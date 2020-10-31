@@ -1527,7 +1527,7 @@ issue 像是一個 TODO List，可以是自己或是別人提出對這個 repo �
 任何 repo（免費帳戶需設定公開）都能提供額外的網頁服務，這僅限於簡易的 Web Servise(HTML+CSS+JS) 使用。你需要指定一個分支為 Page 網站生成來源，因此你可以自己控制網站與代碼的版本操作。預設為關閉，你需要從 Setting 內可找到此服務進行開啟。
 
 ## GitHub Gist 手札
-GitHub Gist 屬於另外獨立的服務，可以說是一種隨手紀錄用的筆記本或便條紙，提供了修改修訂追蹤與星星數服務。可以貼上各種程式碼甚至 markdown，並能 embed 代碼或 url 網頁分享給任何人。
+GitHub Gist 屬於另外獨立的服務，可以說是一種隨手紀錄用的筆記本或便條紙，提供了修訂追蹤與星星數服務。可以貼上各種程式碼甚至 markdown，並能 embed 代碼或 url 網頁分享給任何人。
 
 雖然沒有辦法像 gitpage 這樣使用，但可以透過第三方工具 (bl.ocks) 來達到簡單的 page 使用，舉例如下：
 - 將 gist URL https://gist.github.com/labnol/122d4de95c6a127b1c9b
