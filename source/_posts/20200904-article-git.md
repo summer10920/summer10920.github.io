@@ -1,7 +1,7 @@
 ---
-title: "[基礎課程] Git 與 GitHub 版本管理工具"
+title: "[學習之路] Git 與 GitHub 版本管理工具"
 categories:
-  - Zero 出發的學習之路
+  - Zero Road
 tag:
   - Git & GitHub
   - VSCode

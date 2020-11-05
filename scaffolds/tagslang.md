@@ -108,3 +108,14 @@ hexo g -d
 
 # link to post
 {% post_link exam-173002B10-0 %}
+
+# 圖庫模式
+设置图片展示效果，参考 theme/next/scripts/tags/group-pictures.js 注释示意图。
+
+{% gp 5-3 %}
+![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cice6j218g0p0zpv.jpg)
+![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7ch9rvj218g0p0jvi.jpg)
+![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cj8xej218g0p0gqw.jpg)
+![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cg745j218g0p0juj.jpg)
+![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cgf88j218g0p0ju3.jpg)
+{% endgp %}
