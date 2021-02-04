@@ -27,7 +27,7 @@ JavaScript 的 Ajax 相對來說比較複雜且完整參數指令（可自行查
 | $.get(url,data,callback)                       | 以 get 概念傳送 data 到 url 提供取得，並透過 callback 取得執行指令與 url 結果   |
 | $.post(url,data,callback)                      | 同上，但是以 postt 概念傳送 data 到 url                                         |
 | $.getJSON(url,data,success(data,status,xhr))   | 同 get 概念，可從 url 取得 JSON 格式 (API) 之資料，並提供相關 success 請求參數  |
-| $.getScript(url,data,success(data,status,xhr)) | 同上，主要是取得 JSONP 格式為用途                                               |
+| $.getScript(url,data,success(data,status,xhr)) | 同上，主要是取得JavaScript腳本來執行                                            |
 | $.ajax(setting)                                | 完整的 Ajax 控制語法，setting 為多資料之物件結構陣列。前幾項都是簡化過的 Ajax() |
 
 這裡基礎教學重點為、$.get() 與、$.post()，之後的 API 串接會再深入介紹。

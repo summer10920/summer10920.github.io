@@ -2,6 +2,7 @@
 title: "[學習之路] VSCode 的技巧大補帖"
 categories:
   - Zero Road
+  - Tools
 tag:
   - VSCode
 date: 2020-10-23 16:02:24
