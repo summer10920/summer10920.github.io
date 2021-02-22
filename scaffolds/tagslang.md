@@ -119,3 +119,6 @@ hexo g -d
 ![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cg745j218g0p0juj.jpg)
 ![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cgf88j218g0p0ju3.jpg)
 {% endgp %}
+
+# 使用HTML編譯
+透過`<escape></escape>`標籤包覆能直接寫HTML
