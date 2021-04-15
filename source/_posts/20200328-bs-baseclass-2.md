@@ -1,5 +1,5 @@
 ---
-title: "[基礎課程] Bootstrap 教學（二）：內容與通用"
+title: "[基礎課程] Bootstrap4 教學（二）：內容與通用"
 categories:
   - 職訓教材
   - Bootstrap

@@ -1,5 +1,5 @@
 ---
-title: "[基礎課程] Bootstrap 教學（三）：元件"
+title: "[基礎課程] Bootstrap4 教學（三）：元件"
 categories:
   - 職訓教材
   - Bootstrap
