@@ -31,7 +31,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/7o5GPAm.png">
 <meta property="article:published_time" content="2020-04-21T17:32:41.000Z">
-<meta property="article:modified_time" content="2020-05-08T11:05:48.000Z">
+<meta property="article:modified_time" content="2021-04-16T16:21:22.000Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
@@ -230,7 +230,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-05-08 19:05:48" itemprop="dateModified" datetime="2020-05-08T19:05:48+08:00">2020-05-08</time>
+                <time title="修改時間：2021-04-17 00:21:22" itemprop="dateModified" datetime="2021-04-17T00:21:22+08:00">2021-04-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -357,7 +357,7 @@
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getcount</span>(<span class="params">who</span>) </span>&#123; <span class="comment">// 計分且將紅色變綠色  who=0~8</span></span><br><span class="line">  <span class="keyword">if</span>(animal[who].title==<span class="string">"red"</span>&amp;&amp;flag==<span class="number">1</span>)&#123; <span class="comment">//確定是遊戲中的紅色事件</span></span><br><span class="line">    animal[who].src=<span class="string">"green.png"</span>;</span><br><span class="line">    animal[who].style.background=<span class="string">"green"</span>;</span><br><span class="line">    animal[who].title=<span class="string">"green"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*加分*/</span></span><br><span class="line">    count++;</span><br><span class="line">    combo.textContent=<span class="string">`成績分數：<span class="subst">$&#123;count&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">    id=animal[who].alt;</span><br><span class="line">    clearTimeout(beYellow[id]); <span class="comment">//清除原先路線的轉黃定時器</span></span><br><span class="line">    animal[who].alt=<span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">//green 1 秒之後自己變回 yellow</span></span><br><span class="line">      animal[who].src=<span class="string">"yellow.png"</span>;</span><br><span class="line">      animal[who].style.background=<span class="literal">null</span>;</span><br><span class="line">      animal[who].title=<span class="string">"yellow"</span>;</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <div class="note default">
-            <p><strong>示範參考：</strong> </p><ul><li><a href="https://github.com/summer10920/js_WhackMole" target="_blank" rel="noopener">View Full Code</a></li><li><a href="http://page006.lokiui.com/" target="_blank" rel="noopener">DEMO Page</a></li></ul>
+            <p><strong>示範參考：</strong> </p><ul><li><a href="https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/whackMole" target="_blank" rel="noopener">View Full Code</a></li><li><a href="https://summer10920.github.io/skillStudies_JS_WebDemo/whackMole/">DEMO Page</a></li></ul>
           </div>
     </div>
 

@@ -30,7 +30,7 @@
 <meta property="og:description" content="本篇介紹如何在一個網站能展現出全版面視窗廣告，同時而外的進階利用 cookie 去分析多久內不再出現廣告避免用戶嫌棄。在那之前你需要準備一張任一圖片（可參考蝦皮購物）">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-04-21T04:14:22.000Z">
-<meta property="article:modified_time" content="2020-05-08T11:05:58.000Z">
+<meta property="article:modified_time" content="2021-04-16T16:19:22.000Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
@@ -228,7 +228,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-05-08 19:05:58" itemprop="dateModified" datetime="2020-05-08T19:05:58+08:00">2020-05-08</time>
+                <time title="修改時間：2021-04-17 00:19:22" itemprop="dateModified" datetime="2021-04-17T00:19:22+08:00">2021-04-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -321,7 +321,7 @@
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//開始指定 cookie，有同時有效時間為午夜前</span></span><br><span class="line"><span class="keyword">var</span> eatCook=findCook1(<span class="string">"watchedAd"</span>);</span><br><span class="line"><span class="keyword">if</span>(!eatCook)&#123;<span class="comment">//還沒有設定</span></span><br><span class="line">  <span class="keyword">var</span> end = <span class="keyword">new</span> <span class="built_in">Date</span>(); <span class="comment">//先取得現在，再修改成午夜前的時間（以 UTC 時區+0 為值）</span></span><br><span class="line">  end.setHours(<span class="number">23</span>),end.setMinutes(<span class="number">59</span>),end.setSeconds(<span class="number">59</span>);</span><br><span class="line">  <span class="built_in">document</span>.cookie = <span class="string">"watchedAd=yes;expires="</span> + end.toUTCString();</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="built_in">document</span>.getElementById(<span class="string">"adFull"</span>).remove();<span class="comment">//移除該廣告 div</span></span><br></pre></td></tr></table></figure>
 <hr>
 <div class="note default">
-            <p><strong>示範參考：</strong></p><ul><li><a href="https://github.com/summer10920/js_adCookie" target="_blank" rel="noopener">View Full Code</a></li><li><a href="http://page003.lokiui.com/" target="_blank" rel="noopener">DEMO Page</a></li></ul>
+            <p><strong>示範參考：</strong></p><ul><li><a href="https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/adCookie" target="_blank" rel="noopener">View Full Code</a></li><li><a href="https://summer10920.github.io/skillStudies_JS_WebDemo/adCookie/">DEMO Page</a></li></ul>
           </div>
     </div>
 

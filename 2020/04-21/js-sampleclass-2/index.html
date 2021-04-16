@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://i.imgur.com/SJa2KJg.png">
 <meta property="og:image" content="https://i.imgur.com/29lqYod.png">
 <meta property="article:published_time" content="2020-04-21T13:45:13.000Z">
-<meta property="article:modified_time" content="2020-05-08T11:05:56.000Z">
+<meta property="article:modified_time" content="2021-04-16T16:19:58.000Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
@@ -231,7 +231,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新於</span>
-                <time title="修改時間：2020-05-08 19:05:56" itemprop="dateModified" datetime="2020-05-08T19:05:56+08:00">2020-05-08</time>
+                <time title="修改時間：2021-04-17 00:19:58" itemprop="dateModified" datetime="2021-04-17T00:19:58+08:00">2021-04-17</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -307,7 +307,7 @@
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> n_day = [<span class="string">'SUN'</span>, <span class="string">'MON'</span>, <span class="string">'TUS'</span>, <span class="string">'WED'</span>, <span class="string">'THR'</span>, <span class="string">'FRI'</span>, <span class="string">'SAT'</span>];</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">re_time</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  setTimeout(<span class="string">"re_time()"</span>, <span class="number">1000</span>);</span><br><span class="line">  nt = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">  n_hour = nt.getHours(); <span class="comment">//時</span></span><br><span class="line">  n_min = nt.getMinutes();<span class="comment">//分</span></span><br><span class="line">  n_sec = nt.getSeconds();<span class="comment">//秒 65</span></span><br><span class="line"></span><br><span class="line">  n_year = nt.getFullYear();<span class="comment">//年</span></span><br><span class="line">  n_moth = nt.getMonth();</span><br><span class="line">  n_date = nt.getDate();</span><br><span class="line">  d_item = nt.getDay();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">chk0</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (num &lt; <span class="number">10</span>) ? <span class="string">"0"</span> + num : num;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">"clk2-time"</span>).textContent = <span class="string">`<span class="subst">$&#123;chk0(n_hour)&#125;</span>:<span class="subst">$&#123;chk0(n_min)&#125;</span>:<span class="subst">$&#123;chk0(n_sec)&#125;</span>`</span>;</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">"clk2-date"</span>).textContent = <span class="string">`<span class="subst">$&#123;n_year&#125;</span>-<span class="subst">$&#123;n_moth + <span class="number">1</span>&#125;</span>-<span class="subst">$&#123;n_date&#125;</span> <span class="subst">$&#123;n_day[d_item]&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">re_time();</span><br></pre></td></tr></table></figure>
 <hr>
 <div class="note default">
-            <p><strong>示範參考：</strong></p><ul><li><a href="https://github.com/summer10920/js_digiClock" target="_blank" rel="noopener">View Full Code</a></li><li><a href="http://page004.lokiui.com/" target="_blank" rel="noopener">DEMO Page</a></li></ul>
+            <p><strong>示範參考：</strong></p><ul><li><a href="https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/digiClock" target="_blank" rel="noopener">View Full Code</a></li><li><a href="https://summer10920.github.io/skillStudies_JS_WebDemo/digiClock/">DEMO Page</a></li></ul>
           </div>
     </div>
 
