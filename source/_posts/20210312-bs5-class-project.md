@@ -14,7 +14,7 @@ date: 2021-03-12 20:10:05
 
 {% note default %}
 本練習完成品之預覽位置：
-https://github.com/summer10920/book_BS5_project_hotel
+https://summer10920.github.io/book_BS_project_hotel/bootstrap50/
 {% endnote %}
 ---
 
