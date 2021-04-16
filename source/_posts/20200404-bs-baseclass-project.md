@@ -15,7 +15,7 @@ date: 2020-04-04 15:11:36
 
 {% note default %}
 本練習完成品之預覽位置：
-https://summer10920.github.io/book_BS_project_hotel/bootstrap45/
+https://summer10920.github.io/skillStudies_CSSBS_WebDemo/Bootstrap45_Hotel
 {% endnote %}
 ---
 

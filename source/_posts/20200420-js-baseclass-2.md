@@ -149,8 +149,9 @@ gameplay();
 ```
 {% note default %}
 **示範參考：**
-1. 標準版本 - http://page002.lokiui.com/ver1/
-2. SweetAlert 版本 - http://page002.lokiui.com/
+1. 標準版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/storyGame/ 
+2. SweetAlert 版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/storyGame_swal/
+
 {% endnote %}
 
 ---
@@ -424,5 +425,5 @@ function clearover(){
 
 {% note default %}
 **示範參考：**
-挑戰版本 - https://page007.lokiui.com
+挑戰版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/colorEditor/
 {% endnote %}

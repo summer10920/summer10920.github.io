@@ -293,6 +293,6 @@ re_time();
 ---
 {% note default %}
 **示範參考：**
-- [View Full Code](https://github.com/summer10920/js_digiClock)
-- [DEMO Page](http://page004.lokiui.com/)
+- [View Full Code](https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/digiClock)
+- [DEMO Page](https://summer10920.github.io/skillStudies_JS_WebDemo/digiClock/)
 {% endnote %}
