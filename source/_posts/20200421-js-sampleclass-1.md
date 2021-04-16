@@ -215,6 +215,6 @@ else document.getElementById("adFull").remove();//移除該廣告 div
 ---
 {% note default %}
 **示範參考：**
-- [View Full Code](https://github.com/summer10920/js_adCookie)
-- [DEMO Page](http://page003.lokiui.com/)
+- [View Full Code](https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/adCookie)
+- [DEMO Page](https://summer10920.github.io/skillStudies_JS_WebDemo/adCookie/)
 {% endnote %}

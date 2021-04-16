@@ -23,8 +23,10 @@ date: 2020-11-06 19:40:23
 3. **環境開發工具**：
 本練習不符合網頁設計丙級提供應考人使用之開發工具（請詳閱術科題目說明），本解析採用 VSCode 與外掛工具 Live Server 為自主開發練習工具。
 
-- 完成網站範例：
-  - [01-國立科技高中─校園社團介紹網](https://summer10920.github.io/Loki_PQ_WebFrontend_Exam/)
+{% note default %}
+本練習完成品之預覽位置：
+https://summer10920.github.io/skillStudies_CSSBS_WebDemo/ClassC1_Exam/
+{% endnote %}
 
 ---
 
