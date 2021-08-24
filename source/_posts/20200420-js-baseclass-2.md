@@ -9,7 +9,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-04-20 21:07:53
 ---
-
+![](https://i.imgur.com/D8v3RVP.png)
 本篇介紹 JS 十分重要的兩大模型介紹，如果你希望 JS 能控制並動態調整你的網頁內容。不外乎就是 BOM 與 DOM 模型。BOM 是瀏覽器物件模型，DOM 是文件物件模型，前者是對瀏覽器本身進行操作，而後者是對瀏覽器（可看成容器）內的內容進行操作。
 
 <!-- more -->
@@ -164,6 +164,27 @@ gameplay();
 var txt=document.getElementById("demo").innerHTML; //指定為 txt=物件。方法。子屬性
 ```
 
+## document 物件
+在 document 物件底下會存放一些子物件可以直接獲取 HTML 文件內的大群組元素可直接找到，或者下節部分透過 get 方式找到指定條件的範圍元素。
+
+| document. 子物件 | 描述                                                            |
+| ---------------- | --------------------------------------------------------------- |
+| document.head    | head 元素，但唯獨屬性不可修改                                   |
+| document.body    | body 元素，操作例如`document.body.style.backgroundColor="red";` |
+| document.forms   | 文件內的全部表單元素之通用集合                                  |
+| document.links   | 文件內的全部具備 href 之元素之通用集合                          |
+| document.images  | 文件內的全部 img 元素之通用集合                                 |
+| document.scripts | 文件內的全部 script 元素之通用集合                              |
+
+>如通用集合內的元素持有 id 或 name 可更快指向找到，例如：
+```html
+<img src="https://fakeimg.pl/200x200" name="aa">
+<img src="https://fakeimg.pl/200x200" id="bb">
+<script>
+  consonle.log(document.images.aa,document.images.bb);
+</script>
+```
+
 ## 節點存取
 | document. 方法                 | 描述                                     |
 | ------------------------------ | ---------------------------------------- |
@@ -218,19 +239,52 @@ var txt=document.getElementById("demo").innerHTML; //指定為 txt=物件。方�
 ```
 
 ## Event 事件
-Event 的事件非常多，是指當偵測某物件的狀態成立時觸發執行{}某 JS。有分為滑鼠、鍵盤、遊覽器狀況等各種事件，通常會搭配自訂函式形成一個互動反應。以下只列舉幾個簡單的事件
-
-| document. 方法                           | 描述                                   |
-| ---------------------------------------- | -------------------------------------- |
-| onclick,onmousedown,onmouseup            | 點選，滑鼠按下，彈起                   |
-| onmouseover,onmouseover                  | 滑鼠移入，移出                         |
-| onchange                                 | 常用於表單，當內容有變化時             |
-| onfocus                                  | 獲得焦點                               |
-| addEventListener(),removeEventListener() | 好維護的事件用函式，直接指定事件與對象 |
+Event 的事件非常多，是指當偵測某物件的狀態成立時觸發執行{}某 JS。有分為滑鼠、鍵盤、觸碰裝置、遊覽器、元素等各種事件，通常會搭配自訂函式形成一個互動反應。以下只列舉幾個簡單的事件
 
 {% note default %}
 更多 Event 請參考 [W3Schools 說明網址](https://www.w3schools.com/jsref/dom_obj_event.asp)
 {% endnote %}
+
+**mouse event**
+
+| document. 方法                         | 描述                       |
+| -------------------------------------- | -------------------------- |
+| onclick,dblclick,onmousedown,onmouseup | 點選，雙點，滑鼠按下，彈起 |
+| oncontextmenu                          | 滑鼠右鍵                   |
+| onmouseover,onmouseout                 | 滑鼠移入，移出             |
+| onchange                               | 常用於表單，當內容有變化時 |
+| onfocus                                | 獲得焦點                   |
+| onblur                                 | 失去焦點                   |
+| onsubmit                               | 表單提交                   |
+| onreset                                | 表單重置                   |
+
+> focus/blur有雷同的用法為focusin/focusout，兩者差異後者支援冒泡事件但瀏覽器並非都支援
+
+**touch event**
+
+| document. 方法 | 描述     |
+| -------------- | -------- |
+| ontouchcancel  | 觸碰取消 |
+| ontouchend     | 觸碰離開 |
+| ontouchmove    | 觸碰按壓 |
+| ontouchstart   | 觸碰按下 |
+
+**kerboard event**
+
+| document. 方法 | 描述           |
+| -------------- | -------------- |
+| onkeyup        | 按鈕彈起       |
+| onkeydown      | 按鈕按下       |
+| onkeypress     | 按鈕按下並起來 |
+
+**browser event**
+
+| window. 方法 | 描述           |
+| ------------ | -------------- |
+| onload       | 元素載入後時   |
+| onresize     | 視窗改變尺寸時 |
+
+> 這裡的寫法可使用在 HTML 屬性或透過 JS 對元素物件綁定，後面會講到監聽事件之另一種方法
 
 ### 透過 HTML 屬性觸發
 
@@ -292,6 +346,7 @@ document.onkeydown = getcode;
 ```
 
 ### 透過 JS 監聽行為觸發
+使用 addEventListener() 與 removeEventListener() 做可維護管理的事件用函式，直接指定事件與對象。
 
 {% note primary %}
 **素材準備：準備代碼以方便下階段的教學練習** 

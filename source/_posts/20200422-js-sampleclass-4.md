@@ -9,7 +9,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-04-22 01:32:41
 ---
-
+![](https://i.imgur.com/D8v3RVP.png)
 JS 的互動範例，主要能學習到 settimeout, event, dom 的控制與視覺互動。包含了鍵盤事件的調整與控制。遊戲設計如下：
 <!-- more -->
 

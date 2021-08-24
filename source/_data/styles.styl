@@ -1,26 +1,223 @@
-/*custom css*/
+/* custom css */
+:root {
+  --main: #E91061;
+}
 
 .mermaid {
   background: transparent;
 }
-.sidebar-toggle{
+
+.sidebar-toggle {
   transform: scale(1.5);
+  background: var(--main);
+  opacity: 0.5;
+  transition: 1s opacity;
 }
 
-.post-body>:not(.group-picture) img{
+.post-body>:not(.group-picture) img {
   box-shadow: 0 0 4px 0px #a6a6a670;
-  margin:20px auto;
-  max-width :50vw;
+  margin: 20px auto;
+  max-width: 50vw;
   max-height: 50vh;
 }
 
+.category-all-page .category-list {
+  display: flex;
+}
 
-.category-all-page .category-list{
-  display:flex;
+.category-all-page .category-list-item {
+  margin: 10px;
+  flex: 1 1 auto;
 }
-.github-corner svg{
-  fill:#E91061;
+
+.github-corner svg {
+  fill: var(--main);
 }
-.headband{
-  background: #E91061;
+
+.headband {
+  background: var(--main);
+  display: block !important;
+}
+
+code {
+  border-radius: 0.25rem;
+  color: var(--main);
+  background: #ddd;
+  margin: 0 0.25rem;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 1px 5px;
+}
+
+.post-meta-item-icon {
+  margin: 0 3px;
+}
+
+/* **************highlight */
+figure.highlight {
+  overflow: hidden;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+  background: var(--highlight-gutter-background);
+
+  figcaption {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background: unset;
+  }
+
+  .table-container {
+    background: var(--highlight-background);
+  }
+
+  .table-container::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    background-color: var(--main);
+  }
+}
+
+/* ***********header banner */
+.header {
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+}
+
+.header-inner {
+  padding-top: 40px;
+
+  a {
+    color: #eee;
+    transition: 1s;
+  }
+}
+
+a:hover {
+  color: var(--main);
+}
+
+.menu .menu-item .badge {
+  transition: 1s;
+}
+
+.menu .menu-item a:hover .badge {
+  background-color: var(--main);
+  color: #eee;
+}
+
+#lokiBanner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  z-index: -1;
+}
+
+.site-nav-toggle .toggle .toggle-line, .site-nav-right .toggle .toggle-line {
+  background: #fff;
+}
+
+.site-nav-right .toggle, .site-subtitle {
+  color: #fff;
+}
+
+/* ************main page imgbox */
+.main {
+  background: #eee;
+  min-height: calc(100vh - 66px - 3px);
+}
+
+.lokiIndex {
+  background: white;
+  margin-bottom: 30px;
+  padding: 30px;
+  position: relative;
+  z-index: 0;
+
+  header, .post-button, .post-body>p:nth-child(2) {
+    position: relative;
+    z-index: 5;
+  }
+
+  a.fancybox {
+    position: absolute;
+    bottom: 0;
+    height: 100%;
+    width: 50%;
+    pointer-events: none;
+    border: 0;
+    transition: 1s;
+    filter: opacity(0.5);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      margin: 0;
+      max-width: unset;
+      max-height: unset;
+    }
+  }
+
+  .post-eof {
+    display: none;
+  }
+}
+
+.post-block:nth-child(odd)>.lokiIndex a.fancybox {
+  right: 0;
+
+  img {
+    -webkit-mask-image: linear-gradient(to right, #0000 25%, #000f);
+  }
+}
+
+.post-block:nth-child(even)>.lokiIndex a.fancybox {
+  left: 0;
+
+  img {
+    -webkit-mask-image: linear-gradient(to left, #0000 25%, #000f);
+  }
+}
+
+/* ***********footer */
+footer.footer {
+  background: var(--btn-default-bg);
+  padding: 5px;
+}
+
+/* **********article style */
+tbody tr:nth-of-type(even), thead tr {
+  background: var(--body-bg-color);
+}
+
+blockquote {
+  border-left-color: var(--main);
+}
+
+.post-body h1 {
+  border-bottom: 1px solid;
+  text-align: right;
+}
+
+/* timeline style */
+.posts-collapse .post-content::before {
+  background: var(--main);
+  margin-left: -1px;
+  width: 2px;
+  opacity: 0.5;
+}
+
+.posts-collapse .post-content .collection-title::before, .posts-collapse .post-content .collection-year::before, .posts-collapse .post-content .post-header::before {
+  background: var(--main);
+}
+
+.post-body .note, blockquote {
+  background: #fbfbfb;
 }
