@@ -2833,7 +2833,7 @@ mark.search-keyword {
   transition: all 0.2s ease-in-out;
 }
 .links-of-author a::before {
-  background: #0bec90;
+  background: #09c150;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2856,7 +2856,7 @@ mark.search-keyword {
 /* custom css */
 :root {
   --main: #e91061;
-  --text-color: #f00;
+  --text-color: #333;
 }
 .mermaid {
   background: transparent;
@@ -2872,13 +2872,6 @@ mark.search-keyword {
   margin: 20px auto;
   max-width: 50vw;
   max-height: 50vh;
-}
-.category-all-page .category-list {
-  display: flex;
-}
-.category-all-page .category-list-item {
-  margin: 10px;
-  flex: 1 1 auto;
 }
 .github-corner svg {
   fill: var(--main);
@@ -3044,4 +3037,16 @@ blockquote {
 .post-body .note,
 blockquote {
   background: #fbfbfb;
+}
+/* *********category style */
+.category-all-page .category-list {
+  display: flex;
+}
+.category-all-page .category-list-item {
+  margin: 10px;
+  flex: 1 0 auto;
+}
+.category-list>li>a {
+  color: var(--main);
+  font-weight: bold;
 }
