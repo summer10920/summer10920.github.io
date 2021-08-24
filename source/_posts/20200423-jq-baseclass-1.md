@@ -39,7 +39,6 @@ JQuery 主要是主打 write less,do more 為精神，也就是幫助你減少 J
 <script src="js/jquery-3.4.1.min.js"></script>
 ```
 
----
 # 語法說明
 使用 jQuery 的`$()`為基礎並會變成 jQuery 的元件（物件型態），透過此 jQuery 元件進行相關程式指令。若要接續其他動作則以物件指向來進行行為規劃，舉例來說：
 
@@ -49,6 +48,8 @@ $('li.list').addClass('color');
 ```
 1. 此為找到 DOM 中的 li 標籤同時有 class name 為 list 的對象
 2. 對此對象進行增加 class name 為 color
+
+> 也可使用`jQuery()` 來代表 `$()` 之寫法，如果無法使用該符號情況下（跟某套件衝突）。
 
 JQ 可接續其他對象或動作並能連續指定多種，譬如
 ```javascript
@@ -211,8 +212,14 @@ selector 為文字串格式，舉例方式如下：
 | .scrollTop()                         | Y 軸滾輪 bar 之位置或指定                      |
 | .ready(function(){})                 | DOM 載入完畢後執行 fucntion                    |
 | .load(function(){})                  | 網頁載入完畢後執行 fucntion                    |
-| .on("click",function(){})            | 監聽 event 事件，參數分別為類型與執行 function |
+| .on("click",function(){})            | 添加 event 事件，參數分別為類型與執行 function |
+| .off("click",function(){})           | 關閉 event 事件，同上                          |
 | .click or .submit() or .hover() 等等 | 與前者相同，屬於另一種簡略寫法                 |
+
+> DOM載入後執行的寫法為`$(document).reday(function(){})`，其實還提供另一種簡寫為 `$(function(){})`
+
+> on()可以綁兩種事件做同件事，譬如 `on("focus blur",()=>{console.log("event")});`
+
 
 ## CSS 與特效
 JQ 的特效主要是協助快速控制 CSS，包含控制了你的 display 做顯示或隱藏，或是淡入淡出 opacity 變化等等。另外還有所謂的 animate，幫你做 keyframe 上的 from 到 to 的過渡效果。
