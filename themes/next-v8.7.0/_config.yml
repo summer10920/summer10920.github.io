@@ -41,7 +41,7 @@ scheme: Muse
 #scheme: Gemini
 
 # Dark Mode
-darkmode: true
+darkmode: false
 
 # ---------------------------------------------------------------
 # Site Information Settings
@@ -163,7 +163,7 @@ links_settings:
   layout: block
 
 links:
-  網頁設計乙級術科解析: https://b17300demo.lokiui.com/
+  網頁設計乙級術科解析: http://b17300demo.lokiui.com/
   #Title: https://example.com
 
 # Table of Contents in the Sidebar
