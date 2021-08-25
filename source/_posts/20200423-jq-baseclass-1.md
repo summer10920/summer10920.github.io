@@ -9,15 +9,16 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-04-23 02:16:09
 ---
+![](https://i.imgur.com/NxJTq7q.png)
+
+JQuery 主要是主打 write less,do more 為精神，也就是幫助你減少 JavaScript 的撰寫程式，更容易做更多的處理。
+<!-- more -->
 
 JQuery 是一個由原生 JavaScript 所開發出來的開源函式庫，主要是有三大項功能受到好評而列入主流。包含：
 1. 被簡化的 DOM 控制：比起原生 JavaScript 你能更輕鬆的對 DOM 進行監管
 2. 過度的轉場效果：能容易去控制 CSS 以及配合兩者之間的過渡，也有自己的 animate 功能
 3. AJAX 使用：能直接額外背後連線網頁並將資料取回，再透過 DOM 寫入，達到免重整畫面就能取得。
 
-JQuery 主要是主打 write less,do more 為精神，也就是幫助你減少 JavaScript 的撰寫程式，更容易做更多的處理。
-
-<!-- more -->
 
 # 安裝
 你可以使用 CDN 或是直接安裝到網站內，透過取得 jquery.min.js（壓縮過）。要注意 jQuery 最好是一開始就被載入，如果你有使用其他人的 JavaScript 外掛，可能這些外掛也引用到 JQ，如果有必要必須安排 jQuery 放在這些會受影響的 JavaScript 外掛之前。通常都會擺放到 head 這裡，也有人會放在 body 裡面，只要確認你所使用的 jQuery 代碼是在 JQuery.js 宣告之後出現即可。
@@ -138,6 +139,7 @@ selector 為文字串格式，舉例方式如下：
 | $("li:eq(n)") <br> $("li").eq(n)           | 找到 li 標籤對象之第 n 筆，初值=0    |
 | $("li:contains('打')")                     | 找到 li 標籤內含文字"打"之選取       |
 | $("ul:has(li)") <br> $("ul").has("li")     | 找到 ul 標籤且持有 li 之選取（取 ul) |
+| $("li").each(function(){})                 | 多結果下能批次執行 each() 內的指令   |
 - 能根據 tag 裡面的屬性 (attr) 做選取，透過多種比較式去檢查布林條件
 | 篩選依屬性                               | 屬性以 [] 來指定，值最好加引號      |
 | ---------------------------------------- | ----------------------------------- |
@@ -159,11 +161,13 @@ selector 為文字串格式，舉例方式如下：
 當你熟悉的 selector 後，就能開始要進行何種作業，採用物件連結方式進行處理：
 
 - 最基本常見的方法便是取得內容或修改。你可以抽換文字或 HTML，也能一同更換自己 HTML(tag)。
-| 內容存取             |                              |
-| -------------------- | ---------------------------- |
-| .html("HTML")        | 同 JavaScript .innerHTML()   |
-| .text("String")      | 同 JavaScript .textContext() |
-| .replaceWith("HTML") | 替換 HTML 連同自己該層       |
+| 內容存取             |                                                        |
+| -------------------- | ------------------------------------------------------ |
+| .html("HTML")        | 同 JavaScript .innerHTML()                             |
+| .text("String")      | 同 JavaScript .textContext()                           |
+| .replaceWith("HTML") | 替換 HTML 連同自己該層                                 |
+| .wrap("HTML")        | 增加父層包住自己                                       |
+| .wrapAll("HTM")      | 同上，若同層有多個相同對象當作同群組增加父層包住此群組 |
 - 另個常見方法會在兄弟層級上進行增減（譬如表格或列表的追加刪除）
 | 相對位置做插入   |                   |
 | ---------------- | ----------------- |
@@ -187,6 +191,7 @@ selector 為文字串格式，舉例方式如下：
 | .removeAttr("style")                                                                 | 移除屬性 style                                                                 |
 | .addClass("hot")                                                                     | 增加 class=hot                                                                 |
 | .removeClass("hot")                                                                  | 移除 class=hot                                                                 |
+| .hasClass("hot")                                                                     | 檢查是否持有 class 為 hot                                                      |
 | .toggleClass("hot")                                                                  | 增加或移除 class=hot                                                           |
 | .css("color") <br> .css("color","red") <br> .css({"color":"red","font-size":"14px"}) | 取得 css 之 color 值<br>設定 CSS 之 color=red<br> 設定多筆 CSS（以 JSON 方式） |
 | .val() <br> .val("loki")                                                             | 取得屬性 value 值<br>設定 value=loki                                           |
@@ -203,23 +208,18 @@ selector 為文字串格式，舉例方式如下：
 | .siblings(selector) | 該位置之同層級，找到指定標籤          |
 - 這裡包含了尺寸、定位點、載入與完成、event 事件等各種跟 Browser 有關的方法
 - event 事件與 JavaScript 差異不大，差別於簡化了編寫上的速度
-| BOM 相關                             |                                                |
-| ------------------------------------ | ---------------------------------------------- |
-| .width() 與 .height()                | 同 CSS 設定或取得 width 與 height 尺寸         |
-| .offset()                            | 回傳物件（絕對座標）包含。top 與。left         |
-| .position()                          | 回傳物件（相對座標）包含。top 與。left         |
-| .scrollLeft()                        | X 軸滾輪 bar 之位置或指定                      |
-| .scrollTop()                         | Y 軸滾輪 bar 之位置或指定                      |
-| .ready(function(){})                 | DOM 載入完畢後執行 fucntion                    |
-| .load(function(){})                  | 網頁載入完畢後執行 fucntion                    |
-| .on("click",function(){})            | 添加 event 事件，參數分別為類型與執行 function |
-| .off("click",function(){})           | 關閉 event 事件，同上                          |
-| .click or .submit() or .hover() 等等 | 與前者相同，屬於另一種簡略寫法                 |
-
-> DOM載入後執行的寫法為`$(document).reday(function(){})`，其實還提供另一種簡寫為 `$(function(){})`
-
-> on()可以綁兩種事件做同件事，譬如 `on("focus blur",()=>{console.log("event")});`
-
+| BOM 相關                             |                                                                                                                                 |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| .width() 與 .height()                | 同 CSS 設定或取得 width 與 height 尺寸                                                                                          |
+| .offset()                            | 回傳物件（絕對座標）包含。top 與。left                                                                                          |
+| .position()                          | 回傳物件（相對座標）包含。top 與。left                                                                                          |
+| .scrollLeft()                        | X 軸滾輪 bar 之位置或指定                                                                                                       |
+| .scrollTop()                         | Y 軸滾輪 bar 之位置或指定                                                                                                       |
+| .ready(function(){})                 | DOM 載入完畢後執行 fucntion。<br>寫法為`$(document).reday(function(){})`，其實還提供另一種簡寫為 `$(function(){})`              |
+| .load(function(){})                  | 網頁載入完畢後執行 fucntion                                                                                                     |
+| .on("click",function(){})            | 添加 event 事件，參數分別為類型與執行 function。也可綁兩種事件做同件事，譬如<br> `on("focus blur",()=>{console.log("event")});` |
+| .off("click",function(){})           | 關閉 event 事件，同上                                                                                                           |
+| .click or .submit() or .hover() 等等 | 與前者相同，屬於另一種簡略寫法                                                                                                  |
 
 ## CSS 與特效
 JQ 的特效主要是協助快速控制 CSS，包含控制了你的 display 做顯示或隱藏，或是淡入淡出 opacity 變化等等。另外還有所謂的 animate，幫你做 keyframe 上的 from 到 to 的過渡效果。

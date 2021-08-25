@@ -1,6 +1,7 @@
 /* custom css */
 :root {
   --main: #E91061;
+  --text-color: #333;
 }
 
 .mermaid {
@@ -19,15 +20,6 @@
   margin: 20px auto;
   max-width: 50vw;
   max-height: 50vh;
-}
-
-.category-all-page .category-list {
-  display: flex;
-}
-
-.category-all-page .category-list-item {
-  margin: 10px;
-  flex: 1 1 auto;
 }
 
 .github-corner svg {
@@ -220,4 +212,20 @@ blockquote {
 
 .post-body .note, blockquote {
   background: #fbfbfb;
+}
+
+/* *********category style */
+.category-all-page .category-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.category-all-page .category-list-item {
+  margin: 10px;
+  flex: 1 0 auto;
+}
+
+.category-list>li>a {
+  color: var(--main);
+  font-weight: bold;
 }
