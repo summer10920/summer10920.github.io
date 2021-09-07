@@ -203,14 +203,21 @@ tbody tr:nth-of-type(even), thead tr {
 
 blockquote {
   border-left-color: var(--main);
-}
-
-.post-body h1 {
-  border-bottom: 1px solid;
-  text-align: right;
+  background: #e91e6312;
+  font-size: 1rem;
+  padding: 5px 15px 0;
+  line-height: 1.5rem;
 }
 
 .post-body {
+  h1 {
+    border-bottom: 1px solid;
+    text-align: right;
+  }
+  h2 {
+    background: #ddd;
+  }
+
   h2, h3, h4, h5, h6 {
     border-left: 5px solid;
     padding-left: 10px;
@@ -235,10 +242,6 @@ blockquote {
 
 .posts-collapse .post-content .collection-title::before, .posts-collapse .post-content .collection-year::before, .posts-collapse .post-content .post-header::before {
   background: var(--main);
-}
-
-.post-body .note, blockquote {
-  background: #fbfbfb;
 }
 
 /* *********category style */

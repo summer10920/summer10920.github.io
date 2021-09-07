@@ -206,15 +206,13 @@ document.write(msg.print());
 2. 這次改執行這個工作項目，按下<kbd>CTRL+SHIFT+B</kbd>選取剛建立的`tsc: 監看 - tsconfig.json`。
 3. 現在每次對目標檔案 ts 存檔時，就會自動監看變化並同步轉檔。
 
----
-
 # 型別 Type
 
-## 判斷 type 的機制
+##  判斷
 由於 TypeScript 是 TypeScript 的超集合 (superset)，因此在 Typescript 內輸入純 JavaScript 語法也是可行的，只差於在 TypeScript 領域裡會保守的做任何型別檢查並報錯。型別檢查有以下機制：
 
-### 推論
-TypeScript 了解 JS 的語法因此直接使用 JS 設定變數型別時，TypeScript 會試著去推理出變數的型別。如下例，第一行沒有告知型別，TypeScript 能推測出屬於字串，接著第二行會出現錯誤，TypeScript 已知道這變數為字串而不能改成數字。
+### 根據推論
+TypeScript 了解 Javascript 的語法因此直接使用 Javascript 來設定型別時 TypeScript 會試著去推理出變數的型別。如下例，第一行沒有告知型別，TypeScript 能推測出屬於字串，接著第二行會出現錯誤，TypeScript 已知道這變數為字串而不能改成數字。
 
 ```ts
 let jsword = "hello World";
@@ -222,7 +220,7 @@ jsword = 5;
 console.log(typeof (jsword));
 ```
 
-### 定義 
+### 透過定義
 可以自己告知 TypeScript 這變數屬於什麼型別，有三種基本寫法：
 
 ```ts 寫法 1
@@ -231,12 +229,171 @@ const num = <number>456;  /*寫法 2，在 value 前綴添加<> */
 const bool = true as boolean; /*寫法 3，在 value 用 as 綁定*/
 ```
 
+這習慣很容易培養，每次創立變數時記得宣告這變數的型別即可，舉例如下：
+
+```ts
+const
+  price: number = 100,
+  tax: number = 0.05,
+  total: number = price * (1 + tax);
+const msg:string="$"+price+"含稅價為：$"+total+"。";
+
+console.log(msg);
+```
+
+當然可試著將所有的定義型別移除，TS 程式仍可以正常轉換為 Javascript 不會報錯，這是 TypeScript 透過推論協助出來的。但不要太過於依賴推論功能，如果可以還是想成習慣宣告型別，避免遇到不可預期的邏輯錯誤。
+
 #### any 通用型別
-由於 TypeScript 非常要求靜態型別的宣告，因此除非有必要可使用 any 通用型別，可以像 JS 那樣保留動態不受限定型別
+由於 TypeScript 非常要求靜態型別的宣告，因此有必要時可使用 any 通用型別，可以像 Javascript 那樣保留動態不受限定型別
 ```ts
 let anyVal: any = 123;
 anyVal = "world";
 ```
+
+下一篇開始將介紹各種定義的規則與方式。
+
+## 定義
+目前已經知道 number,string,boolean,any 這四種基本型別的用法，我們接著介紹其他複雜的型別與規則。
+
+### 別名
+型別本身可以使用別名來登記，再透過套用別名方式來達到宣告型別。舉例如下：
+
+```ts
+type userName = string;
+type userAge = number;
+//宣告這些別名且持有型別
+
+let a: userName = "Loki";
+let b: userAge = 18;
+//透過別名能讓變數名在開發維護上可不重要，且能獲得型別
+
+console.log(a, b);
+
+/******to js
+  let a = "Loki";
+  let b = 18;
+  console.log(a, b);
+*/
+```
+
+### 陣列
+陣列的指定型別方式需要多一個`[]`宣告在後餟，這樣的操作下會是陣列內所有資料的型別都是同樣的，雖然不像 Javascript 自由彈性，但也是保護你的資料都是同樣 type 型別。
+
+```ts
+let ary:number[]=[123,456];
+ary.push(789);  //[123,456,789]
+
+let total:number=0;
+for (const i in ary) {
+  total+=ary[i];
+}
+
+console.log(ary,`SUM=${total}`);
+```
+
+#### tuple 元組
+
+
+#### enum 列舉
+enum 是一種特別的資料型別稱呼為列舉型別。能預先將一些固定的資料存入並自動提供索引 key，結果會是以物件方式保存且不可再事後添加。使用列舉型別可以獲得 key 與 value 相反對應的物件，透過以下代碼做檢視就能明白：
+
+```ts
+enum lokiStatus { scuess, warn, error }
+console.log(lokiStatus); 
+//{0: 'scuess', 1: 'warn', 2: 'error', scuess: 0, warn: 1, error: 2}
+```
+
+TypeScript 會自動將這些 value 做成 key 值，如果需要就能去尋找這些值的相關動作。
+
+```ts
+enum lokiStatus { scuess, warn, error }
+console.log(lokiStatus); 
+//{0: 'scuess', 1: 'warn', 2: 'error', scuess: 0, warn: 1, error: 2}
+
+// use value check in enum
+const code:string="scuess";
+switch (lokiStatus[code]) {
+  case lokiStatus.scuess:
+    console.log("is scuess");
+    break;
+  case lokiStatus.error:
+    console.log("is error");
+    break;
+  case lokiStatus.warn:
+    console.log("is warning");
+    break;
+}
+```
+
+也可以去手動設定這些 index 值，舉例來說前後端的 status 對應可以用到。
+
+```ts
+enum apiStatus {
+  scuess = 200,
+  warn = 300,
+  error = 400
+}
+console.log(apiStatus);
+//{200: 'scuess', 300: 'warn', 400: 'error', scuess: 200, warn: 300, error: 400}
+
+// use index check in enum
+const getcode: number = 400;
+switch (getcode) {
+  case apiStatus.scuess:
+    console.log("is scuess");
+    break;
+  case apiStatus.error:
+    console.log("is error");
+    break;
+  case apiStatus.warn:
+    console.log("is warning");
+    break;
+}
+```
+
+也能指定字串作為索引 key，只是不會額外產生反向關聯 key 與 value。
+```ts
+enum msgStatus {
+  scuess = 'ok',
+  warn = 'alert',
+  error = 'fail'
+}
+console.log(msgStatus);
+//{scuess: 'ok', warn: 'alert', error: 'fail'}
+
+//use key check in enum
+const { scuess, error } = msgStatus; //可透過這方法再把 enum 轉回幾個變數，但名稱要存在
+const msg = "ok";
+
+switch (msg as string) { //如果不指定 type 會出現 type 無法比較。因為前一行沒有宣告型別，這裡事後指定這裡的資料為字串
+  case scuess:
+    console.log("is scuess");
+    break;
+  case error:
+    console.log("is warning");
+    break;
+}
+```
+
+應外注意的是 enum 可以使用 const 來宣告，差別在於不會產生 object。換言之在 TypeScript 上可以列舉出這些資料，但你無法看到此資料物件。可以觀察 TypeScript 產生的 JavaScript 精省到什麼程度減少內存效能。換言之因為物件不存在，所以不可能可透過 index 數字的反向取值去找到 value。
+
+```ts
+const enum constStatus {
+  scuess = 'ok',
+  error = 'fail',
+  apple=100,
+  banana=200
+}
+//應該但不存在的物件
+//{100: 'apple', 200: 'banana', scuess: 'ok', error: 'fail', apple: 100, banana: 200}
+
+console.log(constStatus) // 報錯，無此物件
+console.log(constStatus.scuess); //fail:string
+console.log(constStatus[200]); //不可能找到，沒有物件就沒有index
+console.log(constStatus.apple); // 100:number
+```
+
+---
 
 #### 各種場合下的寫法
 這裡列舉一些在不同場合下的型別定義方式
@@ -255,16 +412,15 @@ let add2 = function (x: number, y: number): number {
 };
 ```
 
-其實上面的函式表達寫法並不完整，無錯誤因為TypeScript透過是推論機制得出的。
+其實上面的函式表達寫法並不完整，無錯誤因為 TypeScript 透過是推論機制得出的。
 
 ```ts
-// 補充add2的型別
+// 補充 add2 的型別
 let add3: (x: number, y: number) => number = function (x: number, y: number): number {
   return x + y;
 }
 ```
 > TypeScript 中的 => 和 ES6 中的 => 有所不同，在 TypeScript 的型別定義中，=> 用來表示函式的定義，左邊是輸入型別，需要用括號括起來，右邊是輸出型別。
-
 
 #### interface 斷言
 另外如果是對物件內部設定型別，可透過變數斷言 interface 來定義。
