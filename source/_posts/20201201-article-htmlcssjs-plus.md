@@ -583,14 +583,14 @@ console.log(a, b); ///AAA String {"BBB"}
 ```
 - 建構子 constructor 與原生練 prototype
 ```javascript
-function info(name, height, weight) {
-  //函式
-  this.name = name; //函式內的建構子（式） constructor
+function info(name, height, weight) { //傳統的Prototype-based的寫法
+  //在函式內宣告這些建構子 constructor
+  this.name = name;
   this.height = height;
   this.weight = weight;
 }
 info.prototype.message = function () {
-  //指定 prototype
+  //強迫指定 prototype
   return `姓名：${this.name}, 身高${this.height}, 體重${this.weight}`;
 };
 let user1 = new info("Loki", 10, 20); //建立物件，除了會載入建構子，也會繼承原生 prototype
@@ -606,11 +606,8 @@ info {name: "Loki", height: 10, weight: 20}
   __proto__: Object
 */
 console.log(user1.message());
-
-/*
-constructor 與 prototype 都能共用擁有，最大差異於前者是獨立占用記憶體（每次 new 都會占用記憶體），後者是繼承方式因此記憶體只有一處
-*/
 ```
+> constructor 與 prototype 都能共用擁有，最大差異於前者是獨立占用記憶體（每次 new 都會占用記憶體），後者是繼承方式因此記憶體只有一處
 - hasOwnProperty() | in | isPrototypeOf()
   查詢 constructor 建構子是否存在於函式物件內、以及查詢某變數是否存在於函式物件內、查詢某函式物件是某曾繼承於指定物件宣告來源。
 ```javascript
