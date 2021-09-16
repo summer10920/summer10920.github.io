@@ -37,7 +37,7 @@ JavaScript 的物件導向觀念採用獨特的原生鍊 Prototype Based 類型�
 ```npm npm
 npm install typescript -g
 ```
->這裡需參數 g 來安裝到主機上而不是專案目錄下
+>這裡需引數 g 來安裝到主機上而不是專案目錄下
 
 ## 執行
 試著在專案內新增一筆檔案 `test.ts`，跟著輸入以下代碼準備轉檔
@@ -98,15 +98,15 @@ document.write(msg.print());
 {% endtabs %}
 
 從上列可知道以下觀念（觀察 TypeScript 與 JavaScriptES6)：
-- 編寫 class 的程式觀念上，使用 TypeScript 更直覺操作。畢竟原 ES5 寫法不是標準的 class 而是採用函式。雖 ES6 已經支援 Class 了，這裡因 TypeScript 的預設參數為 ES5 語法，但可自行調整此編譯語法參數。
+- 編寫 class 的程式觀念上，使用 TypeScript 更直覺操作。畢竟原 ES5 寫法不是標準的 class 而是採用函式。雖 ES6 已經支援 Class 了，這裡因 TypeScript 的預設引數為 ES5 語法，但可自行調整此編譯語法引數。
 - TypeScript 主要是協助開發者完成代碼後轉換成 JavaScript 能理解的寫法
 - TypeScript 對於變數的型態宣告有強迫性，這是為了幫助開發者風險降低
 - TypeScript 的主要用途是讓開發者寫得更簡短與穩定，不是為了取代 JavsScript 標準
 
-事實上，任何轉檔調整需求都需要專案根目錄下的 TypeScript 設定檔案`tsconfig.json`來控制轉檔細部設定。這裡沒提供則不影響皆依 tsc 預設為輸出。在此試著規劃參數檔。
+事實上，任何轉檔調整需求都需要專案根目錄下的 TypeScript 設定檔案`tsconfig.json`來控制轉檔細部設定。這裡沒提供則不影響皆依 tsc 預設為輸出。在此試著規劃引數檔。
 
-1. 專案目錄下直接建立`tsconfig.json`檔案。可以手動自己建立，也能透過終端指令`tsc --init`完成並會提供參數說明。
-2. `tsconfig.json`的參數非常多，這裡只隨便兩種設定即可，未設定的都以初始值，甚至都不寫也可以。
+1. 專案目錄下直接建立`tsconfig.json`檔案。可以手動自己建立，也能透過終端指令`tsc --init`完成並會提供引數說明。
+2. `tsconfig.json`的引數非常多，這裡只隨便兩種設定即可，未設定的都以初始值，甚至都不寫也可以。
 ```json
 {
   "compilerOptions": {
@@ -114,7 +114,7 @@ document.write(msg.print());
     "module": "ES6", //指定生成為哪種模組，可不寫則根據 target 為 ES3/ES5 預設為 commonjs，否則預設值為 ES6
   }
 }
-//更多參數詳閱 https://www.staging-typescript.org/tsconfig
+//更多引數詳閱 https://www.staging-typescript.org/tsconfig
 ```
 3. 接著在終端指令輸入`tsc` 就能根據 tsconfig.json 來轉檔，預設會自動對該專案資料夾內所有 ts 或 tsx 檔案為對象。
 
@@ -205,8 +205,8 @@ document.write(msg.print());
 2. 這次改執行這個工作項目，按下<kbd>CTRL+SHIFT+B</kbd>選取剛建立的`tsc: 監看 - tsconfig.json`。
 3. 現在每次對目標檔案 ts 存檔時，就會自動監看變化並同步轉檔。
 
-## tsconfig.json 參數
-這裡列一些值得討論的參數設定（內容隨作者慢慢增加），不設定也沒關係。你可以跳過這篇等到上手環境再回來看。
+## tsconfig.json 引數
+這裡列一些值得討論的引數設定（內容隨作者慢慢增加），不設定也沒關係。你可以跳過這篇等到上手環境再回來看。
 
 | compilerOptions | default Value | Allowed                                                                                               | info                             |
 | --------------- | ------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
@@ -231,9 +231,9 @@ console.log(typeof (jsword));
 可以自己告知 TypeScript 這變數屬於什麼類型，有三種基本寫法：
 
 ```ts 寫法 1
-const str: string = "hello";  /*寫法 1，在 name 處指定類型*/
-const num = <number>456;  /*寫法 2，在 value 前綴添加<> */
-const bool = true as boolean; /*寫法 3，在 value 用 as 綁定*/
+const str: string = "hello";  /*指定寫法：在 name 處指定類型*/
+const num = <number>456;  /*斷言（Type Assertion）寫法：在 value 前綴添加<> */
+const bool = true as boolean; /*斷言（Type Assertion）寫法：在 value 用 as 綁定*/
 ```
 
 這習慣很容易培養，每次創立變數時記得宣告這變數的類型即可，舉例如下：
@@ -371,6 +371,57 @@ interface Objtype {
 
 > 通常開發者命名習慣上會用字首大寫或 I 開頭，這樣能醒目知道而是一個介面類型的名稱。
 
+#### 繼承 extends
+介面也可以透過繼承觀念來得到父介面與子介面的關係。繼承觀念在 class 會再討論一次。
+
+```ts
+interface Fa {
+  name: string,
+  id: number,
+}
+
+interface Son extends Fa{
+  sex: string
+}
+
+const obj:Son={  //error: 類型 '{ sex: string; }' 在類型 'Son' 中缺少下列屬性：name, id
+  sex:'man'
+}
+```
+
+#### 合併介面
+當存在相同名稱的介面可視同合併成一個同名介面，但注意屬性與類型組合不可有衝突。而方法的組合衝突時等同於函式的多載效果。
+
+```ts
+interface User {
+  name: string;
+  id: number;
+  echo(s:number):number;
+}
+interface User {
+  id: number;
+  sex: string;
+  echo(s:string):string;
+}
+
+/* same as
+interface User {
+  name: string;
+  id: number;
+  sex: string;
+  echo(s:number):number;
+  echo(s:string):string;
+}*/
+
+interface Box {
+  price: string;
+}
+interface Box {
+  id: number;
+  price: number;  //error: 後續的屬性宣告必須具有相同的類型。屬性 'price' 的類型必須是 'string'，但此處卻是類型 'number'。
+}
+```
+
 ### 物件 object
 如果是宣告一個物件資料 JSON。定義之前一定要先使用介面並將類型都指定整理好。接著將這個介面名稱當作類型進行宣告給予變數，有些須注意：
 
@@ -391,7 +442,7 @@ const obj: Objtype = {
 #### 可選、任意、唯獨屬性
 - 透過屬性名稱後綴`?`可指定某屬性為非約束之可選屬性，可存在也可不存在
 - `[propName: string]: any` 代表任何名稱與任何的值類型，如果把 any 改成 string，會影響 id 報錯（因為這句會套用其他的屬性上）
-- 透過屬性名稱前綴`readonly`‵，一旦被 obj 套入類型後，obj 這個屬性會獲得不可修改之狀況。
+- 透過屬性名稱前綴`readonly`，一旦被 obj 套入類型後，obj 這個屬性會獲得不可修改之狀況。
 
 ```ts
 interface user {
@@ -412,6 +463,19 @@ const obj: user = {
 console.log(obj); //{name: 'loki', id: 1, sex: 'man', city: 'tp'}
 
 obj.city = 'nt'; //報錯：因為 'city' 為唯讀屬性，所以無法指派至 'city'。
+```
+
+注意的是`[propName: string]`等於是指任何屬性，也約束在其他已寫出的屬性，注意使用場合避免衝突。
+
+```ts
+interface user {
+  name: string;
+  id: number;
+  [propName: string]: string; //如果這裡指定 string，介面任何 type 都必需是 string
+  //也就是此邏輯套用在任何定義上
+}
+
+// 報錯：類型 'number' 的屬性 'id' 不可指派給字串索引類型 'string'。
 ```
 
 ### 陣列 array
@@ -436,6 +500,15 @@ let ary: (string | number)[] = ['Loki', 'Jiang', 18];
 ary.push("taiwan");
 console.log(ary); //(4) ['Loki', 'Jiang', 18, 'taiwan']
 ```
+
+#### 搭配泛型
+陣列泛型（Array Generic）的寫法是專用給陣列的一種宣告方式。透過 Array 這個 JS 原生建構式獲得類型，並且傳遞 number 作為泛型的替代。
+
+```ts
+const ary: Array<number> = [1, 2, 3];
+```
+
+> `ary:any[]` 的解讀角度比較像是 ary 本身是 any type 且為陣列結構之類型，而 `ary:Array<any>` 的解讀為 ary 從 JS 建構式 Array 獲得類型，並由泛型的指定其內容值替代為 any type。
 
 #### 搭配介面
 也可以用介面來做成約束類型給予陣列，但以下用法太複雜很少用於這種形式的陣列上。
@@ -541,6 +614,7 @@ switch (getcode) {
     break;
 }
 ```
+> 避免同時存在手動索引值與自動索引值共存，TypeScript 會笨笨從 0 列項開始自動賦予索引值，可能會自動地給覆蓋掉。例如`[a=2,b,c,d]`的 c 會自動拿到 2，導致 a 手動的 2 被覆蓋。
 
 也能指定字串作為索引 key，只是不會額外產生反向關聯 key 與 value。
 ```ts
@@ -566,7 +640,8 @@ switch (msg as string) { //如果不指定 type 會出現 type 無法比較。�
 }
 ```
 
-應外注意的是 enum 可以使用 const 來宣告，差別在於不會產生 object 但仍可正常於 TypeScript 上去列舉資料（實際因需求而存在）。可以觀察 TypeScript 產生的 JavaScript 精省到什麼程度減少內存效能。然而因為物件不存在，所以無法反向取值透過 index 數字去找到 value。
+#### 常數列舉 const enum
+enum 可以使用 const 來宣告，差別在於編譯完成後會刪除 object 但仍可正常於 TypeScript 上去列舉資料（實際因需求而存在）。可以觀察 TypeScript 產生的 JavaScript 精省到什麼程度減少內存效能。然而因為物件不存在，所以無法反向取值透過 index 數字去找到 value。
 
 ```ts
 const enum constStatus {
@@ -579,9 +654,19 @@ const enum constStatus {
 //{100: 'apple', 200: 'banana', scuess: 'ok', error: 'fail', apple: 100, banana: 200}
 
 console.log(constStatus) // 報錯，無此物件
-console.log(constStatus.scuess); //fail:string
+console.log(constStatus.error); //'fail':string
 console.log(constStatus[200]); //不可能找到，沒有物件就沒有 index
 console.log(constStatus.apple); // 100:number
+```
+
+#### 聲明列舉 declare enum
+聲明用途的列舉，僅檢查用途，編譯時不會有存在 object 與任何換算結果。
+
+```ts
+declare enum constStatus {
+  scuess,
+  error
+}
 ```
 
 ### 元組 tuple
@@ -637,7 +722,7 @@ console.log(rows);
 ```
 
 ### 函式 Function
-除了變數需要指定類型，在函式的應用上也會用到定義函式，例如傳遞參數、回傳參數以及函式型變數等場合。
+除了變數需要指定類型，在函式的應用上也會用到定義函式，例如傳遞引數、回傳值以及函式型變數等場合。
 
 #### 傳遞與回傳
 規則如變數一樣，在傳遞變數後綴指定類型，而回傳的資料也需要類型，寫在函式本體後綴指定類型。
@@ -650,7 +735,7 @@ console.log(calc(99, 5));  // 99*1.05=103.95=> 103
 ```
 
 ##### 傳遞：選配、預設、其餘
-如果傳遞參數為選配，可透過`?`來指定。
+如果傳遞引數為選配，可透過`?`來指定。
 
 ```ts
 function calc(price: number, tax?: number): void {  //回傳類型寫在函式本身後綴
@@ -662,9 +747,9 @@ function calc(price: number, tax?: number): void {  //回傳類型寫在函式�
 calc(100); //105
 calc(100,7); //107
 ```
-> 注意選擇性參數的順序需要再必要參數之後，不可以持有`?`的參數比沒有持有的參數還早出現。
+> 注意選擇性引數的順序需要於必要引數之後，不可以持有`?`的引數比沒有持有的引數還早出現。
 
-而預設參數與 JavaScript ES6 相同觀念使用。
+而預設引數與 JavaScript ES6 相同觀念使用。
 
 ```ts
 function calc(price: number, tax: number = 5): void {  //回傳類型寫在函式本身後綴
@@ -676,7 +761,7 @@ calc(100); //105
 calc(100, 7); //107
 ```
 
-其餘參數 rest parameter 同 JavaScript 用法，使用`...`來表示不確定數量的參數，因為是一種陣列結構所以需宣告陣列類型。
+其餘引數 rest parameter 同 JavaScript 用法，使用`...`來表示不確定數量的引數，因為是一種陣列結構所以需宣告陣列類型。
 
 ```ts
 function sumArg(...ary: number[]): void {
@@ -708,7 +793,7 @@ function errorMsg(message:string): never{
 ```
 
 ##### 超載 overload
-Overload 機制用於考量同一個函式下，多種方案用途其有不同類型的參數與回傳。透過宣告定義函式持有多種載入輸出的不同類型使用。
+Overload 機制用於考量同一個函式下，多種方案用途其有不同類型的引數與回傳。透過宣告定義函式持有多種載入輸出的不同類型使用。
 
 ```ts
 function setConvert(arg: [string, number]): number; //函式定義：傳入 tuple 傳出 number
@@ -735,27 +820,6 @@ console.log(setConvert(['B', 2])); // 7
 
 > 乍看之下拿掉函式定義單靠函式實現的複合類型也能正常執行，但其真正差異於當程式開始檢查型態時會從第一組函式定義循序做檢查。
 
---------------
-
-### 泛用類型 generics
-泛型的應用就是將規劃參數時不先做類型宣告，先使用`<>`作替代，等到執行函式時當下傳入的值再做類型說明。
-```ts
-function calc1<myType>(price: myType): myType {  //myType 是泛用類型，作為暫定類型使用
-  return price * 1.05;  //報錯，TypeScript 預先不知道這是一個數字 type
-}
-console.log(calc1<number>(100));  // 
-
-function calc2<myType extends number>(price: myType): number {  //可透過 extends 擴展為 number
-  return price * 1.05;
-}
-console.log(calc2<number>(100));
-
-function calc3<T extends number, U extends number>(price: T, tax: U): number {  //多個泛型傳遞參數之寫法
-  return price * (1 + tax / 100);
-}
-console.log(calc3<number, number>(100, 7));
-```
-
 #### 函式表達式
 前面介紹的都是故意使用一般命名函式方式來設計，如要改採用匿名函式做表達式之變數其寫法也差不多。
 
@@ -771,7 +835,7 @@ let add2 = function (x: number, y: number): number {
 };
 ```
 
-其 add2 的寫法不完整，雖然是透過推論出來的。如下列寫法說明解釋：`=`的右側為匿名函式比較沒有問題，差別在於等號的左邊沒有給予宣告類型這是怎樣函式。所以右側將用到的傳遞與回傳之變數類型也要同樣宣告到左邊去，才能檢查傳遞進去的參數是哪種類型，也就是等號兩邊都要對應到。
+其 add2 的寫法不完整，雖然是透過推論出來的。如下列寫法說明解釋：`=`的右側為匿名函式比較沒有問題，差別在於等號的左邊沒有給予宣告類型這是怎樣函式。所以右側將用到的傳遞與回傳之變數類型也要同樣宣告到左邊去，才能檢查傳遞進去的引數是哪種類型，也就是等號兩邊都要對應到。
 
 ```ts
 // 補充 add2 的類型，其正確的完整寫法為 add3
@@ -781,14 +845,14 @@ let add3: (x: number, y: number) => number = function (x: number, y: number): nu
 ```
 > TypeScript 中的 `=>` 和 ES6 中的 `=>` 有所不同，在 TypeScript 邏輯上的 `=>` 用來宣告 type is function 之傳遞與回傳區別定義。
 
-如果只有一個傳遞參數，其實可以省略變數名：
+如果只有一個傳遞引數，其實可以省略變數名：
 ```ts
 let add4: (number) => number = function (x: number): number {
   return x + x;
 }
 ```
 
-##### 搭配介面
+#### 搭配介面
 也可以用介面來做成約束類型給予函式
 
 ```ts
@@ -803,6 +867,24 @@ let mySearch: User = function (name: string, age: number) {
 mySearch('loki', 18); //loki 18
 ```
 
+#### 搭配斷言
+在複合類型搭配的可能下，需要處理某類型的動作可以額外採用斷言讓系統知道這是針對複合類型的指定類型之處理。
+
+```ts
+function getLength(arg: string | number): number {
+  // if (typeof arg == 'string' && arg.length) {
+  if ((<string>arg).length) {
+    // return arg.length;
+    return (<string>arg).length;
+  } else {
+    return arg.toString().length;
+  }
+}
+
+console.log(getLength('hello')); //5
+console.log(getLength(100)); //3
+```
+
 #### 箭頭函式 Arrow Function
 熟悉 JavaScript 函式表達式的話，其箭頭函式的用法就清楚了，唯獨`=>`比較容易混淆需要特別注意一下。將上面的 add4 改成箭頭函式的寫法如下：
 
@@ -815,34 +897,36 @@ let add5: (x: number, y: number) => number = (x: number, y: number): number => {
 /* 箭頭函式的特性簡化後 */
 let add5: (x: number, y: number) => number = (x: number, y: number): number => x + y;
 
-//如果只有一個傳遞參數，可以省略變數名
+//如果只有一個傳遞引數，可以省略變數名
 let add6: (number) => number = (x: number): number => x + x;
 ```
 
-##### 參數上使用箭頭函式
+##### 引數上使用箭頭函式
 箭頭函式可以當作一個變數，既然是變數就能傳送到別的函式做承接使用。
 
 ```ts
 function echo(num: number, fn: (number) => number) { //傳遞變數分別為數字與函式且都有宣告型態
-  const total: number = fn(num); //將 num 作為傳遞參數 fn 之使用
+  const total: number = fn(num); //將 num 作為傳遞引數 fn 之使用
   console.log(total);
 }
 
-const sum: (number) => number = (n: number) => n * n;//宣告 sum 這個函式主要會將參數 2 次方並回傳用途
+const sum: (number) => number = (n: number) => n * n;//宣告 sum 這個函式主要會將引數 2 次方並回傳用途
 
 echo(7, sum); //將數字 7 以及變數 sum 整個都傳給 echo 函式做處理。
 ```
 
-### 類別
+### 類別 Class
 類別 class 在 JavaScript ES6 開始提供使用。類別作為物件導向的物件設計藍圖應用。比較常見的在建構函式上對其使用建構子、屬性、方法其定義。一旦類別定義完成後，透過指定來獲得實體化物件。如果你還不熟悉 ES6 的類別，可一邊學習 TypeScript 的寫法與查看轉譯後的 JavaScript ES6 之 Class 寫法。
 
 類別的規劃可以分為三個部分：
 - **attribute 屬性**
-為整個類別下可使用的變數，可先寫好也可以透過建構子來獲得外部參數為值。在類別內想要存取屬性都得需要透過 this 來導向至該變數位置。
+為整個類別下可使用的變數，可先寫好也可以透過建構子來獲得外部引數為值。在類別內想要存取屬性都得需要透過 this 來導向至該變數位置。
 - **constructor 建構子**
-固定作為宣告時的特殊執行，當在外部使用 new 建構物件時透過傳遞參數至建構子進行處理，藉此完成物件完成的初始前置動作。
+固定作為宣告時的特殊執行，當在外部使用 new 建構物件時透過傳遞引數至建構子進行處理，藉此完成物件完成的初始前置動作。
 - **method 方法**
 類似類別下專有的函式，不需要寫 function 字眼，之後操作實體化物件時直接就能找到此函式來執行。
+
+當設計完成時，透過 new 來實體化能呼叫這個建構式。
 
 ```ts
 class info {　　//建立類別 class
@@ -863,7 +947,7 @@ class info {　　//建立類別 class
   }
 }
 
-const obj: info = new info('Loki', 18); //建立 info 這個類別，並傳遞參數提供建構子做處理，最終獲得整個實體化物件
+const obj: info = new info('Loki', 18); //建立 info 這個類別，並傳遞引數提供建構子做處理，最終獲得整個實體化物件
 console.log(obj); //檢查實體化物件的內容
 /*
 >info {name: 'Loki', age: 18}
@@ -879,7 +963,7 @@ console.log(obj.echo()); //呼叫物件內的方法
 //Loki's ages is 18
 ```
 
-#### 存取修飾子 Access Modifier
+#### 訪問修飾子 Access Modifier
 指定類別內的屬性或方法是否可被別處使用。可前綴指定 public（預設）無限制、private（限自身 class)、protected（限自身 class 與 extends 繼承之子類別）。透過以下範例可以得到錯誤資訊說明：
 
 ```ts
@@ -912,6 +996,68 @@ error TS2445: Property 'z' is protected and only accessible within class 'tryit'
 
 > 在 JavaScript ES6 版本還沒有存取修飾子這個觀念，因此 TypeScript 報錯後的編譯下都仍視同 public 存取，因此還需要搭配 Accessor 設計才完善。
 
+修飾子也能用在建構子內的傳遞引數使用，等同於 class 的屬性之取代。直接接給屬性了
+
+```ts
+class tryit {
+  /*替代
+  public x: number;
+  private y: number;
+  protected z: number;
+  */
+
+  /*
+  傳遞引數做了 2 件事情，第一個是在 class 宣告了訪問屬性，第二個將值寫到這個塞給這個訪問屬性
+  */
+
+  constructor(public x: number,private y: number,protected z: number) {
+    // this.x = x;
+    // this.y = y;
+    // this.z = z;
+  }
+}
+
+const obj: tryit = new tryit(1, 2, 3);
+console.log(obj.x, obj.y, obj.z); //1 2 3
+/*
+error TS2341: Property 'y' is private and only accessible within class 'tryit'.
+error TS2445: Property 'z' is protected and only accessible within class 'tryit' and its subclasses.
+*/
+
+obj.x = 4;
+obj.y = 5;
+obj.z = 6;
+/*
+error TS2341: Property 'y' is private and only accessible within class 'tryit'.
+error TS2445: Property 'z' is protected and only accessible within class 'tryit' and its subclasses.
+*/
+console.log(obj.x, obj.y, obj.z); //4 5 6
+```
+
+另外一種是 readonly 的讀寫限制，可以跟訪問修飾子共存（注意寫位的順序）
+
+```ts
+class tryit {
+  public readonly x: number;
+  public y: number;
+  protected z: number;
+
+  constructor(tox: number,toy: number,toz: number) {
+    this.x = tox;
+    this.y = toy;
+    this.z = toz;
+  }
+}
+
+const obj: tryit = new tryit(1, 2, 3);
+console.log(obj.x, obj.y, obj.z); //1 2 3
+//error:'z' 是受保護屬性，只可從類別 'tryit' 及其子類別中存取。
+
+obj.x = 4; //error: 因為 'x' 為唯讀屬性，所以無法指派至 'x'。
+obj.y = 5;
+obj.z = 6; //error: 'z' 是受保護屬性，只可從類別 'tryit' 及其子類別中存取。
+```
+
 #### 存取器 Accessor
 假設屬性或方法已經設定 private 情況下，添加 Accessor 的功能達到寫入與讀取的唯一窗口。Accessor 採用 Method 方法的函式形式來設計，分為 get（讀）與 set（寫）關鍵字使用。將前段的例子做調整（簡化移除 protected 考量）：
 
@@ -920,11 +1066,11 @@ class tryit {
   public x: number; //公開
   private y: number; //私有，限定 class 自身所存取
 
-  get yy(): number { //創造 get yy 函式，作為外部讀取的方法，有 return 但不可有傳遞參數
+  get yy(): number { //創造 get yy 函式，作為外部讀取的方法，有 return 但不可有傳遞引數
     return this.y; //從內部轉達屬性值
   }
 
-  set yy(newNum: number) {  ////創造 set yy 函式，作為外部寫入的方法，不可有 return 但有傳遞參數
+  set yy(newNum: number) {  ////創造 set yy 函式，作為外部寫入的方法，不可有 return 但有傳遞引數
     this.y = newNum;  //從內部改變屬性值
   }
 
@@ -1007,7 +1153,7 @@ class son extends father {　//son 會繼承 father 內的屬性與方法
   }
 }
 
-const objf = new father(5, 'gold5'); //實體化物件只是從寫死的 class 建構物件出來，因此 class 的初始參數永遠是乾淨的
+const objf = new father(5, 'gold5'); //實體化物件只是從寫死的 class 建構物件出來，因此 class 的初始引數永遠是乾淨的
 const objs = new son(10, 'sliver5', 157); // 因此不可誤會 money 跟 face 可省略不寫，還是得跑一次初始建構作業，只是 son 已經從 father 繼承了不用宣告屬性
 
 console.log(objf, objs);
@@ -1023,6 +1169,42 @@ console.log(objs.print());  //father 方法也會繼承給 son
 
 console.log(objs.print2()); //我姓 jiang，拜老爸所賜顏值如 sliver5 且身價有 10 個億。我的 IQ 有 157 高
 ```
+
+##### 抽象類別 abstract 
+對 class 指定為 abstract 模式，則能保護此 class 無法透過 new 實體化出來，只能被子 class 所繼承使用。
+
+```ts
+abstract class father { //抽象化無法被 new 使用
+  public money: number;
+  public face: string;
+
+  constructor(m: number, f: string) {
+    this.money = m;
+    this.face = f;
+  }
+}
+
+class son extends father {　//son 會繼承 father
+  public iq: number;
+
+  constructor(m: number, f: string, i: number) { 
+    super(m, f); //使用建構子必需就得有 super 才能操作 father 的建構子
+    this.iq = i;
+  }
+}
+
+const objf = new father(5, 'gold5'); //error：無法建立抽象類別的執行個體。
+const objs = new son(10, 'sliver5', 157); //OK
+
+console.log(objf, objs);
+
+/*
+father {money: 5, face: 'gold5'}
+son {money: 10, face: 'sliver5', iq: 157}
+*/
+```
+
+> 這裡雖然會報錯，但編譯後的 JavaScript 還是存在父 class。
 
 ##### 複寫 Override
 設計繼承時，如果 son 的方法跟來自 father 的方法撞名時，會發生複寫現象並以 son 自身為主。需特別注意：
@@ -1110,7 +1292,7 @@ console.log(obj.print());
 ```
 
 #### 靜態 static
-大多知道，透過實體化出來的物件的內容，可透過建構子在建構化過程中以 this 的物件導向觀念去更改內容，也能實體化結束後再自行修改物件內容。
+大多知道，透過實體化出來的物件的內容，可透過建構子在建構化過程中以 this 的物件導向觀念去修改值，也能實體化後再自行修改物件內容。
 
 ```ts
 class father {
@@ -1135,7 +1317,7 @@ let obj2= new father(10, 'sliver5');
 console.log(obj2.print()); //俺姓 jiang，顏值如 sliver5 且身價有 10 個億。
 ```
 
-然而如果一開始的類別內特別指定 static 狀態時，這個對象就只限定給 class 使用，無法透過在外部從 this 導向呼喚出來。
+然而如果一開始類別內的屬性或方法有設定 static 狀態時，這個對象就只限定給 class 使用，無法透過在外部從 this 導向呼喚出來。
 
 ```ts
 class father {
@@ -1166,28 +1348,28 @@ let obj2= new father(10, 'sliver5'); //ok
 console.log(obj2.print2()); //俺姓 jiang，顏值如 sliver5 且身價有 10 個億。
 ```
 
-#### 介面 interface
-
-##### 用於 class
-interface 如果套用在 class 的屬性也是一種約束作業， class 要吃介面時必需要透過 implements 實現此約束。主要是保護 class 在規劃內容時根據介面來確保這些物件的完整性。
+#### 搭配介面
+interface 如果套用在 class 的屬性也是一種約束作業，多個 class 除了繼承這種 1 對多個觀念，還有一種狀況為這些 class 彼此有相同非繼承的特性（屬性與方法），可以用介面來將這些共同特性設為約束產生完整的靈活性。 
+- class 要指定介面時必需要透過 implements 實現約束。
+- class 可綁定多個介面，介面名稱使用`,`符號分開。例如 `class lokiwithface implements User, Company`
 
 ```ts
-interface user {  //介面，約定持有 2+1 個屬性與方法
+interface User {  //介面，約定持有 2+1 個屬性與方法
   name: string;
   id: number;
   print(): string;
 }
 
-class lokiwithface implements user { //根據 implements 來實踐介面 user，因故不可缺少此 name,id,print()
-  public name: string; //不出現會報錯
-  public id: number; //不出現會報錯
+class lokiwithface implements User { //根據 implements 來實踐介面 user，因故不可缺少此 name,id,print()
+  public name: string; //必存
+  public id: number; //必存
   public sex: string = 'man'; //可以多增加介面沒有的
 
   constructor(n: string, i: number) {
     this.name = n;
     this.id = i;
   }
-  print(): string { //不出現會報錯
+  print(): string { //必存
     return `#${this.id} ${this.name}`;
   }
 }
@@ -1222,7 +1404,28 @@ console.log(a3, a3.print());
 //結果來說差異不大，都能 print 相同內容。
 ```
 
-如此一來，能會發現一個介面對應一個 class 的使用意義不大，有點事是多此一舉的動作。介面真正的用途在於一個介面去約定多個 class 才是他真正價值。舉例且說明如下：
+介面也可以反過來繼承自 class 認父來擴展介面內的屬性或方法。再提供給 object 或 class 做約束。
+
+```ts
+class User {
+  name: string;
+  age: number;
+}
+interface Member extends User {
+  id: number;
+  /*
+  因為繼承，等於多了這兩項
+  name: string;
+  age: number;
+  */
+}
+let obj: Member = { name: 'Loki', age: 18, id: 3 };
+```
+
+介面能約束 class 的屬性與方法，也能約束
+
+##### 舉例 多個 class 有相同特性
+能會發現一個介面對應一個 class 的使用意義不大，有點事是多此一舉的動作。介面真正的用途在於一個介面去約定多個 class 才是他真正價值。舉例且說明如下：
 
 1. 3 個 class 代表法術說明應用，1 個 class 代表使用法術之遊戲按鈕。
 2. clsBoth 這個 class 有前 2 個 class 相同用途。
@@ -1263,10 +1466,10 @@ class clsBoth { //補扣血效果
 }
 
 class joycon {
-  static btnA(e: clsAdd) { //按鈕 A 將執行傳入參數 class 的 add 詠唱
+  static btnA(e: clsAdd) { //按鈕 A 將執行傳入引數 class 的 add 詠唱
     e.addHP();
   }
-  static btnB(e: clsSub) { //按鈕 B 將執行傳入參數 class 的 sub 詠唱
+  static btnB(e: clsSub) { //按鈕 B 將執行傳入引數 class 的 sub 詠唱
     e.subHP();
   }
 }
@@ -1285,7 +1488,7 @@ joyCon.btnB(spell_3); //按下按鈕 D 觸發 spell_3
 在沒有介面的約束情況下，這些 class 等於是各自提供自己 type 來告知傳遞內容物為何。一旦加上介面整個物件導向的流程會明確清晰：
 
 - 3 個法術 class 都是根據介面約束的定義 method 之應用。
-- joycon 拿到傳遞參數之 type 不再是 cls* 之 class，而是這些共同約束 itf* 之介面當作 type。
+- joycon 拿到傳遞引數之 type 不再是 cls* 之 class，而是這些共同約束 itf* 之介面當作 type。
 
 ```ts
 interface itfAdd {
@@ -1329,10 +1532,10 @@ class clsBoth implements itfAdd, itfSub { //補扣血雙效果，綁兩個介面
 }
 
 class joyCon {
-  static btnA(e: itfAdd) { //按鈕 A 將執行傳入參數 e 的 add 詠唱
+  static btnA(e: itfAdd) { //按鈕 A 將執行傳入引數 e 的 add 詠唱
     e.addHP();
   }
-  static btnB(e: itfSub) { //按鈕 B 將執行傳入參數 e 的 sub 詠唱
+  static btnB(e: itfSub) { //按鈕 B 將執行傳入引數 e 的 sub 詠唱
     e.subHP();
   }
 }
@@ -1349,42 +1552,6 @@ joyCon.btnB(Spell_3); //按下按鈕 B 觸發 Spell_3
 ```
 
 > 如果問這兩段代碼的差異在哪，最大差別在於 type 是否是指向同一個宣告領域。
-
-##### 非約束項目
-可指定屬性為非約束，以及指定屬性名稱未約束
-
-```ts
-class cls implements user {
-  name: string;
-  id: number;
-  animal: string = 'dog';
-  birthMonth: number;
-  constructor(n: string, i: number, s: number) {
-    this.name = n;
-    this.id = i;
-    this.birthMonth = s;
-  }
-  print(): void {
-    console.log(this.name, this.id, this.birthMonth,this.animal);
-  }
-}
-
-const echo = new cls('Loki', 2, 5);
-echo.print(); //Loki 2 5 dog
-```
-
-注意的是`[propName: string]`等於是指任何屬性，也約束在其他已寫出的屬性，注意使用場合避免衝突。
-
-```ts
-interface user {
-  name: string;
-  id: number;
-  [propName: string]: string; //如果這裡指定 string，介面任何 type 都必需是 string
-  //也就是此邏輯套用在任何定義上
-}
-
-// 報錯：類型 'number' 的屬性 'id' 不可指派給字串索引類型 'string'。
-```
 
 ## 進階技巧
 避免後續介紹太複雜，這裡先偷跑一些需要的 type 觀念做初步介紹，詳細用法會在各單元再出現時依據必要性提供說明。
@@ -1409,6 +1576,262 @@ console.log(a, b);
   console.log(a, b);
 */
 ```
+
+### 泛型 Generics
+泛型的應用就是將規劃類型當下不先做宣告，在變數名稱後綴先使用`<關鍵字>`作替寫，等到執行函式時當下傳入的值再做類型說明。可適用於函式、介面、類別等各種場合出現。
+
+#### 用於函式
+舉例以下設計 any 的傳遞引數與回傳如下。雖然整個函式都看似正常。如果 any 的思考則僅要求傳遞與回傳的類型是相同的，也就傳遞與回傳為 `string and string[]`就跟目前的`any and any[]`設計不適當。
+
+```ts
+function ary(value: any): any[] { //回傳 any 陣列
+  let re = []; //不寫，系統自動為 any
+  re.push(value);
+  return re;
+}
+
+console.log(ary('A')); // (2) ['A', 'A']
+console.log(ary(3)); // (2) [3, 3]
+console.log(ary(true)); // (2) [true, true]
+```
+
+此時可透過泛型先做替代的類型，等到執行函式當下決定用什麼類型來決定傳遞與回傳類型。
+
+```ts
+function ary<T>(value: T): T[] { //函式名稱後面使用<T>來指定泛型，其中 T 為關鍵字。接著在函式內部包含傳遞回傳都能用 T 這個類型名
+  let re: T[] = []; //指定 T type
+  re.push(value);
+  return re;
+}
+
+//在使用函式時，提供真正 type 為泛型替換
+console.log(ary<string>('A')); // (2) ['A', 'A'] 
+console.log(ary<number>(3)); // (2) [3, 3]
+
+//如果沒有指定給泛型，系統會自動推論 type 給泛型
+console.log(ary(true)); // (2) [true, true]
+```
+
+##### 多個泛型
+
+泛型能允許多個存在，使用符號`,`來分開。
+
+```ts
+function swap<T, U>(val: [T, U]): [T, U] { //回傳元祖
+  return [val[1], val[0]];
+}
+
+let tpl: [string, number] = ['A', 1];
+
+//故意不寫泛型的真實 type，讓系統自己去推論
+console.log(swap(tpl)); // (2)  [1, 'A']
+```
+
+##### 泛型條件約束
+另外有 2 個在函式上使用泛型的報錯現象值得討論，在使用泛型時在不清楚真實 type 之前，任何操作都可能因 type 不對盤而報錯。
+
+```ts
+function calc1<myType>(price: myType): myType {  //myType 是泛用類型，作為暫定類型使用
+  return price * 1.05;  //報錯，雖邏輯正確，但一開始預先不知道這是一個數字 type 不被認同數字計算
+  
+}
+console.log(calc1<number>(100)); //將 number 提供給泛型做替換
+/*
+  類型 'number' 不可指派給類型 'myType'。
+  'myType' 可以使用與 'number' 無關的任意類型來具現化。
+*/
+```
+
+原因為 myType 無法進行算術符號，因此透過繼承來獲得 number type 的形狀，使得該泛型能進行對盤的操作。
+
+```ts
+function calc2<myType extends number>(price: myType): myType {  //可透過 extends 繼承 number，那麼這個 myType 初始情況下有 number 的定義可允許先接受數字計算
+  return price * 1.05;
+}
+console.log(calc2<number>(100));
+
+function calc3<T extends number, U extends number>(price: T, tax: U): number {  //多個泛型傳遞引數之寫法
+  return price * (1 + tax / 100);
+}
+console.log(calc3<number, number>(100, 7));
+```
+
+另外一個問題如下：
+
+```ts
+function long<myType>(str: myType): number {  // 未知確定 string 情況下，沒有 length 的原生屬性
+  return str.length;  //error: 類型 'myType' 沒有屬性 'length'。
+}
+console.log(long<string>('HELLO'));  //5
+```
+
+原因為 myType 沒有 length 這個屬性，因此 myType 透過繼承方式從介面來獲得 length 這個屬性形狀。注意這裡是用 extends 來繼承做形狀擴展，不是前面範例當作類型賦予。但如果傳進來資料不是 string 就不符合介面的約束報錯。
+
+```ts
+interface Plus{
+  length: number;
+}
+function long<myType extends Plus>(str: myType): number {  // 未知 string 情況下，沒有 length 的猿聲屬性
+  return str.length;  //ok
+}
+console.log(long<string>('HELLO'));  //5
+console.log(long<number>(100));  //error: 類型 'number' 不符合條件約束 'Plus'。
+```
+
+最後一個技巧為泛型與泛型進行約束。下列函式設計用途說明如下：
+
+- 將泛型 T 繼承至泛型 U，不討論兩者形狀是否雷同。我們最終目的為來源資料（套用泛型 U) 能判斷可否覆蓋至目標資料（套用泛型 T ) 上。
+- 因為泛型 T 繼承了 U，所以 T 已受到約束必需持有 U 該有的屬性欄位。
+- 當第一次函式執行時目標 T 類型為 a,b,c，而來源 U 為 b,c。因此程式可以正常執行。
+- 而第二次函式執行時目標 T 類型為 a,b,c，而來源 U 為 d,c。因為 T 繼承了 U 所以應該需要 abcd 這些屬性。而傳入的 data 只有 abc 導致類型不符合產生報錯，達到偵測錯誤之目的。
+
+```ts
+function overWrite<T extends U, U>(target: T, source: U): T {
+  for (let id in source) {
+    target[id] = (<T>source)[id];
+  }
+  return target;
+}
+
+let data = { a: 1, b: 2, c: 3 };
+
+console.log(overWrite(data, { b: 10, c: 20 }));  //{a: 1, b: 10, c: 3, d: 20}
+
+console.log(overWrite(data, { d: 10, c: 20 }));  //error:
+/*
+類型 '{ a: number; b: number; c: number; }' 的引數不可指派給類型 '{ d: number; c: number; }' 的引數。
+類型 '{ a: number; b: number; c: number; }' 缺少屬性 'd'，但類型 '{ d: number; c: number; }' 必須有該屬性。
+*/
+```
+
+#### 用於搭配介面的函式
+三者合併示範搭配介面的函式如何整合泛型的應用。透過前面找到搭配介面的函式進行步驟說明：
+
+```ts
+//由介面來約束 mySearch 的 type 形狀如何。
+interface User {
+  (name: string, age: number): void;
+}
+
+let mySearch: User = function (name: string, age: number) {
+  console.log(name,age);
+}
+
+mySearch('loki', 18); //loki 18
+```
+
+- 接著把 age 這個引數之類型 number 換成泛型名稱 T，有兩個地方要替換泛型 T。
+- 函式綁定泛型如出一轍的替換；而介面的形狀寫法為 function 的形狀，因此介面綁泛型的方式與位置相同。
+- 最後在函式執行的引數上指定泛型真正型態為 number，若省略此步驟其系統將自動推論出 number 給泛型。
+
+```ts
+interface User {
+  <T>(name: string, age: T): void; //這裡是函式形狀有綁泛型
+}
+
+let mySearch: User = function <T>(name: string, age: T) {
+  console.log(name, age);
+}
+
+mySearch('loki', <number>18); //loki 18
+```
+
+- 介面綁泛型的方式也可寫在外面。缺點於 mySearch 這個類型指定就必需告知實際 type 不然會報錯。
+
+```ts
+interface User<T> { //變成是 User 這裡綁泛型
+  (name: string, age: T): void;
+}
+
+let mySearch: User<number> = function <T>(name: string, age: T) {  //理所當然使用 User 這個介面告知泛型的實際 type
+  console.log(name, age);
+}
+
+mySearch('loki', <number>18); //loki 18
+```
+
+#### 用於類別
+用法差不多，從前面單元找範例調整一下來綁泛型：
+
+```ts
+class info {
+  name: string;
+  age: number;
+
+  constructor(na: string, ag: number) {
+    this.name = na;
+    this.age = ag;
+  }
+
+  echo(): string {
+    return `${this.name}'s ages is ${this.age}`;
+  }
+}
+
+const obj: info = new info('Loki', 18);
+console.log(obj.echo()); //Loki's ages is 18
+```
+
+- 將 class 內的 string 替換成泛型，而 class 外面使用`<T>`做泛型綁定。
+- class 內的所有 string 換成關鍵字 T
+- new info 時可以告知泛型實際 type，或者讓系統推論
+- obj 指定時可選擇告知為 class 類型，但必需要告知 class 的泛型 type
+- 會發現 echo() 方法的回傳報錯，既使透過約束 extends string 也無效。
+
+```ts
+class info<T extends string> {
+  name: T;
+  age: number;
+
+  constructor(na: T, ag: number) {
+    this.name = na;
+    this.age = ag;
+  }
+
+  echo(): T {
+    return `${this.name}'s ages is ${this.age}`;
+    //error: 這裡因回傳一定是 string，泛型 T 無法確保其他可能，因此建議你乾脆直接寫 string 才對
+  }
+}
+
+const obj: info<string> = new info<string>('Loki', 18); // 等號：左邊無法推論需綁定；右邊可推論 Loki 為 string
+console.log(obj.echo()); //Loki's ages is 18
+```
+
+改回固定的 string 回傳，畢竟很明顯只有 string 一種可能，也取消約束必要性。
+
+```ts
+class info<T> {
+  name: T;
+  age: number;
+
+  constructor(na: T, ag: number) {
+    this.name = na;
+    this.age = ag;
+  }
+
+  echo(): string {
+    return `${this.name}'s ages is ${this.age}`;
+    //error: 這裡因回傳一定是 string，泛型 T 無法確保其他可能，因此建議你乾脆直接寫 string 才對
+  }
+}
+
+const obj: info<string> = new info<string>('Loki', 18); // 等號：左邊無法推論需綁定；右邊可推論 Loki 為 string
+console.log(obj.echo()); //Loki's ages is 18
+```
+
+#### 泛型之預設 type
+泛型可以預先綁定一組預設 type，如果外部沒有特別告知時會先嘗試自行推論，無法推論時會採用此預設 type
+
+```ts
+function ary<T = string>(value: T): T[] {  
+  let re: T[] = []; //指定 T type
+  re.push(value);
+  return re;
+}
+```
+
+---
 
 # 參考文獻
 - [TypeScript: TSConfig Reference - Docs on every TSConfig option](https://www.staging-typescript.org/tsconfig)
