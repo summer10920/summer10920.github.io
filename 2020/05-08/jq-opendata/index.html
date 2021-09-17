@@ -28,18 +28,19 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/NxJTq7q.png">
 <meta property="og:image" content="https://i.imgur.com/2GU7pux.png">
 <meta property="og:image" content="https://i.imgur.com/toRnzuR.png">
 <meta property="og:image" content="https://i.imgur.com/S6QpKcB.png">
 <meta property="og:image" content="https://i.imgur.com/FcKv9uw.png">
 <meta property="article:published_time" content="2020-05-07T16:46:34.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.224Z">
+<meta property="article:modified_time" content="2021-08-25T02:20:41.861Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
 <meta property="article:tag" content="前端網頁開發技術（職前班）">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/2GU7pux.png">
+<meta name="twitter:image" content="https://i.imgur.com/NxJTq7q.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2020/05-08/jq-opendata/">
@@ -102,9 +103,9 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">10</span></a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">11</span></a></li>
         <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">14</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">50</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">51</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -177,7 +178,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -188,7 +189,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -283,7 +284,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間：2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間：2021-08-25 10:20:41" itemprop="dateModified" datetime="2021-08-25T10:20:41+08:00">2021-08-25</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -316,9 +317,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。</p>
+        <p><img src="https://i.imgur.com/NxJTq7q.png"></p>
+<p>在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。</p>
 <span id="more"></span>
-<hr>
 <h1 id="前端-AJAX-跨域做資料回應並不合法"><a href="#前端-AJAX-跨域做資料回應並不合法" class="headerlink" title="前端 AJAX 跨域做資料回應並不合法"></a>前端 AJAX 跨域做資料回應並不合法</h1><p>然而在瀏覽器規範裡不允許前端技術的 JavaScript 能連接到非相同網域的 Ajax 資料請求（安全性問題），因此在使用跨網域的 API 就延伸了無法取得之窘境。目前使用外部 API 有三種解決方式：</p>
 <ol>
 <li>使用後端伺服器 PHP 語言的 crul 進行遠端 API 串接（或其他後端伺服器），再讓同網域的前端 JavaScript 進行 Ajax 取得</li>
