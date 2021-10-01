@@ -1,5 +1,5 @@
 ---
-title: "[學習之路] TypeScript 的基礎知識"
+title: "[學習之路] TypeScript 的基礎"
 categories:
   - Zero Road
   - Web Fronted
@@ -2132,7 +2132,7 @@ $.ajax('/api/get_something');
 ```
 
 ## 開發套件之類型包
-暫時無法消化反芻，等待花暖春開之時便是更新之日。有興趣請自詳閱[這裡](https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian)
+整理後餘時另編寫 \[學習之路\] TypeScript 的進階篇 。有興趣請自詳閱[這裡](https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian)
 
 To Be Continued...
 
