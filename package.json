@@ -15,6 +15,7 @@
     "browserify": "^17.0.0",
     "hexo": "^5.4.0",
     "hexo-cli": "^4.3.0",
+    "hexo-codepen": "^0.1.1",
     "hexo-deployer-git": "^3.0.0",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",
@@ -26,6 +27,7 @@
     "hexo-renderer-marked": "^4.1.0",
     "hexo-renderer-stylus": "^2.0.1",
     "hexo-server": "^2.0.0",
+    "hexo-word-counter": "^0.0.3",
     "range-parser": "^1.2.1"
   }
 }

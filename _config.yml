@@ -108,3 +108,13 @@ deploy:
 ##
 # encrypt:
 #   enable: true
+
+symbols_count_time:
+  symbols: true # 文章是否顯示字數統計
+  time: true # 文章是否顯示閱讀時間
+  total_symbols: true # 網頁底部是否顯示字數統計
+  total_time: true # 網頁底部是否顯示閱讀時間
+  exclude_codeblock: false # 排除程式碼字數統計
+  awl: 2 #平均文字長度，中文為 2, 英文為 5, 預設為 4
+  wpm: 275 #一分鐘閱讀字數，預設為 275
+  suffix: "mins."

@@ -47,12 +47,21 @@ Every interaction is both precious and an opportunity to delight.
 ## lite version
 {% blockquote Emmet https://docs.emmet.io/ %}{% endblockquote %}
 
-#jsfiddle
+# jsfiddle
 Learn_CSS_CLS3_totalTest
 
 for Learning book demo use
 
 {% jsfiddle summer10920/0s5ro82L js,html,css,result dark 100% 500 %}
+
+# codepen
+
+{% codepen userId|anonymous|anon slugHash theme [defaultTab [height [width]]] %}
+
+替换参数后的语法：(*设置宽高时不要用%，会导致编译错误*)
+<!-- {% codepen summer10920 ExXOLxa dark [html,css,result 500 %} -->
+{% codepen summer10920 ExXOLxa [html,css,result 250 %}
+
 
 [hexo 官方tag說明](https://hexo.io/zh-tw/docs/tag-plugins.html)
 [theme.next官方tag說明](https://theme-next.iissnan.com/tag-plugins.html)
