@@ -62,7 +62,7 @@ body {
 > 現在大部分都採用 Dart Sass 版來編譯使用，如果不清楚最好判別的方式為 Dart Sass 版本目前是 1.42.1 而 LibSass 版本為 3.6.5。如果不是採用官方的管道來安裝 Sass，很可能是該作者根據 Sass 邏輯來自設計或嵌入 Dart Sass 某版，版本上的新功能嘗鮮或閹割就沒這麼正統便是。
 > 
 ### Dart Sass
-Sass 慢慢將主要維護版本落於 Dart Sass 這個版本，如果你還聽過 libSass 也被官方宣告不再維護了，Dart Sass 是採用 JavaScript 來開發的，編譯時間上稍微慢但也沒啥問題。先從下列方式獲得 Dart Sass 編輯能力。
+Sass 已經將主要更新維護落於 Dart Sass 這個版本，如果你還聽過 libSass 也被官方宣告不再維護了，Dart Sass 是採用 JavaScript 來開發的，編譯時間上稍微慢但也沒啥問題。先從下列方式獲得 Dart Sass 編輯能力。
 
 **獨立安裝**
 從 [Github](https://github.com/sass/dart-sass/releases/) 安裝主程式，透過 Dart Sass 主程式來安裝到電腦，並自行設定 PATH 使得 CMD 支援 Sass 指令。
@@ -281,11 +281,19 @@ sass --watch scss:dist/css
 }
 ```
 
-## Partials 區塊化
-在正式介紹 SASS 語法之前，先介紹 Partials 的整理觀念，這是 SASS 最重要的誘因之處。隨著專案的 CSS 龐大複雜而冗長不好維護（想想 Bootstrap.css 2 萬多行的恐怖之處），過往開發設計者為了方便維護，會將 CSS 寫成多筆宣告來載入或使用 css 之 import 語法載入到主樣式表內，但反而會影響網頁加載花費時間（原則上 css 檔案的讀取樹木越少越好）。因此 Sass Partials 的觀念 能適時地將 CSS 分割在不同的 Sass 檔案內，最後經輸出統整回一個樣式表。這樣維護性與時效性都能顧及到，而 Bootstrap Source 包就是這樣設計的。
+## 區塊檔案 Partials
+在正式介紹 SASS 語法之前，先介紹 Partials 的整理觀念，這是 SASS 最重要的誘因之處。隨著專案的 CSS 龐大複雜而冗長不好維護（想想 Bootstrap.css 2 萬多行的恐怖之處），過往開發設計者為了方便維護，會將 CSS 寫成多筆檔案來宣告，之後使用模組方式載入到主樣式表內。Sass Partials 的觀念 能適時地將 CSS 分割在不同的 Sass 檔案內，最後經輸出統整回一個樣式表。這樣維護性與時效性都能顧及到，而 Bootstrap Source 包就是這樣設計的。
 
-### 建立使用
-想備區塊化的 sass 檔案，需要特殊的命名方式讓 Sass 知道這些不是作為轉換用的單獨 css 檔案，命名方式以`_`開頭，除非你在某 Sass 檔案內呼喚 `@import`他們否則 Sass 會忽略這些檔案。
+
+### 區塊應用 @import
+想備區塊化的 sass 檔案，需要特殊的命名方式讓 Sass 知道這些不是作為轉換用的單獨 css 檔案，命名方式以`_`開頭，除非你在某 Sass 檔案內呼喚他們否則 Sass 會忽略這些檔案。
+
+值得提前知道的事，目前@import未來逐漸會被汰換採用新的模組moudles觀念的@use來運作
+
+
+模組的載入方式分為新舊語法，你可以選擇透過@import或@use來匯入區塊檔案。早期是使用`@import`舊方式來載入區塊檔案的內容，跟`@user`效果雷同差異在於舊方式會有全域性覆蓋問題且效能不佳即將淘汰。詳情可參閱 [Introducing Sass Modules | CSS-Tricks](https://css-tricks.com/introducing-sass-modules/)。
+
+>目前只有 Dart Sass 有支持`@use`。其他實現的用戶必須改用該@import規則。
 
 ![Bootstrap 的 partials files](https://i.imgur.com/54feHba.png)
 
@@ -294,16 +302,737 @@ sass --watch scss:dist/css
 ```scss bootstrap-reboot.scss
 ...
 // @import "_functions.scss"; //sass 會判斷，因此可省略 _ 與 .scss 編寫
-@import "functions";
-@import "variables";
-@import "mixins";
-@import "root";
-@import "reboot";
+@import "functions"; // _functions.scss
+@import "variables"; // _variables.scss
+@import "mixins"; // _mixins.scss
+@import "root"; // _root.scss
+@import "reboot"; // _reboot.scss
 ...
 ```
 > Sass 的@import 與 css 的@import 不同，這裡是使進行區塊合併。
 
->Sass 開發人員會有條理地整理這些檔案，透過子目錄依據功能來分類，最後在最外層編寫主樣式表之 Sass，Bootstrap 的作法就是如此。
+Sass 開發人員會有條理地整理這些檔案，透過子目錄依據功能來分類，最後在最外層編寫主樣式表之 Sass，Bootstrap 的作法就是如此。如果區塊檔案在某目錄下之路徑也要寫在@import 上，舉例 Bootstrap 提供四種 css 版本，其中 bootstrap-grid.scss 這檔案寫法長這樣
+
+```scss bootstrap-grid.scss
+//...
+@import "variables";
+
+@import "mixins/lists"; //mixins 目錄下的 _lists.scss
+@import "mixins/breakpoints";
+@import "mixins/container";
+@import "mixins/grid";
+@import "mixins/utilities";
+```
+
+Bootstrap 透過目錄來區分要載入哪些項目區塊，如果好奇可發現 Bootstrap 的`@import "mixins"`其實是指向一個窗口檔案，這個檔案負責載入 mixins 目錄下所有項目區塊。
+
+```scss _mixins.scss
+//...
+// Toggles
+//
+// Used in conjunction with global variables to enable certain theme features.
+
+// Vendor
+@import "vendor/rfs";
+
+// Deprecate
+@import "mixins/deprecate";
+
+// Helpers
+@import "mixins/breakpoints";
+@import "mixins/color-scheme";
+@import "mixins/image";
+@import "mixins/resize";
+@import "mixins/visually-hidden";
+//...
+```
+
+## 變數
+如果熟悉原生 SCC 的變數，這裡也是差不多的做法。差別於 Sass 使用`$`符號代表變數宣告與套入，不像原生 CSS 需要透過 var() 函式才能使用。
+
+```scss _variables.scss
+$blue: #0d6efd; // 宣告變數
+
+h1 {
+  color: $blue; //使用變數
+}
+```
+
+良好的整理習慣會單獨一個檔案（通常是取名`_variables.scss`) 來存放整個專案 Sass 的變數。而其他區塊檔案要使用這些變數勢必要優先 import variables 才能被其他區塊檔案所使用否則無法認識。
+
+```scss bootstrap.scss
+//..
+@import "variables"; //變數集中在這裡
+//..
+@import "root"; // :root 的全域屬性會用到部分變數
+//..
+@import "buttons"; btn-color //會用部分變數
+//..
+```
+
+**多重變數**
+變數的常見用法會導向多個步驟來定義，舉例根據網站的先定義常用顏色變數，隨著不同的特定元素綁定此顏色變數形成多重變數。最後將這個特定元素用在其他區塊檔案內導入各種場合內。多重變數這個觀念能確保來源指向同一個變數，使得事後修改更方便。
+
+```scss _variables.scss
+// scss-docs-start color-variables
+$blue:    #0d6efd !default;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #d63384 !default;
+$red:     #dc3545 !default;
+$orange:  #fd7e14 !default;
+$yellow:  #ffc107 !default;
+$green:   #198754 !default;
+$teal:    #20c997 !default;
+$cyan:    #0dcaf0 !default;
+
+// scss-docs-start theme-color-variables
+$primary:       $blue !default;
+$secondary:     $gray-600 !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-100 !default;
+$dark:          $gray-900 !default;
+```
+
+> `!default` 為預設值，如果沒有出現同名之變數值（不含 null) 會以此為值。
+
+**適用字串**
+變數也會用在 font family 上，在需要的選擇器下帶入變數
+
+```scss _variables.scss
+$font-family-sans-serif:      system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+```
+
+**變數運算利用**
+變數可以拿來做彈性的設計，透過加減乘除獲得指定一個數據的比例調整。但注意進行加減行為需要相同單位否則無法計算。
+
+```scss
+$margin-top:20px;
+$margin-bottom:$margin-top / 2; //10px
+$margin-left:$margin-top - 5px; //15px
+$margin-right:$margin-top  + 5px; //25px
+
+div {
+  margin-top: $margin-top;
+  margin-bottom: $margin-bottom;
+  margin-left: $margin-left;
+  margin-right: $margin-right;
+}
+```
+
+## 選擇器應用
+
+### 巢狀選擇器 Nesting
+對多層元素下達多個選擇器時，在原 CSS 需要分多個選擇器來指定。舉例一個父元素與兩個子元素的樣式如下：
+
+```css style.css
+.nav {
+  /*.nav 屬性*/
+}
+
+.nav li {
+  /*.nav li 屬性*/
+}
+
+.nav a {
+  /*.nav a 屬性*/
+}
+```
+
+在 Sass 可以當作集合的觀念寫在父子之間，Sass 會自動認出從屬關係。
+
+```scss
+.nav {
+  //.nav 屬性
+
+  li {
+    //.nav li 屬性
+  }
+
+  a {
+    //.nav a 屬性
+  }
+
+}
+```
+
+> Sass 的註解語法可多使用原生 CSS 沒有的`//`。
+
+### 上層存取
+`&`符號代表的是本身自己的選擇器為上層的選擇器，舉例來說以偽類使用 Sass 簡化。
+
+```scss
+a {
+  color: #f00;
+
+  &:link {  //& 等價 a
+    color: #ff0;
+  }
+
+  &:visited {
+    color: #f0f;
+  }
+
+  &:hover {
+    color: #00f;
+  }
+
+  &:active {
+    color: #0ff;
+  }
+}
+
+/***************** complier css ************
+a {
+  color: #f00;
+}
+
+a:link {
+  color: #ff0;
+}
+
+a:visited {
+  color: #f0f;
+}
+
+a:hover {
+  color: #00f;
+}
+
+a:active {
+  color: #0ff;
+}
+*/
+```
+
+另一種是命名 class 的替代。假設 HTML 的結構如下
+
+```html
+<!-- .main>.main-title+.main-body -->
+<div class="main">
+  <div class="main-title"></div>
+  <div class="main-body"></div>
+</div>
+```
+
+Sass 可以這樣利用`&`編寫作為文字（取自父選擇器）替代。
+
+```scss
+.main {
+  color: #f00;
+
+  &-main {  // &-main 等價  .main-title
+    color: #ff0;
+  }
+
+  &-body { // &-body 等價 .main-body
+    color: #f0f;
+  }
+}
+```
+
+巢狀的複雜程度沒有限制但越少越好約 1~2 層，否則轉譯過程會耗費較多時間且不易掌控。盡可能把相關的放在適合的巢狀內。
+
+```scss
+.nav {
+  //.nav 屬性
+
+  li {
+    //.nav li 屬性
+  }
+
+  a {
+    //.nav a 屬性
+    &:hover{
+      //.nav a:hover 屬性
+    }
+  }
+
+}
+```
+
+### 繼承屬性
+繼承`@extend`能將某一個選擇器內部的屬性整個繼承過來，類似組合選擇 (ex:h1,h2) 但又賦予個別彈性添加。
+
+```scss
+h1 {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h2{
+  @extend h1;
+  margin-top: 20px;
+}
+
+h3{
+  @extend h1;
+  margin-top: 10px;
+}
+/******** complier css *******
+h1, h2, h3 {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-top: 10px;
+}
+*******************************/
+```
+
+> `@extend` 可放置在行數內任何位置不影響，大多人會放在第一行方便察覺。
+
+不過要注意的繼承效果非常強烈過度。前列範例上指定一個存在的選擇，繼承的對象除了所指定的選擇器 A，其實也會參考其他包含此 A 的選擇器。然而以下會發生不想要 #main h1, #main h2, #main h3 的結果
+
+```scss
+#main h1 {
+  background: #333;
+}
+
+h1 {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  @extend h1;
+  margin-top: 20px;
+}
+
+h3 {
+  @extend h1;
+  margin-top: 10px;
+}
+
+/************complier css
+#main h1, #main h2, #main h3 {
+  background: #333;
+}
+
+h1, h2, h3 {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-top: 10px;
+}
+**************************/
+```
+
+#### 佔位選擇器
+因此需要避免繼承過度發展到其他實存選擇器上，Sass 提供了類似別名不存在任何網頁元素的佔位選擇器 Placeholder Selector。透過符號`%`前綴一個選擇器，而這個不屬於任何 HTML 元素所圈選的非真實存在，只是一個假的選擇器。
+
+```scss
+#main h1 {
+  background: #333;
+}
+
+%headStyle {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  @extend %headStyle;
+  margin-top: 30px;
+}
+
+h2 {
+  @extend %headStyle;
+  margin-top: 20px;
+}
+
+h3 {
+  @extend %headStyle;
+  margin-top: 10px;
+}
+
+/***************complier css
+#main h1 {
+  background: #333;
+}
+
+h1, h2, h3 {
+  color: #222;
+  font-family: 'Raleway', Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  margin-top: 30px;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+h3 {
+  margin-top: 10px;
+}
+****************************/
+```
+
+繼承的應用場合通常發生在一個具有相同數的外觀，再額外的個別差異使用。多看一個例子結束這話題。
+
+```scss
+%btn {
+  display: inline-block;
+  padding: 1rem;
+  border-radius: 3px;
+  color: white;
+}
+
+.btn-danger {
+  @extend %btn;
+  background: red;
+}
+.btn-primary {
+  @extend %btn;
+  background: blue;
+}
+.btn-info {
+  @extend %btn;
+  background: cyan;
+}
+```
+
+## Mixins 混和
+類似一種 Funciton 的觀念可重複使用整合混入，建立方式為`@mixin name{}`而使用方式為`@include name`。而良好的習慣上會將所有 mixin 的語法都另存為`_mixins.scss`區塊檔案，並在一開始進行合併提供使用。通常會在 variables 之後因為 mixin 可能會用到變數。
+
+```scss bootstrap-reboot.scss 
+@import "functions";
+@import "variables";  //好習慣會另外區塊檔案集中管理 mixin
+@import "mixins";
+@import "root";
+@import "reboot";
+```
+
+舉例如何建立與使用 mixin：
+
+```scss
+///////////////////////// mixins.scss
+@mixin myFlex {
+  display: -webkit-flex;
+  display: flex;
+}
+
+//////////////////////// style.scss
+@import "mixins";
+//...
+
+.container{
+  @include myFlex;
+}
+
+/***** complier css ******
+.container {
+  display: -webkit-box;
+  display: flex;
+}
+*************************/
+```
+
+> extend 與 mixin 的用途看似類同，但 mixin 用途更廣泛的應用多元場合下。
+
+### 傳遞變數
+mixin 可像函式一樣夾帶引數作為參數使用。
+
+```scss
+// mixins.scss
+@mixin myRotate($deg) {
+  -webkit-transform: rotate($deg);
+  -ms-transform: rotate($deg);
+  transform: rotate($deg);
+}
+
+.container {
+  @include  myRotate(10deg); //傳遞字串 10deg 給 myRotate
+}
+
+/***** complier css ******
+.container {
+  -webkit-transform: rotate(10deg);
+  transform: rotate(10deg);
+}
+*************************/
+```
+
+**插值 interpolation**
+
+然而如果想傳遞數字做為引述並在 mixin 內組合成文字，需使用插值 interpolation 方式來做替換，否則語意上無法預期作業。字串內的插值寫法為`#{name}`：
+
+```scss
+// mixins.scss
+@mixin myRotate($num) {
+  -webkit-transform: rotate(#{$num}deg);
+  -ms-transform: rotate(#{$num}deg);
+  transform: rotate(#{$num}deg);
+}
+
+.container {
+  @include myRotate(10);
+}
+
+/***** complier css ******
+.container {
+  -webkit-transform: rotate(10deg);
+  transform: rotate(10deg);
+}
+*************************/
+```
+
+**參數預設值**
+傳遞變數可以指定預設值，當未獲得參數時會以預設值來使用。原則上參數需全部必填存在，除非若預設值為 null 則忽略並不會回傳該此結果屬性（選填）。而參數順序上若需必填應排列前面，選填（具備預設值或 null) 排列後面才能正常運作。
+
+```scss
+@mixin myText($size, $height:null, $weight:normal, $color:null) {
+  font-size: $size;
+  line-height: $height;
+  font-weight: $weight;
+  color: $color;
+}
+
+p {
+  @include myText(10px);
+}
+
+/***** complier css ******
+p {
+  font-size: 10px;
+  font-weight: normal;
+}
+*************************/
+```
+
+引數的排序位置因為匿名對應配合參數位置，除非特別在引數上寫參數名來指定名曾。但注意使用此指名引數之後，其餘後列引數不可再恢復匿名。
+
+```scss
+@include myText(10px, $color:red); //scuess
+@include myText(10px, $color:red, bold); //error
+@include myText(10px, $color:red, $weight:bold); //scuess
+@include myText(10px, 2rem, $color:red, $weight:bold); //scuess
+```
+
+>最後，mixins 就像函式一樣只要特定的參數就能獲得外觀屬性值，因此你可以創造一個第自訂函式來快速得到 CSS 外觀屬性組合。也可從訪間尋找一些免費提供的 mixins library 來快速獲得網站外觀。
+
+### 內容綁定
+若在`@mixin`內出現`@content`，則代表這部分的內容屬性來自於呼叫端`@include{}`之外部內容，可藉由此方式更彈性運用
+
+```scss
+@mixin myText($size) {
+  font-size: $size;
+  @content;  //此部分內容將從 include{}來定義替換
+}
+
+p {
+  @include myText(10px) { // {}作為@content 之內容
+    color: red;
+    background: gray;
+  }
+  ;
+}
+
+/***** complier css ******
+p {
+  font-size: 10px;
+  color: red;
+  background: gray;
+}
+*************************/
+```
+
+## Media Query
+編寫媒體查詢時，直接寫在選擇器內進行宣告即可，會自動產生對應該選器的媒體條件。但其缺點他不會整合相同的@media 條件，隨樣式表擴大會產生大量相同的@media 條件，這利弊關係（好管理，不精簡）的支持者分兩派爭議。
+
+```scss
+.container {
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width:576px) {
+    min-width: 540px;
+  }
+
+  @media (min-width:768px) {
+    min-width: 720px;
+  }
+
+}
+
+.display {
+  font-size: 1rem;
+
+  @media (min-width:576px) {
+    font-size: 2rem;
+
+  }
+
+  @media (min-width:768px) {
+    font-size: 3rem;
+
+  }
+}
+
+/*********complier css*****
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+  .container {
+    min-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    min-width: 720px;
+  }
+}
+
+.display {
+  font-size: 1rem;
+}
+
+@media (min-width: 576px) {
+  .display {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .display {
+    font-size: 3rem;
+  }
+}
+
+**************************/
+```
+
+### 設計 RWD 範例
+我們可以運用變數與 Mixin 來重新規劃 Media Query 的響應式範例。
+
+1. 將響應的 break point 做成變數放置在`_variables.scss`內，未來調整時也方便。
+```scss _variables.scss
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$xl: 1200px;
+```
+2. 將 media query 定義成 mixin 函式，之後任何選擇器要加入 RWD 機制直接使用該 mixin 進行 include，獲得 break point 的機制。
+```scss _mixins.scss
+@mixin grid {
+  @media (max-width:$sm - 1px) {
+    @content;
+  }
+}
+
+@mixin grid-sm {
+  @media (min-width:$sm) and (max-width:$md - 1px) {
+    @content;
+  }
+}
+
+@mixin grid-md {
+  @media (min-width:$md) and (max-width:$lg - 1px) {
+    @content;
+  }
+}
+
+@mixin grid-lg {
+  @media (min-width:$lg) and (max-width:$xl - 1px) {
+    @content;
+  }
+}
+
+@mixin grid-xl {
+  @media (max-width:$xl) {
+    @content;
+  }
+}
+```
+3. 接著呼喚 mixin 來獲得 media query 條件，條件內的屬性由外部來編寫設計。使得 media query 的規劃從該元素的選擇器來一併整合。
+```scss style.scss
+@import "variables";
+@import "mixins";
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+
+  @include grid {
+    background: lightyellow;
+  }
+
+  @include grid-sm {
+    background: lightblue;
+  }
+
+  @include grid-md {
+    background: lightcoral;
+  }
+
+  @include grid-lg {
+    background: lightgoldenrodyellow;
+  }
+
+  @include grid-xl {
+    background: lightpink;
+  }
+}
+```
+4. 最後輸出結果為：
+```scss
+.container {
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 575px) {
+  .container {
+    background: lightyellow;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .container {
+    background: lightblue;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .container {
+    background: lightcoral;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .container {
+    background: lightgoldenrodyellow;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    background: lightpink;
+  }
+}
+```
 
 # 參考文獻
 [-](https://www.geeksforgeeks.org/how-to-import-sass-through-npm/)

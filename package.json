@@ -27,7 +27,7 @@
     "hexo-renderer-marked": "^4.1.0",
     "hexo-renderer-stylus": "^2.0.1",
     "hexo-server": "^2.0.0",
-    "hexo-word-counter": "^0.0.3",
+    "hexo-word-counter": "0.0.3",
     "range-parser": "^1.2.1"
   }
 }
