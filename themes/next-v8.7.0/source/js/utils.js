@@ -174,6 +174,9 @@ NexT.utils = {
         if (backToTop) {
           backToTop.classList.toggle('back-to-top-on', Math.round(scrollPercent) >= 5);
           backToTop.querySelector('span').innerText = Math.round(scrollPercent) + '%';
+
+          //custom
+          backToTop.querySelector('.lokiFull').style.setProperty('--progress', scrollPercent.toFixed(2) + '%');
         }
         if (readingProgressBar) {
           readingProgressBar.style.setProperty('--progress', scrollPercent.toFixed(2) + '%');

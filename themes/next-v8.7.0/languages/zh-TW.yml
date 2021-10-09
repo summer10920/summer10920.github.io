@@ -16,7 +16,7 @@ menu:
   sitemap: 網站地圖
   commonweal: 公益 404
 sidebar:
-  overview: 本站概要
+  overview: 關於洛奇
   toc: 文章目錄
 post:
   posted: 發表於
@@ -74,7 +74,7 @@ keep_on: 繼續努力。
 symbol:
   comma: "，"
   period: "。"
-  colon: "："
+  colon: " ×"
 reward:
   donate: 捐贈
   wechatpay: 微信支付
@@ -91,7 +91,7 @@ accessibility:
   select_lang: 選擇語言
 symbols_count_time:
   count: 文章字數
-  count_total: 總字數
+  count_total: 全站總字數
   time: 所需閱讀時間
-  time_total: 所需總閱讀時間
+  time_total: 全站總閱讀時間
   time_minutes: 分鐘
