@@ -1,5 +1,5 @@
 ---
-title: '[學習之路] CSS 進階處理系列（二） -Sass/Scss'
+title: '[學習之路] CSS 進階處理系列（二） - Sass'
 categories:
   - Zero Road
   - Web Fronted
@@ -878,7 +878,7 @@ $weights: ("light": 300, "medium": 500);
 > 已宣告的 map 內容是不可修改的，因此前列的作法都是重新定義變數而不是修改調整 map。
 
 ### 布林值 Booleans
-獲得布林值的方式除了直接指定 true 與 false，也能透過比較式或透過內建模組的 compatible 函式取得，以及複合邏輯、否定式
+獲得布林值的方式除了直接指定 true 與 false，也能透過比較式或透過內建模組的結果取得布林值，以及複合邏輯、否定式
 
 ```scss
 @use "sass:math";
@@ -886,7 +886,7 @@ $weights: ("light": 300, "medium": 500);
 @debug 1px == 2px; // false
 @debug 1px == 1px; // true
 @debug 10px < 3px; // false
-@debug math.compatible(100px, 3in); // true
+@debug math.compatible(100px, 3in); // true，單位相容性檢查 例如 cm 可與 mm 相容
 
 @debug true and true; // true
 @debug true and false; // false
@@ -2655,7 +2655,7 @@ rgba($red, $green, $blue, $alpha: 1)
 rgba($color, $alpha) //=> color 
 ```
 
-當由 Sass 編譯時會自動對 hsl 或 rgb 轉換時，除非遇到`var()`這種原生變數套用才會保留不做異動。
+當由 Sass 編譯時會自動對 hsl 或 rgb 轉換動作，除非遇到`var()`這種原生變數套用才會保留不做異動。
 
 ```scss
 $color1: hsl(210deg 100% 20%);
@@ -2972,7 +2972,7 @@ $color2:#0000ff;
 @debug list.index(1px solid red, solid); // 2
 @debug list.index(1px solid red, dashed); // null
 ```
->另提供全域函式寫法為`index($list, $value)`。
+>另提供全域函式寫法為`index($list, $value)`
 
 #### is-bracketed 判斷 [] 存在
 將查詢資料之結構是否`[]`存在。語法為`list.is-bracketed($list)`。範例如下：
@@ -2981,7 +2981,7 @@ $color2:#0000ff;
 @debug list.is-bracketed(1px 2px 3px); // false
 @debug list.is-bracketed([1px, 2px, 3px]); // true
 ```
->另提供全域函式寫法為`is-bracketed($list)`。
+>另提供全域函式寫法為`is-bracketed($list)`
 
 #### jonn 合併
 將多個資料進行合併，並可決定分隔符號 (comma、space、slash)，預設為 auto 與來源相同。以及是否 [] 之存在。語法為`list.join($list1, $list2, $separator: auto, $bracketed: auto)`。範例如下：
@@ -2995,7 +2995,7 @@ $color2:#0000ff;
 @debug list.join([10px], 20px); // [10px 20px]
 @debug list.join(10px, 20px, $bracketed: true); // [10px 20px]
 ```
->另提供全域函式寫法為`join($list1, $list2, $separator: auto, $bracketed: auto)`。
+>`另提供全域函式寫法`為`join($list1, $list2, $separator: auto, $bracketed: auto)`
 
 #### length 長度
 計算資料長度。語法為`list.length($list)`。範例如下：
@@ -3005,7 +3005,7 @@ $color2:#0000ff;
 @debug list.length(10px 20px 30px); // 3
 @debug list.length((width: 10px, height: 20px)); // 2
 ```
->另提供全域函式寫法為`length($list)`。
+>另提供全域函式寫法為`length($list)`
 
 #### separator 查詢分隔符
 檢查資料使用何種分隔符號（回傳 comma、space、slash)。語法為`list.separator($list)`。範例如下：
@@ -3016,43 +3016,874 @@ $color2:#0000ff;
 @debug list.separator('Helvetica'); // space
 @debug list.separator(()); // space
 ```
->另提供全域函式寫法為`list-separator($list)`。
+>另提供全域函式寫法為`list-separator($list)`
 
 #### nth 指定位置
-查詢資料內指定位置之value，指定位置初始為1，負數從末端開始最小為-1。語法為`list.nth($list, $n)`。範例如下：
+查詢資料內指定位置之 value，指定位置初始為 1，負數從末端開始最小為-1。語法為`list.nth($list, $n)`。範例如下：
 ```scss
 @use 'sass:list';
 @debug list.nth(10px 12px 16px, 2); // 12px
 @debug list.nth([line1, line2, line3], -1); // line3
 ```
->另提供全域函式寫法為`nth($list, $n)`。
+>另提供全域函式寫法為`nth($list, $n)`
 
 #### set-nth 指定修改
-查詢資料內指定位置之value並修改，指定位置初始為1，負數從末端開始最小為-1。語法為`list.set-nth($list, $n, $value)`。範例如下：
+查詢資料內指定位置之 value 並修改，指定位置初始為 1，負數從末端開始最小為-1。語法為`list.set-nth($list, $n, $value)`。範例如下：
 ```scss
 @use 'sass:list';
 @debug list.set-nth(10px 20px 30px, 1, 2em); // 2em 20px 30px
 @debug list.set-nth(10px 20px 30px, -1, 8em); // 10px, 20px, 8em
 @debug list.set-nth((Helvetica, Arial, sans-serif), 3, Roboto); // Helvetica, Arial, Roboto
 ```
->另提供全域函式寫法為`set-nth($list, $n, $value)`。
+>另提供全域函式寫法為`set-nth($list, $n, $value)`
 
 #### list.slash 改為分隔線符號
-將資料內分隔符號替換為slash，但由於目前舊語法的`/`仍被當作除法。因此尚未開放此功能。語法為`list.slash($elements...)`。範例如下：
+將資料內分隔符號替換為 slash，但由於目前舊語法的`/`仍被當作除法。因此尚未開放此功能。語法為`list.slash($elements...)`。範例如下：
 ```scss
 @use 'sass:list';
 @debug list.slash(1px, 50px, 100px); // 10px / 50px / 100px
 ```
 
 #### zip 壓縮合併
-將多筆資料合併壓縮成類似二維list格式，數量匹配需一致才能合併。語法為`list.zip($lists...)`。範例如下：
+將多筆資料合併壓縮成類似二維 list 格式，數量匹配需一致才能合併。語法為`list.zip($lists...)`。範例如下：
 ```scss
 @use 'sass:list';
 @debug list.zip(10px 50px 100px, short mid long); // 10px short, 50px mid, 100px long
 @debug list.zip(10px 50px 100px, short mid); // 10px short, 50px mid
 ```
->另提供全域函式寫法為`zip($lists...)`。
+>另提供全域函式寫法為`zip($lists...)`
+
+### sass:map
+映射格式的 list，每筆內容具備了 key 與 value。而 map 型態可以採用多維方式記錄更深層的資料結構。善用內建模組有效去操作 map 進行合併與讀取等複雜行為
+
+#### get 獲取值
+從 map 透過關鍵字 key 獲得 value，支援多維 map 的查找。語法為`map.get($map, $key, $keys...)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+//一維
+@debug map.get($font-weights, "medium"); // 500
+@debug map.get($font-weights, "extra-bold"); // null
+
+$fonts: (
+  "Helvetica": (
+    "weights": (
+      "regular": 400,
+      "medium": 500,
+      "bold": 700
+    )
+  )
+);
+
+//多維
+@debug map.get($fonts, "Helvetica", "weights", "regular"); // 400
+@debug map.get($fonts, "Helvetica", "colors"); // null
+```
+>另提供全域函式寫法為`map-get($map, $key, $keys...)`
+
+#### set 修改值
+從 map 透過關鍵字 key 找到 value 並修改，可透過多組 key（不含最後一組參數 key) 對多維 map 的 value 修改。語法為`map.set($map, $keys..., $key, $value)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+//一維
+@debug map.set($font-weights, "regular", 300);
+// ("regular": 300, "medium": 500, "bold": 700)
+
+$fonts: (
+  "Helvetica": (
+    "weights": (
+      "regular": 400,
+      "medium": 500,
+      "bold": 700
+    )
+  )
+);
+
+// 二維
+@debug map.set($fonts, "Helvetica", "weights", "regular", 300);
+// (
+//   "Helvetica": (
+//     "weights": (
+//       "regular": 300,
+//       "medium": 500,
+//       "bold": 700
+//     )
+//   )
+// )
+```
+
+#### keys 列出全關鍵字
+可對一維 map 要求印出所有 key 內容以 list 方式回傳。語法為`map.keys($map)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+@debug map.keys($font-weights); // "regular", "medium", "bold"
+```
+>另提供全域函式寫法為`map-keys($map)`
+
+#### values 列出全值
+可對一維 map 要求印出所有 value 內容以 list 方式回傳。語法為`map.values($map)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+@debug map.values($font-weights); // 400, 500, 700
+```
+>另提供全域函式寫法為`map-values($map)`
+
+#### has-key 確認存在
+確認指定關鍵字是否存在於 map 內回傳布林值，支援多維 map 的查找。語法為`map.has-key($map, $key, $keys...)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+//一維
+@debug map.has-key($font-weights, "regular"); // true
+@debug map.has-key($font-weights, "bolder"); // false
+
+$fonts: (
+  "Helvetica": (
+    "weights": (
+      "regular": 400,
+      "medium": 500,
+      "bold": 700
+    )
+  )
+);
+
+//多維
+@debug map.has-key($fonts, "Helvetica", "weights", "regular"); // true
+@debug map.has-key($fonts, "Helvetica", "colors"); // false
+```
+>另提供全域函式寫法為`map-has-key($map, $key, $keys...)`
+
+#### merge 合併
+可對兩個 map 進行合併，若第一組參數 map 為多維 map 且提供關鍵 key，能指定該 map 哪層維度為出發處進行合併。語法為`map.merge($map1, $keys..., $map2)`。
+
+```scss
+@use 'sass:map';
+
+$light-weights: ("lightest": 100, "light": 300);
+$heavy-weights: ("medium": 500, "bold": 700);
+
+// 2 個一維進行合併
+@debug map.merge($light-weights, $heavy-weights);
+// ("lightest": 100, "light": 300, "medium": 500, "bold": 700)
+
+$fonts: (
+  "Helvetica": (
+    "weights": (
+      "lightest": 100,
+      "light": 300
+    )
+  )
+);
+$heavy-weights: ("medium": 500, "bold": 700);
+
+//指定多維之定位出發點進行合併
+@debug map.merge($fonts, "Helvetica", "weights", $heavy-weights);
+// (
+//   "Helvetica": (
+//     "weights": (
+//       "lightest": 100,
+//       "light": 300,
+//       "medium": 500,
+//       "bold": 700
+//     )
+//   )
+// )
+```
+>另提供全域函式寫法為`map-merge($map1, $keys..., $map2)`
+
+#### deep-merge 深度合併
+與 merge 相同，差別是可以深度進行合併。每個維度 map 的都會進行合併。語法為 `map.deep-merge($map1, $map2)`。
+
+```scss
+@use 'sass:map';
+$helvetica-light: (
+  "weights": (
+    "lightest": 100,
+    "light": 300
+  )
+);
+$helvetica-heavy: (
+  "weights": (
+    "medium": 500,
+    "bold": 700
+  )
+);
+
+@debug map.deep-merge($helvetica-light, $helvetica-heavy);
+// (
+//   "weights": (
+//     "lightest": 100,
+//     "light": 300,
+//     "medium": 500,
+//     "bold": 700
+//   )
+// )
+@debug map.merge($helvetica-light, $helvetica-heavy);
+// (
+//   "weights": (
+//     "medium: 500,
+//     "bold": 700
+//   )
+// )
+```
+
+#### remove 移除
+可指定一維 map 下的尋找 key 進行移除，一次可移除多組 key。語法為 `map.remove($map, $keys...)`。
+
+```scss
+@use 'sass:map';
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+@debug map.remove($font-weights, "regular"); // ("medium": 500, "bold": 700)
+@debug map.remove($font-weights, "regular", "bold"); // ("medium": 500)
+@debug map.remove($font-weights, "bolder");
+```
+>另提供全域函式寫法為`map-remove($map, $keys...)`
+
+#### deep-remove 深度移除
+可指定多維 map 下的尋找 key 進行移除，需透過 keys（不含最後一組參數 key) 一步步映射到指定位置才行，一次只能移除一組 key。語法為 `map.deep-remove($map, $key, $keys...)`。
+
+```scss
+@use 'sass:map';
+
+$font-weights: ("regular": 400, "medium": 500, "bold": 700);
+
+// 一維
+@debug map.deep-remove($font-weights, "regular"); 
+// ("medium": 500, "bold": 700)
+
+$fonts: (
+  "Helvetica": (
+    "weights": (
+      "regular": 400,
+      "medium": 500,
+      "bold": 700
+    )
+  )
+);
+
+// 多維
+@debug map.deep-remove($fonts, "Helvetica", "weights", "regular");
+// (
+//   "Helvetica": (
+//     "weights: (
+//       "medium": 500,
+//       "bold": 700
+//     )
+//   )
+// )
+```
+
+### sass:math
+提供大量數學相關功能函式使用。
+
+#### 數學單位
+以下為常用的數學函式使用。
+```scss
+@use 'sass:math';
+
+//常數 e 的值
+@debug math.$e; // 2.7182818285
+
+//常數 π 的值
+@debug math.$pi; // 3.1415926536
+
+/***********************************************************/
+//無條件進位
+@debug math.ceil(4); // 4
+@debug math.ceil(4.2); // 5
+@debug math.ceil(4.9); // 5
+// 另提供全域函式，語法為 ceil($number)
+
+//無條件捨去
+@debug math.floor(4); // 4
+@debug math.floor(4.2); // 4
+@debug math.floor(4.9); // 4
+// 另提供全域函式，語法為 floor($number)
+
+//四捨五入
+@debug math.round(4); // 4
+@debug math.round(4.2); // 4
+@debug math.round(4.9); // 5
+// 另提供全域函式，語法為 round($number)
+
+/***********************************************************/
+
+//取最大值
+@debug math.max(1px, 4px); // 4px
+$widths: 50px, 30px, 100px;
+@debug math.max($widths...); // 100px
+// 另提供全域函式，語法為 max($number...)
+
+//取最小值
+@debug math.min(1px, 4px); // 1px
+$widths: 50px, 30px, 100px;
+@debug math.min($widths...); // 30px
+// 另提供全域函式，語法為 min($number...)
+
+//極限修正：能將數字侷限到 min~max 並回傳。語法為 math.clamp($min, $number, $max)
+@debug math.clamp(-1, 0, 1); // 0
+@debug math.clamp(1px, -1px, 10px); // 1px
+@debug math.clamp(-1in, 1cm, 10mm); // 10mm
+
+/***********************************************************/
+
+//絕對值：返回正數
+@debug math.abs(10px); // 10px
+@debug math.abs(-10px); // 10px
+// 另提供全域函式，語法為 abs($number)
+
+//單位相容性：例如 cm 是否可與 mm 相容
+@debug math.compatible(2px, 1px); // true
+@debug math.compatible(100px, 3em); // false
+@debug math.compatible(10cm, 3mm); // true
+// 另提供全域函式，語法為 comparable($number1, $number2)
+
+//檢查單位為無
+@debug math.is-unitless(100); // true
+@debug math.is-unitless(100px); // false
+// 另提供全域函式，語法為 unitless($number)
+
+//獲取單位
+@debug math.unit(100); // ""
+@debug math.unit(100px); // "px"
+@debug math.unit(5px * 10px); // "px*px"
+@debug math.unit(math.div(5px, 1s)); // "px/s"
+// 另提供全域函式，語法為 unit($number)
+
+//除法：數字與單位都會進行移除相抵
+@debug math.div(1, 2); // 0.5
+@debug math.div(100px, 5px); // 20
+@debug math.div(100px, 5); // 20px
+@debug math.div(100px, 5s); // 20px/s
+
+//轉換百分比：等價　$number * 100%
+@debug math.percentage(0.2); // 20%
+@debug math.percentage(math.div(100px, 50px)); // 200%
+// 另提供全域函式，語法為 percentage($number)
+
+//隨機數：介於 0 和 1 之間的隨機十進制數，若存在 limit 則提供 1 和 limit 之間的隨機整數
+@debug math.random(); // 0.2821251858
+@debug math.random(); // 0.6221325814
+@debug math.random(10); // 4
+@debug math.random(10000); // 5373
+// 另提供全域函式，語法為 random($limit: null)
+```
+
+#### 數學公式
+因低使用性，僅列表說明不範例說明（請自行查看 [官方文件](https://sass-lang.com/documentation/modules/math))。
+
+| 語法                             | 功能                                  |
+| -------------------------------- | ------------------------------------- |
+| `math.hypot($number...)`         | 三角斜邊值 (求 a² + b² + c² 的平方根) |
+| `math.log($number, $base: null)` | 對數                                  |
+| `math.pow($base, $exponent)`     | 幂值                                  |
+| `math.sqrt($number)`             | 平方根                                |
+| `math.cos($number)`              | 三角函數 cos 值                       |
+| `math.sin($number)`              | 三角函數 sin 值                       |
+| `math.tan($number)`              | 三角函數 tan 值                       |
+| `math.acos($number)`             | 三角函數 acos 值                      |
+| `math.asin($number)`             | 三角函數 asin 值                      |
+| `math.atan($number)`             | 三角函數 atan 值                      |
+| `math.atan2($number)`            | 三角函數 atan2 值                     |
+
+### sass:meta
+做為 meta 元件的高深函式提供使用。
+
+#### load-css
+跟`@use/@mixin`機制差不多且提供 with 可配置，不需要@use 就能獲得區塊檔案。語法為`meta.load-css($url, $with: null)`
+
+```scss dark-theme/_code.scss
+$border-contrast: false !default;
+
+code {
+  background-color: #6b717f;
+  color: #d2e1dd;
+  @if $border-contrast {
+    border-color: #dadbdf;
+  }
+}
+```
+```scss style.scss
+@use "sass:meta";
+
+body.dark {
+  @include meta.load-css("dark-theme/code",
+      $with: ("border-contrast": true));
+}
+
+/**********complier css********
+body.dark code {
+  background-color: #6b717f;
+  color: #d2e1dd;
+  border-color: #dadbdf;
+}
+*******************************/
+```
+> 與@use 載入模組的差別在於：@use 載入同對象之區塊檔案只能出現一次；meta.load-css() 沒有限制因此可以重複出現在代碼中。
+
+
+
+#### calc-args 與 calc-name
+回傳計算型的函式之參數或名稱。
+
+```scss
+@use 'sass:meta';
+
+@debug meta.calc-args(calc(100px + 10%)); // ("100px + 10%")
+@debug meta.calc-args(clamp(50px, var(--width), 1000px)); // 50px, var(--width), 1000px
+
+@debug meta.calc-name(calc(100px + 10%)); // "calc"
+@debug meta.calc-name(clamp(50px, var(--width), 1000px)); // "clamp"
+```
+
+#### call
+由於 function 一旦轉為變數就無法執行它，故可透過 call 將此變數呼喚回 function 模式並執行它，也可以提供該 functionn 所需之參數。語法為 `meta.call($function, $args...)`。
+
+```scss
+@use "sass:list";
+@use "sass:meta";
+@use "sass:string";
+
+@function remove-where($list, $condition) {  //這裡的 $condition 為 function 型態的變數
+  $new-list: ();
+  $separator: list.separator($list);
+  @each $element in $list {
+    @if not meta.call($condition, $element) { //因為 $condition 為 function type，需要透過 call 來執行該 function
+      $new-list: list.append($new-list, $element, $separator: $separator);
+    }
+  }
+  @return $new-list;
+}
+
+$fonts: Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+content {
+  @function contains-helvetica($string) {
+    @return string.index($string, "Helvetica");
+  }
+  font-family: remove-where($fonts, meta.get-function("contains-helvetica")); //透過 meta.get-function() 將函式當作值變成一個參數
+}
+```
+>另提供全域函式，語法為 `call($function, $args...)`
+
+
+#### get-function
+將函式結構轉為一個 function type 之變數。若存在 module 參數則會自動命名為該`@use`規則的命名方式。
+
+```scss
+@use "sass:list";
+@use "sass:meta";
+@use "sass:string";
+
+@function remove-where($list, $condition) {  //這裡的 $condition 為 function 型態的變數
+  $new-list: ();
+  $separator: list.separator($list);
+  @each $element in $list {
+    @if not meta.call($condition, $element) { //因為 $condition 為 function type，需要透過 call 來執行該 function
+      $new-list: list.append($new-list, $element, $separator: $separator);
+    }
+  }
+  @return $new-list;
+}
+
+$fonts: Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+content {
+  @function contains-helvetica($string) {
+    @return string.index($string, "Helvetica");
+  }
+  font-family: remove-where($fonts, meta.get-function("contains-helvetica")); //透過 meta.get-function() 將函式當作值變成一個參數
+}
+```
+>另提供全域函式，語法為 `get-function($name, $css: false, $module: null)`
+
+#### inspect
+轉換為 string
+
+```scss
+@use "sass:meta";
+
+@debug meta.inspect(10px 20px 30px); // 10px 20px 30px
+@debug meta.inspect(("width": 200px)); // ("width": 200px)
+@debug meta.inspect(null); // null
+@debug meta.inspect("Helvetica"); // "Helvetica"
+```
+>另提供全域函式，語法為 `ginspect($value)`
+
+#### keywords
+能將持有變數的參數 list，轉化為字串的 keyword。
+
+```scss
+@use "sass:meta";
+
+@mixin syntax-colors($args...) {
+  @debug meta.keywords($args);
+  // (string: #080, comment: #800, variable: #60b)
+
+  @each $name, $color in meta.keywords($args) {
+    pre span.stx-#{$name} {
+      color: $color;
+    }
+  }
+}
+
+@include syntax-colors(
+  $string: #080,
+  $variable: #60b,
+)
+
+/************complier css**********
+pre span.stx-string {
+  color: #080;
+}
+
+pre span.stx-variable {
+  color: #60b;
+}
+**********************************/
+```
+>另提供全域函式，語法為 `keywords($args)`
+
+#### type-of($value)
+檢查變數類型。
+
+```scss
+@debug meta.type-of(10px); // number
+@debug meta.type-of(10px 20px 30px); // list
+@debug meta.type-of(()); // list
+```
+>另提供全域函式，語法為 `type-of($value)`
+
+#### 檢查性
+檢查指定對象獲得結果之布林值。有以下歸類：
+
+##### variable-exists
+檢查目前領域下是否存在該變數
+
+```scss
+@debug meta.variable-exists("var1"); // false
+
+$var1: value;
+@debug meta.variable-exists("var1"); // true
+
+h1 {
+  // $var2 is local.
+  $var2: value;
+  @debug meta.variable-exists("var2"); // true
+}
+```
+>另提供全域函式，語法為 `variable-exists($name)`
+
+##### global-variable-exists
+檢查指定名稱是否存在於全域變數。
+
+```scss
+@use "sass:meta";
+
+@debug meta.global-variable-exists("var1"); // false
+
+$var1: value;
+@debug meta.global-variable-exists("var1"); // true
+
+h1 {
+  // $var2 is local.
+  $var2: value;
+  @debug meta.global-variable-exists("var2"); // false
+}
+```
+>另提供全域函式，語法為 `global-variable-exists($name, $module: null)`
+
+##### content-exists
+寫在 mixin 內部使用，檢查該 mixin 是否存在之獲得來自外部的`@content`。
+
+```scss
+@use "sass:meta";
+
+@mixin debug-content-exists {
+  @debug meta.content-exists();
+  @content;
+}
+
+@include debug-content-exists; // false
+@include debug-content-exists { // true
+  // Content!
+}
+```
+>另提供全域函式，語法為 `content-exists()`
+
+##### feature-exists
+檢查 Sass 目前環境開放那些功能。檢查項目為以下內容為字串檢查：
+
+- global-variable-shadowing: 
+同名之區間變數存在時是否會隱匿全域變數。
+- extend-selector-pseudoclass: 
+`@extent`規則將影響嵌套內的偽類選擇器 (ex:not())。
+- units-level3: 
+支援 CSS3 原生變數。
+- at-error: 
+支援`@error`功能。
+- custom-property: 
+- 自訂屬性不支持任何表達式，除了使用在插值上。
+
+```scss
+@use "sass:meta";
+
+@debug meta.feature-exists("at-error"); // true
+@debug meta.feature-exists("unrecognized"); // false
+```
+
+##### mixin-exists
+檢查指定 mixin 是否存在。
+
+```scss
+@use "sass:meta";
+
+@debug meta.mixin-exists("shadow-none"); // false
+
+@mixin shadow-none {
+  box-shadow: none;
+}
+
+@debug meta.mixin-exists("shadow-none"); // true
+```
+>另提供全域函式，語法為 `mixin-exists($name, $module: null)`
+
+##### function-exists
+檢查函式是否存在或在指定模組內存在。語法為 `meta.function-exists($name, $module: null)`。
+
+```scss
+@use "sass:math";
+
+@debug meta.function-exists("div", "math"); // true
+@debug meta.function-exists("scale-color"); // true
+@debug meta.function-exists("add"); // false
+
+@function add($num1, $num2) {
+  @return $num1 + $num2;
+}
+@debug meta.function-exists("add"); // true
+```
+>另提供全域函式，語法為 `function-exists($name)`
+
+#### 模組抽取
+對模組（區塊檔案）進行萃取回傳map。有以下歸類：
+
+##### module-variables
+返回指定模組內的變數名稱與變數值，並以 map 方式回傳。語法為`meta.module-variables($module)`。
+
+```scss _variables.scss
+$hopbush: #c69;
+$midnight-blue: #036;
+$wafer: #e1d7d2;
+```
+
+```scss style.scss
+@use "sass:meta";
+@use "variables";
+
+@debug meta.module-variables("variables");
+// (
+//   "hopbush": #c69,
+//   "midnight-blue": #036,
+//   "wafer": #e1d7d2
+// )
+```
+
+##### module-functions
+返回指定模組內的函式名稱與變數值 (function type)，並以 map 方式回傳。語法為`meta.module-functions($module)`。
+
+```scss _functions.scss
+@function pow($base, $exponent) {
+  $result: 1;
+  @for $_ from 1 through $exponent {
+    $result: $result * $base;
+  }
+  @return $result;
+}
+```
+```scss style.scss
+@use "sass:map";
+@use "sass:meta";
+@use "functions";
+
+@debug meta.module-functions("functions"); // ("pow": get-function("pow"))
+@debug meta.call(map.get(meta.module-functions("functions"), "pow"), 3, 4); // 16
+```
+
+### sass:selector
+選擇器之相關名稱字串的函式庫。
+
+#### is-superselector
+檢查兩者字串名稱(順訊為祖先與子孫)在選擇器規則上是否為超集合(子孫層級)。語法為`selector.is-superselector($super, $sub)`。
+```scss
+@use "sass:selector";
+
+@debug selector.is-superselector("a", "a.disabled"); // true
+@debug selector.is-superselector("a.disabled", "a"); // false
+@debug selector.is-superselector("a", "sidebar a"); // true
+@debug selector.is-superselector("sidebar a", "a"); // false
+@debug selector.is-superselector("a", "a"); // true
+```
+>另提供全域函式，語法為 `is-superselector($super, $sub)`
+
+#### append
+將選擇器名稱插入後綴，可允許輸入list格式將形成獨立組合排列。語法為`selector.append($selectors...)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.append("a", ".disabled"); // a.disabled
+@debug selector.append(".accordion", "__copy"); // .accordion__copy
+@debug selector.append(".accordion", "__copy, __image");
+```
+>另提供全域函式，語法為 `selector-append($selectors...)`
+
+#### extend
+等同`@extend`邏輯，將指定選擇器名稱的名稱A替換成名稱B。但會提供list包含原選擇器值與新選擇值。語法為`selector.extend($selector, $extendee, $extender)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.extend("a.disabled", "a", ".link"); // a.disabled, .link.disabled
+@debug selector.extend("a.disabled", "h1", "h2"); // a.disabled
+@debug selector.extend(".guide .info", ".info", ".content nav.sidebar"); // .guide .info, .guide .content nav.sidebar, .content .guide nav.sidebar
+```
+>另提供全域函式，語法為 `selector-extend($selector, $extendee, $extender)`
+
+#### nest
+多個選擇器進行合併嵌套，若遇到list會組合出各自list。語法為`selector.nest($selectors...)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.nest("ul", "li"); // ul li
+@debug selector.nest(".alert, .warning", "p"); // .alert p, .warning p
+@debug selector.nest(".alert", "&:hover"); // .alert:hover
+@debug selector.nest(".accordion", "&__copy"); // .accordion__copy
+```
+>另提供全域函式，語法為 `selector-nest($selectors...)`
+
+#### parse
+解析選擇器的值為何。語法為`selector.parse($selector)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.parse(".main aside:hover, .sidebar p"); //.main aside:hover, .sidebar p
+```
+>另提供全域函式，語法為 `selector-parse($selector)`
+
+#### replace
+將指定選擇器名稱的名稱A替換成名稱B。語法為`selector.replace($selector, $original, $replacement)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.replace("a.disabled", "a", ".link"); // .link.disabled
+@debug selector.replace("a.disabled", "h1", "h2"); // a.disabled
+@debug selector.replace(".guide .info", ".info", ".content nav.sidebar");
+// .guide .content nav.sidebar, .content .guide nav.sidebar
+```
+>另提供全域函式，語法為 `selector-replace($selector, $original, $replacement)`
+
+#### unify
+回傳這兩個選擇器都能匹配的選擇器描述方式，無理則為null。語法為`selector.unify($selector1, $selector2)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.unify("a", ".disabled"); // a.disabled
+@debug selector.unify("a.disabled", "a.outgoing"); // a.disabled.outgoing
+@debug selector.unify("a", "h1"); // null
+@debug selector.unify(".warning a", "main a"); // .warning main a, main .warning a
+```
+>另提供全域函式，語法為 `selector-unify($selector1, $selector2)`
+
+#### simple-selectors
+簡化選擇器描述將定義範圍放大，也就是重組改成空白符號。語法為`selector.simple-selectors($selector)`。
+
+```scss
+@use "sass:selector";
+
+@debug selector.simple-selectors("a.disabled"); // a, .disabled
+@debug selector.simple-selectors("main.blog:after"); // main, .blog, :after
+```
+>另提供全域函式，語法為 `simple-selectors($selector)`
+
+### sass:string
+文字串的內建模組函式庫。容易解讀不分章節解釋。
+
+```scss
+@use "sass:string";
+
+// 添加引號
+@debug string.quote(Helvetica); // "Helvetica"
+@debug string.quote("Helvetica"); // "Helvetica"
+// 另提供全域函式，語法為 quote($string)
+
+// 移除引號
+@debug string.unquote("Helvetica"); // Helvetica
+@debug string.unquote(".widget:hover"); // .widget:hover
+// 另提供全域函式，語法為 unquote($string)
+
+/**************************************************************/
+
+// 索引：指定字串在原字串內的索引值，最小值為1
+@debug string.index("Helvetica Neue", "Helvetica"); // 1
+@debug string.index("Helvetica Neue", "Neue"); // 11
+// 另提供全域函式，語法為 str-index($string, $substring)
+
+// 插入：指定字串在原字串內的索引值進行插入
+@debug string.insert("Roboto Bold", " Mono", 7); // "Roboto Mono Bold"
+@debug string.insert("Roboto Bold", " Mono", -6); // "Roboto Mono Bold"
+// 另提供全域函式，語法為 str-insert($string, $insert, $index)
+
+// 長度：字串長度
+@debug string.length("Helvetica Neue"); // 14
+@debug string.length(bold); // 4
+@debug string.length(""); // 0
+// 另提供全域函式，語法為 str-length($string)
+
+// 擷取：指定起始索引處之字段切片，可指定結束索引處。
+@debug string.slice("Helvetica Neue", 11); // "Neue"
+@debug string.slice("Helvetica Neue", 1, 3); // "Hel"
+@debug string.slice("Helvetica Neue", 1, -6); // "Helvetica"
+// 另提供全域函式，語法為 str-slice($string, $start-at, $end-at: -1)
+
+/**************************************************************/
+
+// 大寫
+@debug string.to-upper-case("Bold"); // "BOLD"
+@debug string.to-upper-case(sans-serif); // SANS-SERIF
+// 另提供全域函式，語法為 to-upper-case($string)
+
+// 小寫
+@debug string.to-lower-case("Bold"); // "bold"
+@debug string.to-lower-case(SANS-SERIF); // sans-serif
+// 另提供全域函式，語法為 to-lower-case($string)
+
+// 隨機：不帶引號
+@debug string.unique-id(); // uabtrnzug
+@debug string.unique-id(); // u6w1b1def
+// 另提供全域函式，語法為 unique-id()
+```
 
 # 參考文獻
-[-](https://www.geeksforgeeks.org/how-to-import-sass-through-npm/)
-[-](https://github.com/ritwickdey/vscode-live-sass-compiler/blob/master/docs/settings.md)
+- [Sass: Syntactically Awesome Style Sheets](https://sass-lang.com/)
+- [How to import SASS through npm ? - GeeksforGeeks](https://www.geeksforgeeks.org/how-to-import-sass-through-npm/)
+- [vscode-live-sass-compiler/settings.md](https://github.com/ritwickdey/vscode-live-sass-compiler/blob/master/docs/settings.md)
+
