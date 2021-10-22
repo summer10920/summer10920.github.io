@@ -240,6 +240,10 @@ blockquote {
   p.image-caption {
     margin-top: -10px;
   }
+
+  ol, ul {
+    margin-bottom: 4rem;
+  }
 }
 
 /* archives style */
@@ -296,11 +300,7 @@ blockquote {
     line-height: 1.5;
 
     .lokiFull {
-      background: linear-gradient(
-        var(--main) 0%,
-        rgb(134, 11, 57) 40%,
-        var(--main) 100%
-      );
+      background: linear-gradient(var(--main) 0%, #bb1352 25%, var(--main) 70%);
       position: absolute;
       left: 0;
       right: calc(100% - var(--progress));
@@ -325,7 +325,7 @@ footer.footer {
     content: none;
   }
 
-  .wordcount.busuanzi-count{
+  .wordcount.busuanzi-count {
     display: flex;
     justify-content: space-between;
 

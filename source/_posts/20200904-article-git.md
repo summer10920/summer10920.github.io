@@ -4,7 +4,7 @@ categories:
   - Zero Road
   - Tools
 tag:
-  - Git & GitHub
+  - Git/GitHub
   - VSCode
 date: 2020-09-04 01:34:46
 ---
