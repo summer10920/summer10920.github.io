@@ -4,6 +4,7 @@ categories:
   - Zero Road
   - Web Fronted
 tag:
+  - JavaScript
   - TypeScript
 date: 2021-08-25 13:31:03
 # hidden: true

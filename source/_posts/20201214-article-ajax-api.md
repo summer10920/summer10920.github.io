@@ -4,7 +4,9 @@ categories:
   - Zero Road
   - Web Fronted
 tag:
-  - Fronted
+  - JavaScript
+  - jQuery
+  - axios
 date: 2020-12-14 17:40:15
 ---
 

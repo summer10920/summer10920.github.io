@@ -1,10 +1,11 @@
 ---
-title: '[學習之路] CSS 進階處理系列（二） - Sass'
+title: '[學習之路] CSS 預處理器 Sass'
 categories:
   - Zero Road
   - Web Fronted
 tag:
   - SASS
+  - CSS
 date: 2021-09-27 18:06:58
 ---
 ![](https://i.imgur.com/KgMI01E.png)

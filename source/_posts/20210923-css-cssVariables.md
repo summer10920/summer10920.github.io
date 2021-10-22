@@ -1,10 +1,10 @@
 ---
-title: '[學習之路] CSS 進階處理系列（一） - 原生變數'
+title: '[學習之路] CSS 進階的原生變數'
 categories:
   - Zero Road
   - Web Fronted
 tag:
-  - CSS 變數
+  - CSS
 date: 2021-09-23 13:13:22
 ---
 ![](https://i.imgur.com/v8Pgkpa.png)

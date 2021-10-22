@@ -4,7 +4,8 @@ categories:
   - Zero Road
   - Web Fronted
 tag:
-  - Fronted
+  - JavaScript
+  - NodeJS
 date: 2020-12-30 12:47:03
 ---
 
