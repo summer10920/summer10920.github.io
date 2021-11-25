@@ -109,6 +109,16 @@ function ExampleWithManyStates() {
 
 > Hook 的內建函式名稱幾乎都是 use 開頭，保持這個命名習慣如果你未來有自訂 Hook 函式。
 
+## 初始值
+提供初始值給useState時只有第一次render有用到，之後觸發的render渲染將被忽略此值，如果有需要複雜計算出初始值可以透過匿名函式回傳的組合寫法：
+
+```js
+const [state, setState] = useState(() => {
+  const initialState = someExpensiveComputation(props);
+  return initialState;
+});
+```
+
 # useEffect
 useEffect 是能讓你在組件內使用 Side Effect 副作用，對主調用函式產生附加的影響。useEffect 本身等價於生命週期的 componentDidMount, componentDidUpdate, componentWillUnmount 的組合用途，每當 react 對組件進行 render 時會觸發 useEffect 內的工作。
 
@@ -589,6 +599,141 @@ npm install eslint-plugin-react-hooks --save-dev
     "react-hooks/rules-of-hooks": "error", // 檢查 Hook 的規則
     "react-hooks/exhaustive-deps": "warn" // 檢查 effect 的相依性
   }
+}
+```
+
+# 自訂 Hook
+比較簡單的說法為，透過自訂一個 function 將使用 state 的相同邏輯做成一個 use 名稱的 hook 函式。讓這個函式本身符合 hook 規則（只能被上層呼叫且提供給 function 組件使用）。
+
+舉例以下說明：有兩個函式組件透過某一邏輯使用到 useState 與 useEffect 做一個結果後的不同 return，而這邏輯內容一致：
+
+```js
+import { useState, useEffect } from 'react';
+
+//提供好友 id，告知是否在線上
+function FriendStatus(props) {
+  //same code start
+  const [isOnline, setIsOnline] = useState(null);
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+    return () => {
+      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+    };
+  });
+  //same code end
+
+  if (isOnline === null) {
+    return 'Loading...';
+  }
+  return isOnline ? 'Online' : 'Offline';
+}
+
+//提供好友 id，回傳 li 元素並標示狀況顏色
+function FriendListItem(props) {
+  //same code start
+  const [isOnline, setIsOnline] = useState(null);
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+    return () => {
+      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+    };
+  });
+  //same code end
+
+  return (
+    <li style={{ color: isOnline ? 'green' : 'black' }}>
+      {props.friend.name}
+    </li>
+  );
+}
+```
+
+因此我們可以試著將這些有使用到 Hook 處理過程抽取成為一個自訂的 Hook，命名上使用 use 開頭能確保提醒自己或工具這需要符合 Hook 規則。利用 return 將所需要的 state 值提供回來。
+
+```js
+import { useState, useEffect } from 'react';
+
+//自訂 Hook，並以 use 開頭命名
+function useFriendCheck(friendID) {
+  const [isOnline, setIsOnline] = useState(null);
+  useEffect(() => {
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+    ChatAPI.subscribeToFriendStatus(friendId, handleStatusChange);
+    return () => {
+      ChatAPI.unsubscribeFromFriendStatus(friendId, handleStatusChange);
+    };
+  });
+  return isOnline;
+}
+
+//提供好友 id，告知是否在線上
+function FriendStatus(props) {
+  //same code start
+  const isOnline = useFriendCheck(props.friend.id);
+  //same code end
+
+  if (isOnline === null) {
+    return 'Loading...';
+  }
+  return isOnline ? 'Online' : 'Offline';
+}
+
+//提供好友 id，回傳 li 元素並標示狀況顏色
+function FriendListItem(props) {
+  //same code start
+  const isOnline = useFriendCheck(props.friend.id);
+  //same code end
+
+  return (
+    <li style={{ color: isOnline ? 'green' : 'black' }}>
+      {props.friend.name}
+    </li>
+  );
+}
+```
+
+基本的自訂 Hook 已完成，有以下特性需注意：
+
+- 自訂 Hook 可以內不去使用原有的 Hook 函式，自訂 Hook 只是一個普通 function。
+- 自訂 Hook 命名 use 開頭有提醒規則之用途（包含工具辨識）。
+- 不同組件使用同自訂 Hook 為彼此獨立，自訂 Hook 本身只是一個函式無特別之處。因此不同組件其邏輯操作到的 useState 與 useEffect 獨立不共享。
+
+我們也能對自訂 Hook 傳遞一個可變的像是上層 state 進去，促使下次該組件進行渲染時執行觸發獲得可變的 return 回來。下面為當上層 state 提供數字給自訂 useFriendCheck 能協助回應上線之狀態結果。下次當觸發修改 state 時又會從自訂 useFriendCheck 獲得另一個結果。而 useEffect 每次執行獨立性，前一個好友狀態會再下一次的 useEffect 執行而自動取消本次 useEffect 觸發 unsubscribeFromFriendStatus。
+
+```js
+const friendList = [
+  { id: 1, name: 'Phoebe' },
+  { id: 2, name: 'Rachel' },
+  { id: 3, name: 'Ross' },
+];
+
+function ChatRecipientPicker() {
+  const [recipientID, setRecipientID] = useState(1);
+  const isOnline = useFriendCheck(recipientID);
+
+  return (
+    <>
+      <Circle color={isOnline ? 'green' : 'red'} />
+      <select
+        value={recipientID}
+        onChange={e => setRecipientID(Number(e.target.value))}
+      >
+        {friendList.map(friend => (
+          <option key={friend.id} value={friend.id}>
+            {friend.name}
+          </option>
+        ))}
+      </select>
+    </>
+  );
 }
 ```
 
