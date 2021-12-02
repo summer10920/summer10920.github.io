@@ -381,6 +381,6 @@ function finish(e) {
 
 {% note default %}
 **示範參考：** 
-[View Full Code](https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/storyGame_swal)
-[DEMO Page](https://summer10920.github.io/skillStudies_JS_WebDemo/storyGame_swal/)
+[View Full Code](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/storyGame_swal)
+[DEMO Page](https://summer10920.github.io/studies_TeachDemo_JS/storyGame_swal/)
 {% endnote %}

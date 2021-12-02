@@ -300,6 +300,6 @@ function ctl(who) {
 ---
 {% note default %}
 **示範參考：** 
-- [View Full Code](https://github.com/summer10920/skillStudies_JS_WebDemo/tree/master/analogClock)
-- [DEMO Page](https://summer10920.github.io/skillStudies_JS_WebDemo/analogClock/)
+- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/analogClock)
+- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JS/analogClock/)
 {% endnote %}

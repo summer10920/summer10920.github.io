@@ -149,8 +149,8 @@ gameplay();
 ```
 {% note default %}
 **示範參考：**
-1. 標準版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/storyGame/ 
-2. SweetAlert 版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/storyGame_swal/
+1. 標準版本 - https://summer10920.github.io/studies_TeachDemo_JS/storyGame/ 
+2. SweetAlert 版本 - https://summer10920.github.io/studies_TeachDemo_JS/storyGame_swal/
 
 {% endnote %}
 
@@ -480,5 +480,5 @@ function clearover(){
 
 {% note default %}
 **示範參考：**
-挑戰版本 - https://summer10920.github.io/skillStudies_JS_WebDemo/colorEditor/
+挑戰版本 - https://summer10920.github.io/studies_TeachDemo_JS/colorEditor/
 {% endnote %}
