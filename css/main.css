@@ -2833,7 +2833,7 @@ mark.search-keyword {
   transition: all 0.2s ease-in-out;
 }
 .links-of-author a::before {
-  background: #f18aff;
+  background: #1c65ff;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2925,46 +2925,50 @@ figure.highlight .table-container::-webkit-scrollbar {
 figure.highlight .table-container::-webkit-scrollbar-thumb {
   background-color: var(--main);
 }
-/* ***********header banner */
+/* ***********header banner style */
 .header {
   overflow: hidden;
   position: relative;
   z-index: 5;
 }
-.header-inner {
-  padding-top: 40px;
-}
-.header-inner .main-menu a {
-  color: #eee;
-  transition: 1s;
-}
-a:hover,
-.menu .menu-item a:hover,
-.menu .menu-item a.menu-item-active {
-  color: var(--main);
-  border-bottom: 1px solid var(--main);
-}
-.menu .menu-item .badge {
-  transition: 1s;
-}
-.menu .menu-item a:hover .badge {
-  background-color: var(--main);
-  color: #eee;
-}
-#lokiBanner {
+.header canvas#lokiBanner {
   width: 100%;
   height: 100%;
   object-fit: cover;
   position: absolute;
   z-index: -1;
 }
+.header .header-inner {
+  padding-top: 40px;
+}
+.header .header-inner .main-menu a {
+  color: #eee;
+  transition: 1s;
+}
+.header .header-inner .main-menu a .badge {
+  transition: 1s;
+}
+.header .header-inner .main-menu a:hover,
+.header .header-inner .main-menu a.menu-item-active {
+  color: var(--main);
+  border-bottom: 1px solid var(--main);
+}
+.header .header-inner .main-menu a:hover .badge,
+.header .header-inner .main-menu a.menu-item-active .badge {
+  background-color: var(--main);
+  color: #eee;
+}
+a:hover {
+  color: var(--main);
+  border-bottom: 1px solid var(--main);
+}
+.site-nav-toggle .toggle,
+.site-nav-right .toggle {
+  color: #fff;
+}
 .site-nav-toggle .toggle .toggle-line,
 .site-nav-right .toggle .toggle-line {
   background: #fff;
-}
-.site-nav-right .toggle,
-.site-subtitle {
-  color: #fff;
 }
 /* ************main page imgbox */
 .main {
@@ -2977,6 +2981,9 @@ a:hover,
   padding: 30px;
   position: relative;
   z-index: 0;
+}
+.lokiIndex header.post-header {
+  margin-bottom: 10px;
 }
 .lokiIndex header,
 .lokiIndex .post-button,
@@ -3017,15 +3024,6 @@ a:hover,
 .post-block:nth-child(even)>.lokiIndex a.fancybox img {
   -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0) 25%, #000);
 }
-/* ***********footer */
-footer.footer {
-  background: #666;
-  color: #eee;
-  padding: 5px;
-}
-footer.footer i {
-  color: #eee;
-}
 /* **********article style */
 tbody tr:nth-of-type(even),
 thead tr {
@@ -3035,8 +3033,12 @@ blockquote {
   border-left-color: var(--main);
   background: rgba(233,30,99,0.071);
   font-size: 1rem;
-  padding: 5px 15px 0;
+  padding: 10px 15px;
+  margin-bottom: 20px;
   line-height: 1.5rem;
+}
+blockquote p {
+  margin-bottom: 10px;
 }
 .post-body h1 {
   border-bottom: 1px solid;
@@ -3063,7 +3065,11 @@ blockquote {
 .post-body p.image-caption {
   margin-top: -10px;
 }
-/* timeline style */
+.post-body ol,
+.post-body ul {
+  margin-bottom: 4rem;
+}
+/* archives style */
 .posts-collapse .post-content::before {
   background: var(--main);
   margin-left: -1px;
@@ -3071,7 +3077,7 @@ blockquote {
   opacity: 0.5;
 }
 .posts-collapse .post-content .collection-title::before,
-.posts-collapse .post-content .collection-year::before,
+.posts-collapse .post-content .posts-collapse .post-content .collection-year::before,
 .posts-collapse .post-content .post-header::before {
   background: var(--main);
 }
@@ -3089,4 +3095,51 @@ blockquote {
 .category-list>li>a {
   color: var(--main);
   font-weight: bold;
+}
+/* ***********side menu******* */
+.sidebar .sidebar-panel-container {
+  max-height: calc(100vh - 200px);
+}
+.sidebar .sidebar-panel-container::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar .sidebar-panel-container::-webkit-scrollbar-thumb {
+  background-color: var(--main);
+  border-radius: 2px;
+}
+.sidebar .back-to-top {
+  border: var(--main) 1px solid;
+  margin: 20px;
+  border-radius: 5px;
+  color: #fff;
+  position: relative;
+  line-height: 1.5;
+}
+.sidebar .back-to-top .lokiFull {
+  background: linear-gradient(var(--main) 0%, #bb1352 25%, var(--main) 70%);
+  position: absolute;
+  left: 0;
+  right: calc(100% - var(--progress));
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}
+/* ***********footer style */
+footer.footer {
+  background: #666;
+  color: #eee;
+  padding: 5px;
+}
+footer.footer i {
+  color: #eee;
+}
+footer.footer :not(.post-meta-break) + .post-meta-item::before {
+  content: none;
+}
+footer.footer .wordcount.busuanzi-count {
+  display: flex;
+  justify-content: space-between;
+}
+footer.footer .wordcount.busuanzi-count * {
+  flex: 0 1 auto;
 }

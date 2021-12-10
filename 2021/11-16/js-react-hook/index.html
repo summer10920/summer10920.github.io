@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Hook 是 React 自版本 16.8 開始推廣出來的新功能，主要是用於不需要 class 就能輕鬆使用 state 的方式。出現的動機主要是避免開發人員對於 class 的 this 定義容易混淆，且將使用邏輯更容易直接上手。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[學習之路] JS 前端框架 React - Hook">
+<meta property="og:url" content="http://summer10920.github.io/2021/11-16/js-react-hook/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="Hook 是 React 自版本 16.8 開始推廣出來的新功能，主要是用於不需要 class 就能輕鬆使用 state 的方式。出現的動機主要是避免開發人員對於 class 的 this 定義容易混淆，且將使用邏輯更容易直接上手。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
+<meta property="article:published_time" content="2021-11-16T03:59:04.000Z">
+<meta property="article:modified_time" content="2021-11-23T04:58:03.672Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="ReactJS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/iWnyS9n.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2021/11-16/js-react-hook/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2021/11-16/js-react-hook/","path":"2021/11-16/js-react-hook/","title":"[學習之路] JS 前端框架 React - Hook"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[學習之路] JS 前端框架 React - Hook | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">18</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">58</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          關於洛奇
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#useState"><span class="nav-number">1.</span> <span class="nav-text">useState</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%80%BC"><span class="nav-number">1.1.</span> <span class="nav-text">初始值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#useEffect"><span class="nav-number">2.</span> <span class="nav-text">useEffect</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%85%E9%99%A4-Effect"><span class="nav-number">2.1.</span> <span class="nav-text">清除 Effect</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#useEffect-%E6%B8%85%E9%99%A4%E6%99%82%E6%A9%9F"><span class="nav-number">2.1.1.</span> <span class="nav-text">useEffect 清除時機</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%AD%86%E5%B7%A5%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">多筆工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%96%84%E6%9C%80%E4%BD%B3%E5%8C%96"><span class="nav-number">2.3.</span> <span class="nav-text">改善最佳化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hook-%E8%A6%8F%E5%89%87"><span class="nav-number">3.</span> <span class="nav-text">Hook 規則</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E5%9C%A8%E6%9C%80%E4%B8%8A%E5%B1%A4%E5%91%BC%E5%8F%AB-Hook"><span class="nav-number">3.1.</span> <span class="nav-text">只在最上層呼叫 Hook</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E5%9C%A8-React-Function-%E4%B8%AD%E5%91%BC%E5%8F%AB-Hook"><span class="nav-number">3.2.</span> <span class="nav-text">只在 React Function 中呼叫 Hook</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ESList-%E8%BC%94%E5%8A%A9%E5%B7%A5%E5%85%B7"><span class="nav-number">3.3.</span> <span class="nav-text">ESList 輔助工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E8%A8%82-Hook"><span class="nav-number">4.</span> <span class="nav-text">自訂 Hook</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">5.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/images/loki_img.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll site-overview-item animated">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      友站連結
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+        </li>
+    </ul>
+  </div>
+
+          </div>
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+          <div class="lokiFull"></div>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2021/11-16/js-react-hook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/loki_img.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [學習之路] JS 前端框架 React - Hook
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間 ×2021-11-16 11:59:04" itemprop="dateCreated datePublished" datetime="2021-11-16T11:59:04+08:00">2021-11-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新於</span>
+        <time title="修改時間 ×2021-11-23 12:58:03" itemprop="dateModified" datetime="2021-11-23T12:58:03+08:00">2021-11-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Zero-Road/" itemprop="url" rel="index"><span itemprop="name">Zero Road</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Zero-Road/ReactJS/" itemprop="url" rel="index"><span itemprop="name">ReactJS</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數 ×</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數 ×</span>
+      <span>16679 <i>words</i></span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>30 <i>mins</i></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="https://i.imgur.com/iWnyS9n.png"><br>Hook 是 React 自版本 16.8 開始推廣出來的新功能，主要是用於不需要 class 就能輕鬆使用 state 的方式。出現的動機主要是避免開發人員對於 class 的 this 定義容易混淆，且將使用邏輯更容易直接上手。</p>
+<span id="more"></span>
+
+<p>Hook 本身也是一個多功能的巨集。未來 class 寫法也將被 React 的 hook 所取代。目前業界來說分別為新舊兩派正在使用 class 或 hook。想使用 hook 必須只能使用在 function 組件上，不能在 class 內使用（畢竟未來要捨棄 class)。Hook 可以在函式或函式型變數內使用。例如：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Example1</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 你可以在這裡使用 Hook！</span></span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> /&gt;</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Example2 = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 你可以在這裡使用 Hook！</span></span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span> /&gt;</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="useState"><a href="#useState" class="headerlink" title="useState"></a>useState</h1><p>利用 Hook 來使用 State，算是 Hook 最主要的功能。useState 本身是一個函式透過傳遞參數提供初始值後，將回傳該 state 與可修改之函式。以下提供 state hook 與 class 的差異寫法之處。</p>
+<div class="tabs" id="hookvsstate"><ul class="nav-tabs"><li class="tab active"><a href="#hookvsstate-1">state Hook</a></li><li class="tab"><a href="#hookvsstate-2">state Class</a></li></ul><div class="tab-content"><div class="tab-pane active" id="hookvsstate-1"><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Example</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 宣告一個新的 state 變數，我們稱作為「count」。</span></span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>You clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setCount(count + 1)&#125;&gt;</span></span><br><span class="line"><span class="xml">        Click me</span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(</span><br><span class="line">  <span class="xml"><span class="tag">&lt;<span class="name">Example</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="hookvsstate-2"><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">render</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>You clicked &#123;this.state.count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> this.setState(&#123;</span></span><br><span class="line"><span class="xml">          count: this.state.count + 1</span></span><br><span class="line"><span class="xml">        &#125;)&#125;&gt;</span></span><br><span class="line"><span class="xml">          Click me</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(</span><br><span class="line">  <span class="xml"><span class="tag">&lt;<span class="name">Example</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div></div></div>
+
+<p>很明顯 Hook 不用管太多 this 直接用就好。從上面範例上可以觀察到：</p>
+<ul>
+<li>使用 useState 需要從 react.js 匯入<code>&#123;useState&#125;</code>或<code>React.useState</code>。</li>
+<li>利用陣列解構來一次規劃兩個變數接住 state 與可更新的函式。</li>
+<li>useState 回傳的第一個內容為目前的 state，可使用自訂變數 count 接住，他等價 class 的 this.state.count</li>
+<li>useState 回傳的第二個內容為可更新 state 的函式，可使用自訂變數 setCount 接住，他等價 class 的 this.setState()</li>
+<li>這些變數不會因為 function 結束而消失，React 會保留這些 state 內容。</li>
+<li>觀察 JSX 的 p 標籤，function 內要讀取該 state 時直接使用即可，不用加什麼 this.state 等物件寫法。</li>
+<li>更新 state 的方式，從你指定的函式變數名稱來執行即可。</li>
+</ul>
+<p>如果你需要多個 state，就多筆使用 useState()。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ExampleWithManyStates</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 宣告多個 state 變數！</span></span><br><span class="line">  <span class="keyword">const</span> [age, setAge] = useState(<span class="number">42</span>);</span><br><span class="line">  <span class="keyword">const</span> [fruit, setFruit] = useState(<span class="string">&#x27;banana&#x27;</span>);</span><br><span class="line">  <span class="keyword">const</span> [todos, setTodos] = useState([&#123; <span class="attr">text</span>: <span class="string">&#x27;Learn Hooks&#x27;</span> &#125;]);</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Hook 的內建函式名稱幾乎都是 use 開頭，保持這個命名習慣如果你未來有自訂 Hook 函式。</p>
+</blockquote>
+<h2 id="初始值"><a href="#初始值" class="headerlink" title="初始值"></a>初始值</h2><p>提供初始值給useState時只有第一次render有用到，之後觸發的render渲染將被忽略此值，如果有需要複雜計算出初始值可以透過匿名函式回傳的組合寫法：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> [state, setState] = useState(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> initialState = someExpensiveComputation(props);</span><br><span class="line">  <span class="keyword">return</span> initialState;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h1 id="useEffect"><a href="#useEffect" class="headerlink" title="useEffect"></a>useEffect</h1><p>useEffect 是能讓你在組件內使用 Side Effect 副作用，對主調用函式產生附加的影響。useEffect 本身等價於生命週期的 componentDidMount, componentDidUpdate, componentWillUnmount 的組合用途，每當 react 對組件進行 render 時會觸發 useEffect 內的工作。</p>
+<blockquote>
+<p>使用 useEffect 時同樣的需要從 React.js 匯入獲得此函式。</p>
+</blockquote>
+<div class="tabs" id="hookvseffect"><ul class="nav-tabs"><li class="tab active"><a href="#hookvseffect-1">effect Hook</a></li><li class="tab"><a href="#hookvseffect-2">effect Class</a></li></ul><div class="tab-content"><div class="tab-pane active" id="hookvseffect-1"><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Example</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;clicked&#x27;</span>);</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;count&#125;</span> times`</span>;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>You clicked &#123;count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setCount(count + 1)&#125;&gt;</span></span><br><span class="line"><span class="xml">        Click me</span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(</span><br><span class="line">  <span class="xml"><span class="tag">&lt;<span class="name">Example</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="hookvseffect-2"><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">componentDidMount</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;click by Mount&#x27;</span>)</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;<span class="built_in">this</span>.state.count&#125;</span> times`</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">componentDidUpdate</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;click by Update&#x27;</span>)</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;<span class="built_in">this</span>.state.count&#125;</span> times`</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">render</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>You clicked &#123;this.state.count&#125; times<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> this.setState(&#123;</span></span><br><span class="line"><span class="xml">          count: this.state.count + 1</span></span><br><span class="line"><span class="xml">        &#125;)&#125;&gt;</span></span><br><span class="line"><span class="xml">          Click me</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(</span><br><span class="line">  <span class="xml"><span class="tag">&lt;<span class="name">Example</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div></div></div>
+
+<p>預設情況下，useEffect 在第一個 render 和隨後每一個更新之後執行。把 effect 想成發生在「render 之後」所觸發，而不是考慮「mount」和「update」的生命週期。 React 能保證 DOM 在執行 effect 時已被更新。</p>
+<h2 id="清除-Effect"><a href="#清除-Effect" class="headerlink" title="清除 Effect"></a>清除 Effect</h2><p>在原 React Class 的生命週期觀念中，我們會在 componentDidMount 當下設計一段動作事件，另外再 componentWillUnmount 時將該動作事件清除。舉例來說以下是 Class 的設計，利用假設的 ChatAPI 訂閱模組提供啟用與取消動作分別規劃在生命週期的掛載與卸除上：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FriendStatus</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">props</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(props);</span><br><span class="line">    <span class="built_in">this</span>.state = &#123; <span class="attr">isOnline</span>: <span class="literal">null</span> &#125;;</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange = <span class="built_in">this</span>.handleStatusChange.bind(<span class="built_in">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">componentDidMount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(</span><br><span class="line">      <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">      <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">    );</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Mount&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">componentWillUnmount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    ChatAPI.unsubscribeFromFriendStatus( </span><br><span class="line">      <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">      <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">    );</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Unount&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">handleStatusChange</span>(<span class="params">status</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.setState(&#123;</span><br><span class="line">      <span class="attr">isOnline</span>: status.isOnline</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">render</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.state.isOnline === <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">&#x27;Loading...&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.state.isOnline ? <span class="string">&#x27;Online&#x27;</span> : <span class="string">&#x27;Offline&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同樣的需求，使用 Hook useEffect 來完成，關鍵的卸除部分為透過對 useEffect() 完成一個 return 自訂函式來達到。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendStatus</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [isOnline, setIsOnline] = useState(<span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&#x27;Mount&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 指定如何在這個 effect 之後執行清除：</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">cleanup</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">&#x27;Unmount&#x27;</span>);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isOnline === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Loading...&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> isOnline ? <span class="string">&#x27;Online&#x27;</span> : <span class="string">&#x27;Offline&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果試著操作觀察兩者的 console.log，可以發現先前介紹 class 時的生命週期只會一次，因此除非觸發 ReactDOM.unmountComponentAtNode() 來卸載 DOM 否則<code>console.log(&#39;Unount&#39;)</code>不會執行。</p>
+<p>但 useEffect 不一樣，每次 effect 被 render 執行時會清除前一次的 effect 被迫卸載，原因於每次重新 render 時，React 都會安排另一個不同 effect 來替代上一個。這使 effect 的行為像是 render 結果的一部分，這是一種優點能避免 BUG 或效能問題。</p>
+<p>useEffect 也可以選擇回傳對象為一匿名箭頭函式，或者不回傳（不綁訂清除時動作）。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">    setIsOnline(status.isOnline);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">  <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//...</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;count&#125;</span> times`</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="useEffect-清除時機"><a href="#useEffect-清除時機" class="headerlink" title="useEffect 清除時機"></a>useEffect 清除時機</h3><p>接著來探討清除（卸載的）時機點為當下一個 render 觸發後才會執行。卻不如生命週期那樣被 unmount 時執行一次就好。整體來說是為了避免記憶體資料錯亂的問題減少 BUG 發生。舉例來說前面出現的好友狀態 API 存在瑕疵性：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">componentDidMount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  ChatAPI.subscribeToFriendStatus(</span><br><span class="line">    <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">componentWillUnmount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  ChatAPI.unsubscribeFromFriendStatus(</span><br><span class="line">    <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果發生以下動作：</p>
+<ol>
+<li>這個畫面被 render 了觸發 mount 而產生了好友 A 的狀態。</li>
+<li>此時 props 的 id 更改成好友 B，也就是導致會繼續顯示好友 B 的狀態。</li>
+<li>接著觸發關 DOM 進行卸載，只能取消訂閱好友 B 而好友 A 的狀態就卡在記憶體內了。</li>
+</ol>
+<p>因此，class 設計時還要補上發生 update(props 改變）的退訂與加訂動作。忘記處理這部分是很常見的致命錯誤。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">  <span class="function"><span class="title">componentDidMount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  ChatAPI.subscribeToFriendStatus(</span><br><span class="line">    <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">componentDidUpdate</span>(<span class="params">prevProps</span>)</span> &#123;</span><br><span class="line">  <span class="comment">// 從先前的 friend.id 取消訂閱</span></span><br><span class="line">  ChatAPI.unsubscribeFromFriendStatus(</span><br><span class="line">    prevProps.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">  <span class="comment">// 訂閱下一個 friend.id</span></span><br><span class="line">  ChatAPI.subscribeToFriendStatus(</span><br><span class="line">    <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="title">componentWillUnmount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  ChatAPI.unsubscribeFromFriendStatus(</span><br><span class="line">    <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以討論到這，使用 Hook 的 useEffect 就沒有這困擾，每次的 render 都是另一個 Effect。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendStatus</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假設自 render 開始，隨 props 初始從 100 變化 200 接著 300 最後卸除。其 useEffect 所帶來的時間執行過程變成以下順序：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Mount with &#123; friend: &#123; id: 100 &#125; &#125; props</span></span><br><span class="line">ChatAPI.subscribeToFriendStatus(<span class="number">100</span>, handleStatusChange);     <span class="comment">// 執行第一個 effect</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Update with &#123; friend: &#123; id: 200 &#125; &#125; props</span></span><br><span class="line">ChatAPI.unsubscribeFromFriendStatus(<span class="number">100</span>, handleStatusChange); <span class="comment">// 清除前一個 effect</span></span><br><span class="line">ChatAPI.subscribeToFriendStatus(<span class="number">200</span>, handleStatusChange);     <span class="comment">// 執行下一個 effect</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Update with &#123; friend: &#123; id: 300 &#125; &#125; props</span></span><br><span class="line">ChatAPI.unsubscribeFromFriendStatus(<span class="number">200</span>, handleStatusChange); <span class="comment">// 清除前一個 effect</span></span><br><span class="line">ChatAPI.subscribeToFriendStatus(<span class="number">300</span>, handleStatusChange);     <span class="comment">// 執行下一個 effect</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Unmount</span></span><br><span class="line">ChatAPI.unsubscribeFromFriendStatus(<span class="number">300</span>, handleStatusChange); <span class="comment">// 清除最後一個 effect</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="多筆工作"><a href="#多筆工作" class="headerlink" title="多筆工作"></a>多筆工作</h2><p>對於 class 在使用生命週期時，當需組合多個任務時，只需單純在於各項階段掛載時的多筆工作。舉例前例整合了記數改變網頁標題與好友狀態 api 兩項工作。</p>
+<p><strong>網頁標題</strong></p>
+<ul>
+<li>掛載時，改變網頁標題並使用</li>
+<li>變化時，改變網頁標題並使用</li>
+</ul>
+<p><strong>好友狀態</strong></p>
+<ul>
+<li>掛載時，確認好友狀態資訊</li>
+<li>卸除時，取消好友狀態資訊</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FriendStatusWithCounter</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">props</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(props);</span><br><span class="line">    <span class="built_in">this</span>.state = &#123; <span class="attr">count</span>: <span class="number">0</span>, <span class="attr">isOnline</span>: <span class="literal">null</span> &#125;;</span><br><span class="line">    <span class="built_in">this</span>.handleStatusChange = <span class="built_in">this</span>.handleStatusChange.bind(<span class="built_in">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">componentDidMount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;<span class="built_in">this</span>.state.count&#125;</span> times`</span>; <span class="comment">//job A: mount</span></span><br><span class="line">    ChatAPI.subscribeToFriendStatus( <span class="comment">//job B: mount</span></span><br><span class="line">      <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">      <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">componentDidUpdate</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;<span class="built_in">this</span>.state.count&#125;</span> times`</span>;  <span class="comment">//job A: update</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">componentWillUnmount</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    ChatAPI.unsubscribeFromFriendStatus( <span class="comment">//job B: unmount</span></span><br><span class="line">      <span class="built_in">this</span>.props.friend.id,</span><br><span class="line">      <span class="built_in">this</span>.handleStatusChange</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">handleStatusChange</span>(<span class="params">status</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.setState(&#123;</span><br><span class="line">      <span class="attr">isOnline</span>: status.isOnline</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果在 Hook 的 useEffect 使用方式，由於 useEffect 本身就是具備掛載、更新、卸除（透過 return) 的獨立項目。因此只需要利用多組 useEffect 來完成多筆工作。修改如下：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendStatusWithCounter</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = useState(<span class="number">0</span>);</span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;  <span class="comment">//job A: mount, update</span></span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;count&#125;</span> times`</span>;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [isOnline, setIsOnline] = useState(<span class="literal">null</span>);</span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123; <span class="comment">//job B: mount, unmount</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="改善最佳化"><a href="#改善最佳化" class="headerlink" title="改善最佳化"></a>改善最佳化</h2><p>在 class 的生命週期操作上每次 render 時都會觸發 update 工作，效能上會比較糟糕。而 class 的解決方式就是想辦法透過 prevProps 或 prevState 來檢查上次與目前的實際值是否變化才決定是否執行：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">componentDidUpdate</span>(<span class="params">prevProps, prevState</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (prevState.count !== <span class="built_in">this</span>.state.count) &#123;</span><br><span class="line">    <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;<span class="built_in">this</span>.state.count&#125;</span> times`</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但在 Hook 的 useEffect 已經加入此設計。只需要在 useEffect 第二個參數提供一陣列（也就是可以確認多筆值），每次 update 時 React 會從上一個 useEffect 與目前 useEffect 的這部分陣列是否一致。如果相同則會自動忽略此 update：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line">useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">document</span>.title = <span class="string">`You clicked <span class="subst">$&#123;count&#125;</span> times`</span>;</span><br><span class="line">&#125;, [count]); <span class="comment">// 僅在計數更改時才重新執行 effect</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">    setIsOnline(status.isOnline);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">  <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;, [props.friend.id]); <span class="comment">// 僅在 props.friend.id 改變時重新訂閱</span></span><br></pre></td></tr></table></figure>
+
+<p>舉第一例來說原本 count=5，第一次被 Mount 時 useEffect 這裡提供了 [5]，下次 render 時如果 count 不變，React 比對前後這部分 [5] 與 [5] 因無變化而忽略這個 effect。如果 count 改為 6 而 render 當下因為 [5] 與 [6] 不相同 React 會重新執行此 effect。第二例的清除設計也是一樣。</p>
+<blockquote>
+<p>React 的動作會先 render 再執行 useEffect。</p>
+</blockquote>
+<ul>
+<li>使用此最佳化，通常都是第二參數內是可變化的像是 props 或 state。否則他可能會沒意義的保持舊值不變化檢查 update 時是否執行，只剩 mount 與 unmount 的部分。</li>
+<li>如果就是不想檢查 update 的設計可以指定空陣列 []，也就成為不會因 update 而執行的 Effect，他只剩 mount 與 unmount 的部分（其實有其他方法）。但這樣的設計就等於之前 class 的 bug 隱患問題。</li>
+</ul>
+<h1 id="Hook-規則"><a href="#Hook-規則" class="headerlink" title="Hook 規則"></a>Hook 規則</h1><p>Hook 本身只是 React 開發出來的 javascrtipt 函式作為使用。因此重點說明使用 Hook 該注意的規則經驗。主要有兩個部分。</p>
+<h2 id="只在最上層呼叫-Hook"><a href="#只在最上層呼叫-Hook" class="headerlink" title="只在最上層呼叫 Hook"></a>只在最上層呼叫 Hook</h2><p>不要在迴圈、條件式或是巢狀的 function 內的地方使用 Hook。你只會在組件內的第一層直接使用它。React 才能 useState 和 useEffect 之間呼叫 state。</p>
+<p>舉例來說，我們符合規則使用 2 組 useState 與 useEffect，並觀察它的執行時間過程。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Form</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 1. 使用 name state 變數</span></span><br><span class="line">  <span class="keyword">const</span> [name, setName] = useState(<span class="string">&#x27;Mary&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 使用一個 effect 來保存表單</span></span><br><span class="line">  useEffect(<span class="function"><span class="keyword">function</span> <span class="title">persistForm</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">localStorage</span>.setItem(<span class="string">&#x27;formData&#x27;</span>, name);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3. 使用 surname state 變數</span></span><br><span class="line">  <span class="keyword">const</span> [surname, setSurname] = useState(<span class="string">&#x27;Poppins&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4. 使用一個 effect 來更新標題</span></span><br><span class="line">  useEffect(<span class="function"><span class="keyword">function</span> <span class="title">updateTitle</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.title = name + <span class="string">&#x27; &#x27;</span> + surname;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>React 會仰賴於 Hook 被呼叫的順序，因此 Effect 能準確地執行獲得 state 值將他們聯繫一起。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ------------</span></span><br><span class="line"><span class="comment">// 第一次 render</span></span><br><span class="line"><span class="comment">// ------------</span></span><br><span class="line">useState(<span class="string">&#x27;Mary&#x27;</span>)           <span class="comment">// 1. 用 &#x27;Mary&#x27; 來初始化 name state 變數</span></span><br><span class="line">useEffect(persistForm)     <span class="comment">// 2. 增加一個 effect 來保存表單</span></span><br><span class="line">useState(<span class="string">&#x27;Poppins&#x27;</span>)        <span class="comment">// 3. 用 &#x27;Poppins&#x27; 來初始化 surname state 變數</span></span><br><span class="line">useEffect(updateTitle)     <span class="comment">// 4. 增加一個 effect 來更新標題</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// -------------</span></span><br><span class="line"><span class="comment">// 第二次 render</span></span><br><span class="line"><span class="comment">// -------------</span></span><br><span class="line">useState(<span class="string">&#x27;Mary&#x27;</span>)           <span class="comment">// 1. 讀取 name state 變數 （參數被忽略了）</span></span><br><span class="line">useEffect(persistForm)     <span class="comment">// 2. 替換了用來保存表單的 effect</span></span><br><span class="line">useState(<span class="string">&#x27;Poppins&#x27;</span>)        <span class="comment">// 3. 讀取 surname state 變數 （參數被忽略了）</span></span><br><span class="line">useEffect(updateTitle)     <span class="comment">// 4. 替換了用來更新標題的 effect</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<p>反之，將其中的 useEffect 放置在某判斷式底下。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 🔴 我們違反了第一個規則，在條件式中使用 Hook</span></span><br><span class="line"><span class="keyword">if</span> (name !== <span class="string">&#x27;&#x27;</span>) &#123;</span><br><span class="line">  useEffect(<span class="function"><span class="keyword">function</span> <span class="title">persistForm</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">localStorage</span>.setItem(<span class="string">&#x27;formData&#x27;</span>, name);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>假設一開始成立，使得第一次 render 獲得 4 筆。其後因為使用者操作為<code>name=&#39;&#39;</code>，這會影響 React 的 update 時找不到第二個 hook(useEffect)，前一次與這次的順序整個無法對應上，導致發生問題。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ------------</span></span><br><span class="line"><span class="comment">// 第一次 render</span></span><br><span class="line"><span class="comment">// ------------</span></span><br><span class="line">useState(<span class="string">&#x27;Mary&#x27;</span>)           <span class="comment">// 1. 用 &#x27;Mary&#x27; 來初始化 name state 變數</span></span><br><span class="line">useEffect(persistForm)     <span class="comment">// 2. 增加一個 effect 來保存表單</span></span><br><span class="line">useState(<span class="string">&#x27;Poppins&#x27;</span>)        <span class="comment">// 3. 用 &#x27;Poppins&#x27; 來初始化 surname state 變數</span></span><br><span class="line">useEffect(updateTitle)     <span class="comment">// 4. 增加一個 effect 來更新標題</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// -------------</span></span><br><span class="line"><span class="comment">// 第二次 render</span></span><br><span class="line"><span class="comment">// -------------</span></span><br><span class="line">useState(<span class="string">&#x27;&#x27;</span>)           <span class="comment">// 1. 讀取 name state 變數 （參數被忽略了）</span></span><br><span class="line"><span class="comment">// useEffect(persistForm)  // 這個 Hook 被跳過了！</span></span><br><span class="line">useState(<span class="string">&#x27;Poppins&#x27;</span>)        <span class="comment">// 2 （但之前是 3). 未能讀取 surname state 變數</span></span><br><span class="line">useEffect(updateTitle)     <span class="comment">// 3 （但之前是 4). 未能取代 effect</span></span><br></pre></td></tr></table></figure>
+
+<p>因此，既使你不想執行內容也得確保每次 render 的筆數順序不會產生無法對應之問題。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">useEffect(<span class="function"><span class="keyword">function</span> <span class="title">persistForm</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 👍 我們不再違反第一個規則</span></span><br><span class="line">  <span class="keyword">if</span> (name !== <span class="string">&#x27;&#x27;</span>) &#123;</span><br><span class="line">    <span class="built_in">localStorage</span>.setItem(<span class="string">&#x27;formData&#x27;</span>, name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="只在-React-Function-中呼叫-Hook"><a href="#只在-React-Function-中呼叫-Hook" class="headerlink" title="只在 React Function 中呼叫 Hook"></a>只在 React Function 中呼叫 Hook</h2><p>也就 React 的函式型組件內去使用它或者自訂 Hook，不要在普通的函式內使用。因為 React 設計它拿來做為組件內的功能用途。這部分不做解說。</p>
+<h2 id="ESList-輔助工具"><a href="#ESList-輔助工具" class="headerlink" title="ESList 輔助工具"></a>ESList 輔助工具</h2><p>如果你有使用 ESLint 來協助開發環境，可透過以下插件來增加 Hook 對上列 2 個條件增加規則限制：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install eslint-plugin-react-hooks --save-dev</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 你的 ESLint 配置</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;plugins&quot;</span>: [</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="string">&quot;react-hooks&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;rules&quot;</span>: &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="attr">&quot;react-hooks/rules-of-hooks&quot;</span>: <span class="string">&quot;error&quot;</span>, <span class="comment">// 檢查 Hook 的規則</span></span><br><span class="line">    <span class="attr">&quot;react-hooks/exhaustive-deps&quot;</span>: <span class="string">&quot;warn&quot;</span> <span class="comment">// 檢查 effect 的相依性</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="自訂-Hook"><a href="#自訂-Hook" class="headerlink" title="自訂 Hook"></a>自訂 Hook</h1><p>比較簡單的說法為，透過自訂一個 function 將使用 state 的相同邏輯做成一個 use 名稱的 hook 函式。讓這個函式本身符合 hook 規則（只能被上層呼叫且提供給 function 組件使用）。</p>
+<p>舉例以下說明：有兩個函式組件透過某一邏輯使用到 useState 與 useEffect 做一個結果後的不同 return，而這邏輯內容一致：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//提供好友 id，告知是否在線上</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendStatus</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">//same code start</span></span><br><span class="line">  <span class="keyword">const</span> [isOnline, setIsOnline] = useState(<span class="literal">null</span>);</span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="comment">//same code end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isOnline === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Loading...&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> isOnline ? <span class="string">&#x27;Online&#x27;</span> : <span class="string">&#x27;Offline&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//提供好友 id，回傳 li 元素並標示狀況顏色</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendListItem</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">//same code start</span></span><br><span class="line">  <span class="keyword">const</span> [isOnline, setIsOnline] = useState(<span class="literal">null</span>);</span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="comment">//same code end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">li</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span> <span class="attr">color:</span> <span class="attr">isOnline</span> ? &#x27;<span class="attr">green</span>&#x27; <span class="attr">:</span> &#x27;<span class="attr">black</span>&#x27; &#125;&#125;&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.friend.name&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此我們可以試著將這些有使用到 Hook 處理過程抽取成為一個自訂的 Hook，命名上使用 use 開頭能確保提醒自己或工具這需要符合 Hook 規則。利用 return 將所需要的 state 值提供回來。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//自訂 Hook，並以 use 開頭命名</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">useFriendCheck</span>(<span class="params">friendID</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [isOnline, setIsOnline] = useState(<span class="literal">null</span>);</span><br><span class="line">  useEffect(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">handleStatusChange</span>(<span class="params">status</span>) </span>&#123;</span><br><span class="line">      setIsOnline(status.isOnline);</span><br><span class="line">    &#125;</span><br><span class="line">    ChatAPI.subscribeToFriendStatus(friendId, handleStatusChange);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      ChatAPI.unsubscribeFromFriendStatus(friendId, handleStatusChange);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> isOnline;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//提供好友 id，告知是否在線上</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendStatus</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">//same code start</span></span><br><span class="line">  <span class="keyword">const</span> isOnline = useFriendCheck(props.friend.id);</span><br><span class="line">  <span class="comment">//same code end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (isOnline === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Loading...&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> isOnline ? <span class="string">&#x27;Online&#x27;</span> : <span class="string">&#x27;Offline&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//提供好友 id，回傳 li 元素並標示狀況顏色</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">FriendListItem</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="comment">//same code start</span></span><br><span class="line">  <span class="keyword">const</span> isOnline = useFriendCheck(props.friend.id);</span><br><span class="line">  <span class="comment">//same code end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">li</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span> <span class="attr">color:</span> <span class="attr">isOnline</span> ? &#x27;<span class="attr">green</span>&#x27; <span class="attr">:</span> &#x27;<span class="attr">black</span>&#x27; &#125;&#125;&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.friend.name&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基本的自訂 Hook 已完成，有以下特性需注意：</p>
+<ul>
+<li>自訂 Hook 可以內不去使用原有的 Hook 函式，自訂 Hook 只是一個普通 function。</li>
+<li>自訂 Hook 命名 use 開頭有提醒規則之用途（包含工具辨識）。</li>
+<li>不同組件使用同自訂 Hook 為彼此獨立，自訂 Hook 本身只是一個函式無特別之處。因此不同組件其邏輯操作到的 useState 與 useEffect 獨立不共享。</li>
+</ul>
+<p>我們也能對自訂 Hook 傳遞一個可變的像是上層 state 進去，促使下次該組件進行渲染時執行觸發獲得可變的 return 回來。下面為當上層 state 提供數字給自訂 useFriendCheck 能協助回應上線之狀態結果。下次當觸發修改 state 時又會從自訂 useFriendCheck 獲得另一個結果。而 useEffect 每次執行獨立性，前一個好友狀態會再下一次的 useEffect 執行而自動取消本次 useEffect 觸發 unsubscribeFromFriendStatus。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> friendList = [</span><br><span class="line">  &#123; <span class="attr">id</span>: <span class="number">1</span>, <span class="attr">name</span>: <span class="string">&#x27;Phoebe&#x27;</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">id</span>: <span class="number">2</span>, <span class="attr">name</span>: <span class="string">&#x27;Rachel&#x27;</span> &#125;,</span><br><span class="line">  &#123; <span class="attr">id</span>: <span class="number">3</span>, <span class="attr">name</span>: <span class="string">&#x27;Ross&#x27;</span> &#125;,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ChatRecipientPicker</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [recipientID, setRecipientID] = useState(<span class="number">1</span>);</span><br><span class="line">  <span class="keyword">const</span> isOnline = useFriendCheck(recipientID);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">Circle</span> <span class="attr">color</span>=<span class="string">&#123;isOnline</span> ? &#x27;<span class="attr">green</span>&#x27; <span class="attr">:</span> &#x27;<span class="attr">red</span>&#x27;&#125; /&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">select</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">        <span class="attr">value</span>=<span class="string">&#123;recipientID&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">        <span class="attr">onChange</span>=<span class="string">&#123;e</span> =&gt;</span> setRecipientID(Number(e.target.value))&#125;</span></span><br><span class="line"><span class="xml">      &gt;</span></span><br><span class="line"><span class="xml">        &#123;friendList.map(friend =&gt; (</span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">option</span> <span class="attr">key</span>=<span class="string">&#123;friend.id&#125;</span> <span class="attr">value</span>=<span class="string">&#123;friend.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">            &#123;friend.name&#125;</span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;/<span class="name">option</span>&gt;</span></span></span><br><span class="line"><span class="xml">        ))&#125;</span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.npmjs.com/package/eslint-plugin-react-hooks#installation">eslint-plugin-react-hooks</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/facebook/react/issues/14920">[ESLint] Feedback for ‘exhaustive-deps’ lint rule </a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/tags/ReactJS/" rel="tag"># ReactJS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/11-09/js-react-3/" rel="prev" title="[學習之路] JS 前端框架 React - 井字遊戲">
+                  <i class="fa fa-chevron-left"></i> [學習之路] JS 前端框架 React - 井字遊戲
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/11-23/js-react-4/" rel="next" title="[學習之路] JS 前端框架 React - 高級">
+                  [學習之路] JS 前端框架 React - 高級 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  <span>
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+  </span>
+
+  <span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2021</span> All rights reserved.
+  </span>
+</div>
+<div class="wordcount busuanzi-count">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="全站總字數">1476892 <i>words</i></span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+  </span>
+  <span class="post-meta-item" id="busuanzi_container_site_uv">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="訪客總數">
+      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
+    </span>
+  </span>
+  <span class="post-meta-item" id="busuanzi_container_site_pv">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="總瀏覽次數">
+      <span id="busuanzi_value_site_pv"></span><i> watched</i>
+    </span>
+  </span>
+</div>
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/js/loki.js"></script>
+
+</body>
+</html>
