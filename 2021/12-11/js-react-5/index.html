@@ -21,28 +21,31 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="PHP 能將程式碼分成多個 *.php 格式檔案透過匯入或加載的方式進行代碼整合，能適用在分工作業或特殊應用。請開始在 Web 目錄下新增檔案 3_content.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta name="description" content="本篇介紹 Sass 這套預處理器，他能將大型專案上編寫 CSS 不易維護的問題進行改善。使用 Sass 的 Script 語言來進行 CSS 開發，再透過編譯 complier 後轉為瀏覽器可閱讀的 CSS。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[基礎課程] PHP 匯入與加載">
-<meta property="og:url" content="http://summer10920.github.io/2020/05-12/php-baseclass-3/">
+<meta property="og:title" content="[學習之路] JS 前端框架 React - 深入">
+<meta property="og:url" content="http://summer10920.github.io/2021/12-11/js-react-5/">
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
-<meta property="og:description" content="PHP 能將程式碼分成多個 *.php 格式檔案透過匯入或加載的方式進行代碼整合，能適用在分工作業或特殊應用。請開始在 Web 目錄下新增檔案 3_content.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta property="og:description" content="本篇介紹 Sass 這套預處理器，他能將大型專案上編寫 CSS 不易維護的問題進行改善。使用 Sass 的 Script 語言來進行 CSS 開發，再透過編譯 complier 後轉為瀏覽器可閱讀的 CSS。">
 <meta property="og:locale" content="zh_TW">
-<meta property="article:published_time" content="2020-05-11T17:35:51.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.226Z">
+<meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
+<meta property="article:published_time" content="2021-12-10T17:51:06.000Z">
+<meta property="article:modified_time" content="2021-12-10T17:53:55.789Z">
 <meta property="article:author" content="Loki Jiang">
-<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="ReactJS">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/iWnyS9n.png">
 
 
-<link rel="canonical" href="http://summer10920.github.io/2020/05-12/php-baseclass-3/">
+<link rel="canonical" href="http://summer10920.github.io/2021/12-11/js-react-5/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/05-12/php-baseclass-3/","path":"2020/05-12/php-baseclass-3/","title":"[基礎課程] PHP 匯入與加載"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2021/12-11/js-react-5/","path":"2021/12-11/js-react-5/","title":"[學習之路] JS 前端框架 React - 深入"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>[基礎課程] PHP 匯入與加載 | 洛奇的邪惡組織手札</title>
+<title>[學習之路] JS 前端框架 React - 深入 | 洛奇的邪惡組織手札</title><meta name="robots" content="noindex">
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false}</script>
@@ -154,7 +157,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%AF%E5%85%A5%E6%AA%94%E6%A1%88%E7%9A%84%E7%94%A8%E9%80%94%E6%8A%80%E5%B7%A7"><span class="nav-number">1.</span> <span class="nav-text">匯入檔案的用途技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#include-%E5%92%8C-include-once"><span class="nav-number">2.</span> <span class="nav-text">include 和 include_once</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#require-%E5%92%8C-require-once"><span class="nav-number">3.</span> <span class="nav-text">require 和 require_once</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#include-vs-require"><span class="nav-number">4.</span> <span class="nav-text">include vs require</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B6%B2%E5%9D%80%E4%B8%8A%E7%9A%84%E5%8F%AF%E8%A6%8B%E8%AE%8A%E6%95%B8"><span class="nav-number">5.</span> <span class="nav-text">網址上的可見變數</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8B%E5%96%84%E5%8C%96%E7%B6%B2%E9%A0%81"><span class="nav-number">1.</span> <span class="nav-text">友善化網頁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WAI-ARIA"><span class="nav-number">1.1.</span> <span class="nav-text">WAI-ARIA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AA%9E%E6%84%8F%E6%A8%99%E7%B1%A4-%E8%88%87-Fragment"><span class="nav-number">1.2.</span> <span class="nav-text">語意標籤 與 Fragment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML5-%E8%A1%A8%E5%96%AE%E6%A9%9F%E5%88%B6"><span class="nav-number">1.3.</span> <span class="nav-text">HTML5 表單機制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%AA%E8%AE%80"><span class="nav-number">2.</span> <span class="nav-text">未讀</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -246,7 +249,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
-    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/05-12/php-baseclass-3/">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2021/12-11/js-react-5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
@@ -259,7 +262,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [基礎課程] PHP 匯入與加載
+          [學習之路] JS 前端框架 React - 深入
         </h1>
 
         <div class="post-meta-container">
@@ -269,27 +272,21 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
+      
 
-      <time title="創建時間 ×2020-05-12 01:35:51" itemprop="dateCreated datePublished" datetime="2020-05-12T01:35:51+08:00">2020-05-12</time>
+      <time title="創建時間 ×2021-12-11 01:51:06 / 修改時間 ×01:53:55" itemprop="dateCreated datePublished" datetime="2021-12-11T01:51:06+08:00">2021-12-11</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
-      </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分類於</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+          <a href="/categories/Zero-Road/" itemprop="url" rel="index"><span itemprop="name">Zero Road</span></a>
         </span>
           , 
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/PHP-MySQL/" itemprop="url" rel="index"><span itemprop="name">PHP/MySQL</span></a>
+          <a href="/categories/Zero-Road/Web-Fronted/" itemprop="url" rel="index"><span itemprop="name">Web Fronted</span></a>
         </span>
     </span>
 
@@ -307,14 +304,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>3333 <i>words</i></span>
+      <span>1833 <i>words</i></span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>6 <i>mins</i></span>
+      <span>3 <i>mins</i></span>
     </span>
 </div>
 
@@ -325,73 +322,32 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>PHP 能將程式碼分成多個 <code>*.php</code> 格式檔案透過匯入或加載的方式進行代碼整合，能適用在分工作業或特殊應用。請開始在 Web 目錄下新增檔案 <strong>3_content.php</strong>，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。</p>
+        <p><img src="https://i.imgur.com/iWnyS9n.png"><br>本篇介紹 Sass 這套預處理器，他能將大型專案上編寫 CSS 不易維護的問題進行改善。使用 Sass 的 Script 語言來進行 CSS 開發，再透過編譯 complier 後轉為瀏覽器可閱讀的 CSS。</p>
 <span id="more"></span>
 
-<div class="note primary"><p><strong>素材準備：準備資料以方便下階段的教學練習</strong> </p>
-<ul>
-<li>參考複製維基百科的電影資料，並設計一個電影資訊畫面。用 php 變數儲存以下項目：<ul>
-<li><code>$name</code> //電影名稱</li>
-<li><code>$info</code> //簡介</li>
-<li><code>$image</code> //圖片名稱</li>
-<li><code>$userlist</code> //演員名單，多筆用<code>&lt;li&gt;&lt;/li&gt;</code>包住並列表</li>
-</ul>
-</li>
-<li>設計一個簡單的 HTML+TAG，有上面四項的顯示</li>
-<li>然後變數帶到 HTML 內抽換使用<?= ?>。並嘗試用一些 style 去調整美化<figure class="highlight php"><figcaption><span>3_content.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="variable">$name</span>=<span class="string">&quot;復仇者聯盟&quot;</span>;</span><br><span class="line">  <span class="variable">$info</span>=<span class="string">&quot;《&lt;b&gt;復仇者聯盟&lt;/b&gt;》（英文：The Avengers）係一部 2012 年嘅美國電影，由 John Moore 執導兼編劇，Robert Downey Jr.、Chris Evans、Mark Ruffalo、Chris Hemsworth、Scarlett Johansson、Jeremy Renner、Tom Hiddleston、Clark Gregg、Cobie Smulders、Stellan Skarsgård、Samuel L. Jackson 主演。&quot;</span>;</span><br><span class="line">  <span class="variable">$userlist</span>=<span class="string">&quot;</span></span><br><span class="line"><span class="string">    &lt;li&gt;鋼鐵人&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;蜘蛛人&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;美國隊長&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;蟻人&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;雷神索爾&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;黑寡婦&lt;/li&gt;</span></span><br><span class="line"><span class="string">    &lt;li&gt;綠巨人浩克&lt;/li&gt;</span></span><br><span class="line"><span class="string">  &quot;</span>;</span><br><span class="line">  <span class="variable">$image</span>=<span class="string">&quot;img.jpg&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;img src=<span class="string">&quot;&lt;?=<span class="subst">$image</span>?&gt;&quot;</span> style=<span class="string">&quot;float:right;margin:10px;border:20px solid #cc0&quot;</span>&gt;</span><br><span class="line">&lt;h1 style=<span class="string">&quot;padding-top:30px&quot;</span>&gt;<span class="meta">&lt;?=</span><span class="variable">$name</span><span class="meta">?&gt;</span>&lt;/h1&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;p&gt;<span class="meta">&lt;?=</span><span class="variable">$info</span><span class="meta">?&gt;</span>&lt;/p&gt;</span><br><span class="line">&lt;h1 style=<span class="string">&quot;padding-top:30px&quot;</span>&gt;演員表&lt;/h1&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;ul&gt;<span class="meta">&lt;?=</span><span class="variable">$userlist</span><span class="meta">?&gt;</span>&lt;/ul&gt;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</div>
 
-<hr>
-<h1 id="匯入檔案的用途技巧"><a href="#匯入檔案的用途技巧" class="headerlink" title="匯入檔案的用途技巧"></a>匯入檔案的用途技巧</h1><p>匯入檔案的意思是，你有一個 A.php 跟 B.php，在 A 的#code 裡面某處塞了一個指定函數帶入 B，這時候整個讀取效果等於 A 的#code 裡面有 B 的#code。這是很常見的做法且有不同的考量或優勢，簡單舉幾個例子：</p>
-<ul>
-<li>分工作業上可以把一個完整 php，分開變成 A.php+B.php+C.php，進行團隊分工設計，最後再匯入合併顯示。</li>
-<li>相同的 A.php 頁首頁尾風格，不一樣主題元件的 B.php 跟 C.php，設計更快風格也易修改。</li>
-<li>隱藏不想被知道的 B.php 路徑名稱。透過匯入讓被知道的永遠只有 A.php</li>
-<li>將元件函式庫模組放在 B.php，需要才匯入，管理起來像積木一樣彈性。</li>
-</ul>
-<hr>
-<h1 id="include-和-include-once"><a href="#include-和-include-once" class="headerlink" title="include 和 include_once"></a>include 和 include_once</h1><ul>
-<li>PHP 執行每行過程中讀到 include 的檔案時才將它讀進來。這種方式，可以把程式執行時的流程簡單化。</li>
-<li>include_once 會先檢查此引入檔案的內容是不是在之前就已經引入過了；如果是的話，便不會再次重複引入同樣的內容。可避免相同變數被異動發生非預期結果。</li>
-</ul>
-<hr>
-<h1 id="require-和-require-once"><a href="#require-和-require-once" class="headerlink" title="require 和 require_once"></a>require 和 require_once</h1><p>跟 include 有相同的過程，但執行的觸發時機不同，PHP 執行前就會先讀入 require 檔案，使它變成 PHP 程式網頁的一部份。常用函式可寫成一個函式庫檔案，然後用這個方法將它引入網頁中。</p>
-<hr>
-<h1 id="include-vs-require"><a href="#include-vs-require" class="headerlink" title="include vs require"></a>include vs require</h1><ul>
-<li>如果你需要運算後的判斷是否匯入，用 include（因為 require 的觸發時機早已結束）</li>
-<li>引不到 require 檔案會出現錯誤息，同時整個 php 程式會停止執行並失敗的中斷。</li>
-<li>引不到 include 檔案會出現錯誤息，同時整個 php 程式會跳過繼續往後執行帶警告。</li>
-<li>require 適合用來引入靜態的內容（如不會變的文字或定義好的函式庫）</li>
-<li>include 則適合用來引入動態的程式碼（程式內容會依其他程式碼而變動）</li>
-</ul>
-<p>練習：將原本的 3_content.php 進行挖空。上面 PHP 變數部分另存新增為 3_movie1.php，下面顯示部分另存為 3_layout.php。在這裡你會有 content,movie1,layout 三個檔案。而 content.php 用 include 帶回 movie1 跟 layout</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">/****3_content.php****/</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">include</span>(<span class="string">&#x27;3_movie1.php&#x27;</span>);<span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">include</span>(<span class="string">&#x27;3_layout.php&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>此時重新整理 3_content.php，會發現跟修改前一樣，而其實這是組裝出來的網頁。</p>
-<hr>
-<h1 id="網址上的可見變數"><a href="#網址上的可見變數" class="headerlink" title="網址上的可見變數"></a>網址上的可見變數</h1><p>網址上面常常看到後面有？加一堆東西。其實是一種可見的變數，語法為？變數=值。舉例來說　<code>https://www.youtube.com/watch?v=cwvfYL1Sgl8</code>，變數名稱為 v，內容是 cwvfYL1Sgl8。如果要多個變數用&amp;進行串聯。而 php 要取得這個變數的語法為<code>$_GET[&#39;變數&#39;]</code></p>
-<p>練習：</p>
-<ol>
-<li>建立 3_main.php。設計以下內容<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;如果&quot;</span>.<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>].<span class="string">&quot;, 那&quot;</span>.<span class="variable">$_GET</span>[<span class="string">&#x27;b&#x27;</span>].<span class="string">&quot;... 因為除了你還是你&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></li>
-<li>此時遊覽網頁<code>3_main.php?a=我是九&amp;b=你是三</code>看看效果如何</li>
-</ol>
-<p>思考練習：</p>
-<ol>
-<li>複製 3_movie1.php 另存為 3_movie2.php，修改一下內容為第二部電影資訊。</li>
-<li>3_main.php 的舊練習請註解化不要執行，重新進行題目設計</li>
-<li>題目需求為執行 3_main.php 時</li>
-</ol>
-<ul>
-<li>畫面設計兩者超連結導向，分別網址為 <code>3_main.php?list=A</code> 與 <code>3_main.php?list=B</code></li>
-<li>如果照著提示做，網頁 A 將呈現 3_movie1.php 的內容，網頁 B 呈現出 3_movie2.php 的內容</li>
-<li>但 A 跟 B 版型都一樣，只有資料不一樣。</li>
-</ul>
-<ol start="4">
-<li>提示：你會用到 if else, include, !empty。<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">/****3_main.php****/</span></span><br><span class="line"><span class="comment">// echo $_GET[&#x27;a&#x27;].&quot;,&quot;.$_GET[&#x27;b&#x27;].&quot;除了你還是你&quot;;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">empty</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;list&#x27;</span>]))&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;list&#x27;</span>]==<span class="string">&#x27;A&#x27;</span>) <span class="keyword">include</span>(<span class="string">&#x27;3_movie1.php&#x27;</span>);</span><br><span class="line">  <span class="keyword">if</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;list&#x27;</span>]==<span class="string">&#x27;B&#x27;</span>) <span class="keyword">include</span>(<span class="string">&#x27;3_movie2.php&#x27;</span>);</span><br><span class="line">  <span class="keyword">include</span>(<span class="string">&#x27;3_layout.php&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&#x27;</span></span><br><span class="line"><span class="string">    &lt;a herf=&quot;3_main.php?list=A&quot;&gt;電影介紹 A&lt;/a&gt;</span></span><br><span class="line"><span class="string">    &lt;a herf=&quot;3_main.php?list=B&quot;&gt;電影介紹 B&lt;/a&gt;</span></span><br><span class="line"><span class="string">  &#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<div class="note default"><p><strong>以上課題之完整代碼：</strong> <a target="_blank" rel="noopener" href="https://gist.github.com/summer10920/f03511e55f4bf0b97ee1dc6b3bf6d77a">view full code</a></p>
-</div>
+
+
+<h1 id="友善化網頁"><a href="#友善化網頁" class="headerlink" title="友善化網頁"></a>友善化網頁</h1><p>這部分集結一節討論，包含 WAI-ARIA 無障礙應用技術、HTML5 語意標籤、表單輔助、</p>
+<h2 id="WAI-ARIA"><a href="#WAI-ARIA" class="headerlink" title="WAI-ARIA"></a>WAI-ARIA</h2><p>即是一個能藉由添加進一步的語意幫助處理這種問題的技術 ，讓瀏覽器與輔助科技可以辨識及用以讓使用者知道發生甚麼事情。熟悉 Bootstrap 的人很常看到 aria-*的屬性標籤。JSX 編寫這些屬性不需要遵守駝峰命名直接寫入即可。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;input</span><br><span class="line">  type=<span class="string">&quot;text&quot;</span></span><br><span class="line">  aria-label=&#123;labelText&#125;</span><br><span class="line">  aria-required=<span class="string">&quot;true&quot;</span></span><br><span class="line">  onChange=&#123;onchangeHandler&#125;</span><br><span class="line">  value=&#123;inputValue&#125;</span><br><span class="line">  name=<span class="string">&quot;name&quot;</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="語意標籤-與-Fragment"><a href="#語意標籤-與-Fragment" class="headerlink" title="語意標籤 與 Fragment"></a>語意標籤 與 Fragment</h2><p>語意化為 HTML5 提倡的觀念，盡可能用適合的標籤名稱去結構網頁想表達的內容使瀏覽器或搜尋演算法充分理解。由於常常組件互相勘套時會破壞這標籤結構且組件的 render 必須要一組標籤，因此可以使用短語法<code>&lt;&gt;</code>（或稱空標籤且之前出現過）來當一組標籤避免多餘層級標籤。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//短語法</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ListItem</span>(<span class="params">&#123; item &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者舊方式使用<code>&lt;fragment&gt;&lt;/fragment&gt;</code>分段標籤來替代，Fragment 需要從 react 宣告匯入。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Fragment</span></span><br><span class="line"><span class="keyword">import</span> &#123; Fragment &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ListItem</span>(<span class="params">&#123; item &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>唯獨不同是 Fragment 可以添加一些 props 或是 key 使用。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Glossary</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.items.map(item =&gt; (</span></span><br><span class="line"><span class="xml">        // Fragments should also have a `key` prop when mapping collections</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">Fragment</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="xml">      ))&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTML5-表單機制"><a href="#HTML5-表單機制" class="headerlink" title="HTML5 表單機制"></a>HTML5 表單機制</h2><p>HTML5 在表單上提供一些有用的機制，其中例如 label 標籤的設計，需搭配 for 屬性來指定對應表單元素。然而 for 為特別關鍵字，在 JSX 內必須改用 htmlFor 來表示。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;label htmlFor=<span class="string">&quot;namedInput&quot;</span>&gt;Name:&lt;/label&gt;</span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;namedInput&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span>/&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>控制 focus 看不懂 略過，跟 ref 有關<br><a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/accessibility.html#focus-control">https://zh-hans.reactjs.org/docs/accessibility.html#focus-control</a></p>
+<p>滑鼠事件看不懂，同上</p>
+<h1 id="未讀"><a href="#未讀" class="headerlink" title="未讀"></a>未讀</h1><p>错误边界（Error Boundaries）<br>Higher-Order Component<br>整合其他函式庫<br>Optimizing Performance 最佳化效能<br>Profiler API<br>Reconciliation</p>
+<!-- flag of hidden posts -->
     </div>
 
     
@@ -400,23 +356,12 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/tags/ReactJS/" rel="tag"># ReactJS</a>
           </div>
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2020/05-11/php-baseclass-2/" rel="prev" title="[基礎課程] PHP 條件判斷邏輯">
-                  <i class="fa fa-chevron-left"></i> [基礎課程] PHP 條件判斷邏輯
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2020/05-12/php-baseclass-4/" rel="next" title="[基礎課程] PHP 重複執行迴圈">
-                  [基礎課程] PHP 重複執行迴圈 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
     </footer>
   </article>
 </div>

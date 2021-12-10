@@ -21,17 +21,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="如名般的 Type Script(（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScri">
+<meta name="description" content="如名般的 Type Script（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScrip">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[學習之路] TypeScript 的基礎">
 <meta property="og:url" content="http://summer10920.github.io/2021/08-25/typescript/">
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
-<meta property="og:description" content="如名般的 Type Script(（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScri">
+<meta property="og:description" content="如名般的 Type Script（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScrip">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/VL6vpbF.png">
 <meta property="og:image" content="https://i.imgur.com/Cd776ku.png">
 <meta property="article:published_time" content="2021-08-25T05:31:03.000Z">
-<meta property="article:modified_time" content="2021-10-19T06:14:29.051Z">
+<meta property="article:modified_time" content="2021-12-10T17:52:01.944Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="TypeScript">
 <meta property="article:tag" content="JavaScript">
@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-10-19 14:14:29" itemprop="dateModified" datetime="2021-10-19T14:14:29+08:00">2021-10-19</time>
+        <time title="修改時間 ×2021-12-11 01:52:01" itemprop="dateModified" datetime="2021-12-11T01:52:01+08:00">2021-12-11</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -329,7 +329,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><img src="https://i.imgur.com/VL6vpbF.png"><br>如名般的 Type Script(（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScript 來編寫，兩者差異就只是 type 的補足完整宣告。</p>
+        <p><img src="https://i.imgur.com/VL6vpbF.png"><br>如名般的 Type Script（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScript 來編寫，兩者差異就只是 type 的補足完整宣告。</p>
 <span id="more"></span>
 
 <p>由於 JavaScript 原本誕生作為簡單的腳本語言，隨著主流性發展導致原本語意單調設計上的引起錯亂，舉例來說：</p>
@@ -793,7 +793,7 @@
 <h4 id="宣告合併"><a href="#宣告合併" class="headerlink" title="宣告合併"></a>宣告合併</h4><p>當宣告不同物件類型且同名時是可以視同兩者合併不會影響。舉例 jQuery 來示範。</p>
 <figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="comment">// in jQuery.d.ts</span></span><br><span class="line"><span class="keyword">declare</span> <span class="function"><span class="keyword">function</span> <span class="title">$</span>(<span class="params">selector: <span class="built_in">string</span></span>): <span class="title">any</span></span>;</span><br><span class="line"><span class="keyword">declare</span> <span class="keyword">namespace</span> $ &#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ajax</span>(<span class="params">url: <span class="built_in">string</span>, settings?: <span class="built_in">any</span></span>): <span class="title">void</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//in test.ts</span></span><br><span class="line">$(<span class="string">&#x27;#foo&#x27;</span>);</span><br><span class="line">$.ajax(<span class="string">&#x27;/api/get_something&#x27;</span>);</span><br></pre></td></tr></table></figure>
 
-<h2 id="開發套件之類型包"><a href="#開發套件之類型包" class="headerlink" title="開發套件之類型包"></a>開發套件之類型包</h2><p>整理後餘時另編寫 [學習之路] TypeScript 的進階篇 。有興趣請自詳閱<a target="_blank" rel="noopener" href="https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian">這裡</a></p>
+<h2 id="開發套件之類型包"><a href="#開發套件之類型包" class="headerlink" title="開發套件之類型包"></a>開發套件之類型包</h2><p>整理後餘時另編寫 [學習之路、] TypeScript 的進階篇 。有興趣請自詳閱 <a target="_blank" rel="noopener" href="https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian">這裡</a></p>
 <p>To Be Continued…</p>
 <h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://www.staging-typescript.org/tsconfig">TypeScript: TSConfig Reference - Docs on every TSConfig option</a></li>
@@ -865,7 +865,7 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476892 <i>words</i></span>
+    <span title="全站總字數">1476896 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
