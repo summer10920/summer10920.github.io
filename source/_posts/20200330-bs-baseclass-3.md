@@ -98,7 +98,7 @@ Alert 也提供 JS 操作相關說明，可以整合到你的 JS 腳本內去，
 
 ```javascript
 //透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */
-$('.show').alert('close'); //選擇器填甚麼都可以只要能向上找到。alert 對象
+$('.show').alert('close'); //選擇器填什麼都可以只要能向上找到。alert 對象
 ```
 
 ## 標籤 Badge

@@ -1,15 +1,17 @@
 # 插入閱讀全文
 <!-- more -->
 
-# NOTE標記
+# NOTE 標記
+
 {% note default %}
 **跳頁建議：從這裡開始出現未學過的內容，建議先前往補充知識再回到這裡**
 {% endnote %}
 
 {% note primary %}
-**素材準備：準備代碼以方便下階段的教學練習** 
-```html cssTry.html
-```
+  **素材準備：準備好以下代碼** 
+  ```html cssTry.html
+  <pre><code></code></pre>
+  ```
 {% endnote %}
 
 {% note success %}
@@ -17,17 +19,19 @@
 {% endnote %}
 
 {% note info %}
-**小技巧**：
-{% endnote %}
+  **小技巧：關於 emmet**
+  在 vscode 內建立 `index.html` 完成後，試著輸入 <kbd>!</kbd> 得到畫面提示時，按下 <kbd>TAB</kbd> 可以快速生成基本的 HTML 結構，這是 VSCODE 內建了 [emmet](https://docs.emmet.io/) 快速編寫指令。
+{% endnote%}
 
 {% note warning %}
-**科普知識：**
-{% endnote %}
+  **科普知識：關於 Unicode 與實體化符號**
+  舉例玩一下&copy; 這個符號，中文輸入<kbd>\`u00a9</kbd>可以得到，這就是 unicode 的 16 進位代號：A9，接著轉 10 進位代號：169。試著打出`&#xa9;`跟`&#60;`都可以得到該符號。
+{% endnote%}
 
 {% note danger %}
-**新手陷阱：**
+  **新手陷阱：@import 放置於開頭處**
+  使用@import 時必需放正式撰寫 css 之前的第一行，否則會載入失敗。
 {% endnote %}
-
 
 # Youtube
 {% youtube video_id %}
@@ -36,8 +40,8 @@
 {% vimeo video_id %}
 
 # blockqute
-{% blockquote Seth Godin http://sethgodin.typepad.com/seths_blog/2009/07/welcome-to-island-marketing.html Welcome to Island Marketing %}
-Every interaction is both precious and an opportunity to delight.
+{% blockquote CSS's keyword index https://xxx.xxx.xx %}
+完整的屬性所有項目請參考 MDN 官方手冊：
 {% endblockquote %}
 
 {% blockquote w3schools https://www.w3schools.com/css/css_pseudo_classes.asp %}
@@ -62,9 +66,8 @@ for Learning book demo use
 <!-- {% codepen summer10920 ExXOLxa dark [html,css,result 500 %} -->
 {% codepen summer10920 ExXOLxa [html,css,result 250 %}
 
-
-[hexo 官方tag說明](https://hexo.io/zh-tw/docs/tag-plugins.html)
-[theme.next官方tag說明](https://theme-next.iissnan.com/tag-plugins.html)
+[hexo 官方 tag 說明](https://hexo.io/zh-tw/docs/tag-plugins.html)
+[theme.next 官方 tag 說明](https://theme-next.iissnan.com/tag-plugins.html)
 
 # 引用
 {% cq %}世间所有的相遇，都是久别重逢{% endcq %}
@@ -79,7 +82,7 @@ for Learning book demo use
 {% label success@輸入文字 %}
 
 # tabs
-{% tabs classtry,1 %} 名字为tab，默认在第1个选项卡，如果是-1则隐藏
+{% tabs classtry,1 %} 名字为 tab，默认在第 1 个选项卡，如果是-1 则隐藏
 <!-- tab -->
 **选项卡 1** 
 <!-- endtab -->
@@ -87,7 +90,7 @@ for Learning book demo use
 **选项卡 2**
 <!-- endtab -->
 <!-- tab A -->
-**选项卡 3** 名字为A
+**选项卡 3** 名字为 A
 <!-- endtab -->
 {% endtabs %}
 
@@ -102,13 +105,13 @@ icon : FontAwesome 图标名称（开头没有’fa-‘）。如果未指定文�
 注意：最好添加 <div> 标签，测试时没加 div，下面显示不完全，加上非常美观。
 
 ex:
-<div>{% button https://tding.top/ ,首页,home fa-fw,这是小丁的个人博客首页%}</div>
+<div>{% button https://tding.top/ , 首页，home fa-fw, 这是小丁的个人博客首页%}</div>
 
 <div class="text-center">
   <div>
-    {% button https://tding.top/ ,首页,home fa-fw,这是小丁的个人博客首页%}
-    {% button https://tding.top/movies/ ,观影,film fa-fw,豆瓣电影%}
-    {% button https://tding.top/books/ ,阅读,book fa-fw,豆瓣读书%}
+    {% button https://tding.top/ , 首页，home fa-fw, 这是小丁的个人博客首页%}
+    {% button https://tding.top/movies/ , 观影，film fa-fw, 豆瓣电影%}
+    {% button https://tding.top/books/ , 阅读，book fa-fw, 豆瓣读书%}
   </div>
 </div>
 
@@ -129,5 +132,5 @@ hexo g -d
 ![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cgf88j218g0p0ju3.jpg)
 {% endgp %}
 
-# 使用HTML編譯
-透過`<escape></escape>`標籤包覆能直接寫HTML
+# 使用 HTML 編譯
+透過`<escape></escape>`標籤包覆能直接寫 HTML

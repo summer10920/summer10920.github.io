@@ -340,7 +340,7 @@ function chginput() {
 6. 當使用者按下儲存時，我們需要提交 Ajax 出去給後端做 SQL 更新。
 7. 這裡因為資料為多筆，所以需要以物件型態傳遞。但能支援 serialize() 打包函式。
  - serialize() 能幫你把多筆資料做成 GET 參數
- - 你可以試著 consol.log(data) 理解透過 serialize() 會得到甚麼
+ - 你可以試著 consol.log(data) 理解透過 serialize() 會得到什麼
  - 雖然是 URL 參數 (GET)，但 jQuery's Ajax 會聰明的幫你轉成物件參數
 8. 接著透過 Ajax 成功的將資料交由後端處理，此時你應該等到回傳後確定更新成功才適合作畫面更新
 9. 由於還有更新時間，我們希望後端能告訴我們 cdate 值

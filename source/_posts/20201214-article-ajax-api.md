@@ -180,7 +180,7 @@ jQuery 的 ajax() 是以 jQuery 自己的 Ajax 技術核心來使用，相對來
 - type：
 HTTP 請求的方式 GET 或 POST。預設為 GET 可省略不寫
 - dataType:
-取回的資料該用甚麼型態來讀取。輸入 xml, json, script, text, html 為選項值。可不指定由 jQuery 自動判斷。
+取回的資料該用什麼型態來讀取。輸入 xml, json, script, text, html 為選項值。可不指定由 jQuery 自動判斷。
 - url：
 目標的 URL 網址。
 - data:
@@ -441,7 +441,7 @@ $.when("AAA").then((e)=>{
 
 1. 使用 fetch 並指定 url 位址，如果需要可以對第二參數（稱呼 init 物件）使用 JSON 格式編寫（這裡故意寫 GET ，預設 GET 可不寫）。
 2. 當透過 then() 來後續處理，fetch 最後回傳一個 Response 物件給你 (HTTP 回應資訊），這不是真正的內容結果。
-3. 要找到真正的內容，必需從 Response 裡面的 Body 物件（為 Body mixin 也是 Promise 與 Request 的物件 API，為申明內容該以甚麼方式處理輸出），使用 Body 的 json() 或 text() 來處理內容回傳。
+3. 要找到真正的內容，必需從 Response 裡面的 Body 物件（為 Body mixin 也是 Promise 與 Request 的物件 API，為申明內容該以什麼方式處理輸出），使用 Body 的 json() 或 text() 來處理內容回傳。
 4. 直接使用 Response.json() 方法讓我們透過 Body API 來回應出 JSON 字串，因此我們要再用一次 then() 來後續處理結果。
 5. 在那之前先 return response.json() 出來給下一個 then()。
 6. 第二個 then 將接受到 JSON 資料，才算真正取得內容。

@@ -10,7 +10,7 @@ date: 2021-08-25 13:31:03
 # hidden: true
 ---
 ![](https://i.imgur.com/VL6vpbF.png)
-如名般的 Type Script(（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScript 來編寫，兩者差異就只是 type 的補足完整宣告。
+如名般的 Type Script（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScript 來編寫，兩者差異就只是 type 的補足完整宣告。
 <!-- more -->
 
 由於 JavaScript 原本誕生作為簡單的腳本語言，隨著主流性發展導致原本語意單調設計上的引起錯亂，舉例來說：
@@ -2133,7 +2133,7 @@ $.ajax('/api/get_something');
 ```
 
 ## 開發套件之類型包
-整理後餘時另編寫 \[學習之路\] TypeScript 的進階篇 。有興趣請自詳閱[這裡](https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian)
+整理後餘時另編寫 \[學習之路、] TypeScript 的進階篇 。有興趣請自詳閱 [這裡](https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian)
 
 To Be Continued...
 

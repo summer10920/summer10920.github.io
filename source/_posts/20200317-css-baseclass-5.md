@@ -9,20 +9,20 @@ tag:
 date: 2020-03-17 18:31:49
 ---
 
+![](https://i.imgur.com/lElmG8a.png)
+
 CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS 屬性，也提及到 CSS 動畫與轉場的動態播放，以及跨平台十分重要的 Media Query 媒體查詢。這些都算是能讓 CSS 更生動豐富且靈活，使網頁體驗上更有感受。
 
 <!-- more -->
 
----
-
 # 變形 Transform
 必須作用在 block、inline-block（包含 flex 彈性盒）上。CSS 變形特點不會影響周遭其他的元素，舉例旋轉一個元素 45deg，有可能會壓在上下左右的元素之上。變形的值為函數並歸類出四種類型。
 
-同時間使用多組函式時，你應該用空格進行多組函式值，例如`transform: translate(50%, 50%) rotate(45deg);`。
+例如`transform: translate(50%, 50%) rotate(45deg);`此寫法，同時間使用多組函式時，應該用空格進行多組函式值。
 
 {% note primary %}
 **素材準備：準備代碼以方便下階段的教學練習** 
-設計畫面中心的示範方塊圖且文字垂中，將 transition 的範例結果透過：:after 呈現出來。
+設計畫面中心的示範方塊圖且文字垂中，將 transition 的範例結果透過`::after` 呈現出來。
 
 ```html
 <!--本篇利用 ::after 模擬出變形差異比較-->
@@ -140,9 +140,9 @@ CSS 另外還有的 3D 變形控制，這需要額外的進階深入介紹沒有
 # 轉場 Transition
 轉場是指從何開始到哪裡結束之動畫過程。你需要指定出開始與結束兩種不同的樣式屬性。舉例來說：
 
-1. 初始樣式為 background:red，結束樣式為 background:blue。
+1. 初始樣式為 `background:red`，結束樣式為 `background:blue`。
 2. 瀏覽器會將兩個樣式間的變化形成動畫過渡效果。
-3. 指定觸發時機行為，藉由 CSS 的擬類別觸發動畫（最常見的是：hover)。
+3. 指定觸發時機行為，藉由 CSS 的擬類別觸發動畫，最常見的是`:hover`。
 4. transition 寫在觸發前才可來回轉場，寫在觸發後只會轉場過去，無法變回。
 
 轉場可以分為四個屬性來指定，或者可以用縮寫（通常）來表示：
@@ -154,8 +154,7 @@ CSS 另外還有的 3D 變形控制，這需要額外的進階深入介紹沒有
 | `transition-timing-function` | ease   | 指定過渡為哪種漸變函式，一共有 6 種過渡效果                       |
 | `transition-delay`           | 0      | 指定幾秒過後才執行轉場，單位為 s                                  |
 
->縮寫方式 `transition`: `property` `duration` `timing-function` `delay`; 
-
+縮寫方式 `transition: property duration timing-function delay`; 
 ```css
 /* 縮寫：屬性    持續時間      速度曲線    延遲時間*/
 transition: all 1s ease-in 0s;
@@ -346,8 +345,8 @@ body {
 */
 ```
 
-### 縮寫方式
-動畫縮寫，名稱和持續時間是必要，其他數值可以省略，在寫樣是時請使用動畫縮寫。
+## 縮寫方式
+動畫縮寫，名稱和持續時間是必要，其他數值可以省略，設計樣式時請使用動畫縮寫。
 ```css
 animation:name duration | timing-function | delay | iteration-count | direction | fill-mode | play-state;
 ```

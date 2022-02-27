@@ -489,7 +489,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
 ### 後悔檔案 add 列入暫存
-譬如你進行 `git add *` 將所有檔案加入暫存，事實上某個檔案（可能是 tmp 檔案）是不需要加入做提交準備，你可以根據官網說明用 reset 來到。這會清除 HEAD 對該檔案的暫存狀態回歸到原本，也就是甚麼都沒發生過（回歸到工作目錄階段去）。
+譬如你進行 `git add *` 將所有檔案加入暫存，事實上某個檔案（可能是 tmp 檔案）是不需要加入做提交準備，你可以根據官網說明用 reset 來到。這會清除 HEAD 對該檔案的暫存狀態回歸到原本，也就是什麼都沒發生過（回歸到工作目錄階段去）。
 
 ```shell cmd
 > L:\git_study>git status

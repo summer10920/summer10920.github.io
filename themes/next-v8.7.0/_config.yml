@@ -139,7 +139,7 @@ site_state: true
 social:
   GitHub: https://github.com/summer10920 || fab fa-github
   E-Mail: mailto:summer10920@gmail.com || fa fa-envelope
-  CodePen: https://codepen.io/summmer10920/pens/public || fab fa-codepen
+  CodePen: https://codepen.io/summer10920/pens/public?grid_type=list || fab fa-codepen
   #LinkedIn: https://www.linkedin.com/in/loki-jiang || linkedin
   #vTiger (TW非官方): https://www.facebook.com/yourname || facebook
   #Google: https://plus.google.com/yourname || fab fa-google
@@ -158,13 +158,14 @@ social_icons:
 # Blog rolls
 links_settings:
   icon: fa fa-link
-  title: 友站連結
+  title: 其他資源
   # Available values: block | inline
-  layout: block
+  layout: inline
 
 links:
-  網頁設計乙級術科解析: http://b17300demo.lokiui.com/
-  #Title: https://example.com
+  DemoSite - 網頁設計乙術科: http://b17300demo.lokiui.com/
+  舊址(停更) - 札記 Blog: http://blog.lokiui.com/
+  # Title: https://example.com
 
 # Table of Contents in the Sidebar
 # Front-matter variable (unsupport wrap expand_all).

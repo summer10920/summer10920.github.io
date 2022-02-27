@@ -9,11 +9,11 @@ tag:
 date: 2020-03-10 01:27:51
 ---
 
+![](https://i.imgur.com/lElmG8a.png)
+
 歡迎來到 CSS 教材的第二篇共五篇。除了第一篇屬於入門需要介紹 CSS 公式與使用方法，之後開始都是全部都討論屬性值的控制。可以根據方向性規劃出不同的領域介紹，第二篇都是一些很基礎的 CSS 屬性值，隨著後續章節越來越高階應用。
 
 <!-- more -->
-
----
 
 # CSS 屬性值：基本篇
 CSS 簡單來說就是透過屬性值去要求瀏覽器要如何去宣染這個對象的外觀，通常一個對象會持有很多種屬性值。複數的不斷去累加外觀效果拼湊出一個理想效果。這裡章節會列舉出一些常用且基礎的 CSS 屬性值或組合方式。
@@ -21,11 +21,11 @@ CSS 簡單來說就是透過屬性值去要求瀏覽器要如何去宣染這個�
 部分屬性值額外支援`組合寫法`，也就是可以把多個屬性設定合併成一行。絕大部分的 CSS 設計師都會這樣做。如果可以盡可能學會簡寫減少代碼量。
 
 {% blockquote CSS's keyword index https://developer.mozilla.org/zh-TW/docs/Web/CSS/Reference#Keyword_index %}
-完整的屬性所有項目請參考 MDN 官方手冊
+完整的屬性所有項目請參考 MDN 官方手冊：
 {% endblockquote %}
 
 ## 字型 - Font
-指定對象的網頁文字要吃甚麼字型、字體大小、多粗、或特別效果（各項設定都是獨立的屬性，依需求多筆設定）。通常會習慣統一標準在 body 上設定，之後如果有特別的文字處理再另外指定字型效果（優先權覆蓋）。
+指定對象的網頁文字要吃什麼字型、字體大小、多粗、或特別效果（各項設定都是獨立的屬性，依需求多筆設定）。通常會習慣統一標準在 body 上設定，之後如果有特別的文字處理再另外指定字型效果（優先權覆蓋）。
 
 以下是簡單的介紹五種常用屬性：
 ```css
@@ -48,7 +48,7 @@ body {
 
 優先權由前到後面逐一適應，如果某字第一項不適用時才會吃第二項字型。通常這行為發生在中英混用時，中文環境上先讓第一項英文字型先吃掉英數符號，吃不到中文的會由第二項的中文符號，其他則設計師習慣多安排一項通用字型（像是 sans-serif) 放在最後面預備，不寫也可以會採作業系統預設字。
 
-網頁的字型是依賴作業系統 OS 所持有的字型來呈現，所以網頁必須告知瀏覽器使用甚麼字型。字型大致上可分為四種來源設定方式。
+網頁字是依賴作業系統或瀏覽器內建字型來呈現，所以必須告知瀏覽器要使用何種字型。字型大致上可分為四種來源設定方法。
 
 #### 系統字型：（通用字型）
 不做任何設定就能直接使用。各系統平台都有這些通用字型（可能些許差異），分別是 sans-serif ( 無襯線體 )、serif ( 襯線體 )、monospace ( 等寬體 )、cursive ( 手寫體 ) 和 fantasy ( 幻想體 )。
@@ -178,20 +178,20 @@ p {
     2. 沒指定高度時不准換行讓他超出寬度 white-space: nowrap; 
     3. 超出 block 就不要看到了 overflow:hidden （必要條件）
 
-    clip（切掉）, ellipsis（切掉並加上。.. 結尾）
+    clip（切掉）, ellipsis（切掉並加上…結尾）
   */
   text-overflow: ellipsis;
 
   /*字元間距：英文字母或中文字的間隔*/
   letter-spacing: 5rem;
-  /*單字間距，要有空格，中文很難有空格，較適合英文。*/
+  /*單字間距空格，中文沒有單字空格設計，僅適用英文。*/
   word-spacing: 1rem;
 }
 ```
 
 {% note danger %}
-**新手陷阱：text-align的有限功能**
-text-align的功能僅限於作用該元素的content內容部分而不是本身整體元素的對齊控制，因此如果你希望該元素能控制定位，應對該元素之父層下達text-align屬性，因為該元素為父層的content內容。
+**新手陷阱：text-align 的有限功能**
+text-align 的功能僅限於作用 inline 元素的 content 內容部分來對齊，而不是本身整體 block 元素的對齊控制。因此如果你希望該元素能控制行內之定位，除了本身不是 block（可以是 inline-block)，應對該元素之父層下達 text-align 屬性，控制父層的 content 內容對齊。
 {% endnote %}
 
 ### 文字換行
@@ -271,19 +271,20 @@ p {
   This is some text. This is some text. This is some text. This is some text.
 </p>
 ```
+{% jsfiddle summer10920/boexum6L result,html,css dark 100% 1000 %}
 
 {% note warning %}
 **科普知識：overflow-wrap 的因果**
   以前叫做 word-wrap 是微軟獨家的 CSS 效果，後來 CSS3 另外取名（怕被告？!) 叫做 overflow-wrap。
   另外很多人會跟 word-break 混淆，所以 word-break 乾脆就破例多一個值可以代替此效果，也就是：
 
-  `word-break:break-word`同等於`overflow-wrap:break-word`
+  `word-break:break-word`同等價於`overflow-wrap:break-word`
 {% endnote %}
 
 ### line-height（行高）
 - 預設 line-height 高度為字體高度的 1.2 倍，單位可以是數字（倍率）, px, em, rem，但通常用數字（用 font-size 當比例）
 - line-height 與 font-size 密不可分，line-height 只影響行內元素（文字）與其他行內內容，而不會直接影響區塊元素。
-- 計算行距方式=`(line-height-font-size)/2`，如果 `{font-size 14px;line-height 18px}`則上方與下方的行距個別是 18-14/2=2。
+- 計算行距方式=`(line-height 減去 font-size)/2`，如果 `{font-size 14px;line-height 18px}`則上方與下方的行距個別是 (18-14)/2=2。
 
 ```html
 <style>
@@ -347,7 +348,7 @@ vertical-align 只能夠作用在 `行內元素` 與 `置換元素 (img)`。
 **跟著做：思考原因為何？**
 上面案例試著對 div 進行`style="line-height: 0"`能解釋出 Botton 的位置原因嗎？
 
-ANS: 主要是繼承到 line-height 的 Botton 沒有字體高度所以中心點對其邊緣產生溢出現象。
+解答：主要是繼承到 line-height 的 Botton 沒有字體高度所以中心點對其邊緣產生溢出現象。
 {% endnote %}
 
 ## 連結 - Link
@@ -385,12 +386,11 @@ a:active {
 10. 將表格裡面所有的 align="center" 拿掉，使用 CSS 代替進行文字的水平置中。
 11. 嘗試將整個表格也置中於畫面。
 
+{% tabs demoCSS，1 %}
+<!-- tab 題目-->
 {% jsfiddle summer10920/ex1c3bsd result dark 100% 500 %}
-
----
-
-### 解答
-
+<!-- endtab -->
+<!-- tab 解答 HTML-->
 ```html TryCSS_cls2_font.html
 <!DOCTYPE html>
 <html>
@@ -554,7 +554,8 @@ a:active {
 </body>
 </html>
 ```
-
+<!-- endtab -->
+<!-- tab 解答 CSS-->
 ```css style.css
 body {
   font-family: "Microsoft JhengHei";
@@ -601,6 +602,8 @@ table {
   margin: auto;
 }
 ```
+<!-- endtab -->
+{% endtabs %}
 
 ## 背景 - Background 
 請先指定一個區塊元素 DIV 且具備寬高，我們將進行背景 CSS 介紹。
@@ -664,8 +667,30 @@ div {
 }
 ```
 
-### background-origin 與 background-clip
-兩者效果差不多但做法不同，前者主要是指定圖片 position 的起始位置貼圖，後者為先對 border 開始貼圖，之後根據起始位置遮罩抹除。
+### background-clip 與 background-origin
+兩者效果差不多但做法不同，前者為先對 border 開始貼圖，之後根據起始位置遮罩抹除；後者主要是指定圖片 position 的起始位置貼圖。
+
+#### background-clip
+從 border 開始依指定的位置直接遮罩裁切。
+>使用 background-clip 需確保背景圖夠大能塞滿超出整個 border 區域才會有作用，可使用 repeat 重複（預設值）或 cover 使填滿。
+
+```CSS
+div {
+  /*
+  background-clip
+  =>padding-box（預設）, border-box, content-box
+  */
+  background: url('https://fakeimg.pl/1024x768/');
+  background-clip: content-box;
+  background-size: cover;
+  border: 10px dashed #ff0;
+  padding: 10px;
+}
+```
+{% note info %}
+  **小技巧：新屬性**
+  `background-clip: text`可玩出字為背景圖效果，需文字搭配`color: transparent`。
+{% endnote%}
 
 #### background-origin
 CSS3 新屬性，能指定背景圖的起始放入位置是依據 padding, border, content 對齊擺放。對背景顏色無效
@@ -679,24 +704,6 @@ div{
   */
   background: url('https://fakeimg.pl/150x200/') no-repeat;
   background-origin: padding-box;
-  border: 10px dashed #ff0;
-  padding: 10px;
-}
-```
-
-**background-clip**
-從 border 開始依指定的位置直接遮罩裁切。
->使用 background-clip 需確保背景圖夠大能塞滿整個 border 區域才會有作用，可使用 repeat 重複（預設值）或 cover 使填滿。
-
-```CSS
-div {
-  /*
-  background-clip
-  =>padding-box（預設）, border-box, content-box
-  */
-  background: url('https://fakeimg.pl/1024x768/');
-  background-clip: content-box;
-  background-size: cover;
   border: 10px dashed #ff0;
   padding: 10px;
 }
@@ -833,7 +840,7 @@ background、backgroud-image 都可以設定漸層色，漸層方式有分線性
 - 軸向設定可用角度單位`deg`也可以使用`方位單字`指定。
 - 可指定顏色的漸變比例位置（全長之百分比）。
 
-```
+```css
 html,
 body {
   margin: 0;
@@ -949,10 +956,12 @@ body {
 ```
 
 ## 小節練習 - Background
-提供以下 HTML 與 CSS，請試著對 CSS 編寫做出結果上的效果。
+提供以下 HTML 與 CSS，請試著對 CSS 編寫做出結果畫面。
 
+{% tabs demoBG，1 %}
+<!-- tab 題目素材-->
 ```html TryCSS_cls2_background.html
-~略
+<head>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -973,9 +982,8 @@ body {
       <td class="i"></td>
     </tr>
   </table>
-~略
+</body>
 ```
-
 ```css style.css
 body {
   text-align: center;
@@ -994,13 +1002,11 @@ table td {
   height: 200px;
 }
 ```
-
-**目標畫面：**
+<!-- endtab -->
+<!-- tab 結果畫面-->
 {% jsfiddle summer10920/2x965cyq result dark 100% 750 %}
-
----
-### 解答
-
+<!-- endtab -->
+<!-- tab 解答 -->
 ```css style.css
 body {
   text-align: center;
@@ -1067,6 +1073,8 @@ table td {
   background: radial-gradient(black, white);
 }
 ```
+<!-- endtab -->
+{% endtabs %}
 
 ## 清單 - List
 主項有 ul 跟 ol 兩種常見寫法（另外還有少見的 dl)，雖可透過 list-style-type 擬態其他類型但無法編入 start。
@@ -1157,8 +1165,8 @@ ul {
 
 消除的方式有多種：
 
-1. 方法：調整 HTML 結構，使瀏覽器解讀時無法偵測到斷行符號，直接讀取出結束標籤
-
+#### 調整 HTML 結構
+使瀏覽器解讀時無法偵測到斷行符號，直接讀取出結束標籤
 ```html
 <ul>
   <li><a href="#">關於我們</a></li
@@ -1174,8 +1182,8 @@ ul {
 </ul>
 ```
 
-2. 方法：margin 為-4px 使肉眼畫面消除空白，但實際上不是真正消除空白且無法歸零
-
+#### margin 消除
+設定 margin 為-4px 使肉眼畫面消除空白，但實際上不是真正消除空白且無法歸零
 ```css
 li {
   margin-right: -4px;
@@ -1184,8 +1192,8 @@ li {
 }
 ```
 
-3. 方法：設置父元素 ul 字體為 0，再初始化 li font-size。讓斷行符號沒有尺寸就不會占用，而 li 設定的 font-size 只會給內容元素使用。
-
+#### 消除透明呈現尺寸
+設置父元素 ul 字體為 0，再初始化 li 的 font-size。讓斷行符號沒有尺寸就不會占用，而 li 設定的 font-size 只會給內容元素使用。
 ```css
 ul {
   font-size: 0;
@@ -1199,8 +1207,8 @@ li {
 }
 ```
 
-4. 方法：父元素擺脫 block 元素改用排版用的元素，使得內容不去偵測斷行符號。譬如使用 display:table（或另選 flex 模式），使子元素會採用一種擬態表格的排版方式呈現橫向與縱向排列。
-
+#### 捨棄 inline-block
+父元素擺脫 block 元素改用排版用的元素，使得內容不去偵測斷行符號。譬如使用 display:table（或另選 flex 模式），使子元素會採用一種擬態表格的排版方式呈現橫向與縱向排列。
 ```css
 ul {
   display: table;
@@ -1212,11 +1220,10 @@ ul {
 
 {% note warning %}
 **科普知識：css 的擬態 table 屬性**
-- display:table => table
-- display:table-row => tr
-- display:table-cell => td ,th
-
 支援瀏覽器：IE8.0、Firefox、Safari、Chrome、Oprea
+- display:table 等價 table 外觀
+- display:table-row 等價 tr 外觀
+- display:table-cell 等價 td ,th 外觀
 {% endnote %}
 
 ## 表格 - Table
@@ -1227,19 +1234,29 @@ ul {
 ```html
 <table>
   <tr class="odd">
-    <td>lorem</td><td></td><td></td>
+    <td>lorem</td>
+    <td></td>
+    <td></td>
   </tr>
   <tr>
-    <td>lorem</td><td>lorem</td><td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
   </tr>
   <tr class="odd">
-    <td>lorem</td><td>lorem</td><td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
   </tr>
   <tr>
-    <td>lorem</td><td>lorem</td><td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
   </tr>
   <tr class="odd">
-    <td>lorem</td><td>lorem</td><td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
+    <td>lorem</td>
   </tr>
 </table>
 ```
@@ -1283,7 +1300,17 @@ tr:hover {
 ```
 
 {% note info %}
-**小技巧：加快 table 載入速度**
+**小技巧：雙色表格可善用關係偽類**
+這個範例中是使用 class.odd 去設計雙色，更快的方法其實可以透過關係偽類去控制偶數項目為異色。
+```css
+tr:nth-of-type(odd) {
+  background: #777;
+}
+```
+{% endnote %}
+
+{% note warning %}
+**科普知識：加快 table 載入速度**
 HTML 載入過程中遇到 table 時，預設情況下都需要先掃過所有 td 內容算出空間分配適應才能規劃 table 應該生成多少總寬，這會花掉一些時間效能。如果你已經指定了 table 總寬，其實不需要瀏覽器幫你計算 table 生成寬度。可以透過以下屬性靜用生成總寬。（前提你一定自己手動設定 table 總寬度）
 
 ```css
@@ -1293,15 +1320,4 @@ table{
 }
 ```
 現在大部分的人不會特別設定這個了，因為現在瀏覽器的速度已夠聰明且夠快。
-{% endnote %}
-
-{% note info %}
-**小技巧：雙色表格可善用關係偽類**
-這個範例中是使用 class.odd 去設計雙色，更快的方法其實可以透過關係偽類去控制偶數項目為異色。
-
-```css
-tr:nth-of-type(odd) {
-  background: #777;
-}
-```
 {% endnote %}

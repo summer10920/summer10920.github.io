@@ -44,7 +44,7 @@ BS 目前時間線上 (2020Q1) 筆者手上的最新版本為 4.4，主要包含
 - [LayoutIt! - Interface Builder for CSS Grid and Bootstrap](https://www.layoutit.com/)
 - [All Bootstrap 4 CSS classes 查詢器](https://bootstrapshuffle.com/classes)
 
-參考官方網站或中文化網站，只要是 4.x 版本都可以，這裡我們抓最新版 4.4 作為練習，安裝方式很多我們採用最基本的下載包使用，裡面包含很多重複檔案，可以在 [這裡理解](https://bootstrap.hexschool.com/docs/4.2/getting-started/contents/#css-files) 這些檔案分別代表甚麼差異用途。
+參考官方網站或中文化網站，只要是 4.x 版本都可以，這裡我們抓最新版 4.4 作為練習，安裝方式很多我們採用最基本的下載包使用，裡面包含很多重複檔案，可以在 [這裡理解](https://bootstrap.hexschool.com/docs/4.2/getting-started/contents/#css-files) 這些檔案分別代表什麼差異用途。
 
 我們需要的學習素材只需要一些基本檔案之外，使用 BS 的 JS 功能還需要取得 Jquery 才能驅動使用，所以還需要額外下載 JQ 來使用 (BS 不會使用到 JQ 特效與動畫所以你可以使用 slim 閹割版）。以及如果你不想去異動 BS 的 css，你應該額外寫在 css 樣式並利用優先權方式去調配，所以整個檔案結構以及網頁初始化為
 
