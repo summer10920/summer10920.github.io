@@ -2833,7 +2833,7 @@ mark.search-keyword {
   transition: all 0.2s ease-in-out;
 }
 .links-of-author a::before {
-  background: #1c65ff;
+  background: #c30eff;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2843,6 +2843,7 @@ mark.search-keyword {
   width: 4px;
 }
 .links-of-blogroll-item {
+  display: inline-block;
   padding: 2px 10px;
 }
 .links-of-blogroll-item a {
@@ -2870,8 +2871,6 @@ mark.search-keyword {
 .post-body>:not(.group-picture) img {
   box-shadow: 0 0 4px 0px rgba(166,166,166,0.439);
   margin: 20px auto;
-  max-width: 50vw;
-  max-height: 50vh;
 }
 .github-corner svg {
   fill: var(--main);
@@ -3016,20 +3015,20 @@ a:hover {
   right: 0;
 }
 .post-block:nth-child(odd)>.lokiIndex a.fancybox img {
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 25%, #000);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 0%, #000);
 }
 .post-block:nth-child(even)>.lokiIndex a.fancybox {
   left: 0;
 }
 .post-block:nth-child(even)>.lokiIndex a.fancybox img {
-  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0) 25%, #000);
+  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0) 0%, #000);
 }
 /* **********article style */
-tbody tr:nth-of-type(even),
-thead tr {
+article tbody tr:nth-of-type(even),
+article thead tr {
   background: var(--body-bg-color);
 }
-blockquote {
+article blockquote {
   border-left-color: var(--main);
   background: rgba(233,30,99,0.071);
   font-size: 1rem;
@@ -3037,37 +3036,73 @@ blockquote {
   margin-bottom: 20px;
   line-height: 1.5rem;
 }
-blockquote p {
+article blockquote p {
   margin-bottom: 10px;
 }
-.post-body h1 {
+article .post-body h1 {
   border-bottom: 1px solid;
   text-align: right;
 }
-.post-body h2 {
+article .post-body h2 {
   background: #ddd;
 }
-.post-body h2,
-.post-body h3,
-.post-body h4,
-.post-body h5,
-.post-body h6 {
+article .post-body h3 {
+  border-bottom: 1px dashed;
+}
+article .post-body h2,
+article .post-body h3,
+article .post-body h4,
+article .post-body h5,
+article .post-body h6 {
   border-left: 5px solid;
   padding-left: 10px;
 }
-.post-body .tabs .nav-tabs .tab {
-  background: rgba(255,255,255,0.667);
+article .post-body h1,
+article .post-body h2,
+article .post-body h3 {
+  margin-top: 3rem;
 }
-.post-body .tabs .tab-content,
-.post-body .tabs .nav-tabs .tab.active {
+article .post-body .tabs .nav-tabs .tab {
+  background: rgba(255,255,255,0.933);
+  transition: 0.5s;
+}
+article .post-body .tabs .tab-content,
+article .post-body .tabs .nav-tabs .tab.active {
   background: #fff;
 }
-.post-body p.image-caption {
+article .post-body .tabs ul.nav-tabs li.tab.active {
+  border-top-color: var(--main);
+}
+article .post-body p.image-caption {
   margin-top: -10px;
 }
-.post-body ol,
-.post-body ul {
-  margin-bottom: 4rem;
+article .post-body ol,
+article .post-body ul {
+  margin-bottom: 3rem;
+}
+article .post-body .note {
+  border-color: #ccc;
+  background: #fcfcfc;
+}
+article .post-body .note:not(.no-icon)::before {
+  top: 0.5rem;
+}
+article .post-body p a:not(.fancybox),
+article .post-body blockquote a:not(.fancybox) {
+  border-bottom: 1px dashed var(--main);
+  color: var(--main);
+  font-style: italic;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+article .post-body p a:not(.fancybox):hover,
+article .post-body blockquote a:not(.fancybox):hover {
+  font-weight: bolder;
+  font-style: normal;
+  border-bottom-style: solid;
+}
+article .post-body .headerlink {
+  margin: 0 10px;
 }
 /* archives style */
 .posts-collapse .post-content::before {
