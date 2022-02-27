@@ -29,7 +29,7 @@
 <meta property="og:description" content="本章節的 Components 元件算是資訊量很大的單元，但也不用特別去背，只要知道有哪些功能可以選（複製貼上大法）加以利用去點綴你的網頁即可。">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:published_time" content="2020-03-30T09:15:31.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.218Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="RWD 響應式網頁設計（假日班）">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
@@ -195,18 +195,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -278,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -357,7 +360,7 @@
 <ol start="2">
 <li>使用 JS 指令直接對某 JQ 對象的<code>[data-dismiss]</code>進行 alert close 之動作</li>
 </ol>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */</span></span><br><span class="line">$(<span class="string">&#x27;.show&#x27;</span>).alert(<span class="string">&#x27;close&#x27;</span>); <span class="comment">//選擇器填甚麼都可以只要能向上找到。alert 對象</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */</span></span><br><span class="line">$(<span class="string">&#x27;.show&#x27;</span>).alert(<span class="string">&#x27;close&#x27;</span>); <span class="comment">//選擇器填什麼都可以只要能向上找到。alert 對象</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="標籤-Badge"><a href="#標籤-Badge" class="headerlink" title="標籤 Badge"></a>標籤 Badge</h2><p>標籤指 inline-block 模式的文字含背景色含圓角，可以輕易套用在任何標籤之文字後面做為標籤用途。如果套用在有 hover 或 fouce 的元素則背色會自動變化對應。</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/badge/#example</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Example heading <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-secondary&quot;</span>&gt;</span>New<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span>&gt;</span></span><br><span class="line">  Notifications <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-light badge-pill&quot;</span>&gt;</span>4<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-primary&quot;</span>&gt;</span>Primary<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -1134,7 +1137,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -1142,13 +1145,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

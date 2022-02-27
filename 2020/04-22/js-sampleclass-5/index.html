@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/D8v3RVP.png">
 <meta property="article:published_time" content="2020-04-21T18:25:06.000Z">
-<meta property="article:modified_time" content="2021-12-02T16:36:02.914Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:03.017Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
@@ -198,18 +198,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -281,7 +284,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-12-03 00:36:02" itemprop="dateModified" datetime="2021-12-03T00:36:02+08:00">2021-12-03</time>
+        <time title="修改時間 ×2022-02-27 23:35:03" itemprop="dateModified" datetime="2022-02-27T23:35:03+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -348,7 +351,7 @@
 
 <h2 id="可設計的視窗表單"><a href="#可設計的視窗表單" class="headerlink" title="可設計的視窗表單"></a>可設計的視窗表單</h2><p>參數非常多，需要哪些功能就寫出參數，不寫屬性則部分有預設效果</p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">Swal.fire(&#123; 一個 swal 事件 A 執行</span><br><span class="line">  <span class="attr">title</span>: <span class="string">&#x27;這裡是猜猜遊戲，請輸入角色名字&#x27;</span>, <span class="comment">//標題</span></span><br><span class="line">  <span class="attr">input</span>: <span class="string">&#x27;text&#x27;</span>, <span class="comment">//輸入欄位的類型</span></span><br><span class="line">  <span class="attr">inputValue</span>: <span class="string">&#x27;大俠&#x27;</span>, <span class="comment">//欄位預設值</span></span><br><span class="line">  <span class="attr">showLoaderOnConfirm</span>: <span class="literal">true</span>, <span class="comment">//啟用輸入框</span></span><br><span class="line">  <span class="attr">confirmButtonText</span>: <span class="string">&#x27;我取好了&#x27;</span>, <span class="comment">//確定按鈕之文字</span></span><br><span class="line">  <span class="attr">cancelButtonText</span>: <span class="string">&#x27;略過&#x27;</span>, <span class="comment">//取消按鈕之文字</span></span><br><span class="line">  <span class="attr">showCancelButton</span>: <span class="literal">true</span>, <span class="comment">//提供取消按鈕</span></span><br><span class="line">  <span class="attr">allowOutsideClick</span>: <span class="literal">false</span> <span class="comment">//是窗外的按鈕可否觸發取消事件</span></span><br><span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123; <span class="comment">//按下按鈕後，能得到一個 object</span></span><br><span class="line">  <span class="keyword">if</span> (result.dismiss === <span class="string">&#x27;cancel&#x27;</span>) &#123; <span class="comment">//如果物件。dissmiss=cancel 代表用戶按取消鍵</span></span><br><span class="line">    name = <span class="string">&quot;阿明&quot;</span>;</span><br><span class="line">    Swal.fire(&#123; <span class="comment">//如果是取消反應，提供一個 swal 事件 A-1</span></span><br><span class="line">      <span class="attr">title</span>: <span class="string">`不想輸入？別怕~~我不是死神`</span>,</span><br><span class="line">      <span class="attr">text</span>: <span class="string">`那就叫你<span class="subst">$&#123;name&#125;</span>吧，阿明開始闖關吧`</span>,</span><br><span class="line">      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">imageUrl</span>: <span class="string">&#x27;alertgame/00.jpg&#x27;</span>,</span><br><span class="line">      <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">    &#125;).then(start);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123; <span class="comment">//反之，就不是按下取消時</span></span><br><span class="line">    name = result.value; <span class="comment">//confirm 的值會存在物件。value</span></span><br><span class="line">    Swal.fire(&#123; <span class="comment">//由於不是取消反應，提供一個 swal 事件 A-2</span></span><br><span class="line">      <span class="attr">title</span>: <span class="string">`<span class="subst">$&#123;name&#125;</span>這名字聽起來就專業！`</span>,</span><br><span class="line">      <span class="attr">text</span>: <span class="string">&#x27;請開始闖關挑戰&#x27;</span>,</span><br><span class="line">      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">imageUrl</span>: <span class="string">&#x27;alertgame/01.jpg&#x27;</span>,</span><br><span class="line">      <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">    &#125;).then(start); <span class="comment">// 按下確定後，執行叫 start 的 function</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>所以 swal 生成很簡單，你需要甚麼就寫甚麼，如果需要按鈕後反應或是取得輸入值，都多加一個 <code>.then()</code> 於後面。() 內指定你要執行的 js 代碼，譬如：</p>
+<p>所以 swal 生成很簡單，你需要什麼就寫什麼，如果需要按鈕後反應或是取得輸入值，都多加一個 <code>.then()</code> 於後面。() 內指定你要執行的 js 代碼，譬如：</p>
 <figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">.ther(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(result); <span class="comment">//result 是 swal 回傳的結果已物件提供。</span></span><br><span class="line">  <span class="keyword">if</span>(result.dismiss===<span class="string">&#x27;cencel&#x27;</span>) <span class="built_in">console</span>.log(<span class="string">&quot;被按下了取消&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span>(result.value) <span class="built_in">console</span>.log(<span class="string">&quot;使用者輸入了&quot;</span>+result.value);</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * Swal.fire(&#123;</span></span><br><span class="line"><span class="comment">   *   #insert a new swal event be here</span></span><br><span class="line"><span class="comment">   * &#125;);</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>差不到這裡你就能用出基本的 swal，還有更多豐富用法都在官網示範</p>
@@ -422,7 +425,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -430,13 +433,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

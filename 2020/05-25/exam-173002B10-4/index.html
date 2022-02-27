@@ -40,7 +40,7 @@
 <meta property="og:image" content="https://i.imgur.com/Ji8jU7J.png">
 <meta property="og:image" content="https://i.imgur.com/J0Rxhw4.png">
 <meta property="article:published_time" content="2020-05-25T14:27:22.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.235Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="技術士考照與全國技能競賽">
 <meta name="twitter:card" content="summary">
@@ -206,18 +206,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -289,7 +292,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -569,7 +572,7 @@
 <li>先完成前台的會員登入與註冊，再來完成按下購物可以將資訊塞入購物車。</li>
 <li>設計技巧採用新訪客的流程登入，模擬新使用者的操作，會碰到登入版型、新註冊、登入帳號、查看購物車</li>
 </ul>
-<h2 id="規劃購物車"><a href="#規劃購物車" class="headerlink" title="規劃購物車"></a>規劃購物車</h2><p>之前第四題做到按下我要購買會送往 api 處理並加入 cart。這裡分兩動作，第一先記下來買了甚麼，第二是確認登入了沒。（否則往登入頁面）。為了記錄商品 ID，寫在 SESSION 的 key 上。</p>
+<h2 id="規劃購物車"><a href="#規劃購物車" class="headerlink" title="規劃購物車"></a>規劃購物車</h2><p>之前第四題做到按下我要購買會送往 api 處理並加入 cart。這裡分兩動作，第一先記下來買了什麼，第二是確認登入了沒。（否則往登入頁面）。為了記錄商品 ID，寫在 SESSION 的 key 上。</p>
 <h3 id="增添-api-php-10"><a href="#增添-api-php-10" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><figure class="highlight php"><figcaption><span>api.pgp</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;want&#x27;</span>:</span><br><span class="line">  <span class="variable">$_SESSION</span>[<span class="string">&#x27;buy&#x27;</span>][<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]] = <span class="variable">$_POST</span>[<span class="string">&#x27;num&#x27;</span>];</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;user&#x27;</span>])) plo(<span class="string">&quot;index.php?do=login&quot;</span>);</span><br><span class="line">  <span class="keyword">else</span> plo(<span class="string">&quot;index.php?do=buycart&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
 <h2 id="登入版型"><a href="#登入版型" class="headerlink" title="登入版型"></a>登入版型</h2><ol>
@@ -734,7 +737,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -742,13 +745,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

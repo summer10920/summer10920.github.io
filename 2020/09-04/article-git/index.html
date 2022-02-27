@@ -64,7 +64,7 @@
 <meta property="og:image" content="https://i.imgur.com/c8R3K7G.png">
 <meta property="og:image" content="https://i.imgur.com/aCiniq3.png">
 <meta property="article:published_time" content="2020-09-03T17:34:46.000Z">
-<meta property="article:modified_time" content="2021-10-19T06:13:18.745Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="VSCode">
 <meta property="article:tag" content="Git&#x2F;GitHub">
@@ -231,18 +231,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -314,7 +317,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-10-19 14:13:18" itemprop="dateModified" datetime="2021-10-19T14:13:18+08:00">2021-10-19</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -463,7 +466,7 @@
 <h2 id="小劇場練習"><a href="#小劇場練習" class="headerlink" title="小劇場練習"></a>小劇場練習</h2><h3 id="修正上次的-commit"><a href="#修正上次的-commit" class="headerlink" title="修正上次的 commit"></a>修正上次的 commit</h3><p>當某次 commit 出去後，忘記某檔案也要 add 出去，你可以利用這次的 commit 來覆蓋 commit 上次的內容，保持同個快照動作：</p>
 <figure class="highlight shell"><figcaption><span>cmd</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git commit -m <span class="string">&quot;失誤的提交&quot;</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git <span class="built_in">log</span> -2</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git add demo3.html</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git commit --amend -m <span class="string">&quot;修正的提交&quot;</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git <span class="built_in">log</span> -2</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 初次提交出去後，檢查最後兩個快照描述</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此時將修正的檔案加入，並透過指令 amend 進行上次的提交修正</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 檢查最後兩個快照，發現一開始的提交被覆蓋了</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="後悔檔案-add-列入暫存"><a href="#後悔檔案-add-列入暫存" class="headerlink" title="後悔檔案 add 列入暫存"></a>後悔檔案 add 列入暫存</h3><p>譬如你進行 <code>git add *</code> 將所有檔案加入暫存，事實上某個檔案（可能是 tmp 檔案）是不需要加入做提交準備，你可以根據官網說明用 reset 來到。這會清除 HEAD 對該檔案的暫存狀態回歸到原本，也就是甚麼都沒發生過（回歸到工作目錄階段去）。</p>
+<h3 id="後悔檔案-add-列入暫存"><a href="#後悔檔案-add-列入暫存" class="headerlink" title="後悔檔案 add 列入暫存"></a>後悔檔案 add 列入暫存</h3><p>譬如你進行 <code>git add *</code> 將所有檔案加入暫存，事實上某個檔案（可能是 tmp 檔案）是不需要加入做提交準備，你可以根據官網說明用 reset 來到。這會清除 HEAD 對該檔案的暫存狀態回歸到原本，也就是什麼都沒發生過（回歸到工作目錄階段去）。</p>
 <figure class="highlight shell"><figcaption><span>cmd</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git status</span></span><br><span class="line"></span><br><span class="line">On branch master</span><br><span class="line">Changes not staged for commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)</span><br><span class="line">        modified:   demo1.html</span><br><span class="line">        modified:   demo3.html</span><br><span class="line">no changes added to commit (use &quot;git add&quot; and/or &quot;git commit -a&quot;)</span><br><span class="line"><span class="meta">#</span><span class="bash"> 目前有兩個檔案有異動為紅色提示，要求你加入暫存</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git add *</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git status</span></span><br><span class="line"></span><br><span class="line">On branch master</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">        modified:   demo1.html</span><br><span class="line">        modified:   demo3.html</span><br><span class="line"><span class="meta">#</span><span class="bash"> 透過全部提交加入暫存，但後悔不想提交 demo3.html</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git reset HEAD demo3.html</span></span><br><span class="line"></span><br><span class="line">Unstaged changes after reset:</span><br><span class="line">M       demo3.html</span><br><span class="line"><span class="meta">#</span><span class="bash"> 透過指令將檔案退回暫存回到未提交狀態</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> L:\git_study&gt;git status</span></span><br><span class="line"></span><br><span class="line">On branch master</span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use &quot;git restore --staged &lt;file&gt;...&quot; to unstage)</span><br><span class="line">        modified:   demo1.html</span><br><span class="line">Changes not staged for commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)</span><br><span class="line">        modified:   demo3.html</span><br><span class="line"><span class="meta">#</span><span class="bash"> 現在 demo3.html 處於已修改但未暫存狀態</span></span><br></pre></td></tr></table></figure>
 
 <div class="note danger"><p><strong>移除暫存回工作目錄的方式 restore 跟 reset HEAD 差別？</strong><br>前者 restore 是比較新的方式，只單純對工作目錄、暫存、快照之間的切換做還原。後者是透過 HEAD 來進行還原階段（舊方式），對於 reset HEAD 來說可以操作修改到 repo 內的分支結構，所以操作不當將導致影響很大。<br>建議 restore 來做工作目錄各種還原會更安全些，在部分教學跟官方文件有提及到 reset 來進行 unstage 作業，但實際操作新版 GIT 你會發現提示都是改寫為 restore 為正確做法。<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/58003030/what-is-the-git-restore-command-and-what-is-the-difference-between-git-restor">詳 stackoverflow 討論</a></p>
@@ -1300,7 +1303,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -1308,13 +1311,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

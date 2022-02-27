@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://i.imgur.com/XKdJWtz.png">
 <meta property="og:image" content="https://i.imgur.com/Duzo6Oz.png">
 <meta property="article:published_time" content="2020-05-14T08:11:32.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.230Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="技術士考照與全國技能競賽">
 <meta name="twitter:card" content="summary">
@@ -203,18 +203,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -286,7 +289,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -316,7 +319,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>34871 <i>words</i></span>
+      <span>34874 <i>words</i></span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
@@ -457,7 +460,7 @@
 <p>做 SQL 的 insert 動作，SQL 新增語法為 <code>INSERT INTO table (name1,name2,name3...)VALUES(val1,val2,val3...)</code>。因此你需要整理成以上字串，再透過 <code>query(&quot;#SQLCODE&quot;)</code> 去執行結果。最後再去查詢剛剛新增的 ID 是多少。</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//update SQL</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">update</span>(<span class="params"><span class="variable">$ary</span>,<span class="variable">$tb</span></span>)</span>&#123;</span><br><span class="line">  <span class="keyword">global</span> <span class="variable">$db</span>;</span><br><span class="line">  <span class="keyword">foreach</span> (<span class="variable">$ary</span> <span class="keyword">as</span> <span class="variable">$do</span> =&gt; <span class="variable">$data</span>)&#123;</span><br><span class="line">    <span class="keyword">switch</span> (<span class="variable">$do</span>) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;num+1&#x27;</span>: <span class="comment">//如果陣列 key 是 num+1，對 value(id 值） 做 num+1</span></span><br><span class="line">        <span class="variable">$db</span>-&gt;query(<span class="string">&quot;UPDATE &quot;</span>.<span class="variable">$tb</span>.<span class="string">&quot; SET num=num+1 WHERE id=&quot;</span>.<span class="variable">$data</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="string">&#x27;num-1&#x27;</span>: <span class="comment">//如果陣列 key 是 num-1，對 value(id 值） 做 num-1</span></span><br><span class="line">        <span class="variable">$db</span>-&gt;query(<span class="string">&quot;UPDATE &quot;</span>.<span class="variable">$tb</span>.<span class="string">&quot; SET num=num-1 WHERE id=&quot;</span>.<span class="variable">$data</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">default</span>: <span class="comment">//多組批次更新，key = id，暴力的一次只更新 1 個欄位</span></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$data</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)</span><br><span class="line">          <span class="variable">$db</span>-&gt;query(<span class="string">&quot;UPDATE &quot;</span>.<span class="variable">$tb</span>.<span class="string">&quot; SET &quot;</span>.<span class="variable">$do</span>.<span class="string">&quot;=&#x27;&quot;</span>.<span class="variable">$value</span>.<span class="string">&quot;&#x27; WHERE id=&quot;</span>.<span class="variable">$key</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>作 SQL 的 update 動作，需要取得陣列跟資料表名稱。丟進來的陣列使用 foreach 拆開判斷處理。修改請求大多都是多筆各單值批次。只有在做特殊修改時會是單筆、(num+1 or -1)。</p>
-<p>第一層為動作指定 name 跟 data。根據甚麼名稱做不同的 update 描述。修改方式有 3 種不同做法，分類出是<code>num+1</code>,<code>num-1</code>，<code>普通的資料修改</code>，差別用一維 <code>[$name=&gt;$data]</code> 或二維陣列 <code>[$na=&gt;$dt=&gt;[$key=&gt;$value]]</code></p>
+<p>第一層為動作指定 name 跟 data。根據什麼名稱做不同的 update 描述。修改方式有 3 種不同做法，分類出是<code>num+1</code>,<code>num-1</code>，<code>普通的資料修改</code>，差別用一維 <code>[$name=&gt;$data]</code> 或二維陣列 <code>[$na=&gt;$dt=&gt;[$key=&gt;$value]]</code></p>
 <ul>
 <li>num+1：<br>代表要對某數字做+1，此時 data($dt) 代表式條件的 id 值</li>
 <li>num-1：<br>代表要對某數字做-1，此時 data($dt) 代表式條件的 id 值</li>
@@ -1405,25 +1408,25 @@
 <td>1</td>
 <td>admin</td>
 <td>1234</td>
-<td><a href="mailto:&#x61;&#100;&#x6d;&#105;&#110;&#64;&#x6c;&#97;&#x62;&#111;&#114;&#46;&#x67;&#111;&#x76;&#x2e;&#116;&#x77;">&#x61;&#100;&#x6d;&#105;&#110;&#64;&#x6c;&#97;&#x62;&#111;&#114;&#46;&#x67;&#111;&#x76;&#x2e;&#116;&#x77;</a></td>
+<td><a href="mailto:&#97;&#100;&#x6d;&#x69;&#110;&#x40;&#108;&#x61;&#98;&#x6f;&#114;&#x2e;&#103;&#111;&#118;&#x2e;&#116;&#x77;">&#97;&#100;&#x6d;&#x69;&#110;&#x40;&#108;&#x61;&#98;&#x6f;&#114;&#x2e;&#103;&#111;&#118;&#x2e;&#116;&#x77;</a></td>
 </tr>
 <tr>
 <td>2</td>
 <td>test</td>
 <td>5678</td>
-<td><a href="mailto:&#x74;&#101;&#x73;&#x74;&#64;&#108;&#x61;&#98;&#111;&#114;&#46;&#x67;&#111;&#118;&#46;&#116;&#x77;">&#x74;&#101;&#x73;&#x74;&#64;&#108;&#x61;&#98;&#111;&#114;&#46;&#x67;&#111;&#118;&#46;&#116;&#x77;</a></td>
+<td><a href="mailto:&#x74;&#101;&#x73;&#x74;&#64;&#x6c;&#x61;&#98;&#x6f;&#114;&#x2e;&#x67;&#x6f;&#118;&#x2e;&#116;&#x77;">&#x74;&#101;&#x73;&#x74;&#64;&#x6c;&#x61;&#98;&#x6f;&#114;&#x2e;&#x67;&#x6f;&#118;&#x2e;&#116;&#x77;</a></td>
 </tr>
 <tr>
 <td>3</td>
 <td>mem01</td>
 <td>mem01</td>
-<td><a href="mailto:&#109;&#101;&#x6d;&#48;&#x31;&#64;&#108;&#97;&#x62;&#x6f;&#x72;&#x2e;&#103;&#x6f;&#118;&#x2e;&#116;&#119;">&#109;&#101;&#x6d;&#48;&#x31;&#64;&#108;&#97;&#x62;&#x6f;&#x72;&#x2e;&#103;&#x6f;&#118;&#x2e;&#116;&#119;</a></td>
+<td><a href="mailto:&#109;&#x65;&#109;&#x30;&#49;&#64;&#x6c;&#x61;&#98;&#x6f;&#114;&#46;&#x67;&#111;&#118;&#46;&#x74;&#119;">&#109;&#x65;&#109;&#x30;&#49;&#64;&#x6c;&#x61;&#98;&#x6f;&#114;&#46;&#x67;&#111;&#118;&#46;&#x74;&#119;</a></td>
 </tr>
 <tr>
 <td>4</td>
 <td>mem02</td>
 <td>mem02</td>
-<td><a href="mailto:&#109;&#101;&#109;&#x30;&#50;&#x40;&#108;&#97;&#98;&#x6f;&#114;&#x2e;&#103;&#x6f;&#x76;&#46;&#116;&#x77;">&#109;&#101;&#109;&#x30;&#50;&#x40;&#108;&#97;&#98;&#x6f;&#114;&#x2e;&#103;&#x6f;&#x76;&#46;&#116;&#x77;</a></td>
+<td><a href="mailto:&#109;&#x65;&#x6d;&#x30;&#50;&#x40;&#108;&#97;&#98;&#111;&#114;&#x2e;&#x67;&#x6f;&#x76;&#x2e;&#116;&#x77;">&#109;&#x65;&#x6d;&#x30;&#50;&#x40;&#108;&#97;&#98;&#111;&#114;&#x2e;&#x67;&#x6f;&#x76;&#x2e;&#116;&#x77;</a></td>
 </tr>
 </tbody></table>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `q2t6_user` (`id`, `acc`, `pwd`, `mail`) <span class="keyword">VALUES</span></span><br><span class="line">  (<span class="number">1</span>, <span class="string">&#x27;admin&#x27;</span>, <span class="string">&#x27;1234&#x27;</span>, <span class="string">&#x27;admin@labor.gov.tw&#x27;</span>),</span><br><span class="line">  (<span class="number">2</span>, <span class="string">&#x27;test&#x27;</span>, <span class="string">&#x27;5678&#x27;</span>, <span class="string">&#x27;test@labor.gov.tw&#x27;</span>),</span><br><span class="line">  (<span class="number">3</span>, <span class="string">&#x27;mem01&#x27;</span>, <span class="string">&#x27;mem01&#x27;</span>, <span class="string">&#x27;mem01@labor.gov.tw&#x27;</span>),</span><br><span class="line">  (<span class="number">4</span>, <span class="string">&#x27;mem02&#x27;</span>, <span class="string">&#x27;mem02&#x27;</span>, <span class="string">&#x27;mem02@labor.gov.tw&#x27;</span>);</span><br></pre></td></tr></table></figure>
@@ -2989,7 +2992,7 @@
 <td>test</td>
 <td>test</td>
 <td>測試 01</td>
-<td><a href="mailto:&#x74;&#101;&#115;&#x74;&#64;&#116;&#101;&#115;&#x74;&#46;&#x63;&#111;&#109;">&#x74;&#101;&#115;&#x74;&#64;&#116;&#101;&#115;&#x74;&#46;&#x63;&#111;&#109;</a></td>
+<td><a href="mailto:&#116;&#x65;&#x73;&#x74;&#x40;&#x74;&#x65;&#x73;&#x74;&#x2e;&#99;&#x6f;&#x6d;">&#116;&#x65;&#x73;&#x74;&#x40;&#x74;&#x65;&#x73;&#x74;&#x2e;&#99;&#x6f;&#x6d;</a></td>
 <td>test road</td>
 <td>8888-888-888</td>
 <td>2020-05-22</td>
@@ -3191,7 +3194,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -3199,13 +3202,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://i.imgur.com/kMqEG8t.png">
 <meta property="og:image" content="https://i.imgur.com/CN1gDcE.png">
 <meta property="article:published_time" content="2020-04-20T13:07:53.000Z">
-<meta property="article:modified_time" content="2021-12-02T16:36:02.914Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.856Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
@@ -200,18 +200,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -283,7 +286,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-12-03 00:36:02" itemprop="dateModified" datetime="2021-12-03T00:36:02+08:00">2021-12-03</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -590,7 +593,7 @@ style DOM fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5,
 <div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
 <figure class="highlight html"><figcaption><span>event_listener.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">id</span>=<span class="string">&quot;ock&quot;</span> <span class="attr">value</span>=<span class="string">&quot;try me&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">id</span>=<span class="string">&quot;canel&quot;</span> <span class="attr">value</span>=<span class="string">&quot;取消 mouseover&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;clearover()&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
 
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*一開始 HTML#ock 沒有寫事件，之後透過 addEventListener（甚麼動作，執行甚麼函式）來添加*/</span></span><br><span class="line"><span class="keyword">var</span> mybtn=<span class="built_in">document</span>.getElementById(<span class="string">&quot;ock&quot;</span>);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;click&quot;</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;  <span class="comment">//這裡應該用 click 不該用 onclick</span></span><br><span class="line">  alert(<span class="string">&quot;it&#x27;s click&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;mouseover&quot;</span>, myfun2);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myfun</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  alert(<span class="string">&quot;it&#x27;s mouseover&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myfun2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="string">&quot;you can do more function&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">clearover</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">&quot;ock&quot;</span>).removeEventListener(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*一開始 HTML#ock 沒有寫事件，之後透過 addEventListener（什麼動作，執行什麼函式）來添加*/</span></span><br><span class="line"><span class="keyword">var</span> mybtn=<span class="built_in">document</span>.getElementById(<span class="string">&quot;ock&quot;</span>);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;click&quot;</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;  <span class="comment">//這裡應該用 click 不該用 onclick</span></span><br><span class="line">  alert(<span class="string">&quot;it&#x27;s click&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">mybtn.addEventListener(<span class="string">&quot;mouseover&quot;</span>, myfun2);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myfun</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  alert(<span class="string">&quot;it&#x27;s mouseover&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myfun2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="string">&quot;you can do more function&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">clearover</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">&quot;ock&quot;</span>).removeEventListener(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="節點的屬性讀寫"><a href="#節點的屬性讀寫" class="headerlink" title="節點的屬性讀寫"></a>節點的屬性讀寫</h2><table>
 <thead>
@@ -742,7 +745,7 @@ style DOM fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5,
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -750,13 +753,13 @@ style DOM fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5,
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">

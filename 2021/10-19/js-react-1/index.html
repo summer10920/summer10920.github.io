@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
 <meta property="og:image" content="https://i.imgur.com/hrUtZFt.png">
 <meta property="article:published_time" content="2021-10-19T05:09:14.000Z">
-<meta property="article:modified_time" content="2021-11-29T06:43:09.527Z">
+<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ReactJS">
@@ -198,18 +198,21 @@
         <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summmer10920/pens/public" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summmer10920&#x2F;pens&#x2F;public" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
   </div>
 
 
   <div class="links-of-blogroll site-overview-item animated">
     <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      友站連結
+      其他資源
     </div>
     <ul class="links-of-blogroll-list">
         <li class="links-of-blogroll-item">
-          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">網頁設計乙級術科解析</a>
+          <a href="http://b17300demo.lokiui.com/" title="http:&#x2F;&#x2F;b17300demo.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
         </li>
     </ul>
   </div>
@@ -281,7 +284,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-11-29 14:43:09" itemprop="dateModified" datetime="2021-11-29T14:43:09+08:00">2021-11-29</time>
+        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -580,7 +583,7 @@
 <p>或者簡潔的一次寫完，利用 JSX 的<code>&#123;&#125;</code>表達式特性。</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; nanoid &#125; <span class="keyword">from</span> <span class="string">&#x27;nanoid&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ListItem</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">li</span>&gt;</span>&#123;props.value&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span>;  <span class="comment">//這是純元素</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">NumberList</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.numbers.map((number) =&gt;</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">ListItem</span> <span class="attr">key</span>=<span class="string">&#123;nanoid()&#125;</span> <span class="attr">value</span>=<span class="string">&#123;number&#125;</span> /&gt;</span>)&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">ReactDOM.render(</span><br><span class="line">  <span class="comment">// 渲染時獲得陣列，會根據陣列內的 JSX 元素與 key 值進行處理</span></span><br><span class="line">  <span class="xml"><span class="tag">&lt;<span class="name">NumberList</span> <span class="attr">numbers</span>=<span class="string">&#123;numbers&#125;</span> /&gt;</span></span>,</span><br><span class="line">  <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
-<h2 id="表單設計"><a href="#表單設計" class="headerlink" title="表單設計"></a>表單設計</h2><p>透過 html 表單元素能跟用戶進行資料處理，搭配 state 與 event 可以即時性雙向綁定作業，讓方便性提高不少。在 React 實施雙向綁定的方式稱呼為 Controlled Component 受控組件，讓用戶輸入完成動態更新 state 值而透過 setstate() 達到。但也不是甚麼都能控制，例如 file 只能用戶來進行修改，無法透過 JavaScript 來反向修改（僅唯讀），這一類型又稱呼為 uncontrolled component 不受控組件。</p>
+<h2 id="表單設計"><a href="#表單設計" class="headerlink" title="表單設計"></a>表單設計</h2><p>透過 html 表單元素能跟用戶進行資料處理，搭配 state 與 event 可以即時性雙向綁定作業，讓方便性提高不少。在 React 實施雙向綁定的方式稱呼為 Controlled Component 受控組件，讓用戶輸入完成動態更新 state 值而透過 setstate() 達到。但也不是什麼都能控制，例如 file 只能用戶來進行修改，無法透過 JavaScript 來反向修改（僅唯讀），這一類型又稱呼為 uncontrolled component 不受控組件。</p>
 <h3 id="input"><a href="#input" class="headerlink" title="input"></a>input</h3><p>嘗試將以下 input 版型改為 controlled component，並取消 form 的 submit 預設提交動作。按下 submit 就提供 alert 做檢查。</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span>&gt;</span></span><br><span class="line">    Name: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;Submit&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -758,7 +761,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2021</span> All rights reserved.
+    <span itemprop="copyrightYear">2022</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -766,13 +769,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1476896 <i>words</i></span>
+    <span title="全站總字數">1478775 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2685 <i>mins</i></span>
+    <span title="全站總閱讀時間">2689 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">
