@@ -9,11 +9,11 @@ tag:
 date: 2020-03-06 15:55:32
 ---
 
-CSS 的課程教材一共分為五篇章節文章介紹，都是基礎的從零開始的課程並跟隨 CSS3 的觀念技巧，完全沒學過的人可以跟著學習，曾碰過 CSS 的人也可以跳著章節選擇性參考。CSS 是很基本的技術一定要會，任何的排版與外觀技巧都是透過 CSS 完成。學會 CSS 能幫助你在任何 Web 平台（部落格、套版、框架主題、架站包。.. 等等）上做輕度的視覺修改，更厲害的人可以進入設計師領域。
+![](https://i.imgur.com/lElmG8a.png)
+
+CSS 的課程教材一共分為五篇章節文章介紹，都是基礎的從零開始的課程並跟隨 CSS3 的觀念技巧，完全沒學過的人可以跟著學習，曾碰過 CSS 的人也可以跳著章節選擇性參考。CSS 是很基本的技術一定要會，任何的排版與外觀技巧都是透過 CSS 完成。學會 CSS 能幫助你在任何 Web 平台（部落格、套版、框架主題、架站包…等等）上做輕度的視覺修改，更厲害的人可以進入設計師領域。
 
 <!-- more -->
-
----
 
 # CSS 的基礎觀念
 CSS 是一種針對 HTML 標籤在實體具現化之後的外觀調整工作，現在以 CSS3 為主技術。之前 HTML 有提到，每個 HTML 標籤視為盒子 (Box) 模式且區分區塊、行內兩種模式。CSS 需要額外編寫並宣告與 HTML 的選擇關係，這樣瀏覽器才會知道哪個標籤該用怎樣的 CSS 外觀。
@@ -24,8 +24,7 @@ CSS 是一種針對 HTML 標籤在實體具現化之後的外觀調整工作，�
 {% endnote %}
 
 ## CSS 的寫法方式
-- 與 HTML 不同，屬性與值在兩者是不一樣的描述參數，且 CSS 屬性與值大多為複數，彼此用分號`;`錯開。
-- 選擇器的填寫名稱，可以是標籤 tagname、類別 class、ID，進階複合或擴展到層級、偽元素、相對位置、屬性。.. 等多選擇。
+與 HTML 不同，屬性與值在兩者是不一樣的描述參數，且 CSS 屬性與值採用複數進行疊加效果，彼此用分號`;`錯開。而選擇器的填寫名稱，可以是標籤 tagname、類別 class、ID，進階複合或擴展到層級、偽元素、相對位置、屬性…等多選擇。
 
 - HTML：
   `<標籤名稱 屬性 A="值" 屬性 B="值">TEXT</標籤名稱>`
@@ -33,43 +32,42 @@ CSS 是一種針對 HTML 標籤在實體具現化之後的外觀調整工作，�
   `選擇器 {屬性 A: 值；屬性 B: 值}`
 
 {% note primary %}
-**素材準備：準備好以下代碼方便下一階段的教學練習** 
-```html cssTry.html
-<!DOCTYPE html>
-<html>
+  **素材準備：準備好以下代碼** 
+  ```html cssTry.html
+  <!DOCTYPE html>
+  <html>
 
-<head>
-  <meta charset="UTF-8">
-  <title>CSS Try!!</title>
-  <style>
+  <head>
+    <meta charset="UTF-8">
+    <title>CSS Try!!</title>
+    <style>
+      <!-- 等等在這裡編寫 -->
+    </style>
+  </head>
 
-  </style>
-</head>
+  <body>
+    <h1>Lorem ipsum dolor sit amet.</h1>
+    <p>
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa illum sit dicta, similique dolorum, maiores harum
+      molestiae animi, non quas iusto. Cum voluptates magni harum, maiores veniam obcaecati consequuntur nam aspernatur
+      incidunt aliquid atque quis dolorum enim non dolore a error quae voluptatem nulla numquam dolores natus illo sed
+      nesciunt.
+    </p>
+  </body>
 
-<body>
-  <h1>Lorem ipsum dolor sit amet.</h1>
-  <p>
-    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa illum sit dicta, similique dolorum, maiores harum
-    molestiae animi, non quas iusto. Cum voluptates magni harum, maiores veniam obcaecati consequuntur nam aspernatur
-    incidunt aliquid atque quis dolorum enim non dolore a error quae voluptatem nulla numquam dolores natus illo sed
-    nesciunt.
-  </p>
-</body>
-
-</html>
-```
+  </html>
+  ```
 {% endnote %}
 
 試著在素材上面的 style 區域內進行 CSS 設定，跟著敲打下面三種不同的代碼所得到的效果為何。
 
-1. **簡單的寫法**
+- **簡單的寫法**
 ```css cssTry.html
 h1 {
   color: red;
 }
 ```
-
-2. **多屬性指定**
+- **多屬性指定**
 ```css cssTry.html
 h1 {
   color: white;
@@ -77,8 +75,7 @@ h1 {
   font-size: 30px;
 }
 ```
-
-3. **多項選擇**
+- **多項選擇**
 ```css cssTry.html
 h1,
 p {
@@ -92,15 +89,13 @@ p {
 一共分為 4 種 CSS 宣告位置，**可重複宣告**相同選擇標籤在不同的宣告位置或屬性，但 CSS 單屬性只會依優先權擇一執行。優先權為固定的，將根據離標籤近且明確性描述強烈的為高優先。
 
 ### 行內樣式 (Inline Style)
-最簡單的方式就是直接在該標籤內寫上 style 屬性，這是最浪費資源的寫法且無法重新被其他標籤使用。同時具備最高優先權（由於指定在單一標籤內且夠近，會比內嵌、外部的樣式表來的強。)
-
+最簡單的方式就是直接在該標籤內寫上 style 屬性，這是最浪費資源的寫法且無法重新被其他網頁之標籤元素使用。同時具備最高優先權（由於指定在單一標籤內且夠近，會比頁首內嵌、外部連結的樣式表來的強烈。)
 ```html cssTry.html
 <p style="color:red">Lorem ipsum dolor sit amet.</p>
 ```
 
 ### 頁首宣告 (Embedded Style)
-宣告本網頁使用的樣式表寫在 `<head></head>`裡（並於`<script></script>` JS 執行前面），但同理無法被其他網頁使用只在本頁有效。
-
+宣告本網頁使用的樣式表寫在 `<head></head>`裡（建議可於`<script></script>` JS 執行之前），但同理無法被其他網頁的標籤元素使用，只能在本頁有效。
 ```html cssTry.html
 <head>
   <style>
@@ -112,8 +107,7 @@ p {
 ```
 
 ### 外部連結 (External Style)
-與前者位置相同，但將 CSS 樣式表以副檔名為。css 文件存放在別處，透過 link 連結方式載入執行。好處可以同一份 css 文件進行多網頁共用且易於集中管理修改。
-
+與前者位置相同，但將 CSS 樣式表以副檔名為`.css`文件存放在別處，透過 link 連結方式載入執行。好處可以同一份 css 文件進行多網頁共用且易於集中管理修改。
 ```html cssTry.html
 <head>
   <link rel="stylesheet" href="style.css" />
@@ -121,8 +115,7 @@ p {
 ```
 
 ### 匯入樣式 (Import)
-跟前者相同的用法，其次特點差別在於在 CSS 文件當中，也可以@import 其他的 CSS 檔案匯入成為本體一部分。也就是可以將 CSS 分成多段做更多規劃技巧。
-
+跟前者相同的用法，其次特點差別在於在 CSS 文件當中，也可以`@import`其他的 CSS 檔案匯入成為本體一部分。也就是可以將 CSS 分成多段做更多規劃技巧。
 ```html cssTry.html
 <style>
   /*兩種寫法皆可*/
@@ -132,20 +125,19 @@ p {
 ```
 
 {% note warning %}
-**科普知識：link 與 import 差別**
-- link 屬於 HTML 語法（所以是 TAG 標籤），除了 CSS 文件也可以連結 RSS 等其他用途。
-- import 是 CSS 語法（沒有 TAG 標籤），就是專門匯入 CSS 文件成為自身一部分。
+  **科普知識：link 與 import 差別**
+  link 屬於 HTML 語法因此為標籤元素，link 元素除了 CSS 文件也可以連結其他類型檔案例如 RSS …等；import 是 CSS 語法因此不是 tag 標籤，等同將分散的 CSS 文件透過匯入 import 成一份 CSS 文件。
 
-此外 link 因為是 tag，故可透過 JS 的 DOM 規範去控制，反之@import 是無法受 JS 控制（根本不是 HTML 結構）。
+  此外 link 因為是 tag，故可透過 JS 的 DOM 規範去控制，反之@import 是無法受 JS 控制（根本不是 HTML 結構）。
 {% endnote %}
 
 {% note danger %}
-**新手陷阱：@import 放置於開頭處**
-使用@import 時必需放正式撰寫 css 之前的第一行，否則會載入失敗。
+  **新手陷阱：@import 放置於開頭處**
+  使用@import 時必需放正式撰寫 css 之前的第一行，否則會載入失敗。
 {% endnote %}
 
-## 先偷學的屬性：Color
-為了教學方便，這裡我們挑選簡單的 color 屬性學習，下達指令針對該標籤進行顏色變化，顏色的值有多種表示方法。方便我們做選擇器的練習
+## 初學的屬性：Color
+為了教學方便，這裡我們挑選簡單的 color 作為第一個學習 CSS 屬性，下達指令針對該標籤進行顏色變化，顏色的值有多種表示方法。方便我們做選擇器的練習
 
 ```css inherit.html
 .demo {
@@ -166,10 +158,8 @@ p {
 ```
 
 ### 練習
-
-1. 隨意自行設定標籤與文字內容，接著使用三種可寫入 CSS 的方式，修改標籤文字顏色。
-2. 文字顏色需用到 顏色名稱、HEX 色碼、rgb。
-
+- 隨意自行設定標籤與文字內容，接著使用三種可寫入 CSS 的方式，修改標籤文字顏色。
+- 文字顏色需用到 顏色名稱、HEX 色碼、rgb。
 ```html cssTry.html
 <head>
   <meta charset="UTF-8">
@@ -194,23 +184,25 @@ span{
 ```
 
 # 選擇器
-CSS 有許多種選擇器可以鎖定目標修改該目標的樣式，常用的選擇器有`tag`、`id`、`class`、`複合子`。另外，之前提到 CSS 的優先權，是根據離標籤近且明確性描述高的為優先。你可以根據以下公式做初次暫時性理解，隨之後的上手後再來探討：
+CSS 有許多種選擇器可以鎖定目標修改該目標的樣式，常用的選擇器有`tag`、`id`、`class`、`複合子`。
 
->style(!important)>ID>Class>元素 (Elements)
+{% note danger %}
+  **新手陷阱：CSS 的優先權**
+  是根據離標籤越近且明確性描述較高者為優先，大致規則如下，細部隨後續過程來探討：
+  （高優先）style(!important)＞ID＞Class＞Elements 元素（低優先）
+{% endnote %}
 
 ## Tag、Class、ID
 最基礎用途的方式就是直接指定 tag name（大範圍）、class name（複數範圍）、id name（單一範圍）。通常這層級的寫法都影響優先的程度很大。
 
 ### 元素（標籤）選擇 （Type Selector）
 簡單直接大範圍的指定這類型標籤都吃這個選擇，但優先權非常低很容易被其他選擇器搶走。
-
 ```css cssSelector.html
 h1 {
     color: red;
 }
 ```
-
-> 常使用於全站進行初始化設定但優先權低，像是全站的主色或是文字尺寸都會先指定到`body{}`內
+> 常使用在全站的初始化設定，因為優先權很低不影響後期的二工調整，例如使用`body{}`來規劃全站主色或是文字尺寸。
 
 ###  類別選擇 （Class Selector）
 - 使用 class 方式可以重複使用，任何指定同個 class 名稱的不同標籤都共用。
@@ -293,7 +285,7 @@ h1 {
 <p>Lorem ipsum dolor sit amet.</p>
 ```
 
-### 相鄰選擇 `X ~ Y`
+### 相鄰群選擇 `X ~ Y`
 稱為相鄰兄弟群（多選）。 它僅僅會選擇剛好在 X 元素之後的同層 Y 元素。
 
 ```html
@@ -307,17 +299,18 @@ h1 {
 <p>Lorem ipsum dolor sit amet.</p>
 
 <h2>Lorem, ipsum dolor.</h2>
-<p>Lorem ipsum dolor sit amet.</p>
+<p>Lorem ipsum dolor sit amet.</p><!--blue-->
 
 <h3>Lorem ipsum dolor sit amet.</h3>
-<p>Lorem ipsum dolor sit amet.</p>
+<p>Lorem ipsum dolor sit amet.</p><!--blue-->
+
 <div>
   <p>Lorem ipsum dolor sit amet.</p>
 </div>
 ```
 
 ### 屬性選擇 `X[title]`
-從 tag 的屬性進行選擇，此外能根據屬性值做條件上的滿足
+從 tag 的屬性進行選擇，也能根據屬性值做條件上的滿足。
 
 - `X[Y]` : X 持有屬性 Y 之對象
 - `X[Y="Z"]` :X 持有屬性 Y 之對象，且 Y 的值為 Z
@@ -400,26 +393,59 @@ div:not(.odd) {
 ```
 
 ### 關係偽類
-原則上就是找這群人之中的兄弟關係之對象
->`nth-child`主要是父級下的子級對象不管標籤；`nth-of-type`是等於找兄弟之間的相同標籤。前後差別是用 child 還是以 type 來計算。
+原則上就是找這群人之中的兄弟關係之對象。可分兩派：`nth-child`主要是該父級下的所有子元素之位置；`nth-of-type`是等於找兄弟之間同標籤之位置。前後差別是用 child 還是以 type 來計算。舉例：
 
-| 選擇器                | 說明                                             |
-| --------------------- | ------------------------------------------------ |
-| p:first-child         | 找到這些 p 的父級之第 1 個兒子（大哥）。               |
-| p:last-child          | 找到這些 p 的父級之最後個兒子（老么）。              |
-| --------------------- | ------------------------------------------------ |
-| p:nth-child(3)        | 找到這些 p 的父級之第 3 個兒子。（索引最小為 1)        |
-| p:nth-child(3n+1)     | 找到這些 p 的父級之第 1,4,7... 兒子。                |
-| p:nth-child(3n)       | 找到這些 p 的父級之第 3,6,9... 兒子。                |
-| p:nth-child(-n+3)     | 找到這些 p 的父級之第 1,2,3 兒子。                   |
-| p:nth-child(odd)      | 找到這些 p 的父級之偶數兒子。                      |
-| p:nth-last-child(3)   | 找到這些 p 的父級之倒數第 3 個兒子`p`。（索引最小為 1) |
-| --------------------- | ------------------------------------------------ |
-| p:nth-of-type(3)      | 找到這些 p 的父級之第 3 個兒子`p`。（索引最小為 1)     |
-| p:nth-of-type(3n+1)   | 找到這些 p 的父級之第 1,4,7... 兒子`p`。             |
-| p:nth-of-type(3n)     | 找到這些 p 的父級之第 3,6,9... 兒子`p`。             |
-| p:nth-of-type(odd)    | 找到這些 p 的父級之偶數兒子`p`。                   |
-| p:nth-last-of-type(3) | 找到這些 p 的父級之倒數第 3 個兒子`p`。（索引最小為 1) |
+```html
+<style>
+  p:nth-child(3) { /* 範圍為所有 child，該 p 是否該範圍內排序第 3 */
+    background: red;
+  }
+
+  p:nth-of-type(3) { /* 範圍為所有 child 且 同 type，該 p 是否該範圍內排序第 3 */
+    background: green;
+  }
+</style>
+
+<h3>hhh</h3>
+<p>ppp</p>
+<p>ppp</p><!--red-->
+<p>ppp</p><!--green-->
+
+<div>
+  <p>ppp</p>
+  <h3>hhh</h3>
+  <p>ppp</p><!--red-->
+  <h3>hhh</h3>
+  <p>ppp</p><!--green-->
+</div>
+```
+
+| 選擇器                | 說明                                                            |
+| --------------------- | --------------------------------------------------------------- |
+| p:nth-child(3)        | 找到 p 是某父級之所有 child 範圍內，第 3 個（索引最小為 1)      |
+| p:nth-child(3n+1)     | 找到 p 是某父級之所有 child 範圍內，第 1,4,7…個                 |
+| p:nth-child(3n)       | 找到 p 是某父級之所有 child 範圍內，第 3,6,9…個                 |
+| p:nth-child(-n+3)     | 找到 p 是某父級之所有 child 範圍內，第 1,2,3 個                 |
+| p:nth-child(odd)      | 找到 p 是某父級之所有 child 範圍內，第單數個 (1,3.5…) 等價 2n+1 |
+| --------------------- | ------------------------------------------------------          |
+| p:nth-of-type(3)      | 找到這些 p 的父級之第 3 個兒子`p`。（索引最小為 1)              |
+| p:nth-of-type(3n+1)   | 找到這些 p 的父級之第 1,4,7…兒子`p`。                           |
+| p:nth-of-type(3n)     | 找到這些 p 的父級之第 3,6,9…兒子`p`。                           |
+| p:nth-of-type(odd)    | 找到這些 p 的父級之偶數兒子`p`。                                |
+| p:nth-last-of-type(3) | 找到這些 p 的父級之倒數第 3 個兒子`p`。（索引最小為 1)          |
+
+| 選擇器              | 說明                                                          |
+| ------------------- | ------------------------------------------------------------- |
+| p:first-child       | 找到 p，且需符合為某父級下之第 1 個兒子（大哥）。             |
+| p:last-child        | 找到 p，且需符合為某父級之最後個兒子（老么）。                |
+| p:nth-last-child(3) | 找到 p，且需符合為某父級之倒數第 3 個兒子`p`。（索引最小為 1) |
+
+>last-child 與 nth-last-child 練習部分，如果是直接寫在 body 內且使用 vscode 的 live server，因為 body 最後被偷多添加了`<script>`標籤，所以需特別注意。
+
+{% note danger %}
+  **新手陷阱：*-child 容易順序被異動影響**
+  套用在設計上，大多數老手會避免使用`*-child`來避免因變動添加其他總類元素影響預期之順序。
+{% endnote %}
 
 ```css
 div p:first-child {
@@ -453,10 +479,6 @@ li:not(:nth-child(-n + 3)) {
 
 ## 偽元素
 W3C 定義裡就只有五個，跟偽類不同這裡使用兩個冒號`::`開頭，而偽類使用一個冒號`:`開頭。請 [參考 W3SCHOOL](https://www.w3schools.com/css/css_pseudo_elements.asp)！
-
-{% note default %}
-**跳頁建議：如果這裡開始出現你不懂的內容（文章分類影響），請試著查資料理解後再回來**
-{% endnote %}
 
 {% note danger %}
 **新手陷阱：偽元素請習慣用兩個`::`**
@@ -505,7 +527,7 @@ content 是很特別的屬性，它可以使用 attr 直接獲取內容元素的
 <a href="http:www.google.com" title="My Title">google</a>
 ```
 
-content 內容是可以「相加」的，直接用一個空白鍵就可以不斷的累加下去，以下面的程式碼來說，可以在 content 值用雙引號添加文字。
+content 內容是可以「相加」的，直接用一個<kbd>Space</kbd>就可以不斷的累加下去，以下面的程式碼來說，可以在 content 值用雙引號添加文字。
 
 ```css
 a::before {
@@ -527,8 +549,8 @@ a::before{
 ```
 
 {% note danger %}
-**新手陷阱：哪些標籤不支持偽元素**
-比如 `<img>` 、`<input>`、`<iframe>`，這幾個標籤是不支持類似 img::before 這樣使用。前面說了 before/after 偽元素相當於在元素內部額外的標籤， input，img，iframe 等元素都不能包含其他元素，所以不能通過偽元素插入內容。
+**新手陷阱：置換元素沒有偽元素**
+比如 `<img>`, `<input>`, `<iframe>`，這幾個標籤是不支持類似 img::before 這樣使用。前面說的偽元素相當於在元素內部額外提供假的標籤元素，但 input, img, iframe…等這類置換元素都沒有內容物而是透過屬性得到定義物，所以不能通過偽元素插入到內容的前後。
 {% endnote %}
 
 ### ::first-letter 與 ::first-line
@@ -574,12 +596,12 @@ a::before{
 ```
 透過 Chrome <kbd>F12</kbd> 對`span`檢查，可以得到以下三組 color 指定。
 
-A. `div .this`的`color: inherit`
-B. `.this`的`color: red`
+A. `div .this{}`的`color: inherit`
+B. `.this{}`的`color: red`
 C. 父級 DIV`Style Attribute`的`color: blue`
 
-但`span`優先權部分為：
+但`span`優先權討論為：
 
-- A 的優先最高！因為 A 選擇器吃到兩個 class，B 只有一個 class 還強烈，至於 C 是父級繼承來的沒有指到 span 相對弱又遠。
+- A 的優先最高！因為 A 選擇器吃到兩個選擇描述；比起 B 只有一個 class 還強烈；至於 C 是父級繼承來的沒有描述指向到 span ，因此 C 相對弱又遠。
 - A 的 color 為`inherit`所以去吃父級的設定，因此前看父層級`div`查詢顏色為何。
-- `div`的顏色為 blue，所以 A 的顏色同等於父層級的顏色
+- `div`的顏色為 blue，所以 A 的顏色同等於父層級的顏色。

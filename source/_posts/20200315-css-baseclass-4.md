@@ -9,11 +9,11 @@ tag:
 date: 2020-03-15 14:23:57
 ---
 
+![](https://i.imgur.com/lElmG8a.png)
+
 本篇進入跟版面調整有關的技巧章節，Float 是很常見的浮動觀念，接著佈局章節會提供一些例子進行設計，最後是非常重要且主流的 flexbox 觀念。也就是網頁排版的重點都包含在這篇文章了。另外其實還有 Grid 跟 RWD 部分將之後由 Bootstrap 去深入學習。
 
 <!-- more -->
-
----
 
 # 浮動 float
 float 參數會讓元素產生一種浮動行為，而這個行為會變成 block 性質並緊貼在指定處（像磁鐵一樣）。
@@ -135,7 +135,7 @@ float 本身會脫離父層內的文字流，若父元素沒有高度也沒有�
 ### 方法二： 關閉 float
 由於 float 會持續運作剩餘浮動空間給之後的浮動元素，因此可以塞入一個區塊同時要求屬性為 clear:{left|right|both}進行關閉浮動的空間分配。
 
-本範例中可以在最後的。col 之下一個標籤添加：
+本範例中可以在最後的`.col`之下一個標籤添加：
 ```html
   <div class="col">...</div>
   <div style="clear:both"></div>
@@ -145,7 +145,7 @@ float 本身會脫離父層內的文字流，若父元素沒有高度也沒有�
 此時因為該屬性 clear 關閉了浮動同時也配給出空間，父容器也能算出整體的自身內容高度。
 
 {% note info %}
-**小技巧**：設計 class 攻勢並善用：:after
+**小技巧**：設計 class 規則並善用`::after`
 有時候你不會想對 HTML 添加多餘的元素，我們會習慣設計一個 class 公式能夠對父容器有效（拉回父容器高度），也能對排在後面非浮動之元素有效（不用寫 style 的 clear)。
 ```css
 .clearfix::before,.clearfix::after{
@@ -366,6 +366,8 @@ A 浮動定位後，B 產生了溢位上的空間錯亂，設定 B autoflow:auto
 3. 字型需用微軟正黑體。
 4. 文字需水平、垂直置中。
 
+{% tabs float,1 %}
+<!-- tab 初始素材-->
 ```html
 <div class="container">
   <div class="header">Header</div>
@@ -374,13 +376,13 @@ A 浮動定位後，B 產生了溢位上的空間錯亂，設定 B autoflow:auto
   <div class="footer">Footer</div>
 </div>
 ```
-
+<!-- endtab -->
+<!-- tab 預覽-->
 {% jsfiddle summer10920/dj67rhsm result dark 100% 1024 %}
-
-### 解答
+<!-- endtab -->
+<!-- tab 解答-->
 1. 先設計 .container 的外觀屬性，先跳過垂直水平置中的要求
 2. 其中四個區塊設定 line-height 與 height 同高可以形成文字垂直居中的效果。
-
 ```css
 .container{
   font-family: "Microsoft JhengHei";
@@ -420,9 +422,7 @@ A 浮動定位後，B 產生了溢位上的空間錯亂，設定 B autoflow:auto
   /* line-height: 100px; */
 }
 ```
-
-3. 最後，垂直致中的 .container 有四種方法
-
+3. 最後，垂直致中的`.container`有三種方法
 ```css
 /* ver1:
     因為已經有寬高不如讓 margin 去自動算，但先用 fixed（或 absolute) 才能有絕對定位去抓邊界。
@@ -464,6 +464,8 @@ body{
   align-items: center;
 }
 ```
+<!-- endtab -->
+{% endtabs %}
 
 # 彈性盒 FlexBox
 1. 讓排版端喲端喲的彈性自動算。垂直對齊超簡單，Bootstrap CSS 框架也在用。
@@ -995,11 +997,15 @@ flex 項目的主軸空間尺寸（預設為 auto = 無指定），也就是該�
 這裡提供兩個 flex 學習網站抓準 flex 技巧，做一下最後練習。
 
 {% blockquote FLEXBOX FROGGY https://flexboxfroggy.com/#zh-tw %}
-透過遊戲方式共 24 關卡，學習 CSS 的 flex box 技巧，幫助思考並加強 CSS 排版上的各種雜症。
+透過遊戲方式共 24 關卡，學習 CSS 的 flex box 技巧，全球著名的練習遊戲。
 {% endblockquote %}
 
 {% blockquote Flexbox Defense http://www.flexboxdefense.com/ %}
 透過遊戲方式共 12 關卡，學習 CSS 的 flex box 技巧，幫助思考並加強 CSS 排版上的各種雜症。
+{% endblockquote %}
+
+{% blockquote Flex Priate https://hexschool.github.io/flexbox-pirate/ %}
+透過遊戲方式共兩總模式分別為 20 與 30 關卡，來自六角學院出處。
 {% endblockquote %}
 
 ### 彈性盒置中方式

@@ -9,16 +9,16 @@ tag:
 date: 2020-03-11 16:05:00
 ---
 
+![](https://i.imgur.com/lElmG8a.png)
+
 若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block & Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。
 
 <!-- more -->
 
----
-
 # 盒子模型 Box Model
-- CSS 是盒子的世界，分為兩種基本盒子分為區塊盒（block box），行內盒（inline box）。
-- 在編寫 CSS 時要先確認使用的 HTML 標籤的原型是區塊標籤還是行內標籤，這是寫 CSS 十分非常重要的事。
-- HTML 的每個標籤都可以視為盒子，當使用了標籤等於建立一個盒子，等同產生了容器區塊，也稱為內容區域。
+- CSS 是盒子的世界，分為兩種基本盒子分為區塊盒（block box）與行內盒（inline box）。
+- 在編寫 CSS 時先確認 HTML 標籤的原型是區塊標籤還是行內標籤，這寫 CSS 時非常重要的事。
+- HTML 的每個標籤都可以視為盒子，當使用了標籤等於建立盒子產生容器區塊，也稱為內容區域。
 - 外距、內距的單位百分比 %，是根據父元素的<mark>單位</mark>做為計算，也就是單位 % 不論是上下左右的內外距都是依外層寬高值而影響。
 - img 圖片雖為行內元素，但表現像 inline-block，非常適合解釋 background-color 包含 padding。
 - 有些標籤會有瀏覽器預設的上下外距，例如 h、p、body、ul。
@@ -536,7 +536,7 @@ visibility 屬性可以讓盒子隱藏不見，但將原有的位置保留下來
 - 每產生一個具備偏移座標的 Position 時，就等於一個圖層產生，就能使用 z-index 屬性做圖層堆疊控制。
 
 ## 相對定位 relative
-設定 `position:relative`，區塊會以原本顯示的位置為基準可以指定上下左右偏移。 與 absolute 不同的是，區塊原本的空間仍會保留。若只設定了 position:relative，卻沒有指定偏移則顯示上不會有甚麼明顯有什麼改變。
+設定 `position:relative`，區塊會以原本顯示的位置為基準可以指定上下左右偏移。 與 absolute 不同的是，區塊原本的空間仍會保留。若只設定了 position:relative，卻沒有指定偏移則顯示上不會有什麼明顯有什麼改變。
 
 ## 絕對定位 absolute
 當子元素設定 `position:absolute`，區塊會暫時以目前位置顯示，並脫離原本的區塊空間並向上尋找持有定位（可以是 relative 或是 absolute) 的容器做偏移基準，也就是版面基準點來定位，畫面上因為脫離了所以原本容器內的空間將會釋放掉。
@@ -734,9 +734,11 @@ body {
 ## 小節練習 - Postition
 請使用 CSS 的 postion 屬性試著做出以下畫面，點符號利用 absolute 做出。每個骰子的尺寸為 200px，點符號尺寸為骰子的 0.2 倍大。
 
+{% tabs posdemo,1 %}
+<!-- tab 題目預覽-->
 {% jsfiddle summer10920/rpxjzevc result dark 100% 500 %}
-
-### 解答
+<!-- endtab -->
+<!-- tab 解答-->
 ```html CSS_CLS3_totalTest.html
 <div class="container">
   <div class="dice">
@@ -774,7 +776,6 @@ body {
   </div>
 </div>
 ```
-
 ```css style.css
 .dice {
   width: 200px;
@@ -835,6 +836,8 @@ body {
   text-align: center;
 }
 ```
+<!-- endtab -->
+{% endtabs %}
 
 # 總思考練習
 
@@ -845,7 +848,7 @@ body {
 2. 為何檢查`<div class="container">`的參數只有寬度沒有高度
 3. 在 CSS 代碼中為何沒有`box-sizing: border-box;`時，整個卡片會跑版。
 
-{% jsfiddle summer10920/63oaphu8 html,css,result dark 100% 500 %}
+{% jsfiddle summer10920/63oaphu8 result,html,css, dark 100% 500 %}
 
 ### 解答
 
@@ -859,8 +862,8 @@ body {
 1. 為何預覽上 div.content 無法被選取文字，其原理為何。
 2. 試著理解本題 AD 的水平垂直至中的方法。
 
-{% jsfiddle summer10920/9scL73q6 html,css,js,result dark 100% 500 %}
+{% jsfiddle summer10920/9scL73q6 result,html,css,js dark 100% 500 %}
 
 ### 解答
-1. .ad 最上面設定 z-index，下一層的。all，最後一層是 body 其他的元素。
+1. `.ad`最上面設定 z-index，下一層的`.all`，最後一層是 body 其他的元素。
 2. 利用 fixed 變成圖層後，box 範圍利用 left,right,top,bottom 故意 0 撐大邊界使得 margin:auto 幫忙置中，前提是 content 必須要有固定的 w 跟 h 才能讓 auto 計算得出來。

@@ -359,7 +359,7 @@ document.onkeydown = getcode;
 {% endnote %}
 
 ```javascript
-/*一開始 HTML#ock 沒有寫事件，之後透過 addEventListener（甚麼動作，執行甚麼函式）來添加*/
+/*一開始 HTML#ock 沒有寫事件，之後透過 addEventListener（什麼動作，執行什麼函式）來添加*/
 var mybtn=document.getElementById("ock");
 mybtn.addEventListener("click",function(){  //這裡應該用 click 不該用 onclick
   alert("it's click");

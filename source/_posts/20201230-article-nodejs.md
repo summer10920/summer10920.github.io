@@ -48,7 +48,7 @@ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh | bash
 ```
 我們環境是 windows 無法使用，所以需要找支援 windows 的另一家 NVM 工具，這裡提供 [nvs](https://github.com/jasongin/nvs/releases) 來使用。（另外常用的還有 [nvm-windows](https://github.com/coreybutler/nvm-windows/releases) 選擇） 讓我們下載 nvm-setup.zip 使用。
 
-安裝過程也十分簡單沒甚麼選項，之後開啟 cmd 或 powershell 輸入 `nvs` 能列出版本選擇初次安裝。之後再次輸入 `nvs` 能選擇使用 node 版本或另外安裝。指令簡單明瞭。
+安裝過程也十分簡單沒什麼選項，之後開啟 cmd 或 powershell 輸入 `nvs` 能列出版本選擇初次安裝。之後再次輸入 `nvs` 能選擇使用 node 版本或另外安裝。指令簡單明瞭。
 
 ```cmd
 C:\Users\Loki> nvs

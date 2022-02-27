@@ -9,31 +9,33 @@ tag:
 date: 2020-03-05 18:45:42
 ---
 
+![](https://i.imgur.com/arN20ZR.png)
+
 這是給新手 0 程度的 HTML 的基礎教材，如果你有一定的 HTML 概念與標籤觀念，則可跳過本篇。
 
 <!-- more -->
 
----
-
 # HTML 的結構觀念
-HTML 是一個文件檔案，內容使用大量的元素 (element) 所組成，每個元素都能代表該段內容的資料格式描述，元素使用了標籤 (tag) 方式編寫並規劃從何開始從哪結束的區段，舉例來說`<body>HTML Code</body>`就代表此為 HTML 的內容區域。HTML 本身就是一堆標籤所組成（可以是獨立一段或者巢狀複合），這些 HTML 內容的代碼標籤則稱呼整個網頁下的 HTML 原始碼。
+HTML 是一個文件檔案，使用大量的元素 (element) 代碼所組成內容，每個元素都能代表該內容的資料格式描述表達方式，元素使用了標籤 (tag) 方式編寫並規劃從何開始從哪結束的區段，舉例來說`<body>HTML Code</body>`就代表此為 HTML 的內容區域。HTML 本身就是一堆標籤所組成（可以是獨立一段或者巢狀複合），這些 HTML 內容的代碼標籤則稱呼整個網頁下的 HTML 原始碼。
 
-目前主流規格為 HTML 第五代版本技術 (HTML5)，支援更多定義更完善也貼近主流（效能與多元性）。唯一缺點在於舊覽器上（像是 IE8 以下，有些銀行機關都還在用）都不支援，原因在於 HTML 的文件規格需要被瀏覽器所認識，隨著時間推進越來越多的 HTML 語言元素被定義出來，若是這些瀏覽器沒有版本更新或是塞入最新的規格知識，必然不認識新的 HTML 語法。
+目前主流規格為 HTML 第五代版本技術 (HTML5)，支援更多定義更完善也貼近主流（效能與多元性）。唯一缺點在於舊瀏覽器上（像是 IE 以下，有些銀行機關都還在用）都不支援，原因在於 HTML 的文件規格需要被瀏覽器所認識，隨著時間推進越來越多的 HTML 語言元素被定義出來，若是這些瀏覽器沒有版本更新或是塞入最新的規格知識，必然不認識新的 HTML 語法。
 
 也就是說，當你開始使用瀏覽器進行輸入某個網站網址，開始以下行為步驟：
 
-1. 取得網址，透過轉換得到目標伺服器位置，傳送請求給目標伺服器做網頁讀取行為
-2. 伺服器回傳網頁檔給你，這個網頁檔案為一個。html 的格式。
-3. 瀏覽器取得之後，開始解析。html 檔案上所有的元素標籤，並試著理解並轉化成圖層資料，提供在視窗畫面上。
+1. 取得網址，透過轉換找到目標伺服器位置發送傳送請求，要求取得資料。
+2. 伺服器回傳網頁檔案給你，這個網頁為一個 `*.html` 的格式檔案。
+3. 瀏覽器獲得開始解析 html 檔案上所有的元素標籤，並試著渲染並轉化為圖層預覽，提供在視窗畫面上。
 4. 你看到了漂亮又有結構的網頁畫面，而不是一堆原始碼。
-
----
 
 接下來，本教學會以 HTML5 為介紹方向，並使用 VSCode 編輯器與 chrome 瀏覽器為代碼編輯與操作環境，若你不知道 VSCode 是啥，可以參考本站別篇文章。
 
 ## 寫出第一個 HTML
+請試著輸入以下文字，並透過瀏覽器去讀取
 
-**請試著輸入以下文字，並透過瀏覽器去讀取**
+{% note info %}
+  **小技巧：關於 emmet**
+  在 vscode 內建立 `index.html` 完成後，試著輸入 <kbd>!</kbd> 得到畫面提示時，按下 <kbd>TAB</kbd> 可以快速生成基本的 HTML 結構，這是 VSCODE 內建了 [emmet](https://docs.emmet.io/) 快速編寫指令。
+{% endnote%}
 
 ```html index.html
 <!DOCTYPE html>
@@ -50,37 +52,35 @@ HTML 是一個文件檔案，內容使用大量的元素 (element) 所組成，�
 </html>
 ```
 
-{% note info %}
-  **小技巧：關於 emmet**
-  在 vscode 內建立 <mark>index.html</mark> 完成後，試著輸入 <kbd>!</kbd> 得到畫面提示時，按下 <kbd>TAB</kbd> 可以快速生成基本的 HTML 結構，這是 VSCODE 內建了 emmet 快速編寫指令。
-  {% blockquote Emmet https://docs.emmet.io/ %}{% endblockquote %}
-{% endnote%}
+從上面我們逐步說明各標籤元素代表什麼意思：
 
-從上面我們逐步說明各標籤代表什麼意思。
-
-| 片段                  | 說明                                                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------------------------ |
-| `<!DOCTYPE html>`     | 說明本 HTML 文件採用 HTML5 編寫                                                                            |
-| `<html lang="zh-TW">` | HTML 標籤範圍，其中`lang`是這個元素的屬性宣告，也就是說明這個標籤內容都是台灣中文                       |
-| `<head></head>`       | 網頁開頭宣告區，擺放一些重要的標籤宣告。譬如 title（網站名稱）、meta（網頁描述）                            |
-| `<meta ....>`         | meta 標籤的總類非常多，可以從 [這裡](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta) 得知 |
-| `<body></body>`       | 網站的預覽內容，所有的預覽項目都集中在這裡編寫                                                         |
-| `<p></p>`             | 宣告一個 P 標籤，使用段落樣式呈現預覽                                                                    |
+- `<!DOCTYPE html>`
+說明本 HTML 文件採用 HTML5 編寫
+- `<html lang="zh-TW">`
+HTML 標籤範圍，其中 lang 是這個元素的屬性宣告，也就是說明這個標籤內容都是台灣中文
+- `<head></head>`
+網頁開頭宣告區，擺放一些重要的標籤宣告，舉例 title（網站名稱）、meta（網頁描述）
+- `<meta ....>`
+meta 標籤的總類非常多，詳閱從 [這裡](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta) 得知
+- `<body></body>`
+網站的預覽內容，所有的預覽項目都集中在這裡編寫
+- `<p></p>`
+宣告一個 P 標籤，使用段落樣式呈現預覽
 
 基本上`<html>`+`<head>`+`<body>`都不可缺少，但現在瀏覽器十分聰明會自己判斷標籤語法試著修正並預覽，不要認為某些精簡寫法是對的，還是需要有良好的 HTML 結構觀念，HTML 的結構越完整無瑕能幫助 SEO 評級更高（完善 meta 也是幫助 SEO 的主要項目）。
 
 {% note info %}
   **小技巧：註解方式**
-  HTML 的註解方式為`<!-- text -->`，text 這個文字就會被跳過不被瀏覽器所讀取，所以透過註解的方式做任何筆記塗鴉（大多的開發者都會做筆記）。
+  HTML 的註解方式為`<!-- text -->`，text 這個文字就會被跳過不被瀏覽器所處理，所以透過註解的方式做任何筆記或說明。
 {% endnote%}
 
-## 標籤特性
-標籤語義化的重要性影響到結構及搜尋引擎優化（SEO），了解標籤怎麼去標記內容（文字、圖片、影片），了解標籤本身的語義，標籤如何組成網頁結構。
+## 標籤規則與特性
+標籤本身有語意上的重要性，間接影響到結構及搜尋引擎優化（SEO）。這裡初步了解標籤怎麼去標記內容（文字、圖片、影片），以及如何組成網頁結構上一部分。
 
 - 標籤不分大小寫，請用小寫。
-- < >開始，< / >結束。
-- 標籤具有屬性與值的特性
-- 少數獨立標籤指沒有結尾標籤，或稱呼空標籤，像是，`<meta>`、`<link>`、`<br>`、`<hr>`、`<img>`
+- `<>`開始，`</ >`結束。
+- 標籤具有屬性與值的特性。
+- 少數獨立標籤指沒有結尾標籤（空標籤），像是`<meta>`、`<link>`、`<br>`、`<hr>`、`<img>`
 
 ```html index.html
 <!-- 
@@ -99,27 +99,29 @@ HTML 是一個文件檔案，內容使用大量的元素 (element) 所組成，�
 
 {% note info %}
   **小技巧：VSCode 插件 假圖產生器**
-  使用 plugin 插件 `Fake Image Snippet Collection` 能幫助你快速產生圖片檔。輸入'fakeimg'或'picsum'並指定寬高即可使用。
+  使用 plugin 插件 `Fake Image Snippet Collection` 能幫助你快速產生圖片檔。輸入 fakeimg 或 picsum 並指定寬高即可使用。
 {% endnote%}
 
 ## 絕對與相對路徑
-既然扯到圖片跟超連結那就需要知道路徑。當你的資源來源是外部位置時，很簡單給他一個 http 位置的絕對路徑。但如果是內部路徑，我們就需要知道相對的路徑在哪裡。
+既然談到圖片跟超連結那就需要知道路徑。當你的資源來源是外部位置時，很簡單給他一個 http 位置的絕對路徑。但如果是內部路徑，我們就需要知道相對的路徑在哪裡。
 
-- 絕對路徑：一般在連結外部連結、網路上的資源時使用，當然你也可以當內部連結使用，但效能就是差且不可變動性。
-  - `http://網域名稱/資料夾名稱/資料夾名稱/檔案名稱`
+**絕對路徑**
+一般在連結外部連結、網路上的資源時使用，當然你也可以當內部連結使用，但效能就是差且不可變動性。
+- `http://網域名稱/資料夾名稱/資料夾名稱/檔案名稱`
 
-- 相對路徑：從目前使用的檔案位置為判斷處來找到目標檔案的位置，通常製作網站取得內部檔案或多媒體時使用。
-  - `images/01.jpg` 目前檔案位置為起點，往下探尋
-  - `./images/01.jpg` index 位置為起點，往下探尋
-  - `../` 回上一層
-  - `/` 從設定的根目錄開始找
+**相對路徑**
+從目前使用的檔案位置為判斷處來找到目標檔案的位置，通常製作網站取得內部檔案或多媒體時使用。
+- `images/01.jpg` 目前檔案位置為起點，往下探尋
+- `./images/01.jpg` index 位置為起點，往下探尋
+- `../` 回上一層
+- `/` 從設定的根目錄開始找
 
 ## 置換元素
 置換元素（Replaced elements）是指元素的內容（content）會被置換成某些文章內容。
 - img 為置換元素，意思指它必須要靠屬性指向某些內容才有意義。
 - input 也是為置換元素，置換後的內容依據類別可以是文字框、按鈕、複選、單選框。
 
-img、input 這些可置換元素 (Replaced elements)，若對它宣告 display:block;margin:0 auto;，可以置中，這是因為 img、input 都有它們自身的寬度 width。
+img、input 這些可置換元素 (Replaced elements) 若宣告`display:block`轉為區塊元素時，`margin:0 auto;`可產生置中效果，這是由於 img、input 都有它們自身的寬度 width 能夠進行 margin 操作。如果其他像是 code 或 sapn 這些行內元素同樣測試效果，因為沒有自身寬度導致預設給予 100%寬度。
 
 HTML 中大部分的元素都是「非置換元素」，這表示瀏覽器會直接以元素本身產生元素的內容，呈現在某個區塊 (box) 中。
 
@@ -132,11 +134,11 @@ HTML 中大部分的元素都是「非置換元素」，這表示瀏覽器會直
 
 ## 標題與段落
 - **h1 ~ h6**：
-  - 標題標籤作為標題效果（共 6 段），大小、粗度、行距。.. 等等都依瀏覽器預設，使用者也可透過自訂 (CSS) 調整。
+標題標籤作為標題效果（共 6 段），大小、粗度、行距…等等接依據瀏覽器（各家效果差距不同）預設所提供外觀，如果需要使用者也可另外透過自訂 (CSS) 自訂調整外觀。
 - **p**：
-  - 段落是一組文字段落，瀏覽器會以段落表達，本身也有行距與大小粗度。
+段落是一組文字段落，瀏覽器會以段落表達，本身也有行距與大小粗度。
 - **a**：
-  - 連結可以語義為一個外部網址或是內部網址，也可以是一個網頁上的錨點。屬性 href 是個組合縮寫字，它原文是 Hypertext（超文字） + Reference （參考、查詢、提交、關聯）之意。 
+連結可以語義為一個外部網址或是內部網址，也可以是一個網頁上的錨點。屬性 href 是個組合縮寫字，它原文是 Hypertext（超文字） + Reference （參考、查詢、提交、關聯）之意。 
 
 ```html tags.html
 <!-- 標題 Heading or Header -->
@@ -174,7 +176,7 @@ HTML 中大部分的元素都是「非置換元素」，這表示瀏覽器會直
 {% endnote%}
 
 ## 清單項目
-分符號跟序號清單
+分為 Unordered 符號清單跟 Ordered 序號清單，差別在於是符號還是流水號。而 Ordered List 可額外提供屬性 start 來決定起始值。
 
 ```html tags.html
 <!-- 無序號的清單 Unordered List -->
@@ -188,6 +190,7 @@ HTML 中大部分的元素都是「非置換元素」，這表示瀏覽器會直
 ```
 
 ## 文字效果
+能對幾個文字進行效果調整，部分效果你可以找到 2 種表示方式但其意義卻不同，原因在於一個是指定外觀效果另一個為具備意思的外觀效果。
 
 ```html tags.html
 <!-- bold -->
@@ -219,7 +222,11 @@ HTML 中大部分的元素都是「非置換元素」，這表示瀏覽器會直
 <blockquote>我也是引言，長篇文章用我</blockquote>
 ```
 
+>code 標籤當輸入的程式碼為 HTML 代碼時會無法詮釋於畫面上。這是因為瀏覽器會將 HTML 都渲染出來，因此需要透過符號實體化將敏感的代碼文字用別的意思傳達給瀏覽器。後續請詳閱 [符號（字元）實體化](#符號（字元）實體化)。
+
 ## 多媒體
+列舉一些多媒體的標籤元素，大多數這些元素會持有不少屬性值來定義參數。
+
 ```html tags.html
 <!-- 圖片-->
 <img src="images/tailogo.JPG" width="300" alt="泰山職訓局" title="泰山職訓局" />
@@ -239,8 +246,11 @@ title 屬性為標題，滑鼠移到圖片時顯示。
 <br />
 <iframe src="http://www.runoob.com" width="1000px" height="800px" name="showFrame"></iframe>
 ```
+>iframe 屬於一種嵌入網頁之媒體元素，而 frame 為早期網頁分割框架元素（已淘汰），可參考史萊姆第一個家網站為示意。
 
 ## 表格
+繪製表格用，主要為 table 標記其主要元素，內含 head 或 body 區域，繪製欄位時由上至下為 tr 排，再由左至右為 td 列。同時能夠進行合併：
+
 - rowspan （列合併）（上下）：上面吃掉下面，下面消失。
 - colspan （欄合併）（左右）：左邊吃掉右邊，右邊消失。
 
@@ -260,11 +270,12 @@ title 屬性為標題，滑鼠移到圖片時顯示。
 
 ### 小節練習
 憑著網路資源或學習結果，請示著刻印以下畫面：
-{% jsfiddle summer10920/kydsquhz result dark 100% 500 %}
 
----
-#### 解答
-
+{% tabs demoTable，1 %}
+<!-- tab 預覽-->
+{% jsfiddle summer10920/kydsquhz result dark 100% 600 %}
+<!-- endtab -->
+<!-- tab 解答-->
 ```html TryTable.html
 <!DOCTYPE html>
 <html lang="zh-TW">
@@ -342,6 +353,8 @@ title 屬性為標題，滑鼠移到圖片時顯示。
   </body>
 </html>
 ```
+<!-- endtab -->
+{% endtabs %}
 
 ## 表單
 每個輸入欄位會有自己的名稱 name，輸入完表單資料後會產生屬於它的值，form 標籤有 POST 或 GET 的方法去傳遞欄位的值，將值傳送到伺服器（依賴另種伺服器程式做承接處理，像是 PHP 當作橋樑與資料庫溝通，去做新增、修改、刪除資料）。
@@ -415,15 +428,14 @@ title 屬性為標題，滑鼠移到圖片時顯示。
 **預覽結果**：
 {% jsfiddle summer10920/26p8xt1j result dark 100% 400 %}
 
-# 總結練習
+## 總結練習
 這裡做一個基本的 HTML 編輯，只使用 HTML 元素完成並不依賴任何 CSS。請根據以下 Result 結果試著反向做出 HTML 代碼
 
+{% tabs demoHTML，1 %}
+<!-- tab 題目-->
 {% jsfiddle summer10920/sbq1kpyt result dark 100% 1200 %}
-
----
-
-## 解答
-
+<!-- endtab -->
+<!-- tab 解答-->
 ```html totalTest.html
 <!DOCTYPE html>
 <html>
@@ -595,6 +607,8 @@ title 屬性為標題，滑鼠移到圖片時顯示。
   現在的規範都是希望透過 CSS 來完成版面或外觀處理，讓 HTML 只有單純的結構與語意化。
 -->
 ```
+<!-- endtab -->
+{% endtabs %}
 
 # 深入探討
 這裡講一些比較深且重要的學習觀念，幫助你對 HTML 得到一個程度後的完美結束。
@@ -612,20 +626,20 @@ title 屬性為標題，滑鼠移到圖片時顯示。
 有些場合下如果你不希望特殊符號被判讀成 HTML 的標籤符號，你應該使用 character entities：
 
 | 結果   | 說明                 | 實體化符號 | 實體化代號：Unicode 轉 10 進位<br>（另還有 16 進為寫法開頭為&#x..) |
-| ------ | -------------------- | ---------- | ------------------------------------------------------------ |
-| "      | quotation mark       | &quot\;    | &#34\;                                                       |
-| '      | apostrophe           | &apos\;    | &#39\;                                                       |
-| &      | ampersand            | &amp\;     | &#38\;                                                       |
-| <      | less-than            | &lt\;      | &#60\;                                                       |
-| >      | greater-than         | &gt\;      | &#62\;                                                       |
-| &nbsp; | non-breaking space   | &nbsp\;    | &#160\;                                                      |
-| &copy; | copyright            | &copy\;    | &#169\;                                                      |
-| &reg;  | registered trademark | &reg\;     | &#174\;                                                      |
-| '      | spacing acute        | &acute\;   | &#180\;                                                      |
-| -      | middle dot           | &middot\;  | &#183\;                                                      |
-| ¸      | spacing cedilla      | &cedil\;   | &#184\;                                                      |
+| ------ | -------------------- | ---------- | ------------------------------------------------------------------ |
+| "      | quotation mark       | &quot\;    | &#34\;                                                             |
+| '      | apostrophe           | &apos\;    | &#39\;                                                             |
+| &      | ampersand            | &amp\;     | &#38\;                                                             |
+| <      | less-than            | &lt\;      | &#60\;                                                             |
+| >      | greater-than         | &gt\;      | &#62\;                                                             |
+| &nbsp; | non-breaking space   | &nbsp\;    | &#160\;                                                            |
+| &copy; | copyright            | &copy\;    | &#169\;                                                            |
+| &reg;  | registered trademark | &reg\;     | &#174\;                                                            |
+| '      | spacing acute        | &acute\;   | &#180\;                                                            |
+| -      | middle dot           | &middot\;  | &#183\;                                                            |
+| ¸      | spacing cedilla      | &cedil\;   | &#184\;                                                            |
 
-一般建議是使用實體化符號比較能肉眼看出這是甚麼字，使用代號就比較難以快速得知。
+一般建議是使用實體化符號比較能肉眼看出這是什麼字，使用代號就比較難以快速得知。
 
 {% note warning %}
   **科普知識：關於 Unicode 與實體化符號**
@@ -647,15 +661,43 @@ title 屬性為標題，滑鼠移到圖片時顯示。
 ### 語法更簡單
 使用 HTML5 能讓宣告語法更輕鬆簡單，也是趨勢與主流。
 
-| HTML4                                                                                                                                      | HTML5                                                           |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| &lt;!doctype html public &quot;-/w3c/dtd html 4.01 transitional/en&quot; &quot;h<span>ttp://www</span>.w3.org/tr/html4/loose.dtd&quot;&gt; | &lt;!DOCTYPE html&gt;                                           |
-| &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot;/&gt;                                              | &lt;meta charset=&quot;utf-8&quot; /&gt;                        |
-| &lt;script type=&quot;text/javascript&quot; src=&quot;my.js&quot;&gt;&lt;/script&gt;                                                       | &lt;script src=&quot;my.js&quot;&gt;&lt;/script&gt;             |
-| &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;my.css&quot;&gt;                                                  | &lt;link rel=&quot;stylesheet&quot; href=&quot;my.css&quot;&gt; |
+```html HTML4_version
+<!doctype html public "-/w3c/dtd html 4.01 transitional/en" "http://www.w3.org/tr/html4/loose.dtd">
+<html lang="zh-TW">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <title>HTML4</title>
+  <script type="text/javascript" src="my.js"></script>
+  <link rel="stylesheet" type="text/css" href="my.css">
+</head>
+<body>
+  <div id="header">
+    <h1>Monday Times</h1>
+  </div>
+  ...
+</body>
+</html>
+```
+```html html5_version
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <title>HTML5</title>
+  <script src="my.js"></script>
+  <link rel="stylesheet" href="my.css">
+</head>
+<body>
+  <header>
+    <h1>Monday Times</h1>
+  </header>
+  ...
+</body>
+</html>
+```
 
 ### 語意更有意義
-雖然在排版上，設計師大多還是用`<div>`來排版，但 html5 主打的是語意標籤，甚麼是語意標籤？簡單說就是直接在標籤賦予它結構及意義，例如：
+雖然在排版上，設計師大多還是用`<div>`來排版，但 html5 主打的是語意標籤，什麼是語意標籤？簡單說就是直接在標籤賦予它結構及意義，例如：
 
 - &lt;header&gt;    定義網頁頁首的區域。
 - &lt;nav&gt;       定義網頁導覽區域。
