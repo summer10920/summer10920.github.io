@@ -28,6 +28,7 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇為網乙解析系列之題組一。難易度偏低，評分項目多且步驟較多但重複性高，只要善用同題目作為範本複製貼上，進行修改調整就能快速完成題目動作。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/xVkDTDr.png">
 <meta property="og:image" content="https://i.imgur.com/R4L7SuR.png">
 <meta property="og:image" content="https://i.imgur.com/igd8Xfs.png">
 <meta property="og:image" content="https://i.imgur.com/CPhNg9q.png">
@@ -40,11 +41,11 @@
 <meta property="og:image" content="https://i.imgur.com/SWP0XsG.png">
 <meta property="og:image" content="https://i.imgur.com/Ji8jU7J.png">
 <meta property="article:published_time" content="2020-05-18T12:24:28.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.233Z">
+<meta property="article:modified_time" content="2022-03-07T14:31:31.903Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="技術士考照與全國技能競賽">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/R4L7SuR.png">
+<meta name="twitter:image" content="https://i.imgur.com/xVkDTDr.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2020/05-18/exam-173002B10-1/">
@@ -292,7 +293,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間 ×2022-03-07 22:31:31" itemprop="dateModified" datetime="2022-03-07T22:31:31+08:00">2022-03-07</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -322,7 +323,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>51609 <i>words</i></span>
+      <span>51597 <i>words</i></span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
@@ -340,14 +341,13 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本篇為網乙解析系列之題組一。難易度偏低，評分項目多且步驟較多但重複性高，只要善用同題目作為範本複製貼上，進行修改調整就能快速完成題目動作。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。</p>
+        <p><img src="https://i.imgur.com/xVkDTDr.png"></p>
+<p>本篇為網乙解析系列之題組一。難易度偏低，評分項目多且步驟較多但重複性高，只要善用同題目作為範本複製貼上，進行修改調整就能快速完成題目動作。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。</p>
 <span id="more"></span>
 
-<blockquote>
-<p>網乙術科題庫分析 - 卓越科技大學校園資訊系統</p>
-</blockquote>
-<p>事前建置說明：<a href="/2020/05-14/exam-173002B10-0/" title="[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）">[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）</a></p>
-<hr>
+<div class="note default"><p><strong>網乙術科題庫分析：</strong><br>事前建置說明 - <a href="/2020/05-14/exam-173002B10-0/" title="[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）">[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）</a></p>
+</div>
+
 <h1 id="No-10-管理登入按鈕-20"><a href="#No-10-管理登入按鈕-20" class="headerlink" title="No.10 管理登入按鈕 (20%)"></a>No.10 管理登入按鈕 (20%)</h1><p>您必須先做第 10 題，才能方便在其他題目上做切換前後台檢查。90 分鐘所設計的 lib.php 記得放到本題組目錄下。<br><img src="https://i.imgur.com/R4L7SuR.png" alt="q1t10"></p>
 <h2 id="修正登入連結"><a href="#修正登入連結" class="headerlink" title="修正登入連結"></a>修正登入連結</h2><p>將三個頁面跟登入按鈕有關的 onclick 做正確的導向。我們直接轉址到 admin.php 就可以了。調整</p>
 <h3 id="修改-index-php-news-php-login-php"><a href="#修改-index-php-news-php-login-php" class="headerlink" title="修改 index.php, news.php, login.php"></a>修改 index.php, news.php, login.php</h3><figure class="highlight html"><figcaption><span>index.php, news.php, login.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--右邊--&gt;</span>   </span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">style</span>=<span class="string">&quot;width:100%; margin-left:auto; margin-right:auto; margin-top:2px; height:50px;&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;lo(<span class="symbol">&amp;#39;</span>?do=admin<span class="symbol">&amp;#39;</span>)&quot;</span>&gt;</span>管理登入<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -385,7 +385,6 @@
 <p>接著登出處理，添加 case logout 項目</p>
 <h3 id="修改-api-php"><a href="#修改-api-php" class="headerlink" title="修改 api.php"></a>修改 api.php</h3><figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;logout&#x27;</span>:</span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;admin&#x27;</span>]);</span><br><span class="line">    plo(<span class="string">&quot;login.php&quot;</span>);</span><br><span class="line"><span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-3-網站標題-35"><a href="#No-3-網站標題-35" class="headerlink" title="No.3 網站標題 (35%)"></a>No.3 網站標題 (35%)</h1><p>你已經可以正常切換前後台就能開始處理各題目，同時注意後台 admin.php 的初始頁為該 No.3。因這裡算第一次處理後台，所以 main_zone 要先處理掉</p>
 <p><img src="https://i.imgur.com/igd8Xfs.png" alt="q1t3"></p>
 <h2 id="內容區域調整"><a href="#內容區域調整" class="headerlink" title="內容區域調整"></a>內容區域調整</h2><p>原後台選單連結都是<code>?do=admin&amp;redo=XX</code>。所以先做切換 mainzone 的功能。在後台主頁增添 php 代碼</p>
@@ -469,7 +468,6 @@
 <p>這時候要注意 login.php 跟 index.php 跟 news.php 都還沒有連結 lib.php。所以開頭記得補上</p>
 <figure class="highlight php"><figcaption><span>login.php, index.php, news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">require_once</span>(<span class="string">&#x27;lib.php&#x27;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-4-動態文字廣告-30"><a href="#No-4-動態文字廣告-30" class="headerlink" title="No.4 動態文字廣告 (30%)"></a>No.4 動態文字廣告 (30%)</h1><p>透過已完成的第三題，你可以很快地複製修改出此題的後台內容格式。</p>
 <p><img src="https://i.imgur.com/CPhNg9q.png" alt="q1t4"></p>
 <h2 id="後台的內容格式-1"><a href="#後台的內容格式-1" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -499,7 +497,6 @@
 <p>帶入 <code>$t4_text</code> 改為</p>
 <figure class="highlight html"><figcaption><span>login.php, index.php, news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">marquee</span> <span class="attr">scrolldelay</span>=<span class="string">&quot;120&quot;</span> <span class="attr">direction</span>=<span class="string">&quot;left&quot;</span> <span class="attr">style</span>=<span class="string">&quot;position:absolute; width:100%; height:40px;&quot;</span>&gt;</span></span><br><span class="line">    &lt;?= $t4_text ?&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">marquee</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-5-動畫圖片輪播-30"><a href="#No-5-動畫圖片輪播-30" class="headerlink" title="No.5 動畫圖片輪播 (30%)"></a>No.5 動畫圖片輪播 (30%)</h1><p>透過前面的操作完成，可以很快地複製修改出此題的後台內容格式。</p>
 <p><img src="https://i.imgur.com/Gb8Pbqb.png" alt="q1t5"></p>
 <h2 id="後台的內容格式-2"><a href="#後台的內容格式-2" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -547,7 +544,6 @@
 <p>修正為</p>
 <figure class="highlight html"><figcaption><span>index.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--正中央--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;width:100%; padding:2px; height:290px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;mwww&quot;</span> <span class="attr">loop</span>=<span class="string">&quot;true&quot;</span> <span class="attr">style</span>=<span class="string">&quot;width:100%; height:100%;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;width:99%; height:100%; position:relative;&quot;</span> <span class="attr">class</span>=<span class="string">&quot;cent&quot;</span>&gt;</span>沒有資料<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> lin = <span class="keyword">new</span> <span class="built_in">Array</span>();</span></span><br><span class="line"><span class="javascript">  lin = &lt;?= json_encode($t5_ary) ?&gt;;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> now = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">  ww(); <span class="comment">// 修正初始沒資料畫面</span></span></span><br><span class="line"><span class="javascript">  <span class="keyword">if</span> (lin.length &gt; <span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">setInterval</span>(<span class="string">&quot;ww()&quot;</span>, <span class="number">3000</span>);</span></span><br><span class="line"><span class="javascript">    now = <span class="number">1</span>;</span></span><br><span class="line"><span class="javascript">  &#125;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">  <span class="function"><span class="keyword">function</span> <span class="title">ww</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    $(<span class="string">&quot;#mwww&quot;</span>).html(<span class="string">&quot;&lt;embed loop=true src=&#x27;&quot;</span> + lin[now] + <span class="string">&quot;&#x27; style=&#x27;width:99%; height:100%;&#x27;&gt;&lt;/embed&gt;&quot;</span>)</span></span><br><span class="line"><span class="javascript">    <span class="comment">//$(&quot;#mwww&quot;).attr(&quot;src&quot;,lin[now])</span></span></span><br><span class="line"><span class="javascript">    now++;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span> (now &gt;= lin.length)</span></span><br><span class="line"><span class="javascript">      now = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">  &#125;</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-6-校園映像-40"><a href="#No-6-校園映像-40" class="headerlink" title="No.6 校園映像 (40%)"></a>No.6 校園映像 (40%)</h1><p>與第五題的後台版面比較相近，可以拿來很快複製修改出第六題的內容格式。</p>
 <p><img src="https://i.imgur.com/A2jlOsP.png" alt="q1t6"></p>
 <h2 id="後台的內容格式-3"><a href="#後台的內容格式-3" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -612,7 +608,6 @@
 <p>因此修改為</p>
 <figure class="highlight javascript"><figcaption><span>index.php & login.php & news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> nowpage = <span class="number">0</span>, num = &lt;?= $t6_many ?&gt;;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">pp</span>(<span class="params">x</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> s, t;</span><br><span class="line">  <span class="keyword">if</span> (x == <span class="number">1</span> &amp;&amp; nowpage - <span class="number">1</span> &gt;= <span class="number">0</span>) nowpage--; <span class="comment">//往前</span></span><br><span class="line">  <span class="keyword">if</span> (x == <span class="number">2</span> &amp;&amp; nowpage + <span class="number">1</span> &lt;= num - <span class="number">3</span>) nowpage++; <span class="comment">//往後</span></span><br><span class="line">  $(<span class="string">&quot;.im&quot;</span>).hide()</span><br><span class="line">  <span class="keyword">for</span> (s = <span class="number">0</span>; s &lt;= <span class="number">2</span>; s++) &#123;</span><br><span class="line">    t = s * <span class="number">1</span> + nowpage * <span class="number">1</span>;</span><br><span class="line">    $(<span class="string">&quot;#ssaa&quot;</span> + t).show()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">pp(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-7-進站總人數-20"><a href="#No-7-進站總人數-20" class="headerlink" title="No.7 進站總人數 (20%)"></a>No.7 進站總人數 (20%)</h1><p>這題很簡單，如法炮製隨便找個類似來改<br><img src="https://i.imgur.com/fo48pnO.png" alt="q1t7"></p>
 <h2 id="修改後台的內容格式"><a href="#修改後台的內容格式" class="headerlink" title="修改後台的內容格式"></a>修改後台的內容格式</h2><ul>
 <li>整個複製版型後，根據需求做修改調整。題目沒要求是否帶舊值（示意圖有）你可以不做。</li>
@@ -631,7 +626,6 @@
 <p>改為 admin.php &amp; login.php &amp; index.php &amp; news.php</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;t&quot;</span>&gt;</span>進站總人數 : &lt;?= $t7_text ?&gt;<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-8-頁尾版權-10"><a href="#No-8-頁尾版權-10" class="headerlink" title="No.8 頁尾版權 (10%)"></a>No.8 頁尾版權 (10%)</h1><p>就拿第 7 題來改吧<br><img src="https://i.imgur.com/Uz7ESVU.png" alt="q1t8"></p>
 <h2 id="修改後台的內容格式-1"><a href="#修改後台的內容格式-1" class="headerlink" title="修改後台的內容格式"></a>修改後台的內容格式</h2><p>整個複製版型後，根據需求做修改調整。題目未要求帶原值可自決定。記得 from 提交改成到 <code>do=footermdy</code>。</p>
 <h3 id="新增-abottom-php（參考-atotal-php"><a href="#新增-abottom-php（參考-atotal-php" class="headerlink" title="新增 abottom.php（參考 atotal.php)"></a>新增 abottom.php（參考 atotal.php)</h3><figure class="highlight html"><figcaption><span>abottom.php</span></figcaption><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$re = select(&quot;q1t8_footer&quot;, 1);</span><br><span class="line">?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span> <span class="attr">action</span>=<span class="string">&quot;api.php?do=footermdy&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;t botli&quot;</span>&gt;</span>頁尾版權資料管理<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;cent&quot;</span>&gt;</span>頁尾版權資料 ： <span class="tag">&lt;<span class="name">input</span> <span class="attr">name</span>=<span class="string">&quot;text[1]&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&lt;?= $re[0][&#x27;text&#x27;] ?&gt;&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;cent&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">&quot;修改確定&quot;</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;reset&quot;</span> <span class="attr">value</span>=<span class="string">&quot;重置&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -648,7 +642,6 @@
 <p>帶入 <code>$t8_text</code> 改為</p>
 <figure class="highlight php"><figcaption><span>admin.php & login.php & index.php & news.php</span></figcaption><table><tr><td class="code"><pre><span class="line">&lt;span <span class="class"><span class="keyword">class</span>=&quot;<span class="title">t</span>&quot; <span class="title">style</span>=&quot;<span class="title">line</span>-<span class="title">height</span>:123<span class="title">px</span>;&quot;&gt;&lt;?= $<span class="title">t8_text</span> ?&gt;&lt;/<span class="title">span</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-9-最新消息-55"><a href="#No-9-最新消息-55" class="headerlink" title="No.9 最新消息 (55%)"></a>No.9 最新消息 (55%)</h1><p>此題目與第六題都是文字類型管理，從此複製開始修改</p>
 <p><img src="https://i.imgur.com/Uhxt0cY.png" alt="q1t9"></p>
 <h2 id="後台的內容格式-4"><a href="#後台的內容格式-4" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -705,7 +698,6 @@
 
 <h3 id="修改-news-php-1"><a href="#修改-news-php-1" class="headerlink" title="修改 news.php"></a>修改 news.php</h3><figure class="highlight html"><figcaption><span>news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;text-align:center;&quot;</span>&gt;</span></span><br><span class="line">  &lt;?=$t9_page?&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-11-管理者帳號管理功能-15"><a href="#No-11-管理者帳號管理功能-15" class="headerlink" title="No.11 管理者帳號管理功能 (15%)"></a>No.11 管理者帳號管理功能 (15%)</h1><p>因為是文字型，所以挑第四題來複製修改。由於題目未說明清楚且示意圖未帶出 admin/1234 引此我們也不帶出。</p>
 <p><img src="https://i.imgur.com/fkJgDij.png" alt="q1t11"></p>
 <h2 id="後台的內容格式-5"><a href="#後台的內容格式-5" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -723,7 +715,6 @@
 <h2 id="修改多筆-刪除多筆-5"><a href="#修改多筆-刪除多筆-5" class="headerlink" title="修改多筆 + 刪除多筆"></a>修改多筆 + 刪除多筆</h2><p>對 api.php 做 SQL 處理，接著回到該單元內容。（可複製前題目做修改）</p>
 <h3 id="增添-api-php-16"><a href="#增添-api-php-16" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;adminmdy&#x27;</span>:</span><br><span class="line">  update(<span class="variable">$_POST</span>, <span class="string">&quot;q1t10_admin&quot;</span>);</span><br><span class="line">  delete(<span class="variable">$_POST</span>, <span class="string">&quot;q1t10_admin&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?do=aadmin&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-12-選單管理功能-45"><a href="#No-12-選單管理功能-45" class="headerlink" title="No.12 選單管理功能 (45%)"></a>No.12 選單管理功能 (45%)</h1><p>這題步驟很多且版型欄位較多，是偷第四題來改並參考第三題的格式做調整</p>
 <p><img src="https://i.imgur.com/SWP0XsG.png" alt="q1t12"></p>
 <h2 id="後台的內容格式-6"><a href="#後台的內容格式-6" class="headerlink" title="後台的內容格式"></a>後台的內容格式</h2><ol>
@@ -774,7 +765,6 @@
 <p>將 login.php、index.php、news.php 的選單區域部分標籤內增加 php 變數</p>
 <h3 id="修改-login-php-amp-index-php-amp-news-php"><a href="#修改-login-php-amp-index-php-amp-news-php" class="headerlink" title="修改 login.php &amp; index.php &amp; news.php"></a>修改 login.php &amp; index.php &amp; news.php</h3><figure class="highlight html"><figcaption><span>login.php & index.php & news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;menuput&quot;</span> <span class="attr">class</span>=<span class="string">&quot;dbor&quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--主選單放此--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;t botli&quot;</span>&gt;</span>主選單區<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">&lt;?= $t12_text ?&gt;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="END-調整版面-5"><a href="#END-調整版面-5" class="headerlink" title="END 調整版面 (5%)"></a>END 調整版面 (5%)</h1><p>這題動作如果來不及做可以放棄，元素材差異性下有可能不會被考官所注意到。</p>
 <p><img src="https://i.imgur.com/Ji8jU7J.png" alt="q1layout"></p>
 <h2 id="修改-login-php-amp-index-php-amp-news-php-amp-admin-php"><a href="#修改-login-php-amp-index-php-amp-news-php-amp-admin-php" class="headerlink" title="修改 login.php &amp; index.php &amp; news.php &amp; admin.php"></a>修改 login.php &amp; index.php &amp; news.php &amp; admin.php</h2><ol>
@@ -850,7 +840,7 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1478779 <i>words</i></span>
+    <span title="全站總字數">1478748 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">

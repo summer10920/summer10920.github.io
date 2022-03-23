@@ -21,13 +21,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。">
+<meta name="description" content="本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄 g位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[題目解析] 技能檢定！網頁設計乙級術科考題分析（題組四）">
 <meta property="og:url" content="http://summer10920.github.io/2020/05-25/exam-173002B10-4/">
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
-<meta property="og:description" content="本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。">
+<meta property="og:description" content="本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄 g位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/WXHp93R.png">
 <meta property="og:image" content="https://i.imgur.com/TruJNd8.png">
 <meta property="og:image" content="https://i.imgur.com/jbWrr25.png">
 <meta property="og:image" content="https://i.imgur.com/OdR4S9g.png">
@@ -40,11 +41,11 @@
 <meta property="og:image" content="https://i.imgur.com/Ji8jU7J.png">
 <meta property="og:image" content="https://i.imgur.com/J0Rxhw4.png">
 <meta property="article:published_time" content="2020-05-25T14:27:22.000Z">
-<meta property="article:modified_time" content="2022-02-27T15:35:02.893Z">
+<meta property="article:modified_time" content="2022-03-08T01:26:00.719Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="技術士考照與全國技能競賽">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/TruJNd8.png">
+<meta name="twitter:image" content="https://i.imgur.com/WXHp93R.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2020/05-25/exam-173002B10-4/">
@@ -292,7 +293,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
+        <time title="修改時間 ×2022-03-08 09:26:00" itemprop="dateModified" datetime="2022-03-08T09:26:00+08:00">2022-03-08</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -322,7 +323,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>37760 <i>words</i></span>
+      <span>37756 <i>words</i></span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
@@ -340,14 +341,13 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。</p>
+        <p><img src="https://i.imgur.com/WXHp93R.png"></p>
+<p>本篇為網乙解析系列之題組四，難度算是次高的，資料處理觀念要熟悉且欄 g位很多而對應處理要準確。本篇之前置作業 (lib.php 與 MySQL 規劃）不再進行說明。</p>
 <span id="more"></span>
 
-<blockquote>
-<p>網乙術科題庫分析 - ABC 影城</p>
-</blockquote>
-<p>事前建置說明：<a href="/2020/05-14/exam-173002B10-0/" title="[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）">[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）</a></p>
-<hr>
+<div class="note default"><p><strong>網乙術科題庫分析：</strong><br>事前建置說明 - <a href="/2020/05-14/exam-173002B10-0/" title="[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）">[題目解析] 技能檢定！網頁設計乙級術科考題分析（事前準備）</a></p>
+</div>
+
 <h1 id="No-3-前台首頁標題-35"><a href="#No-3-前台首頁標題-35" class="headerlink" title="No.3 前台首頁標題 (35%)"></a>No.3 前台首頁標題 (35%)</h1><p>修正指定之網頁有效連結</p>
 <p><img src="https://i.imgur.com/TruJNd8.png" alt="q4t3"></p>
 <h2 id="選單的有效連結"><a href="#選單的有效連結" class="headerlink" title="選單的有效連結"></a>選單的有效連結</h2><p>大部分的選單都已有預設值，我們不特別修改。只需調整首頁連結，以及 URL 轉換能有效執行便可</p>
@@ -369,7 +369,6 @@
 <h2 id="購物流程的圖片顯示"><a href="#購物流程的圖片顯示" class="headerlink" title="購物流程的圖片顯示"></a>購物流程的圖片顯示</h2><p>這部分很容易遺忘掉，其他的選單都在之後的題目動作會完成。所以這裡記得先做掉。</p>
 <h3 id="建立-look-php"><a href="#建立-look-php" class="headerlink" title="建立 look.php"></a>建立 look.php</h3><figure class="highlight html"><figcaption><span>look.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;img/0401.jpg&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-4-前台商品分類-25"><a href="#No-4-前台商品分類-25" class="headerlink" title="No.4 前台商品分類 (25%)"></a>No.4 前台商品分類 (25%)</h1><p>偷取 admin 的選單作為前台選單。</p>
 <p><img src="https://i.imgur.com/jbWrr25.png" alt="q4t4"></p>
 <h2 id="先規劃前台選單"><a href="#先規劃前台選單" class="headerlink" title="先規劃前台選單"></a>先規劃前台選單</h2><ul>
@@ -409,7 +408,6 @@
 <h3 id="建立-info-php"><a href="#建立-info-php" class="headerlink" title="建立 info.php"></a>建立 info.php</h3><figure class="highlight html"><figcaption><span>info.php</span></figcaption><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$re = select(&quot;q4t5_product&quot;, &quot;id=&quot; . $_GET[&#x27;id&#x27;]);</span><br><span class="line">$ro = $re[0];</span><br><span class="line">?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;api.php?do=want&amp;id=&lt;?= $_GET[&#x27;id&#x27;] ?&gt;&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h3</span> <span class="attr">class</span>=<span class="string">&quot;ct&quot;</span>&gt;</span>&lt;?= $ro[&#x27;title&#x27;] ?&gt;<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span> <span class="attr">rowspan</span>=<span class="string">5</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">width</span>=<span class="string">400</span> <span class="attr">src</span>=<span class="string">&quot;img/&lt;?= $ro[&#x27;img&#x27;] ?&gt;&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>分類：</span><br><span class="line">        &lt;?php</span><br><span class="line">          echo select(&quot;q4t4_class&quot;, &quot;id=&quot; . $ro[&#x27;fa&#x27;])[0][&#x27;title&#x27;];</span><br><span class="line">          echo &quot;&gt;&quot;.select(&quot;q4t4_class&quot;, &quot;id=&quot; . $ro[&#x27;son&#x27;])[0][&#x27;title&#x27;];</span><br><span class="line">        ?&gt;</span><br><span class="line">      <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>編號：&lt;?= $ro[&#x27;seq&#x27;] ?&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>價錢：&lt;?= $ro[&#x27;price&#x27;] ?&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>詳細說明：<span class="tag">&lt;<span class="name">br</span>&gt;</span>&lt;?= $ro[&#x27;text&#x27;] ?&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>庫存量：&lt;?= $ro[&#x27;num&#x27;] ?&gt;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">td</span> <span class="attr">colspan</span>=<span class="string">2</span>&gt;</span>購買數量<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;num&quot;</span> <span class="attr">id</span>=<span class="string">&quot;&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;image&quot;</span> <span class="attr">src</span>=<span class="string">&quot;img/0402.jpg&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;submit&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;返回&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;window.history.back()&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>步驟到此，api.php 的寫法留至第七題解。接下來準備處理後台商品管理，但你需要先設計第十題的管理登入。</p>
-<hr>
 <h1 id="No-10-管理登入-35"><a href="#No-10-管理登入-35" class="headerlink" title="No.10 管理登入 (35%)"></a>No.10 管理登入 (35%)</h1><p>先設計登入功能，方便你做其他題目後台的設計。本題重點分為列表、新增、修改、刪除四組 SQL 連接。後三者以送往 api.php 處理為主。</p>
 <p><img src="https://i.imgur.com/OdR4S9g.png" alt="q4t10"></p>
 <h2 id="判斷是否登入"><a href="#判斷是否登入" class="headerlink" title="判斷是否登入"></a>判斷是否登入</h2><ul>
@@ -482,7 +480,6 @@
 <h2 id="刪除管理者"><a href="#刪除管理者" class="headerlink" title="刪除管理者"></a>刪除管理者</h2><p>這裡就直接提交 api.php 處理了，不用再設計版型。</p>
 <h3 id="增添-api-php-3"><a href="#增添-api-php-3" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;admindel&#x27;</span>:</span><br><span class="line">  <span class="variable">$post</span>[<span class="string">&#x27;del&#x27;</span>][] = <span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">  delete(<span class="variable">$post</span>, <span class="string">&quot;q4t10_admin&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-5-商品介紹-55"><a href="#No-5-商品介紹-55" class="headerlink" title="No.5 商品介紹 (55%)"></a>No.5 商品介紹 (55%)</h1><p>事實上這裡分為兩個主題被歸類在同一題目，分別是分類管理與商品管理。所以除了原本指定好的路徑建立 th.php，再另外建立為 tp.php，兩者之間再建立連結做為切換。</p>
 <p><img src="https://i.imgur.com/G3AicrU.png" alt="q4t5"></p>
 <h2 id="分類管理之版型"><a href="#分類管理之版型" class="headerlink" title="分類管理之版型"></a>分類管理之版型</h2><ol>
@@ -545,7 +542,6 @@
 <h2 id="商品管理之刪除、上下架"><a href="#商品管理之刪除、上下架" class="headerlink" title="商品管理之刪除、上下架"></a>商品管理之刪除、上下架</h2><p>直接在 api.php 處理，注意需額外整理 delete 與 update 的 display，為 function 所能接受格式。</p>
 <h3 id="增添-api-php-9"><a href="#增添-api-php-9" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;tpon&#x27;</span>:</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;dpy&#x27;</span>][<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]] = <span class="number">1</span>;</span><br><span class="line">  update(<span class="variable">$_POST</span>, <span class="string">&quot;q4t5_product&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?redo=tp&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> <span class="string">&#x27;tpoff&#x27;</span>:</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;dpy&#x27;</span>][<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]] = <span class="number">0</span>;</span><br><span class="line">  update(<span class="variable">$_POST</span>, <span class="string">&quot;q4t5_product&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?redo=tp&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> <span class="string">&#x27;tpdel&#x27;</span>:</span><br><span class="line">  <span class="variable">$post</span>[<span class="string">&#x27;del&#x27;</span>][] = <span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">  delete(<span class="variable">$post</span>, <span class="string">&quot;q4t5_product&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?redo=tp&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-6-最新消息-10"><a href="#No-6-最新消息-10" class="headerlink" title="No.6 最新消息 (10%)"></a>No.6 最新消息 (10%)</h1><p>分為做跑馬燈以及最新消息文章顯示。後者的說明較不齊全完整，要求沒有指定從資料庫處理，所以直接都由 HTML 處理掉。</p>
 <p><img src="https://i.imgur.com/y1ewCeR.png" alt="q4t6"></p>
 <h2 id="跑馬燈效果"><a href="#跑馬燈效果" class="headerlink" title="跑馬燈效果"></a>跑馬燈效果</h2><p>這裡比較簡單，就是撈取然後顯示為 marquee，找到該靜態文字</p>
@@ -558,7 +554,6 @@
 <h3 id="建立-news-php"><a href="#建立-news-php" class="headerlink" title="建立 news.php"></a>建立 news.php</h3><figure class="highlight html"><figcaption><span>news.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h3</span> <span class="attr">class</span>=<span class="string">&quot;ct&quot;</span>&gt;</span>最新消息<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">bgcolor</span>=<span class="string">#fff</span> <span class="attr">width</span>=<span class="string">100%</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span> <span class="attr">bgcolor</span>=<span class="string">#ff5</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span>標題<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span> <span class="attr">bgcolor</span>=<span class="string">#ffc</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span>年終特賣會開跑了<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tr</span> <span class="attr">bgcolor</span>=<span class="string">#ffc</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">td</span>&gt;</span>情人節特惠活動<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>另外題目沒有設計後台的最新消息管理功能，所以記得後台的選單路徑要改為 # 作為無反應。</p>
-<hr>
 <h1 id="No-7-購物功能-45"><a href="#No-7-購物功能-45" class="headerlink" title="No.7 購物功能 (45%)"></a>No.7 購物功能 (45%)</h1><p>這題被塞了兩個單元，分別是前台的會員註冊登入與會員服務（購物）。</p>
 <p><img src="https://i.imgur.com/uHYq1yL.png" alt="q4t7"></p>
 <p>操作流程與設計方針為：</p>
@@ -625,7 +620,6 @@
 <h3 id="增添-api-php-13"><a href="#增添-api-php-13" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><p>SESSION 直接打包成字串並清除購物車 (SESSION)，acc 跟 date 以及將用戶資訊也要塞入 $_POST 內一併上傳，方便後台上的直接讀取。另外題目要求有提示 alert，所以轉址要用 JS 不能用 PHP 否則還沒跑 JS 就被 PHP 轉走。</p>
 <figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;pay&#x27;</span>:</span><br><span class="line">  <span class="variable">$re</span> = select(<span class="string">&quot;q4t9_user&quot;</span>, <span class="string">&quot;id=&quot;</span> . <span class="variable">$_SESSION</span>[<span class="string">&#x27;id&#x27;</span>]);</span><br><span class="line">  <span class="variable">$ro</span> = <span class="variable">$re</span>[<span class="number">0</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;acc&#x27;</span>] = <span class="variable">$ro</span>[<span class="string">&#x27;acc&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;name&#x27;</span>] = <span class="variable">$ro</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;tel&#x27;</span>] = <span class="variable">$ro</span>[<span class="string">&#x27;tel&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;addr&#x27;</span>] = <span class="variable">$ro</span>[<span class="string">&#x27;addr&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;mail&#x27;</span>] = <span class="variable">$ro</span>[<span class="string">&#x27;mail&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;total&#x27;</span>] = <span class="variable">$_GET</span>[<span class="string">&#x27;total&#x27;</span>];</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;date&#x27;</span>] = date(<span class="string">&quot;Y-m-d&quot;</span>);</span><br><span class="line">  <span class="variable">$_POST</span>[<span class="string">&#x27;buy&#x27;</span>] = serialize(<span class="variable">$_SESSION</span>[<span class="string">&#x27;buy&#x27;</span>]);</span><br><span class="line">  <span class="keyword">unset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;buy&#x27;</span>]);</span><br><span class="line">  insert(<span class="variable">$_POST</span>, <span class="string">&quot;q4t8_order&quot;</span>);</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&quot;&lt;script&gt;alert(&#x27;訂購成功感謝您的參與&#x27;);&quot;</span> . jlo(<span class="string">&quot;index.php&quot;</span>) . <span class="string">&quot;&lt;/script&gt;&quot;</span>;</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-8-訂單管理-20"><a href="#No-8-訂單管理-20" class="headerlink" title="No.8 訂單管理 (20%)"></a>No.8 訂單管理 (20%)</h1><p>這裡只有兩個版型要規劃，分別是列表與細節。透過第七題先隨意建立幾筆訂單。</p>
 <p><img src="https://i.imgur.com/5ZY6Lb9.png" alt="q4t8"></p>
 <h2 id="訂單列表"><a href="#訂單列表" class="headerlink" title="訂單列表"></a>訂單列表</h2><p>之前都已經先將必要資訊都已建立起來，只需取得 sql table order。刪除則由 API 來處理。注意 delete function 之格式。至於細節則導向到 do=admin&amp;redo=orderdetial 並夾帶 ID</p>
@@ -637,7 +631,6 @@
 <h2 id="訂單刪除"><a href="#訂單刪除" class="headerlink" title="訂單刪除"></a>訂單刪除</h2><p>題目要求可以刪除訂單，由 api 來處理</p>
 <h3 id="增添-api-pgp"><a href="#增添-api-pgp" class="headerlink" title="增添 api.pgp"></a>增添 api.pgp</h3><figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;odrdel&#x27;</span>:</span><br><span class="line">  <span class="variable">$post</span>[<span class="string">&#x27;del&#x27;</span>][] = <span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">  delete(<span class="variable">$post</span>, <span class="string">&quot;q4t8_order&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?redo=order&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-9-會員管理-15"><a href="#No-9-會員管理-15" class="headerlink" title="No.9 會員管理 (15%)"></a>No.9 會員管理 (15%)</h1><p>第七題已經設計出可新增會員，這裡只需做列表與修改刪除。</p>
 <p><img src="https://i.imgur.com/oKny57W.png" alt="q4t9"></p>
 <h2 id="清單檢視版型"><a href="#清單檢視版型" class="headerlink" title="清單檢視版型"></a>清單檢視版型</h2><p>取得相近的 HTML table 版型做設計</p>
@@ -652,7 +645,6 @@
 <h2 id="刪除功能"><a href="#刪除功能" class="headerlink" title="刪除功能"></a>刪除功能</h2><p>廢話不多說</p>
 <h3 id="增添-api-php-15"><a href="#增添-api-php-15" class="headerlink" title="增添 api.php"></a>增添 api.php</h3><figure class="highlight php"><figcaption><span>api.php</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">&#x27;memdel&#x27;</span>:</span><br><span class="line">  <span class="variable">$post</span>[<span class="string">&#x27;del&#x27;</span>][] = <span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">  delete(<span class="variable">$post</span>, <span class="string">&quot;q4t9_user&quot;</span>);</span><br><span class="line">  plo(<span class="string">&quot;admin.php?redo=mem&quot;</span>);</span><br><span class="line">  <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="No-11-頁尾版權-25"><a href="#No-11-頁尾版權-25" class="headerlink" title="No.11 頁尾版權 (25%)"></a>No.11 頁尾版權 (25%)</h1><p>這題後台有改沒提示。找個最簡單相近的 HTML 版型來使用。</p>
 <p><img src="https://i.imgur.com/x841WKb.png" alt="q4t11"></p>
 <h2 id="頁尾編輯"><a href="#頁尾編輯" class="headerlink" title="頁尾編輯"></a>頁尾編輯</h2><ul>
@@ -672,7 +664,6 @@
 <p>改成下列</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;div id=<span class="string">&quot;bottom&quot;</span> style=<span class="string">&quot;line-height:70px; color:#FFF; background:url(icon/bot.png);&quot;</span> <span class="class"><span class="keyword">class</span>=&quot;<span class="title">ct</span>&quot;&gt;</span></span><br><span class="line"><span class="class">  &lt;?=$<span class="title">bot</span>?&gt; </span></span><br><span class="line"><span class="class">&lt;/<span class="title">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<hr>
 <h1 id="END-調整版面-5"><a href="#END-調整版面-5" class="headerlink" title="END 調整版面 (5%)"></a>END 調整版面 (5%)</h1><p><mark>這題動作一定要做！!</mark>，因為題目有明確表示因產品過多一定要做分頁或是滾輪。</p>
 <p><img src="https://i.imgur.com/Ji8jU7J.png" alt="q4layout"><br><img src="https://i.imgur.com/J0Rxhw4.png" alt="q4scroll"></p>
 <h3 id="修改-index-php-amp-admin-php"><a href="#修改-index-php-amp-admin-php" class="headerlink" title="修改 index.php &amp; admin.php"></a>修改 index.php &amp; admin.php</h3><p>找到主區域的 div 修改為</p>
@@ -745,7 +736,7 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1478779 <i>words</i></span>
+    <span title="全站總字數">1478748 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
