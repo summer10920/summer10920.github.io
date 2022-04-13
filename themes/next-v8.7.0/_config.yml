@@ -146,7 +146,7 @@ social:
   #Twitter: https://twitter.com/yourname || fab fa-twitter
   #FB Page: https://www.facebook.com/yourname || fab fa-facebook
   #StackOverflow: https://stackoverflow.com/yourname || fab fa-stack-overflow
-  #YouTube: https://youtube.com/yourname || fab fa-youtube
+  YouTube: https://www.youtube.com/c/LokiJiang/playlists || fab fa-youtube
   #Instagram: https://instagram.com/yourname || fab fa-instagram
   #Skype: skype:yourname?call|chat || fab fa-skype
 
@@ -163,7 +163,7 @@ links_settings:
   layout: inline
 
 links:
-  DemoSite - 網頁設計乙術科: http://b17300demo.lokiui.com/
+  DemoSite - 網頁設計乙術科: http://demob17300.lokiui.com/
   舊址(停更) - 札記 Blog: http://blog.lokiui.com/
   # Title: https://example.com
 
