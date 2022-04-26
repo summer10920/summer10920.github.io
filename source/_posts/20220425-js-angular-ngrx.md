@@ -7,6 +7,7 @@ tag:
   - Angular
   - JavaScript
 date: 2022-04-25 20:08:50
+hidden: true
 ---
 
 ![](https://i.imgur.com/q0DRxPm.png)
