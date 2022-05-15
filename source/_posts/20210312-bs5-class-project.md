@@ -15,12 +15,10 @@ date: 2021-03-12 20:10:05
 
 {% note default %}
 本練習完成品之預覽位置：
-https://summer10920.github.io/skillStudies_CSSBS_WebDemo/Bootstrap50_Hotel
+https://summer10920.github.io/studies_TeachDemo_CSSBS/Bootstrap50_Hotel/
 {% endnote %}
----
 
 # 環境準備
-
 1. 準備前往下載並加以使用，確保以下外掛檔案列入你的專案內：
    - [Bootstrap5](https://getbootstrap.com/docs/5.0/getting-started/download/)
 2. 關於文字，icon，網站 ico 的資源使用：

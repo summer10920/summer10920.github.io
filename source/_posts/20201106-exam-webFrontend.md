@@ -25,10 +25,8 @@ date: 2020-11-06 19:40:23
 
 {% note default %}
 本練習完成品之預覽位置：
-https://summer10920.github.io/skillStudies_CSSBS_WebDemo/ClassC1_Exam/
+https://summer10920.github.io/studies_TeachDemo_CSSBS/ClassC1_Exam/
 {% endnote %}
-
----
 
 # No.2 設計首頁
 這裡主要是說明各別檔案名稱與用途，可先建立 `index.html`, `main.html`, `guitar_history.html`, `guitar_event.html`, `guitar_learning.html` 等五個檔案即可。接著本節實作只需設計 index.html 的版型設計。
