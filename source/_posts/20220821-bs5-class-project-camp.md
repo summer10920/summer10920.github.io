@@ -986,9 +986,9 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 ```
 
 ### 優化調整
-1. 拔除according的框線使用`.accordion.accordion-flush`。
-2. item的間格加大、改成圓角特大、以及內部的bg會超出所以溢出處理、再弄點陰影。整題呈現`accordion-item.my-3.overflow-auto.rounded-5.shadow-sm`。
-3. 標題前面增加fontawsone icon，以及me-2推開文字距離。
+1. 拔除 according 的框線使用`.accordion.accordion-flush`。
+2. item 的間格加大、改成圓角特大、以及內部的 bg 會超出所以溢出處理、再弄點陰影。整題呈現`accordion-item.my-3.overflow-auto.rounded-5.shadow-sm`。
+3. 標題前面增加 fontawsone icon，以及 me-2 推開文字距離。
 
 ```html index.html#lokiRule
 <section
@@ -1061,8 +1061,85 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 ```
 
 ## 聯絡我們
+這裡簡單設計超連結至 Google 表單，若未來若接觸 JS 與 PHP 課程再設計串接資料庫。透過modal整合 google form embed 設計完成。
 
 ## 頁尾資訊 footer
-test notebook 2
+頁尾資訊不屬於選單項目之一，提供一些商家基本資訊使用。使用基本元件觀念來完成設計即可。
+
+### 整理代碼 
+1. 使用 footer 標籤並提供黑底白字設計`text-bg-dark`
+2. 分為兩區塊，上半部再多一個`.bg-light.bg-opacity-25`區塊，下半部就作為頁尾字串。
+3. 下半部使用`.text-muted.text-center`，再增加`py-3`推開間格。
+4. 上半部有 img 跟 container，img 使用`.position-absolute`對齊上層左下（因此上層需要綁 relative)，如果跟鄰居 container 打架，鄰居可以綁 relative。
+5. container 均分成`.col*3`三組
+   - 第一組為網站名稱與項目。li 與 fontawsone 對齊方式參考官方說明。
+   - 第一組可添加 fake btn of a-link
+   - 第一與第二組可以 md 以下多一個 hr
+   - 第二組擺放任何文字
+   - 第三組使用 googleMap 來設計，利用 BS 的強制比例幫助我們鎖定 1:1
+   - 第三組多設計 border 視覺美觀
+
+```html index.html footer
+<footer class="text-bg-dark">
+  <div class="bg-light bg-opacity-25 overflow-hidden position-relative">
+    <img
+      src="media/camp.svg"
+      class="position-absolute w-25 start-0 bottom-0"
+    >
+    <div class="container py-5 lh-lg position-relative">
+      <div class="row g-5">
+        <div class="col-md-6 col-lg-4">
+          <h5>泰山溫泉度假營地</h5>
+          <ul class="fa-ul">
+            <li><span class="fa-li"><i class="fa-solid fa-location-dot"></i></span>243 新北市泰山區貴子里致遠新村 55 之 1 號 </li>
+            <li><span class="fa-li"><i class="fa-solid fa-phone"></i></span>02-2901-8274</li>
+            <li><span class="fa-li"><i class="fa-solid fa-print"></i></span>02-2908-4773 </li>
+            <li><span class="fa-li"><i class="fa-solid fa-envelope"></i></span>service@toyugi.com.tw</li>
+          </ul>
+          <a
+            class="btn btn-primary rounded-circle d-inline-flex justify-content-center align-items-center mx-1 fs-5"
+            style="width:2.5rem;height:2.5rem"
+            link="#"
+          ><i class="fa-brands fa-facebook-f"></i></a>
+          <a
+            class="btn btn-danger rounded-circle d-inline-flex justify-content-center align-items-center mx-1 fs-5"
+            style="width:2.5rem;height:2.5rem"
+            link="#"
+          ><i class="fa-brands fa-youtube"></i></a>
+          <a
+            class="btn btn-success rounded-circle d-inline-flex justify-content-center align-items-center mx-1 fs-4"
+            style="width:2.5rem;height:2.5rem"
+            link="#"
+          ><i class="fa-brands fa-line"></i></a>
+        </div>
+        <div class="d-md-none">
+          <hr>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <h5>自行開車</h5>
+          <p> 高速公路五股交流道下（往新莊、泰山），經新五路至新北大道右轉，直行至貴子路口右轉，貴子路直行至明志路左轉。於明志路繼續前行約 100 公尺右轉工專路，即可抵達明科技大學。 </p>
+          <p> 由台北車站走忠孝橋，直行高架道路，下到平面道路之後直行至貴子路口右轉，貴子路直行至明志路左轉，於明志路繼續前行約 100 公尺右轉工專路，即可抵達明科技大學。 明志科大「汽車」停車費 30
+            元/小時，請儘量搭乘大眾交通工具或機車（免停車費）。 </p>
+        </div>
+        <div class="d-md-none">
+          <hr>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="ratio ratio-1x1">
+            <iframe
+              class="border border-5 border-secondary rounded-circle"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.7020090599085!2d121.41729491546742!3d25.04418494403601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a7bed3dc9b59%3A0x57e6439a2db0fa2a!2zMjQz5paw5YyX5biC5rOw5bGx5Y2A5rOw5bGx6IG36KiT5Lit5b-D!5e0!3m2!1szh-TW!2stw!4v1665497547856!5m2!1szh-TW!2stw"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-muted py-3 text-center">
+    <small class="container"> 泰山職業訓練中心課程教材編譯 <br>Copyright © 2022 <span class="text-white">洛奇數位設計</span>. all rights
+      reserved </small>
+  </div>
+</footer>
+```
 
 ## END
