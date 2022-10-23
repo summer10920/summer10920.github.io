@@ -16,14 +16,14 @@ date: 2022-08-21 13:37:12
 # 前提準備
 
 ## 環境安裝
-1. 準備前往下載並加以使用，確保以下第三方資源已列入你的專案內：
+- 準備前往下載並加以使用，確保以下第三方資源已列入你的專案內：
    - [Bootstrap5](https://getbootstrap.com/docs/5.2/getting-started/download/)，採用已編譯完成 min.css 與 min.js 為資源使用。
    - [思源黑體 Noto Sans TC](https://fonts.google.com/specimen/Noto+Sans+TC) 使用 Google Fonts 做為我們的中文線上字型。
    - [FontIcon](https://gauger.io/fonticon/) 做為我們簡單的網站 ico 使用。
    - [Fontawesome](https://fontawesome.com/) 作為我們圖示庫，註冊會員之後透過 kit 獲取專屬免費授權 js 套件。
-2. 設定網站名稱與上列所有設定與測試：
+- 設定網站名稱與上列所有設定與測試：
    - 將 favicon.ico 放置指定位置，透過 link:favicon 指向過去。
-   - 透過 style.css 的 body 設定 font-family，先英文字型再中文字型，最後多個預設襯線體。
+   - 透過 style.css 的 body 設定 font-family，先英文字型再中文字型，最後多個預設襯線體。本次為黑底風格。
    - 使用 [Bootstrap > Carousel > With captions](https://getbootstrap.com/docs/5.2/components/carousel/#with-captions) 單元代碼測試，並利用 picsum 做測試圖是否有效呈現。
 
 ![檔案目錄相對位置](https://i.imgur.com/7G7i5MI.png)
@@ -31,10 +31,10 @@ date: 2022-08-21 13:37:12
 ```css media/style.css
 body {
   font-family: 'Roboto', 'Noto Sans TC', 'Open Sans', Helvetica, Arial;
-  background: #eee; /* 白底不要傷眼 */
+  background: #282c34;
+  color:#eee;
 }
 ```
-
 ```html index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +43,7 @@ body {
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>泰山溫泉度假營地 - 露營區</title>
+  <title>洛奇渡假營地 - 溫泉露營</title>
   <!-- favicon.ico -->
   <link rel="shortcut icon" href="media/favicon.ico" type="image/x-icon">
   <!-- google font -->
@@ -105,11 +105,11 @@ body {
 ```
 
 ## 認知說明
-1. 使用 html5 的語意標籤，參考 [W3Schools](https://www.w3schools.com/html/html5_semantic_elements.asp) 之說明。
-2. 在設計響應式網站過程中，你應該先從小螢幕開始著手外觀調整設計，其次在大螢幕上做局部調整。
-3. 為了練習簡化，會對使用的所有 Bootstrap 元件全都會移除 aria-* 系列屬性或是 sr-only 之類的障讀設計。alt 或 title 之類的 SEO 強化也會移除。
-4. 同上，為了方便判讀可更名皆採用 loki* 命名方式做自行判斷。
-5. 你可以使用 picsum 或 fakeimg 作為素材，或是自行下載合法圖庫包。
+- 使用 html5 的語意標籤，參考 [W3Schools](https://www.w3schools.com/html/html5_semantic_elements.asp) 之說明。
+- 在設計響應式網站過程中，你應該先從小螢幕開始著手外觀調整設計，其次在大螢幕上做局部調整。
+- 為了練習簡化，會對使用的所有 Bootstrap 元件全都會移除 aria-* 系列屬性或是 sr-only 之類的障讀設計。alt 或 title 之類的 SEO 強化也會移除。
+- 同上，為了方便判讀可更名皆採用 loki* 命名方式做自行判斷。
+- 你可以使用 picsum 或 fakeimg 作為素材，或是自行下載合法圖庫包。
 
 ```html index.html
 <body>
@@ -165,9 +165,9 @@ https://getbootstrap.com/docs/5.2/components/carousel/#with-captions
 {% endnote %}
 
 ### 整理代碼
-1. 前面已完成語意優化初步階段，包含替換 ID 名稱，捨略 aria-* 屬性。
-2. 添加 HTML5 語意，更改 div.carousel 為 section.carousel
-3. 避免眼球疲累改為 fade 效果，增加 #lokiSlider.carousel-fade 公式。
+- 前面已完成語意優化初步階段，包含替換 ID 名稱，捨略 aria-* 屬性。
+- 添加 HTML5 語意，更改 div.carousel 為 section.carousel
+- 避免眼球疲累改為 fade 效果，增加 #lokiSlider.carousel-fade 公式。
 
 ```html index.html#lokiSlider
 <section id="lokiSlider" class="carousel slide carousel-fade" data-bs-ride="false">
@@ -226,9 +226,9 @@ https://getbootstrap.com/docs/5.2/components/carousel/#with-captions
 ```
 - 透過 fontAnswse 更換更粗的 icon 圖案。不滿意 size 可根據 Docs 說明方式調整尺寸公式，舉例使用 `<i class="fa-solid fa-angle-left"></i>` （或自訂 css 當作文字處理 font-size)。
 - 同上，針對更明顯的顯示自訂 css 增加矩陣黑底。另外透過 button.w-auto 取消原本的寬度空間使貼齊邊界。
-- 調整文字畫面居中，針對 `.carousel-caption` 規劃 d-flex，並利用本身已持有 position 屬性，操作上頂下底產生高度空間。
+- 調整文字畫面居中，針對 `.carousel-caption` 規劃 d-flex，`.justify-content-end.align-items-start`靠其左下，並自訂`pb240`。
 - 原設計文字區塊於 md 以下模式所隱藏，可改至 p 段落隱藏。
-- 可將標題改用 h2 元素，不夠大可利用`.carousel-caption.display-2`更大。
+- 可將標題改用 h2 元素，不夠大可利用`.carousel-caption.display-2.fw-bolder`更強烈放大。
 - 最後可將自動輪播啟用並更改秒數 `#lokiSlider[data-bs-interval="3000" data-bs-ride="carousel"]`。
 
 ```html index.html#lokiSlider
@@ -241,23 +241,32 @@ https://getbootstrap.com/docs/5.2/components/carousel/#with-captions
   </div>
   <div class="carousel-inner">
     <div class="carousel-item vh-100 active">
-      <img src="https://picsum.photos/1920/1080/?random=10" class="d-block h-100 w-100">
-      <div class="carousel-caption d-flex justify-content-center align-items-center flex-column top-0 bottom-0">
-        <h2 class="display-2">First slide label</h2>
+      <img
+        src="https://picsum.photos/1920/1080/?random=10"
+        class="d-block h-100 w-100"
+      >
+      <div class="carousel-caption d-flex justify-content-end align-items-start flex-column">
+        <h2 class="display-2 fw-bolder">First slide label</h2>
         <p class="d-none d-md-block">Some representative placeholder content for the first slide.</p>
       </div>
     </div>
     <div class="carousel-item vh-100">
-      <img src="https://picsum.photos/1920/1080/?random=11" class="d-block h-100 w-100">
-      <div class="carousel-caption d-flex justify-content-center align-items-center flex-column top-0 bottom-0">
-        <h2 class="display-2">Second slide label</h2>
+      <img
+        src="https://picsum.photos/1920/1080/?random=11"
+        class="d-block h-100 w-100"
+      >
+      <div class="carousel-caption d-flex justify-content-end align-items-start flex-column">
+        <h2 class="display-2 fw-bolder">Second slide label</h2>
         <p class="d-none d-md-block">Some representative placeholder content for the second slide.</p>
       </div>
     </div>
     <div class="carousel-item vh-100">
-      <img src="https://picsum.photos/1920/1080/?random=12" class="d-block h-100 w-100">
-      <div class="carousel-caption d-flex justify-content-center align-items-center flex-column top-0 bottom-0">
-        <h2 class="display-2">Third slide label</h2>
+      <img
+        src="https://picsum.photos/1920/1080/?random=12"
+        class="d-block h-100 w-100"
+      >
+      <div class="carousel-caption d-flex justify-content-end align-items-start flex-column">
+        <h2 class="display-2 fw-bolder">Third slide label</h2>
         <p class="d-none d-md-block">Some representative placeholder content for the third slide.</p>
       </div>
     </div>
@@ -271,6 +280,15 @@ https://getbootstrap.com/docs/5.2/components/carousel/#with-captions
 </section>
 ```
 ```css style.css
+#lokiSlider .carousel-item {
+  padding-bottom: 240px;
+  background: #282c34; /*轉場問題加底圖*/
+}
+
+#lokiSlider .carousel-caption {
+  padding-bottom: 120px;
+}
+
 #lokiSlider img {
   object-fit: cover;
   filter: grayscale(50%) sepia(80%);
@@ -308,10 +326,10 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 {% endnote %}
 
 ### 整理代碼
-1. 使用 section 作為區塊內容，並設計窄版 Container。
-2. 規劃標題 header 元素與尺寸為 h2，輕設計左側 Border 灰粗線。
-3. 規劃 cols 3 的 GRID 系統，並加大 Gutter 擴大間格。約規劃 4 組 col 容器。
-4. 每一個 col 的內容採用 img-overlay 來置入 Card 元件。
+- 使用 section 作為區塊內容，並設計窄版 Container。
+- 規劃標題 header 元素與尺寸為 h2，輕設計左側 Border 灰粗線。
+- 規劃 cols 3 的 GRID 系統，並加大 Gutter 擴大間格。約規劃 4 組 col 容器。
+- 每一個 col 的內容採用 img-overlay 來置入 Card 元件。
 
 ```html index.html#lokiPallet
 <section id="lokiPallet" class="container">
@@ -366,16 +384,16 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 ```
 
 ### 優化調整
-1. 為了明確的內文條列，將`p.card-text`改成`ul.list-unstyled>li*3`。
-2. 將卡片標題追加為`h3.card-title.text-warning.fw-bolder`。
-3. 整個卡片 overlay 調製半透明黑底對齊至中且文字至中`div.card-img-overlay.text-center.bg-opacity-50.bg-dark.d-flex.flex-column.justify-content-center`。
-4. 對於空洞的產品數量缺點調整為階梯式呈現（只限定 md 模式以上），自訂 media 條件 Card 單數做 往上偏移 Y -50% 並 pb150 指定作為間格（也會讓 flex 空間之偶數 card 獲得相同間距高度）。
-5. 同時將 Gutter 添加改為`g-5.gx-md-5.gy-md-0`避免干擾計算。且限定於 md 模式。
-6. 同上為了左上的空白美感，需將整個 article 調整為`.flex-row-reverse`，由於步驟 4 有上推空間，此時需要透過 pt 去擴展足夠的空間讓內部 card 可呈現，多少值則根據 card 本身移動多少值如何算。
-7. padding 本身是認定 width 為比例，利用已知的 card 空間一排 2 個、Gutter 為 24px、卡片比例 4:3，有推開 150px，能算出上面空間需要讓出 `(100%-24px*2)/2*0.75/2-150px/2`。
-8. 另外將 card 添加改為`.card.overflow-hidden`使圖片特效正常。亦可添加`.border-0.shadow`使美觀。
-9. 最後的 card 如果覺得 pb150 使得留白太多，在父容器 article 可多設計 mb-150 來抵銷。
-10. 只用於 md 模式規劃 CSS 動態滑動效果。初始卡片比例 0，滑過時圖片偏大以及卡片文字比例恢復正常。
+- 為了明確的內文條列，將`p.card-text`改成`ul.list-unstyled>li*3`。
+- 將卡片標題追加為`h3.card-title.text-warning.fw-bolder`。
+- 整個卡片 overlay 調製半透明黑底對齊至中且文字至中`div.card-img-overlay.text-center.bg-opacity-50.bg-dark.d-flex.flex-column.justify-content-center`。
+- 對於空洞的產品數量缺點調整為階梯式呈現（只限定 md 模式以上），自訂 media 條件 Card 單數做 往上偏移 Y -50% 並 pb150 指定作為間格（也會讓 flex 空間之偶數 card 獲得相同間距高度）。
+- 同時將 Gutter 添加改為`g-5.gx-md-5.gy-md-0`避免干擾計算。且限定於 md 模式。
+- 同上為了左上的空白美感，需將整個 article 調整為`.flex-row-reverse`，由於步驟 4 有上推空間，此時需要透過 pt 去擴展足夠的空間讓內部 card 可呈現，多少值則根據 card 本身移動多少值如何算。
+- padding 本身是認定 width 為比例，利用已知的 card 空間一排 2 個、Gutter 為 24px、卡片比例 4:3，有推開 150px，能算出上面空間需要讓出 `(100%-24px*2)/2*0.75/2-150px/2`。
+- 另外將 card 添加改為`.card.overflow-hidden`使圖片特效正常。亦可添加`.border-0.shadow`使美觀。
+- 最後的 card 如果覺得 pb150 使得留白太多，在父容器 article 可多設計 mb-150 來抵銷。
+- 只用於 md 模式規劃 CSS 動態滑動效果。初始卡片比例 0，滑過時圖片偏大以及卡片文字比例恢復正常。
 ```css style.css
 @media screen and (min-width: 768px) {
   #lokiPallet .col:nth-child(odd) {
@@ -481,6 +499,122 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 </section>
 ```
 
+## 選單 #lokiMenu
+將選單放置於輪播廣告前面，利用 Navbar 元件即可容易完成。
+
+{% note default %}
+使用 navbar 第一個範例做調整修改前置作業。
+https://getbootstrap.com/docs/5.2/components/navbar/#supported-content
+{% endnote %}
+
+### 整理代碼
+- 移除用不到的 search 表單、`aria-*`標籤、下拉選單 dropMenu。
+- 簡化結構為`.navbar-nav>a.nav-link`並複製多個 nav-link 大約共計 5 組。
+- 調整靠右方式為`.navbar-nav.ms-auto`
+- 更改為 container 窄版。更改 id 名稱為#lokiMenu
+- 規劃LOGO文字可用font Awesome前綴，或是使用指定LOGO圖片。
+- 5 個 nav-link 使用錨點連結至各主題且加大`.mx-3`，其中 action 因設計上用不到而拔除。
+
+```html index.html>nav
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container">
+    <a
+      class="navbar-brand"
+      href="#"
+    ><i class="fa-solid fa-campground"></i> 洛奇渡假營地</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#lokiMenu"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse"
+      id="lokiMenu"
+    >
+      <div class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <a class="nav-link mx-3" href="#lokiPallet">營位介紹</a>
+          <a class="nav-link mx-3" href="#lokiPark">探索體驗</a>
+          <a class="nav-link mx-3" href="#lokiService">遊客服務</a>
+          <a class="nav-link mx-3" href="#lokiRule">營區守則</a>
+          <a class="nav-link mx-3" href="#lokiContact">聯絡我們</a>
+      </div>
+    </div>
+  </div>
+</nav>
+```
+
+### 優化調整
+- 主 nav 調整色系`nav.text-bg-dark.navbar-dark`，以及黏貼畫面上`.position-fixed.top-0.w-100`，如果疊層不夠自訂 z-index 最上方。
+- 嘗試點選錨點跳躍，會因為 menu 與 section 定位上邊緣問題壓到，可以對 section 多添加`pt-5`來閃躲。
+- 要產生 scrollSpy 功能，對偵測的範圍添加`[data-bs-spy="scroll"][data-bs-target="#lokiMenu"]`，這裡選body就能整頁偵測到。另多增加css特效。
+
+```html index.html body
+<body data-bs-spy="scroll" data-bs-target="#lokiMenu">
+  <nav class="navbar navbar-expand-lg text-bg-dark navbar-dark position-fixed top-0 w-100">
+    <div class="container">
+      <a
+        class="navbar-brand"
+        href="#"
+      ><i class="fa-solid fa-campground"></i> 洛奇渡假營地</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#lokiMenu"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div
+        class="collapse navbar-collapse"
+        id="lokiMenu"
+      >
+        <div class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <a class="nav-link mx-3" href="#lokiPallet">營位介紹</a>
+            <a class="nav-link mx-3" href="#lokiPark">探索體驗</a>
+            <a class="nav-link mx-3" href="#lokiService">遊客服務</a>
+            <a class="nav-link mx-3" href="#lokiRule">營區守則</a>
+            <a class="nav-link mx-3" href="#lokiContact">聯絡我們</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- ... -->
+</body>
+```
+```css style.css
+body > nav {
+  z-index: 9999;
+}
+#lokiMenu a.nav-link,
+#lokiMenu a.navbar-brand {
+  letter-spacing: 0.1rem;
+  transition: 0.5s;
+}
+
+#lokiMenu a.nav-link::before {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  background: white;
+  border-radius: 50%;
+}
+
+#lokiMenu a.nav-link.active {
+  transform: scale(1.2);
+}
+```
+```html index.html #lokiPallet
+<section
+  id="lokiPallet"
+  class="container pt-5"
+>
+  <!-- ... -->
+</section>
+```
+
 ## 探索體驗 #lokiPark
 第三個主題來介紹設備環境並使用大量圖片拚疊，以滿版呈現方式搭載瀑布流 Masonry 套件實施。
 
@@ -490,13 +624,13 @@ https://getbootstrap.com/docs/5.2/components/card/#masonry
 {% endnote %}
 
 ### 整理代碼
-1. 延期前面的 section 複製修改為`.container-field`，調整拔除 container 轉移到內部成為`header.my-5.container`。
-2. 原本的 header 拔除標題效果相關 class 轉移到內部成為`h2.border-start.border-5.border-secondary.ps-3`。
-3. header 內多一組`div.text-center.w-75.mx-auto.py-5`作為標題內文。
-4. article 成為 row 容器，並考慮 RWD 呈現不同 cols 數與 gutter 值。
-5. col 容器內部捨棄 card 設計視覺，但保留 card-img 與 card-overlay>card-title 的蓋圖效果。
-6. card-img 雖然是瀑布流設計，考量整齊感其圖片高度為倍數考量。
-7. 若圖片為本地可使用 Bootstrap 所示範的`.row[data-masonry='{"percentPosition": true }']`。然而如果因延遲性導致（例如 fakeImg ）初始化會抓不到高度，則需改用 onload 完畢才去初始插件。建議路徑方式分離 js 代碼。
+- 延期前面的 section 複製修改為`.container-field`，調整拔除 container 轉移到內部成為`header.my-5.container`。
+- 原本的 header 拔除標題效果相關 class 轉移到內部成為`h2.border-start.border-5.border-secondary.ps-3`。
+- header 內多一組`div.text-center.w-75.mx-auto.py-5`作為標題內文。
+- article 成為 row 容器，並考慮 RWD 呈現不同 cols 數與 gutter 值。
+- col 容器內部捨棄 card 設計視覺，但保留 card-img 與 card-overlay>card-title 的蓋圖效果。
+- card-img 雖然是瀑布流設計，考量整齊感其圖片高度為倍數考量。
+- 若圖片為本地可使用 Bootstrap 所示範的`.row[data-masonry='{"percentPosition": true }']`。然而如果因延遲性導致（例如 fakeImg ）初始化會抓不到高度，則需改用 onload 完畢才去初始插件。建議路徑方式分離 js 代碼。
 ```js plugin/custom.js
 // 記得 html>body 底部宣告 <script src="plugin/custom.js"></script>
 onload = () => {
@@ -507,7 +641,7 @@ onload = () => {
 }
 ```
 ```html index.html#lokiPark
-<section id="lokiPark" class="container-field">
+<section id="lokiPark" class="container-field pt-5">
   <header class="my-5 container">
     <h2 class="border-start border-5 border-secondary ps-3">探索體驗</h2>
     <div class="text-center w-75 mx-auto py-5"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis,
@@ -575,12 +709,12 @@ onload = () => {
 ```
 
 ### 優化調整
-1. 使文字透過 flex 置中，父容器增添為`div.card-img-overlay.d-flex.justify-content-center.align-items-center`。
-2. 文字本身做膠囊化設計，調整為`.card-title.text-bg-warning.opacity-75.rounded-pill.px-3.py-2`。
-3. 只對 md 模式提供互動，而手機螢幕小不適合互動。同樣利用 query 達成。
-4. 因互動而產生空間擠壓，對增添為`section#lokiPark.overflow-hidden`。
-5. 增加背景且固定，透過混和染上白色。
-6. 注意到整個 section 下方都不足空間，透過偽類非 slider 的都要增添 pb120。
+- 使文字透過 flex 置中，父容器增添為`div.card-img-overlay.d-flex.justify-content-center.align-items-center`。
+- 文字本身做膠囊化設計，調整為`.card-title.text-bg-warning.opacity-75.rounded-pill.px-3.py-2`。
+- 只對 md 模式提供互動，而手機螢幕小不適合互動。同樣利用 query 達成。
+- 因互動而產生空間擠壓，對增添為`section#lokiPark.overflow-hidden`。
+- 增加背景且固定，透過混和染上白色。
+- 注意到整個 section 下方都不足空間，透過偽類非 slider 的都要增添 pb120。
 
 ```css plugin/style.css
 @media screen and (min-width: 768px) {
@@ -620,7 +754,7 @@ section:not(#lokiSlider){
 }
 ```
 ```html index.html#lokiParkt
-<section id="lokiPark" class="overflow-hidden container-fluid">
+<section id="lokiPark" class="overflow-hidden container-fluid pt-5">
   <header class="my-5 container">
     <h2 class="border-start border-5 border-secondary ps-3">探索體驗</h2>
     <div class="text-center w-75 mx-auto py-5"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis,
@@ -698,15 +832,15 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
 {% endnote %}
 
 ### 整理代碼
-1. 從前列 section 複製出一組，row 規劃 cols-md-3 與 cols-1 來做 RWD，注意 gutter 的調整。
-2. 內部為 card 且 h-100 的項目。card 設定 text-bg-dark、rounded-0 消除圓角、增加 shadow、展開 p-3。
-3. 規劃 card-header.text-center 置中，放入 h3.card-title 標題 與 img.round-circle 圓形圖
-4. 同上，img 規劃 border 與 border-secondary 框線，可累加 m-3 增加空間感。
+- 從前列 section 複製出一組，row 規劃 cols-md-3 與 cols-1 來做 RWD，注意 gutter 的調整。
+- 內部為 card 且 h-100 的項目。card 設定 text-bg-dark、rounded-0 消除圓角、增加 shadow、展開 p-3。
+- 規劃 card-header.text-center 置中，放入 h3.card-title 標題 與 img.round-circle 圓形圖
+- 同上，img 規劃 border 與 border-secondary 框線，可累加 m-3 增加空間感。
 
 ```html index.html#lokiService
 <section
   id="lokiService"
-  class="container"
+  class="container pt-5"
 >
   <header class="h2 my-5 border-start border-5 border-secondary ps-3">遊客服務</header>
   <article class="row row-cols-1 row-cols-md-3 gy-3">
@@ -775,12 +909,12 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
 ```
 
 ### 優化調整
-1. 調整背景圖片，異動原本 section 的 container 到 header 與 article 內。多增加 overflow 來內部修正 header 的 mr 錯位。
-2. 因為`.container>.row>.col`條件，多一組`div.row`來扮演層級角色。
-3. 調整文字色系，修改 header 所有配合包含 text 與 border。
-4. 規劃提供豐富的內容版型收費描述，使用 badge 作為價格標籤，可以列表清單、文字描述、組合型清單。
-5. card-text 的用途已不存在，可以拔除改成 ul>li、p 用途，注意 px 空間上的一致性。以及注意 badge 在不同位置的規劃並搭配 padding 微調。
-6. 參考前 bg 的混色 css 作法，用暗色混和的效果去填塞。
+- 調整背景圖片，異動原本 section 的 container 到 header 與 article 內。多增加 overflow 來內部修正 header 的 mr 錯位。
+- 因為`.container>.row>.col`條件，多一組`div.row`來扮演層級角色。
+- 調整文字色系，修改 header 所有配合包含 text 與 border。
+- 規劃提供豐富的內容版型收費描述，使用 badge 作為價格標籤，可以列表清單、文字描述、組合型清單。
+- card-text 的用途已不存在，可以拔除改成 ul>li、p 用途，注意 px 空間上的一致性。以及注意 badge 在不同位置的規劃並搭配 padding 微調。
+- 參考前 bg 的混色 css 作法，用暗色混和的效果去填塞。
 
 ```css plugin/style.css
 #lokiService {
@@ -793,7 +927,7 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
 ```html index.html#lokiService
 <section
   id="lokiService"
-  class="overflow-hidden text-white"
+  class="overflow-hidden text-white pt-5"
 >
   <header class="container h2 my-5 border-start border-5 border-white ps-3">遊客服務</header>
   <article class="container">
@@ -918,7 +1052,7 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 ```html index.html#lokiRule
 <section
   id="lokiRule"
-  class="container"
+  class="container pt-5"
 >
   <header class="h2 my-5 border-start border-5 border-secondary ps-3">營區守則</header>
   <article class="row row-cols-1 row-cols-md-2 flex-row-reverse gy-3">
@@ -986,14 +1120,14 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 ```
 
 ### 優化調整
-1. 拔除 according 的框線使用`.accordion.accordion-flush`。
-2. item 的間格加大、改成圓角特大、以及內部的 bg 會超出所以溢出處理、再弄點陰影。整題呈現`accordion-item.my-3.overflow-auto.rounded-5.shadow-sm`。
-3. 標題前面增加 fontawsone icon，以及 me-2 推開文字距離。
+- 拔除 according 的框線使用`.accordion.accordion-flush`。
+- item 的間格加大、改成圓角特大、以及內部的 bg 會超出所以溢出處理、再弄點陰影。整題呈現`accordion-item.my-3.overflow-auto.rounded-5.shadow-sm`。
+- 標題前面增加 fontawsone icon，以及 me-2 推開文字距離。
 
 ```html index.html#lokiRule
 <section
   id="lokiRule"
-  class="container"
+  class="container pt-5"
 >
   <header class="h2 my-5 border-start border-5 border-secondary ps-3">營區守則</header>
   <article class="row row-cols-1 row-cols-md-2 flex-row-reverse gy-3">
@@ -1060,21 +1194,99 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 </section>
 ```
 
-## 聯絡我們
-這裡簡單設計超連結至 Google 表單，若未來若接觸 JS 與 PHP 課程再設計串接資料庫。透過modal整合 google form embed 設計完成。
+## 聯絡我們 lokiContact
+這裡簡單設計整合至 Google 表單（你可以選擇 iframe 方式整合個人網站，但視覺美感不推薦），若未來若接觸 JS 與 PHP 進階課程再指導如何串接後台資料庫。這裡提供兩種方式完成。
+
+### 初始準備
+請至 Google Form 設計需要的表單題目，未來用戶透過網站填寫表單將回歸到 Google 表單來協助紀錄，如此就不需要後台即可完成具備聯絡表單的需求。本教學不多介紹，請準備至以下畫面所需欄位。
+![Google Form](https://i.imgur.com/GmRkJXK.png)
+
+### 方式一：透過 Formfacade 免費插件完成
+- 規劃完成 Google 表單時，點選外掛程式搜尋 Formfacade 進行安裝並同意連結授權。免費版下跟隨指令步驟取得 script（採用 Bootstrap 的格式）。
+- 由於免費版沒有提供直覺樣式參數，僅能透過自訂 css 完成設計。
+- 完成設計如下：
+![demo](https://i.imgur.com/yQYVAMb.png)
+
+```html index#lokiContact
+<section id="lokiContact">
+    <div
+      id="ff-compose"
+      class="container text-white"
+    ></div>
+    <script
+      async
+      defer
+      src="https://formfacade.com/include/104718054880738559461/form/1FAIpQLScpJE5jF4yPo2bu2zxqkmr-04lSQanuOfqTEoezBYHzU7ojjA/clean.js?div=ff-compose"
+    ></script>
+  </section>
+```
+```css style.css
+#lokiContact {
+  background: url("https://picsum.photos/1920/1080/?random=10"),
+    #000 no-repeat center/cover;
+  background-attachment: fixed;
+  background-blend-mode: luminosity;
+}
+
+#lokiContact #ff-compose {
+  padding-top: 120px;
+}
+
+#lokiContact .ff-form {
+  backdrop-filter: blur(10px);
+  background: rgb(255, 193, 7, 0.3);
+  border-radius: 5px;
+}
+
+#lokiContact #ff-title-root {
+  margin: 3rem 0;
+  border-left: 5px solid white;
+  font-size: 2rem;
+  padding: 0 0 0 1rem;
+}
+```
+### 方式二：手動對接 form action 與 field name
+此方法參考自 [Youtube](https://www.youtube.com/watch?v=_gsZbIIMS7w&ab_channel=TrabantTechnologyPartners) 教學，提供此方法不做詳細教學，可自行搭配 Bootstrap Form 自行設計。
+- 透過 Google Form 選擇`取得預先填入的連結`，任意填寫資料後按下複製 URL 代碼。
+- 整理 URL，其中包含了`entry. 數字`=你剛任意填寫的資料，這裡的`entry. 數字`就是明碼下的 field name。
+- 回到自訂的頁面表格欄位更改 name 參數，action 的位置為表單填寫之處，但尾綴需要為`/formResponse`
+- 由於 Google 預先會轉頁，最好使用開啟新頁方式。舉例代碼如下：
+```html
+<form
+  action="https://docs.google.com/forms/d/e/1FAIpQLScpJE5jF4yPo2bu2zxqkmr-04lSQanuOfqTEoezBYHzU7ojjA/formResponse"
+  target="_blank"
+>
+  <input
+    type="text"
+    name="entry.411362954"
+  >
+  <input
+    type="text"
+    name="entry.1734230940"
+  >
+  <input
+    type="date"
+    name="entry.314005902"
+  >
+  <input
+    type="date"
+    name="entry.1931529426"
+  >
+  <input type="submit" value="send">
+</form>
+```
 
 ## 頁尾資訊 footer
 頁尾資訊不屬於選單項目之一，提供一些商家基本資訊使用。使用基本元件觀念來完成設計即可。
 
 ### 整理代碼 
-1. 使用 footer 標籤並提供黑底白字設計`text-bg-dark`
-2. 分為兩區塊，上半部再多一個`.bg-light.bg-opacity-25`區塊，下半部就作為頁尾字串。
-3. 下半部使用`.text-muted.text-center`，再增加`py-3`推開間格。
-4. 上半部有 img 跟 container，img 使用`.position-absolute`對齊上層左下（因此上層需要綁 relative)，如果跟鄰居 container 打架，鄰居可以綁 relative。
-5. container 均分成`.col*3`三組
-   - 第一組為網站名稱與項目。li 與 fontawsone 對齊方式參考官方說明。
-   - 第一組可添加 fake btn of a-link
-   - 第一與第二組可以 md 以下多一個 hr
+- 使用 footer 標籤並提供黑底白字設計`text-bg-dark`
+- 分為兩區塊，上半部再多一個`.bg-light.bg-opacity-25`區塊，下半部就作為頁尾字串。
+- 下半部使用`.text-muted.text-center`，再增加`py-3`推開間格。
+- 上半部有 img 跟 container，img 使用`.position-absolute`對齊上層左下（因此上層需要綁 relative)，如果會跟 container 鄰居打架，鄰居可以綁 relative。
+- container 均分成`.col*3`三組
+   - 第一組為網站名稱與項目。li 與 fontawsone 對齊方式 [參考官方說明](https://fontawesome.com/v5/docs/web/style/lists)。
+   - 第一組可添加 fake btn of a-link，賦予 rounded-circle 與 inline 排列，圖案置中可用 flex，並綁定正寬高來使尺寸一致。
    - 第二組擺放任何文字
    - 第三組使用 googleMap 來設計，利用 BS 的強制比例幫助我們鎖定 1:1
    - 第三組多設計 border 視覺美觀
@@ -1084,7 +1296,7 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
   <div class="bg-light bg-opacity-25 overflow-hidden position-relative">
     <img
       src="media/camp.svg"
-      class="position-absolute w-25 start-0 bottom-0"
+      class="position-absolute start-0 top-0" style="max-width:400px"
     >
     <div class="container py-5 lh-lg position-relative">
       <div class="row g-5">
@@ -1110,19 +1322,13 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
             class="btn btn-success rounded-circle d-inline-flex justify-content-center align-items-center mx-1 fs-4"
             style="width:2.5rem;height:2.5rem"
             link="#"
-          ><i class="fa-brands fa-line"></i></a>
-        </div>
-        <div class="d-md-none">
-          <hr>
+          ><i class="fa-brands fa-line"></i></a>  
         </div>
         <div class="col-md-6 col-lg-4">
           <h5>自行開車</h5>
           <p> 高速公路五股交流道下（往新莊、泰山），經新五路至新北大道右轉，直行至貴子路口右轉，貴子路直行至明志路左轉。於明志路繼續前行約 100 公尺右轉工專路，即可抵達明科技大學。 </p>
           <p> 由台北車站走忠孝橋，直行高架道路，下到平面道路之後直行至貴子路口右轉，貴子路直行至明志路左轉，於明志路繼續前行約 100 公尺右轉工專路，即可抵達明科技大學。 明志科大「汽車」停車費 30
             元/小時，請儘量搭乘大眾交通工具或機車（免停車費）。 </p>
-        </div>
-        <div class="d-md-none">
-          <hr>
         </div>
         <div class="col-md-6 col-lg-4">
           <div class="ratio ratio-1x1">
