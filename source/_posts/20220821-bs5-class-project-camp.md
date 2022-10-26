@@ -233,7 +233,7 @@ https://getbootstrap.com/docs/5.2/components/carousel/#with-captions
 
 ```html index.html#lokiSlider
 <!-- 測試廣告輪播判斷 Bootstrap 是否正常運行 -->
-<section id="lokiSlider" class="carousel slide carousel-fade" data-bs-ride="false">
+<section id="lokiSlider" class="carousel slide carousel-fade" data-bs-ride="carousel">
   <div class="carousel-indicators">
     <button type="button" data-bs-target="#lokiSlider" data-bs-slide-to="0" class="active"></button>
     <button type="button" data-bs-target="#lokiSlider" data-bs-slide-to="1"></button>
