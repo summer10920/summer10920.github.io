@@ -964,31 +964,36 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
             <ul class="ps-4">
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
+                  <div class="px-2 text-bg-info">Subheading</div>
+                  <p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
+                  <div class="px-2 text-bg-info">Subheading</div>
+                  <p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
+                  <div class="px-2 text-bg-info">Subheading</div>
+                  <p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
+                  <div class="px-2 text-bg-info">Subheading</div>
+                  <p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
+                  <div class="px-2 text-bg-info">Subheading</div>
+                  <p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
