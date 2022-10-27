@@ -396,7 +396,7 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 - 只用於 md 模式規劃 CSS 動態滑動效果。初始卡片比例 0，滑過時圖片偏大以及卡片文字比例恢復正常。
 ```css style.css
 @media screen and (min-width: 768px) {
-  #lokiPallet .col:nth-child(odd) {
+  #lokiPallet article > .col:nth-child(odd) {
     transform: translateY(-50%);
     padding-bottom: 150px;
   }
@@ -404,7 +404,7 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
     padding-top: calc((50% - 24px) * 0.375 + 75px);
     margin-bottom: -150px;
   }
-  #lokiPallet .col:nth-last-child(1) {
+  #lokiPallet article > .col:nth-last-child(1) {
     margin-bottom: -150px;
   }
 
@@ -498,6 +498,23 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
   </article>
 </section>
 ```
+
+如果覺得Slider與Pallet之間過於單調，可嘗試添加一些圖片作為分隔。放入到section之內首
+
+```html index.html#lokiPallet
+<div class="row row-cols-4 g-0">
+  <img class="col img-fluid" src="https://fakeimg.pl/300x300/200">
+  <img class="col img-fluid" src="https://fakeimg.pl/600x400/200">
+  <img class="col img-fluid" src="https://fakeimg.pl/300x500/200">
+  <img class="col img-fluid" src="https://fakeimg.pl/700x300/200">
+</div>
+```
+```css style.css
+#lokiPallet .row > img {
+  object-fit: cover;
+}
+```
+
 
 ## 選單 #lokiMenu
 將選單放置於輪播廣告前面，利用 Navbar 元件即可容易完成。
@@ -713,7 +730,7 @@ onload = () => {
 - 文字本身做膠囊化設計，調整為`.card-title.text-bg-warning.opacity-75.rounded-pill.px-3.py-2`。
 - 只對 md 模式提供互動，而手機螢幕小不適合互動。同樣利用 query 達成。
 - 因互動而產生空間擠壓，對增添為`section#lokiPark.overflow-hidden`。
-- 增加背景且固定，透過混和染上白色。
+- 增加背景且固定，透過混和染上黑色。
 - 注意到整個 section 下方都不足空間，透過偽類非 slider 的都要增添 pb120。
 
 ```css plugin/style.css
@@ -733,15 +750,16 @@ onload = () => {
   }
   #lokiPark .col .card-img {
     opacity: 0.5;
+    filter: blur(2px);
     transition: 0.3s;
   }
   #lokiPark .col:hover .card-img {
     opacity: 1;
+    filter: blur(0);
   }
 }
 #lokiPark {
-  background: url("https://picsum.photos/1920/1800/?random=10"),
-    #fff8 no-repeat center/cover;
+  background: url("https://picsum.photos/1920/1800/?random=10") #3338 no-repeat center/cover;
   background-attachment: fixed;
   background-blend-mode: lighten;
 }
@@ -946,31 +964,31 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
             <ul class="ps-4">
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="fw-bold">Subheading</div> Content for list item
+                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="fw-bold">Subheading</div> Content for list item
+                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="fw-bold">Subheading</div> Content for list item
+                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="fw-bold">Subheading</div> Content for list item
+                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
               <li class="py-1 d-flex justify-content-between align-items-start">
                 <div>
-                  <div class="fw-bold">Subheading</div> Content for list item
+                  <div class="bg-info">Subheading</div><p class="mb-1 px-2">Content for list item</p>
                 </div>
                 <span class="badge bg-info rounded-pill">NT 200</span>
               </li>
