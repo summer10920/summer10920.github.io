@@ -735,12 +735,8 @@ onload = () => {
 
 ```css plugin/style.css
 @media screen and (min-width: 768px) {
-  #lokiPallet .card-img {
-    transition: 0.3s;
-  }
-  #lokiPallet .card:hover .card-img {
-    transform: scale(1.3);
-  }
+  /* ... */
+  
   #lokiPark .col {
     transition: 0.3s;
   }
