@@ -648,8 +648,8 @@ https://getbootstrap.com/docs/5.2/components/card/#masonry
 - col 容器內部捨棄 card 設計視覺，但保留 card-img 與 card-overlay>card-title 的蓋圖效果。
 - card-img 雖然是瀑布流設計，考量整齊感其圖片高度為倍數考量。
 - 若圖片為本地可使用 Bootstrap 所示範的`.row[data-masonry='{"percentPosition": true }']`。然而如果因延遲性導致（例如 fakeImg ）初始化會抓不到高度，則需改用 onload 完畢才去初始插件。建議路徑方式分離 js 代碼。
-```js plugin/custom.js
-// 記得 html>body 底部宣告 <script src="plugin/custom.js"></script>
+```js plugins/custom.js
+// 記得 html>body 底部宣告 <script src="plugins/custom.js"></script>
 onload = () => {
   var grid = document.querySelector('#lokiPark article.row');
   var msnry = new Masonry(grid, {
@@ -722,7 +722,7 @@ onload = () => {
     </div>
   </article>
 </section>
-<script src="plugin/custom.js"></script>
+<script src="plugins/custom.js"></script>
 ```
 
 ### 優化調整
@@ -749,13 +749,11 @@ onload = () => {
     z-index: 99;
   }
   #lokiPark .col .card-img {
-    opacity: 0.5;
-    filter: blur(2px);
+    filter: brightness(0.7);
     transition: 0.3s;
   }
   #lokiPark .col:hover .card-img {
-    opacity: 1;
-    filter: blur(0);
+    filter: brightness(1);
   }
 }
 #lokiPark {
@@ -936,8 +934,7 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
 
 ```css plugin/style.css
 #lokiService {
-  background: url("https://picsum.photos/1920/1800/?random=11"),
-    #0008 no-repeat center/cover;
+  background: url("https://picsum.photos/1920/1800/?random=11") #0008 no-repeat center/cover;
   background-attachment: fixed;
   background-blend-mode: darken;
 }
@@ -947,8 +944,8 @@ https://getbootstrap.com/docs/5.2/components/card/#grid-cards
   id="lokiService"
   class="overflow-hidden text-white pt-5"
 >
-  <header class="container h2 my-5 border-start border-5 border-white ps-3">遊客服務</header>
   <article class="container">
+    <header class="h2 my-5 border-start border-5 border-white ps-3">遊客服務</header>
     <div class="row row-cols-1 row-cols-md-3 gy-3">
       <div class="col">
         <div class="card h-100 text-bg-dark rounded-0 shadow-lg py-3">
@@ -1245,8 +1242,7 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 ```
 ```css style.css
 #lokiContact {
-  background: url("https://picsum.photos/1920/1080/?random=10"),
-    #000 no-repeat center/cover;
+  background: url("https://picsum.photos/1920/1080/?random=10") #000 no-repeat center/cover;
   background-attachment: fixed;
   background-blend-mode: luminosity;
 }
