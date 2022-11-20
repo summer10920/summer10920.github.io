@@ -1,5 +1,5 @@
 ---
-title: "[練習課程] Bootstrap5 實作：一頁式網站"
+title: "[練習課程] Bootstrap5 期末實作：商務網站"
 categories:
   - 職訓教材
   - 範例實作網站
@@ -499,7 +499,7 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 </section>
 ```
 
-如果覺得Slider與Pallet之間過於單調，可嘗試添加一些圖片作為分隔。放入到section之內首
+如果覺得 Slider 與 Pallet 之間過於單調，可嘗試添加一些圖片作為分隔。放入到 section 之內首
 
 ```html index.html#lokiPallet
 <div class="row row-cols-4 g-0">
@@ -515,7 +515,6 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 }
 ```
 
-
 ## 選單 #lokiMenu
 將選單放置於輪播廣告前面，利用 Navbar 元件即可容易完成。
 
@@ -529,7 +528,7 @@ https://getbootstrap.com/docs/5.2/components/navbar/#supported-content
 - 簡化結構為`.navbar-nav>a.nav-link`並複製多個 nav-link 大約共計 5 組。
 - 調整靠右方式為`.navbar-nav.ms-auto`
 - 更改為 container 窄版。更改 id 名稱為#lokiMenu
-- 規劃LOGO文字可用font Awesome前綴，或是使用指定LOGO圖片。
+- 規劃 LOGO 文字可用 font Awesome 前綴，或是使用指定 LOGO 圖片。
 - 5 個 nav-link 使用錨點連結至各主題且加大`.mx-3`，其中 action 因設計上用不到而拔除。
 
 ```html index.html>nav
@@ -566,7 +565,7 @@ https://getbootstrap.com/docs/5.2/components/navbar/#supported-content
 ### 優化調整
 - 主 nav 調整色系`nav.text-bg-dark.navbar-dark`，以及黏貼畫面上`.position-fixed.top-0.w-100`，如果疊層不夠自訂 z-index 最上方。
 - 嘗試點選錨點跳躍，會因為 menu 與 section 定位上邊緣問題壓到，可以對 section 多添加`pt-5`來閃躲。
-- 要產生 scrollSpy 功能，對偵測的範圍添加`[data-bs-spy="scroll"][data-bs-target="#lokiMenu"]`，這裡選body就能整頁偵測到。另多增加css特效。
+- 要產生 scrollSpy 功能，對偵測的範圍添加`[data-bs-spy="scroll"][data-bs-target="#lokiMenu"]`，這裡選 body 就能整頁偵測到。另多增加 css 特效。
 
 ```html index.html body
 <body data-bs-spy="scroll" data-bs-target="#lokiMenu">
@@ -639,6 +638,13 @@ body > nav {
 從 card 的佈局上可看到 Masonry 插件說明，藉此引用到 Grid System 來協助處理，但這裡不使用 card 當作容器。
 https://getbootstrap.com/docs/5.2/components/card/#masonry
 {% endnote %}
+
+至 Masonry 下載放入 plugins 目錄，設定 head 內宣告。
+
+```html index.html
+<!-- masonry -->
+<script src="plugins/masonry.pkgd.min.js"></script>
+```
 
 ### 整理代碼
 - 延期前面的 section 複製修改為`.container-field`，調整拔除 container 轉移到內部成為`header.my-5.container`。
