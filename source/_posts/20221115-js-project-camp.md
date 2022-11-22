@@ -443,6 +443,7 @@ listMaker = (obj) => {
 
       if (obj.thisDate.date(i).isSameOrBefore(today)) classStr += ' delDay'; //過期
       else {
+        const dateStr = obj.thisDate.date(i).format('YYYY-MM-DD');// 將該天轉為指定的日期字串
         if ((i + firstDay) % 7 < 2 || nationalHoliday.includes(dateStr)) classStr += ' holiday'; //是否周末假日或國定日
       }
       obj.listBox += `<li class="${classStr}">${i}</li>`;
@@ -465,4 +466,288 @@ const calendarService = () => {
 ##### 滿帳
 如果該天的銷售加總情況總數剛好符合整個營區的可售總數，代表當日已經滿位無法接受預訂。需要增加 class 為 fullDay 效果。
 
-- 
+- 透過 fetch 以及全域變數 pallet.count 能得知整個營位數量上限。
+- 將每次 li 的日期（共用前面出現的 dateStr)，去尋找 booked 之每筆小物件的指定位置 date 是否存在相同，有則嘗試將該小物件的 sellout 加總起來是否符合 pallet.count 上限。
+- booked 是個陣列，批示檢查每個 value 底下的 date，使用 [`array.find()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find) 方式探詢。有找到就利用這個 value 處理計算，沒有會是 undefined 視同 false。
+- 如果有找到，對這個特定物件只抽取底下 sellout 物件的所有 value 轉為陣列。使用`Object.values()`。
+- 獲得存數字的陣列，利用 [`Array.reduce()`](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) 能幫助每次抽取 item 與上次 return 的值做處理（需指定 init 參數當作前次 return)，適合累加這樣的做法。
+- 將累加的值與總值相比，就能知道是否滿帳了。
+
+```js
+listMaker = (obj) => {
+// ...
+  for (let i = 1; i <= totalDay; i++) {
+    let classStr = 'JsCal';
+
+    if (obj.thisDate.date(i).isSameOrBefore(today)) classStr += ' delDay'; //過期
+    else {
+      const dateStr = obj.thisDate.date(i).format('YYYY-MM-DD');
+      if ((i + firstDay) % 7 < 2 || nationalHoliday.includes(dateStr)) classStr += ' holiday'; //假日
+
+      const checkDay = booked.find(item => item.date == dateStr); // 尋找該日是否存在於 booked 陣列內之各 object.date，有回傳該指定 object
+      if (checkDay && !(pallet.count - Object.values(checkDay.sellout).reduce((preVal, num) => preVal + num, 0))) //總數與指定 object.sellout 之 value 總和相等媽
+        classStr += ' fullDay'; //滿帳
+
+    }
+    obj.listBox += `<li class="${classStr}">${i}</li>`;
+  }
+// ...
+}
+```
+
+### 操作事件
+這裡開始能對月曆進行動態操作行為，包含了選擇日期以及更改月曆兩項重點：先完成可更改日曆之部分，會利用到閉包特性。
+
+#### 更改月曆
+目前已知，整個日曆的計算會透過`listPrint()`來帶動兩次`listMaker(obj)`與輸出畫面。而參考日的區間變數`theDay`能演算出`obj.thisDate`的兩組每日號（本月與下月）。
+
+隨著開始要加減月份的動作要求，要進行日曆的增減一個月（透過`dayjs().add(1, 'month')`方式），除非也把`let theDay = dayjs()`移出成為全域變數來操作，才有辦法從外部去異動 theDay 的變化。使得整個 listMarker 可以重新算出所有日子。
+
+如果希望區間變數不搬移出來，同時又能從外部去控制該變數增減月份，可以利用 [閉包觀念](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Closures) 去操作。
+
+##### 閉包 print
+閉包簡單來說，可以只將內部的 fn 執行指令傳送出來，再透過物件導向呼喚該內部小函式執行存取自己內部的變數。這樣就能保持區間內相同的記憶體位置變數存取。
+
+- 取消原本 calendarService 最後的`listPrint()`，我們不會再透過`calendarService()`來間接觸這裡。
+- calendarService 本身要能 return 回傳一物件`{}`，物件包含含有關鍵字屬性以及執行內部小函式的方法。任何區間外的位置都能透過這個回傳方式來呼喚區間內的行為方法。
+- 在 init 處，調整為將 calendarService 當成一個執行後所回傳的物件存起來並為全域變數。
+
+```js
+//dayjs init
+//...
+
+//全域變數宣告區
+let
+  fetchPath = 'db.json',
+  nationalHoliday = [],
+  booked = [],
+  pallet = {},
+  calendarCtrl = null ////////////////////////////初始日曆物件
+  ;
+
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    ({ nationalHoliday, booked, pallet } = json);
+
+    calendarCtrl = calendarService(); //////////////calendarService 提供一個函式物件
+    calendarCtrl.print(); //////////////////////////改從這裡去執行 print
+  });
+}
+
+//執行
+init();
+
+//Service
+const calendarService = () => {
+  //...
+
+  const
+  //...
+    listMaker = (obj) => {
+    //...
+    },
+    listPrint = () => {
+    //...
+    };
+
+  //捨棄立即觸發執行，讓整個函式成為一個只有多個代碼指令的結構。
+  // listPrint();
+  return {
+    print: () => listPrint() //////////////////////print 代表了 listPrint()
+  }
+}
+```
+
+現在已經不是從 calendarService 來進行 listPrint 而是從 init 這裡透過 calendarCtrl.print() 來操作 calendarCtrl 內部的 listPrint。
+
+##### 增設 add 與 sub
+現在我們可以從 init 去綁定按鈕去執行 calendarCtrl 做一些事情，外部只需如何透過 calendarCtrl 來操弄 calendarService 物件，不需要也無法清楚函式物件內部狀況。
+
+- calendarService 多回傳 2 個方法 add 與 sub，都能操作調整 theDay （透過新函式`changeMonth(count)`完成此動作）與重新輸出 listPrint。
+- changeMonth 會將 thdDay 重新變換並回存，前面已用過 add，故透過 add(number,Shorthand) 來增減 1 個月單位。
+- changeMonth 還要更改 objL 與 objR 的乾淨狀態，後面的 listPrint 塞入才能從清空狀態下累加。因此要調整 const 回 let。
+- DOM 綁定 calendarCtrl.add() 或 sub()，而超連結原本預設行為可以取消。
+
+```js
+//dayjs init
+//...
+
+//全域變數宣告區
+//...
+
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    ({ nationalHoliday, booked, pallet } = json);
+
+    calendarCtrl = calendarService();
+    calendarCtrl.print();
+
+    document.querySelector('a[href="#nextCtrl"]').onclick = (event) => { //綁定 event
+      event.preventDefault();
+      calendarCtrl.add();
+    }
+    document.querySelector('a[href="#prevCtrl"]').onclick = (event) => { //綁定 event
+      event.preventDefault();
+      calendarCtrl.sub();
+    }
+  });
+}
+
+//執行
+init();
+
+//Service
+const calendarService = () => {
+  let
+    theDay = dayjs(),
+    today = dayjs(),
+    objL = {    //改成 let
+      listBox: '',
+      title: '',
+      thisDate: theDay,
+    },
+    objR = {    //同理
+      listBox: '',
+      title: '',
+      thisDate: theDay.add(1, 'M'),
+    };
+
+  const
+    changeMonth = (count) => {
+      theDay = theDay.add(count, 'M'); // 增加 1 個月，手冊上寫可使用 shortCode
+      objL = {  //obj 回到乾淨狀態下，使得 listMaker 可以重新賦予
+        listBox: '',
+        title: '',
+        thisDate: theDay,
+      };
+      objR = {  //同理
+        listBox: '',
+        title: '',
+        thisDate: theDay.add(1, 'month'),
+      };
+    },
+    listMaker = (obj) => {
+      //..
+    },
+    listPrint = () => {
+      //...
+    };
+
+  return {
+    print: () => listPrint(),
+    add: () => { //如果 add，就是要求增加一個月，使得 theDay 可以 + 1。再進行 listPrint
+      changeMonth(1);
+      listPrint();
+    },
+    sub: () => {
+      changeMonth(-1); //同理
+      listPrint();
+    },
+  }
+}
+```
+
+#### 選擇日期
+首先需確認使用邏輯，除了過期日子都能給予選擇，包含滿帳也是可以選擇的（可選擇退房日）。在 listMaker 對可以互動的日子添加 class`.selectDay`。
+
+- 根據非過期的條件範圍下，else 處賦予`.selectDay` class 獲得外觀 pointer。
+
+```js
+listMaker = obj => {
+  //...
+  for (let i = 1; i <= totalDay; i++) {
+    let classStr = 'JsCal';
+
+    if (obj.thisDate.date(i).isSameOrBefore(today)) classStr += ' delDay'; //過期
+    else {
+      //...
+      classStr += ' selectDay'; //////////////給予可選擇的互動視覺
+    }
+    obj.listBox += `<li class="${classStr}">${i}</li>`;
+  }
+  //...
+},
+```
+
+##### 綁定選擇
+對於每次進行 print 後這些新 li 元素都要重新宣告 click 事件，便於進行選擇日期動作處理。
+
+- printList 後期，設定所有持有 Class selectDay 的 li 之 click 事件。
+- click 觸發內部的 chooseList()，或者也可以從全域變數`calendarCtrl.choose()`來操作，後者建議原因能操作的一致姓。
+- 追加 return 的轉派`chooseList(item)`
+- 編列 chooseList 與測試。
+
+```js
+//Service
+const calendarService = () => {
+  //...
+
+  const
+    changeMonth = count => {
+      //...
+    },
+    listMaker = obj => {
+      //...
+    },
+    listPrint = () => {
+      //...
+
+      document.querySelectorAll('.selectDay').forEach((item) => { //賦予 selectDay 可點擊
+        item.onclick = () => calendarCtrl.choose(item); // 每次點選將執行給該函式並傳送 item 自己
+      })
+    },
+    chooseList = item => { //最後回到這裡，測試 event 事件是否成功
+      console.log(item);
+    };
+
+  return {
+    print: () => listPrint(),
+    add: () => {
+      changeMonth(1);
+      listPrint();
+    },
+    sub: () => {
+      changeMonth(-1);
+      listPrint();
+    },
+    choose: item => chooseList(item) //轉派
+  }
+}
+```
+
+##### 選取判斷
+日曆上將進行兩次點擊，分別為從何點起與從何結束。為了方便日期計算，所有的日子都需要標記提供 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) 方式給予日期字串。
+
+- 修改原本 ListBox 的生成方式。添加該日的日期字串。
+
+```js
+listMaker = obj => {
+  //...
+
+  for (let i = 1; i <= totalDay; i++) {
+    let classStr = 'JsCal';
+    const dateStr = obj.thisDate.date(i).format('YYYY-MM-DD'); //搬移時機，使得 listBox 可以使用
+
+    if (obj.thisDate.date(i).isSameOrBefore(today)) classStr += ' delDay';
+    else {
+      // const dateStr = obj.thisDate.date(i).format('YYYY-MM-DD'); //搬移
+      if ((i + firstDay) % 7 < 2 || nationalHoliday.includes(dateStr)) classStr += ' holiday';
+
+      const checkDay = booked.find(item => item.date == dateStr);
+      if (checkDay && !(pallet.count - Object.values(checkDay.sellout).reduce((preVal, num) => preVal + num, 0)))
+        classStr += ' fullDay';
+
+      classStr += ' selectDay';
+    }
+    // obj.listBox += `<li class="${classStr}">${i}</li>`;
+    obj.listBox += `<li class="${classStr}" data-date="${dateStr}">${i}</li>`; //追加 DateStr 至元素
+  }
+
+  obj.title = `${dayjs.months()[obj.thisDate.month()]} ${obj.thisDate.year()}`;
+  return obj;
+},
+```
+
+- 接著
