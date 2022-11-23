@@ -717,8 +717,8 @@ const calendarService = () => {
 }
 ```
 
-##### 選取判斷
-日曆上將進行兩次點擊，分別為從何點起與從何結束。為了方便日期計算，所有的日子都需要標記提供 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) 方式給予日期字串。
+##### Head 與 Foot 選取
+日曆上能進行兩次點擊分別為從何點起與從何結束。為了方便日期計算，所有的日子都需要標記提供 [dataset](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/dataset) 方式給予日期字串。
 
 - 修改原本 ListBox 的生成方式。添加該日的日期字串。
 
@@ -750,4 +750,53 @@ listMaker = obj => {
 },
 ```
 
-- 接著
+接著邏輯思考應用性，每當點選第一次 Class 需賦予 selectHead，第二次為 class 賦予 selectFoot，且可以支援先選截止日再選起始日或重新再選擇。因此考慮兩次點擊的組合性。
+
+主函式使用一個陣列長度 2，來做為判斷 chooseLists 內部受點選狀況：
+
+1. `[null,null]`，代表第一次點選，作業為`[1st,null]`。
+2. `[1st,null]`，代表第二次點選，作業為`[1st,2nd]`。
+3. 同上，如果 2nd 日期比 1st 還早，代表使用者故意點反，要對調成`[2nd,1st]`。
+4. `[!null,!null]`，代表第二次點選，作業為`[round2's 1st,null]`。
+
+整理好以上邏輯，開始設計以下動作：
+
+- 宣告`chooseDays = [null,null]`初始化。
+- 根據前列 4 種考量，做行為前判斷與行為後動作。
+- 需判斷日子是否早於指定日，使用前面出現過的 isSameOrBefore，利用 dataset 轉為時間物件。
+
+```js
+const
+  chooseDays = [null, null], // 初始已選陣列
+  //...
+
+  chooseList = item => {
+    // console.log(item);
+    if (!chooseDays[0] && !chooseDays[1]) { //[null,null] => first click
+      chooseDays[0] = item; //存入
+      chooseDays[0].classList.add('selectHead');
+    } else if (chooseDays[0] && !chooseDays[1]) {  //[item,null]=> second click
+      chooseDays[1] = item; //先存入
+
+      const foot2head = dayjs(item.dataset.date).isSameOrBefore(dayjs(chooseDays[0].dataset.date)); //目前 item 是否早於先前點的日子，
+      if (foot2head) { //成立代表先 foot-> 才 head =>需對調
+        chooseDays[0].classList.replace('selectHead', 'selectFoot');
+        chooseDays[1].classList.add('selectHead');
+        [chooseDays[0], chooseDays[1]] = [chooseDays[1], chooseDays[0]];//利用 ES6 解構進行 swap
+      } else chooseDays[1].classList.add('selectFoot');
+    } else { //[item,item] => third click
+
+      chooseDays[0].classList.remove('selectHead');
+      chooseDays[1].classList.remove('selectFoot');
+      chooseDays[1] = null;
+
+      //這裡的前三行的邏輯可以考慮跟前面 [null,null] 合併為前置判斷處理
+      chooseDays[0] = item;
+      chooseDays[0].classList.add('selectHead');
+    }
+  };
+```
+
+檢查畫面操作 click 多次是否正常顯示 selectHead 與 selectFoot 外觀。
+
+##### Connect 選取
