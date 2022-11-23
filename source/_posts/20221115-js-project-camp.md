@@ -38,7 +38,7 @@ date: 2022-11-15 23:03:07
 - 第一次 then 回來的 response 會是一個 promise 物件，需要另透過 json() 方法來獲取等待結果。
 - 第二次 then 為該 promise 給我們的資料，此時才能獲得資料。
 
-```js
+```js lokiCalendar.js
 const fetchPath = 'db.json';
 fetch(fetchPath, { method: 'GET' })
     .then(response => 
@@ -171,7 +171,7 @@ const calendarService = () => {
 - 參閱 [dayjs().add()](https://day.js.org/docs/en/manipulate/add) 手冊，能夠指定某時間物件做增加（若參數為負數也視同減去）。
 - theDay 必須要是 let 宣告，隨著後續的改變日期我們會調整這個時間參考。
 
-```js
+```js lokiCalendar.js
 const calendarService = () => {
   let
     theDay = dayjs();
@@ -205,7 +205,7 @@ const calendarService = () => {
 - 執行 listMaker 前，需要將 obj 傳入，請 listMaker 幫我們規劃新的資料回存，也可以回傳給我們。
 - 執行 listMaker 後，嘗試看看變換結果。
 
-```js
+```js lokiCalendar.js
 const calendarService = () => {
   let
     theDay = dayjs();
@@ -250,7 +250,7 @@ const calendarService = () => {
 - **1 號開始的存在日子`<li class="JsCal"></li>`有幾個並寫入 listBox**
 第一次規劃保留 className 的彈性，之後會再複雜去判斷追加 class。
 
-```js
+```js lokiCalendar.js
 const calendarService = () => {
   // ...
     listMaker = (obj) => {
@@ -284,7 +284,7 @@ const calendarService = () => {
 - 綁定`listMaker(objL)`的結果之 listBox 傳回到`.leftDayList`畫面上
 - 綁定`listMaker(objLR)`的結果之 listBox 傳回到`.rightDayList`畫面上
 
-```js
+```js lokiCalendar.js
 listPrint = () => {
   // console.log(listMaker(objL));
   document.querySelector('.leftDayList').innerHTML = listMaker(objL).listBox;
@@ -312,7 +312,7 @@ listPrint = () => {
 
 以及到 js 內第一行插入代碼，確保地區已切換以及插件已開啟供給整份 js 使用。注意 [瀏覽器初始化插件](https://day.js.org/docs/en/plugin/loading-into-browser) 的方式稍微不同。被藏在 window 大物件底下。（當然 window 可以偷懶不寫）：
 
-```js
+```js lokiCalendar.js
 //dayjs init
 dayjs.locale('zh-tw');
 dayjs.extend(window.dayjs_plugin_localeData);
@@ -325,7 +325,7 @@ dayjs.extend(window.dayjs_plugin_localeData);
 - 現在可以產生類似 <mark>一月 2022</mark> 的標題，產生的時機適合列於 return obj 之前。
 - 然而再由 listPrint 將畫面標題替換掉。
 
-```js
+```js lokiCalendar.js
 //...
 listMaker = (obj) => {
   const
@@ -379,7 +379,7 @@ listPrint = () => {
   <!-- ... -->
 </head>
 ```
-```js
+```js lokiCalendar.js
 //dayjs init
 dayjs.locale('zh-tw');
 dayjs.extend(dayjs_plugin_localeData);
@@ -411,7 +411,7 @@ listMaker = (obj) => {
 
 將此判斷塞入，非過期的判斷邏輯下。
 
-```js
+```js lokiCalendar.js
 listMaker = (obj) => {
 // ...
     for (let i = 1; i <= totalDay; i++) {
@@ -435,7 +435,7 @@ listMaker = (obj) => {
 - 利用該月曆的 thisDate 物件，提問指定日 dat(i) 之時間物件。接著利用 [format 轉為字串](https://day.js.org/docs/en/display/format) YYYY-MM-DD 使得與 nationalHoliday 格式一致
 - 最後使用 nationalHoliday 是否 includes 目前回圈內的日期。整合周末假日一起判斷。
 
-```js
+```js lokiCalendar.js
 listMaker = (obj) => {
 // ...
     for (let i = 1; i <= totalDay; i++) {
@@ -454,7 +454,7 @@ listMaker = (obj) => {
 
 此時若無法確認功能是否正常，可以暫時將參考日的 theDay 改成有國定假日的月份驗證。例如：
 
-```js
+```js lokiCalendar.js
 const calendarService = () => {
   let
     // theDay = dayjs();
@@ -473,7 +473,7 @@ const calendarService = () => {
 - 獲得存數字的陣列，利用 [`Array.reduce()`](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) 能幫助每次抽取 item 與上次 return 的值做處理（需指定 init 參數當作前次 return)，適合累加這樣的做法。
 - 將累加的值與總值相比，就能知道是否滿帳了。
 
-```js
+```js lokiCalendar.js
 listMaker = (obj) => {
 // ...
   for (let i = 1; i <= totalDay; i++) {
@@ -512,7 +512,7 @@ listMaker = (obj) => {
 - calendarService 本身要能 return 回傳一物件`{}`，物件包含含有關鍵字屬性以及執行內部小函式的方法。任何區間外的位置都能透過這個回傳方式來呼喚區間內的行為方法。
 - 在 init 處，調整為將 calendarService 當成一個執行後所回傳的物件存起來並為全域變數。
 
-```js
+```js lokiCalendar.js
 //dayjs init
 //...
 
@@ -569,7 +569,7 @@ const calendarService = () => {
 - changeMonth 還要更改 objL 與 objR 的乾淨狀態，後面的 listPrint 塞入才能從清空狀態下累加。因此要調整 const 回 let。
 - DOM 綁定 calendarCtrl.add() 或 sub()，而超連結原本預設行為可以取消。
 
-```js
+```js lokiCalendar.js
 //dayjs init
 //...
 
@@ -654,7 +654,7 @@ const calendarService = () => {
 
 - 根據非過期的條件範圍下，else 處賦予`.selectDay` class 獲得外觀 pointer。
 
-```js
+```js lokiCalendar.js
 listMaker = obj => {
   //...
   for (let i = 1; i <= totalDay; i++) {
@@ -679,7 +679,7 @@ listMaker = obj => {
 - 追加 return 的轉派`chooseList(item)`
 - 編列 chooseList 與測試。
 
-```js
+```js lokiCalendar.js
 //Service
 const calendarService = () => {
   //...
@@ -722,7 +722,7 @@ const calendarService = () => {
 
 - 修改原本 ListBox 的生成方式。添加該日的日期字串。
 
-```js
+```js lokiCalendar.js
 listMaker = obj => {
   //...
 
@@ -765,7 +765,7 @@ listMaker = obj => {
 - 根據前列 4 種考量，做行為前判斷與行為後動作。
 - 需判斷日子是否早於指定日，使用前面出現過的 isSameOrBefore，利用 dataset 轉為時間物件。
 
-```js
+```js lokiCalendar.js
 const
   chooseDays = [null, null], // 初始已選陣列
   //...
@@ -800,3 +800,92 @@ const
 檢查畫面操作 click 多次是否正常顯示 selectHead 與 selectFoot 外觀。
 
 ##### Connect 選取
+當成立了`[head,foot]`的陣列時，對畫面上所有的 li 快速檢查，若日期介於 head 與 foot 之間，class 要給予 selectConnect 的效果。
+
+- 位於`chooseDays[0] && !chooseDays[1]`的範圍下，處理 DOM 選擇。
+- 使用 querySelectAll 方式將所有的。selectDay 選取起來做批次判斷。
+- 利用擴充插件 [isBetween](https://day.js.org/docs/en/plugin/is-between#docsNav) 協助判斷，記得宣告 cdn 與擴展 extend
+- 符合條件的賦予 class 增列 selectConnect。
+- 若 round 2 之後，也要消除這些 selectConnect。
+
+```html index.html
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/isBetween.js"></script>
+```
+
+```js lokiCalendar.js
+dayjs.extend(dayjs_plugin_isBetween); //宣告
+
+//...
+const calendarService = () => {
+  //...
+
+  } else if (chooseDays[0] && !chooseDays[1]) {
+    chooseDays[1] = item;
+
+    const foot2head = dayjs(item.dataset.date).isSameOrBefore(dayjs(chooseDays[0].dataset.date));
+    if (foot2head) {
+      chooseDays[0].classList.replace('selectHead', 'selectFoot');
+      chooseDays[1].classList.add('selectHead');
+      [chooseDays[0], chooseDays[1]] = [chooseDays[1], chooseDays[0]];
+    } else chooseDays[1].classList.add('selectFoot');
+
+    //add selectConnect between head and foot
+    document.querySelectorAll('li.selectDay').forEach(item => {
+      if (dayjs(item.dataset.date).isBetween(chooseDays[0].dataset.date, chooseDays[1].dataset.date))
+        item.classList.add('selectConnect');
+    });
+  } else { //[item,item] => third click
+      document.querySelectorAll('li.selectConnect').forEach(
+        item => item.classList.remove('selectConnect')
+      );
+  //...
+  }
+  
+  //...
+}
+```
+
+檢查畫面是否 selectHead 與 selectFoot 之間的日子是否具備 selectConnect。
+
+##### 排除連續點擊 selectHead
+最後還有一個小 bug，若連續點選 2 次 selectHead 則不要進行 chooseList 動作。這行為只會發生在 selectHead 已持有的狀態下，selectFoot 不會出現 2 次。我們可以在`calendarCtrl.choose(item)`列入判斷。此作用僅限於還沒有 selectFoot 情況下。
+
+```js lokiCalendar.js
+return {
+  print: () => listPrint(),
+  add: () => {
+    changeMonth(1);
+    listPrint();
+  },
+  sub: () => {
+    changeMonth(-1);
+    listPrint();
+  },
+  choose: item => {
+    if (item.classList.contains('selectHead') && !chooseDays[1]) return;//如果點選的位置還是 selectHead 而且還沒有選擇到 selectFoot，就離開函式
+    chooseList(item); //轉提供
+  }
+}
+```
+
+目前為止，萬年曆的功能開發到一段落。接下來要對 table 進行處理。在已選擇完 selectHead 與 selectFoot 結束時，需新規劃處理 tableMaker 作業。
+
+```js lokiCalendar.js
+chooseList = item => {
+  if (!chooseDays[0] && !chooseDays[1]) { //[null,null] => first click
+    //...
+  } else if (chooseDays[0] && !chooseDays[1]) {  //[item,null]=> second click
+    //...
+
+    tableMaker();  //於選完selectHead與selectFoot後，觸發此動作
+
+  } else { //[item,item] => third click
+    //...
+  }
+},
+tableMaker = () => {
+  console.log(chooseDays); //測試
+};
+```
+
+### 生成 table 列表
