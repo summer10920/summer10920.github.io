@@ -877,7 +877,7 @@ chooseList = item => {
   } else if (chooseDays[0] && !chooseDays[1]) {  //[item,null]=> second click
     //...
 
-    tableMaker();  //於選完selectHead與selectFoot後，觸發此動作
+    tableMaker();  //於選完 selectHead 與 selectFoot 後，觸發此動作
 
   } else { //[item,item] => third click
     //...
@@ -888,4 +888,475 @@ tableMaker = () => {
 };
 ```
 
-### 生成 table 列表
+## table 列表
+接著要將受選擇的 check-in 與 check-out 資料與可銷售的營位數做組合提供表格正確資訊與數量選單。首先要將表格所需的所有資料成為一個重要表單物件，任何對表格刷新都能從此表單物件存取或修改。該物件需要規劃到全域變數，方便多處使用，要整理的資料如下：
+
+```js lokiCalendar.js
+//全域變數宣告區
+let
+  fetchPath = 'db.json',
+  nationalHoliday = [],
+  booked = [],
+  pallet = {},
+  calendarCtrl = null,
+  tableData = { //初始的表格資料
+    totalPrice: 0, // 總價
+    normalCount: 0, // 平日入住數
+    holidayCount: 0, // 平日入住數
+    pallet: { //營位資料 => 標題名稱、可賣數量、預約日金、小計、訂購數
+      aArea: { title: '河畔 × A 區', sellCount: 0, sellInfo: '<div></div>', sumPrice: 0, orderCount: 0 },
+      bArea: { title: '山間 × B 區', sellCount: 0, sellInfo: '<div></div>', sumPrice: 0, orderCount: 0 },
+      cArea: { title: '平原 × C 區', sellCount: 0, sellInfo: '<div></div>', sumPrice: 0, orderCount: 0 },
+      dArea: { title: '車屋 × D 區', sellCount: 0, sellInfo: '<div></div>', sumPrice: 0, orderCount: 0 }
+    }
+  };
+```
+
+### 初始表格輸出
+目前畫面上的表格為假資料，任何要對表格進行生成的作業，都透過 tablePrint 來進行輸出。由於 table 上沒有特別標示 id 與獨特 class 做為 DOM 選擇，這裡利用 select option 元素的 name 屬性來做對象遍歷。
+
+- 建立 tablePrint 函式，並搜索網頁上 form select 的所有 item 做遍歷。
+- 遍歷到指定的位置替換 HTML 文字之動作設計。
+- 設計 return，能使用 tableRefresh 來提供作業。
+
+```js lokiCalendar.js
+//Service
+const calendarService = () => {
+  let
+    theDay = dayjs(),
+    today = dayjs(),
+    objL = {    //改成 let
+      listBox: '',
+      title: '',
+      thisDate: theDay,
+    },
+    objR = {    //同理
+      listBox: '',
+      title: '',
+      thisDate: theDay.add(1, 'M'),
+    };
+
+  const
+    //...
+    listMaker = obj => {
+      //...
+    },
+    listPrint = () => {
+      //...
+    },
+    chooseList = item => {
+      //...
+    },
+    tableMaker = () => {
+      //...
+    },
+    tablePrint = () => {
+      document.querySelectorAll('form select').forEach(node => {
+        const palletName = node.name; //ex: aArea
+
+        //td>select>option 可賣數量
+        const count = tableData.pallet[palletName].sellCount; //option 數量
+        let optionStr = '';
+        for (let i = 0; i <= count; i++) optionStr += `<option value="${i}">${i}</option>`;
+        node.innerHTML = optionStr;
+        node.disabled = !count; //如果為 0，禁用此
+
+        //td>div 預約日金 
+        const palletInfo = node.parentElement.previousElementSibling; //select=>上層=>前一格=td
+        palletInfo.innerHTML = count == 0 ? '' : tableData.pallet[palletName].sellInfo; // 如果是 0，div 也可不要輸出了
+
+        //td>label>剩餘 span 組 
+        palletInfo.previousElementSibling.children.item(1).children.item(0).textContent = count;
+      });
+
+      //h3 文字
+      document.querySelector('form>h3').textContent = `$0 / ${tableData.normalCount}晚平日，${tableData.holidayCount}晚假日`;
+    };
+
+  return {
+    //...
+    tableRefresh: () => tablePrint() //轉提供
+  }
+}
+```
+
+然後綁定當 init 作業時，隨 fetch 完成後再利用`calendarCtrl.tableRefresh();`來使表格資料更新。
+
+```js lokiCalendar.js
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    ({ nationalHoliday, booked, pallet } = json);
+
+    calendarCtrl = calendarService(); //calendarService 提供一個函式物件
+
+    //...
+
+    calendarCtrl.tableRefresh();
+  });
+}
+```
+
+此時檢查畫面是否已更新為不可選取的表格狀態。
+
+### 計算表格輸出
+回到前面未完成的 tableMaker。當我們完成萬年曆上的日期選擇時，需要重新計算目前選擇的日期範圍重新修訂 tableData 資料，接著再呼喚 tablePrint 表格修正輸出。由於會進行多次修正，最好是先將目前空表格的資料記錄起來成為初始狀態資料。隨著下一次要進行重新修動，從初始狀態資料開始建置會比較方便，否則需要先清除上次舊資料才能塞入新資料頗為麻煩。
+
+在 calendarService 規劃一區間變數 defaultTableData，需將 TableData 複製指定給此變數，由於物件本身有 [淺層拷貝 Shallow copy](https://developer.mozilla.org/zh-CN/docs/Glossary/Shallow_copy) 的特性，這是由於物件最後的參考記憶體位置會是相同。所以一般的指定語句無法異部資料複製。若要做到 [深層拷貝 Deep Copy](https://developer.mozilla.org/zh-CN/docs/Glossary/Deep_copy)，做法就是透過 JSON.stringify() 將轉為純字串，再轉回 JSON.parse() 成立全新的物件與記憶體空間位置。
+
+```js lokiCalendar.js
+//Service
+const calendarService = () => {
+  let
+    //...
+
+  const
+    chooseDays = [null, null],
+    defaultTableDataStr = JSON.stringify(tableData), //深層複製，純資料可行。
+
+  //...
+}
+```
+之後若要還原 tableData，只要將此字串轉為物件型別即可。回到 tableMaker 開始改寫 tableData：
+
+- 將 defaultTableDataStr 轉回 object 給全域變數 tableData。每次這裡都會清歸使復位作業簡化。
+- 一開始可售是 0，重新計算可售數，從 pallet 取回總數給各營位。後續經檢查已售數再相減得出正確可售數。
+- 尋找萬年曆上的選擇日，包含了第一天與連續日（不含離開日），針對這幾天取出 dataset 的日期字串做處理檢查。
+- 任何一天都要檢查 4 組營位類型的 booked 日子是否重疊，有就要確認已賣幾位，算出可售幾位。
+- 同上，畫面只需要這幾天的最低值，也就是若連續 3 日的可售狀況為 3,2,1，那能賣給客人的只有 1。整合此邏輯使用 Math.min 來計算此值。
+- 如果可售數不是 0，那才要顯示價格文字與小計價格
+- 最後也要算出 title 要顯示的平假日統計數
+- 完成計算同呼叫 tablePrint() 完成表格更新輸出動作。
+
+```js lokiCalendar.js
+tableMaker = () => {
+  tableData = JSON.parse(defaultTableDataStr); //將字串轉為物件存入，此時物件會整個翻新包含記憶體位置也會與先前的不同
+  for (const key in tableData.pallet) //取得 key=[a ~ d]Area
+    tableData.pallet[key].sellCount = pallet[key].total; //將數量改回原總數，隨減去已賣數，剩餘就是可售數
+
+  document.querySelectorAll('li.selectHead, li.selectConnect').forEach(node => { //尋找欲入住當晚的日子，不含離營日
+
+    for (const key in tableData.pallet) { //每一個入住日都要檢查該日期是否出現在後端給的 booked 內
+
+      const hasOrder = booked.find(item => item.date == node.dataset.date);
+      if (hasOrder)
+        //N 天只要找最低可售數就好，因此原總數減去 booked 的某日已售，就是 sellCount 剩餘數，而與目前剩餘數取小再回存 sellCount。
+        tableData.pallet[key].sellCount = Math.min(tableData.pallet[key].sellCount, pallet[key].total - hasOrder.sellout[key]);
+
+      //如果可售數不是 0，我們才有要顯示更多細節可以賣。只要沒房就不需要賣給客人了（顯示販售資訊）。
+      if (tableData.pallet[key].sellCount) { //該日該營位若可售
+
+        // 確認當日哪種日子價格，小計到 tableData，並塞入販售價格資訊。
+        const dayPrice = pallet[key][node.classList.contains('holiday') ? 'holidayPrice' : 'normalPrice'];
+        tableData.pallet[key].sumPrice += dayPrice;
+        tableData.pallet[key].sellInfo += `<div>${node.dataset.date}(${dayPrice})</div>`;
+      }
+    }
+
+  tableData[node.classList.contains('holiday') ? 'holidayCount' : 'normalCount']++; //更新平假日統計數
+  });
+  tablePrint();
+},
+```
+
+### 帳數選擇與變更總價
+目前為止可以根據日子的選擇給予正確的數量與販售資訊，接著讓客戶選擇所需要的帳數進行價格統計。
+
+- init 的 fetch 結束前，設定 form 內所有的 select 元素一個 change 事件，只要有任何的 value 變化就進行價格總計。
+- 計算方式為，先將 tableData 總價格歸 0 重新計算。找到所有的 select 當下 value 與 tableData 的小計相乘疊加回總價格去。
+- 最後記得輸出到畫面上。
+
+```js lokiCalendar.js
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    ({ nationalHoliday, booked, pallet } = json);
+
+    //...
+
+    const allSelect = document.querySelectorAll('form select'); //找到所有 select
+    allSelect.forEach(node => { //跑批次
+      node.onchange = function () { //設定 event，只要發生 change 就做以下事情
+        tableData.totalPrice = 0; //總價歸 0 重新計算
+        allSelect.forEach(item => { //對所有的 select value 與小計相乘疊加回總價去
+          tableData.totalPrice += tableData.pallet[item.name].sumPrice * item.value
+          tableData.pallet[item.name].orderCount = Number(item.value);//同時記住買了幾個營位數
+        }
+        );
+
+        // 跑完迴圈後，將總價輸出到畫面上
+        document.querySelector('form>h3').textContent = `$${tableData.totalPrice} / ${tableData.normalCount}晚平日，${tableData.holidayCount}晚假日`;
+      }
+    });
+
+  });
+}
+```
+
+## 提交訂單
+來到預約功能最後環節，將目前已選擇的日期與指定帳數進行表單提交，不採用 HTML FORM 方式來傳遞表單，而是改用 fetch 方式進行發送訂單。而訂單的填寫資訊介面將另外使用 Bootstrap 的 offCanvas 完成。
+
+### offCanvas
+元素才已提供以下 section，我們需要透過 Bootstrap 來呼喚此 [offCanvas](https://getbootstrap.com/docs/5.2/components/offcanvas/) 作用顯示出來。我們希望按下按鈕可以呼叫 canvas，但又需要做一些 DOM 修改，最好的方式自訂手動的 [JS 操作](https://getbootstrap.com/docs/5.2/components/offcanvas/#via-javascript) 此 offCanvas 時機。從官方文件上對於 offCanvas 的用法為透過`new bootstrap.Offcanvas('node')`來執行 show 的方法。
+
+```html index.html
+<section
+  class="offcanvas offcanvas-start"
+  data-bs-backdrop="static"
+>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">訂位確認</h5>
+    <button
+      class="btn-close"
+      data-bs-dismiss="offcanvas"
+    ></button>
+  </div>
+  <form
+    id="orderForm"
+    class="offcanvas-body  needs-validation"
+    novalidate
+  >
+    <div class="card mb-3">
+      <ol class="list-group list-group-flush list-group-numbered">
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="ms-2 me-auto">
+            <div class="fw-bold">河畔 × A 區 </div>
+            <div>
+              <div>2022-12-06(1000)</div>
+              <div>2022-12-07(1000)</div>
+            </div>
+          </div>
+          <span class="badge bg-warning rounded-pill">x <span class="fs-6">2</span>帳</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="ms-2 me-auto">
+            <div class="fw-bold">山間 × B 區 </div>
+            <div>
+              <div>2022-12-06(1000)</div>
+              <div>2022-12-07(1000)</div>
+            </div>
+          </div>
+          <span class="badge bg-warning rounded-pill">x <span class="fs-6">2</span>帳</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+          <div class="ms-2 me-auto">
+            <div class="fw-bold">平原 × C 區 </div>
+            <div>
+              <div>2022-12-06(1000)</div>
+              <div>2022-12-07(1000)</div>
+            </div>
+          </div>
+          <span class="badge bg-warning rounded-pill">x <span class="fs-6">2</span>帳</span>
+        </li>
+      </ol>
+      <h5 class="card-header"> $12000 / 0 晚平日，2 晚假日
+      </h5>
+      <div class="card-body">
+        <div class="mb-3">
+          <label
+            for="lokiUser"
+            class="form-label"
+          >訪客姓名</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            name="userName"
+            id="lokiUser"
+            required
+          >
+        </div>
+        <div class="mb-3">
+          <label
+            for="lokiPhone"
+            class="form-label"
+          >聯絡手機</label>
+          <input
+            type="phone"
+            class="form-control form-control-sm"
+            id="lokiPhone"
+            name="userPhone"
+            required
+          >
+        </div>
+        <div class="mb-3">
+          <label
+            for="lokiMail"
+            class="form-label"
+          >Email 電子信箱</label>
+          <input
+            type="email"
+            class="form-control form-control-sm"
+            id="lokiMail"
+            name="userMail"
+            required
+          >
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <button
+        type="submit"
+        class="btn btn-dark w-100"
+      >提交訂單</button>
+      <small>此預約系統僅預約功能，並不會對您進行收費</small>
+    </div>
+  </form>
+</section>
+```
+
+測試預覽用法為在 console 測試指令：
+
+```js console
+const lokiCanvas = new bootstrap.Offcanvas(document.querySelector('.offcanvas'));
+lokiCanvas.open();
+```
+
+### 預約按鈕與畫面
+從前一步驟的測試預覽假畫面得知，每次的動作除了表單欄位不用整理，另需要重新動態整理 list 到 offcanvas 畫面上。由上至下需要產生之重點為：
+
+```html list Group in Card
+<li class="list-group-item d-flex justify-content-between align-items-start">
+  <div class="ms-2 me-auto">
+    <!-- 取自 tableData.pallet.aArea.title -->
+    <div class="fw-bold">河畔 × A 區 </div>
+    <!-- 取自 tableData.pallet.aArea.sellInfo -->
+    <div>
+      <div>2022-12-06(1000)</div>
+      <div>2022-12-07(1000)</div>
+    </div>
+  </div>
+  <!-- 取自 tableData.pallet.aArea.orderCount -->
+  <span class="badge bg-warning rounded-pill">x <span class="fs-6">2</span>帳</span>
+</li>
+```
+
+```html card header in Card
+<!-- 取自右側畫面上的標題 -->
+<h5 class="card-header"> $12000 / 0 晚平日，2 晚假日 </h5>
+```
+
+整合以上的要點，開始規劃經過所有流程：
+
+- 當按下 form#selectPallet 的 button 時，需先整理 canvas 的 html 與輸出
+- 適配相關文字位置，取自 tableData 與 Table 標題。li 的生成條件根據當購買數為 0 就不必輸出。
+- 另外如果畫面上沒有任何 li 就代表沒有勾選位數，就鎖定確認表單之按鈕不給提交。
+
+```js lokiCalendar.js
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    //..
+
+    const offcanvas = new bootstrap.Offcanvas(document.querySelector('.offcanvas'));
+    document.querySelector('#selectPallet button').onclick = () => {
+      liStr = '';
+      for (const key in tableData.pallet) {
+        console.log(key);
+        if (tableData.pallet[key].orderCount == 0) continue;
+        liStr += `
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">${tableData.pallet[key].title} </div>
+                <div>
+                  ${tableData.pallet[key].sellInfo}
+                </div>
+              </div>
+              <span class="badge bg-warning rounded-pill">x <span class="fs-6">${tableData.pallet[key].orderCount}</span> 帳</span>
+          </li>
+        `;
+      }
+
+      document.querySelector('.offcanvas ol').innerHTML = liStr;
+      document.querySelector('.offcanvas .card-header').textContent = document.querySelector('form>h3').textContent;
+      document.querySelector('.offcanvas button[type="submit"]').disabled = !liStr;
+      offcanvas.show();
+    }
+  });
+}
+```
+
+檢查畫面操作是否如期結果。
+
+### 送出處理
+最後部分，將表單資料提交至後端伺服器。在正式提交之前需先確認後端所需要的資料格式標準為何，前端只需將客戶資訊、購買日期、以及數量即可。其餘皆可由後端自行組合資料。假設如下：
+
+```json
+{
+  "userName":"loki",
+  "userPhone":"0988112233",
+  "userMail":"loki@gmail.com",
+  "selectDate":["2022-12-07","2022-12-08"],
+  "sellout":{"aArea":0,"bArea":0,"cArea":4,"dArea":0},
+}
+```
+
+我們需將前面的 offCanvas 的資訊再重新整理：
+
+- 透過 dom 指令，找到此 form 的 submit 事件。這裡使用 document.form 快速找到 id 為 orderForm 的提交。
+- 避免 HTML 自動移轉且我們不想使用 submit 來直接轉移網頁，而是需要先整理資料以及透過 fetch 處理提交。
+- 想快速取出 form 所有的資料，可透過`new Form(node)`來快速獲得表單資料物件 sendData。
+- tableData 沒有購買日期資料，從萬年曆上提取出來，透過 map 成陣列轉為，再試圖插入到表單物件 sendData。
+- 同上，注意伺服器沒有 js object 觀念，提交需先將物件陣列轉為字串。
+- 接著四個營位的購買數也提交出來，透過 Object.key 整理出四個關鍵字再去搜索存回暫存物件 sellout。
+- 同前面步驟，也需要轉為字串列入待提交的 senData。
+- 最後檢查 formData 物件，與普通物件用法不同，可透過 [formData.entries()](https://developer.mozilla.org/en-US/docs/Web/API/FormData/entries) 方式確認該表單物件的資料內容物。
+
+```js lokiCalendar.js
+//初次執行項目
+const init = () => {
+  fetch(fetchPath).then(response => response.json()).then(json => {
+    //...
+
+    document.forms.orderForm.onsubmit = function (event) {
+      event.preventDefault();
+
+      const sendData = new FormData(this);
+
+      const selectDateAry = [...document.querySelectorAll('li.selectHead, li.selectConnect')].map(e => e.dataset.date);
+      sendData.append('selectDate', JSON.stringify(selectDateAry));
+
+      const sellout = {};
+      Object.keys(tableData.pallet).forEach(key => sellout[key] = tableData.pallet[key].orderCount);
+      sendData.append('sellout', JSON.stringify(sellout));
+
+      for (var pair of sendData.entries())
+        console.log(pair[0] + ', ' + pair[1]);
+      
+    };
+  });
+}
+```
+
+### 驗證與 fetch 提交
+要快速確認該表單物件是否有效，可透過該表單元素的 [checkValidity()](https://developer.mozilla.org/zh-TW/docs/Web/API/HTMLSelectElement/checkValidity) 確認是否為合格驗證。
+
+- 當不合格時，搭配 Bootstrap 的 [驗證](https://getbootstrap.com/docs/5.2/forms/validation/) 功能，當不合格時找到此 form 元素 class 添加 was-validated 就能快速得到錯誤提示。
+- 反之合格時，利用 fetch 的 POST（最低限度即可）提交至測試用的 [fake API](https://jsonplaceholder.typicode.com/) （目前沒有後端可以傳送），檢查 network 是否已成功提交給伺服器。
+- 若後端有回應資料，則顯示 alert 成功，並嘗試導向網頁回到主站。
+
+```js lokiCalendar.js
+document.forms.orderForm.onsubmit = function (event) {
+  event.preventDefault();
+
+    //...
+
+  // for (var pair of sendData.entries())
+  //   console.log(pair[0] + ', ' + pair[1]);
+
+  if (!this.checkValidity()) this.classList.add('was-validated');
+  else {
+    // fetch post
+    fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body: sendData,
+      // headers: { 'Content-Type': 'multipart/form-data' }
+    })
+      .then((res) => res.json()).then((data) => {
+        if (data) {
+          alert('感謝您的預約！期待見面');
+          // document.location.href = '/'; //測試階段可以先隱匿起來
+        }
+      })
+  }
+};
+```
