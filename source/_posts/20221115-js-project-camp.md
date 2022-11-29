@@ -1362,6 +1362,278 @@ document.forms.orderForm.onsubmit = function (event) {
 ```
 
 # 燈箱功能
+本單元將設計動態的燈箱設計，改良#lokiPark 能提供放大圖片之作用。在此之前提供以下 html 與 css 套用，僅著重於 js 設計解說：
+
+## 前置作業
+需準備能展滿全畫面的黑底燈箱區。於 index.html 尾處多增加一 section#lokiLightBox，以及獨立一筆新 lokiLightBox.css 並宣告於頁首。而我們需要透過 js 來完成動作觸發，可先完成 js 檔案的建檔前置，同建立新 lokiLightBox.js 至
+
+```css lokiLightBox.css
+#lokiLightBox {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#lokiLightBox .backdrop {
+  position: fixed;
+  background: hsla(0, 0%, 0%, 0.75);
+  backdrop-filter: blur(5px);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+}
+
+#lokiLightBox .mainZone img {
+  max-width: 85%;
+  max-height: 70%;
+}
+
+#lokiLightBox .control {
+  position: absolute;
+  bottom: 40px;
+}
+
+#lokiLightBox .control img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border: 2px solid white;
+  cursor: pointer;
+  margin-top: 5px;
+}
+```
+```html index.html
+<head>
+<!-- ... -->
+<link
+    rel="stylesheet"
+    href="plugins/lokiLightBox.css"
+  >
+</head>
+<body>
+<!-- ... -->
+<section
+  id="lokiLightBox"
+  style="display: flex;"
+>
+  <div class="mainZone">
+    <img
+      src="media/imgs/park01.jpg"
+      class="img-fluid"
+    >
+    <p>Lorem ipsum dolor sit amet.</p>
+  </div>
+  <div class="control">
+    <img src="media/imgs/park01.jpg">
+  </div>
+  <div class="backdrop"></div>
+  </section>
+  <!-- ... -->
+  <script src="plugins/custom.js"></script>
+  <script src="plugins/lokiCalendar.js"></script>
+  <script src="plugins/lokiLightBox.js"></script>
+```
+
+此時能看見畫面已有部分假資料且呈現於畫面上。
+
+## 縮圖生成
+不再去異動靜態網頁的圖片路徑情況下，透過 JavaScript 來尋找指定 section 所有圖片與文字。以搜尋。col 為目標，透過該。col 元素底下的 img 與 h5 進行捕獲。
+
+- 類似 jQuery 的 find 功能，我們可以對。col 進行二次搜索，最大差別僅在於 document 變成指定 node 對象。
+- 由於不是搬移而是複製該節點底下的 img，我們使用 cloneNode() 來生成新複製的元素。
+- 嘗試列印驗證
+
+```js lokiLightBox.js
+const init = () => {
+  document.querySelectorAll('#lokiPark .col').forEach(item => {
+    const minImg = item.querySelector('img').cloneNode();
+    console.log(minImg);
+  });
+}
+
+init();
+```
+
+出來會發現 init 因 const 無法宣告成功，這是因為同一份網頁上在其他 js 已經占用，因此我們不應該直接以全域變數來規劃 init 函式變數，可以改以 [創造函式並立即執行](https://stackoverflow.com/questions/3755606/what-does-the-exclamation-mark-do-before-the-function) 他，這樣 init 只活在這個區間範圍內不受其他全域變數所影響，這是一個良好的保護與執行機制。同樣也無法以全域變數的觀念從 console 去調用此變數。
+
+你可以使用以下幾種方式去執行該函式且不會被 JavaScript 當作無效指令而僅是一個表達式（改箭頭函式亦可）：
+
+```js
+// method1
+!function (){
+  // #code
+}()
+
+// method2
+(function () {
+  // #code
+})();
+```
+
+因此改成以下寫法即可使兩個 init 變數不衝突，當然前例的 lokiCalendar.js 也該這樣做。
+
+```js lokiLightBox.js
+!function () {
+  const init = () => {
+    document.querySelectorAll('#lokiPark .col').forEach(item => {
+      const minImg = item.querySelector('img').cloneNode();
+      console.log(minImg);
+    });
+  }
+  init();
+}();
+```
+
+再來是將嘗試將文字以塞入到這些新 img 元素方便之後存取。並規劃插入適合位置
+
+- 原 item 位置下層的標題 h5 文字，採 dataset 方式存入
+- 找到縮圖 list 目標位置位於#lokiLightBox 底下的。control，由於。mainZone 之後也會需要存取到，因此建議找到上層即可，在二次搜索到此兩處，可先寫好。
+- 靜態假資料可以手動移除註解。
+
+```js lokiLightBox.js
+!function () {
+  const init = () => {
+    const lightBox = document.querySelector('#lokiLightBox');
+    const targetCtrl = lightBox.querySelector('.control');
+    const targetMain = lightBox.querySelector('.mainZone');
+
+    document.querySelectorAll('#lokiPark .col').forEach(item => {
+      const minImg = item.querySelector('img').cloneNode();
+      // console.log(minImg);
+      minImg.dataset.str = item.querySelector('h5').textContent;
+
+      targetCtrl.append(minImg);
+    });
+  }
+  init();
+}();
+```
+
+## 燈箱開關
+控制燈箱開啟的時機為點選任何主畫面的示意圖以及黑色部分的背景。
+
+- 剛好 foreach 的 item(col) 為這些示意圖，設定 event click 代表 lightBox 開啟。
+- 同上，控制整個 style 的字串（多筆 css 屬性）可使用 cssText 來指定。
+- 關閉與 foreach 無關，在外面設定點擊黑色部分為 lightBox 關閉。
+- 最後將 html 的 lightBox 設定 style 為 display:none。
+
+```js lokiLightBox.js
+!function () {
+  const init = () => {
+    const lightBox = document.querySelector('#lokiLightBox');
+    const targetCtrl = lightBox.querySelector('.control');
+    const targetMain = lightBox.querySelector('.mainZone');
+
+    document.querySelectorAll('#lokiPark .col').forEach(item => {
+      const minImg = item.querySelector('img').cloneNode();
+      // console.log(minImg);
+      minImg.dataset.str = item.querySelector('h5').textContent;
+
+      targetCtrl.append(minImg);
+
+      item.onclick = function () { //每個示意圖都能控制燈箱顯示
+        lightBox.style.cssText = 'display:flex';
+      }
+    });
+
+    lightBox.querySelector('.backdrop').onclick = function () { //黑色部分為關閉
+      lightBox.style.cssText = 'display:none';
+    }
+  }
+  init();
+}();
+```
+```html index.html
+<section
+    id="lokiLightBox"
+    style="display: none;"
+  >
+  <!-- ... -->
+</section>
+```
+
+## 縮圖動作替換主圖
+接著改作小圖可以控制 mainZone 的替換。我們可以 minImg 在塞入 targetCtrl 之前就設定好 event。
+
+- 設定 minImg 擁有 click 事件，每當這個 minImg 被點選時，會將自己的 img.src 與 dataset.str 指定給目標 img 或 p。
+- 同上，這裡偷懶直接從 children[] 來找到。
+
+```js lokiLightBox.js
+!function () {
+  const init = () => {
+    const lightBox = document.querySelector('#lokiLightBox');
+    const targetCtrl = lightBox.querySelector('.control');
+    const targetMain = lightBox.querySelector('.mainZone');
+
+    document.querySelectorAll('#lokiPark .col').forEach(item => {
+      const minImg = item.querySelector('img').cloneNode();
+      minImg.dataset.str = item.querySelector('h5').textContent;
+
+      minImg.onclick = function () {
+        targetMain.children[0].src = this.src;
+        targetMain.children[1].textContent = this.dataset.str;
+      }
+      //應早於插入之前但其實可順序錯，這不影響記憶體位置
+
+      targetCtrl.append(minImg);
+
+      item.onclick = function () {
+        lightBox.style.cssText = 'display:flex';
+      }
+    });
+
+    lightBox.querySelector('.backdrop').onclick = function () {
+      lightBox.style.cssText = 'display:none';
+    }
+  }
+  init();
+}();
+```
+
+此時任何縮圖點選都能正常換圖。而主畫面上的示意圖也要能控制換圖，此行為等價於 javaScript 模擬行為點了該縮圖。不妨指定只要下達：
+
+- 該 item 被點選，則模擬該 item 的 minImg 被執行 click()。
+- 完成上續，然後才開啟燈箱。
+
+```js lokiLightBox.js
+!function () {
+  const init = () => {
+    const lightBox = document.querySelector('#lokiLightBox');
+    const targetCtrl = lightBox.querySelector('.control');
+    const targetMain = lightBox.querySelector('.mainZone');
+
+    document.querySelectorAll('#lokiPark .col').forEach(item => {
+      const minImg = item.querySelector('img').cloneNode();
+      minImg.dataset.str = item.querySelector('h5').textContent;
+
+      minImg.onclick = function () {
+        targetMain.children[0].src = this.src;
+        targetMain.children[1].textContent = this.dataset.str;
+      }
+
+      targetCtrl.append(minImg);
+
+      item.onclick = function () {
+        lightBox.style.cssText = 'display:flex';
+        minImg.click();//////////////A示意圖 click時 => 做 A min圖 click() 行為
+      }
+    });
+
+    lightBox.querySelector('.backdrop').onclick = function () {
+      lightBox.style.cssText = 'display:none';
+    }
+  }
+  init();
+}();
+```
 
 # 選單初始透明
-
