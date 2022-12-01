@@ -1624,7 +1624,7 @@ init();
 
       item.onclick = function () {
         lightBox.style.cssText = 'display:flex';
-        minImg.click();//////////////A示意圖 click時 => 做 A min圖 click() 行為
+        minImg.click();//////////////A 示意圖 click 時 => 做 A min 圖 click() 行為
       }
     });
 
@@ -1636,4 +1636,235 @@ init();
 }();
 ```
 
+最後有必要的對這些 col 增加滑鼠外觀
+
+```css lokiLightBox.css
+#lokiPark .col{
+  cursor: pointer;
+}
+```
+
 # 選單初始透明
+一開始載入的網頁首頂處，產生可透明的選單背景。唯獨手機模式與離開頂處一定距離後才呈現背景色。先自訂 css 屬性 class 獲得 init 時可以透明化背景。同時為了增強顏色差異，將原 dark 背景改成 secondary。
+
+```html index.html
+<body
+  data-bs-spy="scroll"
+  data-bs-target="#lokiMenu"
+>
+  <nav class="navbar navbar-expand-lg text-bg-secondary navbar-dark position-fixed top-0 w-100">
+    <!-- ... -->
+  </nav>
+  <!-- ... -->
+</body>
+```
+```css style.css
+nav.navbar {
+  transition: background-color 1s;
+}
+
+nav.navbar.init {
+  background-color: #0003 !important;
+}
+```
+
+## 實作設計
+透背只限定於桌機模式下，根據以下思考動作進行設計，並代碼簡短故寫在 custom.js 內：
+
+- 找到指定處 nav.navbar 判斷該元素底下的 button 的 ComputedStyle（已渲染的效果，非行內 style) 之 display 是否為 none 就能確認是否為桌機。
+- 要獲取某元素的 ComputedStyle 需透過 [`window.getComputedStyle(element)`](https://developer.mozilla.org/zh-TW/docs/Web/API/Window/getComputedStyle) 來取得完整資訊物件，並透過 prototype 的 getPropertyValue 提取指定屬性之值。
+- 只有大畫面或是離開頂部的 Y 軸位置，我們不要透明 (class 移除 init)，反之需要。
+- 每次滾動網頁都要確認上面的動作，如有必要更改網頁尺寸時也要確認。
+
+```js custom.js
+onload = () => {
+  var grid = document.querySelector('#lokiPark article.row');
+  new Masonry(grid, { percentPosition: 'true' });
+
+  //menu background effect
+  const menuEffect = () => {
+    const headerMenu = document.querySelector('nav.navbar');
+    let desktopMode = getComputedStyle(headerMenu.querySelector('button')).getPropertyValue('display');
+
+    if (scrollY > 500 || desktopMode != 'none') headerMenu.classList.remove('init');
+    else headerMenu.classList.add('init');
+  }
+
+  onresize = () => {
+    menuEffect();
+  }
+  onscroll = () => {
+    menuEffect();
+  }
+}
+```
+
+# aos 滾動特效
+本節介紹視覺 [套件 aos](https://michalsnik.github.io/aos/)，屬於一套 scroll animate 的載入特效。不影響 lazy loading 缺點仍可正常 SEO，能幫助用戶對於畫面體驗增加停留觀看的小技巧。
+
+## 安裝與設定
+從 github 的 readme 得知，安裝需要 css 與 js，於網頁最後地方進行 init 初始化。將以下代碼插入至 head 內。
+
+```html index.html
+<head>
+  <!-- ... -->
+
+<!-- aos -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+</head>
+```
+
+雖說 init 需要執行頁尾 body，我們可以放在 custom 內，畢竟我們已確保 DOM 會先生成完畢才執行 custom。
+
+```js custom.js
+onload = () => {
+  // ...
+
+  AOS.init();
+}
+```
+
+最後在喜歡的指定元素處增添 dataset 屬性，例如`data-aos="fade-in"`。這裡使用 lokiPallet 示範：
+
+>注意 aos 本身是依賴 css 的 transform 來動畫，因此注意原本元素是否已有自訂的 transform，像這裡的 col 本身有`transform: translateY(-50%);`的設定會干擾，因此設定放於內部的 card 上面。
+
+```html
+<section
+  id="lokiPallet"
+  class="container pt-5"
+>
+  <div class="row row-cols-4 g-0">
+    <!--here--><img
+      class="col img-fluid"
+      src="media/imgs/palletHeader01.jpg"
+      data-aos="flip-up"
+    >
+    <!--here--><img
+      class="col img-fluid"
+      src="media/imgs/palletHeader02.jpg"
+      data-aos="flip-down"
+      data-aos-delay="500"
+    >
+    <!--here--><img
+      class="col img-fluid"
+      src="media/imgs/palletHeader03.jpg"
+      data-aos="flip-left"
+      data-aos-delay="300"
+    >
+    <!--here--><img
+      class="col img-fluid"
+      src="media/imgs/palletHeader04.jpg"
+      data-aos="flip-right"
+      data-aos-delay="900"
+    >
+  </div>
+  <header class="h2 my-5 border-start border-5 border-secondary ps-3">營位介紹</header>
+  <article class="row row-cols-1 row-cols-md-2 flex-row-reverse g-5 gx-md-5 gy-md-0 overflow-hidden">
+    <div class="col">
+      <!--here--><div
+        class="card text-bg-dark overflow-hidden border-0 shadow"
+        data-aos="fade-left"
+        data-aos-duration="1000"
+      >
+        <img
+          src="media/imgs/pallet01.jpeg"
+          class="card-img"
+        >
+        <div
+          class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center align-items-center"
+        >
+          <h3 class="card-title text-warning fw-bolder">河畔 × A 區</h3>
+          <hr>
+          <ul class="list-unstyled">
+            <li>每帳空間 4X8 公尺，獨立水槽與供電，共 20 帳</li>
+            <li>帳邊可停車！每帳限 1 台車，超過酌收至指定停車場費用 $100/車</li>
+            <li>每帳限四人，超出費用（五歲以上）酌收人頭費 $300</li>
+          </ul>
+          <h5 class="card-text">
+            <label class="badge rounded-pill text-bg-light">一宿 / $1000</label>
+            <label class="badge rounded-pill text-bg-dark">國定假日 / $1500</label>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <!--here--><div
+        class="card text-bg-dark overflow-hidden border-0 shadow"
+        data-aos="fade-right"
+        data-aos-duration="1000"
+      >
+        <img
+          src="media/imgs/pallet02.jpg"
+          class="card-img"
+        >
+        <div
+          class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center align-items-center"
+        >
+          <h3 class="card-title text-warning fw-bolder">山間 × B 區</h3>
+          <hr>
+          <ul class="list-unstyled">
+            <li>每帳空間 4X8 公尺，獨立水槽與供電，共 12 帳</li>
+            <li>帳邊可停車！每帳限 1 台車，超過酌收至指定停車場費用 $100/車</li>
+            <li>每帳限四人，超出費用（五歲以上）酌收人頭費 $300</li>
+          </ul>
+          <h5 class="card-text">
+            <label class="badge rounded-pill text-bg-light">一宿 / $1100</label>
+            <label class="badge rounded-pill text-bg-dark">國定假日 / $1600</label>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <!--here--><div
+        class="card text-bg-dark overflow-hidden border-0 shadow"
+        data-aos="fade-left"
+        data-aos-duration="1000"
+      >
+        <img
+          src="media/imgs/pallet03.jpg"
+          class="card-img"
+        >
+        <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
+          <h3 class="card-title text-warning fw-bolder">平原 × C 區</h3>
+          <hr>
+          <ul class="list-unstyled">
+            <li>每帳空間 4X8 公尺，獨立水槽與供電，共 12 帳</li>
+            <li>帳邊不可停車！需停靠專用停車場，超過 1 車需酌收至指定停車場費用 $100/車</li>
+            <li>每帳限四人，超出費用（五歲以上）酌收人頭費 $300</li>
+          </ul>
+          <h5 class="card-text">
+            <label class="badge rounded-pill text-bg-light">一宿 / $1200</label>
+            <label class="badge rounded-pill text-bg-dark">國定假日 / $1700</label>
+          </h5>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <!--here--><div
+        class="card text-bg-dark overflow-hidden border-0 shadow"
+        data-aos="fade-right"
+        data-aos-duration="1000"
+      >
+        <img
+          src="media/imgs/pallet04.jpg"
+          class="card-img"
+        >
+        <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
+          <h3 class="card-title text-warning fw-bolder">車屋 × D 區</h3>
+          <hr>
+          <ul class="list-unstyled">
+            <li>免搭帳輕鬆入帳，雙人獨立筒床與獨立衛浴水電，共 14 帳</li>
+            <li>屋旁不可停車！需停靠專用停車場，超過 1 車需酌收至指定停車場費用 $100/車</li>
+            <li>每屋上限三人，超出費用（五歲以上）酌收人頭費 $300</li>
+          </ul>
+          <h5 class="card-text">
+            <label class="badge rounded-pill text-bg-light">一宿 / $2000</label>
+            <label class="badge rounded-pill text-bg-dark">國定假日 / $2500</label>
+          </h5>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+```
