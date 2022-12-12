@@ -388,7 +388,7 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
 - 將卡片標題追加為`h3.card-title.text-warning.fw-bolder`。
 - 整個卡片 overlay 調製半透明黑底對齊至中且文字至中`div.card-img-overlay.text-center.bg-opacity-50.bg-dark.d-flex.flex-column.justify-content-center`。
 - 對於空洞的產品數量缺點調整為階梯式呈現（只限定 md 模式以上），自訂 media 條件 Card 單數做 往上偏移 Y -50% 並 pb150 指定作為間格（也會讓 flex 空間之偶數 card 獲得相同間距高度）。
-- 同時將 Gutter 添加改為`g-5.gx-md-5.gy-md-0`避免干擾計算。且限定於 md 模式。
+- 同時將 Gutter 添加改為`g-4.gx-md-4.gy-md-0`避免干擾計算。且限定於 md 模式。
 - 同上為了左上的空白美感，需將整個 article 調整為`.flex-row-reverse`，由於步驟 4 有上推空間，此時需要透過 pt 去擴展足夠的空間讓內部 card 可呈現，多少值則根據 card 本身移動多少值如何算。
 - padding 本身是認定 width 為比例，利用已知的 card 空間一排 2 個、Gutter 為 24px、卡片比例 4:3，有推開 150px，能算出上面空間需要讓出 `(100%-24px*2)/2*0.75/2-150px/2`。
 - 另外將 card 添加改為`.card.overflow-hidden`使圖片特效正常。亦可添加`.border-0.shadow`使美觀。
@@ -430,7 +430,7 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
   class="container"
 >
   <header class="h2 my-5 border-start border-5 border-secondary ps-3">營位介紹</header>
-  <article class="row row-cols-1 row-cols-md-2 flex-row-reverse g-5 gx-md-5 gy-md-0 overflow-hidden">
+  <article class="row row-cols-1 row-cols-md-2 flex-row-reverse g-4 gx-md-4 gy-md-0 overflow-hidden">
     <div class="col">
       <div class="card text-bg-dark overflow-hidden border-0 shadow">
         <img
@@ -439,7 +439,6 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">Card title</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>Lorem ipsum dolor sit amet.</li>
           </ul>
@@ -455,7 +454,6 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">Card title</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>Lorem ipsum dolor sit amet.</li>
           </ul>
@@ -471,7 +469,6 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">Card title</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>Lorem ipsum dolor sit amet.</li>
           </ul>
@@ -487,7 +484,6 @@ https://getbootstrap.com/docs/5.2/components/card/#image-overlays
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">Card title</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>Lorem ipsum dolor sit amet.</li>
           </ul>

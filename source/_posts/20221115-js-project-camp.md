@@ -18,7 +18,7 @@ date: 2022-11-15 23:03:07
 
 ## 素材下載
 請前往下載加以使用，確保安裝置環境內容。本教材與前期 RWD 響應式網頁設計（假日班）期末實作教材稍些取不同，請從新下載此份：
-  - [Source Project](https://github.com/summer10920/studies_TeachDemo_JS/releases) 基本 HTML/CSS/Bootstrap5.2 之商務網站素材。
+  - [Source Project](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/project_Camp/source) 基本 HTML/CSS/Bootstrap5.2 之商務網站素材。
 
 此時檢查內容，包含了
 - **db.json**
@@ -1760,7 +1760,7 @@ onload = () => {
     >
   </div>
   <header class="h2 my-5 border-start border-5 border-secondary ps-3">營位介紹</header>
-  <article class="row row-cols-1 row-cols-md-2 flex-row-reverse g-5 gx-md-5 gy-md-0 overflow-hidden">
+  <article class="row row-cols-1 row-cols-md-2 flex-row-reverse g-4 gx-md-4 gy-md-0 overflow-hidden">
     <div class="col">
       <!--here--><div
         class="card text-bg-dark overflow-hidden border-0 shadow"
@@ -1775,7 +1775,6 @@ onload = () => {
           class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center align-items-center"
         >
           <h3 class="card-title text-warning fw-bolder">河畔 × A 區</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>每帳空間 4X8 公尺，獨立水槽與供電，共 20 帳</li>
             <li>帳邊可停車！每帳限 1 台車，超過酌收至指定停車場費用 $100/車</li>
@@ -1802,7 +1801,6 @@ onload = () => {
           class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center align-items-center"
         >
           <h3 class="card-title text-warning fw-bolder">山間 × B 區</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>每帳空間 4X8 公尺，獨立水槽與供電，共 12 帳</li>
             <li>帳邊可停車！每帳限 1 台車，超過酌收至指定停車場費用 $100/車</li>
@@ -1827,7 +1825,6 @@ onload = () => {
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">平原 × C 區</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>每帳空間 4X8 公尺，獨立水槽與供電，共 12 帳</li>
             <li>帳邊不可停車！需停靠專用停車場，超過 1 車需酌收至指定停車場費用 $100/車</li>
@@ -1852,7 +1849,6 @@ onload = () => {
         >
         <div class="card-img-overlay text-center bg-opacity-50 bg-dark d-flex flex-column justify-content-center">
           <h3 class="card-title text-warning fw-bolder">車屋 × D 區</h3>
-          <hr>
           <ul class="list-unstyled">
             <li>免搭帳輕鬆入帳，雙人獨立筒床與獨立衛浴水電，共 14 帳</li>
             <li>屋旁不可停車！需停靠專用停車場，超過 1 車需酌收至指定停車場費用 $100/車</li>
@@ -1868,3 +1864,60 @@ onload = () => {
   </article>
 </section>
 ```
+
+# cookie 使用同意
+根據歐盟《一般資料保護規範》(GDPR)，歐洲地區的顧客造訪您的網站時，您必須獲得他們的同意聲明才可收集他們的資料。因此越來越多網站配合趨勢都會特別增加 cookie 使用的詢問。若有使用 google analytics 等資料行為捕獲等動作，是應該增加此同意。
+
+## 增添 html 與 css
+於網頁最後處增添以下內容，並於 style.css 增加應有畫面：
+
+```html index.html
+<div id="lokiCookie">
+  <h4>Cookie 之使用</h4>
+  <p>為提供您更完善之個人化與即時服務，本網站運用 Cookies 技術，記錄、存取及蒐集您的瀏覽使用資訊，若您欲停用 Cookies 技術支援者，請自行操作瀏覽器設定加以排除，但有可能無法使用本網站之部分服務。</p>
+  <button class="btn btn-outline-light float-end">我了解</button>
+</div>
+```
+```css style.css
+/****************Cookie Agree*****/
+#lokiCookie {
+  padding: 30px 60px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #1b2a4dc7;
+  z-index: 99999;
+
+  /* display:none; */
+  /* 若畫面成功則增加以上規則 */
+}
+```
+
+## 增添 js 行為
+參考舊文章說明 [Cookie 評估 24H 不顯示](https://summer10920.github.io/2020/04-21/js-sampleclass-1/#Cookie-%E8%A9%95%E4%BC%B0-24H-%E4%B8%8D%E9%A1%AF%E7%A4%BA)，cookie 的解說不再特別說明。於 custom.js 內部多增加以下動作：
+
+- 將 cookie 取出轉為陣列。從陣列中去判斷是否存在指定的我方 cookie 字串
+- 若不存在指定的字串，則顯示 cookie 資訊。
+- 若用戶按下按鈕，則指定壽命為 180 天。
+- 反之完成同意或已存在 cookie 接刪除此元素（亦可 display 為 none)。
+
+```js
+const
+  itemStr = `cookieUsed=agree`,
+  cookieNode = document.querySelector('#lokiCookie'),
+  cookieAry = document.cookie.split('; ');
+
+if (!cookieAry.includes(itemStr)) {
+  cookieNode.style.display = 'block';
+
+  cookieNode.querySelector('.btn').onclick = function () {
+    document.cookie = `${itemStr}; max-age=${60 * 60 * 24 * 180}`;
+    cookieNode.remove();
+  }
+}
+else cookieNode.remove();
+```
+
+# 結尾
+以上完整範例代碼，請詳閱 [Github](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/project_Camp/final)。
