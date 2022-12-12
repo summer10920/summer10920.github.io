@@ -5,8 +5,11 @@ categories:
   - PHP/MySQL
 tag:
   - 前端網頁開發技術（職前班）
+  - PHP 程式設計（假日班）
 date: 2020-05-11 23:50:51
 ---
+
+![](https://i.imgur.com/96NYgou.png)
 
 本篇開始透過介紹程式的基礎邏輯去學會相關 PHP 語法指令，請開始在 Web 目錄下新增檔案 **2_ifelse.php**，為了簡化程式碼結構將不再建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 <!-- more -->

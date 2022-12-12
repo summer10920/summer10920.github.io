@@ -1,12 +1,14 @@
 ---
-title: "[實作課程] PHP 資料處理實作"
+title: "[實作課程] PHP 與 MySQL 資料處理實作"
 categories:
   - 職訓教材
   - PHP/MySQL
 tag:
+  - PHP 程式設計（假日班）
   - 前端網頁開發技術（職前班）
 date: 2020-05-13 19:49:42
 ---
+![](https://i.imgur.com/96NYgou.png)
 
 接下來開始設計一個資料管理網頁，分為三種寫法介紹。請開始在 Web 目錄下新增一個資料夾為 `animal` 。為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 <!-- more -->

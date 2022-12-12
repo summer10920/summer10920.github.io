@@ -4,9 +4,11 @@ categories:
   - 職訓教材
   - PHP/MySQL
 tag:
+  - PHP 程式設計（假日班）
   - 前端網頁開發技術（職前班）
 date: 2020-05-12 15:49:42
 ---
+![](https://i.imgur.com/96NYgou.png)
 
 本篇介紹 PHP 能跨網頁的共用變數，如果有一些變數希望能跨（同網站）網頁彼此共用，就能用 session 跟 cookie。請開始在 Web 目錄下新增檔案 **3_session_cookie.php**，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 
