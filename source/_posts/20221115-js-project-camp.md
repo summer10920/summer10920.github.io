@@ -1382,7 +1382,7 @@ document.forms.orderForm.onsubmit = function (event) {
 }
 
 #lokiLightBox .backdrop {
-  position: fixed;
+  position: absolute;
   background: hsla(0, 0%, 0%, 0.75);
   backdrop-filter: blur(5px);
   top: 0;
