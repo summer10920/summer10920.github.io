@@ -128,14 +128,18 @@ sellout: {"aArea":1,"bArea":2,"cArea":3,"dArea":4}
 ```
 
 而後台所需生成的欄位為：
-- 訂購人
-- 入住日
-- 購買帳位
-- 應收金額
-- 手機信箱
-- 訂購日期
 
-### table _loki_orderList
+```html
+<tr>
+  <th>訂購人</th>
+  <th>入住日</th>
+  <th>購買帳位</th>
+  <th>應收金額</th>
+  <th>手機信箱</th>
+  <th>訂購時間</th>
+  <th>刪除操作</th>
+</tr>
+```
 
 因此，建立對應的 sql table 名為 `_loki_orderList`：
 
@@ -143,6 +147,7 @@ sellout: {"aArea":1,"bArea":2,"cArea":3,"dArea":4}
 CREATE TABLE `project_camp`.`_loki_orderList` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` TEXT NOT NULL,
+  `phone` TEXT NOT NULL,
   `mail` TEXT NOT NULL,
   `selectDate` TEXT NOT NULL,
   `sellout` TEXT NOT NULL,
@@ -185,6 +190,7 @@ INSERT INTO `_loki_orderList`
 VALUES (
     NULL,
     '客戶 A',
+    '0988123123',
     'aa@gmail.com',
     'a:3:{i:0;s:10:"2023-02-21";i:1;s:10:"2023-02-22";i:2;s:10:"2023-02-23";}',
     'O:8:"stdClass":4:{s:5:"aArea";i:1;s:5:"bArea";i:2;s:5:"cArea";i:3;s:5:"dArea";i:4;}',
@@ -196,17 +202,18 @@ INSERT INTO `_loki_orderList`
 VALUES (
     NULL,
     '客戶 B',
+    '0977456456',
     'bb@gmail.com',
     'a:3:{i:0;s:10:"2023-02-22";i:1;s:10:"2023-02-23";i:2;s:10:"2023-02-24";}',
     'O:8:"stdClass":4:{s:5:"aArea";i:2;s:5:"bArea";i:3;s:5:"cArea";i:4;s:5:"dArea";i:5;}',
-    9999,
+    5555,
     NOW(),
     0
   );
 ```
 
 
-## 存取資料
+## 資料讀取
 
 
 # undo
