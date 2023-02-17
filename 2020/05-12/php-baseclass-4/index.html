@@ -28,11 +28,14 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 1_loop.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/96NYgou.png">
 <meta property="article:published_time" content="2020-05-12T00:35:51.000Z">
-<meta property="article:modified_time" content="2021-08-22T06:33:05.226Z">
+<meta property="article:modified_time" content="2022-12-12T13:56:34.863Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta property="article:tag" content="PHP 程式設計（假日班）">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/96NYgou.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2020/05-12/php-baseclass-4/">
@@ -95,9 +98,9 @@
 <nav class="site-nav">
   <ul class="main-menu menu">
         <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">19</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">62</span></a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -170,18 +173,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分類</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">標籤</span></a>
       </div>
   </nav>
@@ -283,7 +286,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-08-22 14:33:05" itemprop="dateModified" datetime="2021-08-22T14:33:05+08:00">2021-08-22</time>
+        <time title="修改時間 ×2022-12-12 21:56:34" itemprop="dateModified" datetime="2022-12-12T21:56:34+08:00">2022-12-12</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -331,7 +334,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 <strong>1_loop.php</strong>，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。</p>
+        <p><img src="https://i.imgur.com/96NYgou.png"></p>
+<p>本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 <strong>1_loop.php</strong>，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。</p>
 <span id="more"></span>
 
 <hr>
@@ -423,6 +427,7 @@
     <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+              <a href="/tags/PHP-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 程式設計（假日班）</a>
           </div>
 
         
@@ -468,7 +473,7 @@
       <i class="fas fa-copyright"></i>
     </span>
     2020 – 
-    <span itemprop="copyrightYear">2022</span> All rights reserved.
+    <span itemprop="copyrightYear">2023</span> All rights reserved.
   </span>
 </div>
 <div class="wordcount busuanzi-count">
@@ -476,13 +481,13 @@
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="全站總字數">1624848 <i>words</i></span>
+    <span title="全站總字數">1784934 <i>words</i></span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon with-love">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="全站總閱讀時間">2954 <i>mins</i></span>
+    <span title="全站總閱讀時間">3245 <i>mins</i></span>
   </span>
   <span class="post-meta-item" id="busuanzi_container_site_uv">
     <span class="post-meta-item-icon with-love">
