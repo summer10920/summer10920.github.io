@@ -1365,4 +1365,5 @@ https://getbootstrap.com/docs/5.2/components/accordion/#example
 </footer>
 ```
 
-## END
+## 結尾
+以上完整範例代碼，請詳閱 [Github](https://github.com/summer10920/studies_TeachDemo_CSSBS/tree/master/Bootstrap52_Camp)。
