@@ -22,18 +22,15 @@ date: 2022-12-11 21:38:38
 ## 素材下載
 請前往下載加以使用，確保安裝置環境內容。本教材與前期 JavaScript 網頁設計（假日班）期末實作教材稍些取不同，請從新下載此份：
 
->等待修訂
-  <!-- - [Source Project](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/project_Camp/source) 基本 HTML/CSS/Bootstrap5.2 之商務網站素材。 -->
+> [Source Project](https://github.com/summer10920/studies_TeachDemo_PHP) - 基本 PHP/MYSQL 之商務網站素材。
 
-<!-- 此時檢查內容，包含了
-- **db.json**
-作為模擬後端給予的所有資源。
-- **index.html**
-主要網站，以一頁式方式呈現。
-- **plugins 目錄**
-所有相關的 css 與 js 檔案都收錄在此，不論現成套件或自開發檔案。
-- **media 目錄**
-所有相關的圖片收錄在此，此內容圖片取自 [snow peak JP](https://www.snowpeak.co.jp/) 未授權之商業網站，本站教學僅學術交流使用與示範代碼引用之用途並標示出處，若採用發布轉載自行負擔責任。 -->
+此時檢查內容，包含了以下目錄：
+- **source**
+本教材前端起始素材，內包含前台完整版型資料與訂單表單。
+- **final**
+本教材之完整結果DEMO檔案。
+- **backed_template**
+本教材所需之後台版型素材，提供本教學所需建置之版型檔案。
 
 ## 資料庫設定
 接著規劃資料庫與測試資料存取：
@@ -452,7 +449,7 @@ if (isset($_GET['to'])) {
         return $v !== 0;
       }));
 
-      $sqlCode = ['null', '\'' . $_POST['userName'] . '\'', '\'' . $_POST['userPhone'] . '\'', '\'' . $_POST['userMail'] . '\'', '\'' . $selectDateZip . '\'', '\'' . $selloutZip . '\'', 'NOW()', 999, 0];
+      $sqlCode = ['null', '\'' . $_POST['userName'] . '\'', '\'' . $_POST['userPhone'] . '\'', '\'' . $_POST['userMail'] . '\'', '\'' . $selectDateZip . '\'', '\'' . $selloutZip . '\'', $sum, 'NOW()',  0];
       //最後提交到 sql 時需要 string 符號，因此這裡需要追加並利用跳脫字元。
       // print_r($sqlCode);
 
@@ -1797,8 +1794,8 @@ $htmlCode .= '<tr>
 將 file 目錄下的 login.html 搬移到根目錄上，方便拜訪`localhost/login.html`能操作登入表單。
 
 - 修改 form 的 action 方式，指向到 function.php?do=login，帳密使用 post 方式傳送。
-- 將一開始因測試完畢而註解的 checkUserSaveSession() 再釋放回來。該函式用途為，只要提供帳密就能確認是否帳戶存在並自動存入session。
-- 同上，因此試圖將提交的post轉入該函式內，若成功則轉向到admin.php
+- 將一開始因測試完畢而註解的 checkUserSaveSession() 再釋放回來。該函式用途為，只要提供帳密就能確認是否帳戶存在並自動存入 session。
+- 同上，因此試圖將提交的 post 轉入該函式內，若成功則轉向到 admin.php
 
 ```html login.html
 <!-- ... -->
@@ -1823,7 +1820,7 @@ $sql = new lokiSQL();
 
 function checkUserSaveSession($acc, $pwd) {
   global $sql;
-  if (isset($_SESSION['admin'])) return true; //如果存在就直接回傳true，不用再驗證設定SESSION
+  if (isset($_SESSION['admin'])) return true; //如果存在就直接回傳 true，不用再驗證設定 SESSION
 
   $check = !!$sql->select('user', 'name="' . $acc . '" AND password="' . $pwd . '" AND active=1');
   if ($check) $_SESSION['admin'] = $acc;
@@ -1847,7 +1844,7 @@ if (isset($_GET['do'])) {
 ```
 
 ## 後台禁止無登入成功的拜訪
-目前直接拜訪後台任何網頁都能成功，應只有當從login獲得session的身分才能允許拜訪，因此找到後台共同持有的header.php進行判別即可。(不可規劃到function.php內，這會導致前台獲取json.php以及新增表單時會失敗拒絕php處理)
+目前直接拜訪後台任何網頁都能成功，應只有當從 login 獲得 session 綁定的狀態才能允許拜訪，因此找到後台共同持有的 header.php 進行判別即可。（不可規劃到 function.php 內，這會導致前台獲取 json.php 以及新增表單時會失敗拒絕 php 處理）
 
 ```php header.php
 <?php
@@ -1856,8 +1853,8 @@ if (empty($_SESSION['admin'])) header('Location:/');
 ?>
 ```
 
-## 登出清除session
-登出方式只要清除session導向回首頁即可。
+## 登出清除 session
+登出方式只要清除 session 導向回首頁即可。
 
 ```php header.php
 <li><a class="dropdown-item" href="function.php?do=logout">登出</a></li>
@@ -1867,4 +1864,136 @@ case 'logout':
   unset($_SESSION['admin']);
   header('Location:/');
   break;
+```
+
+## 限定單台電腦登入
+這裡將介紹如何同時間只允許一台電腦連線登入後台使用。做發生其他地點有任何電腦或瀏覽器登入，會強制踢出原本已登入的用戶。
+
+### 限定 login 只需一次
+將 login.html 修改為 login.php，使得該拜訪處具備 php 處理能力。追加同 header.php 的起始處 php 處理方式。唯獨不同的轉址作法為當 session 存在就直接去後台。而可以不引用整份 function.php 改只取 session 相關設定。
+
+```php login.php
+<?php
+// require_once("./function.php");
+session_save_path('tmp');
+session_start();
+if (isset($_SESSION['admin'])) header('Location:/admin.php');
+?>
+```
+
+### 登入提交產生 token 
+我們需要再登入階段多考量 token 的儲存，token 能代表後端給予我們的當下唯一代碼。
+
+- 先擴增 SQL 內_loki_user 的兩個欄位，分別存放 token:TEXT 與 expire:DATETIME
+- 處理的時機為，當 check 完成後已確認該 account 存在，則準備生成 token 值。
+- token 值可隨意字串再轉 MD5，這裡使用帳號加密碼加當下時間。
+- 將 token 值塞回 SQL 內，以及規劃生命期限為當下的五分鐘後（僅示範，可自己規劃時間長度）。
+- 如果我們 token 跟 expire 都成功更新了，也把 session 的固定值改成存放 token。
+
+```sql mysql command
+ALTER TABLE `_loki_user` ADD `token` TEXT NOT NULL AFTER `password`, ADD `expire` DATETIME NOT NULL AFTER `token`;
+```
+```php function.php
+function checkUserSaveSession($acc, $pwd) {
+  global $sql;
+  if (isset($_SESSION['admin'])) return true; //如果存在就直接回傳 true，不用再驗證設定 SESSION
+  $check = !!$sql->select('user', 'name="' . $acc . '" AND password="' . $pwd . '" AND active=1');
+
+  if ($check) {
+    date_default_timezone_set('Asia/Taipei');
+    $token = md5($acc . $pwd . strtotime('now'));
+    $result = $sql->update('user', 'token="' . $token . '", expire=DATE_ADD(NOW(), INTERVAL 5 MINUTE)', 'name="' . $acc . '"')->queryString;
+    if ($result) $_SESSION['admin'] = $token;
+    else exit('sql fail');
+  }
+
+  return $check;
+}
+```
+
+### 每次後台都需檢查 token 是否健在。
+我們希望每次操作後台，都要檢查資料庫狀態，如果稍早我們存入的 token 已經被修改時，代表有人登入此帳號而我們因前面設計不可能做登入。以及要判斷是否太久沒有存取後台而掛網需踢出。
+
+- 將檢查的工作規畫為函式放入 header.php 也就所有的後台頁面。
+- 規劃該 checkPermission，首先先檢查 expire 是否小於（過去）目前時間，由於貪快寫死 name 僅示範，否則應試著從 session 或某處記住帳戶 name。
+- 如果存在期效已發生於過去，清除當下 SESSION（使得可以開放 login)，並提示後轉至 login。這裡使用 js 轉址是確保用戶可以收到 alert 資訊。並 exit 停止 php 工作。
+- 反之未過期，程式繼續往下跑，接著檢查 token 是否 SQL 與 SESSION 仍一致。
+- 如果存在一致沒有改變，則請求翻新 SQL 內的 expire 多活當下 5 分鐘。
+- 反之不存在，代表 token 已從指定條件下被修改（其他電腦拜訪 login 而我們拜訪不到 Login 運行到 token update)。
+- 同上，清除手上的 token 使得可拜訪 login 做 token update，並轉到 login 畫面。
+
+```php header.php
+require_once("./function.php");
+if (empty($_SESSION['admin'])) header('Location:/');
+checkPermission();
+```
+```php function.php
+function checkPermission() {
+  global $sql;
+  $life = $sql->select('user', 'expire<NOW() and name="admin"'); //是否有時間已過期
+
+  if (count($life)) { //有找到代表有過期
+    unset($_SESSION['admin']);
+    exit("
+      <script>
+        alert('連線逾時，請重新作業。');
+        document.location.href = '/login.php';
+      </script>
+    ");
+  }
+
+  $tokenIsset = $sql->select('user', 'token="' . $_SESSION['admin'] . '"');
+  if (count($tokenIsset))  //token 不變，延長壽命
+    $sql->update('user', 'expire=DATE_ADD(NOW(), INTERVAL 5 MINUTE)', 'name="' . $tokenIsset[0]['name'] . '"')->queryString;
+  else { //token 已改變，清除 session，顯示重複登入，登出，踢回 login
+    unset($_SESSION['admin']);
+    exit("
+      <script>
+        alert('帳號重複登入，請重新作業。');
+        document.location.href = '/login.php';
+      </script>
+    ");
+  }
+}
+```
+
+# 隱藏 URL 附檔名
+- 確認 apache 的 rewrite 功能有啟用
+```conf httpd.conf
+LoadModule rewrite_module modules/mod_rewrite.so
+```
+- 新增根目錄檔案底下添加 RewriteRule 規則
+```shell .htaccess
+Options +FollowSymlinks
+RewriteEngine on
+
+RewriteCond %{THE_REQUEST} /([^.]+)\.php [NC]
+RewriteRule ^ /%1 [NC,L,R]
+
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^ %{REQUEST_URI}.php [NC,L]
+```
+- 調整過去在 HTM 上的相關 URL 寫法
+```php login.php
+// ...
+<form action="function?do=login" method="post">
+```
+```js lokiCalendar
+//...
+fetch('/function?do=newOrder', {
+```
+```php header.php
+<li><a class="dropdown-item" href="function?do=logout">登出</a></li>
+```
+```php main-holiday.php
+//...
+<form class="container-fluid px-4" method="post" action="function?do=mdyHoliday">
+```
+```php main-orderList.php
+//...
+'<a class="btn btn-danger btn-sm" href="function?' . http_build_query($getAry) . '">刪除</a>';
+```
+```php main-pallet.php
+//...
+<form class="container-fluid px-4" method="post" action="function?do=mdyPallet">
 ```
