@@ -386,11 +386,11 @@ title 屬性為標題，滑鼠移到圖片時顯示。
         <td>興趣：</td>
         <td>
           <!-- name 需相同，表示同一組複選，checked 為預設勾選選項 -->
-          <input type="checkbox" name="like" value="拍照" />拍照
-          <input type="checkbox" name="like" value="看書" />看書
-          <input type="checkbox" name="like" value="唱歌" />唱歌
-          <input type="checkbox" name="like" value="寫網頁" checked />寫網頁
-          <input type="checkbox" name="like" value="逛街" checked />逛街
+          <input type="checkbox" name="like[]" value="拍照" />拍照
+          <input type="checkbox" name="like[]" value="看書" />看書
+          <input type="checkbox" name="like[]" value="唱歌" />唱歌
+          <input type="checkbox" name="like[]" value="寫網頁" checked />寫網頁
+          <input type="checkbox" name="like[]" value="逛街" checked />逛街
         </td>
       </tr>
       <tr>
