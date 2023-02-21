@@ -189,6 +189,16 @@ p {
 }
 ```
 
+### 指定行數之省略文字
+本段落針對前面所提到的 text-overflow 進行進階補充，在 MDN 網站上的範例只限定於一行文字且 overflow（強制不換行）情況下有用。但實用性其低（無法應用於多行情況下）。若要舉例針對 blog 做摘要文字就需要別的方法，依賴 [-webkit-line-clamp](https://developer.mozilla.org/zh-CN/docs/Web/CSS/-webkit-line-clamp) 屬性進行。
+
+```css
+.twoLine{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;}
+```
+
 {% note danger %}
 **新手陷阱：text-align 的有限功能**
 text-align 的功能僅限於作用 inline 元素的 content 內容部分來對齊，而不是本身整體 block 元素的對齊控制。因此如果你希望該元素能控制行內之定位，除了本身不是 block（可以是 inline-block)，應對該元素之父層下達 text-align 屬性，控制父層的 content 內容對齊。
@@ -1236,26 +1246,17 @@ ul {
   <tr class="odd">
     <td>lorem</td>
     <td></td>
-    <td></td>
   </tr>
   <tr>
-    <td>lorem</td>
-    <td>lorem</td>
     <td>lorem</td>
   </tr>
   <tr class="odd">
     <td>lorem</td>
-    <td>lorem</td>
-    <td>lorem</td>
   </tr>
   <tr>
     <td>lorem</td>
-    <td>lorem</td>
-    <td>lorem</td>
   </tr>
   <tr class="odd">
-    <td>lorem</td>
-    <td>lorem</td>
     <td>lorem</td>
   </tr>
 </table>
