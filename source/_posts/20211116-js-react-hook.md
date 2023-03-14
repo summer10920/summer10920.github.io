@@ -1,5 +1,5 @@
 ---
-title: '[學習之路] JS 前端框架 React - Hook'
+title: '[前端框架] React - Hook'
 categories:
   - Zero Road
   - ReactJS

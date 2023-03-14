@@ -1,6 +1,6 @@
 ---
 # title: {{ title }}
-title: '[學習之路] JS 前端框架 React - 基礎學習'
+title: '[前端框架] React - 基礎學習'
 date: {{ date }}
 categories:
   - Zero Road
