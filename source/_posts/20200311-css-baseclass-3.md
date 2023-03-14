@@ -547,9 +547,9 @@ visibility 屬性可以讓盒子隱藏不見，但將原有的位置保留下來
 - 設定 position 才可以使用 z-index 屬性。（重要）
 
 ## 固定定位 position:fixed
-absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的定位是會去找有安排定位之容器，真的找不到才會採網頁的定位之容器。flexd 是直接任網頁的定位之容器當偏移基準。
+absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的定位是會去找有安排定位之容器，真的找不到才會採網頁的定位之容器。fixed 是直接任網頁的定位之容器當偏移基準。
 
-## 範例說明 relative & absolute & flexd
+## 範例說明 relative & absolute & fixed
 這裡直接實作比較三者差異會更容易理解。準備一個 5*4 的方塊圖，試著讓資料在畫面中央。
 
 {% note primary %}
@@ -575,7 +575,7 @@ absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的
       <div class="box">14</div>
       <div class="box">15</div>
       <div class="box">16</div>
-      <div class="box flexd">17</div>
+      <div class="box fixed">17</div>
       <div class="box">18</div>
       <div class="box">19</div>
       <div class="box">20</div>
@@ -672,7 +672,7 @@ body {
   /* 預設位置不變，父容器失去該元素 */
 }
 
-.flexd{
+.fixed{
   position: fixed;
   background: darkgreen;
   /* 解讀奇怪的預設位置 =>
@@ -685,7 +685,7 @@ body {
 3. 試著解讀以下各種狀況：
   - .absolute 設定偏移量 (top,bottom,left,right) 尋找落點
   - .bigbox, .main, body 選一組設定 relative，尋找。absolute 落點
-  - .flexd 設定偏移量 (top,bottom,left,right) 尋找落點
+  - .fixed 設定偏移量 (top,bottom,left,right) 尋找落點
   - 3 組都設定 z-index 屬性，帶入正值與負值解析圖層位置
   - 挑幾組號碼給他指定 absolute 或 relative 看看圖層位置
 
