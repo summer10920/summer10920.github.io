@@ -359,6 +359,16 @@ article {
 }
 
 /* ***********footer style */
+.footer-inner {
+  flex-flow: row wrap;
+  justify-content: space-between;
+  width: 100%;
+
+  >* {
+    flex: 1 0 auto;
+  }
+}
+
 footer.footer {
   background: #666;
   color: #eee;
@@ -370,14 +380,5 @@ footer.footer {
 
   :not(.post-meta-break) + .post-meta-item::before {
     content: none;
-  }
-
-  .wordcount.busuanzi-count {
-    display: flex;
-    justify-content: space-between;
-
-    * {
-      flex: 0 1 auto;
-    }
   }
 }
