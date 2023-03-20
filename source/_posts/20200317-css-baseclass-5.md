@@ -77,7 +77,7 @@ CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS
 ```
 
 ## scale 縮放
-- 能依據指定值縮放大小，用`負值會呈現倒影型態`。數值是倍數，舉例 scaleX(2) 變成轉換前的兩倍，scaleY(0.5) 讓元素高度減半，`無法使用百分比`。
+- 能依據指定值縮放大小，用`負值會呈現倒影型態`。數值是倍數，舉例 scaleX(2) 變成轉換前的兩倍，scaleY(0.5) 讓元素高度減半，`無法使用百分比`不過Chrome仍可用，仍建議以係數比控制。
 - 可同時讓兩軸縮放，舉例 scale(2,0.5) 會讓元素縮放兩倍寬 (X)，一半高 (Y)。如果只填一個值 就會等同樣比例縮放兩軸。
 
 ```css
@@ -333,7 +333,7 @@ body {
 /* 循環交替或反向播放
   animation-direction:
     normal（默認，正常播放）
-    revers（反向播放）
+    reverse（反向播放）
     alternate（輪流交替播放，動畫在奇數次 1,3,5 正向播放，在偶數次 2,4,6 反向播放）
     alternate-reverse（動畫在奇數次 1,3,5 反向播放，在偶數次 2,4,6 正向播放）
 */
@@ -419,7 +419,7 @@ animation:name duration | timing-function | delay | iteration-count | direction 
     line-height: 50px;
     overflow: hidden;
   }
-  div.btn:after {
+  div.btn::after {
     content: "";
     background: linear-gradient(to right bottom, #ffffff00 30%, #ffffff88 50%, #ffffff00 70%);
     transform: translateX(-75%);
