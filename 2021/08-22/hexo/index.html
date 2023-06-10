@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,12 +14,13 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="本篇主要是隨手紀錄 HEXO 維護心得，供自己使用。">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇主要是隨手紀錄 HEXO 維護心得，供自己使用。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[隨手紀錄] HEXO 維護相關問題紀錄">
 <meta property="og:url" content="http://summer10920.github.io/2021/08-22/hexo/">
@@ -30,7 +29,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/khVSx9I.png">
 <meta property="article:published_time" content="2021-08-22T06:52:18.000Z">
-<meta property="article:modified_time" content="2021-10-04T06:23:02.506Z">
+<meta property="article:modified_time" content="2023-06-10T01:40:29.670Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="HEXO">
 <meta name="twitter:card" content="summary">
@@ -52,6 +51,10 @@
 
 
 
+
+
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
@@ -64,9 +67,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -79,14 +82,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -95,11 +98,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -132,15 +131,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -156,23 +149,22 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0"><span class="nav-number">1.</span> <span class="nav-text">版本更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HEXO-%E5%8D%87%E7%B4%9A"><span class="nav-number">1.1.</span> <span class="nav-text">HEXO 升級</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#theme-next-%E5%8D%87%E7%B4%9A"><span class="nav-number">1.2.</span> <span class="nav-text">theme next 升級</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AA%BF%E6%95%B4"><span class="nav-number">2.</span> <span class="nav-text">調整</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%84%AA%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">優化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#next-%E4%B8%BB%E9%A1%8C%E5%8F%83%E6%95%B8"><span class="nav-number">2.1.1.</span> <span class="nav-text">next 主題參數</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%87%AA%E8%A8%82-JS-%E6%AA%94%E6%A1%88"><span class="nav-number">2.1.2.</span> <span class="nav-text">添加自訂 JS 檔案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%96%87%E7%AB%A0%E9%9A%B1%E8%97%8F"><span class="nav-number">2.1.3.</span> <span class="nav-text">指定文章隱藏</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0"><span class="nav-number">1.</span> <span class="nav-text">版本更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HEXO-%E5%8D%87%E7%B4%9A"><span class="nav-number">1.1.</span> <span class="nav-text">HEXO 升級</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#theme-next-%E5%8D%87%E7%B4%9A"><span class="nav-number">1.2.</span> <span class="nav-text">theme next 升級</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AA%BF%E6%95%B4"><span class="nav-number">2.</span> <span class="nav-text">調整</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%84%AA%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">優化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#next-%E4%B8%BB%E9%A1%8C%E5%8F%83%E6%95%B8"><span class="nav-number">2.1.1.</span> <span class="nav-text">next 主題參數</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#busuanzi-count-%E5%8F%AF%E9%96%8B%E5%95%9F%E8%A8%AA%E5%AE%A2%E7%80%8F%E8%A6%BD%E8%A8%98%E6%95%B8"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">busuanzi_count 可開啟訪客瀏覽記數</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wordcount"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">wordcount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#custom-file-path-%E6%B7%BB%E5%8A%A0%E8%87%AA%E8%A8%82%E4%BB%A3%E7%A2%BC%E8%88%87%E6%A8%A3%E5%BC%8F"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">custom_file_path 添加自訂代碼與樣式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%A0%81%E9%9D%A2-UI"><span class="nav-number">2.1.1.4.</span> <span class="nav-text">修改頁面 UI</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-article-%E6%AE%B5%E8%90%BD"><span class="nav-number">2.1.1.5.</span> <span class="nav-text">修改 article 段落</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E8%87%AA%E8%A8%82-JS-%E6%AA%94%E6%A1%88"><span class="nav-number">2.1.2.</span> <span class="nav-text">添加自訂 JS 檔案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%96%87%E7%AB%A0%E9%9A%B1%E8%97%8F"><span class="nav-number">2.1.3.</span> <span class="nav-text">指定文章隱藏</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -188,60 +180,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -259,11 +240,16 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[隨手紀錄] HEXO 維護相關問題紀錄 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -280,24 +266,24 @@
 
       <time title="創建時間 ×2021-08-22 14:52:18" itemprop="dateCreated datePublished" datetime="2021-08-22T14:52:18+08:00">2021-08-22</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-10-04 14:23:02" itemprop="dateModified" datetime="2021-10-04T14:23:02+08:00">2021-10-04</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2023-06-10 09:40:29" itemprop="dateModified" datetime="2023-06-10T09:40:29+08:00">2023-06-10</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分類於</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9A%A8%E6%89%8B%E7%B4%80%E9%8C%84/" itemprop="url" rel="index"><span itemprop="name">隨手紀錄</span></a>
+          <a href="/categories/%E9%AD%94%E6%94%B9%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">魔改系列</span></a>
         </span>
           , 
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E9%9A%A8%E6%89%8B%E7%B4%80%E9%8C%84/%E7%9C%8B%E5%BB%A2%E6%96%87%E4%B8%8D%E5%A6%82%E8%B0%B7%E6%AD%8C/" itemprop="url" rel="index"><span itemprop="name">看廢文不如谷歌</span></a>
+          <a href="/categories/%E9%AD%94%E6%94%B9%E7%B3%BB%E5%88%97/%E9%83%A8%E8%90%BD%E6%A0%BC/" itemprop="url" rel="index"><span itemprop="name">部落格</span></a>
         </span>
     </span>
 
@@ -315,14 +301,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>2990 <i>words</i></span>
+      <span>1,292</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>5 <i>mins</i></span>
+      <span>00:02:21</span>
     </span>
 </div>
 
@@ -332,8 +318,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <!-- ![](https://i.imgur.com/y30OtFX.png) -->
+    <div class="post-body" itemprop="articleBody"><!-- ![](https://i.imgur.com/y30OtFX.png) -->
 <p><img src="https://i.imgur.com/khVSx9I.png"></p>
 <p>本篇主要是隨手紀錄 HEXO 維護心得，供自己使用。</p>
 <span id="more"></span>
@@ -345,7 +330,7 @@
 <li>執行<code>npm update</code>直接更新所有 module 套件版本。</li>
 <li>測試 hexo 指令時出現以下訊息，原因為自 5.0 版本開始更名，更新用戶需自行修改<code>_config.yml</code>將名稱<code>use_date_for_updated</code>改為<code>updated_option</code>。<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Deprecated config detected: &quot;use_date_for_updated&quot; is deprecated, please use &quot;updated_option&quot; instead. See https://hexo.io/docs/configuration for more details.</span><br></pre></td></tr></table></figure></li>
 <li>啟動<code>hexo s</code>會出現以下資訊，是因為<code>hexo-renderer-stylus</code>內建套件所包的<code>nib/stylus</code>的版本是 0.54.5 與 node.js 16 版本不相容（最新 0.54.8 才解決）<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;lineno&#x27; of module exports inside circular dependency</span><br><span class="line">(Use `node --trace-warnings ...` to show where the warning was created)</span><br><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;column&#x27; of module exports inside circular dependency</span><br><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;filename&#x27; of module exports inside circular dependency</span><br><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;lineno&#x27; of module exports inside circular dependency</span><br><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;column&#x27; of module exports inside circular dependency</span><br><span class="line">(node:6868) Warning: Accessing non-existent property &#x27;filename&#x27; of module exports inside circular dependency</span><br></pre></td></tr></table></figure></li>
-<li>網路爬文的 uninstall/install <code>hexo-renderer-stylus</code> 是沒意義的，目前 v2.0.1 仍然是舊的 stylus v0.54.5。</li>
+<li>網路爬文的 uninstall&#x2F;install <code>hexo-renderer-stylus</code> 是沒意義的，目前 v2.0.1 仍然是舊的 stylus v0.54.5。</li>
 <li>手動更新<code>hexo-renderer-stylus</code>內包含的 stylus 版本，切換到模組位置 <code>cd /node_modules/nib</code>。</li>
 <li>再利用<code>npm-upgrade</code>來幫忙檢查更新 package.json 資訊，確認可升級到 0.54.8 並修改完成後，輸入<code>npm update</code>直接更新即可完成</li>
 <li>事後發現使用一些其他套件使用又會發生一樣的事情，搞不定，因為 warning 不影響，所以暫時忽略。..，等 hexo 更新。</li>
@@ -357,13 +342,22 @@
 <li>比對兩者 theme 內的<code>_config.yml</code>逐項改回原本設定。</li>
 </ol>
 <h1 id="調整"><a href="#調整" class="headerlink" title="調整"></a>調整</h1><h2 id="優化"><a href="#優化" class="headerlink" title="優化"></a>優化</h2><p>調整<code>themes/next/_config.yml</code>即可使用以下功能。</p>
-<h3 id="next-主題參數"><a href="#next-主題參數" class="headerlink" title="next 主題參數"></a>next 主題參數</h3><ul>
-<li>busuanzi_count 可開啟訪客瀏覽記數<br>如果不滿意 layout 可調整<code>themes\next\layout\_partials\footer.njk</code>適時添加說明文字。</li>
-<li>wordcount<br>安裝 <code>npm install hexo-word-counter</code> 可啟用閱讀文字紀錄</li>
-<li>custom_file_path 添加自訂代碼與樣式<br>自訂 CSS 方法。關閉註解 <code>source\_data\styles.styl</code> 並對應位置至主目錄之路徑添加即可。其他檔案設定亦同能協助在指定網頁位置插入部分代碼，例如<code>bodyEnd: source/_data/body-end.njk</code>能在 body 底部設定指定代碼</li>
-<li>修改頁面 UI<br>檔案位置在 <code>themes\next\layout\_layout.njk</code></li>
-<li>修改 article 段落<br>調整首頁文章列表或單一文章的位置在 <code>themes\next\layout\_macro\post.njk</code></li>
+<h3 id="next-主題參數"><a href="#next-主題參數" class="headerlink" title="next 主題參數"></a>next 主題參數</h3><h4 id="busuanzi-count-可開啟訪客瀏覽記數"><a href="#busuanzi-count-可開啟訪客瀏覽記數" class="headerlink" title="busuanzi_count 可開啟訪客瀏覽記數"></a>busuanzi_count 可開啟訪客瀏覽記數</h4><p>如果不滿意 layout 可調整<code>themes\next\layout\_partials\footer.njk</code>適時添加說明文字。</p>
+<h4 id="wordcount"><a href="#wordcount" class="headerlink" title="wordcount"></a>wordcount</h4><p>安裝 <code>npm install hexo-word-counter</code> 可啟用閱讀文字紀錄</p>
+<p>因不滿意他的文字效果沒有單位量，所以需要修改此模組，但避免異動版本升級與異地差異，所以使用補釘包插件來處理。這方式專門做類似的模組差異修改用途。</p>
+<ul>
+<li>安裝 修改補釘模組 <code>npm install patch-package --save-dev</code></li>
+<li>增加 script 指令，到 package.json 補上<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;postinstall&quot;</span><span class="punctuation">:</span> <span class="string">&quot;patch-package&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li>初始安裝你的目標模組，已存在就不需要再安裝一次</li>
+<li>直接修改你的目標模組，這裡舉例模組名稱為 hexo-word-counter ，路徑為 node_modules\hexo-word-counter\lib\helper.js</li>
+<li>此時你只是修改本地模組檔案，遠端或其他電腦不會有變動。</li>
+<li>透過指令 npx patch-package hexo-word-counter，此時會去將目標模組有異動的代碼記錄起來。每次修改都執行此指令</li>
+<li>最後再用指令 npm run postinstall 將修改包以補丁方式整合到專案 GIT 內</li>
+<li>其他電腦或遠端 npm install 就會將此 patch 修改包自動應用進去。</li>
 </ul>
+<h4 id="custom-file-path-添加自訂代碼與樣式"><a href="#custom-file-path-添加自訂代碼與樣式" class="headerlink" title="custom_file_path 添加自訂代碼與樣式"></a>custom_file_path 添加自訂代碼與樣式</h4><p>自訂 CSS 方法。關閉註解 <code>source\_data\styles.styl</code> 並對應位置至主目錄之路徑添加即可。其他檔案設定亦同能協助在指定網頁位置插入部分代碼，例如<code>bodyEnd: source/_data/body-end.njk</code>能在 body 底部設定指定代碼</p>
+<h4 id="修改頁面-UI"><a href="#修改頁面-UI" class="headerlink" title="修改頁面 UI"></a>修改頁面 UI</h4><p>檔案位置在 <code>themes\next\layout\_layout.njk</code></p>
+<h4 id="修改-article-段落"><a href="#修改-article-段落" class="headerlink" title="修改 article 段落"></a>修改 article 段落</h4><p>調整首頁文章列表或單一文章的位置在 <code>themes\next\layout\_macro\post.njk</code></p>
 <h3 id="添加自訂-JS-檔案"><a href="#添加自訂-JS-檔案" class="headerlink" title="添加自訂 JS 檔案"></a>添加自訂 JS 檔案</h3><p>由於 custom_file_path 只能匯入程式碼到頁面去，如果需要添加 js 檔案並宣告執行，需要多一個步驟</p>
 <ol>
 <li>將 js 檔案放置在主題目錄下 <code>theme\source</code>，在這個目錄下皆會自動時輸出到網站目錄上。</li>
@@ -417,73 +411,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 

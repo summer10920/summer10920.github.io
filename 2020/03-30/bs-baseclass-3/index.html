@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,12 +14,13 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="本章節的 Components 元件算是資訊量很大的單元，但也不用特別去背，只要知道有哪些功能可以選（複製貼上大法）加以利用去點綴你的網頁即可。">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本章節的 Components 元件算是資訊量很大的單元，但也不用特別去背，只要知道有哪些功能可以選（複製貼上大法）加以利用去點綴你的網頁即可。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[基礎課程] Bootstrap4 教學（三）：元件">
 <meta property="og:url" content="http://summer10920.github.io/2020/03-30/bs-baseclass-3/">
@@ -51,6 +50,10 @@
 
 
 
+
+
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
@@ -63,9 +66,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -78,14 +81,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -94,11 +97,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -131,15 +130,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -155,23 +148,22 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%83%E4%BB%B6-Components"><span class="nav-number">1.</span> <span class="nav-text">元件 Components</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AD%A6%E5%A0%B1-Alert"><span class="nav-number">1.1.</span> <span class="nav-text">警報 Alert</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E"><span class="nav-number">1.1.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.1.2.</span> <span class="nav-text">JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%99%E7%B1%A4-Badge"><span class="nav-number">1.2.</span> <span class="nav-text">標籤 Badge</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BA%B5%E5%8C%85%E5%B1%91-breadcrumb"><span class="nav-number">1.3.</span> <span class="nav-text">麵包屑 breadcrumb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%88%95-Buttons"><span class="nav-number">1.4.</span> <span class="nav-text">按鈕 Buttons</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-3"><span class="nav-number">1.4.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%88%95%E7%BE%A4%E7%B5%84-Button-Grounp"><span class="nav-number">1.5.</span> <span class="nav-text">按鈕群組 Button Grounp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-4"><span class="nav-number">1.5.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%A1%E7%89%87-Card"><span class="nav-number">1.6.</span> <span class="nav-text">卡片 Card</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-5"><span class="nav-number">1.6.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%87%89%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.6.2.</span> <span class="nav-text">其他應用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%AA%E6%92%AD-Carousel"><span class="nav-number">1.7.</span> <span class="nav-text">輪播 Carousel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%88%E7%8F%BE"><span class="nav-number">1.7.1.</span> <span class="nav-text">基本呈現</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%B0%8E%E8%A6%BD%E9%8D%B5"><span class="nav-number">1.7.2.</span> <span class="nav-text">添加導覽鍵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%B0%8E%E8%A6%BD%E5%88%97"><span class="nav-number">1.7.3.</span> <span class="nav-text">添加導覽列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AD%97%E5%B9%95%EF%BC%88%E5%9C%96%E7%89%87%E4%B8%8A%E5%B1%A4%E5%8D%80%EF%BC%89"><span class="nav-number">1.7.4.</span> <span class="nav-text">添加字幕（圖片上層區）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%80%9D%E8%80%83"><span class="nav-number">1.7.5.</span> <span class="nav-text">進階思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%89%E5%A0%B4%E7%89%B9%E6%95%88"><span class="nav-number">1.7.6.</span> <span class="nav-text">轉場特效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E5%B1%AC%E6%80%A7%E8%88%87-JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.7.7.</span> <span class="nav-text">控制屬性與 JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%BA%E7%96%8A-Collapse"><span class="nav-number">1.8.</span> <span class="nav-text">摺疊 Collapse</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%A8%AD%E8%A8%88"><span class="nav-number">1.8.1.</span> <span class="nav-text">基本設計</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E9%A2%A8%E7%90%B4%E6%95%88%E6%9E%9C"><span class="nav-number">1.8.2.</span> <span class="nav-text">手風琴效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E6%8B%89%E9%81%B8%E5%96%AE-Dropdowns"><span class="nav-number">1.9.</span> <span class="nav-text">下拉選單 Dropdowns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B5%90%E6%A7%8B"><span class="nav-number">1.9.1.</span> <span class="nav-text">基本結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%8D%80%E8%A8%AD%E8%A8%88"><span class="nav-number">1.9.2.</span> <span class="nav-text">選單區設計</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E5%96%AE-Forms"><span class="nav-number">1.10.</span> <span class="nav-text">表單 Forms</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B5%90%E6%A7%8B-1"><span class="nav-number">1.10.1.</span> <span class="nav-text">基本結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%96%AE%E9%A9%97%E8%AD%89%E6%95%88%E6%9E%9C"><span class="nav-number">1.10.2.</span> <span class="nav-text">表單驗證效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E5%A4%96%E8%A7%80"><span class="nav-number">1.10.3.</span> <span class="nav-text">自訂外觀</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#radio-amp-checkbox"><span class="nav-number">1.10.3.1.</span> <span class="nav-text">radio &amp; checkbox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#select"><span class="nav-number">1.10.3.2.</span> <span class="nav-text">select</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#range"><span class="nav-number">1.10.3.3.</span> <span class="nav-text">range</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#file"><span class="nav-number">1.10.3.4.</span> <span class="nav-text">file</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%B8%E5%85%A5%E6%A1%86%E7%BE%A4%E7%B5%84%E5%8C%96-Input-Group"><span class="nav-number">1.11.</span> <span class="nav-text">輸入框群組化 Input Group</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%A3%E5%91%8A%E5%B1%8F%E5%B9%95-Jumbotron"><span class="nav-number">1.12.</span> <span class="nav-text">廣告屏幕 Jumbotron</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E7%BE%A4%E7%B5%84-List-Group"><span class="nav-number">1.13.</span> <span class="nav-text">列表群組 List Group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tabs-%E6%B8%85%E5%96%AE%E6%A8%A1%E5%BC%8F-%EF%BC%88%E9%85%8D%E5%90%88-JS"><span class="nav-number">1.13.1.</span> <span class="nav-text">tabs 清單模式 （配合 JS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%AE%B9%E5%99%A8"><span class="nav-number">1.13.1.1.</span> <span class="nav-text">選單容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%AE%B9%E5%99%A8"><span class="nav-number">1.13.1.2.</span> <span class="nav-text">分頁容器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AA%92%E9%AB%94%E7%89%A9%E4%BB%B6-Media-Object"><span class="nav-number">1.14.</span> <span class="nav-text">媒體物件 Media Object</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E5%8B%95%E8%A6%96%E7%AA%97-Modal"><span class="nav-number">1.15.</span> <span class="nav-text">互動視窗 Modal</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%B8%E7%99%BC%E6%8C%89%E9%88%95%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.1.</span> <span class="nav-text">觸發按鈕條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A7%E5%AE%B9%E8%A6%96%E7%AA%97%E7%B5%90%E6%A7%8B"><span class="nav-number">1.15.2.</span> <span class="nav-text">內容視窗結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E9%96%89-modal-%E6%96%B9%E5%BC%8F"><span class="nav-number">1.15.3.</span> <span class="nav-text">關閉 modal 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.4.</span> <span class="nav-text">.modal 的效果條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-dialog-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.5.</span> <span class="nav-text">.modal-dialog 的效果條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-content-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.6.</span> <span class="nav-text">.modal-content 的效果條件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8E%E8%A6%BD-Navs"><span class="nav-number">1.16.</span> <span class="nav-text">導覽 Navs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#flex-%E7%9A%84%E9%81%8B%E7%94%A8"><span class="nav-number">1.16.1.</span> <span class="nav-text">flex 的運用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tabs-%E6%B8%85%E5%96%AE%E6%A8%A1%E5%BC%8F-%EF%BC%88%E9%85%8D%E5%90%88-JS-1"><span class="nav-number">1.16.2.</span> <span class="nav-text">tabs 清單模式 （配合 JS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%AE%B9%E5%99%A8-1"><span class="nav-number">1.16.2.1.</span> <span class="nav-text">選單容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%AE%B9%E5%99%A8-1"><span class="nav-number">1.16.2.2.</span> <span class="nav-text">分頁容器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8E%E8%A6%BD%E5%88%97-Navbar"><span class="nav-number">1.17.</span> <span class="nav-text">導覽列 Navbar</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%AE%B9%E5%99%A8-nav-navbar"><span class="nav-number">1.17.1.</span> <span class="nav-text">主容器 nav.navbar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LOGO-%E5%8D%80-navbar-brand"><span class="nav-number">1.17.2.</span> <span class="nav-text">LOGO 區 .navbar-brand</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%A2%E5%A0%A1%E6%8C%89%E9%88%95-button-navbar-toggler"><span class="nav-number">1.17.3.</span> <span class="nav-text">漢堡按鈕 button.navbar-toggler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%8D%80-navbar-collapse"><span class="nav-number">1.17.4.</span> <span class="nav-text">選單區 .navbar-collapse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%85%83%E4%BB%B6"><span class="nav-number">1.17.5.</span> <span class="nav-text">其他元件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#navbar-%E7%9A%84%E5%AE%9A%E4%BD%8D%E6%96%B9%E5%BC%8F"><span class="nav-number">1.17.6.</span> <span class="nav-text">.navbar 的定位方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E9%AB%94%E6%87%89%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-number">1.17.7.</span> <span class="nav-text">整體應用技巧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%B0%8E%E8%A6%BD-Pagination"><span class="nav-number">1.18.</span> <span class="nav-text">分頁導覽 Pagination</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%88%E8%B7%B3%E6%8F%90%E7%A4%BA%E6%A1%86-Popovers"><span class="nav-number">1.19.</span> <span class="nav-text">彈跳提示框 Popovers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E5%BA%A6%E6%A2%9D-Progress"><span class="nav-number">1.20.</span> <span class="nav-text">進度條 Progress</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#progress-%E7%88%B6%E5%AE%B9%E5%99%A8"><span class="nav-number">1.20.1.</span> <span class="nav-text">.progress 父容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#progress-bar-%E5%AD%90%E9%A0%85%E7%9B%AE"><span class="nav-number">1.20.2.</span> <span class="nav-text">.progress-bar 子項目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%BE%E5%8B%95%E7%9B%A3%E6%8E%A7-Scrollspy"><span class="nav-number">1.21.</span> <span class="nav-text">滾動監控 Scrollspy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E6%87%89%E7%AB%AF-navs-or-list-group"><span class="nav-number">1.21.1.</span> <span class="nav-text">反應端 (navs or list-group)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%A3%E6%8E%A7%E7%AB%AF-content"><span class="nav-number">1.21.2.</span> <span class="nav-text">監控端 (content)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%89%E5%85%A5%E5%8B%95%E7%95%AB-Spinners"><span class="nav-number">1.22.</span> <span class="nav-text">載入動畫 Spinners</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%90%E5%8F%B8%E6%96%B9%E5%A1%8A-Toasts"><span class="nav-number">1.23.</span> <span class="nav-text">吐司方塊 Toasts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#toast-%E4%B8%BB%E5%AE%B9%E5%99%A8"><span class="nav-number">1.23.1.</span> <span class="nav-text">.toast 主容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#toast-%E7%89%A9%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.23.2.</span> <span class="nav-text">toast() 物件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E6%8F%90%E7%A4%BA-Tooltips"><span class="nav-number">1.24.</span> <span class="nav-text">工具提示 Tooltips</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">2.</span> <span class="nav-text">結語</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%83%E4%BB%B6-Components"><span class="nav-number">1.</span> <span class="nav-text">元件 Components</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AD%A6%E5%A0%B1-Alert"><span class="nav-number">1.1.</span> <span class="nav-text">警報 Alert</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E"><span class="nav-number">1.1.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.1.2.</span> <span class="nav-text">JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%99%E7%B1%A4-Badge"><span class="nav-number">1.2.</span> <span class="nav-text">標籤 Badge</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BA%B5%E5%8C%85%E5%B1%91-breadcrumb"><span class="nav-number">1.3.</span> <span class="nav-text">麵包屑 breadcrumb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%88%95-Buttons"><span class="nav-number">1.4.</span> <span class="nav-text">按鈕 Buttons</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-3"><span class="nav-number">1.4.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E9%88%95%E7%BE%A4%E7%B5%84-Button-Grounp"><span class="nav-number">1.5.</span> <span class="nav-text">按鈕群組 Button Grounp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-4"><span class="nav-number">1.5.1.</span> <span class="nav-text">公式說明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%A1%E7%89%87-Card"><span class="nav-number">1.6.</span> <span class="nav-text">卡片 Card</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AA%AA%E6%98%8E-5"><span class="nav-number">1.6.1.</span> <span class="nav-text">公式說明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%87%89%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">1.6.2.</span> <span class="nav-text">其他應用方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%AA%E6%92%AD-Carousel"><span class="nav-number">1.7.</span> <span class="nav-text">輪播 Carousel</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%88%E7%8F%BE"><span class="nav-number">1.7.1.</span> <span class="nav-text">基本呈現</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%B0%8E%E8%A6%BD%E9%8D%B5"><span class="nav-number">1.7.2.</span> <span class="nav-text">添加導覽鍵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%B0%8E%E8%A6%BD%E5%88%97"><span class="nav-number">1.7.3.</span> <span class="nav-text">添加導覽列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%AD%97%E5%B9%95%EF%BC%88%E5%9C%96%E7%89%87%E4%B8%8A%E5%B1%A4%E5%8D%80%EF%BC%89"><span class="nav-number">1.7.4.</span> <span class="nav-text">添加字幕（圖片上層區）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%B2%E9%9A%8E%E6%80%9D%E8%80%83"><span class="nav-number">1.7.5.</span> <span class="nav-text">進階思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%89%E5%A0%B4%E7%89%B9%E6%95%88"><span class="nav-number">1.7.6.</span> <span class="nav-text">轉場特效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E5%B1%AC%E6%80%A7%E8%88%87-JS-%E4%BA%8B%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.7.7.</span> <span class="nav-text">控制屬性與 JS 事件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%BA%E7%96%8A-Collapse"><span class="nav-number">1.8.</span> <span class="nav-text">摺疊 Collapse</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%A8%AD%E8%A8%88"><span class="nav-number">1.8.1.</span> <span class="nav-text">基本設計</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E9%A2%A8%E7%90%B4%E6%95%88%E6%9E%9C"><span class="nav-number">1.8.2.</span> <span class="nav-text">手風琴效果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E6%8B%89%E9%81%B8%E5%96%AE-Dropdowns"><span class="nav-number">1.9.</span> <span class="nav-text">下拉選單 Dropdowns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B5%90%E6%A7%8B"><span class="nav-number">1.9.1.</span> <span class="nav-text">基本結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%8D%80%E8%A8%AD%E8%A8%88"><span class="nav-number">1.9.2.</span> <span class="nav-text">選單區設計</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E5%96%AE-Forms"><span class="nav-number">1.10.</span> <span class="nav-text">表單 Forms</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B5%90%E6%A7%8B-1"><span class="nav-number">1.10.1.</span> <span class="nav-text">基本結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E5%96%AE%E9%A9%97%E8%AD%89%E6%95%88%E6%9E%9C"><span class="nav-number">1.10.2.</span> <span class="nav-text">表單驗證效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E5%A4%96%E8%A7%80"><span class="nav-number">1.10.3.</span> <span class="nav-text">自訂外觀</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#radio-amp-checkbox"><span class="nav-number">1.10.3.1.</span> <span class="nav-text">radio &amp; checkbox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#select"><span class="nav-number">1.10.3.2.</span> <span class="nav-text">select</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#range"><span class="nav-number">1.10.3.3.</span> <span class="nav-text">range</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#file"><span class="nav-number">1.10.3.4.</span> <span class="nav-text">file</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%B8%E5%85%A5%E6%A1%86%E7%BE%A4%E7%B5%84%E5%8C%96-Input-Group"><span class="nav-number">1.11.</span> <span class="nav-text">輸入框群組化 Input Group</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%A3%E5%91%8A%E5%B1%8F%E5%B9%95-Jumbotron"><span class="nav-number">1.12.</span> <span class="nav-text">廣告屏幕 Jumbotron</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E7%BE%A4%E7%B5%84-List-Group"><span class="nav-number">1.13.</span> <span class="nav-text">列表群組 List Group</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tabs-%E6%B8%85%E5%96%AE%E6%A8%A1%E5%BC%8F-%EF%BC%88%E9%85%8D%E5%90%88-JS"><span class="nav-number">1.13.1.</span> <span class="nav-text">tabs 清單模式 （配合 JS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%AE%B9%E5%99%A8"><span class="nav-number">1.13.1.1.</span> <span class="nav-text">選單容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%AE%B9%E5%99%A8"><span class="nav-number">1.13.1.2.</span> <span class="nav-text">分頁容器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AA%92%E9%AB%94%E7%89%A9%E4%BB%B6-Media-Object"><span class="nav-number">1.14.</span> <span class="nav-text">媒體物件 Media Object</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%92%E5%8B%95%E8%A6%96%E7%AA%97-Modal"><span class="nav-number">1.15.</span> <span class="nav-text">互動視窗 Modal</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%B8%E7%99%BC%E6%8C%89%E9%88%95%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.1.</span> <span class="nav-text">觸發按鈕條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A7%E5%AE%B9%E8%A6%96%E7%AA%97%E7%B5%90%E6%A7%8B"><span class="nav-number">1.15.2.</span> <span class="nav-text">內容視窗結構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E9%96%89-modal-%E6%96%B9%E5%BC%8F"><span class="nav-number">1.15.3.</span> <span class="nav-text">關閉 modal 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.4.</span> <span class="nav-text">.modal 的效果條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-dialog-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.5.</span> <span class="nav-text">.modal-dialog 的效果條件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#modal-content-%E7%9A%84%E6%95%88%E6%9E%9C%E6%A2%9D%E4%BB%B6"><span class="nav-number">1.15.6.</span> <span class="nav-text">.modal-content 的效果條件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8E%E8%A6%BD-Navs"><span class="nav-number">1.16.</span> <span class="nav-text">導覽 Navs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#flex-%E7%9A%84%E9%81%8B%E7%94%A8"><span class="nav-number">1.16.1.</span> <span class="nav-text">flex 的運用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tabs-%E6%B8%85%E5%96%AE%E6%A8%A1%E5%BC%8F-%EF%BC%88%E9%85%8D%E5%90%88-JS-1"><span class="nav-number">1.16.2.</span> <span class="nav-text">tabs 清單模式 （配合 JS)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%AE%B9%E5%99%A8-1"><span class="nav-number">1.16.2.1.</span> <span class="nav-text">選單容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%AE%B9%E5%99%A8-1"><span class="nav-number">1.16.2.2.</span> <span class="nav-text">分頁容器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8E%E8%A6%BD%E5%88%97-Navbar"><span class="nav-number">1.17.</span> <span class="nav-text">導覽列 Navbar</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E5%AE%B9%E5%99%A8-nav-navbar"><span class="nav-number">1.17.1.</span> <span class="nav-text">主容器 nav.navbar</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LOGO-%E5%8D%80-navbar-brand"><span class="nav-number">1.17.2.</span> <span class="nav-text">LOGO 區 .navbar-brand</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%A2%E5%A0%A1%E6%8C%89%E9%88%95-button-navbar-toggler"><span class="nav-number">1.17.3.</span> <span class="nav-text">漢堡按鈕 button.navbar-toggler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E5%96%AE%E5%8D%80-navbar-collapse"><span class="nav-number">1.17.4.</span> <span class="nav-text">選單區 .navbar-collapse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%85%83%E4%BB%B6"><span class="nav-number">1.17.5.</span> <span class="nav-text">其他元件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#navbar-%E7%9A%84%E5%AE%9A%E4%BD%8D%E6%96%B9%E5%BC%8F"><span class="nav-number">1.17.6.</span> <span class="nav-text">.navbar 的定位方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E9%AB%94%E6%87%89%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-number">1.17.7.</span> <span class="nav-text">整體應用技巧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%A0%81%E5%B0%8E%E8%A6%BD-Pagination"><span class="nav-number">1.18.</span> <span class="nav-text">分頁導覽 Pagination</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%88%E8%B7%B3%E6%8F%90%E7%A4%BA%E6%A1%86-Popovers"><span class="nav-number">1.19.</span> <span class="nav-text">彈跳提示框 Popovers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%B2%E5%BA%A6%E6%A2%9D-Progress"><span class="nav-number">1.20.</span> <span class="nav-text">進度條 Progress</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#progress-%E7%88%B6%E5%AE%B9%E5%99%A8"><span class="nav-number">1.20.1.</span> <span class="nav-text">.progress 父容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#progress-bar-%E5%AD%90%E9%A0%85%E7%9B%AE"><span class="nav-number">1.20.2.</span> <span class="nav-text">.progress-bar 子項目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%BE%E5%8B%95%E7%9B%A3%E6%8E%A7-Scrollspy"><span class="nav-number">1.21.</span> <span class="nav-text">滾動監控 Scrollspy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E6%87%89%E7%AB%AF-navs-or-list-group"><span class="nav-number">1.21.1.</span> <span class="nav-text">反應端 (navs or list-group)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%A3%E6%8E%A7%E7%AB%AF-content"><span class="nav-number">1.21.2.</span> <span class="nav-text">監控端 (content)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BC%89%E5%85%A5%E5%8B%95%E7%95%AB-Spinners"><span class="nav-number">1.22.</span> <span class="nav-text">載入動畫 Spinners</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%99%E8%A3%A1%E5%B7%B2%E7%B6%93%E6%8F%90%E4%BE%9B%E4%B8%80%E4%BA%9B-HTML-CSS-animation-%E7%9A%84%E5%8B%95%E6%85%8B%E5%9C%96%E7%A4%BA%EF%BC%8C%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%B8%8C%E6%9C%9B%E6%8B%BF%E4%BE%86%E7%95%B6%E8%B3%87%E6%96%99%E8%99%95%E7%90%86%E7%9A%84%E9%81%8E%E6%B8%A1%E6%99%82%E9%96%93%EF%BC%8C%E4%BD%A0%E9%9C%80%E8%A6%81%E8%87%AA%E5%B7%B1%E5%8B%95%E6%89%8B%E5%81%9A%E5%87%BA-JS-%E8%85%B3%E6%9C%AC%E6%8E%A7%E5%88%B6%E9%80%99%E4%BA%9B-DOM-%E8%88%87%E9%9A%B1%E8%94%BD%E5%9C%96%E7%A4%BA%E4%B9%8B%E6%99%82%E6%A9%9F%E3%80%821-%E6%8F%90%E4%BE%9B%E6%97%8B%E8%BD%89%E6%88%96%E6%BC%B8%E8%AE%8A%E6%A8%A1%E5%BC%8F%EF%BC%8C%E5%88%86%E5%88%A5%E6%98%AF-spinner-border-grow-%EF%BC%8C%E5%8F%A6%E6%B7%BB%E5%8A%A0-text-color-%E7%8E%A9%E8%89%B2%E3%80%822-%E6%8F%90%E4%BE%9B%E5%B0%BA%E5%AF%B8%E8%AA%BF%E6%95%B4%EF%BC%8C%E5%8F%A6%E6%B7%BB%E5%8A%A0-spinner-border-grow-lg-sm-%E3%80%823-%E6%9C%AC%E8%B3%AA%E7%82%BA-inline-block%EF%BC%8C%E6%89%80%E4%BB%A5%E5%8F%AF%E4%BB%A5%E7%94%A8-flex-text-align-float-margin-%E9%80%99%E9%A1%9E%E6%8A%80%E5%B7%A7%E5%8E%BB%E8%99%95%E7%90%86%E6%8E%92%E7%89%88%EF%BC%8C%E4%B9%9F%E5%8F%AF%E6%95%B4%E5%90%88%E5%88%B0%E4%BB%BB%E4%BD%95%E7%9A%84%E5%85%83%E7%B4%A0%E6%88%96%E5%85%83%E4%BB%B6%E5%85%A7%E3%80%82"><span class="nav-number">1.23.</span> <span class="nav-text">這裡已經提供一些 HTML + CSS animation 的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出 JS 腳本控制這些 DOM 與隱蔽圖示之時機。&lt;div class&#x3D;&quot;spinner-border text-danger&quot;&gt;&lt;&#x2F;div&gt;&lt;div class&#x3D;&quot;spinner-grow text-danger&quot;&gt;&lt;&#x2F;div&gt;1. 提供旋轉或漸變模式，分別是 .spinner-{border|grow} ，另添加 .text-{color} 玩色。2. 提供尺寸調整，另添加.spinner-{border|grow}-{lg|sm}。3. 本質為 inline-block，所以可以用 flex, text-align, float, margin 這類技巧去處理排版，也可整合到任何的元素或元件內。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%90%E5%8F%B8%E6%96%B9%E5%A1%8A-Toasts"><span class="nav-number">1.24.</span> <span class="nav-text">吐司方塊 Toasts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#toast-%E4%B8%BB%E5%AE%B9%E5%99%A8"><span class="nav-number">1.24.1.</span> <span class="nav-text">.toast 主容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#toast-%E7%89%A9%E4%BB%B6%E6%93%8D%E4%BD%9C"><span class="nav-number">1.24.2.</span> <span class="nav-text">toast() 物件操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E6%8F%90%E7%A4%BA-Tooltips"><span class="nav-number">1.25.</span> <span class="nav-text">工具提示 Tooltips</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AA%9E"><span class="nav-number">2.</span> <span class="nav-text">結語</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -187,60 +179,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -258,11 +239,16 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] Bootstrap4 教學（三）：元件 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -279,13 +265,13 @@
 
       <time title="創建時間 ×2020-03-30 17:15:31" itemprop="dateCreated datePublished" datetime="2020-03-30T17:15:31+08:00">2020-03-30</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2022-02-27 23:35:02" itemprop="dateModified" datetime="2022-02-27T23:35:02+08:00">2022-02-27</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -314,14 +300,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>60220 <i>words</i></span>
+      <span>14,737</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>109 <i>mins</i></span>
+      <span>00:26:48</span>
     </span>
 </div>
 
@@ -331,8 +317,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p>本章節的 Components 元件算是資訊量很大的單元，但也不用特別去背，只要知道有哪些功能可以選（複製貼上大法）加以利用去點綴你的網頁即可。</p>
+    <div class="post-body" itemprop="articleBody"><p>本章節的 Components 元件算是資訊量很大的單元，但也不用特別去背，只要知道有哪些功能可以選（複製貼上大法）加以利用去點綴你的網頁即可。</p>
 <span id="more"></span>
 
 <hr>
@@ -347,7 +332,7 @@
 <blockquote>
 <p> <code>role=&quot;alert&quot;</code> 屬於 html5 的語意屬性（讓網頁受辨識與無障礙），代表這是一個向使用者傳遞警報的文字區塊，非必要可以不用填寫。</p>
 </blockquote>
-<h3 id="公式說明"><a href="#公式說明" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.alert</span> <span class="comment">/* 產生一個滿寬的警報型文字框 */</span></span><br><span class="line"><span class="selector-class">.alert-</span>&#123;<span class="attribute">color</span>&#125;   <span class="comment">/* 填上粉系的背景色，你可以反向當作背景色公式通用在其他領域上 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.alert-link /* 自動在對應的背景色上產生適合的字色，同時加粗體讓連結能明顯於文字上 */</span><br><span class="line">.alert-heading /* 設定 color: inherit 沒有意義，官方說明有需要可以自訂參數效果 */</span><br></pre></td></tr></table></figure>
+<h3 id="公式說明"><a href="#公式說明" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.alert</span> <span class="comment">/* 產生一個滿寬的警報型文字框 */</span></span><br><span class="line"><span class="selector-class">.alert-</span>&#123;<span class="attribute">color</span>&#125;   <span class="comment">/* 填上粉系的背景色，你可以反向當作背景色公式通用在其他領域上 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.alert-link <span class="comment">/* 自動在對應的背景色上產生適合的字色，同時加粗體讓連結能明顯於文字上 */</span></span><br><span class="line">.alert-heading <span class="comment">/* 設定 color: inherit 沒有意義，官方說明有需要可以自訂參數效果 */</span></span><br></pre></td></tr></table></figure>
 
 <p>Alert 還有動態關閉的使用效果（反之觸發效果就是你所會的 JS 建立 DOM 而已），範例當中提供了關閉按鈕使觸發對應的 DOM 進行關閉。Bootstrap 利用自訂屬性<code>data-dismiss=&quot;alert&quot;</code>觸發 alert 事件</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/alerts/#dismissing</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-warning alert-dismissible fade show&quot;</span>&gt;</span></span><br><span class="line">  You should check in on some of those fields below.You should check in on some of those fields below.You should check in on some of those fields below.</span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;close&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;alert&quot;</span> <span class="attr">aria-label</span>=<span class="string">&quot;Close&quot;</span>&gt;</span>×<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -358,17 +343,17 @@
 <ol>
 <li>偵測到某個 JQ 對象觸發 alert close 按鈕之事件</li>
 </ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-warning alert-dismissible fade show&quot;</span>&gt;</span></span><br><span class="line">  alert first <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;close&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;alert&quot;</span>&gt;</span>×<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-warning alert-dismissible fade show&quot;</span>&gt;</span></span><br><span class="line">  alert second <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;close&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;alert&quot;</span>&gt;</span>×<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  <span class="comment">//close 觸發事件的函式用法</span></span></span><br><span class="line"><span class="javascript">  $(<span class="string">&quot;.show&quot;</span>).on(<span class="string">&quot;closed.bs.alert&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">&quot;觸發 JS 動作時機為：close 結束後&quot;</span>);</span></span><br><span class="line"><span class="javascript">  &#125;);</span></span><br><span class="line"><span class="javascript">  $(<span class="string">&quot;.show&quot;</span>).on(<span class="string">&quot;close.bs.alert&quot;</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">&quot;觸發 JS 動作時機為：close 發生當下&quot;</span>);</span></span><br><span class="line"><span class="javascript">  &#125;);</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-warning alert-dismissible fade show&quot;</span>&gt;</span></span><br><span class="line">  alert first <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;close&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;alert&quot;</span>&gt;</span>×<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;alert alert-warning alert-dismissible fade show&quot;</span>&gt;</span></span><br><span class="line">  alert second <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;close&quot;</span> <span class="attr">data-dismiss</span>=<span class="string">&quot;alert&quot;</span>&gt;</span>×<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="comment">//close 觸發事件的函式用法</span></span></span><br><span class="line"><span class="language-javascript">  $(<span class="string">&quot;.show&quot;</span>).<span class="title function_">on</span>(<span class="string">&quot;closed.bs.alert&quot;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;觸發 JS 動作時機為：close 結束後&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">  &#125;);</span></span><br><span class="line"><span class="language-javascript">  $(<span class="string">&quot;.show&quot;</span>).<span class="title function_">on</span>(<span class="string">&quot;close.bs.alert&quot;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;觸發 JS 動作時機為：close 發生當下&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">  &#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <ol start="2">
 <li>使用 JS 指令直接對某 JQ 對象的<code>[data-dismiss]</code>進行 alert close 之動作</li>
 </ol>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */</span></span><br><span class="line">$(<span class="string">&#x27;.show&#x27;</span>).alert(<span class="string">&#x27;close&#x27;</span>); <span class="comment">//選擇器填什麼都可以只要能向上找到。alert 對象</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */</span></span><br><span class="line">$(<span class="string">&#x27;.show&#x27;</span>).<span class="title function_">alert</span>(<span class="string">&#x27;close&#x27;</span>); <span class="comment">//選擇器填什麼都可以只要能向上找到。alert 對象</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="標籤-Badge"><a href="#標籤-Badge" class="headerlink" title="標籤 Badge"></a>標籤 Badge</h2><p>標籤指 inline-block 模式的文字含背景色含圓角，可以輕易套用在任何標籤之文字後面做為標籤用途。如果套用在有 hover 或 fouce 的元素則背色會自動變化對應。</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/badge/#example</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Example heading <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-secondary&quot;</span>&gt;</span>New<span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span>&gt;</span></span><br><span class="line">  Notifications <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-light badge-pill&quot;</span>&gt;</span>4<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span> <span class="attr">class</span>=<span class="string">&quot;badge badge-primary&quot;</span>&gt;</span>Primary<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="公式說明-1"><a href="#公式說明-1" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.badge</span> <span class="comment">/* 變成 inline-block */</span></span><br><span class="line"><span class="selector-class">.badge-</span>&#123;<span class="attribute">color</span>&#125;   <span class="comment">/* 替換底色字色 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.badge-pill /* 框線為膠囊形狀 */</span><br></pre></td></tr></table></figure>
+<h3 id="公式說明-1"><a href="#公式說明-1" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.badge</span> <span class="comment">/* 變成 inline-block */</span></span><br><span class="line"><span class="selector-class">.badge-</span>&#123;<span class="attribute">color</span>&#125;   <span class="comment">/* 替換底色字色 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.badge-pill <span class="comment">/* 框線為膠囊形狀 */</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="麵包屑-breadcrumb"><a href="#麵包屑-breadcrumb" class="headerlink" title="麵包屑 breadcrumb"></a>麵包屑 breadcrumb</h2><p>做為網站的站點紀錄用途，會自動在 li 之間判斷塞入 <kbd>/</kbd> 分隔符號。</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/breadcrumb/#example</span></figcaption><table><tr><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">nav</span> <span class="attr">aria-label</span>=<span class="string">&quot;breadcrumb&quot;</span>&gt;</span>  <span class="comment">&lt;!--這層主要是網頁語意用，告知為麵包屑，可省略 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ol</span> <span class="attr">class</span>=<span class="string">&quot;breadcrumb&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;breadcrumb-item&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Home<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;breadcrumb-item&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Library<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;breadcrumb-item active&quot;</span> <span class="attr">aria-current</span>=<span class="string">&quot;page&quot;</span>&gt;</span>Data<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ol</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -378,9 +363,9 @@
 <p><code>aria-current=&quot;page&quot;</code>為語意用途，亦為告知當前所在頁面可省略。</p>
 </blockquote>
 <h2 id="按鈕-Buttons"><a href="#按鈕-Buttons" class="headerlink" title="按鈕 Buttons"></a>按鈕 Buttons</h2><p>算是 Bootstrap 最有識別性的元件了，拿來美化 button 標籤也能用任何元素包裝成按鈕型態，且具有 hover 效果。</p>
-<h3 id="公式說明-3"><a href="#公式說明-3" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.btn</span> <span class="comment">/* 外觀變化為按鈕型態 */</span></span><br><span class="line"><span class="selector-class">.btn-</span>&#123;<span class="attribute">color</span>&#125; <span class="comment">/* 填上底色 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark, link</span><br><span class="line"></span><br><span class="line">.btn-outline-&#123;color&#125; <span class="comment">/* 另一種外框填色模式，背景為摟空 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.btn-lg /* 大按鈕 */</span><br><span class="line">.btn-sm /* 小按鈕 */</span><br><span class="line">.btn-block /* 為 block 型態滿寬 */</span><br><span class="line"></span><br><span class="line">.active /* 點選中的效果，顏色較深 */</span><br><span class="line">.disabled /* 取消的效果，顏色較暗且沒有 hover 反應 */</span><br></pre></td></tr></table></figure>
+<h3 id="公式說明-3"><a href="#公式說明-3" class="headerlink" title="公式說明"></a>公式說明</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.btn</span> <span class="comment">/* 外觀變化為按鈕型態 */</span></span><br><span class="line"><span class="selector-class">.btn-</span>&#123;<span class="attribute">color</span>&#125; <span class="comment">/* 填上底色 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark, link</span><br><span class="line"></span><br><span class="line">.btn-outline-&#123;<span class="attribute">color</span>&#125; <span class="comment">/* 另一種外框填色模式，背景為摟空 */</span></span><br><span class="line"><span class="attribute">color</span>: primary, secondary, success, danger, warning, info, light, dark</span><br><span class="line"></span><br><span class="line">.btn-lg <span class="comment">/* 大按鈕 */</span></span><br><span class="line">.btn-sm <span class="comment">/* 小按鈕 */</span></span><br><span class="line">.btn-block <span class="comment">/* 為 block 型態滿寬 */</span></span><br><span class="line"></span><br><span class="line">.active <span class="comment">/* 點選中的效果，顏色較深 */</span></span><br><span class="line">.disabled <span class="comment">/* 取消的效果，顏色較暗且沒有 hover 反應 */</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="JS-事件操作-1"><a href="#JS-事件操作-1" class="headerlink" title="JS 事件操作"></a>JS 事件操作</h3><p>透過指定的屬性添加，能讓按鈕產生 JS 互動對應<code>.active</code>反應（顏色變化），你可以拿來進行控制切換 (ON/OFF) 效果，適用表單類型的元素。</p>
+<h3 id="JS-事件操作-1"><a href="#JS-事件操作-1" class="headerlink" title="JS 事件操作"></a>JS 事件操作</h3><p>透過指定的屬性添加，能讓按鈕產生 JS 互動對應<code>.active</code>反應（顏色變化），你可以拿來進行控制切換 (ON&#x2F;OFF) 效果，適用表單類型的元素。</p>
 <p><strong>切換狀態：</strong><br>添加屬性<code>data-toggle=&quot;button&quot;</code>就能進行切換效果，若初始化為作用中效果，你需要先寫好<code>.active</code>與語意屬性<code>aria-pressed=&quot;true&quot;</code>。</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/buttons/#toggle-states</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary active&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;button&quot;</span> <span class="attr">aria-pressed</span>=<span class="string">&quot;true&quot;</span>&gt;</span>Single toggle<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -407,16 +392,16 @@
 
 <h3 id="其他應用方式"><a href="#其他應用方式" class="headerlink" title="其他應用方式"></a>其他應用方式</h3><ol>
 <li><code>div.card</code> 內沒有任何上列 class 公式也是可以呈現的，將變成框線卡片仍可包任何 BS 元件或 HTML 元素。</li>
-<li>可將 Navs 元件整合到 <code>.card-header</code> 內，只要<code>ul.nav+navtabs</code>的地方宣告<code>.card-header-tabs</code>即可融合一起。另一個效果則是<code>.card-header-pills</code>。<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#navigation">https://getbootstrap.com/docs/4.4/components/card/#navigation</a>
+<li>可將 Navs 元件整合到 <code>.card-header</code> 內，只要<code>ul.nav+navtabs</code>的地方宣告<code>.card-header-tabs</code>即可融合一起。另一個效果則是<code>.card-header-pills</code>。  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#navigation">https://getbootstrap.com/docs/4.4/components/card/#navigation</a>
   </p>
 </div></li>
-<li>整合 row 跟 col 觀念，你可以玩出圖片區域在左，文字在右的垂直效果。<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#horizontal">https://getbootstrap.com/docs/4.4/components/card/#horizontal</a>
+<li>整合 row 跟 col 觀念，你可以玩出圖片區域在左，文字在右的垂直效果。  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#horizontal">https://getbootstrap.com/docs/4.4/components/card/#horizontal</a>
   </p>
 </div></li>
-<li><code>.card</code>處搭配 <code>.bg-&#123;color&#125;</code>, <code>.text-&#123;color&#125;</code>, <code>.border-&#123;color&#125;</code> 能輕鬆玩色。<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#card-styles">https://getbootstrap.com/docs/4.4/components/card/#card-styles</a>
+<li><code>.card</code>處搭配 <code>.bg-&#123;color&#125;</code>, <code>.text-&#123;color&#125;</code>, <code>.border-&#123;color&#125;</code> 能輕鬆玩色。  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#card-styles">https://getbootstrap.com/docs/4.4/components/card/#card-styles</a>
   </p>
 </div></li>
-<li>卡片可以群組化（緊密一排且高度會切平，原理為 flexbox)，只要這些<code>div.card</code>外層多用一個父元素<code>div.card-group</code>包住。另種效果是<code>div.card-deck</code>有間格，以及<code>div.card-colums</code>瀑布排列。<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#card-layout">https://getbootstrap.com/docs/4.4/components/card/#card-layout</a>
+<li>卡片可以群組化（緊密一排且高度會切平，原理為 flexbox)，只要這些<code>div.card</code>外層多用一個父元素<code>div.card-group</code>包住。另種效果是<code>div.card-deck</code>有間格，以及<code>div.card-colums</code>瀑布排列。  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/card/#card-layout">https://getbootstrap.com/docs/4.4/components/card/#card-layout</a>
   </p>
 </div></li>
 </ol>
@@ -476,10 +461,10 @@
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--自動播放--&gt;</span></span><br><span class="line">div.carousel.side[data-ride=&#123;value&#125;]</span><br><span class="line">value=false(default), carousel</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--keyboard 鍵盤控制：BS 小 BUG 就是要先曾觸發過按鈕--&gt;</span></span><br><span class="line">div.carousel.side[data-keyboard=&#123;value&#125;]</span><br><span class="line">value=true(default), false</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--停留時間：對 carousel 指定則 All 對象有效，對 item 指定為只有該 One 對象--&gt;</span></span><br><span class="line">div.carousel(or carousel-item).side[data-interval=&#123;value&#125;]  </span><br><span class="line">value=5000(default), any number, false（持續停留）</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--觸發暫停播放：電腦滑鼠移入移出或手持觸碰時--&gt;</span></span><br><span class="line">div.carousel.side[data-pause=&#123;value&#125;]</span><br><span class="line">value=hover(default), false（不暫停）</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--循環播放--&gt;</span></span><br><span class="line">div.carousel.side[data-wrap=&#123;value&#125;]</span><br><span class="line">value=true(default), false</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--觸控拖曳控制--&gt;</span></span><br><span class="line">div.carousel.side[data-touch=&#123;value&#125;]</span><br><span class="line">value=true(default), false</span><br></pre></td></tr></table></figure>
 
 <p>或者改由 JS 的 JSON 參數指定法，將對象的 <code>.carusel</code> 初始化（同對應前面 <code>[data-name]</code> 之名稱）：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).carousel(&#123;</span><br><span class="line">  <span class="attr">interval</span>:<span class="number">500</span>,</span><br><span class="line">  <span class="attr">keyboard</span>:<span class="literal">false</span>,</span><br><span class="line">  <span class="attr">pause</span>:hover</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).<span class="title function_">carousel</span>(&#123;</span><br><span class="line">  <span class="attr">interval</span>:<span class="number">500</span>,</span><br><span class="line">  <span class="attr">keyboard</span>:<span class="literal">false</span>,</span><br><span class="line">  <span class="attr">pause</span>:hover</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 
 <p>還有一些 JS 的指令控制，舉幾個例子為</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).carousel(<span class="string">&#x27;prev&#x27;</span>);</span><br><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).carousel(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).<span class="title function_">carousel</span>(<span class="string">&#x27;prev&#x27;</span>);</span><br><span class="line">$(<span class="string">&#x27;.carousel&#x27;</span>).<span class="title function_">carousel</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>後續 JS 部分因實用性考量，之後的元件開始將不再特別介紹 Bootstrap 有提供開發者 JS 觸發事件反應與相關筆記說明，大多都是如何透過 JS 指令形成互動事件，有需求者自行前往官方元件文件學習理解。</p>
@@ -523,15 +508,17 @@
 <li><p>透過按鈕（可以是 button 或 a:link 但建議使用<code>.btn</code> 有外觀）上的屬性 <code>data-toggle=&quot;dropdown&quot;</code> 進行觸發事件，會對同層位置的 <code>.dropdown-menu</code> 控制顯現。</p>
 </li>
 <li><p>對按鈕宣告 <code>.dropdown-toggle</code> 會對本身內容 ::after 後面呈現一個倒三角提示效果。</p>
-<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#single-button</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary dropdown-toggle&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">    Dropdown button</span><br><span class="line">  <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Another action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Something else here<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#single-button</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary dropdown-toggle&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">    Dropdown button</span><br><span class="line">  <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Another action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Something else here<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
 <li><p>你可以將按鈕做成 <code>.btn-group</code> ，對有反應的下拉選單做<strong>分割按鈕設計</strong>。其中 <code>.dropdown-toggle-split</code> 是為了修正間格優化。</p>
 </li>
 <li><p><code>.btn-group</code>可以拿來取代<code>.dropdown</code>，反正都有 relative 效果，有沒有組合其實沒差。</p>
-<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#split-button</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;btn-group&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger dropdown-toggle dropdown-toggle-split&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Another action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Something else here<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#split-button</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;btn-group&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger dropdown-toggle dropdown-toggle-split&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;dropdown&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Another action<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-item&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>Something else here<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
 <li><p>可利用 <code>.btn-lg</code> , <code>.btn-sm</code> 這類的按鈕尺寸組合下去，設計不同尺寸。</p>
 </li>
 <li><p>欲更改箭頭方向，對主容器 <code>.btn-group</code> 或 <code>.dropdown</code> 處添加 <code>.dropup</code> , <code>.dropright</code>, <code>.dropleft</code>。</p>
-<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-alignment">https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-alignment</a></p>
+  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-alignment">https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-alignment</a></p>
 </div></li>
 </ol>
 <h3 id="選單區設計"><a href="#選單區設計" class="headerlink" title="選單區設計"></a>選單區設計</h3><p>對於下拉後所產生的 Menu 內部區域也很彈性，規則如下：</p>
@@ -553,11 +540,12 @@
 <li><p>同上，可添加分隔線，例如 <code>&lt;div class=&quot;dropdown-divider&quot;&gt;&lt;/div&gt;</code> 。</p>
 </li>
 <li><p>同上，可添加喜歡的 HTML 元素，像是表單元件或添加一段 HTML 代碼，注意需要自訂上限寬度便是（預設 <code>.dropdown-menu</code> 只有 <code>min-width:10rem</code> 。</p>
-<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-content</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu p-4 text-muted&quot;</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 200px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Some example text that&#x27;s free-flowing within the dropdown menu.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;mb-0&quot;</span>&gt;</span>And this is more example text.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
-<li><p>欲調整下拉的 menu 區域定位點，在按鈕處添加屬性像是 <code>data-offset=&quot;10,20&quot;</code> 代表 x=10,y=20 偏移。</p>
+<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/dropdowns/#menu-content</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;dropdown-menu p-4 text-muted&quot;</span> <span class="attr">style</span>=<span class="string">&quot;max-width: 200px;&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Some example text that&#x27;s free-flowing within the dropdown menu.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">&quot;mb-0&quot;</span>&gt;</span>And this is more example text.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>欲調整下拉的 menu 區域定位點，在按鈕處添加屬性像是 <code>data-offset=&quot;10,20&quot;</code> 代表 x&#x3D;10,y&#x3D;20 偏移。</p>
 </li>
 <li><p>同上，在按鈕處添加屬性<code>data-reference=&quot;&#123;parent|toggle&#125;&quot;</code>，parent 代表直接對齊父容器 (btn-group)，toggle 代表對齊<code>data-toggle</code>後面那格。</p>
-<div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/dropdowns/#dropdown-options">https://getbootstrap.com/docs/4.4/components/dropdowns/#dropdown-options</a></p>
+  <div class="note default"><p><a target="_blank" rel="noopener" href="https://getbootstrap.com/docs/4.4/components/dropdowns/#dropdown-options">https://getbootstrap.com/docs/4.4/components/dropdowns/#dropdown-options</a></p>
 </div></li>
 </ol>
 <h2 id="表單-Forms"><a href="#表單-Forms" class="headerlink" title="表單 Forms"></a>表單 Forms</h2><p>也是識別與實用性很高的元件，也是屬於比較開始複雜且固定的 class 公式，開始可以不用去理解 class 應用有無選項，絕大多數的人就是複製貼上直接改用即可。</p>
@@ -568,8 +556,8 @@
 <li>label 是 HTML5 標準定義，提供做為某 input 標籤的定義標籤，透過 <code>label[for=id]</code> 與 <code>input#id</code> 形成關聯連動，非必要的用法，好處是當滑鼠點選 label 時等同 focus 該 input。</li>
 <li>屬性 <code>input[placeholder=]</code> 為提示用途，作用出現在輸入框內做提示。</li>
 <li>如果要大片禁用，可以添加容器並指定屬性為 <code>fieldset[disabled]</code> (fieldset 算是表單中的語意標籤，代表相關資訊的組合）。</li>
-<li> 要是某 checkbox|raido 沒有 label 會影響外觀（ absolute 找不到貼齊處），應調整 <code>input:&#123;checkbox|radio&#125;.form-check-input.position-static</code> 修正。</li>
-<li> 善用網格 grid 觀念玩出更多排版效果，可利用<code>.col-*</code>去控制寬度分配，或使用<code>.col-auto</code>自動依內容偵測決定寬度。</li>
+<li>要是某 checkbox|raido 沒有 label 會影響外觀（ absolute 找不到貼齊處），應調整 <code>input:&#123;checkbox|radio&#125;.form-check-input.position-static</code> 修正。</li>
+<li>善用網格 grid 觀念玩出更多排版效果，可利用<code>.col-*</code>去控制寬度分配，或使用<code>.col-auto</code>自動依內容偵測決定寬度。</li>
 </ol>
 <p><strong>單標籤外觀</strong></p>
 <table>
@@ -678,13 +666,14 @@
 <li><p>Bootstrap 的所有驗證效果是寫在<code>form.was-validated</code>，需要透過手動 JS 方式去控制添加移除，達到驗證結果的顯示隱藏。包含 AJAX 這種提交完需取消檢查，也需自行透過 JS 移除 <code>.was-validated</code> 之 Class 名稱。</p>
 </li>
 <li><p>想要單獨操作可改 JS 控制單筆 <code>input.&#123;is-valid|is-invalid&#125;</code> 來觸發指定對象外觀，就不用在表單上填入 <code>.was-validated</code> 做全部控制。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&quot;#validationCustom01&quot;</span>).addClass(<span class="string">&quot;is-valid&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&quot;#validationCustom01&quot;</span>).<span class="title function_">addClass</span>(<span class="string">&quot;is-valid&quot;</span>);</span><br></pre></td></tr></table></figure></li>
 <li><p>驗證的 (input, textarea, select) 所發出綠色或紅色提示框，是 Bootstrap 採用偽元素：invalid &amp; :valid 所固定編寫的 CSS。</p>
 </li>
 <li><p>接續上話題，偽元素：invalid &amp; :valid 根據 HTML5 檢查合理性作業下 (required 與 type 屬性）所提供的外觀 CSS 處理。</p>
 </li>
 <li><p>總結來說，你需要自行<strong>編寫 JS 腳本來控制</strong>遞交表單時進行判斷欄位滿足條件，若不成立時清除遞交動作指令並添加 <code>form.was-validated</code> ：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> demoform = <span class="built_in">document</span>.getElementsByClassName(<span class="string">&#x27;needs-validation&#x27;</span>)[<span class="number">0</span>];</span><br><span class="line">demoform.addEventListener(<span class="string">&#x27;submit&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">  <span class="comment">//檢查 demoform 是否有檢核與驗證滿足條件。</span></span><br><span class="line">  <span class="keyword">if</span> (demoform.checkValidity() === <span class="literal">false</span>) &#123; <span class="comment">// false 代表沒有通過檢核，瀏覽器會對 demoform 觸發一個可取消的 invalid 事件。</span></span><br><span class="line">    event.preventDefault();  <span class="comment">// 方法一：取消事件的預設行為</span></span><br><span class="line">    <span class="comment">// event.stopPropagation(); //　方法二：阻止當前事件繼續進行捕捉（capturing）及冒泡（bubbling）階段的傳遞。</span></span><br><span class="line">    demoform.classList.add(<span class="string">&#x27;was-validated&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> demoform = <span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&#x27;needs-validation&#x27;</span>)[<span class="number">0</span>];</span><br><span class="line">demoform.<span class="title function_">addEventListener</span>(<span class="string">&#x27;submit&#x27;</span>, <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">  <span class="comment">//檢查 demoform 是否有檢核與驗證滿足條件。</span></span><br><span class="line">  <span class="keyword">if</span> (demoform.<span class="title function_">checkValidity</span>() === <span class="literal">false</span>) &#123; <span class="comment">// false 代表沒有通過檢核，瀏覽器會對 demoform 觸發一個可取消的 invalid 事件。</span></span><br><span class="line">    event.<span class="title function_">preventDefault</span>();  <span class="comment">// 方法一：取消事件的預設行為</span></span><br><span class="line">    <span class="comment">// event.stopPropagation(); //　方法二：阻止當前事件繼續進行捕捉（capturing）及冒泡（bubbling）階段的傳遞。</span></span><br><span class="line">    demoform.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;was-validated&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>觸發時如果額外需要提示字（自訂），可以另添加 <code>div.&#123;valid-feedback|invalid-feedback&#125;</code> 作為當下合理與不合理的提示文字，這個提示字只會在 <code>form.was-validated</code> 下被看見。</p>
 </li>
 <li><p>同上，另一種的提示泡泡效果為<code>div.&#123;valid-tooltip|invalid-tooltip&#125;</code>，需確保父容器有 <code>position:relative</code> 可參考定位（如果是使用 .col 來排版就已有此參數）。</p>
@@ -703,9 +692,11 @@
 <blockquote>
 <p>checkbox 有特別的偽類 <code>:indeterminate</code>，跟 <code>:invalid, :valid</code> 同應用，處於一種預設情況下之不明確的項目。可以透過 JSJQ 來控制初始調整。如下例：</p>
 </blockquote>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;customCheck&quot;</span>).indeterminate=<span class="literal">true</span>; <span class="comment">// js version</span></span><br><span class="line">$(<span class="string">&#x27;#demoCheck&#x27;</span>).prop(<span class="string">&#x27;indeterminate&#x27;</span>, <span class="literal">true</span>); <span class="comment">// jq version</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;customCheck&quot;</span>).<span class="property">indeterminate</span>=<span class="literal">true</span>; <span class="comment">// js version</span></span><br><span class="line">$(<span class="string">&#x27;#demoCheck&#x27;</span>).<span class="title function_">prop</span>(<span class="string">&#x27;indeterminate&#x27;</span>, <span class="literal">true</span>); <span class="comment">// jq version</span></span><br></pre></td></tr></table></figure>
+</li>
 <li><p>使用 inline 模式效果時，更改為 <code>.custom-control-inline</code> （替代 <code>.form-check-inline</code> 用途）。</p>
-<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/forms/#inline-1</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--for inline mode --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-check form-check-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-check-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;form-check-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline1&quot;</span>&gt;</span>1<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-check form-check-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-check-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline2&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;form-check-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline2&quot;</span>&gt;</span>2<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;custom-control custom-radio custom-control-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline3&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline3&quot;</span>&gt;</span>AAA<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;custom-control custom-radio custom-control-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline4&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline4&quot;</span>&gt;</span>BBB<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/forms/#inline-1</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--for inline mode --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-check form-check-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-check-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;form-check-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline1&quot;</span>&gt;</span>1<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;form-check form-check-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;form-check-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline2&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;form-check-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline2&quot;</span>&gt;</span>2<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;custom-control custom-radio custom-control-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline3&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline3&quot;</span>&gt;</span>AAA<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;custom-control custom-radio custom-control-inline&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-input&quot;</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">id</span>=<span class="string">&quot;inline4&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;inline4&quot;</span>&gt;</span>BBB<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
 <li><p>checkbox 還有特別的 switch 模式視覺效果，容器使用 <code>custom-switch</code> （替代 <code>custom-checkbox</code> )。</p>
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/forms/#switches</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;custom-control custom-switch&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;checkbox&quot;</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-input&quot;</span> <span class="attr">id</span>=<span class="string">&quot;switch1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">label</span> <span class="attr">class</span>=<span class="string">&quot;custom-control-label&quot;</span> <span class="attr">for</span>=<span class="string">&quot;switch1&quot;</span>&gt;</span>Toggle this switch element<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 </ul>
@@ -731,7 +722,7 @@
 <blockquote>
 <p>Bootstrap 推薦使用第三方插件 <code>bs-custom-file-input</code> 優化動態拖曳的效果，記得裝載 <code>bs-custom-file-input.js</code> 並宣告使用。</p>
 </blockquote>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  bsCustomFileInput.init(); <span class="comment">//使得 custom 版也有 file input 之動態拖曳檔案之效果</span></span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  bsCustomFileInput.<span class="title function_">init</span>(); <span class="comment">//使得 custom 版也有 file input 之動態拖曳檔案之效果</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 </ul>
 <hr>
 <h2 id="輸入框群組化-Input-Group"><a href="#輸入框群組化-Input-Group" class="headerlink" title="輸入框群組化 Input Group"></a>輸入框群組化 Input Group</h2><p>屬於表單特別加強的一種視覺包裝（可多筆連成 inline 並圓角化），能對 input 欄位添加前後敘述。層級公式架構如下：</p>
@@ -800,8 +791,8 @@
 </ol>
 <h3 id="tabs-清單模式-（配合-JS"><a href="#tabs-清單模式-（配合-JS" class="headerlink" title="tabs 清單模式 （配合 JS)"></a>tabs 清單模式 （配合 JS)</h3><p>清單群組可以進階設計成帶有內容切換的 tabs 功能，這需要搭配 Bootstrap.js 發生腳本行為，共會有兩個獨立容器分別當作選單與分頁。</p>
 <h4 id="選單容器"><a href="#選單容器" class="headerlink" title="選單容器"></a>選單容器</h4><ol>
-<li><code>a.list-group-item</code> 屬性 [data-toggle=list] ： 完成 list 行為。</li>
-<li><code>a.list-group-item</code> 連結 [href=#id]：指定目標對象錨點。</li>
+<li><code>a.list-group-item</code> 屬性 [data-toggle&#x3D;list] ： 完成 list 行為。</li>
+<li><code>a.list-group-item</code> 連結 [href&#x3D;#id]：指定目標對象錨點。</li>
 <li>初始下應對某 <code>a.list-group-item</code> 綁定 <code>.active</code>，與分頁對象形成作用對應。</li>
 </ol>
 <h4 id="分頁容器"><a href="#分頁容器" class="headerlink" title="分頁容器"></a>分頁容器</h4><ol>
@@ -812,7 +803,7 @@
 <figure class="highlight html"><figcaption><span>https://getbootstrap.com/docs/4.4/components/list-group/#javascript-behavior</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- List group --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;list-group&quot;</span> <span class="attr">id</span>=<span class="string">&quot;controldemo&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;list-group-item list-group-item-action active&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;list&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#home&quot;</span>&gt;</span>Home<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;list-group-item list-group-item-action&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;list&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#profile&quot;</span>&gt;</span>Profile<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- Tab panes --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-content&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane active&quot;</span> <span class="attr">id</span>=<span class="string">&quot;home&quot;</span>&gt;</span>A Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error, vel.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane&quot;</span> <span class="attr">id</span>=<span class="string">&quot;profile&quot;</span>&gt;</span>B Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, est.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>Bootstrap.js 已設計好這些 a:link 的錨點控制行為為<code>$().tab</code>操作，因此你可以手動 JS 觸發這些動作：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#controldemo a[href=&quot;#profile&quot;]&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select tab by name</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:first-child&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select first tab</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:last-child&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select last tab</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:nth-child(3)&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select third tab</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#controldemo a[href=&quot;#profile&quot;]&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select tab by name</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:first-child&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select first tab</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:last-child&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select last tab</span></span><br><span class="line">$(<span class="string">&#x27;#controldemo a:nth-child(3)&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select third tab</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>另還有觸發反應事件，請參考官方說明</p>
@@ -839,7 +830,7 @@
 <li>第三層 <code>.modal-content</code>：內容用容器有不同區域，分別是 <code>div.modal-header</code> , <code>div.modal-body</code> , <code>div.modal-footer</code> 。</li>
 </ul>
 <h3 id="關閉-modal-方式"><a href="#關閉-modal-方式" class="headerlink" title="關閉 modal 方式"></a>關閉 modal 方式</h3><ul>
-<li>於 <code>.modal-content</code> 內任處可擺放關閉 modal 的按鈕，必需持有屬性 [data-dismiss=modal]。</li>
+<li>於 <code>.modal-content</code> 內任處可擺放關閉 modal 的按鈕，必需持有屬性 [data-dismiss&#x3D;modal]。</li>
 <li>關閉按鈕可增添 <code>.close</code> 使版面效果靠緊右上。</li>
 <li>點擊由 Bootstrap 自動生成的半透黑之區域 <code>div.modal-backdrop</code>，預設情況下已啟用。</li>
 </ul>
@@ -865,7 +856,8 @@
 <p>可對 model 進行 JS 控制或參數調整（詳閱官方說明），舉例來說，若想想關閉灰透的互動，有兩種方法：</p>
 <ol>
 <li><p>透過 JS 腳本設定</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#modaldemo&#x27;</span>).modal(&#123;</span><br><span class="line">  <span class="attr">backdrop</span>:<span class="string">&#x27;static&#x27;</span>,</span><br><span class="line">  <span class="attr">show</span>:<span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#modaldemo&#x27;</span>).<span class="title function_">modal</span>(&#123;</span><br><span class="line">  <span class="attr">backdrop</span>:<span class="string">&#x27;static&#x27;</span>,</span><br><span class="line">  <span class="attr">show</span>:<span class="literal">false</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>透過 HTML 的 data 屬性設定</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;modal&quot;</span> <span class="attr">id</span>=<span class="string">&quot;modaldemo&quot;</span> <span class="attr">data-backdrop</span>=<span class="string">&quot;static&quot;</span>&gt;</span></span><br><span class="line">...</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 </ol>
@@ -905,7 +897,7 @@
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--nav tab--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;nav nav-tabs&quot;</span> <span class="attr">id</span>=<span class="string">&quot;myTab&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;nav-item&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;nav-link active&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tab&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#home&quot;</span>&gt;</span>Home<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;nav-item&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;nav-link&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tab&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#profile&quot;</span>&gt;</span>Profile<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;nav-item&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;nav-link&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tab&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#contact&quot;</span>&gt;</span>Contact<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--content zone--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-content&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane fade show active&quot;</span> <span class="attr">id</span>=<span class="string">&quot;home&quot;</span>&gt;</span>Home Text<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane fade&quot;</span> <span class="attr">id</span>=<span class="string">&quot;profile&quot;</span>&gt;</span>Profile Text<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;tab-pane fade&quot;</span> <span class="attr">id</span>=<span class="string">&quot;contact&quot;</span>&gt;</span>Contact Text<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>Bootstrap.js 已設計好這些 a:link 的錨點控制行為為$().tab 操作，因此你可以手動 JS 觸發這些動作：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#myTab a[href=&quot;#profile&quot;]&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select tab by name</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:first-child a&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select first tab</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:last-child a&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select last tab</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:nth-child(3) a&#x27;</span>).tab(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select third tab</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#myTab a[href=&quot;#profile&quot;]&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select tab by name</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:first-child a&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select first tab</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:last-child a&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select last tab</span></span><br><span class="line">$(<span class="string">&#x27;#myTab li:nth-child(3) a&#x27;</span>).<span class="title function_">tab</span>(<span class="string">&#x27;show&#x27;</span>) <span class="comment">// Select third tab</span></span><br></pre></td></tr></table></figure>
 <hr>
 <h2 id="導覽列-Navbar"><a href="#導覽列-Navbar" class="headerlink" title="導覽列 Navbar"></a>導覽列 Navbar</h2><p>由 Nav 再進化提供網站選單之元件（不同的公式，一個是 nav 一個是 navbar) 且資訊量大，也是一個網站的重要核心之主選單部分，更牽扯到 RWD 網站的選單變化設計。Navbar 除了選單連結，還能加入 品牌 LOGO 或表單元件等等。大致結構為：</p>
 <p><code>nav.navbar</code>（主容器） &gt; <code>a.navbar-brand</code>(LOGO 區） + <code>button.navbar-toggler&gt;span.navbar-toggler-icon</code>（漢堡按鈕） + <code>div.nav-collapse</code>（選單區）+ 其他項目。</p>
@@ -925,8 +917,8 @@
 </ol>
 <h3 id="漢堡按鈕-button-navbar-toggler"><a href="#漢堡按鈕-button-navbar-toggler" class="headerlink" title="漢堡按鈕 button.navbar-toggler"></a>漢堡按鈕 button.navbar-toggler</h3><ol>
 <li>漢堡圖案可使用 <code>&lt;span class=&quot;navbar-toggler-icon&quot;&gt;&lt;/span&gt;</code>作為 font icon。</li>
-<li><code>button.navbar-toggler</code> 屬性 [data-toggle=collapse]：完成 collapse 行為。</li>
-<li><code>button.navbar-toggler</code> 屬性 [data-target=#id]：指定目標對象。</li>
+<li><code>button.navbar-toggler</code> 屬性 [data-toggle&#x3D;collapse]：完成 collapse 行為。</li>
+<li><code>button.navbar-toggler</code> 屬性 [data-target&#x3D;#id]：指定目標對象。</li>
 </ol>
 <h3 id="選單區-navbar-collapse"><a href="#選單區-navbar-collapse" class="headerlink" title="選單區 .navbar-collapse"></a>選單區 .navbar-collapse</h3><ol>
 <li>必要性添加 <code>.collapse</code> 才可執行響應式選單隱藏顯示之對應。</li>
@@ -963,7 +955,7 @@
 <hr>
 <h2 id="彈跳提示框-Popovers"><a href="#彈跳提示框-Popovers" class="headerlink" title="彈跳提示框 Popovers"></a>彈跳提示框 Popovers</h2><p>這裡會依賴第三方外掛 popper.js ，可使用 bootstrap.bundle.js（內含 bootstrap.js + popper.js)，效果是能觸發一個緊湊且可指定位置的小提示框，但僅限於簡單的標題與文字提示。</p>
 <p>因為效能問題不會自動生效，你必須手動網頁上透過 JS 初始化才能使觸發有效。透過 JQ 找到對象後執行 popover 函式初始化。 <code>[data-toggle=&quot;popover&quot;]</code> 為 Bootstrap 建議統一寫法，非絕對。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-content</span>=<span class="string">&quot;poper message&quot;</span>&gt;</span>touch me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  $(<span class="string">&#x27;button&#x27;</span>).popover();</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-content</span>=<span class="string">&quot;poper message&quot;</span>&gt;</span>touch me<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  $(<span class="string">&#x27;button&#x27;</span>).<span class="title function_">popover</span>();</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <table>
 <thead>
@@ -977,38 +969,38 @@
 <tbody><tr>
 <td>顯示文字</td>
 <td></td>
-<td>data-content=*</td>
+<td>data-content&#x3D;*</td>
 <td>content:*</td>
 </tr>
 <tr>
 <td>顯示標題</td>
 <td></td>
-<td>title=*</td>
+<td>title&#x3D;*</td>
 <td>title:*</td>
 </tr>
 <tr>
 <td>顯示於指定元素內（需已存在）</td>
 <td>body</td>
-<td>data-container=*</td>
+<td>data-container&#x3D;*</td>
 <td>container:*</td>
 </tr>
 <tr>
 <td>彈跳方向 (left,right,top,bottom)</td>
 <td>left</td>
-<td>data-placement=*</td>
+<td>data-placement&#x3D;*</td>
 <td>placement:*</td>
 </tr>
 <tr>
 <td>更改觸發開關方式 (:focus,:hover)<br>需注意 a 或 btn 有那些偽類</td>
 <td>:click</td>
-<td>data-trigger={focus|hover}</td>
-<td>trigger={focus|hover}</td>
+<td>data-trigger&#x3D;{focus|hover}</td>
+<td>trigger&#x3D;{focus|hover}</td>
 </tr>
 </tbody></table>
 <div class="note default"><p>官方提供相當多的參數能設定，你可以決定是透過 HTML 屬性還是 JS 函式參數去調整。<br><a target="_blank" rel="noopener" href="https://bootstrap.hexschool.com/docs/4.2/components/popovers/#options">https://bootstrap.hexschool.com/docs/4.2/components/popovers/#options</a></p>
 </div>
 
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;popover&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Popover title&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">data-content</span>=<span class="string">&quot;And here&#x27;s some amazing content. It&#x27;s very engaging. Right?&quot;</span>&gt;</span>Click to toggle popover<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;popover&quot;</span>&gt;</span>Popover on top<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  $(<span class="string">&#x27;[data-toggle=&quot;popover&quot;]&#x27;</span>).eq(<span class="number">0</span>).popover();</span></span><br><span class="line"><span class="javascript">  $(<span class="string">&#x27;[data-toggle=&quot;popover&quot;]&#x27;</span>).eq(<span class="number">1</span>).popover(&#123;</span></span><br><span class="line"><span class="javascript">    <span class="attr">container</span>: <span class="string">&#x27;body&#x27;</span>,</span></span><br><span class="line"><span class="javascript">    <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,</span></span><br><span class="line"><span class="javascript">    <span class="attr">title</span>: <span class="string">&#x27;demo title&#x27;</span>,</span></span><br><span class="line"><span class="javascript">    <span class="attr">content</span>: <span class="string">&#x27;&lt;em&gt;Vivamus &lt;/em&gt;sagittis lacus vel augue laoreet rutrum faucibus.&#x27;</span></span></span><br><span class="line"><span class="javascript">&#125;);</span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-danger&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;popover&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Popover title&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">data-content</span>=<span class="string">&quot;And here&#x27;s some amazing content. It&#x27;s very engaging. Right?&quot;</span>&gt;</span>Click to toggle popover<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;popover&quot;</span>&gt;</span>Popover on top<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  $(<span class="string">&#x27;[data-toggle=&quot;popover&quot;]&#x27;</span>).<span class="title function_">eq</span>(<span class="number">0</span>).<span class="title function_">popover</span>();</span></span><br><span class="line"><span class="language-javascript">  $(<span class="string">&#x27;[data-toggle=&quot;popover&quot;]&#x27;</span>).<span class="title function_">eq</span>(<span class="number">1</span>).<span class="title function_">popover</span>(&#123;</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">container</span>: <span class="string">&#x27;body&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">title</span>: <span class="string">&#x27;demo title&#x27;</span>,</span></span><br><span class="line"><span class="language-javascript">    <span class="attr">content</span>: <span class="string">&#x27;&lt;em&gt;Vivamus &lt;/em&gt;sagittis lacus vel augue laoreet rutrum faucibus.&#x27;</span></span></span><br><span class="line"><span class="language-javascript">&#125;);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <hr>
 <h2 id="進度條-Progress"><a href="#進度條-Progress" class="headerlink" title="進度條 Progress"></a>進度條 Progress</h2><p>一種作為固定表示進度用途的視覺元件，結構為 <code>div.progress&gt;div.progerss-bar</code>。</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;progress&quot;</span> <span class="attr">style</span>=<span class="string">&quot;height:40px&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;progress-bar bg-danger&quot;</span> <span class="attr">style</span>=<span class="string">&quot;width:66%&quot;</span>&gt;</span>66%<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -1040,15 +1032,7 @@
 </ol>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span> <span class="attr">class</span>=<span class="string">&quot;bd-example&quot;</span> <span class="attr">data-spy</span>=<span class="string">&quot;scroll&quot;</span> <span class="attr">data-target</span>=<span class="string">&quot;#list-example&quot;</span> <span class="attr">data-offset</span>=<span class="string">&quot;0&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;row&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;col-4&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;list-example&quot;</span> <span class="attr">class</span>=<span class="string">&quot;list-group sticky-top&quot;</span> <span class="attr">style</span>=<span class="string">&quot;top:1.5rem&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;list-group-item list-group-item-action&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#list-item-1&quot;</span>&gt;</span>Item 1<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">class</span>=<span class="string">&quot;list-group-item list-group-item-action&quot;</span> <span class="attr">href</span>=<span class="string">&quot;#list-item-2&quot;</span>&gt;</span>Item 2<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;col-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h4</span> <span class="attr">id</span>=<span class="string">&quot;list-item-1&quot;</span>&gt;</span>Item 1<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>A Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perferendis facere ad sint nemo eaque veniam voluptatem modi adipisci nulla? In, vero, asperiores labore adipisci eaque fugit explicabo repellendus incidunt blanditiis laboriosam est corrupti ad dolor possimus consequuntur a animi odit, dignissimos placeat? Nisi odit accusamus cupiditate ratione delectus voluptatum alias ipsam, minus incidunt sapiente commodi a qui illum quia, consectetur mollitia tempore esse beatae saepe laborum corporis! Porro doloribus adipisci beatae dolor velit accusantium quos odio sequi corporis facilis recusandae iusto vel modi libero perspiciatis excepturi, itaque omnis magni vero incidunt ipsum consequatur, culpa tempore. Numquam iste culpa esse eaque doloribus iure, <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h4</span> <span class="attr">id</span>=<span class="string">&quot;list-item-2&quot;</span>&gt;</span>Item 2<span class="tag">&lt;/<span class="name">h4</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>B Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima quaerat eveniet, quam expedita asperiores magni eius quo dolorum fuga quisquam sed odio est ea repellat ullam excepturi. At dolore minus illum, aliquid ex ea doloribus alias totam error cumque itaque quia atque, illo porro quas velit aspernatur debitis deserunt inventore molestiae eligendi autem repudiandae sequi excepturi! Sint laboriosam asperiores beatae officia commodi unde reiciendis illum aperiam quam sunt nam soluta excepturi illo obcaecati tempora vitae corporis, accusantium adipisci voluptates, quasi enim! Laborum, consectetur deleniti aliquid velit aliquam maxime amet aut mollitia adipisci voluptates provident quod alias nam ipsam nobis iusto quae numquam, veniam iure possimus, <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <hr>
-<h2 id="載入動畫-Spinners"><a href="#載入動畫-Spinners" class="headerlink" title="載入動畫 Spinners"></a>載入動畫 Spinners</h2><p>這裡已經提供一些 HTML + CSS animation 的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出 JS 腳本控制這些 DOM 與隱蔽圖示之時機。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;spinner-border text-danger&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;spinner-grow text-danger&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ol>
-<li>提供旋轉或漸變模式，分別是 <code>.spinner-&#123;border|grow&#125;</code> ，另添加 <code>.text-&#123;color&#125;</code> 玩色。</li>
-<li>提供尺寸調整，另添加<code>.spinner-&#123;border|grow&#125;-&#123;lg|sm&#125;</code>。</li>
-<li>本質為 inline-block，所以可以用 flex, text-align, float, margin 這類技巧去處理排版，也可整合到任何的元素或元件內。</li>
-</ol>
-<hr>
-<h2 id="吐司方塊-Toasts"><a href="#吐司方塊-Toasts" class="headerlink" title="吐司方塊 Toasts"></a>吐司方塊 Toasts</h2><p>常見於社群網站的資訊傳送或服務網頁的即時傳遞使用，主要是模仿電腦桌面角落的推播方塊，本身採用 flex 概念。架構為</p>
+<h2 id="載入動畫-Spinners"><a href="#載入動畫-Spinners" class="headerlink" title="載入動畫 Spinners"></a>載入動畫 Spinners</h2><h2 id="這裡已經提供一些-HTML-CSS-animation-的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出-JS-腳本控制這些-DOM-與隱蔽圖示之時機。1-提供旋轉或漸變模式，分別是-spinner-border-grow-，另添加-text-color-玩色。2-提供尺寸調整，另添加-spinner-border-grow-lg-sm-。3-本質為-inline-block，所以可以用-flex-text-align-float-margin-這類技巧去處理排版，也可整合到任何的元素或元件內。"><a href="#這裡已經提供一些-HTML-CSS-animation-的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出-JS-腳本控制這些-DOM-與隱蔽圖示之時機。1-提供旋轉或漸變模式，分別是-spinner-border-grow-，另添加-text-color-玩色。2-提供尺寸調整，另添加-spinner-border-grow-lg-sm-。3-本質為-inline-block，所以可以用-flex-text-align-float-margin-這類技巧去處理排版，也可整合到任何的元素或元件內。" class="headerlink" title="這裡已經提供一些 HTML + CSS animation 的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出 JS 腳本控制這些 DOM 與隱蔽圖示之時機。1. 提供旋轉或漸變模式，分別是 .spinner-{border|grow} ，另添加 .text-{color} 玩色。2. 提供尺寸調整，另添加.spinner-{border|grow}-{lg|sm}。3. 本質為 inline-block，所以可以用 flex, text-align, float, margin 這類技巧去處理排版，也可整合到任何的元素或元件內。"></a>這裡已經提供一些 HTML + CSS animation 的動態圖示，如果你希望拿來當資料處理的過渡時間，你需要自己動手做出 JS 腳本控制這些 DOM 與隱蔽圖示之時機。<br><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;spinner-border text-danger&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;spinner-grow text-danger&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure><br>1. 提供旋轉或漸變模式，分別是 <code>.spinner-&#123;border|grow&#125;</code> ，另添加 <code>.text-&#123;color&#125;</code> 玩色。<br>2. 提供尺寸調整，另添加<code>.spinner-&#123;border|grow&#125;-&#123;lg|sm&#125;</code>。<br>3. 本質為 inline-block，所以可以用 flex, text-align, float, margin 這類技巧去處理排版，也可整合到任何的元素或元件內。</h2><h2 id="吐司方塊-Toasts"><a href="#吐司方塊-Toasts" class="headerlink" title="吐司方塊 Toasts"></a>吐司方塊 Toasts</h2><p>常見於社群網站的資訊傳送或服務網頁的即時傳遞使用，主要是模仿電腦桌面角落的推播方塊，本身採用 flex 概念。架構為</p>
 <blockquote>
 <p><code>div.toast&gt;div.toast-header+div.toast-body</code></p>
 </blockquote>
@@ -1063,23 +1047,23 @@
 </ol>
 <h3 id="toast-物件操作"><a href="#toast-物件操作" class="headerlink" title="toast() 物件操作"></a>toast() 物件操作</h3><p>toast 提供像是曝光秒數 (data-delay)，自動消失 (data-autohide) 等應用參數，可以用 HTML 的 data 屬性或是 JS 物件宣告指定。</p>
 <ol>
-<li>透過手動 JS 進行顯示，但預設只有 500 豪秒曝光且會自動隱藏。<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.toast&#x27;</span>).toast(<span class="string">&#x27;show&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
-<li>修改曝光豪秒方式，可透過 HTML 屬性 [data-delay=*] 或 JS 物件參數操作。</li>
-<li>取消自動隱藏方式，可透過 HTML 屬性 [data-autohide=false] 或 JS 物件參數操作。</li>
-<li>取消預設淡出效果，可透過 HTML 屬性 [data-animation=false] 或 JS 物件參數操作。</li>
+<li>透過手動 JS 進行顯示，但預設只有 500 豪秒曝光且會自動隱藏。<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;.toast&#x27;</span>).<span class="title function_">toast</span>(<span class="string">&#x27;show&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li>修改曝光豪秒方式，可透過 HTML 屬性 [data-delay&#x3D;*] 或 JS 物件參數操作。</li>
+<li>取消自動隱藏方式，可透過 HTML 屬性 [data-autohide&#x3D;false] 或 JS 物件參數操作。</li>
+<li>取消預設淡出效果，可透過 HTML 屬性 [data-animation&#x3D;false] 或 JS 物件參數操作。</li>
 </ol>
 <hr>
 <h2 id="工具提示-Tooltips"><a href="#工具提示-Tooltips" class="headerlink" title="工具提示 Tooltips"></a>工具提示 Tooltips</h2><p>是一個比 Popovers 還更單調的元件，只能取得自身的 title 屬性變成泡泡方塊作為 hover 提示。這裡會依賴第三方外掛 popper.js ，可使用 bootstrap.bundle.js（內含 bootstrap.js + popper.js)。</p>
 <p>因為效能問題不會自動生效，你必須手動網頁上透過 JS 初始化才能使觸發有效。透過 JQ 找到對象後執行 tooltip 函式初始化。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tooltip&quot;</span> <span class="attr">data-placement</span>=<span class="string">&quot;top&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Tooltip on top&quot;</span>&gt;</span>Tooltip on top<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">$(<span class="string">&#x27;button&#x27;</span>).tooltip();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tooltip&quot;</span> <span class="attr">data-placement</span>=<span class="string">&quot;top&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Tooltip on top&quot;</span>&gt;</span>Tooltip on top<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript">$(<span class="string">&#x27;button&#x27;</span>).<span class="title function_">tooltip</span>();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>官方提供相當多的參數能設定，你可以透過 JS 物件去調整，也能透過 HTML5 的 data-*屬性來調整。</p>
 <ol>
-<li>添加屬性 [data-toggle=”tooltip”] 為 Bootstrap 建議統一寫法，非絕對。</li>
+<li>添加屬性 [data-toggle&#x3D;”tooltip”] 為 Bootstrap 建議統一寫法，非絕對。</li>
 <li>必要屬性 [title] 為提供為提示字（也能使用 HTML CODE 作為提示文，詳閱官方文件）。</li>
 <li>添加屬性 [data-html] 為使提示字支援 HTML Code。</li>
-<li>添加屬性 [data-container=body] 能指定 DOM 寫入元素為誰。</li>
-<li>添加屬性 [data-placement={left,right,top,bottom}] 能控制提示框的呈現方向。</li>
+<li>添加屬性 [data-container&#x3D;body] 能指定 DOM 寫入元素為誰。</li>
+<li>添加屬性 [data-placement&#x3D;{left,right,top,bottom}] 能控制提示框的呈現方向。</li>
 </ol>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-secondary&quot;</span> <span class="attr">data-toggle</span>=<span class="string">&quot;tooltip&quot;</span> <span class="attr">data-placement</span>=<span class="string">&quot;top&quot;</span> <span class="attr">title</span>=<span class="string">&quot;Tooltip on top&quot;</span>&gt;</span>Tooltip on top<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -1126,73 +1110,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 

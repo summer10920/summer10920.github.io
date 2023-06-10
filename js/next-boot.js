@@ -16,36 +16,11 @@ NexT.boot.registerEvents = function() {
     document.body.classList.toggle('site-nav-on');
   });
 
-  const duration = 200;
   document.querySelectorAll('.sidebar-nav li').forEach((element, index) => {
     element.addEventListener('click', () => {
-      if (element.matches('.sidebar-toc-active .sidebar-nav-toc, .sidebar-overview-active .sidebar-nav-overview')) return;
-      const sidebar = document.querySelector('.sidebar-inner');
-      const panel = document.querySelector('.sidebar-panel-container');
-      const activeClassName = ['sidebar-toc-active', 'sidebar-overview-active'];
-
-      window.anime({
-        duration,
-        targets   : panel,
-        easing    : 'linear',
-        opacity   : 0,
-        translateY: [0, -20],
-        complete  : () => {
-          // Prevent adding TOC to Overview if Overview was selected when close & open sidebar.
-          sidebar.classList.replace(activeClassName[1 - index], activeClassName[index]);
-          window.anime({
-            duration,
-            targets   : panel,
-            easing    : 'linear',
-            opacity   : [0, 1],
-            translateY: [-20, 0]
-          });
-        }
-      });
+      NexT.utils.activateSidebarPanel(index);
     });
   });
-
-  window.addEventListener('resize', NexT.utils.initSidebarDimension);
 
   window.addEventListener('hashchange', () => {
     const tHash = location.hash;
@@ -63,7 +38,6 @@ NexT.boot.refresh = function() {
    * Need to add config option in Front-End at 'scripts/helpers/next-config.js' file.
    */
   CONFIG.prism && window.Prism.highlightAll();
-  CONFIG.fancybox && NexT.utils.wrapImageWithFancyBox();
   CONFIG.mediumzoom && window.mediumZoom('.post-body :not(a) > img, .post-body > img', {
     background: 'var(--content-bg-color)'
   });
@@ -71,13 +45,13 @@ NexT.boot.refresh = function() {
   CONFIG.pangu && window.pangu.spacingPage();
 
   CONFIG.exturl && NexT.utils.registerExtURL();
+  NexT.utils.wrapTableWithBox();
   NexT.utils.registerCopyCode();
   NexT.utils.registerTabsTag();
   NexT.utils.registerActiveMenuItem();
   NexT.utils.registerLangSelect();
   NexT.utils.registerSidebarTOC();
   NexT.utils.registerPostReward();
-  NexT.utils.wrapTableWithBox();
   NexT.utils.registerVideoIframe();
 };
 

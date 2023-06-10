@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,21 +14,22 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="本篇為 React 官方手冊伴讀的最後一篇，作為部分深入操作技巧的學習之路。熟悉 React 程度須有一定標準才建議著手看過此篇。">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇為 React 官方手冊伴讀的最後一篇，作為部分深入操作技巧的學習之路。熟悉 React 程度須有一定標準才建議著手看過此篇。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[學習之路] JS 前端框架 React - 技巧">
+<meta property="og:title" content="[前端框架] React - 技巧">
 <meta property="og:url" content="http://summer10920.github.io/2021/12-11/js-react-5/">
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇為 React 官方手冊伴讀的最後一篇，作為部分深入操作技巧的學習之路。熟悉 React 程度須有一定標準才建議著手看過此篇。">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
 <meta property="article:published_time" content="2021-12-10T17:51:06.000Z">
-<meta property="article:modified_time" content="2022-04-13T13:17:03.932Z">
+<meta property="article:modified_time" content="2023-06-10T01:40:29.674Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ReactJS">
@@ -42,14 +41,18 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2021/12-11/js-react-5/","path":"2021/12-11/js-react-5/","title":"[學習之路] JS 前端框架 React - 技巧"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2021/12-11/js-react-5/","path":"2021/12-11/js-react-5/","title":"[前端框架] React - 技巧"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>[學習之路] JS 前端框架 React - 技巧 | 洛奇的邪惡組織手札</title><meta name="robots" content="noindex">
+<title>[前端框架] React - 技巧 | 洛奇的邪惡組織手札</title><meta name="robots" content="noindex">
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
 
 
 
@@ -65,9 +68,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -80,14 +83,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -96,11 +99,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -133,15 +132,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -162,18 +155,17 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -189,60 +181,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -260,15 +241,20 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[前端框架] React - 技巧 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [學習之路] JS 前端框架 React - 技巧
+          [前端框架] React - 技巧
         </h1>
 
         <div class="post-meta-container">
@@ -281,13 +267,13 @@
 
       <time title="創建時間 ×2021-12-11 01:51:06" itemprop="dateCreated datePublished" datetime="2021-12-11T01:51:06+08:00">2021-12-11</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2022-04-13 21:17:03" itemprop="dateModified" datetime="2022-04-13T21:17:03+08:00">2022-04-13</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2023-06-10 09:40:29" itemprop="dateModified" datetime="2023-06-10T09:40:29+08:00">2023-06-10</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -316,14 +302,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>8123 <i>words</i></span>
+      <span>1,591</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>15 <i>mins</i></span>
+      <span>00:02:54</span>
     </span>
 </div>
 
@@ -333,16 +319,15 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p><img src="https://i.imgur.com/iWnyS9n.png"><br>本篇為 React 官方手冊伴讀的最後一篇，作為部分深入操作技巧的學習之路。熟悉 React 程度須有一定標準才建議著手看過此篇。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/iWnyS9n.png"><br>本篇為 React 官方手冊伴讀的最後一篇，作為部分深入操作技巧的學習之路。熟悉 React 程度須有一定標準才建議著手看過此篇。</p>
 <span id="more"></span>
 
 <h1 id="render-prop"><a href="#render-prop" class="headerlink" title="render prop"></a>render prop</h1><p>一種將函式設計成 porp 傳遞，使得其他組件能夠重複使用指定程式碼的技巧。被賦予 render prop 的組件不會根據自己原本的 render 來決定渲染內容，而是根據 render prop 帶回來的內容動態的顯示呼叫出來。</p>
 <h2 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h2><p>假設我們有兩個雷同的範例，一個是輸出組件能夠根據滑鼠事件來渲染出座標文字顯示：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;render&#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*same code start*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove=<span class="function">(<span class="params">event</span>)=&gt;</span>&#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span>(</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span>&#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span>&#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span>&#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span>&#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">      &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>[&#123;x&#125;,&#123;y&#125;]<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*same code end*/</span></span><br><span class="line"></span><br><span class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">MouseTrack</span>/&gt;</span></span>,<span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="built_in">document</span>.body.style.margin=<span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;render&#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*same code start*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span>=(<span class="params">event</span>)=&gt;&#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span>(</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span>&#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span>&#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span>&#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span>&#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>[&#123;x&#125;,&#123;y&#125;]<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*same code end*/</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">MouseTrack</span>/&gt;</span></span>,<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">margin</span>=<span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
 
 <p>另一個輸出範例為，根據滑鼠事件來調整一個貓咪圖片位置：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cat</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*same code start*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseWithCat</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;&#123;</span> <span class="attr">left:</span> <span class="attr">x</span>, <span class="attr">top:</span> <span class="attr">y</span> &#125;&#125; /&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*same code end*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">MouseWithCat</span> /&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="built_in">document</span>.body.style.margin = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Cat</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*same code start*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseWithCat</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;&#123;</span> <span class="attr">left:</span> <span class="attr">x</span>, <span class="attr">top:</span> <span class="attr">y</span> &#125;&#125; /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*same code end*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">MouseWithCat</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
 
 <p>以範例貓咪位置來說，這樣的渲染結果是根據 MouseWithCat 組件作為寫死渲染出貓咪位置。若換個角度調整，是否能將 MouseWithCat 另設計成可封裝的 Mouse 組件，未來如果要共用 Mouse 組件就能重複使用，這就需要運用到 render props 來設計。</p>
 <ul>
@@ -352,33 +337,33 @@
 <li>最後將內容傳給下層 Mouse 組件，使得 Mouse 組件根據不同內容有不一樣的畫面結果。</li>
 <li>現在 Mouse 組件已不是固定內容渲染的組件，經過封裝後可被不同上層組件依需求來重複利用。</li>
 </ul>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cat</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mouse</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;/* <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;&#123;</span> <span class="attr">left:</span> <span class="attr">x</span>, <span class="attr">top:</span> <span class="attr">y</span> &#125;&#125; /&gt;</span> */&#125;</span></span><br><span class="line"><span class="xml">      &#123;props.render(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">render</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="built_in">document</span>.body.style.margin = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Cat</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Mouse</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;/* <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;&#123;</span> <span class="attr">left:</span> <span class="attr">x</span>, <span class="attr">top:</span> <span class="attr">y</span> &#125;&#125; /&gt;</span> */&#125;</span></span><br><span class="line"><span class="language-xml">      &#123;props.render(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">render</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
 
 <p>現在，可以在上層 MouseTrack 組件多要求 Pos 組件去改變 Mouse 組件該渲染的內容。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cat</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Pos</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">p</span>&gt;</span>[&#123;props.mouse.left&#125;,&#123;props.mouse.top&#125;]<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mouse</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.render(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">render</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">render(<span class="xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="built_in">document</span>.getElementById(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="built_in">document</span>.body.style.margin = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cat <span class="keyword">from</span> <span class="string">&#x27;./cat.png&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Cat</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&#123;cat&#125;</span> <span class="attr">alt</span>=<span class="string">&#x27;cat&#x27;</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">position:</span> &#x27;<span class="attr">fixed</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">left:</span> <span class="attr">props.mouse.left</span>,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">top:</span> <span class="attr">props.mouse.top</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; /&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Pos</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">p</span>&gt;</span>[&#123;props.mouse.left&#125;,&#123;props.mouse.top&#125;]<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Mouse</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;props.render(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">render</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">MouseTrack</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&quot;0&quot;</span>;</span><br></pre></td></tr></table></figure>
 
 <p><a target="_blank" rel="noopener" href="https://codepen.io/summer10920/pen/bGogjxy?editors=0010">Codepen DEMO</a></p>
 <h2 id="規則說明"><a href="#規則說明" class="headerlink" title="規則說明"></a>規則說明</h2><p>由於 render props 只是一種傳遞函式當作 props 的技巧，因此不是強迫需要命名為 props.render。你可以改用其他 props 命名，只要是這樣的操作技巧都稱呼為 render prop。例如使用 props.children 這特別 props 來完成此技巧</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mouse</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.children(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">children</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Mouse</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;props.children(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">Mouse</span> <span class="attr">children</span>=<span class="string">&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">mouse</span> =&gt;</span> (</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )</span><br><span class="line">    &#125; /&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>既然是 props.children，也可以用 JSX 的 children 表示特性來完成。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Mouse</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = useState(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = useState(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> doMove = <span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">    setX(event.clientX);</span><br><span class="line">    setY(event.clientY);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.children(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">MouseTrack</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Mouse</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;mouse =&gt; (</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )&#125;</span><br><span class="line">    &lt;/Mouse&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Mouse</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [x, setX] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">const</span> [y, setY] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="title function_">doMove</span> = (<span class="params">event</span>) =&gt; &#123;</span><br><span class="line">    <span class="title function_">setX</span>(event.<span class="property">clientX</span>);</span><br><span class="line">    <span class="title function_">setY</span>(event.<span class="property">clientY</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">height:</span> &#x27;<span class="attr">100vh</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">display:</span> &#x27;<span class="attr">flex</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">justifyContent:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">alignItems:</span> &#x27;<span class="attr">center</span>&#x27;,</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">flexDirection:</span> &#x27;<span class="attr">column</span>&#x27;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">    &#125;&#125; <span class="attr">onMouseMove</span>=<span class="string">&#123;doMove&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;props.children(&#123; left: x, top: y &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">MouseTrack</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">Mouse</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;mouse =&gt; (</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">h1</span>&gt;</span>mouse position<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Pos</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">Cat</span> <span class="attr">mouse</span>=<span class="string">&#123;mouse&#125;</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">      )&#125;</span><br><span class="line">    &lt;/<span class="title class_">Mouse</span>&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="Higher-Order-Components-高階組件"><a href="#Higher-Order-Components-高階組件" class="headerlink" title="Higher-Order Components 高階組件"></a>Higher-Order Components 高階組件</h1><h1 id="友善化網頁"><a href="#友善化網頁" class="headerlink" title="友善化網頁"></a>友善化網頁</h1><p>這部分集結一節討論，包含 WAI-ARIA 無障礙應用技術、HTML5 語意標籤、表單輔助、</p>
 <h2 id="WAI-ARIA"><a href="#WAI-ARIA" class="headerlink" title="WAI-ARIA"></a>WAI-ARIA</h2><p>即是一個能藉由添加進一步的語意幫助處理這種問題的技術 ，讓瀏覽器與輔助科技可以辨識及用以讓使用者知道發生什麼事情。熟悉 Bootstrap 的人很常看到 aria-*的屬性標籤。JSX 編寫這些屬性不需要遵守駝峰命名直接寫入即可。</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;input</span><br><span class="line">  type=<span class="string">&quot;text&quot;</span></span><br><span class="line">  aria-label=&#123;labelText&#125;</span><br><span class="line">  aria-required=<span class="string">&quot;true&quot;</span></span><br><span class="line">  onChange=&#123;onchangeHandler&#125;</span><br><span class="line">  value=&#123;inputValue&#125;</span><br><span class="line">  name=<span class="string">&quot;name&quot;</span></span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure>
 
 <h2 id="語意標籤-與-Fragment"><a href="#語意標籤-與-Fragment" class="headerlink" title="語意標籤 與 Fragment"></a>語意標籤 與 Fragment</h2><p>語意化為 HTML5 提倡的觀念，盡可能用適合的標籤名稱去結構網頁想表達的內容使瀏覽器或搜尋演算法充分理解。由於常常組件互相勘套時會破壞這標籤結構且組件的 render 必須要一組標籤，因此可以使用短語法<code>&lt;&gt;</code>（或稱空標籤且之前出現過）來當一組標籤避免多餘層級標籤。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//短語法</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ListItem</span>(<span class="params">&#123; item &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//短語法</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ListItem</span>(<span class="params">&#123; item &#125;</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>或者舊方式使用<code>&lt;fragment&gt;&lt;/fragment&gt;</code>分段標籤來替代，Fragment 需要從 react 宣告匯入。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Fragment</span></span><br><span class="line"><span class="keyword">import</span> &#123; Fragment &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ListItem</span>(<span class="params">&#123; item &#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Fragment</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Fragment</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ListItem</span>(<span class="params">&#123; item &#125;</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>唯獨不同是 Fragment 可以添加一些 props 或是 key 使用。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Glossary</span>(<span class="params">props</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="xml"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span></span><br><span class="line"><span class="xml">      &#123;props.items.map(item =&gt; (</span></span><br><span class="line"><span class="xml">        // Fragments should also have a `key` prop when mapping collections</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">Fragment</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="xml">      ))&#125;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Glossary</span>(<span class="params">props</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">dl</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;props.items.map(item =&gt; (</span></span><br><span class="line"><span class="language-xml">        // Fragments should also have a `key` prop when mapping collections</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Fragment</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">dt</span>&gt;</span>&#123;item.term&#125;<span class="tag">&lt;/<span class="name">dt</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">dd</span>&gt;</span>&#123;item.description&#125;<span class="tag">&lt;/<span class="name">dd</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">Fragment</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      ))&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">dl</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="HTML5-表單機制"><a href="#HTML5-表單機制" class="headerlink" title="HTML5 表單機制"></a>HTML5 表單機制</h2><p>HTML5 在表單上提供一些有用的機制，其中例如 label 標籤的設計，需搭配 for 屬性來指定對應表單元素。然而 for 為特別關鍵字，在 JSX 內必須改用 htmlFor 來表示。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;label htmlFor=<span class="string">&quot;namedInput&quot;</span>&gt;Name:&lt;/label&gt;</span><br><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;namedInput&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span>/&gt;</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;label htmlFor=<span class="string">&quot;namedInput&quot;</span>&gt;<span class="title class_">Name</span>:&lt;/label&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;namedInput&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span>/&gt;</span></span></span><br></pre></td></tr></table></figure>
 
 <p>控制 focus 看不懂 略過，跟 ref 有關<br><a target="_blank" rel="noopener" href="https://zh-hans.reactjs.org/docs/accessibility.html#focus-control">https://zh-hans.reactjs.org/docs/accessibility.html#focus-control</a></p>
 <p>滑鼠事件看不懂，同上</p>
@@ -413,73 +398,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 

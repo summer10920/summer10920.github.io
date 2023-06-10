@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,21 +14,22 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用組件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用元件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[學習之路] JS 前端框架 Angular - 介紹與安裝">
+<meta property="og:title" content="[前端框架] Angular - 介紹與安裝">
 <meta property="og:url" content="http://summer10920.github.io/2022/04-13/js-angular-1/">
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
-<meta property="og:description" content="Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用組件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、">
+<meta property="og:description" content="Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用元件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://i.imgur.com/WC5iApN.png">
 <meta property="article:published_time" content="2022-04-13T13:18:06.000Z">
-<meta property="article:modified_time" content="2022-08-20T09:12:32.514Z">
+<meta property="article:modified_time" content="2023-06-10T01:40:29.678Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="Angular">
@@ -42,14 +41,18 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2022/04-13/js-angular-1/","path":"2022/04-13/js-angular-1/","title":"[學習之路] JS 前端框架 Angular - 介紹與安裝"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2022/04-13/js-angular-1/","path":"2022/04-13/js-angular-1/","title":"[前端框架] Angular - 介紹與安裝"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>[學習之路] JS 前端框架 Angular - 介紹與安裝 | 洛奇的邪惡組織手札</title>
+<title>[前端框架] Angular - 介紹與安裝 | 洛奇的邪惡組織手札</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false}</script>
   <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
 
 
 
@@ -65,9 +68,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -80,14 +83,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -96,11 +99,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -133,15 +132,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -162,18 +155,17 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -189,60 +181,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -260,15 +241,20 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[前端框架] Angular - 介紹與安裝 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          [學習之路] JS 前端框架 Angular - 介紹與安裝
+          [前端框架] Angular - 介紹與安裝
         </h1>
 
         <div class="post-meta-container">
@@ -281,13 +267,13 @@
 
       <time title="創建時間 ×2022-04-13 21:18:06" itemprop="dateCreated datePublished" datetime="2022-04-13T21:18:06+08:00">2022-04-13</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2022-08-20 17:12:32" itemprop="dateModified" datetime="2022-08-20T17:12:32+08:00">2022-08-20</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2023-06-10 09:40:29" itemprop="dateModified" datetime="2023-06-10T09:40:29+08:00">2023-06-10</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -316,14 +302,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>23947 <i>words</i></span>
+      <span>7,624</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>44 <i>mins</i></span>
+      <span>00:13:52</span>
     </span>
 </div>
 
@@ -333,9 +319,8 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p><img src="https://i.imgur.com/WC5iApN.png"></p>
-<p>Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用組件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Component 整個零件內。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/WC5iApN.png"></p>
+<p>Angular 通常是指 Angular 2+以上的版本（與早期的 Angular 1 版本完全不同，又稱呼第一代叫 AngularJS)，是由 AngularJS 團隊於 2016 年重新改寫並由 Google 所主導開發的 JavaScript 框架，與 React 相同都是採用元件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Component 整個零件內。</p>
 <span id="more"></span>
 
 <p>Angular 對於學習難度上高於其他框架，且在國內市場比例低於 React 與 Vue。相對來說在薪資上也比較不會被競爭而拉低，風險考量就在於未來市場上如何走向發展。隨著 TypeScript 的市場需求度越來越高，也許學會 Angular 不是一個壞事。以及 Angular 對於版本升級有很強烈的向後相容性。不會再因為框架的版本變化而影響原專案的開發維護難題。因此學 Angular 挑最新版的學就好了（也就是 Angular 2+)。</p>
@@ -351,7 +336,7 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm uninstall -g angular-cli @angular/cli </span><br><span class="line">npm cache verify </span><br><span class="line">npm install -g @angular/cli </span><br></pre></td></tr></table></figure>
 
 <h3 id="初始化應用-app"><a href="#初始化應用-app" class="headerlink" title="初始化應用 app"></a>初始化應用 app</h3><p>透過指令（擇一），你能獲得指定目錄名稱的 Angular 套件與相依套件。過程中會問你幾個問題（是否要添加 Route 功能、採用哪種樣式表），隨便挑可以留最基本就好讓他執行，最後將會獲得具有 DEMO 內容的網頁。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 嚴格模式 TypeScript 會報錯</span></span><br><span class="line">ng new lokiFirst </span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 非嚴格模式</span></span><br><span class="line">ng new lokiFirst --no-strict</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">嚴格模式 TypeScript 會報錯</span></span><br><span class="line">ng new lokiFirst </span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">非嚴格模式</span></span><br><span class="line">ng new lokiFirst --no-strict</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>甚麼是 <a target="_blank" rel="noopener" href="https://angular.tw/guide/strict-mode">嚴格模式</a></p>
 </blockquote>
@@ -370,9 +355,9 @@
 <h1 id="初次應用"><a href="#初次應用" class="headerlink" title="初次應用"></a>初次應用</h1><p>你可以參考 Angular 官方提供的 <a target="_blank" rel="noopener" href="https://angular.tw/tutorial">課程英雄之旅</a>，這是一個很好的初體驗帶動課程但本章節不會跟著課程做但是會加減參考內容觀念說明。</p>
 <h2 id="目錄說明"><a href="#目錄說明" class="headerlink" title="目錄說明"></a>目錄說明</h2><p>來到 src 目錄下，那是我們主要的應用目錄。可以發現一些東西：</p>
 <p>透過<code>index.html</code>網頁檢查可發現 body 內塞了以下代碼，可發現<code>&lt;app-root&gt;&lt;/app-root&gt;</code>這是一個預設的 component 元件，所有的內容都從這裡產生出來。而每個小 component 元件又從這裡帶出來。</p>
-<figure class="highlight html"><figcaption><span>src/index.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>LokiFirst<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">base</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">type</span>=<span class="string">&quot;image/x-icon&quot;</span> <span class="attr">href</span>=<span class="string">&quot;favicon.ico&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-root</span>&gt;</span><span class="tag">&lt;/<span class="name">app-root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><figcaption><span>src/index.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>LokiFirst<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">base</span> <span class="attr">href</span>=<span class="string">&quot;/&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;icon&quot;</span> <span class="attr">type</span>=<span class="string">&quot;image/x-icon&quot;</span> <span class="attr">href</span>=<span class="string">&quot;favicon.ico&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">app-root</span>&gt;</span><span class="tag">&lt;/<span class="name">app-root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>來到 src/app 目錄下，這裡放 Angular 的所有元件，包含我們最外層的 app Component。這是整個 Angular 主要的 Component 檔案。</p>
+<p>來到 src&#x2F;app 目錄下，這裡放 Angular 的所有元件，包含我們最外層的 app Component。這是整個 Angular 主要的 Component 檔案。</p>
 <ul>
 <li>app.component.ts — 元件的類別程式碼，這是用 TypeScript 寫的。在 Angular 都是用 ts 來編寫具備強型別的 javascript。</li>
 <li>app.component.html — 元件的範本，這是用 HTML 寫的。</li>
@@ -380,10 +365,10 @@
 <li>app.module.ts - 整個應用會用到的 Angular 模組，宣告在這裡就能使用 Angular 提供的模組功能。</li>
 </ul>
 <blockquote>
-<p><code>*.spec.ts</code> 是測試用的可以直接刪除，新手用不到。如果建立元件時可以多添加 ``參數要求不要產生該檔案，</p>
+<p><code>*.spec.ts</code> 是測試用的可以直接刪除，新手用不到。如果建立元件時可以多添加 &#96;&#96;參數要求不要產生該檔案，</p>
 </blockquote>
 <p>從 ts 內可以看到，這隻檔案會匯出一個 class 並提供一個資料為 title</p>
-<figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">AppComponent</span> &#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可試著將 html 內全部刪除只留下以下內容，能發現瀏覽畫面提供了這個資料輸出。</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -392,7 +377,7 @@
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;title&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>雖然 ngModal 已出現在 app.module.ts 內，但畫面報錯上出現了以下資訊 <mark>Can’t bind to ‘ngModel’ since it isn’t a known property of ‘input’.</mark> 說明無髮綁定給 ngModel 模組是因為 input 的屬性沒有提供，所以 Angular 不能理解 input 內的屬性 ngModel 是要做甚麼事。由於 Angular 把模組拆得很細，如果 input 需要規劃 ngModel 功能就需要添加 FormsModule 匯入。</p>
-<figure class="highlight ts"><figcaption><span>app.module.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; NgModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; FormsModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>; <span class="comment">//這裡，如果你有依賴 vscode 套件這裡不用特別寫，會自動下面產生時這裡自動填寫</span></span><br><span class="line"><span class="keyword">import</span> &#123; BrowserModule &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; AppComponent &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    FormsModule <span class="comment">//添加模組做匯入</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppModule</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>app.module.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">NgModule</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">FormsModule</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/forms&#x27;</span>; <span class="comment">//這裡，如果你有依賴 vscode 套件這裡不用特別寫，會自動下面產生時這裡自動填寫</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">BrowserModule</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/platform-browser&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">AppComponent</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./app.component&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    <span class="title class_">AppComponent</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    <span class="title class_">BrowserModule</span>,</span><br><span class="line">    <span class="title class_">FormsModule</span> <span class="comment">//添加模組做匯入</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [<span class="title class_">AppComponent</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">AppModule</span> &#123; &#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p><code>import ... from ...</code> 是 TypeScript 要求知道東西從哪裡來，與 Angular 無關。<code>@NgModule&#123;&#125;</code>提供給 Angular 理解有哪些模組特性使用。</p>
@@ -415,7 +400,7 @@
 <h1 id="基本知識"><a href="#基本知識" class="headerlink" title="基本知識"></a>基本知識</h1><p>Angular 能允許你建立單一網頁的框架，因此我們是對一個 html 文件來進行開發也就是 index.html 這個單頁檔案。而這份 index.html 如前面所說有個 app-root 元素為我們最上層的元素。詳細原理我們不用去理解，這一切都由 CLI 來幫助我們去進行關聯。</p>
 <h2 id="Component-元件"><a href="#Component-元件" class="headerlink" title="Component 元件"></a>Component 元件</h2><p>這裡會開始介紹元件的一些屬性以及它的結構用途。一開始從 app 這隻元件開始說起。</p>
 <h3 id="app-component-ts"><a href="#app-component-ts" class="headerlink" title="app.component.ts"></a>app.component.ts</h3><p>從根元件下手，來觀察這份檔案你能看到有個裝飾器<code>@component</code>，裏面涵蓋了這個根元件所有重要資訊，包含了我們的 selector 選擇器指向到哪個 template 範本內元素、對應的 template 範本 (html) 在哪、元件所吃的樣式表位置。這些資訊都是為了要幫我們對 index.html 進行抽換的資訊，也就是整個<code>app.component.html</code>的完整內容。</p>
-<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">AppComponent</span> &#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>這是根元件由 cli 提供，之後會再介紹如何建立自己的元件。而最外層的<code>main.ts</code>是網頁觸發 angular 的第一個腳本</p>
@@ -424,17 +409,17 @@
 <p>根元件盡可能保留下來，因為 app.modules.ts 已經都寫好指定一個元件作為根元件，除非你想手動去修改這些 CLI 已寫好的模組內容。</p>
 <p>這裡我們嘗試自行添加一個元件並試著讓它顯示於根元件底下</p>
 <h4 id="建立-Component"><a href="#建立-Component" class="headerlink" title="建立 Component"></a>建立 Component</h4><p>想建立一個元件放置於根元件下面，我們會習慣用目錄的方式代表一個元建。你可以手動去建立 folder 與手動產生對應的 ts,html,css 檔案（注意檔名要對應清楚）。或者透過指令<code>ng n g ...</code>來建立新的元件。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 完整指令</span></span><br><span class="line">ng generate component myserver</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 簡化指令</span></span><br><span class="line">ng g c myserver</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 搭配不想產生測試用的*.spec.ts</span></span><br><span class="line">ng g c myserver --skip-tests</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">完整指令</span></span><br><span class="line">ng generate component myserver</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">簡化指令</span></span><br><span class="line">ng g c myserver</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">搭配不想產生測試用的*.spec.ts</span></span><br><span class="line">ng g c myserver --skip-tests</span><br></pre></td></tr></table></figure>
 
 <div class="note info"><p><strong>小技巧：關閉產生 spec.ts 的方式</strong><br>如果想直接關閉這個功能，可在單一專案目錄下對 angular.json 添加參數</p>
-<figure class="highlight json"><figcaption><span>angular.json</span></figcaption><table><tr><td class="code"><pre><span class="line">&#123; </span><br><span class="line">  <span class="attr">&quot;projects&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;&#123;PROJECT_NAME&#125;&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;schematics&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;@schematics/angular:component&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;skipTests&quot;</span>: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><figcaption><span>angular.json</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> </span><br><span class="line">  <span class="attr">&quot;projects&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;&#123;PROJECT_NAME&#125;&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;schematics&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;@schematics/angular:component&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">          <span class="attr">&quot;skipTests&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>如果所有的專案則是在外層添加</p>
-<figure class="highlight json"><figcaption><span>angular.json</span></figcaption><table><tr><td class="code"><pre><span class="line">&#123; </span><br><span class="line">  <span class="attr">&quot;schematics&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;@schematics/angular:component&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;skipTests&quot;</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><figcaption><span>angular.json</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> </span><br><span class="line">  <span class="attr">&quot;schematics&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;@schematics/angular:component&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;skipTests&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>或者透過指令完成要求，等價自動幫你做上面那段代碼的事情。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 所有專案都不要 <span class="built_in">test</span> 檔案</span></span><br><span class="line">ng config schematics.@schematics/angular:component.skipTests true</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">所有專案都不要 <span class="built_in">test</span> 檔案</span></span><br><span class="line">ng config schematics.@schematics/angular:component.skipTests true</span><br></pre></td></tr></table></figure></div>
 
 <p>這裡我們透過指令完成後，會產生對應的目錄以及相關檔案，而觀察 app.module.ts 也發現 ServerComponent 也幫你寫好了（元件都會自動以大寫來表示這是一個元件對象）。觀察 NgModule 提供了四種屬性，分別是 declarations 聲明、imports 導入、providers 提供者、bootstrap 引導程序（這裡不是指 CSS 框架那個）。引導程序這裡，會告知 Angular 會使用哪個元件，也就是一開始 CLI 提供的根元件。近而產生整個 index.html 所需要的內容。所以你應該將各種元件進行嵌套到這個根元件內。因此引導程序這裡不太需要去動到他。而是將新元件被寫在 declarations 聲明處（檔案來源也記得要寫上，就是 import … from … 部分，屆時透過打包工具時才能找到這個檔案處做整合）。</p>
-<figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    AppComponent,</span><br><span class="line">    ServerComponent</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    BrowserModule,</span><br><span class="line">    FormsModule</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [AppComponent]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NgModule</span>(&#123;</span><br><span class="line">  <span class="attr">declarations</span>: [</span><br><span class="line">    <span class="title class_">AppComponent</span>,</span><br><span class="line">    <span class="title class_">ServerComponent</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">imports</span>: [</span><br><span class="line">    <span class="title class_">BrowserModule</span>,</span><br><span class="line">    <span class="title class_">FormsModule</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">providers</span>: [],</span><br><span class="line">  <span class="attr">bootstrap</span>: [<span class="title class_">AppComponent</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>imports 導入這裡，通常是載入一些內建的模組，譬如這裡用到了瀏覽器與表單的模組，Angular 會將很多功能打散成模組提供使用，為了效能你需要自行指定需要的模塊來導入使用，未來會在介紹更多有哪些好用的模組。</p>
 <h4 id="使用-Component"><a href="#使用-Component" class="headerlink" title="使用 Component"></a>使用 Component</h4><p>讓我們回到 appComponent 的 html 部分，我們可以學 index.html 那樣將指定的標籤元素插入到這裡的 html 內。現在在 server 元件這裡的 html 已經有一些 html 代碼（你可以改只是測試用），同時從 ts 的檔案知道 CLI 幫我們在選擇器上取名為 app-server。接下來只要在根元件的 html 插入以下代碼就能形成嵌套的元件輸出使用。</p>
 <figure class="highlight html"><figcaption><span>app.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;title&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span>&gt;</span>123<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-server</span>&gt;</span><span class="tag">&lt;/<span class="name">app-server</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -446,10 +431,10 @@
 <figure class="highlight html"><figcaption><span>app.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> [(<span class="attr">ngModel</span>)]=<span class="string">&quot;title&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;btn btn-primary&quot;</span>&gt;</span>123<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-servers</span>&gt;</span><span class="tag">&lt;/<span class="name">app-servers</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>現在你應該會看到三個 p 段落在畫面上，而這個 p 段落來自於我們 servers 元件，而 servers 元件內重複了 server 元件。</p>
 <h5 id="templateUrl-vs-template"><a href="#templateUrl-vs-template" class="headerlink" title="templateUrl vs template"></a>templateUrl vs template</h5><p>我們回到 servers 的 ts 來討論，在上面可以看到 templateUrl 代表 template 範本來自於外部連結，透過這個外部文件獲得了我們的 html 代碼。如果你的需求很低是不需要透過該元件的 html 來告知 template 範本的內容，而可以使用 template 以 string 的方式來指定內容。這是觀念上的技巧。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component, OnInit &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-servers&#x27;</span>,</span><br><span class="line">  <span class="comment">// templateUrl: &#x27;./servers.component.html&#x27;,</span></span><br><span class="line">  <span class="attr">template</span>:<span class="string">`</span></span><br><span class="line"><span class="string">    &lt;p&gt;hello world&lt;/p&gt;</span></span><br><span class="line"><span class="string">    &lt;app-server&gt;&lt;/app-server&gt;</span></span><br><span class="line"><span class="string">  `</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./servers.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> <span class="title">implements</span> <span class="title">OnInit</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123; &#125;</span><br><span class="line">  ngOnInit(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span>, <span class="title class_">OnInit</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-servers&#x27;</span>,</span><br><span class="line">  <span class="comment">// templateUrl: &#x27;./servers.component.html&#x27;,</span></span><br><span class="line">  <span class="attr">template</span>:<span class="string">`</span></span><br><span class="line"><span class="string">    &lt;p&gt;hello world&lt;/p&gt;</span></span><br><span class="line"><span class="string">    &lt;app-server&gt;&lt;/app-server&gt;</span></span><br><span class="line"><span class="string">  `</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./servers.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> <span class="keyword">implements</span> <span class="title class_">OnInit</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123; &#125;</span><br><span class="line">  <span class="title function_">ngOnInit</span>(): <span class="built_in">void</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h5 id="styleUrl-vs-styles"><a href="#styleUrl-vs-styles" class="headerlink" title="styleUrl vs styles"></a>styleUrl vs styles</h5><p>在 app 元件 (app-root) 上我們編寫了 h1 這個元素，若想兌換顏色可以到 app.component.css 編寫<code>h1&#123;color:blue&#125;</code>屬性測試看看。同樣原理我們可以改用內部方式來指定但是型別為陣列指定 string。</p>
-<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="comment">// styleUrls: [&#x27;./app.component.css&#x27;]</span></span><br><span class="line">  <span class="attr">styles</span>: [<span class="string">`</span></span><br><span class="line"><span class="string">    h1&#123;</span></span><br><span class="line"><span class="string">      color:blue;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">  `</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="comment">// styleUrls: [&#x27;./app.component.css&#x27;]</span></span><br><span class="line">  <span class="attr">styles</span>: [<span class="string">`</span></span><br><span class="line"><span class="string">    h1&#123;</span></span><br><span class="line"><span class="string">      color:blue;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">  `</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">AppComponent</span> &#123;</span><br><span class="line">  title = <span class="string">&#x27;lokiFirst&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>如果我們把 servers 元件的 template 內的 p 段落換成 h1，你會發現 app 元件的 style 只對 app 元件有效而對 servers 元件無感。之後再討論</p>
@@ -469,23 +454,23 @@
 <p>angular 不支援#id 的方式來指定，或是偽類例如 hover。通常這裡大概就這幾種方法來 selector。但絕大部分來說都只用最單純的元素選擇來操作。</p>
 </blockquote>
 <h2 id="Data-Binding-資料綁定"><a href="#Data-Binding-資料綁定" class="headerlink" title="Data Binding 資料綁定"></a>Data Binding 資料綁定</h2><p>資料綁定指的是一種通訊觀念，我們的程式邏輯與資料都寫在 TypeScript 裡面，而用戶是透過 template(HTML) 來獲得畫面，事後透過資料綁定進行輸出資料到畫面上。如先前出現的<code>&#123;&#123;title&#125;&#125;</code>，就是將我們從伺服器獲取且計算後所得到的 Data 要對用戶進行顯示。而由於一開始用戶只看到 template 以傳統靜態觀念來說已經結束通信了。資料綁定就是透過另一個通信來替換 html 上的內容。</p>
-<p>輸出 Data 到用戶的畫面上你可以選擇透過字串插植方式，也就是透過 <code>&#123;&#123; &#125;&#125;</code> 的語法達到。另一種屬性綁定，透過元素的屬性名稱或某表達式達到，例如`[property=data]。</p>
+<p>輸出 Data 到用戶的畫面上你可以選擇透過字串插植方式，也就是透過 <code>&#123;&#123; &#125;&#125;</code> 的語法達到。另一種屬性綁定，透過元素的屬性名稱或某表達式達到，例如&#96;[property&#x3D;data]。</p>
 <p>相反的方向，如果想要住戶將 Template 上的 data 傳給 TypeScript，可以透過事件的綁定來執行動作。或者兩種方向的同時雙向通信稱呼為雙向綁定 two-way binding。</p>
 <h3 id="String-Interpolation-字串插值"><a href="#String-Interpolation-字串插值" class="headerlink" title="String Interpolation 字串插值"></a>String Interpolation 字串插值</h3><p>這裡測試一下前面出現過的字串插值方式，值得注意畢竟是插值，因此我們也可以一個固定字串來插入到 template 內。</p>
-<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  serverState: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//這裡為了簡化代碼，有刪除掉預設提供的 OnInit 部分，但不影響練習</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServerComponent</span> &#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  <span class="attr">serverState</span>: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//這裡為了簡化代碼，有刪除掉預設提供的 OnInit 部分，但不影響練習</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight html"><figcaption><span>server.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;&#x27;Server&#x27;&#125;&#125; &#x27;s id = &#123;&#123;serverId&#125;&#125; and state = &#123;&#123;serverState&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>同前面環境，這個 server 元件被 servers 元件所使用沒有異動，此時檢查畫面上可看到，如我們期望那樣成功插入 TypeScript 的資料到畫面裡面。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Server &#x27;s id = 999 and state = offline</span><br></pre></td></tr></table></figure>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">Server &#x27;s id = 999 and state = offline</span><br></pre></td></tr></table></figure>
 
 <p>或者也可以插值一個 class method 來獲得一個結果，畢竟最終結果都是字串且可行的。</p>
-<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  serverState: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getServerState</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.serverState;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServerComponent</span> &#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  <span class="attr">serverState</span>: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">getServerState</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">serverState</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight html"><figcaption><span>server.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;&#x27;Server&#x27;&#125;&#125; &#x27;s id = &#123;&#123;serverId&#125;&#125; and state = &#123;&#123;getServerState()&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="Property-Binding-屬性綁定"><a href="#Property-Binding-屬性綁定" class="headerlink" title="Property Binding 屬性綁定"></a>Property Binding 屬性綁定</h3><p>前面介紹的字串插植邏輯很簡單，就是想插入一個字串到 template 上面去，而這裡的屬性綁定是根據一個表達式結果決定是否要對元素屬性來做添加與否。舉例來說我們回到 servers 元件，添加一個按鈕平常所鎖住不給按的。但一經過 TypeScript 一段操作後我們會開放這個按鈕可以按，也就是我們需要透過資料通信到 template 來要求某條件成立下移除 disabled 屬性。</p>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">disabled</span>&gt;</span>Add Server<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-server</span>&gt;</span><span class="tag">&lt;/<span class="name">app-server</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>來到 server 的 ts 部分，先宣告一個屬性為 boolean。同時利用 constructor 建構函式他會當元件 (class) 被建立並初始化時被執行。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;[app-servers]&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./servers.component.html&#x27;</span>,</span><br><span class="line">  <span class="comment">// template:`</span></span><br><span class="line">  <span class="comment">//   &lt;h1&gt;hello world&lt;/h1&gt;</span></span><br><span class="line">  <span class="comment">//   &lt;app-server&gt;&lt;/app-server&gt;</span></span><br><span class="line">  <span class="comment">// `,</span></span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./servers.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> </span>&#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.allowNewServer = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//為了簡化，這裡有先移除 cli 預設給的 onInit 相關代碼</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;[app-servers]&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./servers.component.html&#x27;</span>,</span><br><span class="line">  <span class="comment">// template:`</span></span><br><span class="line">  <span class="comment">//   &lt;h1&gt;hello world&lt;/h1&gt;</span></span><br><span class="line">  <span class="comment">//   &lt;app-server&gt;&lt;/app-server&gt;</span></span><br><span class="line">  <span class="comment">// `,</span></span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./servers.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> &#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">allowNewServer</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//為了簡化，這裡有先移除 cli 預設給的 onInit 相關代碼</span></span><br></pre></td></tr></table></figure>
 
 <p>接著回到我們的 template， 若要移除 disable 屬性，需想辦法獲得一個屬性寫法為<code>[disable]=false</code>。額外的我們把這個結果輸出在下方 p 段落做判斷。</p>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- &lt;button type=&quot;button&quot; disabled&gt;Add Server&lt;/button&gt; --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span></span></span><br><span class="line"><span class="tag">  <span class="attr">type</span>=<span class="string">&quot;button&quot;</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">disabled</span>]=<span class="string">&quot;!allowNewServer&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span>Add Server<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;!allowNewServer&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-server</span>&gt;</span><span class="tag">&lt;/<span class="name">app-server</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -498,7 +483,7 @@
 
 <p>因此如果你只是想簡單插入一些字串就用字串插值就可以。而指令類型或是元件通常會使用屬性綁定，觀念上你不應該在屬性綁定的等號右側使用<code>&#123;&#123;&#125;&#125;</code>來插入字串，而是透過表達式來處理這個屬性結果的值為何。這個例子來說屬性綁定要的是一個 Boolean 值而不是字串。</p>
 <h3 id="Event-Binding-事件綁定"><a href="#Event-Binding-事件綁定" class="headerlink" title="Event Binding 事件綁定"></a>Event Binding 事件綁定</h3><p>接下來我們可以透過一個事件來觸發通信，透過元件的 method 來修改原屬性的值。這裡為了看出效果我們做一個字串插值來呈現資料有取得且變動。同樣使用 servers 元件來增加一個屬性與方法。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> </span>&#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState=<span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.allowNewServer = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onCreateServer</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.serverCreatingState=<span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> &#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState=<span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">allowNewServer</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onCreateServer</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverCreatingState</span>=<span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>現在只要想辦法讓用戶去觸發這個 onCreateServer() 就能改變屬性資料。在 servers 的 html 部分我們需要指定一個 click 事件，在 Angular 內只需要透過屬性<code>(click)=*</code>就能代表一個點擊事件。同時為了方便判斷我們在下方進行字串插值顯示這個資料方便觀察。</p>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span></span></span><br><span class="line"><span class="tag">  <span class="attr">type</span>=<span class="string">&quot;button&quot;</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">disabled</span>]=<span class="string">&quot;!allowNewServer&quot;</span></span></span><br><span class="line"><span class="tag">  (<span class="attr">click</span>)=<span class="string">&quot;onCreateServer()&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span>Add Server<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;serverCreatingState&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -509,16 +494,16 @@
 </blockquote>
 <h4 id="透過-Event-Object-傳遞與使用"><a href="#透過-Event-Object-傳遞與使用" class="headerlink" title="透過 Event Object 傳遞與使用"></a>透過 Event Object 傳遞與使用</h4><p>使用事件綁定時，你可以嘗試從用戶那裏將整個觸發當下的事件物件，透過參數來傳遞給 TypeScript 去處理做監聽行為。要使用這個方式使用<code>$event</code>保留字變數來傳遞。每次的輸入都能傳遞一些數據給 TypeScript。而參數的強型別先暫時使用 Any 即可（實際上型別為 Event 型別）。</p>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span>&gt;</span>Server Name<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">(<span class="attr">input</span>)=<span class="string">&quot;onUpdateServerName($event)&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- ... --&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> </span>&#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState=<span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.allowNewServer = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onCreateServer</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.serverCreatingState=<span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onUpdateServerName</span>(<span class="params">event:<span class="built_in">any</span></span>)</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(event); <span class="comment">//可獲得 event 的 Object</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> &#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState=<span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">allowNewServer</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onCreateServer</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverCreatingState</span>=<span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onUpdateServerName</span>(<span class="params">event:<span class="built_in">any</span></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(event); <span class="comment">//可獲得 event 的 Object</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>此時試著打一些字在該 input 位置，從 console 能發現每次的 input 動作都能已成功獲得 event 物件，更實用的做法還能從 Target 這位置找到 input 的 value 值。因此我們調整一下代碼同時設定該型別為 Event。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> </span>&#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState = <span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  serverName = <span class="string">&#x27;&#x27;</span>; <span class="comment">//添加一個初始屬性為空字串</span></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.allowNewServer = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onCreateServer</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.serverCreatingState = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onUpdateServerName</span>(<span class="params">event: Event</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(event.target.value); <span class="comment">//報錯，因為 Event 這個型別沒有 event.target 這樣的位置</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> &#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState = <span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  serverName = <span class="string">&#x27;&#x27;</span>; <span class="comment">//添加一個初始屬性為空字串</span></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">allowNewServer</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onCreateServer</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverCreatingState</span> = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onUpdateServerName</span>(<span class="params">event: Event</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(event.<span class="property">target</span>.<span class="property">value</span>); <span class="comment">//報錯，因為 Event 這個型別沒有 event.target 這樣的位置</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>TypeScript 沒辦法知道這個型別下的有這樣的 event.target 位置，因此我們要改讓 TypeScript 知道這是一個 HTML 的 input 元素。在 event 前綴增加一個顯式轉換。讓 TypeScript 知道 event 是一個 HTML 的 input 元素會持有這樣的位置。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">onUpdateServerName</span>(<span class="params">event: Event</span>)</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log((&lt;HTMLInputElement&gt;event.target).value); <span class="comment">//將 event.target 轉為一個 HTML Input Element 型別</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="title function_">onUpdateServerName</span>(<span class="params">event: Event</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>((&lt;<span class="title class_">HTMLInputElement</span>&gt;event.<span class="property">target</span>).<span class="property">value</span>); <span class="comment">//將 event.target 轉為一個 HTML Input Element 型別</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>現在可以正常抓到這個 input 的 value 了。你可以在用戶上透過字串插值來抓到這個 value。</p>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span>&gt;</span>Server Name<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span></span></span><br><span class="line"><span class="tag">  <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">  (<span class="attr">input</span>)=<span class="string">&quot;onUpdateServerName($event)&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>&#123;&#123;serverName&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="title">onUpdateServerName</span>(<span class="params">event: Event</span>)</span> &#123;</span><br><span class="line">  <span class="comment">// console.log((&lt;HTMLInputElement&gt;event.target).value); //報錯，因為 Event 這個型別沒有 event.target 這樣的位置</span></span><br><span class="line">  <span class="built_in">this</span>.serverName = (&lt;HTMLInputElement&gt;event.target).value;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="title function_">onUpdateServerName</span>(<span class="params">event: Event</span>) &#123;</span><br><span class="line">  <span class="comment">// console.log((&lt;HTMLInputElement&gt;event.target).value); //報錯，因為 Event 這個型別沒有 event.target 這樣的位置</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">serverName</span> = (&lt;<span class="title class_">HTMLInputElement</span>&gt;event.<span class="property">target</span>).<span class="property">value</span>;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>記得在對 form 類型元素進行綁定時，需對<code>app.module.ts</code>進行 FormsModule 的 imports，這裡很順利是一開始我們就曾做過這件事。</p>
@@ -545,7 +530,7 @@
 <figure class="highlight html"><figcaption><span>*.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">appTurnGreen</span>&gt;</span>Receives a green background!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>指令的可以像元件的 selector 寫法那樣進行配置，或採用 CSS 的選擇器或元素名稱。要使用這個指令就是像這樣編寫 selector</p>
-<figure class="highlight ts"><figcaption><span>*.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Directive</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>:<span class="string">&#x27;[appTurnGreen]&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">TurnGreenDirective</span></span>&#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>*.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Directive</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>:<span class="string">&#x27;[appTurnGreen]&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">TurnGreenDirective</span>&#123;</span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>之後會介紹如何自定義指令，我們先介紹一些常用的內建指令。</p>
 <h3 id="ngIf-判斷"><a href="#ngIf-判斷" class="headerlink" title="ngIf 判斷"></a>ngIf 判斷</h3><p>就像 if 語句那樣，我們可以要求某條件下對 DOM 進行指令要求，使用 ngIf 必須前墜添加<code>*</code>號這是必需的，因為 ngIf 是一種結構指令，它會改變我們的 DOM 結構。舉例前面的小節練習，我們希望只有當有值才顯示 p，捨棄原本的三元字串做法。</p>
@@ -554,7 +539,7 @@
 <p>另一種作法是透過元件屬性 Boolean 來控制這個指令。</p>
 <figure class="highlight html"><figcaption><span>app.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">label</span>&gt;</span>UserName<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span></span></span><br><span class="line"><span class="tag">  <span class="attr">type</span>=<span class="string">&quot;text&quot;</span></span></span><br><span class="line"><span class="tag">  [(<span class="attr">ngModel</span>)]=<span class="string">&quot;username&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">disabled</span>]=<span class="string">&quot;username===&#x27;&#x27;&quot;</span></span></span><br><span class="line"><span class="tag">  (<span class="attr">click</span>)=<span class="string">&quot;onReset()&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span>RESET<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- &lt;p&gt;You input value is &#123;&#123;username===&#x27;&#x27;?&#x27;null&#x27;:username&#125;&#125;.&lt;/p&gt; --&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- &lt;p *ngIf=&quot;username!==&#x27;&#x27;&quot;&gt;You input value is &#123;&#123;username&#125;&#125;.&lt;/p&gt; --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> *<span class="attr">ngIf</span>=<span class="string">&quot;username!==&#x27;&#x27;&quot;</span>&gt;</span>You input value is &#123;&#123;username&#125;&#125;.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line">  username = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  showText = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">onReset</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.showText = <span class="literal">true</span>;</span><br><span class="line">    <span class="built_in">this</span>.username = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-root&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./app.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./app.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">AppComponent</span> &#123;</span><br><span class="line">  username = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  showText = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">onReset</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">showText</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">username</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="使用-else-增強-ngIf"><a href="#使用-else-增強-ngIf" class="headerlink" title="使用 else 增強 ngIf"></a>使用 else 增強 ngIf</h4><p>ngIf 可以搭配 else 來操作，原本的 if 僅判斷要不要輸出這個 DOM，添加 else 可以要求改換另一組 DOM 來輸出。這裡會用到 ng-template 將我們的自訂 template 範本。注意的是自訂 template 範本需要有名字 (<code>#</code>前綴）且指定給 else 知道要用哪個 template 範本。</p>
 <ul>
@@ -565,7 +550,7 @@
 <figure class="highlight html"><figcaption><span>app.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- &lt;p *ngIf=&quot;username!==&#x27;&#x27;&quot;&gt;You input value is &#123;&#123;username&#125;&#125;.&lt;/p&gt; --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> *<span class="attr">ngIf</span>=<span class="string">&quot;username!==&#x27;&#x27;;else noMessage&quot;</span>&gt;</span>You input value is &#123;&#123;username&#125;&#125;.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ng-template</span> #<span class="attr">noMessage</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h5</span> <span class="attr">style</span>=<span class="string">&quot;color:red&quot;</span>&gt;</span>You never input something there!!<span class="tag">&lt;/<span class="name">h5</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ng-template</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="ngStyle-樣式"><a href="#ngStyle-樣式" class="headerlink" title="ngStyle 樣式"></a>ngStyle 樣式</h3><p>ngStyle 是一種屬性指令，本身就是拿來代表 HTML 屬性的樣式表。因此使用 ngStyle 必需要對指定元素使用屬性綁定<code>[]</code>方式來運作。回到一開始的 lokiFirst 專案做練習。為了差異化 server 的 p 段落不同文字結果，我們透過建構函式內的 random 來做隨機產生。</p>
-<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  serverState: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.serverState = <span class="built_in">Math</span>.random() &gt; <span class="number">0.5</span> ? <span class="string">&#x27;online&#x27;</span> : <span class="string">&#x27;offline&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getServerState</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.serverState;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServerComponent</span> &#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  <span class="attr">serverState</span>: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverState</span> = <span class="title class_">Math</span>.<span class="title function_">random</span>() &gt; <span class="number">0.5</span> ? <span class="string">&#x27;online&#x27;</span> : <span class="string">&#x27;offline&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">getServerState</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">serverState</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>接著將 ngStyle 綁定給我們目標元素對象。這裡先指定一個固定紅色背景。觀看效果</p>
 <figure class="highlight html"><figcaption><span>server.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> [<span class="attr">ngStyle</span>]=<span class="string">&quot;&#123;background: &#x27;red&#x27;&#125;&quot;</span>&gt;</span></span><br><span class="line">  &#123;&#123;&#x27;Server&#x27;&#125;&#125; &#x27;s id = &#123;&#123;serverId&#125;&#125; and state = &#123;&#123;getServerState()&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -576,7 +561,7 @@
 <p>或者獨立出一個 method 為 getColor 來負責 return 獲得指定色。</p>
 <figure class="highlight html"><figcaption><span>server.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> [<span class="attr">ngStyle</span>]=<span class="string">&quot;&#123;</span></span></span><br><span class="line"><span class="string"><span class="tag">  background:getColor()</span></span></span><br><span class="line"><span class="string"><span class="tag">&#125;&quot;</span>&gt;</span></span><br><span class="line">  &#123;&#123;&#x27;Server&#x27;&#125;&#125; &#x27;s id = &#123;&#123;serverId&#125;&#125; and state = &#123;&#123;getServerState()&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerComponent</span> </span>&#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  serverState: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.serverState = <span class="built_in">Math</span>.random() &gt; <span class="number">0.5</span> ? <span class="string">&#x27;online&#x27;</span> : <span class="string">&#x27;offline&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">getServerState</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.serverState;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">getColor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.serverState === <span class="string">&#x27;online&#x27;</span> ? <span class="string">&#x27;green&#x27;</span> : <span class="string">&#x27;red&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Component</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;@angular/core&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="attr">styleUrls</span>: [<span class="string">&#x27;./server.component.css&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServerComponent</span> &#123;</span><br><span class="line">  <span class="attr">serverId</span>: <span class="built_in">number</span> = <span class="number">999</span>;</span><br><span class="line">  <span class="attr">serverState</span>: <span class="built_in">string</span> = <span class="string">&quot;offline&quot;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverState</span> = <span class="title class_">Math</span>.<span class="title function_">random</span>() &gt; <span class="number">0.5</span> ? <span class="string">&#x27;online&#x27;</span> : <span class="string">&#x27;offline&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">getServerState</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">serverState</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">getColor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">serverState</span> === <span class="string">&#x27;online&#x27;</span> ? <span class="string">&#x27;green&#x27;</span> : <span class="string">&#x27;red&#x27;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="ngClass-CSS-類別"><a href="#ngClass-CSS-類別" class="headerlink" title="ngClass CSS 類別"></a>ngClass CSS 類別</h3><p>如果 ngStyle 等價於控制指令添加 style，那 ngClass 則是代表控制指令添加 class name，透過此指令可進行增加或刪除 class name。首先我們先針對 server 元件建立一個樣式表，為了簡化代碼直接寫在<code>@Component</code>的 styles 陣列內。</p>
 <figure class="highlight ts"><figcaption><span>server.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span>(&#123;</span><br><span class="line">  <span class="attr">selector</span>: <span class="string">&#x27;app-server&#x27;</span>,</span><br><span class="line">  <span class="attr">templateUrl</span>: <span class="string">&#x27;./server.component.html&#x27;</span>,</span><br><span class="line">  <span class="comment">// styleUrls: [&#x27;./server.component.css&#x27;]</span></span><br><span class="line">  <span class="attr">styles</span>: [<span class="string">`</span></span><br><span class="line"><span class="string">    .online&#123;</span></span><br><span class="line"><span class="string">      color:white</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">  `</span>]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
@@ -585,14 +570,14 @@
 <figure class="highlight html"><figcaption><span>server.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">ngStyle</span>]=<span class="string">&quot;&#123;background:getColor()&#125;&quot;</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">ngClass</span>]=<span class="string">&quot;&#123;online:serverState===&#x27;online&#x27;&#125;&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line">  &#123;&#123;&#x27;Server&#x27;&#125;&#125; &#x27;s id = &#123;&#123;serverId&#125;&#125; and state = &#123;&#123;getServerState()&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="ngFor-迴圈"><a href="#ngFor-迴圈" class="headerlink" title="ngFor 迴圈"></a>ngFor 迴圈</h3><p>等同於迴圈，我們可以直接透過指令來控制 DOM 執行重複的元素輸出。我們試著將 servers 原本手動靜態三組輸出改成迴圈來作業。首先需要一個初始屬性 serverList 陣列放了這三筆資料名稱，接著到 html 部分使用 <code>*ngFor</code> 指令綁定給 app-server 這個元素。因為 ngFor 式結構指令改變了 DOM 所以會有<code>*</code>前綴。</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ServersComponent</span> </span>&#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState = <span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  serverName = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  serverList = [<span class="string">&#x27;test1&#x27;</span>, <span class="string">&#x27;test2&#x27;</span>, <span class="string">&#x27;test3&#x27;</span>]; <span class="comment">//一開始有三組</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">this</span>.allowNewServer = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onCreateServer</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.serverCreatingState = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">onUpdateServerName</span>(<span class="params">event: Event</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.serverName = (&lt;HTMLInputElement&gt;event.target).value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">ServersComponent</span> &#123;</span><br><span class="line">  allowNewServer = <span class="literal">false</span>;</span><br><span class="line">  serverCreatingState = <span class="string">&#x27;No Server Create!!&#x27;</span>;</span><br><span class="line">  serverName = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  serverList = [<span class="string">&#x27;test1&#x27;</span>, <span class="string">&#x27;test2&#x27;</span>, <span class="string">&#x27;test3&#x27;</span>]; <span class="comment">//一開始有三組</span></span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">allowNewServer</span> = <span class="literal">true</span>;</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onCreateServer</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverCreatingState</span> = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">onUpdateServerName</span>(<span class="params">event: Event</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">serverName</span> = (&lt;<span class="title class_">HTMLInputElement</span>&gt;event.<span class="property">target</span>).<span class="property">value</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight html"><figcaption><span>servers.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">app-server</span> *<span class="attr">ngFor</span>=<span class="string">&quot;let item of serverList&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">app-server</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>for/of 的觀念同 JavaScript 一樣使用而目前我們不會拿 item 做些什麼工作。現在你的 server 元件透過元素進行迴圈而產出的。為了可以讓使用者能增加列表，我們把按鈕綁定事件允許添加到 serverList 內，對 onCreateServer() 再調整一下：</p>
-<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="function"><span class="title">onCreateServer</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.serverCreatingState = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  <span class="built_in">this</span>.serverList.push(<span class="built_in">this</span>.serverName);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
+<p>for&#x2F;of 的觀念同 JavaScript 一樣使用而目前我們不會拿 item 做些什麼工作。現在你的 server 元件透過元素進行迴圈而產出的。為了可以讓使用者能增加列表，我們把按鈕綁定事件允許添加到 serverList 內，對 onCreateServer() 再調整一下：</p>
+<figure class="highlight ts"><figcaption><span>servers.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="title function_">onCreateServer</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">serverCreatingState</span> = <span class="string">&#x27;Now Server Created!!&#x27;</span>;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">serverList</span>.<span class="title function_">push</span>(<span class="variable language_">this</span>.<span class="property">serverName</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//...</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="小節練習-1"><a href="#小節練習-1" class="headerlink" title="小節練習"></a>小節練習</h3><ul>
 <li>建立切換按鈕，使用 event click 來控制一些事情。</li>
-<li>建立段落來顯示文字為 secret password = tuna，透過 ngIf 來判斷只有在按鈕次數基數當下才會出現</li>
+<li>建立段落來顯示文字為 secret password &#x3D; tuna，透過 ngIf 來判斷只有在按鈕次數基數當下才會出現</li>
 <li>每按幾次按鈕會出現幾次帶數字的段落 p，使用 ngFor 來執行。起始數字 1 開始</li>
 <li>使用 ngStyle，當數字 5 開始的段落 p 會有背景。</li>
 <li>使用 ngClass，當數字 5 開始的段落 p 會有白字。</li>
@@ -601,7 +586,7 @@
 
 <h4 id="透過-ngFor-獲得-index-值"><a href="#透過-ngFor-獲得-index-值" class="headerlink" title="透過 ngFor 獲得 index 值"></a>透過 ngFor 獲得 index 值</h4><p>利用作業內容繼續討論，ngFor 本身執行來源的是陣列，如果想抽出陣列的 index 值是可以用分號來操作。為了好看我們改顯示文字為時間，而 new Date 是內建 js 物件不需要宣告來源就能使用。</p>
 <figure class="highlight html"><figcaption><span>app.component.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">button</span> (<span class="attr">click</span>)=<span class="string">&quot;onToggleButton()&quot;</span>&gt;</span>BUTTON<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> *<span class="attr">ngIf</span>=<span class="string">&quot;showOn&quot;</span>&gt;</span>secret password = tuna<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span></span></span><br><span class="line"><span class="tag">  *<span class="attr">ngFor</span>=<span class="string">&quot;let item of logs;let i=index&quot;</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">ngStyle</span>]=<span class="string">&quot;&#123;background: i&gt;=4?&#x27;green&#x27;:&#x27;transparent&#x27;&#125;&quot;</span></span></span><br><span class="line"><span class="tag">  [<span class="attr">ngClass</span>]=<span class="string">&quot;&#123;addWhite: i&gt;=4&#125;&quot;</span></span></span><br><span class="line"><span class="tag">&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="function"><span class="title">onToggleButton</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">  <span class="built_in">this</span>.showOn = !<span class="built_in">this</span>.showOn;</span><br><span class="line">  <span class="comment">// this.logs.push(this.logs.length + 1);</span></span><br><span class="line">  <span class="built_in">this</span>.logs.push(<span class="keyword">new</span> <span class="built_in">Date</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><figcaption><span>app.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">//...</span></span><br><span class="line"><span class="title function_">onToggleButton</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">showOn</span> = !<span class="variable language_">this</span>.<span class="property">showOn</span>;</span><br><span class="line">  <span class="comment">// this.logs.push(this.logs.length + 1);</span></span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">logs</span>.<span class="title function_">push</span>(<span class="keyword">new</span> <span class="title class_">Date</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>透過 index 值拿來提供 ngColor 與 ngStyle 進行處理。</p>
 <h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><ul>
@@ -624,13 +609,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/11-23/js-react-4/" rel="prev" title="[學習之路] JS 前端框架 React - 高級">
-                  <i class="fa fa-chevron-left"></i> [學習之路] JS 前端框架 React - 高級
+                <a href="/2021/11-23/js-react-4/" rel="prev" title="[前端框架] React - 高級">
+                  <i class="fa fa-chevron-left"></i> [前端框架] React - 高級
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/04-15/js-angular-2/" rel="next" title="[學習之路] JS 前端框架 Angular - 元件和數據綁定">
-                  [學習之路] JS 前端框架 Angular - 元件和數據綁定 <i class="fa fa-chevron-right"></i>
+                <a href="/2022/04-15/js-angular-2/" rel="next" title="[前端框架] Angular - 元件、數據綁定、指令">
+                  [前端框架] Angular - 元件、數據綁定、指令 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -649,73 +634,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 

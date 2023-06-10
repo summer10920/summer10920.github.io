@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,12 +14,13 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="本系列主要重點想介紹CSS設計上你該有更好的處理方式來設計，包含你應該熟悉CSS所提供的原生變數、可預處理的Script編譯語言、可預後處理的擴展工具輔助。本第一篇將先會先介紹 CSS3 提供的變數與應用方式來說明。">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本系列主要重點想介紹CSS設計上你該有更好的處理方式來設計，包含你應該熟悉CSS所提供的原生變數、可預處理的Script編譯語言、可預後處理的擴展工具輔助。本第一篇將先會先介紹 CSS3 提供的變數與應用方式來說明。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[學習之路] CSS 進階的原生變數">
 <meta property="og:url" content="http://summer10920.github.io/2021/09-23/css-cssVariables/">
@@ -52,6 +51,10 @@
 
 
 
+
+
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
@@ -64,9 +67,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -79,14 +82,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -95,11 +98,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -132,15 +131,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -161,18 +154,17 @@
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -188,60 +180,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -259,11 +240,16 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[學習之路] CSS 進階的原生變數 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -280,13 +266,13 @@
 
       <time title="創建時間 ×2021-09-23 13:13:22" itemprop="dateCreated datePublished" datetime="2021-09-23T13:13:22+08:00">2021-09-23</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2021-10-19 14:14:34" itemprop="dateModified" datetime="2021-10-19T14:14:34+08:00">2021-10-19</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2021-10-19 14:14:34" itemprop="dateModified" datetime="2021-10-19T14:14:34+08:00">2021-10-19</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -315,14 +301,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>5471 <i>words</i></span>
+      <span>1,676</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>10 <i>mins</i></span>
+      <span>00:03:03</span>
     </span>
 </div>
 
@@ -332,8 +318,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p><img src="https://i.imgur.com/v8Pgkpa.png"><br>本系列主要重點想介紹CSS設計上你該有更好的處理方式來設計，包含你應該熟悉CSS所提供的原生變數、可預處理的Script編譯語言、可預後處理的擴展工具輔助。本第一篇將先會先介紹 CSS3 提供的變數與應用方式來說明。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/v8Pgkpa.png"><br>本系列主要重點想介紹CSS設計上你該有更好的處理方式來設計，包含你應該熟悉CSS所提供的原生變數、可預處理的Script編譯語言、可預後處理的擴展工具輔助。本第一篇將先會先介紹 CSS3 提供的變數與應用方式來說明。</p>
 <span id="more"></span>
 
 <p>如果你曾看過 <code>bootstrap.css</code> 的樣式表設計，很容易看到<code>var()</code>這樣的關鍵設計。使用變數的好處在於當你未來需要集中調整同樣的視覺（例如尺寸、色系等考量），透過變數修改就能完成同步調之改變。</p>
@@ -345,13 +330,13 @@
 <li>對指定元素採用之選擇器使用屬性與值時，其值處帶入此變數內容需透過<code>var()</code>來獲取。</li>
 <li>css 變數僅僅是帶入變數內容回歸原本 CSS 屬性值，其繼承性與優先權上與一般屬性有相同特性存在，也適用 Media Query 內。</li>
 </ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="css">    --first-<span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="css">    --second-<span class="attribute">color</span>: yellow;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#two</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#container</span> &#123;</span></span><br><span class="line"><span class="css">    --first-<span class="attribute">color</span>: green;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#three</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="css">    <span class="comment">/*高優先權來自 container*/</span></span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is blue<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;two&quot;</span>&gt;</span>color is blue | bg is yellow<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;container&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;three&quot;</span>&gt;</span>color is yellow | bg is green<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--first-color</span>: blue;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--second-color</span>: yellow;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#two</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#container</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--first-color</span>: green;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#three</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="language-css">    <span class="comment">/*高優先權來自 container*/</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is blue<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;two&quot;</span>&gt;</span>color is blue | bg is yellow<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;container&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;three&quot;</span>&gt;</span>color is yellow | bg is green<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>變數內容也能寫在另一組變數內之特殊用途。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  --first-<span class="attribute">color</span>: blue;</span><br><span class="line">  --second-<span class="attribute">color</span>: <span class="built_in">var</span>(--first-color);  <span class="comment">/*blue*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-pseudo">:root</span> &#123;</span><br><span class="line">  <span class="attr">--first-color</span>: blue;</span><br><span class="line">  <span class="attr">--second-color</span>: <span class="built_in">var</span>(--first-color);  <span class="comment">/*blue*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="預設值"><a href="#預設值" class="headerlink" title="預設值"></a>預設值</h2><p>css 自訂變數在<code>var()</code>獲取當下，第二參數為預設值。其作用當獲取變數來源不存在時將改用指定的常值帶入。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="comment">/* --first-color: blue; */</span></span></span><br><span class="line"><span class="css">    --second-<span class="attribute">color</span>: yellow;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#two</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is red beacause can&#x27;t find Variables Source<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;two&quot;</span>&gt;</span>color is blue | bg is yellow<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="comment">/* --first-color: blue; */</span></span></span><br><span class="line"><span class="language-css">    <span class="attr">--second-color</span>: yellow;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#two</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--first-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is red beacause can&#x27;t find Variables Source<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;two&quot;</span>&gt;</span>color is blue | bg is yellow<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="無效值"><a href="#無效值" class="headerlink" title="無效值"></a>無效值</h2><p>無效值為當變數內容（單位不符合或錯誤字串）無法適用於屬性帶入時，瀏覽器會自動根據以下規則處理：</p>
 <ol>
@@ -359,13 +344,13 @@
 <li>若找不到第二之指定值，將回歸瀏覽器預設外觀。</li>
 <li>注意這裡，<code>var()</code>所指定預設值不會列入考量，因為整個 var 作廢不成立。</li>
 </ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="css">    --first-<span class="attribute">color</span>: <span class="number">16px</span>;</span></span><br><span class="line"><span class="css">    --second-<span class="attribute">color</span>: yellow;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is transparent by Browser Default Color<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--first-color</span>: <span class="number">16px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--second-color</span>: yellow;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is transparent by Browser Default Color<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="JavaScript-操作"><a href="#JavaScript-操作" class="headerlink" title="JavaScript 操作"></a>JavaScript 操作</h2><p>可透過 JavaScript 來獲取與賦予變數，且根據 MDN 說明有以下幾點根據不同考量有不同作法。事實上方式跟 CSS 一般屬性的獲取賦予方法都相同。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 獲取方式一，如果是直接行內樣式所寫入的來查找</span></span><br><span class="line">element.style.getPropertyValue(<span class="string">&quot;--my-var&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 獲取方式二，根據完成（已套樣式表）getComputedStyle 函式來查找</span></span><br><span class="line">getComputedStyle(element).getPropertyValue(<span class="string">&quot;--my-var&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改方式</span></span><br><span class="line">element.style.setProperty(<span class="string">&quot;--my-var&quot;</span>, jsVar + <span class="number">4</span>);</span><br><span class="line"><span class="comment">//修改不可能寫回到 style 樣式表（唯讀），因此只能從行內樣式來增加。</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 獲取方式一，如果是直接行內樣式所寫入的來查找</span></span><br><span class="line">element.<span class="property">style</span>.<span class="title function_">getPropertyValue</span>(<span class="string">&quot;--my-var&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 獲取方式二，根據完成（已套樣式表）getComputedStyle 函式來查找</span></span><br><span class="line"><span class="title function_">getComputedStyle</span>(element).<span class="title function_">getPropertyValue</span>(<span class="string">&quot;--my-var&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改方式</span></span><br><span class="line">element.<span class="property">style</span>.<span class="title function_">setProperty</span>(<span class="string">&quot;--my-var&quot;</span>, jsVar + <span class="number">4</span>);</span><br><span class="line"><span class="comment">//修改不可能寫回到 style 樣式表（唯讀），因此只能從行內樣式來增加。</span></span><br></pre></td></tr></table></figure>
 
 <p>舉例寫在樣式表的狀況。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="css">    --first-<span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="css">    --second-<span class="attribute">color</span>: yellow;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="css">    <span class="attribute">font-size</span>: <span class="number">2rem</span>;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is transparent by Browser Default Color<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">  <span class="keyword">const</span></span></span><br><span class="line"><span class="javascript">    myid = <span class="built_in">document</span>.getElementById(<span class="string">&quot;one&quot;</span>),</span></span><br><span class="line"><span class="javascript">    myroot = <span class="built_in">document</span>.body;</span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">  <span class="comment">//因為變數寫在樣式表，因此得使用 getComputedStyle() 來查找</span></span></span><br><span class="line"><span class="javascript">  <span class="keyword">const</span></span></span><br><span class="line"><span class="javascript">    valid = getComputedStyle(myid).getPropertyValue(<span class="string">&#x27;--first-color&#x27;</span>),</span></span><br><span class="line"><span class="javascript">    valroot = getComputedStyle(myroot).getPropertyValue(<span class="string">&#x27;--first-color&#x27;</span>);</span></span><br><span class="line"><span class="javascript">  <span class="built_in">console</span>.log(valid, valroot); <span class="comment">// blue  blue</span></span></span><br><span class="line"><span class="javascript"></span></span><br><span class="line"><span class="javascript">  myid.style.setProperty(<span class="string">&#x27;--second-color&#x27;</span>,<span class="string">&#x27;red&#x27;</span>); <span class="comment">//對 p#one 添加屬性 style=&#x27;--second-color:red&#x27;</span></span></span><br><span class="line"><span class="javascript">  <span class="built_in">console</span>.log(myid.style.getPropertyValue(<span class="string">&#x27;--second-color&#x27;</span>)); <span class="comment">//red</span></span></span><br><span class="line"><span class="javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-pseudo">:root</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--first-color</span>: blue;</span></span><br><span class="line"><span class="language-css">    <span class="attr">--second-color</span>: yellow;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-id">#one</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="built_in">var</span>(--first-color, red);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="built_in">var</span>(--second-color);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">2rem</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;one&quot;</span>&gt;</span>color is yellow | bg is transparent by Browser Default Color<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">const</span></span></span><br><span class="line"><span class="language-javascript">    myid = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;one&quot;</span>),</span></span><br><span class="line"><span class="language-javascript">    myroot = <span class="variable language_">document</span>.<span class="property">body</span>;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  <span class="comment">//因為變數寫在樣式表，因此得使用 getComputedStyle() 來查找</span></span></span><br><span class="line"><span class="language-javascript">  <span class="keyword">const</span></span></span><br><span class="line"><span class="language-javascript">    valid = <span class="title function_">getComputedStyle</span>(myid).<span class="title function_">getPropertyValue</span>(<span class="string">&#x27;--first-color&#x27;</span>),</span></span><br><span class="line"><span class="language-javascript">    valroot = <span class="title function_">getComputedStyle</span>(myroot).<span class="title function_">getPropertyValue</span>(<span class="string">&#x27;--first-color&#x27;</span>);</span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">console</span>.<span class="title function_">log</span>(valid, valroot); <span class="comment">// blue  blue</span></span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  myid.<span class="property">style</span>.<span class="title function_">setProperty</span>(<span class="string">&#x27;--second-color&#x27;</span>,<span class="string">&#x27;red&#x27;</span>); <span class="comment">//對 p#one 添加屬性 style=&#x27;--second-color:red&#x27;</span></span></span><br><span class="line"><span class="language-javascript">  <span class="variable language_">console</span>.<span class="title function_">log</span>(myid.<span class="property">style</span>.<span class="title function_">getPropertyValue</span>(<span class="string">&#x27;--second-color&#x27;</span>)); <span class="comment">//red</span></span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="搭配-calc-用法"><a href="#搭配-calc-用法" class="headerlink" title="搭配 calc 用法"></a>搭配 calc 用法</h2><p>除了自訂變數能夠統一數值的套用，可以延伸更方便的去設計。假設元素自身持有變數<code>--i:5</code>，再搭配<code>calc()</code>之變數帶入就能獲得邏輯性的不同數值輸出。以下 2 組範例就是利用多個相同外觀元素搭配自身獨有的數字整合出不同的視覺角度與延遲動畫：</p>
 <h3 id="範例一"><a href="#範例一" class="headerlink" title="範例一"></a>範例一</h3><p>這裡示範一個 loading 動畫。</p>
@@ -432,73 +417,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 

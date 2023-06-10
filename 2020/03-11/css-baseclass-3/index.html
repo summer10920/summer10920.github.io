@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -16,12 +14,13 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","version":"8.7.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-<meta name="description" content="若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block &amp; Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。">
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.17.0","exturl":false,"sidebar":{"position":"left","width":400,"display":"post","padding":20,"offset":20},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block &amp; Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[基礎課程] CSS 教學（三）：盒子模型與定位點">
 <meta property="og:url" content="http://summer10920.github.io/2020/03-11/css-baseclass-3/">
@@ -33,7 +32,7 @@
 <meta property="og:image" content="https://i.imgur.com/WKXpVNl.png">
 <meta property="og:image" content="https://i.imgur.com/vCQc7zp.png">
 <meta property="article:published_time" content="2020-03-11T08:05:00.000Z">
-<meta property="article:modified_time" content="2022-02-27T17:40:32.590Z">
+<meta property="article:modified_time" content="2023-06-10T01:40:29.668Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="RWD 響應式網頁設計（假日班）">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
@@ -56,6 +55,10 @@
 
 
 
+
+
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
@@ -68,9 +71,9 @@
   <div class="headband"></div>
 
   <main class="main">
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <div class="column">
       <canvas id="lokiBanner" width="1920" height="200"></canvas>
-      <div class="header-inner"><div class="site-brand-container">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切換導航欄" role="button">
         <span class="toggle-line"></span>
@@ -83,14 +86,14 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">洛奇的邪惡組織手札</h1>
+      <p class="site-title">洛奇的邪惡組織手札</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
   </div>
 
   <div class="site-nav-right">
-    <div class="toggle popup-trigger">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
         <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
@@ -99,11 +102,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">65</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>文章<span class="badge">68</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
         </a>
@@ -136,15 +135,9 @@
     </div>
   </div>
 
-</div>
+</header>
         
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
   <aside class="sidebar">
 
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
@@ -160,23 +153,22 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B-Box-Model"><span class="nav-number">1.</span> <span class="nav-text">盒子模型 Box Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%80%E5%A1%8A%E7%9B%92%EF%BC%88block-box%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">區塊盒（block box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E5%85%A7%E7%9B%92%EF%BC%88inline-box%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">行內盒（inline box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E5%85%A7%E5%8D%80%E5%A1%8A%E7%9B%92%EF%BC%88inline-block-box%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">行內區塊盒（inline-block box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%88%89%E4%BE%8B%E7%A4%BA%E7%AF%84"><span class="nav-number">1.4.</span> <span class="nav-text">舉例示範</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B%E5%8F%83%E6%95%B8"><span class="nav-number">1.5.</span> <span class="nav-text">盒子模型參數</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#width%E3%80%81height"><span class="nav-number">1.5.1.</span> <span class="nav-text">width、height</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Margin%E3%80%81Padding"><span class="nav-number">1.5.2.</span> <span class="nav-text">Margin、Padding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Border"><span class="nav-number">1.5.3.</span> <span class="nav-text">Border</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#border-%E7%B0%A1%E5%AF%AB%E5%B1%AC%E6%80%A7"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">border 簡寫屬性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#border-radius-%E5%9C%93%E8%A7%92"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">border-radius 圓角</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#outline-%E5%A4%96%E5%81%B4"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">outline 外側</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%AF%80%E7%B7%B4%E7%BF%92%EF%BC%9A%E7%AE%97%E5%87%BA%E4%BB%A5%E4%B8%8B-margin%E3%80%81width-%E4%B9%8B-auto-%E5%80%BC"><span class="nav-number">1.5.4.</span> <span class="nav-text">小節練習：算出以下 margin、width 之 auto 值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E7%9A%84%E5%B1%AC%E6%80%A7%E7%B5%84%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">常見的屬性組合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#display"><span class="nav-number">1.6.1.</span> <span class="nav-text">display</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#min-width-amp-max-width"><span class="nav-number">1.6.2.</span> <span class="nav-text">min-width &amp; max-width</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Box-sizing"><span class="nav-number">1.6.3.</span> <span class="nav-text">Box-sizing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overflow"><span class="nav-number">1.6.4.</span> <span class="nav-text">overflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#visibility"><span class="nav-number">1.6.5.</span> <span class="nav-text">visibility</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%BD%8D-Position"><span class="nav-number">2.</span> <span class="nav-text">定位 Position</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%B0%8D%E5%AE%9A%E4%BD%8D-relative"><span class="nav-number">2.1.</span> <span class="nav-text">相對定位 relative</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D-absolute"><span class="nav-number">2.2.</span> <span class="nav-text">絕對定位 absolute</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E5%AE%9A%E4%BD%8D-position-fixed"><span class="nav-number">2.3.</span> <span class="nav-text">固定定位 position:fixed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E8%AA%AA%E6%98%8E-relative-amp-absolute-amp-flexd"><span class="nav-number">2.4.</span> <span class="nav-text">範例說明 relative &amp; absolute &amp; flexd</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A0%90%E8%A6%BD%E7%AF%84%E4%BE%8B%E6%95%88%E6%9E%9C"><span class="nav-number">2.4.1.</span> <span class="nav-text">預覽範例效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8-absolute-%E7%89%B9%E6%80%A7-%E6%8B%BF%E4%BE%86%E5%81%9A%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E8%87%B3%E4%B8%AD%E3%80%82"><span class="nav-number">2.4.2.</span> <span class="nav-text">利用 absolute 特性 拿來做水平垂直至中。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%8F%E6%80%A7%E5%AE%9A%E4%BD%8D-position-sticky"><span class="nav-number">2.5.</span> <span class="nav-text">黏性定位 position:sticky</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%AF%80%E7%B7%B4%E7%BF%92-Postition"><span class="nav-number">2.6.</span> <span class="nav-text">小節練習 - Postition</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B8%BD%E6%80%9D%E8%80%83%E7%B7%B4%E7%BF%92"><span class="nav-number">3.</span> <span class="nav-text">總思考練習</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%A1%E7%89%87%E6%8E%92%E7%89%88"><span class="nav-number">3.1.</span> <span class="nav-text">卡片排版</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94"><span class="nav-number">3.1.1.</span> <span class="nav-text">解答</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%A3%E5%91%8A%E9%8E%96%E9%A0%BB"><span class="nav-number">3.2.</span> <span class="nav-text">廣告鎖頻</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">解答</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B-Box-Model"><span class="nav-number">1.</span> <span class="nav-text">盒子模型 Box Model</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%80%E5%A1%8A%E7%9B%92%EF%BC%88block-box%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">區塊盒（block box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E5%85%A7%E7%9B%92%EF%BC%88inline-box%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">行內盒（inline box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E5%85%A7%E5%8D%80%E5%A1%8A%E7%9B%92%EF%BC%88inline-block-box%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">行內區塊盒（inline-block box）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%88%89%E4%BE%8B%E7%A4%BA%E7%AF%84"><span class="nav-number">1.4.</span> <span class="nav-text">舉例示範</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B%E5%8F%83%E6%95%B8"><span class="nav-number">1.5.</span> <span class="nav-text">盒子模型參數</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#width%E3%80%81height"><span class="nav-number">1.5.1.</span> <span class="nav-text">width、height</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Margin%E3%80%81Padding"><span class="nav-number">1.5.2.</span> <span class="nav-text">Margin、Padding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Border"><span class="nav-number">1.5.3.</span> <span class="nav-text">Border</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#border-%E7%B0%A1%E5%AF%AB%E5%B1%AC%E6%80%A7"><span class="nav-number">1.5.3.1.</span> <span class="nav-text">border 簡寫屬性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#border-radius-%E5%9C%93%E8%A7%92"><span class="nav-number">1.5.3.2.</span> <span class="nav-text">border-radius 圓角</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#outline-%E5%A4%96%E5%81%B4"><span class="nav-number">1.5.3.3.</span> <span class="nav-text">outline 外側</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%AF%80%E7%B7%B4%E7%BF%92%EF%BC%9A%E7%AE%97%E5%87%BA%E4%BB%A5%E4%B8%8B-margin%E3%80%81width-%E4%B9%8B-auto-%E5%80%BC"><span class="nav-number">1.5.4.</span> <span class="nav-text">小節練習：算出以下 margin、width 之 auto 值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A6%8B%E7%9A%84%E5%B1%AC%E6%80%A7%E7%B5%84%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">常見的屬性組合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#display"><span class="nav-number">1.6.1.</span> <span class="nav-text">display</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#min-width-amp-max-width"><span class="nav-number">1.6.2.</span> <span class="nav-text">min-width &amp; max-width</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Box-sizing"><span class="nav-number">1.6.3.</span> <span class="nav-text">Box-sizing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#overflow"><span class="nav-number">1.6.4.</span> <span class="nav-text">overflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#visibility"><span class="nav-number">1.6.5.</span> <span class="nav-text">visibility</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%BD%8D-Position"><span class="nav-number">2.</span> <span class="nav-text">定位 Position</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%B0%8D%E5%AE%9A%E4%BD%8D-relative"><span class="nav-number">2.1.</span> <span class="nav-text">相對定位 relative</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%95%E5%B0%8D%E5%AE%9A%E4%BD%8D-absolute"><span class="nav-number">2.2.</span> <span class="nav-text">絕對定位 absolute</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E5%AE%9A%E4%BD%8D-position-fixed"><span class="nav-number">2.3.</span> <span class="nav-text">固定定位 position:fixed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E8%AA%AA%E6%98%8E-relative-amp-absolute-amp-fixed"><span class="nav-number">2.4.</span> <span class="nav-text">範例說明 relative &amp; absolute &amp; fixed</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A0%90%E8%A6%BD%E7%AF%84%E4%BE%8B%E6%95%88%E6%9E%9C"><span class="nav-number">2.4.1.</span> <span class="nav-text">預覽範例效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8-absolute-%E7%89%B9%E6%80%A7-%E6%8B%BF%E4%BE%86%E5%81%9A%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E8%87%B3%E4%B8%AD%E3%80%82"><span class="nav-number">2.4.2.</span> <span class="nav-text">利用 absolute 特性 拿來做水平垂直至中。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%8F%E6%80%A7%E5%AE%9A%E4%BD%8D-position-sticky"><span class="nav-number">2.5.</span> <span class="nav-text">黏性定位 position:sticky</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%AF%80%E7%B7%B4%E7%BF%92-Postition"><span class="nav-number">2.6.</span> <span class="nav-text">小節練習 - Postition</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B8%BD%E6%80%9D%E8%80%83%E7%B7%B4%E7%BF%92"><span class="nav-number">3.</span> <span class="nav-text">總思考練習</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%A1%E7%89%87%E6%8E%92%E7%89%88"><span class="nav-number">3.1.</span> <span class="nav-text">卡片排版</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94"><span class="nav-number">3.1.1.</span> <span class="nav-text">解答</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%A3%E5%91%8A%E9%8E%96%E9%A0%BB"><span class="nav-number">3.2.</span> <span class="nav-text">廣告鎖頻</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E7%AD%94-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">解答</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
         <div class="site-overview-wrap sidebar-panel">
-          <div class="site-overview">
-            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Loki Jiang"
       src="/images/loki_img.jpg">
   <p class="site-author-name" itemprop="name">Loki Jiang</p>
   <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
 </div>
-<div class="site-state-wrap site-overview-item animated">
+<div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -192,60 +184,49 @@
       </div>
   </nav>
 </div>
-  <div class="links-of-author site-overview-item animated">
+  <div class="links-of-author animated">
       <span class="links-of-author-item">
-        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
       </span>
   </div>
 
-
-  <div class="links-of-blogroll site-overview-item animated">
-    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
-      其他資源
-    </div>
-    <ul class="links-of-blogroll-list">
-        <li class="links-of-blogroll-item">
-          <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
-        </li>
-        <li class="links-of-blogroll-item">
-          <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
-        </li>
-    </ul>
-  </div>
-
-          </div>
         </div>
       </div>
         <div class="back-to-top animated" role="button" aria-label="回到頂端">
           <i class="fa fa-arrow-up"></i>
           <span>0%</span>
-          <div class="lokiFull"></div>
         </div>
     </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
-    </header>
 
     
-  <div class="reading-progress-bar"></div>
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiui.com/" title="http:&#x2F;&#x2F;demob17300.lokiui.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiui.com/" title="http:&#x2F;&#x2F;blog.lokiui.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
 
-  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
-
+    </div>
 
     <div class="main-inner post posts-expand">
 
@@ -263,11 +244,16 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/loki_img.jpg">
       <meta itemprop="name" content="Loki Jiang">
-      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] CSS 教學（三）：盒子模型與定位點 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -284,13 +270,13 @@
 
       <time title="創建時間 ×2020-03-11 16:05:00" itemprop="dateCreated datePublished" datetime="2020-03-11T16:05:00+08:00">2020-03-11</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新於</span>
-        <time title="修改時間 ×2022-02-28 01:40:32" itemprop="dateModified" datetime="2022-02-28T01:40:32+08:00">2022-02-28</time>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
       </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間 ×2023-06-10 09:40:29" itemprop="dateModified" datetime="2023-06-10T09:40:29+08:00">2023-06-10</time>
+    </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
@@ -319,14 +305,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">文章字數 ×</span>
-      <span>16152 <i>words</i></span>
+      <span>5,490</span>
     </span>
     <span class="post-meta-item" title="所需閱讀時間">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
-      <span>29 <i>mins</i></span>
+      <span>00:09:59</span>
     </span>
 </div>
 
@@ -336,8 +322,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-        <p><img src="https://i.imgur.com/lElmG8a.png"></p>
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/lElmG8a.png"></p>
 <p>若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block &amp; Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。</p>
 <span id="more"></span>
 
@@ -392,7 +377,7 @@
 
 <h2 id="盒子模型參數"><a href="#盒子模型參數" class="headerlink" title="盒子模型參數"></a>盒子模型參數</h2><p><img src="https://i.imgur.com/j6U9BhG.png" alt="Image"></p>
 <blockquote>
-<p>計算一個區塊實際寬度為：實際總寬度 = width + padding + border + margin。</p>
+<p>計算一個區塊實際寬度為：實際總寬度 &#x3D; width + padding + border + margin。</p>
 </blockquote>
 <table>
 <thead>
@@ -466,7 +451,7 @@
 <p><strong>Border 樣式：</strong></p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-style */</span></span><br><span class="line"><span class="attribute">border-style</span>:&#123;value&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;-style:&#123;value&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  value=dotted, dashed, double, groove, ridge, inset</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  或四邊設定法 =&gt; 水平 垂直 | top right bottom left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="attribute">border-style</span>: dotted dashed;</span><br><span class="line"><span class="attribute">border-style</span>: dotted dashed double ridge;</span><br></pre></td></tr></table></figure>
 <p><strong>Border 顏色：</strong></p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-color*/</span></span><br><span class="line"><span class="attribute">border-color</span>:&#123;color&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;-<span class="attribute">color</span>:&#123;color&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  color=dotted, dashed, double, groove, ridge, inset</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  或四邊設定法 =&gt; 水平 垂直 | top right bottom left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="attribute">border-color</span>: red blue green yellow;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-color*/</span></span><br><span class="line"><span class="attribute">border-color</span>:&#123;<span class="attribute">color</span>&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;-<span class="attribute">color</span>:&#123;<span class="attribute">color</span>&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  color=dotted, dashed, double, groove, ridge, inset</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  或四邊設定法 =&gt; 水平 垂直 | top right bottom left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="attribute">border-color</span>: red blue green yellow;</span><br></pre></td></tr></table></figure>
 <p><strong>Border 寬度：</strong></p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-width */</span></span><br><span class="line"><span class="attribute">border-width</span>:&#123;medium|thin|thick|*length*&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;-<span class="attribute">width</span>:&#123;medium|thin|thick|*length*&#125;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">  或四邊設定法 =&gt; 水平 垂直 | top right bottom left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">  <span class="attribute">border-color</span>: red blue green yellow;</span><br></pre></td></tr></table></figure>
 
@@ -475,7 +460,7 @@
 <li>一但使用 Border 縮寫方式後，原本的所有 border-style,border-width,border-color 都會失效。則縮寫為主要優先且不互通。</li>
 <li>border 簡寫也有全部或局部，可分開指定。</li>
 </ol>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border */</span></span><br><span class="line"><span class="attribute">border</span>:&#123;width&#125; | &#123;style&#125; | &#123;<span class="attribute">color</span>&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;:&#123;width&#125; | &#123;style&#125; | &#123;<span class="attribute">color</span>&#125;;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">  <span class="attribute">border</span>: <span class="number">5px</span> solid <span class="number">#f00</span>;</span><br><span class="line">  <span class="attribute">border-bottom</span>: <span class="number">10px</span> solid <span class="number">#0f0</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border */</span></span><br><span class="line"><span class="attribute">border</span>:&#123;<span class="attribute">width</span>&#125; | &#123;style&#125; | &#123;<span class="attribute">color</span>&#125;;</span><br><span class="line"><span class="attribute">border</span>-&#123;<span class="attribute">direction</span>&#125;:&#123;<span class="attribute">width</span>&#125; | &#123;style&#125; | &#123;<span class="attribute">color</span>&#125;;;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  可全部或局部</span></span><br><span class="line"><span class="comment">  direction= top, right, bottom, left</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">  <span class="attribute">border</span>: <span class="number">5px</span> solid <span class="number">#f00</span>;</span><br><span class="line">  <span class="attribute">border-bottom</span>: <span class="number">10px</span> solid <span class="number">#0f0</span>;</span><br></pre></td></tr></table></figure>
 
 <h4 id="border-radius-圓角"><a href="#border-radius-圓角" class="headerlink" title="border-radius 圓角"></a>border-radius 圓角</h4><ol>
 <li><p>border-radius 其實也是個簡寫屬性，其實是<code>border-top-left-radius</code>、<code>border-top-right-radius</code>、<code>border-bottom-right-radius</code>、<code>border-bottom-left-radius</code>所簡化並對應四邊角。</p>
@@ -487,10 +472,11 @@
 <li><p>硬要說的話其實有 8 個圓角錨點（雙半徑），完整寫法為<code>border-radius: 10px 20px 30px 40px / 50px 60px 70px 80px</code>各別代表水平組↖ ↗ ↘ ↙ <kbd>/</kbd> 垂直組↖ ↗ ↘ ↙;</p>
 </li>
 <li><p>當部分錨點未指定時，會自動尋找簡寫屬性的該單位之合併規則描述。</p>
-<blockquote><p>如果很難懂，可以透過這個網站工具清楚說明錨點的設定變化。</p>
+  <blockquote><p>如果很難懂，可以透過這個網站工具清楚說明錨點的設定變化。</p>
 <footer><strong>Fancy Border Radius Generator</strong><cite><a target="_blank" rel="noopener" href="https://9elements.github.io/fancy-border-radius/full-control.html">9elements.github.io/fancy-border-radius/full-control.html</a></cite></footer></blockquote>
 <p>示範如下：</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-width */</span></span><br><span class="line"><span class="selector-tag">div</span>&#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;　<span class="comment">/*all*/</span></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">25%</span> <span class="number">10%</span>; <span class="comment">/* ↖↘ ↙↗ */</span></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span> <span class="number">20px</span> <span class="number">30px</span> <span class="number">40px</span>; <span class="comment">/* ↖ ↗ ↘ ↙ */</span></span><br><span class="line"></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">1em</span>/<span class="number">5em</span>;</span><br><span class="line">  <span class="comment">/* 等同於： */</span></span><br><span class="line">  <span class="attribute">border-top-left-radius</span>:     <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-top-right-radius</span>:    <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-bottom-right-radius</span>: <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-bottom-left-radius</span>:  <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line"></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">4px</span> <span class="number">3px</span> <span class="number">6px</span> / <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="comment">/* 等同於： */</span></span><br><span class="line">  <span class="attribute">border-top-left-radius</span>:     <span class="number">4px</span> <span class="number">2px</span>;</span><br><span class="line">  <span class="attribute">border-top-right-radius</span>:    <span class="number">3px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">border-bottom-right-radius</span>: <span class="number">6px</span> <span class="number">2px</span>;</span><br><span class="line">  <span class="attribute">border-bottom-left-radius</span>:  <span class="number">3px</span> <span class="number">4px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/********************************** border-width */</span></span><br><span class="line"><span class="selector-tag">div</span>&#123;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span>;　<span class="comment">/*all*/</span></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">25%</span> <span class="number">10%</span>; <span class="comment">/* ↖↘ ↙↗ */</span></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">10px</span> <span class="number">20px</span> <span class="number">30px</span> <span class="number">40px</span>; <span class="comment">/* ↖ ↗ ↘ ↙ */</span></span><br><span class="line"></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">1em</span>/<span class="number">5em</span>;</span><br><span class="line">  <span class="comment">/* 等同於： */</span></span><br><span class="line">  <span class="attribute">border-top-left-radius</span>:     <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-top-right-radius</span>:    <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-bottom-right-radius</span>: <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line">  <span class="attribute">border-bottom-left-radius</span>:  <span class="number">1em</span> <span class="number">5em</span>;</span><br><span class="line"></span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">4px</span> <span class="number">3px</span> <span class="number">6px</span> / <span class="number">2px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="comment">/* 等同於： */</span></span><br><span class="line">  <span class="attribute">border-top-left-radius</span>:     <span class="number">4px</span> <span class="number">2px</span>;</span><br><span class="line">  <span class="attribute">border-top-right-radius</span>:    <span class="number">3px</span> <span class="number">4px</span>;</span><br><span class="line">  <span class="attribute">border-bottom-right-radius</span>: <span class="number">6px</span> <span class="number">2px</span>;</span><br><span class="line">  <span class="attribute">border-bottom-left-radius</span>:  <span class="number">3px</span> <span class="number">4px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>當 border-collapse: collapse 成立時（共享 border)，圓角化將無效。</p>
 </li>
 <li><p>就算 border 不存在，圓角效果也能影響 background。</p>
@@ -506,7 +492,7 @@
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>:<span class="number">500px</span>;</span><br><span class="line">  <span class="attribute">height</span>:<span class="number">500px</span>;</span><br><span class="line">  <span class="comment">/* 外框 */</span></span><br><span class="line">  <span class="comment">/* </span></span><br><span class="line"><span class="comment">  outline-width: 10px;</span></span><br><span class="line"><span class="comment">  outline-style: solid;</span></span><br><span class="line"><span class="comment">  outline-color: #000; </span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="attribute">border</span>: <span class="number">10px</span> solid red;</span><br><span class="line">  <span class="attribute">outline</span>: <span class="number">10px</span> solid <span class="number">#000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="小節練習：算出以下-margin、width-之-auto-值"><a href="#小節練習：算出以下-margin、width-之-auto-值" class="headerlink" title="小節練習：算出以下 margin、width 之 auto 值"></a>小節練習：算出以下 margin、width 之 auto 值</h3><div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-tag">div</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">width</span>: <span class="number">500px</span>;</span></span><br><span class="line"><span class="css">    <span class="attribute">background</span>: black;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css">  <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">height</span>: <span class="number">30px</span>;</span></span><br><span class="line"><span class="css">    <span class="attribute">background</span>: <span class="number">#aaa</span>;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">500px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: black;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">30px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#aaa</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
 <p>試著根據不同的追加屬性之描述，對 p 的盒子現象進行了解</p>
 <ol>
 <li><p>求 p 的 margin-left 的 auto 值。</p>
@@ -601,7 +587,7 @@
 <p>也有 min-height &amp; max-height，但如果 max-height 設定內容超過該高度時，內容會溢出 overflow。</p>
 </blockquote>
 <p>舉例 1: 最大寬度為 500px，若小於 500px 寬度會以 40% 設定</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">  <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="css">    <span class="attribute">width</span>: <span class="number">40%</span>;</span></span><br><span class="line"><span class="css">    <span class="attribute">max-width</span>: <span class="number">500px</span>;</span></span><br><span class="line"><span class="css">    <span class="attribute">height</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="css">  &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque temporibus numquam omnis eaque, aliquam officiis magni aperiam molestias ipsa! Sunt sed magnam iste perspiciatis autem fuga nostrum pariatur labore totam odio ipsa quis quasi itaque, recusandae velit amet voluptatum corrupti voluptates optio sint odit. Omnis sint, fuga ut ipsum quasi fugiat autem asperiores animi voluptatum earum pariatur iusto rerum assumenda dignissimos possimus repudiandae quis quisquam? Rerum quaerat praesentium dolore corporis nihil voluptatibus ad odio atque ut laborum expedita, modi et a, nobis beatae nostrum molestias? Porro, doloribus rem sit blanditiis eos exercitationem eveniet autem laudantium consectetur sapiente saepe ipsum voluptatum.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">40%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">max-width</span>: <span class="number">500px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque temporibus numquam omnis eaque, aliquam officiis magni aperiam molestias ipsa! Sunt sed magnam iste perspiciatis autem fuga nostrum pariatur labore totam odio ipsa quis quasi itaque, recusandae velit amet voluptatum corrupti voluptates optio sint odit. Omnis sint, fuga ut ipsum quasi fugiat autem asperiores animi voluptatum earum pariatur iusto rerum assumenda dignissimos possimus repudiandae quis quisquam? Rerum quaerat praesentium dolore corporis nihil voluptatibus ad odio atque ut laborum expedita, modi et a, nobis beatae nostrum molestias? Porro, doloribus rem sit blanditiis eos exercitationem eveniet autem laudantium consectetur sapiente saepe ipsum voluptatum.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>舉例 2: 先控制最大寬度！不管介面有多大都不會超出這個範圍。當瀏覽器小於指定的 max-width 1200px 寬度時，會用原先設定的寬度百分比 80% 來計算。</p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">80%</span>;</span><br><span class="line">    <span class="attribute">max-width</span>: <span class="number">1200px</span>;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span> auto;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">300px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -616,11 +602,11 @@
 </thead>
 <tbody><tr>
 <td>content-box</td>
-<td>width = content area，預設</td>
+<td>width &#x3D; content area，預設</td>
 </tr>
 <tr>
 <td>border-box</td>
-<td>width = content + padding + border</td>
+<td>width &#x3D; content + padding + border</td>
 </tr>
 </tbody></table>
 <p>在 border-box 模式下，border、padding 都會算在寬度裡面，只需考量處理 margin。bootstrap 便是採用 border-box 模式。</p>
@@ -633,7 +619,7 @@
 
 <p>更細一點的參數如 overflow-x 與 overflow-y，能對 x 與 y 軸進行溢出處理。</p>
 <p><strong>舉例：使用 max-height 來建立純 CSS 的捲動軸</strong></p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-class">.slider</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">max-height</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">overflow-y</span>: hidden;</span></span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span></span><br><span class="line"><span class="css">    <span class="selector-class">.slider</span><span class="selector-pseudo">:hover</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">max-height</span>: <span class="number">600px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">overflow-y</span>: scroll;</span></span><br><span class="line"><span class="css">    &#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-class">.slider</span> &#123;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">max-height</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">overflow-y</span>: hidden;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">width</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-class">.slider</span><span class="selector-pseudo">:hover</span> &#123;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">max-height</span>: <span class="number">600px</span>;</span></span><br><span class="line"><span class="language-css">        <span class="attribute">overflow-y</span>: scroll;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="visibility"><a href="#visibility" class="headerlink" title="visibility"></a>visibility</h3><p>visibility 屬性可以讓盒子隱藏不見，但將原有的位置保留下來，反而 display:none 並不會保留空間下來。</p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.a</span> &#123;</span><br><span class="line">    <span class="comment">/* visible、hidden */</span></span><br><span class="line">    <span class="attribute">visibility</span>: hidden;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -645,9 +631,9 @@
 </li>
 <li><p>元素生成時會從父容器那取得初始顯示位置，如果：</p>
 <ol>
-<li>該元素設定為<code>相對定位</code>=&gt; 初始顯示位置不變、保留容器給的<code>Containing 位置</code>、以<code>Containing 位置</code>給的容器範圍為空間座標，以自己的空間座標做相對偏移。</li>
-<li>該元素設定為<code>絕對定位</code>=&gt; 初始顯示位置不變、捨棄容器給的<code>Containing 位置</code>，向祖先尋找最近已存在 Position 的空間座標做基準（最後找不到則認 viewpoint)，以別人的空間座標做絕對偏移。</li>
-<li>該元素設定為<code>固定定位</code>=&gt; 初始顯示位置不變、捨棄容器給的<code>Containing 位置</code>，直接向瀏覽器的 viewpoint 做基準，以網頁的空間座標做絕對偏移。</li>
+<li>該元素設定為<code>相對定位</code>&#x3D;&gt; 初始顯示位置不變、保留容器給的<code>Containing 位置</code>、以<code>Containing 位置</code>給的容器範圍為空間座標，以自己的空間座標做相對偏移。</li>
+<li>該元素設定為<code>絕對定位</code>&#x3D;&gt; 初始顯示位置不變、捨棄容器給的<code>Containing 位置</code>，向祖先尋找最近已存在 Position 的空間座標做基準（最後找不到則認 viewpoint)，以別人的空間座標做絕對偏移。</li>
+<li>該元素設定為<code>固定定位</code>&#x3D;&gt; 初始顯示位置不變、捨棄容器給的<code>Containing 位置</code>，直接向瀏覽器的 viewpoint 做基準，以網頁的空間座標做絕對偏移。</li>
 </ol>
 </li>
 <li><p>每產生一個具備偏移座標的 Position 時，就等於一個圖層產生，就能使用 z-index 屬性做圖層堆疊控制。</p>
@@ -661,10 +647,10 @@
 <li>若定位的容器不存在，<code>Containing 範圍</code>定義為網頁的整體容器區塊。</li>
 <li>設定 position 才可以使用 z-index 屬性。（重要）</li>
 </ul>
-<h2 id="固定定位-position-fixed"><a href="#固定定位-position-fixed" class="headerlink" title="固定定位 position:fixed"></a>固定定位 position:fixed</h2><p>absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的定位是會去找有安排定位之容器，真的找不到才會採網頁的定位之容器。flexd 是直接任網頁的定位之容器當偏移基準。</p>
-<h2 id="範例說明-relative-amp-absolute-amp-flexd"><a href="#範例說明-relative-amp-absolute-amp-flexd" class="headerlink" title="範例說明 relative &amp; absolute &amp; flexd"></a>範例說明 relative &amp; absolute &amp; flexd</h2><p>這裡直接實作比較三者差異會更容易理解。準備一個 5*4 的方塊圖，試著讓資料在畫面中央。</p>
+<h2 id="固定定位-position-fixed"><a href="#固定定位-position-fixed" class="headerlink" title="固定定位 position:fixed"></a>固定定位 position:fixed</h2><p>absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的定位是會去找有安排定位之容器，真的找不到才會採網頁的定位之容器。fixed 是直接任網頁的定位之容器當偏移基準。</p>
+<h2 id="範例說明-relative-amp-absolute-amp-fixed"><a href="#範例說明-relative-amp-absolute-amp-fixed" class="headerlink" title="範例說明 relative &amp; absolute &amp; fixed"></a>範例說明 relative &amp; absolute &amp; fixed</h2><p>這裡直接實作比較三者差異會更容易理解。準備一個 5*4 的方塊圖，試著讓資料在畫面中央。</p>
 <div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
-<figure class="highlight html"><figcaption><span>cssPosition_Rel_Abs_Flex.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- div.bigbox&gt;div.box&#123;$&#125;*20 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;main&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;bigbox&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>01<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>02<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>03<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>04<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>05<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>06<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box relative&quot;</span>&gt;</span>07<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>08<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>09<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box absolute&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>11<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>12<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>13<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>14<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>15<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>16<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box flexd&quot;</span>&gt;</span>17<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>18<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>19<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>20<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><figcaption><span>cssPosition_Rel_Abs_Flex.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- div.bigbox&gt;div.box&#123;$&#125;*20 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;main&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;bigbox&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>01<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>02<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>03<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>04<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>05<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>06<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box relative&quot;</span>&gt;</span>07<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>08<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>09<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box absolute&quot;</span>&gt;</span>10<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>11<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>12<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>13<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>14<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>15<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>16<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box fixed&quot;</span>&gt;</span>17<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>18<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>19<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>20<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight css"><figcaption><span>style.css</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#ccc</span>;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#ff0</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">/* flexbox 效果，使內容居中心 */</span></span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">  <span class="attribute">align-items</span>: center;</span><br><span class="line">  <span class="attribute">height</span>: <span class="built_in">calc</span>(<span class="number">100vh</span> - <span class="number">204px</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.main</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>:<span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#aaa</span>;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#f00</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.bigbox</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">300px</span>;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="built_in">rgb</span>(<span class="number">209</span>, <span class="number">248</span>, <span class="number">248</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">5px</span>;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">  <span class="attribute">background-color</span>: darkcyan;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">display</span>: inline-block;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
 
@@ -679,14 +665,15 @@
 <li><p>後續教學上我們採用<strong>方法一</strong>來解決 （較多狀況可以解析，如果可以兩法都去理解）。此時你的畫面應該如下：<br><img src="https://i.imgur.com/vCQc7zp.png" alt="Image"></p>
 </li>
 <li><p>添加三種 position 效果到各位置。理解這些定位點解析：</p>
-<figure class="highlight css"><figcaption><span>style.css</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.relative</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">background</span>: brown;</span><br><span class="line">  <span class="attribute">top</span>: -<span class="number">30px</span>;</span><br><span class="line">  <span class="attribute">left</span>: -<span class="number">30px</span>;</span><br><span class="line">  <span class="comment">/* 空間仍在僅偏移 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.absolute</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">background</span>: blueviolet;</span><br><span class="line">  <span class="comment">/* 預設位置不變，父容器失去該元素 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.flexd</span>&#123;</span><br><span class="line">  <span class="attribute">position</span>: fixed;</span><br><span class="line">  <span class="attribute">background</span>: darkgreen;</span><br><span class="line">  <span class="comment">/* 解讀奇怪的預設位置 =&gt;</span></span><br><span class="line"><span class="comment">    1. 因為 inline-block 關係，會緊鄰前者旁邊</span></span><br><span class="line"><span class="comment">    2. 失去父容器的強迫換行，所以 overflow</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight css"><figcaption><span>style.css</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.relative</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">background</span>: brown;</span><br><span class="line">  <span class="attribute">top</span>: -<span class="number">30px</span>;</span><br><span class="line">  <span class="attribute">left</span>: -<span class="number">30px</span>;</span><br><span class="line">  <span class="comment">/* 空間仍在僅偏移 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.absolute</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">background</span>: blueviolet;</span><br><span class="line">  <span class="comment">/* 預設位置不變，父容器失去該元素 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.fixed</span>&#123;</span><br><span class="line">  <span class="attribute">position</span>: fixed;</span><br><span class="line">  <span class="attribute">background</span>: darkgreen;</span><br><span class="line">  <span class="comment">/* 解讀奇怪的預設位置 =&gt;</span></span><br><span class="line"><span class="comment">    1. 因為 inline-block 關係，會緊鄰前者旁邊</span></span><br><span class="line"><span class="comment">    2. 失去父容器的強迫換行，所以 overflow</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
 <li><p>試著解讀以下各種狀況：</p>
 </li>
 </ol>
 <ul>
 <li>.absolute 設定偏移量 (top,bottom,left,right) 尋找落點</li>
 <li>.bigbox, .main, body 選一組設定 relative，尋找。absolute 落點</li>
-<li>.flexd 設定偏移量 (top,bottom,left,right) 尋找落點</li>
+<li>.fixed 設定偏移量 (top,bottom,left,right) 尋找落點</li>
 <li>3 組都設定 z-index 屬性，帶入正值與負值解析圖層位置</li>
 <li>挑幾組號碼給他指定 absolute 或 relative 看看圖層位置</li>
 </ul>
@@ -722,7 +709,7 @@
 <h3 id="解答"><a href="#解答" class="headerlink" title="解答"></a>解答</h3><ol>
 <li>父容器 relation 與子元素 absolute 與 top&amp;right</li>
 <li>父容器有綁定 width 但子元素 float</li>
-<li>父容器總寬 960，瀏覽器預設是 content-box(width = content) 模式所以全部算入一共是 m20+b2+p20+w300=&gt;342*3&gt;960 超過，反之 border-box 模式 (width = content + padding + border) 下為 m20+w300=320*3=960。</li>
+<li>父容器總寬 960，瀏覽器預設是 content-box(width &#x3D; content) 模式所以全部算入一共是 m20+b2+p20+w300&#x3D;&gt;342*3&gt;960 超過，反之 border-box 模式 (width &#x3D; content + padding + border) 下為 m20+w300&#x3D;320*3&#x3D;960。</li>
 </ol>
 <h2 id="廣告鎖頻"><a href="#廣告鎖頻" class="headerlink" title="廣告鎖頻"></a>廣告鎖頻</h2><p>本練習包含 JQ 語法負責按鈕控制（未學習過不影響本題思考），思考以下問題：</p>
 <ol>
@@ -777,73 +764,191 @@
   <footer class="footer">
     <div class="footer-inner">
 
+  
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-chart-line"></i>
+        </span>
+        <span title="全站總字數">518,427</span>
+      </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-coffee"></i>
+        </span>
+        <span title="全站總閱讀時間">15:42:36</span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_uv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-user"></i>
+        </span>
+        <span class="site-uv" title="訪客總數">
+          <span id="busuanzi_value_site_uv"></span>
+        </span>
+      </span>
+      <span class="post-meta-item" id="busuanzi_container_site_pv">
+        <span class="post-meta-item-icon with-love">
+          <i class="fa fa-eye"></i>
+        </span>
+        <span class="site-pv" title="總瀏覽次數">
+          <span id="busuanzi_value_site_pv"></span>
+        </span>
+      </span>
 
-<div class="copyright">
-  <span>
-    <span class="with-love">
-      <i class="fa fa-star"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
-  </span>
-
-  <span>
-    <span class="post-meta-item-icon with-love">
-      <i class="fas fa-copyright"></i>
-    </span>
-    2020 – 
-    <span itemprop="copyrightYear">2023</span> All rights reserved.
-  </span>
-</div>
-<div class="wordcount busuanzi-count">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="全站總字數">1784952 <i>words</i></span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="全站總閱讀時間">3245 <i>mins</i></span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_uv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-user"></i>
-    </span>
-    <span class="site-uv" title="訪客總數">
-      <span id="busuanzi_value_site_uv"></span><i> visitors</i>
-    </span>
-  </span>
-  <span class="post-meta-item" id="busuanzi_container_site_pv">
-    <span class="post-meta-item-icon with-love">
-      <i class="fa fa-eye"></i>
-    </span>
-    <span class="site-pv" title="總瀏覽次數">
-      <span id="busuanzi_value_site_pv"></span><i> watched</i>
-    </span>
-  </span>
-</div>
+    <div class="copyright">
+      <span class="with-love">
+        <i class="fa fa-star"></i>
+      </span>
+      <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+      <span class="post-meta-item-icon with-love">
+        <i class="fas fa-copyright"></i>
+      </span>
+      2020 – 
+      <span itemprop="copyrightYear">2023</span> All rights reserved.
+    </div>
+  
     </div>
   </footer>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
 
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.11.2/dist/mermaid.min.js","integrity":"sha256-lBK8/r0PCT3qtPtIvDcaT+20nHioFbzRGg36kOJ+wz4="}}</script>
-  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
+  
+  <script>
+    var bszCaller,
+      bszTag;
+    !function () {
+      var c,
+        d,
+        e,
+        a = !1,
+        b = [];
+      ready = function (c) {
+        return a || "interactive" === document.readyState || "complete" === document.readyState
+          ? c.call(document)
+          : b.push(function () {
+            return c.call(this)
+          }),
+        this
+      },
+      d = function () {
+        for (var a = 0, c = b.length; c > a; a++) 
+          b[a].apply(document);
+        b = []
+      },
+      e = function () {
+        a || (
+          a = !0, d.call(window), document.removeEventListener
+          ? document.removeEventListener("DOMContentLoaded", e, !1)
+          : document.attachEvent && (document.detachEvent("onreadystatechange", e), window == window.top && (clearInterval(c), c = null)))
+      },
+      document.addEventListener
+        ? document.addEventListener("DOMContentLoaded", e, !1)
+        : document.attachEvent && (document.attachEvent("onreadystatechange", function () {
+          /loaded|complete/.test(document.readyState) && e()
+        }), window == window.top && (c = setInterval(function () {
+          try {
+            a || document
+              .documentElement
+              .doScroll("left")
+          } catch (b) {
+            return
+          }
+          e()
+        }, 5)))
+    }(),
+    bszCaller = {
+      fetch: function (a, b) {
+        var c = "BusuanziCallback_" + Math.floor(1099511627776 * Math.random());
+        window[c] = this.evalCall(b),
+        a = a.replace("=BusuanziCallback", "=" + c),
+        scriptTag = document.createElement("SCRIPT"),
+        scriptTag.type = "text/javascript",
+        scriptTag.defer = !0,
+        scriptTag.src = a,
+        scriptTag.referrerPolicy = "no-referrer-when-downgrade",
+        document
+          .getElementsByTagName("HEAD")[0]
+          .appendChild(scriptTag)
+      },
+      evalCall: function (a) {
+        return function (b) {
+          ready(function () {
+            try {
+              a(b),
+              scriptTag
+                .parentElement
+                .removeChild(scriptTag)
+            } catch (c) {
+              bszTag.hides()
+            }
+          })
+        }
+      }
+    },
+    bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback", function (a) {
+      bszTag.texts(a),
+      bszTag.shows()
+    }),
+    bszTag = {
+      bszs: [
+        "site_pv", "page_pv", "site_uv"
+      ],
+      texts: function (a) {
+        this
+          .bszs
+          .map(function (b) {
+            var c = document.getElementById("busuanzi_value_" + b);
+            c && (c.innerHTML = a[b].toLocaleString())
+          })
+      },
+      hides: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "none")
+          })
+      },
+      shows: function () {
+        this
+          .bszs
+          .map(function (a) {
+            var b = document.getElementById("busuanzi_container_" + a);
+            b && (b.style.display = "inline")
+          })
+      }
+    };
+  </script>
 
 
 
