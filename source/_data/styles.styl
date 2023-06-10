@@ -84,54 +84,40 @@ figure.highlight {
 }
 
 /* ***********header banner style */
-.header {
-  overflow: hidden;
-  position: relative;
-  z-index: 5;
+.main {
+  .column {
+    position: relative;
 
-  canvas#lokiBanner {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    z-index: -1;
-  }
+    canvas#lokiBanner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+    }
 
-  .header-inner {
-    padding-top: 40px;
+    header.header {
+      padding-top: 40px;
+      z-index: 1;
+      position: relative;
 
-    .main-menu a {
-      color: #eee;
-      transition: 1s;
-
-      .badge {
+      .main-menu a {
+        color: #eee;
         transition: 1s;
-      }
-
-      &:hover, &.menu-item-active {
-        color: var(--main);
-        border-bottom: 1px solid var(--main);
 
         .badge {
-          background-color: var(--main);
-          color: #eee;
+          transition: 1s;
+        }
+
+        &:hover, &.menu-item-active {
+          color: var(--main);
+          border-bottom: 1px solid var(--main);
+
+          .badge {
+            background-color: var(--main);
+            color: #eee;
+          }
         }
       }
-    }
-  }
-}
-
-a:hover {
-  color: var(--main);
-  border-bottom: 1px solid var(--main);
-}
-
-.site-nav-toggle, .site-nav-right {
-  .toggle {
-    color: #fff;
-
-    .toggle-line {
-      background: #fff;
     }
   }
 }
@@ -165,7 +151,7 @@ a:hover {
     width: 50%;
     pointer-events: none;
     border: 0;
-    transition: 1s;
+    animation-fill-mode: none;
     filter: opacity(0.5);
 
     img {

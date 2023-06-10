@@ -94,7 +94,7 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 # theme: landscape
-theme: next-v8.7.0
+theme: next-v8.17.0
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
