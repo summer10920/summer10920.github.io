@@ -345,6 +345,6 @@ function getcount(who) { // 計分且將紅色變綠色  who=0~8
 
 {% note default %}
 **示範參考：** 
-- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/whackMole)
-- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JS/whackMole/)
+- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JSJQ/tree/master/vanillaJS/whackMole)
+- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/whackMole/)
 {% endnote %}

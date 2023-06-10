@@ -19,7 +19,6 @@ date: 2020-04-21 12:14:22
 2. 找到適合的位置規劃大`<div>`，裡面有廣告圖片，並利用 CSS 功能使滿版並半透明背景
 3. 同上，裡面還有一個按鈕，可以觸發 JS 事件關閉這個大`<div>`使其 display:none
 4. 再來結合 cookie 功能，針對時效性使這個大 div+JS 不再出現
----
 
 # 規劃有內容的 HTML
 你可以挑選一個喜歡的 Youtube 影片當作我們的內容（或者任何的 HTML 內容都可）。直接使用的使用一個 div 去 iframe API 塞入 youtube，畫面隨意的有資料即可。
@@ -215,6 +214,6 @@ else document.getElementById("adFull").remove();//移除該廣告 div
 ---
 {% note default %}
 **示範參考：**
-- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/adCookie)
-- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JS/adCookie/)
+- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JSJQ/tree/master/vanillaJS/adCookie)
+- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/adCookie/)
 {% endnote %}
