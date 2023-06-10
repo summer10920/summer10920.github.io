@@ -10,7 +10,7 @@ tag:
 date: 2020-04-21 21:45:13
 ---
 ![](https://i.imgur.com/D8v3RVP.png)
-本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0)。
+本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。
 <!-- more -->
 
 大致設計步驟如下：
@@ -143,7 +143,6 @@ retime();
 ---
 # 文字表示法
 這裡比較簡單的使用文字就能代表時間，我們把功能擴展到除了時分秒，還有年月日與日期。以及多一個 CSS animation 效果去裝飾 RGB。
-
 
 ## HTML+CSS
 ```html
@@ -293,6 +292,6 @@ re_time();
 ---
 {% note default %}
 **示範參考：**
-- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/digiClock)
-- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JS/digiClock/)
+- [View Full Code](https://github.com/summer10920/studies_TeachDemo_JSJQ/tree/master/vanillaJS/digiClock)
+- [DEMO Page](https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/digiClock/)
 {% endnote %}
