@@ -1,17 +1,8 @@
 diff --git a/node_modules/hexo-word-counter/lib/helper.js b/node_modules/hexo-word-counter/lib/helper.js
-index 143419c..6db0f97 100644
+index 3400ee1..95b6cfd 100644
 --- a/node_modules/hexo-word-counter/lib/helper.js
 +++ b/node_modules/hexo-word-counter/lib/helper.js
-@@ -2,7 +2,7 @@
- 
- let config = {};
- 
--module.exports.setConfig = function(_config) {
-+module.exports.setConfig = function (_config) {
-   config = _config;
- };
- 
-@@ -10,30 +10,42 @@ function getSymbols(post) {
+@@ -10,30 +10,44 @@ function getSymbols(post) {
    return post.length;
  }
  
@@ -34,6 +25,7 @@ index 143419c..6db0f97 100644
 +  const sDisplay = ('00' + s).slice(-2);
 +  return hDisplay + mDisplay + sDisplay;
  }
+ 
 +// function getFormatTime(minutes, suffix) {
 +//   const fHours = Math.floor(minutes / 60);
 +//   let fMinutes = Math.floor(minutes - (fHours * 60));
@@ -44,9 +36,8 @@ index 143419c..6db0f97 100644
 +//     ? fMinutes + ' ' + suffix // < 59 => 59 mins.
 +//     : fHours + ':' + ('00' + fMinutes).slice(-2); // = 61 => 1:01
 +// }
- 
--module.exports.symbolsCount = function(post) {
-+module.exports.symbolsCount = function (post) {
++
+ module.exports.symbolsCount = function(post) {
    let symbolsResult = getSymbols(post);
 -  if (symbolsResult > 9999) {
 -    symbolsResult = Math.round(symbolsResult / 1000) + 'k'; // > 9999 => 11k
@@ -54,48 +45,43 @@ index 143419c..6db0f97 100644
 -    symbolsResult = (Math.round(symbolsResult / 100) / 10) + 'k'; // > 999 => 1.1k
 -  } // < 999 => 111
 -  return symbolsResult;
++  return symbolsResult.toLocaleString();
 +  // if (symbolsResult > 9999) {
 +  //   symbolsResult = Math.round(symbolsResult / 1000) + 'k'; // > 9999 => 11k
 +  // } else if (symbolsResult > 999) {
 +  //   symbolsResult = (Math.round(symbolsResult / 100) / 10) + 'k'; // > 999 => 1.1k
 +  // } // < 999 => 111
-+  return symbolsResult.toLocaleString();
++  // return symbolsResult;
  };
  
--module.exports.symbolsTime = function(post, awl = config.awl, wpm = config.wpm, suffix = config.suffix) {
--  const minutes = Math.round(getSymbols(post) / (awl * wpm));
+ module.exports.symbolsTime = function(post, awl, wpm = config.wpm, suffix = config.suffix) {
+-  const minutes = Math.round(getSymbols(post) / wpm);
 -  return getFormatTime(minutes, suffix);
-+module.exports.symbolsTime = function (post, awl = config.awl, wpm = config.wpm, suffix = config.suffix) {
-+  // const minutes = Math.round(getSymbols(post) / (awl * wpm));
-+  // return getFormatTime(minutes, suffix);
 +  const seconds = Math.round(getSymbols(post) / (awl * wpm) * 60);
 +  return getFormatTime(seconds, suffix);
++  // const minutes = Math.round(getSymbols(post) / wpm);
++  // return getFormatTime(minutes, suffix);
  };
  
  function getSymbolsTotal(site) {
-@@ -44,14 +56,18 @@ function getSymbolsTotal(site) {
-   return symbolsResultCount;
- }
+@@ -46,12 +60,15 @@ function getSymbolsTotal(site) {
  
--module.exports.symbolsCountTotal = function(site) {
-+module.exports.symbolsCountTotal = function (site) {
+ module.exports.symbolsCountTotal = function(site) {
    const symbolsResultTotal = getSymbolsTotal(site);
 -  return symbolsResultTotal < 1000000
 -    ? Math.round(symbolsResultTotal / 1000) + 'k' // < 999k => 111k
 -    : (Math.round(symbolsResultTotal / 100000) / 10) + 'm'; // > 999k => 1.1m
-+  // return symbolsResultTotal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 +  return symbolsResultTotal.toLocaleString();
 +  // return symbolsResultTotal < 1000000
 +  //   ? Math.round(symbolsResultTotal / 1000) + 'k' // < 999k => 111k
 +  //   : (Math.round(symbolsResultTotal / 100000) / 10) + 'm'; // > 999k => 1.1m
  };
  
--module.exports.symbolsTimeTotal = function(site, awl = config.awl, wpm = config.wpm, suffix = config.suffix) {
--  const minutes = Math.round(getSymbolsTotal(site) / (awl * wpm));
+ module.exports.symbolsTimeTotal = function(site, awl, wpm = config.wpm, suffix = config.suffix) {
+-  const minutes = Math.round(getSymbolsTotal(site) / wpm);
 -  return getFormatTime(minutes, suffix);
-+module.exports.symbolsTimeTotal = function (site, awl = config.awl, wpm = config.wpm, suffix = config.suffix) {
-+  // const minutes = Math.round(getSymbolsTotal(site) / (awl * wpm));
-+  // return getFormatTime(minutes, suffix);
 +  const seconds = Math.round(getSymbolsTotal(site) / (awl * wpm) * 60);
 +  return getFormatTime(seconds, suffix);
++  // const minutes = Math.round(getSymbolsTotal(site) / wpm);
++  // return getFormatTime(minutes, suffix);
  };
