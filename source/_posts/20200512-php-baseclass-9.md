@@ -69,7 +69,7 @@ unlink("upload/".$newname);
    - 按鈕有 [預覽]，能提交 form 資料到 api.php
 3. 設計`api.php`，能將 form 表單的資料包含圖片路徑（記得存入空間）一起轉成 SESSION 或 COOKIE，接著導向到 preview.php。導向連結用`header('location:preview.php');`
 4. 設計`preview.php`，主要是能自動依版型 (link 到 layout.css) 跟 session 資訊（或 cookie) 整合到 HTML，成為完整的 vCard 畫面。另外提供返回按鈕，設計為`<button onclick="window.history.go(-1)">回頁面</button>`
-5. 發揮所學去規劃 HTML+CSS，或者去偷老師的 [示範網站](http://phpdemo.lokiui.com/ch6_hw/)。
+5. 發揮所學去規劃 HTML+CSS，或者去偷老師的 [示範網站](http://phpdemo.lokiwebs.com/ch6_hw/)。
 
 {% note default %}
 **以上課題之完整代碼：** [view full code](https://gist.github.com/summer10920/d271a5797f3091a75f933f0d88ec6424)
