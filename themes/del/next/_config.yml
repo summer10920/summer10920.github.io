@@ -190,7 +190,7 @@ site_state: true
 # Value before `||` delimiter is the target permalink, value after `||` delimiter is the name of Font Awesome icon.
 social:
   GitHub: https://github.com/summer10920 || github
-  E-Mail: mailto:summer10920@gmail.com || envelope
+  E-Mail: mailto:blog@lokiwebs.com || envelope
   CodePen: https://codepen.io/summer10920/pens/public || codepen
   # LinkedIn: https://www.linkedin.com/in/loki-jiang || linkedin
   # vTiger (TW非官方): https://www.facebook.com/yourname || facebook

@@ -258,7 +258,7 @@ nothing added to commit but untracked files present (use "git add" to track)
 > L:\git_study>git log
 
 commit 59a2dc41b127fc84226b77f80004c29f39a1dada (HEAD -master)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Mon Sep 14 23:09:57 2020 +0800
 
     第一次的提交練習
@@ -293,14 +293,14 @@ nothing to commit, working tree clean
 
 > L:\git_study>git log
 commit 1b1cc5b62768cd1d1fdc52546a11d5bd37db84b3 (HEAD -master)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Mon Sep 14 23:42:54 2020 +0800
 
     這是第二次的 commit 提交
     並使用完整的提交資訊編寫
 
 commit 59a2dc41b127fc84226b77f80004c29f39a1dada
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Mon Sep 14 23:09:57 2020 +0800
 
     第一次的提交練習
@@ -377,20 +377,20 @@ nothing to commit, working tree clean
 > L:\git_study>git log
 
 commit a46dd157b09221fadff4ede08a7dad43475ab54d (HEAD -master)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Tue Sep 15 00:57:35 2020 +0800
 
     我增加了一行文字
 
 commit 1b1cc5b62768cd1d1fdc52546a11d5bd37db84b3
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Mon Sep 14 23:42:54 2020 +0800
 
     這是第二次的 commit 提交
     並使用完整的提交資訊編寫
 
 commit 59a2dc41b127fc84226b77f80004c29f39a1dada
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Mon Sep 14 23:09:57 2020 +0800
 
     第一次的提交練習
@@ -755,25 +755,25 @@ Changes to be committed:
 > L:\git_study>git log
 commit 3108c0986bfe71f3602739d207fa42e52841f4fa (HEAD -> master)
 Merge: e396c95 33c510d
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Sat Sep 26 01:30:08 2020 +0800
 
     解決衝突了
 
 commit e396c953a1a36456e42c0d3cc101c1e76932f11f
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Sat Sep 26 01:28:10 2020 +0800
 
     master 修改了內容
 
 commit 33c510d70ba8ee0cb1400fee3ab541ad7953e80d (iss53)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Sat Sep 26 01:27:39 2020 +0800
 
     iss53 修改了內容
 
 commit 1bde0b9455cd01d749ec866f006620b0e5ade0ef
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Sat Sep 26 01:26:35 2020 +0800
 
     初始的內容
@@ -833,7 +833,7 @@ L:\git_study>git branch
 > L:\git_study>git show
 
 commit 169dfcd0026218b076308c89c540330f98eff934 (HEAD -master, tag: v0.1)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:05:38 2020 +0800
 
     first commit
@@ -870,7 +870,7 @@ v0.2
 # 查詢所有 git 快照完整資訊
 > L:\git_study>git show
 commit 93c54337f0d82cb98c1b7553fd6ba0087955d8f0 (HEAD -master, tag: v0.2)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:09:40 2020 +0800
 
     second commit
@@ -891,7 +891,7 @@ index 69763a7..2c98e76 100644
 
 > L:\git_study>git show v0.1
 commit 169dfcd0026218b076308c89c540330f98eff934 (tag: v0.1)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:05:38 2020 +0800
 
     first commit
@@ -917,7 +917,7 @@ index 0000000..69763a7
 
 > L:\git_study>git show v0.2
 commit 93c54337f0d82cb98c1b7553fd6ba0087955d8f0 (HEAD -master, tag: v0.2)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:09:40 2020 +0800
 
     second commit
@@ -942,13 +942,13 @@ index 69763a7..2c98e76 100644
 > L:\git_study>git log
 
 commit 93c54337f0d82cb98c1b7553fd6ba0087955d8f0 (HEAD -> master, tag: v0.2)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:09:40 2020 +0800
 
     second commit
 
 commit 169dfcd0026218b076308c89c540330f98eff934 (tag: v0.1-tw, tag: v0.1)
-Author: Loki Jiang <summer10920@gmail.com>
+Author: Loki Jiang <blog@lokiwebs.com>
 Date:   Fri Sep 25 14:05:38 2020 +0800
 
     first commit
