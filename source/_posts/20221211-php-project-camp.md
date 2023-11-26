@@ -54,6 +54,11 @@ INSERT INTO `_loki_user` (`id`, `name`, `password`, `acitve`) VALUES (NULL, 'adm
 
 ```php function.php
 <?php
+/***
+* 可添加這兩行，如果發生http 500而無法出現錯誤資訊
+* error_reporting(E_ALL);  
+* ini_set('display_errors', 1);
+***/
 session_save_path('tmp'); //修改 tmp 路徑
 session_start(); //open session
 
@@ -492,7 +497,7 @@ foreach ($rows as $row) {
     <td>' . $row['price'] . '</td>
     <td>' . $row['phone'] . ' | ' . $row['mail'] . '</td>
     <td>' . $row['createDate'] . '</td>
-    <td><a class="btn btn-danger btn-sm" href="function.php?' . http_build_query($getAry) . '">刪除</a></td>
+    <td><a class="btn btn-danger btn-sm" href="./function.php?' . http_build_query($getAry) . '">刪除</a></td>
     </tr>';
     //原本的 <td>'.$row['del'].'</td>換掉
 }
@@ -725,7 +730,7 @@ foreach ($rows as $row) {
 }
 ?>
 
-<form class="container-fluid px-4" method="post" action="function.php?do=mdyPallet">
+<form class="container-fluid px-4" method="post" action="./function.php?do=mdyPallet">
   <h1 class="mt-4">營位參數設定</h1>
   <div class="row row-cols-1 row-cols-sm-2">
     <?= $htmlCode ?>
@@ -799,6 +804,10 @@ if (isset($_GET['do'])) {
 ### 重製 db.json 為 db.json.php
 將原本根目錄下的 db.json 複製為 db.json.php，並修改前台原本的`plugins\lokiCalendar.js`內之`db.json`檔案路徑更改為`db.json.php` 進行該檔案調整：
 
+```js plugins\lokiCalendar.js
+fetchPath = './db.json.php',
+```
+
 - 將原本的內容改成 string 方式用 php 的邏輯儲存起來，此時格式叫做 json string
 - 將 json string 轉換解碼為純陣列使用。此時格式叫做 json array，這裡我們稍晚再做陣列整理保留
 - 再者要提供在畫面內容上之前，記得宣告網頁格式 Content-Type 為 json。
@@ -807,6 +816,11 @@ if (isset($_GET['do'])) {
 
 ```php db.json.php
 <?php
+/***
+* 可添加這兩行，如果發生http 500而無法出現錯誤資訊
+* error_reporting(E_ALL);  
+* ini_set('display_errors', 1);
+***/
 require_once("./function.php");
 
 $dbJSONStr = '{
@@ -1009,7 +1023,12 @@ echo json_encode($dbJSONAry); //將 php 的經修改的 array 以 json(string) �
 到時候會是以 textarea 讓業者編譯此內容，我們需要以普通的字串來存入資料庫。然而 textarea 支援斷行，所以你可以從 phpmyadmin 去一個個斷行，或改以下指令方式新增。對此建立資料表，以及建立資料參閱 db.json：
 
 ```sql command history
-CREATE TABLE `project_camp`.`_loki_holiday` ( `id` INT NOT NULL AUTO_INCREMENT , `year` TEXT NOT NULL , `date` TEXT NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+CREATE TABLE `project_camp`.`_loki_holiday` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `year` text NOT NULL,
+  `date` text DEFAULT NULL,
+  PRIMARY KEY (`id`))
+) ENGINE = InnoDB;
 
 INSERT INTO `_loki_holiday` VALUES (NULL, '2023', '2023-01-02\r\n2023-01-20\r\n2023-01-23\r\n2023-01-24\r\n2023-01-25\r\n2023-01-26\r\n2023-01-27\r\n2023-02-27\r\n2023-02-28\r\n2023-04-03\r\n2023-04-04\r\n2023-04-05\r\n2023-06-22\r\n2023-06-23\r\n2023-09-29\r\n2023-10-09\r\n2023-10-10');
 INSERT INTO `_loki_holiday` VALUES (NULL, '2024', '2024-01-01');
@@ -1169,7 +1188,7 @@ foreach ($rows as $row) {
 }
 
 ?>
-<form class="container-fluid px-4" method="post" action="function.php?do=mdyHoliday">
+<form class="container-fluid px-4" method="post" action="./function.php?do=mdyHoliday">
   <h1 class="mt-4">國定假日</h1>
   <div class="row row-cols-1 row-cols-sm-3">
     <?= $htmlCode ?>
@@ -1383,10 +1402,10 @@ case 'newOrder':
 CREATE TABLE `project_camp`.`_loki_daily_state` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `date` DATE NOT NULL,
-  `aArea` INT NOT NULL,
-  `bArea` INT NOT NULL,
-  `cArea` INT NOT NULL,
-  `dArea` INT NOT NULL,
+  `aArea` INT NOT NULL DEFAULT 0,
+  `bArea` INT NOT NULL DEFAULT 0,
+  `cArea` INT NOT NULL DEFAULT 0,
+  `dArea` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
@@ -1728,7 +1747,7 @@ $htmlCode .= '<tr>
   <td>' . $row['price'] . '</td>
   <td>' . $row['phone'] . ' | ' . $row['mail'] . '</td>
   <td>' . $row['createDate'] . '</td>
-  <td><a class="btn btn-danger btn-sm" href="function.php?' . http_build_query($getAry) . '">刪除</a></td>
+  <td><a class="btn btn-danger btn-sm" href="./function.php?' . http_build_query($getAry) . '">刪除</a></td>
   </tr>';
 ```
 
@@ -1774,7 +1793,7 @@ $dateNum = array_map(function ($date) {
 
 $lessDay = min($dateNum) < time() ?
   '<span class="btn btn-secondary btn-sm disabled">過期</span>' :
-  '<a class="btn btn-danger btn-sm" href="function.php?' . http_build_query($getAry) . '">刪除</a>';
+  '<a class="btn btn-danger btn-sm" href="./function.php?' . http_build_query($getAry) . '">刪除</a>';
 
 $htmlCode .= '<tr>
   <td>' . $row['name'] . '</td>
@@ -1799,7 +1818,7 @@ $htmlCode .= '<tr>
 
 ```html login.html
 <!-- ... -->
-<form action="function.php?do=login" method="post">
+<form action="./function.php?do=login" method="post">
   <div class="form-floating mb-3">
     <input class="form-control" id="inputAccount" name="inputAccount" type="text" placeholder="name@example.com" required/>
     <label for="inputAccount">Account</label>
@@ -1857,7 +1876,7 @@ if (empty($_SESSION['admin'])) header('Location:/');
 登出方式只要清除 session 導向回首頁即可。
 
 ```php header.php
-<li><a class="dropdown-item" href="function.php?do=logout">登出</a></li>
+<li><a class="dropdown-item" href="./function.php?do=logout">登出</a></li>
 ```
 ```php function.php
 case 'logout':
@@ -1976,24 +1995,28 @@ RewriteRule ^ %{REQUEST_URI}.php [NC,L]
 - 調整過去在 HTM 上的相關 URL 寫法
 ```php login.php
 // ...
-<form action="function?do=login" method="post">
+<form action="./function?do=login" method="post">
 ```
-```js lokiCalendar
+```js lokiCalendar.js
+//...
+fetchPath = './db.json',
 //...
 fetch('/function?do=newOrder', {
+// ...
+});
 ```
 ```php header.php
-<li><a class="dropdown-item" href="function?do=logout">登出</a></li>
+<li><a class="dropdown-item" href="./function?do=logout">登出</a></li>
 ```
 ```php main-holiday.php
 //...
-<form class="container-fluid px-4" method="post" action="function?do=mdyHoliday">
+<form class="container-fluid px-4" method="post" action="./function?do=mdyHoliday">
 ```
 ```php main-orderList.php
 //...
-'<a class="btn btn-danger btn-sm" href="function?' . http_build_query($getAry) . '">刪除</a>';
+'<a class="btn btn-danger btn-sm" href="./function?' . http_build_query($getAry) . '">刪除</a>';
 ```
 ```php main-pallet.php
 //...
-<form class="container-fluid px-4" method="post" action="function?do=mdyPallet">
+<form class="container-fluid px-4" method="post" action="./function?do=mdyPallet">
 ```
