@@ -28,7 +28,7 @@ date: 2022-12-11 21:38:38
 - **source**
 本教材前端起始素材，內包含前台完整版型資料與訂單表單。
 - **final**
-本教材之完整結果DEMO檔案。
+本教材之完整結果 DEMO 檔案。
 - **backed_template**
 本教材所需之後台版型素材，提供本教學所需建置之版型檔案。
 
@@ -55,7 +55,7 @@ INSERT INTO `_loki_user` (`id`, `name`, `password`, `acitve`) VALUES (NULL, 'adm
 ```php function.php
 <?php
 /***
-* 可添加這兩行，如果發生http 500而無法出現錯誤資訊
+* 可添加這兩行，如果發生 http 500 而無法出現錯誤資訊
 * error_reporting(E_ALL);  
 * ini_set('display_errors', 1);
 ***/
@@ -363,19 +363,20 @@ foreach ($rows as $row) {
 此時需要依賴前台的表單建立，也就是透過真實下訂之後轉給後端來執行資料庫寫入，讓後台可以看到單筆訂單追加。前台設計的位置為 index.html，同時透過 API 方式提交訂單給後端。
 
 ### 修改 plugins\lokiCalendar.js
-API 位置原本為一個測試用的 fake 站點，修改調整回後端指定處。這裡合併利用 function.php 來完成（你應該另外建立一個專門與前台對接的 api.php，但由於範例只有一組 api 所以這裡簡約合併使用 function.php)。
+API 位置原本為一個測試用的 fake 站點，修改調整回後端指定處。這裡新開一個 api.php 並利用 request function.php 來完成一些初始規劃。
 
 ```js plugins\lokiCalendar.js
 // fetch('https://jsonplaceholder.typicode.com/posts', {
-fetch('/function.php?do=newOrder', {
+fetch('./api.php?do=newOrder', {
 ```
 
-### 規劃 function.php
+### 規劃 api.php
 此時預覽一下 function.php，除了價格前端的前台提交不會傳遞過來（這也是保護真正的金額由後端自家伺服器來計算而不是由客戶來告知金額費用）。因此稍晚我們後端還需要透過資料庫去更新正確的金額。我們先完成訂單存入的行為。
 
-```php function.php
+```php api.php
+require_once './function.php';
 // api todo
-if (isset($_GET['to'])) {
+if (isset($_GET['do'])) {
   switch ($_GET['do']) {
     case 'newOrder':
       print_r($_POST);
@@ -435,8 +436,12 @@ function saveOrder($sqlCode) {
   return $sql->insert('order_list', $sqlCode)->queryString; //如果 SQL 指令成功，可以捕獲到這個 String
 }
 
+```
+
+```php api.php
+require_once './function.php';
 // api todo
-if (isset($_GET['to'])) {
+if (isset($_GET['do'])) {
   switch ($_GET['do']) {
     case 'newOrder':
 
@@ -541,6 +546,9 @@ function delOrder($id) {
   // UPDATE _loki_order_list SET del=1 WHERE id=5  參考
 }
 
+```
+```php api.php
+require_once './function.php';
 // api todo
 if (isset($_GET['do'])) {
   switch ($_GET['do']) {
@@ -730,7 +738,7 @@ foreach ($rows as $row) {
 }
 ?>
 
-<form class="container-fluid px-4" method="post" action="./function.php?do=mdyPallet">
+<form class="container-fluid px-4" method="post" action="./api.php?do=mdyPallet">
   <h1 class="mt-4">營位參數設定</h1>
   <div class="row row-cols-1 row-cols-sm-2">
     <?= $htmlCode ?>
@@ -755,8 +763,7 @@ foreach ($rows as $row) {
 - updatePallet 保持乾淨，只需向 PDO 做 update 並回傳結果。且 PDO 的 update 之前已設計過，我們可以重複利用
 - 回到 case，既然會跑 4 次要確保沒有錯誤，可以自訂一個 boolean 為 true，只要有任何一次迴圈的 updatePallet 回傳捕獲失敗就改 false。離開迴圈後觀察此變數是否仍保持 true 就能代表 PDO 都順利，可以導向返回後台頁面。
 
-```php
-<?php
+```php function.php
 //...
 
 ///////////// custom function
@@ -767,6 +774,9 @@ function updatePallet($id, $set) {
   return $sql->update('pallet', $set, 'id=' . $id)->queryString;
 }
 
+```
+```php api.php
+require_once './function.php';
 // api todo
 if (isset($_GET['do'])) {
   switch ($_GET['do']) {
@@ -817,7 +827,7 @@ fetchPath = './db.json.php',
 ```php db.json.php
 <?php
 /***
-* 可添加這兩行，如果發生http 500而無法出現錯誤資訊
+* 可添加這兩行，如果發生 http 500 而無法出現錯誤資訊
 * error_reporting(E_ALL);  
 * ini_set('display_errors', 1);
 ***/
@@ -1133,7 +1143,7 @@ function getHoliday() {
 ## 修改資料
 目前階段將進行後台的修改提交動作，與前面 pallet 設計大同小異，僅要注意的是前面是數字這裡是字串，因此需要特別增加跳脫字元`\`來追加`'`單引符號。而 textarea 本身的斷行會自處理不用管理。
 
-- form 表單本身提交位置到 function.php?do=mdyHoliday
+- form 表單本身提交位置到 api.php?do=mdyHoliday
 - 與前面 pallet 做法相同，以陣列方式命名 HTML 元素之 name 屬性。並 hidden id 值提交，後端處理時以 id 陣列跑出 index 再跨 date 陣列。
 - 同樣這裡會跑 3 次 SQL，因此是否成功可以用 flag 機制判斷。最後若都順利將進行重新導向。
 
@@ -1143,6 +1153,9 @@ function updateHoliday($id, $set) {
   global $sql;
   return $sql->update('holiday', $set, 'id=' . $id)->queryString;
 }
+```
+```php api.php
+require_once './function.php';
 // api todo
 if (isset($_GET['do'])) {
   switch ($_GET['do']) {
@@ -1188,7 +1201,7 @@ foreach ($rows as $row) {
 }
 
 ?>
-<form class="container-fluid px-4" method="post" action="./function.php?do=mdyHoliday">
+<form class="container-fluid px-4" method="post" action="./api.php?do=mdyHoliday">
   <h1 class="mt-4">國定假日</h1>
   <div class="row row-cols-1 row-cols-sm-3">
     <?= $htmlCode ?>
@@ -1582,6 +1595,69 @@ foreach ($data[1] as $row) {
 </div>
 ```
 
+### db.json.php
+回到 db.json.php 這裡，試圖能產生原本的所需的 booked 陣列內容。利用已經規劃的 getDaily （獲取每日的四組營位的已售量），來試著產生符合規格的資料。
+
+嘗試比對以下 SQL 指令的結果與 db.json 的格式
+
+```sql SQL command
+SELECT * FROM `_loki_daily_state` WHERE date>=DATE(CURRENT_DATE()) ORDER BY date;
+```
+```json db.json
+{
+  "booked": [
+    {
+      "date": "2022-12-25",
+      "sellout": {
+        "aArea": 10,
+        "bArea": 10,
+        "cArea": 10,
+        "dArea": 10
+      }
+    },
+    {
+      "date": "2022-12-16",
+      "sellout": {
+        "aArea": 10,
+        "bArea": 10,
+        "cArea": 10,
+        "dArea": 10
+      }
+    }
+  ]
+}
+```
+
+我們可以透過採用 array_map 方式將$rows 轉換，最後記得覆蓋原本的 `$dbJSONAry['booked']`。
+
+```php db.json.php
+// ...
+
+// booked data
+$rows = getDaily();
+$booked = array_map(function ($row) {
+  return [
+    'date' => $row['date'],
+    'sellout' => [
+      'aArea' => $row['aArea'],
+      'bArea' => $row['bArea'],
+      'cArea' => $row['cArea'],
+      'dArea' => $row['dArea'],
+    ]
+  ];
+}, $rows);
+
+//overwrite to json
+$dbJSONAry = json_decode($dbJSONStr, true);
+
+//each data overwrite
+$dbJSONAry['pallet'] = $pallet; //更新指定的值
+$dbJSONAry['nationalHoliday'] = $nationalHoliday; //更新指定的值
+$dbJSONAry['booked'] = $booked; //更新指定的值
+```
+
+試著操作幾個訂單生成，是否前台的數量有更新異動。
+
 ## 資料寫入
 此時隨著訂單生成時，後台只會成功訂單資料，不會更新到此每日房況。寫入該資料庫_loki_daily_status 的時機為每次新增訂單下，除了原本對_loki_order_list 進行 INSERT 外，也要對_loki_daily_state 變化。
 
@@ -1812,13 +1888,13 @@ $htmlCode .= '<tr>
 ## 登入頁面到後台
 將 file 目錄下的 login.html 搬移到根目錄上，方便拜訪`localhost/login.html`能操作登入表單。
 
-- 修改 form 的 action 方式，指向到 function.php?do=login，帳密使用 post 方式傳送。
+- 修改 form 的 action 方式，指向到 api.php?do=login，帳密使用 post 方式傳送。
 - 將一開始因測試完畢而註解的 checkUserSaveSession() 再釋放回來。該函式用途為，只要提供帳密就能確認是否帳戶存在並自動存入 session。
 - 同上，因此試圖將提交的 post 轉入該函式內，若成功則轉向到 admin.php
 
 ```html login.html
 <!-- ... -->
-<form action="./function.php?do=login" method="post">
+<form action="./api.php?do=login" method="post">
   <div class="form-floating mb-3">
     <input class="form-control" id="inputAccount" name="inputAccount" type="text" placeholder="name@example.com" required/>
     <label for="inputAccount">Account</label>
@@ -1846,7 +1922,9 @@ function checkUserSaveSession($acc, $pwd) {
   return $check;
 }
 //...
-
+```
+```php api.php
+require_once './function.php';
 // api todo
 if (isset($_GET['do'])) {
   switch ($_GET['do']) {
@@ -1876,12 +1954,12 @@ if (empty($_SESSION['admin'])) header('Location:/');
 登出方式只要清除 session 導向回首頁即可。
 
 ```php header.php
-<li><a class="dropdown-item" href="./function.php?do=logout">登出</a></li>
+<li><a class="dropdown-item" href="./api.php?do=logout">登出</a></li>
 ```
-```php function.php
+```php api.php
 case 'logout':
   unset($_SESSION['admin']);
-  header('Location:/');
+  header('Location:./');
   break;
 ```
 
@@ -1956,7 +2034,7 @@ function checkPermission() {
     exit("
       <script>
         alert('連線逾時，請重新作業。');
-        document.location.href = '/login.php';
+        document.location.href = './login.php';
       </script>
     ");
   }
@@ -1969,7 +2047,7 @@ function checkPermission() {
     exit("
       <script>
         alert('帳號重複登入，請重新作業。');
-        document.location.href = '/login.php';
+        document.location.href = './login.php';
       </script>
     ");
   }
@@ -1993,30 +2071,46 @@ RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^ %{REQUEST_URI}.php [NC,L]
 ```
 - 調整過去在 HTM 上的相關 URL 寫法
+```php function.php
+// ...
+exit("
+  <script>
+    alert('連線逾時，請重新作業。');
+    document.location.href = './login';
+  </script>
+");
+// ...
+exit("
+  <script>
+    alert('帳號重複登入，請重新作業。');
+    document.location.href = './login';
+  </script>
+");
+```
 ```php login.php
 // ...
-<form action="./function?do=login" method="post">
+<form action="./api?do=login" method="post">
 ```
 ```js lokiCalendar.js
 //...
 fetchPath = './db.json',
 //...
-fetch('/function?do=newOrder', {
+fetch('/api?do=newOrder', {
 // ...
 });
 ```
 ```php header.php
-<li><a class="dropdown-item" href="./function?do=logout">登出</a></li>
+<li><a class="dropdown-item" href="./api?do=logout">登出</a></li>
 ```
 ```php main-holiday.php
 //...
-<form class="container-fluid px-4" method="post" action="./function?do=mdyHoliday">
+<form class="container-fluid px-4" method="post" action="./api?do=mdyHoliday">
 ```
 ```php main-orderList.php
 //...
-'<a class="btn btn-danger btn-sm" href="./function?' . http_build_query($getAry) . '">刪除</a>';
+'<a class="btn btn-danger btn-sm" href="./api?' . http_build_query($getAry) . '">刪除</a>';
 ```
 ```php main-pallet.php
 //...
-<form class="container-fluid px-4" method="post" action="./function?do=mdyPallet">
+<form class="container-fluid px-4" method="post" action="./api?do=mdyPallet">
 ```
