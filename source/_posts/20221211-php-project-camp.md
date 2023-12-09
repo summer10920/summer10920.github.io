@@ -1254,7 +1254,7 @@ echo json_encode($dbJSONAry); //將 php 的經修改的 array 以 json(string) �
 資料庫目前已具備了假日參數與營位價格參數，足以修正先前的訂單資料之中的價格統計。這裡需要回頭找到原先在新訂單生成時，針對實際價格進行統計列入資料庫儲存。
 
 ### 修改新訂單之處理
-我們需要回到 function.php 之`switch case 'newOrder'`部分，重新整理於提交 sqlcode 之前的動作：
+我們需要回到 api.php 之`switch case 'newOrder'`部分，重新整理於提交 sqlcode 之前的動作：
 
 - 將 selectDate 與 sellout 的陣列準備好為 selectDateAry 與 selloutAry。
 - selectDateAry 會存放訂單的日期，我們需要批次去檢查這些購買的日期是否為假日。
@@ -1263,7 +1263,7 @@ echo json_encode($dbJSONAry); //將 php 的經修改的 array 以 json(string) �
 - selloutAry 是指定營位與數量，確認好假日或平日時，進行數字總和。
 - 營位參數在資料庫內需取回，取回時可以整理成我們好對應找到的特殊陣列 palletAry。
 
-```php function.php
+```php api.php
 case 'newOrder':
   $selectDateAry = json_decode($_POST['selectDate']);
   $selectDateZip = serialize($selectDateAry);
@@ -1442,7 +1442,6 @@ VALUES
 - getDaily : 獲取每日的四組營位的已售量。
 - getPallet: 已存在，要獲取四組營位數上限，以及價格資訊。
 - checkHoliday : 規劃小函式，可以判斷該日期是否為假日或國定日。
-- 
 
 ##### getDaily()
 從資料獲取銷售數量。可參考先前 getHoliday() 的做法，當時是獲取今年之後的 sql 資料，而我們要拿取的會是今日之後（房況只需顯示未來的日子）。
@@ -1458,7 +1457,7 @@ function getDaily() {
 ```
 
 ##### checkHoliday()
-稍早在新增訂單設計那裏已經有類似的計算。我們可以整理出來變成 checkHoliday()，這樣在新增訂單以及每日房況都能共用此函式。
+稍早在新增訂單設計那裏已經有類似的計算。我們可以整理出來變成 checkHoliday() 移到 function.php，這樣在新增訂單以及每日房況都能共用此函式。
 
 - 複製參考 `case 'newOrder':` 日期判斷作法，規劃到 function.php 形成 checkHoliday($date) 回傳 boolean 值。
 - 完成後調整該原處的寫法，而改使用 checkHoliday($date) 方式。
@@ -1472,7 +1471,9 @@ function checkHoliday($date) {
   $day = date("D", strtotime($date));
   return $day == 'Sat' || $day == 'SUN' || in_array($date, $holidayAry) ? true : false;
 }
+```
 
+```php api.php
 //...
 if (isset($_GET['do'])) {
   switch ($_GET['do']) {
@@ -1662,7 +1663,7 @@ $dbJSONAry['booked'] = $booked; //更新指定的值
 此時隨著訂單生成時，後台只會成功訂單資料，不會更新到此每日房況。寫入該資料庫_loki_daily_status 的時機為每次新增訂單下，除了原本對_loki_order_list 進行 INSERT 外，也要對_loki_daily_state 變化。
 
 先將原本的 newOrder 做一下順序整理與註解，方便思考修整：
-```php function.php
+```php api.php
 case 'newOrder':
   // 前端 payload 資料 
   // userName: 假日測試
@@ -1823,7 +1824,7 @@ $htmlCode .= '<tr>
   <td>' . $row['price'] . '</td>
   <td>' . $row['phone'] . ' | ' . $row['mail'] . '</td>
   <td>' . $row['createDate'] . '</td>
-  <td><a class="btn btn-danger btn-sm" href="./function.php?' . http_build_query($getAry) . '">刪除</a></td>
+  <td><a class="btn btn-danger btn-sm" href="./api.php?' . http_build_query($getAry) . '">刪除</a></td>
   </tr>';
 ```
 
@@ -2101,6 +2102,15 @@ fetch('/api?do=newOrder', {
 ```
 ```php header.php
 <li><a class="dropdown-item" href="./api?do=logout">登出</a></li>
+// ...
+<a class="nav-link" href="admin">
+  <i class="sb-nav-link-icon fas fa-clipboard-list"></i>訂單資料</a>
+<a class="nav-link" href="daily">
+  <i class="sb-nav-link-icon fas fa-calendar-days"></i>每日房況</a>
+<a class="nav-link" href="holiday">
+  <i class="sb-nav-link-icon fas fa-calendar-plus"></i>國定假日</a>
+<a class="nav-link" href="pallet">
+  <i class="sb-nav-link-icon fas fa-pallet"></i>營位參數設定</a>
 ```
 ```php main-holiday.php
 //...
@@ -2113,4 +2123,15 @@ fetch('/api?do=newOrder', {
 ```php main-pallet.php
 //...
 <form class="container-fluid px-4" method="post" action="./api?do=mdyPallet">
+```
+```php api.php
+// ...
+header('Location:admin');
+// ...
+header('Location:pallet');
+// ...
+header('Location:holiday');
+// ...
+header('Location:admin');
+// ...
 ```
