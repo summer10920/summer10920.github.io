@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "hexo generate",
-    "clean": "hexo clean",
-    "deploy": "hexo deploy",
-    "server": "hexo server",
+    "start": "npx hexo server",
+    "build": "npx hexo generate",
+    "clean": "npx hexo clean",
+    "deploy": "npx hexo deploy",
     "postinstall": "patch-package"
   },
   "hexo": {
@@ -14,22 +14,23 @@
   },
   "dependencies": {
     "browserify": "^17.0.0",
-    "hexo": "^6.3.0",
-    "hexo-cli": "^4.3.1",
+    "hexo": "^7.3.0",
+    "hexo-cli": "^4.3.2",
     "hexo-codepen": "^0.1.1",
     "hexo-deployer-git": "^4.0.0",
     "hexo-generator-archive": "^2.0.0",
     "hexo-generator-category": "^2.0.0",
-    "hexo-generator-index": "^3.0.0",
+    "hexo-generator-index": "^4.0.0",
     "hexo-generator-searchdb": "^1.4.1",
     "hexo-generator-tag": "^2.0.0",
-    "hexo-hide-posts": "^0.2.0",
+    "hexo-hide-posts": "^0.4.3",
     "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-marked": "^6.1.0",
-    "hexo-renderer-stylus": "^1.1.0",
+    "hexo-renderer-marked": "^6.3.0",
+    "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
-    "hexo-word-counter": "^0.1.0",
-    "patch-package": "^7.0.0",
+    "hexo-word-counter": "^0.2.0",
+    "npm-upgrade": "^3.1.0",
+    "patch-package": "^8.0.0",
     "range-parser": "^1.2.1"
   }
 }
