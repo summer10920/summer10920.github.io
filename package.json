@@ -11,7 +11,7 @@
     "postinstall": "patch-package"
   },
   "hexo": {
-    "version": "6.3.0"
+    "version": "7.3.0"
   },
   "dependencies": {
     "browserify": "^17.0.0",
@@ -29,6 +29,7 @@
     "hexo-renderer-marked": "^6.3.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
+    "hexo-tag-embed": "^1.0.0",
     "hexo-word-counter": "^0.2.0",
     "npm-upgrade": "^3.1.0",
     "patch-package": "^8.0.0",
