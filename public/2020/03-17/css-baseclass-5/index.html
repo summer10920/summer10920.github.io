@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS 屬性，也提及到 CSS 動畫與轉場的動態播放，以及跨平台十分重要的 Media Query 媒體查詢。這些都算是能讓 CSS 更生動豐富且靈活，使網頁體驗上更有感受。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] CSS 教學（五）：變形、轉場、動畫、媒體查詢">
+<meta property="og:url" content="http://summer10920.github.io/2020/03-17/css-baseclass-5/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS 屬性，也提及到 CSS 動畫與轉場的動態播放，以及跨平台十分重要的 Media Query 媒體查詢。這些都算是能讓 CSS 更生動豐富且靈活，使網頁體驗上更有感受。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/lElmG8a.png">
+<meta property="article:published_time" content="2020-03-17T10:31:49.000Z">
+<meta property="article:modified_time" content="2023-03-20T03:55:10.386Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="RWD 響應式網頁設計（假日班）">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/lElmG8a.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/03-17/css-baseclass-5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/03-17/css-baseclass-5/","path":"2020/03-17/css-baseclass-5/","title":"[基礎課程] CSS 教學（五）：變形、轉場、動畫、媒體查詢"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] CSS 教學（五）：變形、轉場、動畫、媒體查詢 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%8A%E5%BD%A2-Transform"><span class="nav-number">1.</span> <span class="nav-text">變形 Transform</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#translate-%E5%B9%B3%E7%A7%BB"><span class="nav-number">1.1.</span> <span class="nav-text">translate 平移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#scale-%E7%B8%AE%E6%94%BE"><span class="nav-number">1.2.</span> <span class="nav-text">scale 縮放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rotate-%E6%97%8B%E8%BD%89"><span class="nav-number">1.3.</span> <span class="nav-text">rotate 旋轉</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#skew-%E6%AD%AA%E6%96%9C"><span class="nav-number">1.4.</span> <span class="nav-text">skew 歪斜</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transform-origin-%E8%AE%8A%E5%BD%A2%E9%BB%9E"><span class="nav-number">1.5.</span> <span class="nav-text">transform-origin 變形點</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%89%E5%A0%B4-Transition"><span class="nav-number">2.</span> <span class="nav-text">轉場 Transition</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%96%AE%E5%B1%AC%E6%80%A7%E6%88%96%E5%A4%9A%E5%B1%AC%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">單屬性或多屬性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%EF%BC%9A%E8%BD%89%E5%A0%B4%E5%8B%95%E7%95%AB"><span class="nav-number">2.2.</span> <span class="nav-text">範例：轉場動畫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%EF%BC%9A%E5%A4%9A%E5%B1%AC%E6%80%A7%E6%95%88%E6%9E%9C"><span class="nav-number">2.3.</span> <span class="nav-text">範例：多屬性效果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8B%95%E7%95%AB-Animation"><span class="nav-number">3.</span> <span class="nav-text">動畫 Animation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8B%95%E7%95%AB%E5%B1%AC%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">動畫屬性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B8%AE%E5%AF%AB%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">縮寫方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E7%B7%B4%E7%BF%92"><span class="nav-number">3.3.</span> <span class="nav-text">範例練習</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%AF%84%E4%BE%8B-1"><span class="nav-number">3.3.1.</span> <span class="nav-text">基本範例 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%AF%84%E4%BE%8B-2"><span class="nav-number">3.3.2.</span> <span class="nav-text">基本範例 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%AF%84%E4%BE%8B-3"><span class="nav-number">3.3.3.</span> <span class="nav-text">基本範例 3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%AF%84%E4%BE%8B-4"><span class="nav-number">3.3.4.</span> <span class="nav-text">基本範例 4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E9%A0%90%E8%A6%BD"><span class="nav-number">3.3.5.</span> <span class="nav-text">範例預覽</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AA%92%E9%AB%94%E6%9F%A5%E8%A9%A2-Media-Query"><span class="nav-number">4.</span> <span class="nav-text">媒體查詢 Media Query</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%9E%E5%9E%8B%E8%88%87%E7%89%B9%E6%80%A7"><span class="nav-number">4.1.</span> <span class="nav-text">類型與特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%9E%E5%9E%8B-Media-Type"><span class="nav-number">4.1.1.</span> <span class="nav-text">類型 - Media Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%80%A7-%E8%A6%96%E7%AA%97%E6%88%96%E9%A0%81%E9%9D%A2%E5%B0%BA%E5%AF%B8-Viewport-Page-Dimensions"><span class="nav-number">4.1.2.</span> <span class="nav-text">特性 - 視窗或頁面尺寸 ( Viewport&#x2F;Page Dimensions )</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%80%A7-%E9%A1%AF%E7%A4%BA%E5%93%81%E8%B3%AA-Display-Quality"><span class="nav-number">4.1.3.</span> <span class="nav-text">特性 - 顯示品質 ( Display Quality )</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%80%A7-%E9%A1%8F%E8%89%B2-Color"><span class="nav-number">4.1.4.</span> <span class="nav-text">特性 - 顏色 ( Color )</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%80%A7-%E4%BA%92%E5%8B%95-Interaction"><span class="nav-number">4.1.5.</span> <span class="nav-text">特性 - 互動 ( Interaction )</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Media-%E7%9A%84%E5%AF%AB%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">Media 的寫法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%E8%AA%AA%E6%98%8E"><span class="nav-number">4.3.</span> <span class="nav-text">範例說明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E7%A8%AE%E5%AF%AC%E5%BA%A6%E5%8D%80%E9%96%93%E7%9A%84%E9%A1%8F%E8%89%B2%E8%AE%8A%E5%8C%96"><span class="nav-number">4.3.1.</span> <span class="nav-text">四種寬度區間的顏色變化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#768px-%E4%BB%A5%E4%B8%8A%E6%99%82%EF%BC%8C%E5%91%88%E7%8F%BE%E5%85%A9%E6%AC%84"><span class="nav-number">4.3.2.</span> <span class="nav-text">768px 以上時，呈現兩欄</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BOOTSTRAP-%E7%9A%84-RWD-%E5%AF%AB%E6%B3%95"><span class="nav-number">4.3.3.</span> <span class="nav-text">BOOTSTRAP 的 RWD 寫法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B6%AD%E5%9F%BA%E7%99%BE%E7%A7%91%E7%9A%84%E5%88%97%E5%8D%B0%E6%95%88%E6%9E%9C%EF%BC%88%E9%83%A8%E5%88%86%E7%95%AB%E9%9D%A2%E4%B8%8D%E9%A1%AF%E7%A4%BA%E5%8D%B0%E5%87%BA%EF%BC%89"><span class="nav-number">4.3.4.</span> <span class="nav-text">維基百科的列印效果（部分畫面不顯示印出）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RWD-Table-%E6%96%B9%E6%B3%95-1"><span class="nav-number">4.3.5.</span> <span class="nav-text">RWD Table 方法 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RWD-Table-%E6%96%B9%E6%B3%95-2"><span class="nav-number">4.3.6.</span> <span class="nav-text">RWD Table 方法 2</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/images/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/03-17/css-baseclass-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] CSS 教學（五）：變形、轉場、動畫、媒體查詢 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] CSS 教學（五）：變形、轉場、動畫、媒體查詢<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200317-css-baseclass-5.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-03-17 18:31:49" itemprop="dateCreated datePublished" datetime="2020-03-17T18:31:49+08:00">2020-03-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2023-03-20 11:55:10" itemprop="dateModified" datetime="2023-03-20T11:55:10+08:00">2023-03-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/HTML-CSS/" itemprop="url" rel="index"><span itemprop="name">HTML/CSS</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>6,564</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:11:56</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/lElmG8a.png"></p>
+<p>CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS 屬性，也提及到 CSS 動畫與轉場的動態播放，以及跨平台十分重要的 Media Query 媒體查詢。這些都算是能讓 CSS 更生動豐富且靈活，使網頁體驗上更有感受。</p>
+<span id="more"></span>
+
+<h1 id="變形-Transform"><a href="#變形-Transform" class="headerlink" title="變形 Transform"></a>變形 Transform</h1><p>必須作用在 block、inline-block（包含 flex 彈性盒）上。CSS 變形特點不會影響周遭其他的元素，舉例旋轉一個元素 45deg，有可能會壓在上下左右的元素之上。變形的值為函數並歸類出四種類型。</p>
+<p>例如<code>transform: translate(50%, 50%) rotate(45deg);</code>此寫法，同時間使用多組函式時，應該用空格進行多組函式值。</p>
+<div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong><br>設計畫面中心的示範方塊圖且文字垂中，將 transition 的範例結果透過<code>::after</code> 呈現出來。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--本篇利用 ::after 模擬出變形差異比較--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: flex;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">justify-content</span>: center;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">align-items</span>: center;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">100vh</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: white;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.box</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#FF0000</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">line-height</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: relative;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="string">&quot;transform&quot;</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: absolute;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">left</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">top</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">opacity</span>: <span class="number">0.5</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#0000FF</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span>Befault<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="translate-平移"><a href="#translate-平移" class="headerlink" title="translate 平移"></a>translate 平移</h2><ul>
+<li>translateX()、translateY() 稱為「平移函式」能左右或上下移動，但不能沿 z 軸前後移動。</li>
+<li>接受用長度或百分比表示距離，px、em、%，正值往右或上，負值為往左或下。</li>
+<li>使用 translate(x,y) 能同時對 x 軸與 y 軸平移，但如果不寫 y 值則預設為 0，也就 translate(2em) 等同 translateX(2em)。</li>
+<li>如果變形函數中<code>使用百分比 (%) 做為移動的數據，以元素本身的 box 尺寸為百分比計算基準</code>。注意，這和 CSS box 以容納區 (containing block) 尺寸為計算基準不同。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span>&#123;</span><br><span class="line">  <span class="comment">/* transform: translate(50px, 50px); */</span></span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translate</span>(<span class="number">50%</span>, <span class="number">50%</span>);</span><br><span class="line">  <span class="comment">/* 若是某 x,y 值不需設定，一定要設定成 0 */</span></span><br><span class="line">  <span class="comment">/* transform: translate(0, 100px); */</span></span><br><span class="line">  <span class="comment">/* transform: translate(100px, 0); */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="scale-縮放"><a href="#scale-縮放" class="headerlink" title="scale 縮放"></a>scale 縮放</h2><ul>
+<li>能依據指定值縮放大小，用<code>負值會呈現倒影型態</code>。數值是倍數，舉例 scaleX(2) 變成轉換前的兩倍，scaleY(0.5) 讓元素高度減半，<code>無法使用百分比</code>不過Chrome仍可用，仍建議以係數比控制。</li>
+<li>可同時讓兩軸縮放，舉例 scale(2,0.5) 會讓元素縮放兩倍寬 (X)，一半高 (Y)。如果只填一個值 就會等同樣比例縮放兩軸。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span>&#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">scale</span>(<span class="number">3.5</span>);</span><br><span class="line">  <span class="comment">/* transform: scale(3.5, 1.5); */</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* transform 函式可累加，用空格分開 */</span></span><br><span class="line">  <span class="comment">/* transform: translate(50%, 50%) scale(1.2); */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="rotate-旋轉"><a href="#rotate-旋轉" class="headerlink" title="rotate 旋轉"></a>rotate 旋轉</h2><p>可三維空間分別控制 rotateX()、rotateY()、rotateZ()。若單一使用 rotate() 則是二維空間順時旋轉，可負值且單位為 deg（degree）。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translate</span>(<span class="number">100%</span>) <span class="built_in">rotate</span>(<span class="number">45deg</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="skew-歪斜"><a href="#skew-歪斜" class="headerlink" title="skew 歪斜"></a>skew 歪斜</h2><ul>
+<li>skewX()、skewY()、skew()，有正、負值，skew(30deg)，記得要加單位 deg，</li>
+<li>skew() 第一個數值是 x 的歪斜角， 接著才是 y 的歪斜角，如果省略 y 歪斜角，就視為 0。</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">translate</span>(<span class="number">100%</span>) <span class="built_in">skew</span>(<span class="number">45deg</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="transform-origin-變形點"><a href="#transform-origin-變形點" class="headerlink" title="transform-origin 變形點"></a>transform-origin 變形點</h2><ul>
+<li>另外獨立的屬性指定，transform-origin 可以設定元素上的原點，元素旋轉時會對著這個原點旋轉</li>
+<li>為複合屬性，先指定 x 水平， y 垂直，最後是選填的 z 軸方向，彼此之間以空格間隔。</li>
+<li>數值可以是單位 em、px、%、left、right、top、bottom；center。</li>
+<li>z 軸只能用長度值（一般會是 px)，不能夠使用關鍵字與百分比值。</li>
+<li>預設值為 50% 50%(box 中心點），若省略 Y 值不寫將視為 center (50%) 。</li>
+</ul>
+<blockquote>
+<p>transform-origin 對於使用 translate 平移沒有效果。</p>
+</blockquote>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">rotate</span>(<span class="number">30deg</span>);</span><br><span class="line">  <span class="comment">/* 以下四個設定都一樣 ，只設定一個值，另一值會被認定 center */</span></span><br><span class="line">  <span class="attribute">transform-origin</span>: center center;</span><br><span class="line">  <span class="attribute">transform-origin</span>: <span class="number">50%</span> <span class="number">50%</span>;</span><br><span class="line">  <span class="attribute">transform-origin</span>: center;</span><br><span class="line">  <span class="attribute">transform-origin</span>: <span class="number">50%</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="note warning"><p><strong>科普知識：3D 版的 Transform</strong><br>CSS 另外還有的 3D 變形控制，這需要額外的進階深入介紹沒有加入本篇教材，有機會另開文章解說。簡單來說：</p>
+<ul>
+<li>translateZ() 數值為長度值（不允許百分比），需搭配 perspective() 才能做出維度空間。</li>
+<li>translate3d() 設定少於 3 個數值時並不會帶入預設值，一定要 3 個數值。</li>
+<li>scale3d() 設定數值跟 translate3d 一樣要 3 個數值。</li>
+</ul>
+</div>
+
+<h1 id="轉場-Transition"><a href="#轉場-Transition" class="headerlink" title="轉場 Transition"></a>轉場 Transition</h1><p>轉場是指從何開始到哪裡結束之動畫過程。你需要指定出開始與結束兩種不同的樣式屬性。舉例來說：</p>
+<ol>
+<li>初始樣式為 <code>background:red</code>，結束樣式為 <code>background:blue</code>。</li>
+<li>瀏覽器會將兩個樣式間的變化形成動畫過渡效果。</li>
+<li>指定觸發時機行為，藉由 CSS 的擬類別觸發動畫，最常見的是<code>:hover</code>。</li>
+<li>transition 寫在觸發前才可來回轉場，寫在觸發後只會轉場過去，無法變回。</li>
+</ol>
+<p>轉場可以分為四個屬性來指定，或者可以用縮寫（通常）來表示：</p>
+<table>
+<thead>
+<tr>
+<th>屬性</th>
+<th>預設值</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>transition-property</code></td>
+<td>all</td>
+<td>指定哪些 CSS 屬性受過渡轉場效果。沒指定到的屬性會瞬間變化沒有效果</td>
+</tr>
+<tr>
+<td><code>transition-duration</code></td>
+<td>0</td>
+<td>指定該轉場需幾秒內完成，單位為 s</td>
+</tr>
+<tr>
+<td><code>transition-timing-function</code></td>
+<td>ease</td>
+<td>指定過渡為哪種漸變函式，一共有 6 種過渡效果</td>
+</tr>
+<tr>
+<td><code>transition-delay</code></td>
+<td>0</td>
+<td>指定幾秒過後才執行轉場，單位為 s</td>
+</tr>
+</tbody></table>
+<p>縮寫方式 <code>transition: property duration timing-function delay</code>; </p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* 縮寫：屬性    持續時間      速度曲線    延遲時間*/</span></span><br><span class="line"><span class="attribute">transition</span>: all <span class="number">1s</span> ease-in <span class="number">0s</span>;</span><br><span class="line"><span class="comment">/* 簡單寫法 */</span></span><br><span class="line"><span class="attribute">transition</span>: all <span class="number">2s</span>; <span class="comment">/*default is append ease 0s */</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="單屬性或多屬性"><a href="#單屬性或多屬性" class="headerlink" title="單屬性或多屬性"></a>單屬性或多屬性</h2><p>可指定單某 CSS 屬性對象做轉場參數，若需要多屬性則連續設定轉場參數並使用<kbd>,</kbd>分開。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">transition-property（預設 all）</span></span><br><span class="line"><span class="comment">transition-duration（預設 0s）</span></span><br><span class="line"><span class="comment">transition-timing-function（ease 預設、ease-in、linear、ease-out、ease-in-out）</span></span><br><span class="line"><span class="comment">transition-delay（預設 0s）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 縮寫且單筆 */</span></span><br><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">transition</span>: width <span class="number">1s</span> ease <span class="number">1s</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">div</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">500px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 縮寫且多筆 */</span></span><br><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#000</span>;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">scale</span>(<span class="number">1</span>);</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">1px</span>;</span><br><span class="line">  <span class="attribute">transition</span>: transform <span class="number">1s</span> ease, border-radius <span class="number">1s</span> ease-out;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">div</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">scale</span>(<span class="number">2</span>);</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">50%</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 完整列出且多筆，順序需相對應 */</span></span><br><span class="line"><span class="selector-tag">div</span> &#123;</span><br><span class="line">  <span class="attribute">transition-property</span>: color, background-color, border-color;</span><br><span class="line">  <span class="attribute">transition-duration</span>: <span class="number">0.25s</span>, <span class="number">0.75s</span>, <span class="number">2s</span>;</span><br><span class="line">  <span class="attribute">transition-timing-function</span>: ease, ease-in, linear;</span><br><span class="line">  <span class="attribute">transition-delay</span>: <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">/* 或是以下寫法 */</span></span><br><span class="line">  <span class="attribute">transition</span>: color <span class="number">0.25s</span> ease <span class="number">0</span>, background-color <span class="number">0.75s</span> ease-in <span class="number">0</span>, border-color <span class="number">2s</span> linear <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="note warning"><p><strong>科普知識：transition-property</strong><br>轉場對應的屬性對象除了 all 全部，也能指定單一或多筆的 CSS 某一屬性，根據官方說法以下屬性都能適用：</p>
+<p>rotate, scale, translate, skew, width, height, color, background-color, border-color, border-width, font-size, line-height, letter-spacing, word-spacing, margin, padding, opacity, top, right, bottom, left</p>
+</div>
+
+<h2 id="範例：轉場動畫"><a href="#範例：轉場動畫" class="headerlink" title="範例：轉場動畫"></a>範例：轉場動畫</h2><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">  <span class="attribute">align-items</span>: center;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100vh</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#FF0000</span>;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&quot;transform&quot;</span>;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#0000FF</span>;</span><br><span class="line">  <span class="attribute">transform-origin</span>: right bottom;</span><br><span class="line">  <span class="attribute">transition</span>: <span class="number">2s</span>;</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:hover</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">rotate</span>(<span class="number">75deg</span>);</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="範例：多屬性效果"><a href="#範例：多屬性效果" class="headerlink" title="範例：多屬性效果"></a>範例：多屬性效果</h2><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">  <span class="attribute">align-items</span>: center;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100vh</span>;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#FF0000</span>;</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&quot;transform&quot;</span>;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">position</span>: absolute;</span><br><span class="line">  <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#0000FF</span>;</span><br><span class="line">  <span class="attribute">transform-origin</span>: right top;</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">0</span>;</span><br><span class="line">  <span class="comment">/* transition-property: opacity, top, width, transform;</span></span><br><span class="line"><span class="comment">  transition-duration: 0.5s, 0.5s, 0.5s, 0.5s;</span></span><br><span class="line"><span class="comment">  transition-timing-function: ease, ease, ease, ease;</span></span><br><span class="line"><span class="comment">  transition-delay: 0s, 0.5s, 1s, 1.5s; */</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/*或多筆一行寫完*/</span></span><br><span class="line">  <span class="attribute">transition</span>: opacity <span class="number">0.5s</span> ease <span class="number">0s</span>, top <span class="number">0.5s</span> ease <span class="number">0.5s</span>, width <span class="number">0.5s</span> ease <span class="number">1s</span>, transform <span class="number">0.5s</span> ease <span class="number">1.5s</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.box</span><span class="selector-pseudo">:hover</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">transform</span>: <span class="built_in">rotate</span>(<span class="number">90deg</span>);</span><br><span class="line">  <span class="attribute">opacity</span>: <span class="number">1</span>;</span><br><span class="line">  <span class="attribute">top</span>: <span class="number">100px</span>;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<div class="note danger"><p><strong>新手陷阱：秒差下的多屬性</strong><br>使用不同屬性進行 transition 時，當你設計了（順向）連續動作在不同時間上。有可能導致你（順向）返回動畫上的延遲產生誤會效果。</p>
+</div>
+
+<h1 id="動畫-Animation"><a href="#動畫-Animation" class="headerlink" title="動畫 Animation"></a>動畫 Animation</h1><p>轉場跟動畫不太相同的是，前者轉場是選擇器 A 跟選擇器 B 之間的過渡效果（通常是：hover)，當偵測到選擇器 B 成立時（觸發）由指定的選擇器 A 開始轉場；後者動畫是只需要對選擇器 B 宣告一個動畫播放即可，不用指定選擇器 A 是誰。</p>
+<p>建立動畫的步驟為：</p>
+<ol>
+<li>建立一組關鍵影格（keyframe）包含了動畫名稱、起始 (from) 之屬性為何、結束 (to) 之屬性為何。</li>
+<li>定義相關動畫參數到指定的選擇器上，可以為該動畫設定時間、延遲、速度與次數等設定。</li>
+<li>設定 Keyframe 的所有 CSS 屬性時，同樣需要注意該元素是否適合這些屬性變化結合，譬如 linline 與 hieght。</li>
+<li>animation-delay 延遲時間設定為「負值」時，則不是延遲而是變成跳秒播放。舉例<code>animation-duration:5s</code>，<code>animation-delay:-2s</code>，代表直接從第 2 秒的影格位置播放並 3 秒後停止 ( 類似 5-2&#x3D;3 的概念 )。</li>
+</ol>
+<h2 id="動畫屬性"><a href="#動畫屬性" class="headerlink" title="動畫屬性"></a>動畫屬性</h2><table>
+<thead>
+<tr>
+<th>屬性</th>
+<th>預設值</th>
+<th>說明</th>
+<th>單位與值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>animation-name</td>
+<td></td>
+<td>動畫名稱</td>
+<td></td>
+</tr>
+<tr>
+<td>animation-duration</td>
+<td>0</td>
+<td>動畫持續時間</td>
+<td>*s（秒）, *ms（毫秒）</td>
+</tr>
+<tr>
+<td>animation-timing-function</td>
+<td>ease</td>
+<td>動畫加速度函式</td>
+<td>ease, linear, ease-in, ease-out, ease-in-out</td>
+</tr>
+<tr>
+<td>animation-delay</td>
+<td>0</td>
+<td>動畫延遲播放時間</td>
+<td>*s（秒）, *ms（毫秒）</td>
+</tr>
+<tr>
+<td>animation-iteration-count</td>
+<td>1</td>
+<td>動畫播放次數</td>
+<td>數字或 infinite。</td>
+</tr>
+<tr>
+<td>animation-direction</td>
+<td>normal</td>
+<td>動畫播放方向</td>
+<td>normal, reverse, alternate, alternate-reverse。</td>
+</tr>
+<tr>
+<td>animation-fill-mode</td>
+<td>none</td>
+<td>動畫播放前後模式</td>
+<td>none, forwards, backwards, both。</td>
+</tr>
+<tr>
+<td>animation-play-state</td>
+<td>running</td>
+<td>動畫播放或暫停狀態</td>
+<td>running, paused。</td>
+</tr>
+</tbody></table>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* 循環交替或反向播放</span></span><br><span class="line"><span class="comment">  animation-direction:</span></span><br><span class="line"><span class="comment">    normal（默認，正常播放）</span></span><br><span class="line"><span class="comment">    reverse（反向播放）</span></span><br><span class="line"><span class="comment">    alternate（輪流交替播放，動畫在奇數次 1,3,5 正向播放，在偶數次 2,4,6 反向播放）</span></span><br><span class="line"><span class="comment">    alternate-reverse（動畫在奇數次 1,3,5 反向播放，在偶數次 2,4,6 正向播放）</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment">  animation-fill-mode: </span></span><br><span class="line"><span class="comment">    forwards（保留動畫結束後的樣式，例如顏色、位置）</span></span><br><span class="line"><span class="comment">    backwards（返回動畫一開始的樣式，例如顏色、位置） </span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="縮寫方式"><a href="#縮寫方式" class="headerlink" title="縮寫方式"></a>縮寫方式</h2><p>動畫縮寫，名稱和持續時間是必要，其他數值可以省略，設計樣式時請使用動畫縮寫。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="attribute">animation</span>:name duration | timing-function | delay | iteration-count | direction | fill-mode | play-state;</span><br></pre></td></tr></table></figure>
+
+<h2 id="範例練習"><a href="#範例練習" class="headerlink" title="範例練習"></a>範例練習</h2><h3 id="基本範例-1"><a href="#基本範例-1" class="headerlink" title="基本範例 1"></a>基本範例 1</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#333</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: white;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: flex;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">justify-content</span>: space-around;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">flex-direction</span>: column;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">align-items</span>: center;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">100vh</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 宣告關鍵影格為動畫、動畫名稱、開始、結束 */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.base</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: red;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 動畫名稱 */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-name: demo1; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 動畫間隔 */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-duration: 1s; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 速度函式 */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-timing-function: ease; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 動畫延遲 */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-delay: 0.1s; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 播放次數 */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-iteration-count: 3; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 循環交替或反向播放*/</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-direction: alternate; */</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/*播放基數次時可考慮是否要停留於尾格，否則會還原到初始格狀態*/</span></span></span><br><span class="line"><span class="language-css">    <span class="comment">/* animation-fill-mode: forwards; */</span></span></span><br><span class="line"><span class="language-css">    </span></span><br><span class="line"><span class="language-css">    <span class="comment">/* 以上可縮寫成 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">animation</span>: demo1 <span class="number">1s</span> infinite alternate forwards;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="keyword">@keyframes</span> demo1 &#123;</span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">from</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background</span>: red;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">to</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background</span>: yellow;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;base&quot;</span>&gt;</span>HELLO WORLD<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基本範例-2"><a href="#基本範例-2" class="headerlink" title="基本範例 2"></a>基本範例 2</h3><ol>
+<li>可以用百分比來控制每個影格的位置處，其中 from 可以作為 0%寫法，to 可作為 100%寫法。</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.btn</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">50px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: orange;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: relative;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">5px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">line-height</span>: <span class="number">50px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">overflow</span>: hidden;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.btn</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="string">&quot;&quot;</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="built_in">linear-gradient</span>(to right bottom, <span class="number">#ffffff00</span> <span class="number">30%</span>, <span class="number">#ffffff88</span> <span class="number">50%</span>, <span class="number">#ffffff00</span> <span class="number">70%</span>);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">transform</span>: <span class="built_in">translateX</span>(-<span class="number">75%</span>);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: absolute;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">left</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">top</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">right</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">bottom</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">animation</span>: demo2 <span class="number">2s</span> linear infinite;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 宣告關鍵影格為動畫、動畫名稱、開始、結束 */</span></span></span><br><span class="line"><span class="language-css">  <span class="keyword">@keyframes</span> demo2 &#123;</span></span><br><span class="line"><span class="language-css">    <span class="number">50%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">transform</span>: <span class="built_in">translateX</span>(-<span class="number">5%</span>);</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="number">100%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">transform</span>: <span class="built_in">translateX</span>(<span class="number">75%</span>);</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;btn&quot;</span>&gt;</span>Button<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基本範例-3"><a href="#基本範例-3" class="headerlink" title="基本範例 3"></a>基本範例 3</h3><ol>
+<li>屬性彼此獨立於影格，可以單一屬性指定在僅需要的影格時間上即可。</li>
+<li>可指定不同的時間區段上有同樣影格屬性參數。</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.load</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: relative;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.load</span><span class="selector-pseudo">::before</span>,</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.load</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="string">&quot;&quot;</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">position</span>: absolute;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">top</span>: -<span class="number">2rem</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">left</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">right</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">bottom</span>: <span class="number">2rem</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#eee</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-class">.load</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">animation</span>: demo3 <span class="number">10s</span> linear infinite;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="keyword">@keyframes</span> demo3 &#123;</span></span><br><span class="line"><span class="language-css">    <span class="number">0%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">right</span>: <span class="number">200%</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">    <span class="number">25%</span>,<span class="number">75%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background</span>: <span class="number">#500</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">    <span class="number">50%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background</span>: <span class="number">#e00</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">    <span class="number">100%</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">right</span>: -<span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;load&quot;</span>&gt;</span>Loading<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基本範例-4"><a href="#基本範例-4" class="headerlink" title="基本範例 4"></a>基本範例 4</h3><ol>
+<li>可以套用多個動畫到同個選擇器，屬性值需對應好</li>
+<li>如果需要可以用 JS 控制動畫<code>animation-play-state: paused;</code>暫停</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-tag">div</span><span class="selector-class">.rgb</span> &#123;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">font-size</span>: <span class="number">5rem</span>;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">font-family</span>: Arial, Helvetica, sans-serif;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">text-transform</span>: uppercase;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">letter-spacing</span>: <span class="number">1rem</span>;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">animation</span>: rgb <span class="number">5s</span> linear infinite, Breat <span class="number">10s</span> linear infinite;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">padding</span>: <span class="number">5px</span> <span class="number">0</span> <span class="number">5px</span> <span class="number">1rem</span>;</span></span><br><span class="line"><span class="language-css">  <span class="attribute">border</span>: <span class="number">1px</span> solid white;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="keyword">@keyframes</span> rgb &#123;</span></span><br><span class="line"><span class="language-css">  <span class="number">0%</span>, <span class="number">100%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ff0000ff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#ff000099</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">33%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00ff00ff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#00ff0099</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">66%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#0000ffff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#0000ff99</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"><span class="keyword">@keyframes</span> Breat &#123;</span></span><br><span class="line"><span class="language-css">  <span class="number">0%</span>, <span class="number">100%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ff0000ff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#ff000099</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ff0000ff</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#ff000099</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">12.5%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ffFF00ff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ffFF0099</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ffFF00ff</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#ffFF0099</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">33%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00ff00ff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#00ff0099</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00ff00ff</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#00ff0099</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">45.5%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00FFFFFF</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00FFFF99</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00FFFFFF</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#00FFFF99</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">66%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#0000ffff</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#0000ff99</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#0000ffff</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">5rem</span> <span class="number">#0000ff99</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="number">78.5%</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">box-shadow</span>: <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#FF00FFFF</span>, <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#FF00FF99</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#FF00FFFF</span>, inset <span class="number">0px</span> <span class="number">0px</span> <span class="number">1rem</span> <span class="number">#FF00FF99</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rgb&quot;</span>&gt;</span>Loki<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="範例預覽"><a href="#範例預覽" class="headerlink" title="範例預覽"></a>範例預覽</h3><iframe scrolling="no" width="100%" height="500" src="https://jsfiddle.net/summer10920/d241xjvg/embedded/result/dark" frameborder="0" loading="lazy" allowfullscreen></iframe>
+
+<h1 id="媒體查詢-Media-Query"><a href="#媒體查詢-Media-Query" class="headerlink" title="媒體查詢 Media Query"></a>媒體查詢 Media Query</h1><p>網頁會先查詢 media 指定之 Query 邏輯性 (true&#x2F;false)，如果 media 條件符合再針對這些屬性套入 css 樣式表。網頁是否載入 CSS 樣式表的方式如下：</p>
+<ul>
+<li><p><strong>在 HTML 內使用</strong><br>在視窗 screen 時會邏輯成立 style.css，列印時則會邏輯成立 print.css。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">media</span>=<span class="string">&quot;screen&quot;</span> <span class="attr">href</span>=<span class="string">&quot;style.css&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">media</span>=<span class="string">&quot;print&quot;</span> <span class="attr">href</span>=<span class="string">&quot;print.css&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>在 CSS 內使用</strong><br>如果直接寫在 CSS 裡，下列的寫法也是一樣的概念。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> screen&#123;</span><br><span class="line">  <span class="comment">/*css code*/</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> print&#123;</span><br><span class="line">  <span class="comment">/*css code*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>使用@import</strong><br>如果你喜歡在 CSS 文件內使用@import，也可以根據不同的 media 特性，import 不同的 css。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@import</span> <span class="string">&quot;style.css&quot;</span>;</span><br><span class="line"><span class="keyword">@import</span> <span class="string">&quot;print.css&quot;</span> print;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="類型與特性"><a href="#類型與特性" class="headerlink" title="類型與特性"></a>類型與特性</h2><ul>
+<li>類型 (Types)：主要是根據用戶端裝置為何，目前主要的 Media 類型有以下四種。</li>
+<li>特性 (Fratures)：主要是網頁環境上的細部描述為何，可分為四大類型（大多市面上只應用 viewport)。</li>
+</ul>
+<h3 id="類型-Media-Type"><a href="#類型-Media-Type" class="headerlink" title="類型 - Media Type"></a>類型 - Media Type</h3><table>
+<thead>
+<tr>
+<th>類型</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>all</td>
+<td>所有裝置。</td>
+</tr>
+<tr>
+<td>print</td>
+<td>列印裝置，包含使用列印預覽產生的所有畫面 ( 例如列印為 pdf )。</td>
+</tr>
+<tr>
+<td>screen</td>
+<td>螢幕裝置，不屬於 print 和 speech 的設備。</td>
+</tr>
+<tr>
+<td>speech</td>
+<td>朗讀裝置，針對可以「讀出」頁面的無障礙工具設備。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>tty、tv、projection、handheld、braille、embossed 和 aural 因為在 Level 4 已經描述未來不支援不多做介紹。</p>
+</blockquote>
+<h3 id="特性-視窗或頁面尺寸-Viewport-Page-Dimensions"><a href="#特性-視窗或頁面尺寸-Viewport-Page-Dimensions" class="headerlink" title="特性 - 視窗或頁面尺寸 ( Viewport&#x2F;Page Dimensions )"></a>特性 - 視窗或頁面尺寸 ( Viewport&#x2F;Page Dimensions )</h3><table>
+<thead>
+<tr>
+<th>特徵</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>width</td>
+<td>螢幕寬度，支援 max-width 和 min-width。</td>
+</tr>
+<tr>
+<td>height</td>
+<td>螢幕高度，支援 max-height 和 min-height。</td>
+</tr>
+<tr>
+<td>aspect-ratio</td>
+<td>螢幕長寬比例，支援 max-aspect-ratio 和 min-aspect-ratio。( 長寬比的寫法格式為 1&#x2F;1、1680&#x2F;720… 等 )</td>
+</tr>
+<tr>
+<td>orientation</td>
+<td>螢幕旋轉方向，有兩個選項：portrait 和 landscape。 ( portrait 為直向，landscape 為橫向 )</td>
+</tr>
+</tbody></table>
+<h3 id="特性-顯示品質-Display-Quality"><a href="#特性-顯示品質-Display-Quality" class="headerlink" title="特性 - 顯示品質 ( Display Quality )"></a>特性 - 顯示品質 ( Display Quality )</h3><table>
+<thead>
+<tr>
+<th>特徵</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>resolution</td>
+<td>解析度 ( dpi、ppx… 等 )，支援 max-resolution 和 min-resolution</td>
+</tr>
+<tr>
+<td>scan</td>
+<td>電視掃描方式，有兩個選項：interlace 和 progressive。 ( interlace 為交錯式掃描，奇數偶數掃描線交錯，progressive 為漸進式掃描，是現在大多數電視採用的方式 )</td>
+</tr>
+<tr>
+<td>update</td>
+<td>更新媒體，有三個選項：none、slow 和 fast。( none 表示不會更新的顯示裝置，例如印出來的文件，slow 表示更新速度慢的顯示裝置，fast 表示更新速度快的裝置，例如電腦螢幕 )</td>
+</tr>
+<tr>
+<td>overflow-block</td>
+<td>當內容包含 block 特性並超過邊界範圍，有四個選項：none、scroll、optional-paged 和 paged。( none 表示任何超過範圍都不顯示，例如看板，scroll 表示可滾動查看超出範圍，例如電腦螢幕，optional-paged 表示可手動查看超出的內容，例如簡報，paged 表示超出的內容會以分頁顯示，例如印表機 )</td>
+</tr>
+<tr>
+<td>overflow-inline</td>
+<td>當內容包含 inline 特性並超過邊界範圍，有兩個選項：none 和 scroll。</td>
+</tr>
+<tr>
+<td>grid</td>
+<td>網格媒體，兩個選項：0 和 1。</td>
+</tr>
+</tbody></table>
+<h3 id="特性-顏色-Color"><a href="#特性-顏色-Color" class="headerlink" title="特性 - 顏色 ( Color )"></a>特性 - 顏色 ( Color )</h3><table>
+<thead>
+<tr>
+<th>特徵</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>color</td>
+<td>輸出裝置的色彩位元數，若數值為 0 則代表黑白裝置，支援 max-color 和 min-color。</td>
+</tr>
+<tr>
+<td>color-index</td>
+<td>輸出裝置的色彩索引位元數，支援 max-color-index 和 min-color-index。</td>
+</tr>
+<tr>
+<td>monochrome</td>
+<td>單色媒體功能，若數值為 0 表示「不是」單色設備。</td>
+</tr>
+<tr>
+<td>color-gamut</td>
+<td>輸出裝置色域，有三個選項：srgb、p3 和 rec2020。( 絕大多數的顯示器都支援 srgb，而 p3 的色域比 srgb 更廣且包含 srgb，rec2020</td>
+</tr>
+</tbody></table>
+<h3 id="特性-互動-Interaction"><a href="#特性-互動-Interaction" class="headerlink" title="特性 - 互動 ( Interaction )"></a>特性 - 互動 ( Interaction )</h3><table>
+<thead>
+<tr>
+<th>特徵</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pointer、any-pointer</td>
+<td>指標裝置 ( 例如滑鼠 ) 的準確性，有三個選項：none、coarse 和 fine。( none 表示沒有指標裝置，coarse 表示精度較差的指</td>
+</tr>
+<tr>
+<td>hover、any-hover</td>
+<td>裝置具備 hover 的能力，有兩個選項：none 和 hover。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>可以使用 Types（多個）跟 Fratures（多個）兩大類別進行邏輯條件，也可複數組合 AND、OR、NOT（少用）使用。</p>
+</blockquote>
+<h2 id="Media-的寫法"><a href="#Media-的寫法" class="headerlink" title="Media 的寫法"></a>Media 的寫法</h2><ul>
+<li>Media 類型宣告先寫，如果是 all 類型（預設）可以省略。</li>
+<li>條件如果同時需要 (AND)，使用 and 分隔</li>
+<li>條件如果某項成立即可 (OR)，使用逗號分隔</li>
+<li>Fratures 特性類型記得用小括弧 () 包覆</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> screen <span class="keyword">and</span> (<span class="attribute">min-width</span>: <span class="number">480px</span>) &#123;</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  成立條件 AND</span></span><br><span class="line"><span class="comment">    螢幕裝置</span></span><br><span class="line"><span class="comment">    且</span></span><br><span class="line"><span class="comment">    寬度符合：min-width:480px （需 480px 以上）</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">max-width</span>: <span class="number">700px</span>), print &#123;</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  成立條件 OR</span></span><br><span class="line"><span class="comment">    寬度符合 max-width:700px （不超過 700px ）</span></span><br><span class="line"><span class="comment">    或</span></span><br><span class="line"><span class="comment">    列印裝置也成立</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">400px</span>) <span class="keyword">and</span> (<span class="attribute">max-width</span>: <span class="number">700px</span>) &#123;</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  寬度符合 400px~700px 時</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="範例說明"><a href="#範例說明" class="headerlink" title="範例說明"></a>範例說明</h2><h3 id="四種寬度區間的顏色變化"><a href="#四種寬度區間的顏色變化" class="headerlink" title="四種寬度區間的顏色變化"></a>四種寬度區間的顏色變化</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">320px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: lightpink;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">550px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: lightyellow;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">768px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: lightgreen;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">960px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: lightblue;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="768px-以上時，呈現兩欄"><a href="#768px-以上時，呈現兩欄" class="headerlink" title="768px 以上時，呈現兩欄"></a>768px 以上時，呈現兩欄</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  * &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">0</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.box</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">100%</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">height</span>: <span class="number">50vh</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.bg1</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#fbc531</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.bg2</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: <span class="number">#44bd32</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">768px</span>) &#123;</span></span><br><span class="line"><span class="language-css">    <span class="selector-class">.box</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">width</span>: <span class="number">50%</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">height</span>: <span class="number">100vh</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">float</span>: left;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box bg1&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box bg2&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="BOOTSTRAP-的-RWD-寫法"><a href="#BOOTSTRAP-的-RWD-寫法" class="headerlink" title="BOOTSTRAP 的 RWD 寫法"></a>BOOTSTRAP 的 RWD 寫法</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.col-sm-8</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: relative;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">  <span class="attribute">min-height</span>: <span class="number">1px</span>;</span><br><span class="line">  <span class="attribute">padding-right</span>: <span class="number">15px</span>;</span><br><span class="line">  <span class="attribute">padding-left</span>: <span class="number">15px</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">min-width</span>: <span class="number">576px</span>) &#123;</span><br><span class="line">  <span class="comment">/* ... */</span></span><br><span class="line">  <span class="selector-class">.col-sm-8</span> &#123;</span><br><span class="line">    -webkit-box-<span class="attribute">flex</span>: <span class="number">0</span>;</span><br><span class="line">    -ms-<span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">66.666667%</span>;</span><br><span class="line">    <span class="attribute">flex</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">66.666667%</span>;</span><br><span class="line">    <span class="attribute">max-width</span>: <span class="number">66.666667%</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* ... */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="維基百科的列印效果（部分畫面不顯示印出）"><a href="#維基百科的列印效果（部分畫面不顯示印出）" class="headerlink" title="維基百科的列印效果（部分畫面不顯示印出）"></a>維基百科的列印效果（部分畫面不顯示印出）</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> print &#123;</span><br><span class="line">  <span class="selector-class">.noprint</span>,</span><br><span class="line">  <span class="selector-class">.catlinks</span>,</span><br><span class="line">  <span class="selector-class">.magnify</span>,</span><br><span class="line">  <span class="selector-class">.mw-cite-backlink</span>,</span><br><span class="line">  <span class="selector-class">.mw-jump</span>,</span><br><span class="line">  <span class="selector-class">.mw-editsection</span>,</span><br><span class="line">  <span class="selector-class">.mw-editsection-like</span>,</span><br><span class="line">  <span class="selector-class">.mw-hidden-catlinks</span>,</span><br><span class="line">  <span class="selector-class">.mw-indicators</span>,</span><br><span class="line">  <span class="selector-class">.mw-redirectedfrom</span>,</span><br><span class="line">  <span class="selector-class">.patrollink</span>,</span><br><span class="line">  <span class="selector-class">.usermessage</span>,</span><br><span class="line">  <span class="selector-id">#column-one</span>,</span><br><span class="line">  <span class="selector-id">#footer-places</span>,</span><br><span class="line">  <span class="selector-id">#jump-to-nav</span>,</span><br><span class="line">  <span class="selector-id">#mw-navigation</span>,</span><br><span class="line">  <span class="selector-id">#siteNotice</span>,</span><br><span class="line">  <span class="selector-id">#f-poweredbyico</span>,</span><br><span class="line">  <span class="selector-id">#f-copyrightico</span>,</span><br><span class="line">  <span class="selector-tag">li</span><span class="selector-id">#about</span>,</span><br><span class="line">  <span class="selector-tag">li</span><span class="selector-id">#disclaimer</span>,</span><br><span class="line">  <span class="selector-tag">li</span><span class="selector-id">#mobileview</span>,</span><br><span class="line">  <span class="selector-tag">li</span><span class="selector-id">#privacy</span> &#123;</span><br><span class="line">      <span class="attribute">display</span>: none</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">/* ... */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RWD-Table-方法-1"><a href="#RWD-Table-方法-1" class="headerlink" title="RWD Table 方法 1"></a>RWD Table 方法 1</h3><p>透過隱藏部分 th,td 達到。練習資料來源：<a target="_blank" rel="noopener" href="https://job.taiwanjobs.gov.tw/Internet/index/docDetail.aspx?uk=844&docid=6718">https://job.taiwanjobs.gov.tw/Internet/index/docDetail.aspx?uk=844&amp;docid=6718</a></p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>服務站名<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>電話<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>傳真<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>地址<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>北基宜花金馬分署<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)8995-6399<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)8995-6398<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>新北市新莊區中平路 439 號南棟 3 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>基隆就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2422-5263<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2428-1514<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>基隆市中正區中正路 102 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>羅東就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)954-2094<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)957-6435<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣羅東鎮中正北路 50 號 1、2 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>基隆就業中心六堵分站<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2451-5020<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2452-8501<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>基隆市七堵區工建北路 1 之 2 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)832-3262<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)835-6927<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣花蓮市國民三街 25 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>連江就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(0836)23576<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(0836)26304<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>連江縣南竿鄉介壽村 47-4 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>玉里就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)888-2033<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)888-6140<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣玉里鎮莊敬路 8 號 2 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>金門就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(082)31-1119<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(082)31-1120<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>金門縣金城鎮民權路 173 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>頭城就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)977-1650<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)977-1650<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣頭城鎮開蘭路 1 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>員山就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)923-2880<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)923-2880<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣員山鄉員山路一段 322 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>蘇澳就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)996-5300<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)996-5300<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣蘇澳鎮蘇港路 215 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>礁溪就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)988-3234<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)988-3234<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣礁溪鄉中山路二段 3 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>瑞穗就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)887-0507<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)887-0507<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣瑞穗鄉成功南路 19 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>壽豐就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)865-0885<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)865-0885<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣壽豐鄉壽山路 26 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>冬山就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)959-6490<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)959-6490<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣冬山鄉冬山路 100 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>秀林就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)861-0803<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)861-0803<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣秀林鄉秀林村 12 鄰 62 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>五結就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)950-9912<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)950-9912<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>宜蘭縣五結鄉五結路二段 343 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>吉安就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)852-9886<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)852-9886<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣吉安鄉吉安村吉安路二段 116 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>光復就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)870-0226<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(03)870-0226<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>花蓮縣光復鄉中山路一段 216 巷 8 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>銀髮人才資源中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)7730-8878<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2231-0109<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>新北市永和區自由街 64 號 1 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>臺北青年職涯發展中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2977-0755<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>(02)2977-0765<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>新北市三重區重新路 4 段 12 號 3 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">table</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="built_in">calc</span>(<span class="number">100%</span> - <span class="number">20px</span>);</span><br><span class="line">  <span class="attribute">line-height</span>: <span class="number">2rem</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">font-family</span>: <span class="string">&#x27;microsoft jhenghei&#x27;</span>;</span><br><span class="line">  <span class="attribute">border-bottom</span>: <span class="number">2px</span> solid <span class="number">#000</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">thead</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: black;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">tbody</span>&gt;<span class="selector-tag">tr</span><span class="selector-pseudo">:nth-child</span>(even) &#123;</span><br><span class="line">  <span class="attribute">background</span>: lightgray;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">td</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">0</span> <span class="number">5px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>RWD 關鍵為</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> (<span class="attribute">max-width</span>: <span class="number">576px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">table</span>&gt;<span class="selector-tag">thead</span> <span class="selector-tag">th</span><span class="selector-pseudo">:nth-last-child</span>(<span class="number">2</span>),</span><br><span class="line">  <span class="selector-tag">table</span>&gt;<span class="selector-tag">tbody</span> <span class="selector-tag">td</span><span class="selector-pseudo">:nth-last-child</span>(<span class="number">2</span>) &#123;</span><br><span class="line">    <span class="attribute">display</span>: none;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@media</span> (<span class="attribute">max-width</span>: <span class="number">960px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">table</span>&gt;<span class="selector-tag">thead</span> <span class="selector-tag">th</span><span class="selector-pseudo">:last-child</span>,</span><br><span class="line">  <span class="selector-tag">table</span>&gt;<span class="selector-tag">tbody</span> <span class="selector-tag">td</span><span class="selector-pseudo">:last-child</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: none;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RWD-Table-方法-2"><a href="#RWD-Table-方法-2" class="headerlink" title="RWD Table 方法 2"></a>RWD Table 方法 2</h3><p>打破 table 排版變成另一個形式。這裡 HTML 需要調整一下前例結構添加自訂<code>data-*</code>，CSS 則免調整。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>服務站名<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>電話<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>傳真<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;<span class="name">th</span>&gt;</span>地址<span class="tag">&lt;/<span class="name">th</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>北基宜花金馬分署<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(02)8995-6399<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(02)8995-6398<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>新北市新莊區中平路 439 號南棟 3 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>基隆就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(02)2422-5263<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(02)2428-1514<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>基隆市中正區中正路 102 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>羅東就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)954-2094<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)957-6435<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣羅東鎮中正北路 50 號 1、2 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>基隆就業中心六堵分站<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(02)2451-5020<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(02)2452-8501<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>基隆市七堵區工建北路 1 之 2 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>花蓮就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)832-3262<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)835-6927<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣花蓮市國民三街 25 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>連江就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(0836)23576<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(0836)26304<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>連江縣南竿鄉介壽村 47-4 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>玉里就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)888-2033<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)888-6140<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣玉里鎮莊敬路 8 號 2 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>金門就業中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(082)31-1119<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(082)31-1120<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>金門縣金城鎮民權路 173 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>頭城就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)977-1650<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)977-1650<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣頭城鎮開蘭路 1 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>員山就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)923-2880<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)923-2880<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣員山鄉員山路一段 322 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>蘇澳就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)996-5300<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)996-5300<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣蘇澳鎮蘇港路 215 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>礁溪就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)988-3234<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)988-3234<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣礁溪鄉中山路二段 3 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>瑞穗就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)887-0507<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)887-0507<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣瑞穗鄉成功南路 19 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>壽豐就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)865-0885<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)865-0885<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣壽豐鄉壽山路 26 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>冬山就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)959-6490<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)959-6490<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣冬山鄉冬山路 100 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>秀林就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)861-0803<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)861-0803<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣秀林鄉秀林村 12 鄰 62 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>五結就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)950-9912<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)950-9912<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>宜蘭縣五結鄉五結路二段 343 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>吉安就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)852-9886<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)852-9886<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣吉安鄉吉安村吉安路二段 116 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>光復就業服務台<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(03)870-0226<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(03)870-0226<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>花蓮縣光復鄉中山路一段 216 巷 8 號<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>銀髮人才資源中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(02)7730-8878<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(02)2231-0109<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>新北市永和區自由街 64 號 1 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;服務站名&quot;</span>&gt;</span>臺北青年職涯發展中心<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;電話&quot;</span>&gt;</span>(02)2977-0755<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;傳真&quot;</span>&gt;</span>(02)2977-0765<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span> <span class="attr">data-head</span>=<span class="string">&quot;地址&quot;</span>&gt;</span>新北市三重區重新路 4 段 12 號 3 樓<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>RWD 關鍵為</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@media</span> (<span class="attribute">max-width</span>: <span class="number">960px</span>) &#123;</span><br><span class="line">  <span class="selector-tag">thead</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: none;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-tag">tr</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: block;</span><br><span class="line">    <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-tag">td</span> &#123;</span><br><span class="line">    <span class="attribute">padding-left</span>: <span class="number">30%</span>;</span><br><span class="line">    <span class="attribute">position</span>: relative;</span><br><span class="line">    <span class="attribute">display</span>: block;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-tag">td</span><span class="selector-pseudo">::before</span> &#123;</span><br><span class="line">    <span class="attribute">content</span>: <span class="built_in">attr</span>(data-head);</span><br><span class="line">    <span class="attribute">font-weight</span>: bold;</span><br><span class="line">    <span class="attribute">position</span>: absolute;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">2%</span>;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">28%</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RWD-%E9%9F%BF%E6%87%89%E5%BC%8F%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># RWD 響應式網頁設計（假日班）</a>
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03-15/css-baseclass-4/" rel="prev" title="[基礎課程] CSS 教學（四）：浮動、佈局、Flex">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] CSS 教學（四）：浮動、佈局、Flex
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03-26/bs-baseclass-1/" rel="next" title="[基礎課程] Bootstrap4 教學（一）：初始與排版">
+                  [基礎課程] Bootstrap4 教學（一）：初始與排版 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/js/loki.js"></script>
+
+</body>
+</html>
