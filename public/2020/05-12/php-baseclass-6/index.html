@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="php 本身的函數非常多，譬如之前所用的rand()就是其中一種。同時常有重複的函數功能，譬如mt_rand()跟rand()。你不需要特別去背函式庫，只需要用到時就去查，慢慢常用的就會記住。請開始在 Web 目錄下新增檔案 2_array.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] PHP 常用函式與自訂函式">
+<meta property="og:url" content="http://summer10920.github.io/2020/05-12/php-baseclass-6/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="php 本身的函數非常多，譬如之前所用的rand()就是其中一種。同時常有重複的函數功能，譬如mt_rand()跟rand()。你不需要特別去背函式庫，只需要用到時就去查，慢慢常用的就會記住。請開始在 Web 目錄下新增檔案 2_array.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/96NYgou.png">
+<meta property="article:published_time" content="2020-05-12T06:30:42.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.193Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta property="article:tag" content="PHP 程式設計（假日班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/96NYgou.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/05-12/php-baseclass-6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/05-12/php-baseclass-6/","path":"2020/05-12/php-baseclass-6/","title":"[基礎課程] PHP 常用函式與自訂函式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] PHP 常用函式與自訂函式 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%BD%E6%95%B8%EF%BC%88%E5%BC%8F%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">常用的函數（式）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#phpinfo"><span class="nav-number">1.1.</span> <span class="nav-text">phpinfo()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rand-min-max"><span class="nav-number">1.2.</span> <span class="nav-text">rand(min,max)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#array"><span class="nav-number">1.3.</span> <span class="nav-text">array()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unset"><span class="nav-number">1.4.</span> <span class="nav-text">unset()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#date-format"><span class="nav-number">1.5.</span> <span class="nav-text">date(format)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#date-default-timezone-set"><span class="nav-number">1.6.</span> <span class="nav-text">date_default_timezone_set()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ceil-floor-round"><span class="nav-number">1.7.</span> <span class="nav-text">ceil() &amp;&amp; floor() &amp;&amp; round()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#substr-mb-substr"><span class="nav-number">1.8.</span> <span class="nav-text">substr() &amp;&amp; mb_substr()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-replace"><span class="nav-number">1.9.</span> <span class="nav-text">str_replace()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#addslashes"><span class="nav-number">1.10.</span> <span class="nav-text">addslashes()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#md5"><span class="nav-number">1.11.</span> <span class="nav-text">md5()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chr"><span class="nav-number">1.12.</span> <span class="nav-text">chr()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E7%9A%84%E5%87%BD%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">自訂的函式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%AE%B6%E4%BD%9C%E6%A5%AD-1"><span class="nav-number">3.</span> <span class="nav-text">回家作業 1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%AE%B6%E4%BD%9C%E6%A5%AD-2"><span class="nav-number">4.</span> <span class="nav-text">回家作業 2</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/05-12/php-baseclass-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] PHP 常用函式與自訂函式 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] PHP 常用函式與自訂函式<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200512-php-baseclass-6.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-05-12 14:30:42" itemprop="dateCreated datePublished" datetime="2020-05-12T14:30:42+08:00">2020-05-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/PHP-MySQL/" itemprop="url" rel="index"><span itemprop="name">PHP/MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1,450</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:02:38</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/96NYgou.png"></p>
+<p>php 本身的函數非常多，譬如之前所用的<code>rand()</code>就是其中一種。同時常有重複的函數功能，譬如<code>mt_rand()</code>跟<code>rand()</code>。你不需要特別去背函式庫，只需要用到時就去查，慢慢常用的就會記住。請開始在 Web 目錄下新增檔案 <strong>2_array.php</strong>，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="常用的函數（式）"><a href="#常用的函數（式）" class="headerlink" title="常用的函數（式）"></a>常用的函數（式）</h1><h2 id="phpinfo"><a href="#phpinfo" class="headerlink" title="phpinfo()"></a>phpinfo()</h2><p>可以拿來查看 PHP 環境檢查上的確認。也是屬於比較私密的資料，不要放上網址讓知道你伺服器環境的弱點而被攻擊。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">phpinfo</span>();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="rand-min-max"><a href="#rand-min-max" class="headerlink" title="rand(min,max)"></a>rand(min,max)</h2><p>會產生 min~max 之間的隨機整數，這裡不帶範例。</p>
+<h2 id="array"><a href="#array" class="headerlink" title="array()"></a>array()</h2><p>可以用 array() 函式快速建立一個陣列組合，多值用<kbd>,</kbd>分開。記得要用變數儲存。你也可以指定 ‘索引’&#x3D;&gt;’內容’</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//array() 可以快速指定完整的陣列，記得用變數儲存</span></span><br><span class="line"><span class="variable">$ary1</span>=<span class="keyword">array</span>(<span class="string">&quot;加菲貓&quot;</span>,<span class="string">&quot;凱蒂貓&quot;</span>,<span class="string">&quot;湯姆貓&quot;</span>);</span><br><span class="line"><span class="variable">$ary2</span>=<span class="keyword">array</span>(<span class="number">5</span>=&gt;<span class="string">&quot;加菲貓&quot;</span>,<span class="string">&quot;jp&quot;</span>=&gt;<span class="string">&quot;凱蒂貓&quot;</span>,<span class="string">&quot;湯姆貓&quot;</span>);</span><br><span class="line"><span class="title function_ invoke__">print_r</span>(<span class="variable">$ary2</span>);</span><br><span class="line"><span class="keyword">print</span>(<span class="string">&quot;&lt;hr&gt;&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">array 相關的函數很多，這裡不一一列舉，你可以參考這裡：</span></span><br><span class="line"><span class="comment">http://www.w3school.com.cn/php/php_ref_array.asp</span></span><br><span class="line"><span class="comment">如果有用到再個別介紹</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="unset"><a href="#unset" class="headerlink" title="unset()"></a>unset()</h2><p>殺掉變數，可以殺掉一個完整變數，或是殺掉陣列內的某一格或整個陣列變數。你可以拿來跟指定 <code>變數=null</code> 做差異比較。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//unset() 可以殺掉變數</span></span><br><span class="line"><span class="variable">$var</span> = <span class="string">&#x27;hello world&#x27;</span>;</span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$var</span>);</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$var</span>);</span><br><span class="line"><span class="keyword">print</span>(<span class="string">&quot;&lt;hr&gt;&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$ary2</span>[<span class="number">5</span>]); <span class="comment">//根據前例子，殺掉加菲貓</span></span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$ary2</span>); </span><br><span class="line"></span><br><span class="line"><span class="comment">//相對於變數等於 null 時，則是變數沒有內容，但變數存在</span></span><br><span class="line"><span class="variable">$var</span> = <span class="string">&#x27;hello world&#x27;</span>;</span><br><span class="line"><span class="variable">$var</span>=<span class="literal">null</span>;</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$var</span>);</span><br><span class="line"><span class="keyword">print</span>(<span class="string">&quot;&lt;hr&gt;&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="date-format"><a href="#date-format" class="headerlink" title="date(format)"></a>date(format)</h2><p>產生系統時間（以 php.ini 宣告的時區為主，預設 GMT+0)，format 要填寫指定所需格式。參考網址 <a target="_blank" rel="noopener" href="https://www.php.net/manual/en/function.date.php">link&gt;&gt;時間格式</a></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*系統時間與日期*/</span></span><br><span class="line"><span class="variable">$now</span>=<span class="title function_ invoke__">date</span>(<span class="string">&quot;Y-m-d H:i:s&quot;</span>);	</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;現在系統時間為 &quot;</span>.<span class="variable">$now</span>.<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果此時要事後調整時區，比較直覺的作法是將時間往後推。透過 hour+7 的寫法。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*系統時間與日期*/</span></span><br><span class="line"><span class="variable">$now</span>=<span class="title function_ invoke__">date</span>(<span class="string">&quot;Y-m-d H:i:s&quot;</span>);	</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;現在系統時間為 &quot;</span>.<span class="variable">$now</span>.<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//date() 可以根據想要的 format（前面）去顯示，同時也能做增加減少（後面）但必須先把文字轉成時間語</span></span><br><span class="line"><span class="variable">$timelang</span>=<span class="title function_ invoke__">strtotime</span>(<span class="string">&quot;+6 hours&quot;</span>); <span class="comment">//你可以試著 echo 這裡會得到一堆數字</span></span><br><span class="line"><span class="variable">$tw</span>=<span class="title function_ invoke__">date</span>(<span class="string">&quot;Y-m-d H:i:s&quot;</span>,<span class="variable">$timelang</span>);	<span class="comment">//台灣時間</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;現在台灣時間為 &quot;</span>.<span class="variable">$tw</span>.<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>strtotime() 能將字串指令變成時間代碼。提供時間與時間的數學加減計算。</p>
+<h2 id="date-default-timezone-set"><a href="#date-default-timezone-set" class="headerlink" title="date_default_timezone_set()"></a>date_default_timezone_set()</h2><p>直接告知網頁是以時區以哪個為主，這屬於比較正式的時區宣告。不是透過上面比較治標不治本的方法用調數字去補足。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">date_default_timezone_set</span>(<span class="string">&#x27;Asia/Taipei&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;現在系統時間為 &quot;</span>.<span class="title function_ invoke__">date</span>(<span class="string">&quot;Y-m-d H:i:s&quot;</span>);	<span class="comment">//台灣時間</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="ceil-floor-round"><a href="#ceil-floor-round" class="headerlink" title="ceil() &amp;&amp; floor() &amp;&amp; round()"></a>ceil() &amp;&amp; floor() &amp;&amp; round()</h2><p>無條件進位 &amp;&amp; 無條件捨去 &amp;&amp; 四捨五入，用在計算時使用</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;10÷3=??&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;ceil: &quot;</span>.<span class="title function_ invoke__">ceil</span>(<span class="number">10</span>/<span class="number">3</span>).<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;floor: &quot;</span>.<span class="title function_ invoke__">floor</span>(<span class="number">10</span>/<span class="number">3</span>).<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;round: &quot;</span>.<span class="title function_ invoke__">round</span>(<span class="number">10</span>/<span class="number">3</span>).<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="substr-mb-substr"><a href="#substr-mb-substr" class="headerlink" title="substr() &amp;&amp; mb_substr()"></a>substr() &amp;&amp; mb_substr()</h2><p>擷取字串，能將一個文字串做擷取某部分出來。後者是針對中文的支援。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">// substr 擷取字串</span></span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">substr</span>(<span class="string">&quot;abcdefg&quot;</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">mb_substr</span>(<span class="string">&quot;不要打架要打去練舞室打&quot;</span>,<span class="number">4</span>,<span class="number">6</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="str-replace"><a href="#str-replace" class="headerlink" title="str_replace()"></a>str_replace()</h2><p>抽取某字串進行字串替換，不特別帶練習</p>
+<h2 id="addslashes"><a href="#addslashes" class="headerlink" title="addslashes()"></a>addslashes()</h2><p>自動增加反斜線在特殊符號’”&#x2F;之前綴，不特別帶練習</p>
+<h2 id="md5"><a href="#md5" class="headerlink" title="md5()"></a>md5()</h2><p>md5 加密，可以單向字串加密但無法反向解密，通常是對帳密認證之類做存取後兩者比對。</p>
+<h2 id="chr"><a href="#chr" class="headerlink" title="chr()"></a>chr()</h2><p>查詢 ASCII 碼的字串值。通常用在程式連續產字的時候方便性。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//chr 轉為 ascii code=&gt; 0-9, a-z,A-Z = 48-57, 97-122, 65-90</span></span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">chr</span>(<span class="number">97</span>); <span class="comment">//a</span></span><br></pre></td></tr></table></figure>
+
+<p>練習：產生一組隨機密碼，由 0-9, a-z,A-Z 組成，密碼長度 8~12<br>提示：你會需要用到 rand,for,ifelse,chr</p>
+<p>解答：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$num</span>=<span class="title function_ invoke__">rand</span>(<span class="number">8</span>,<span class="number">16</span>);</span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span>&lt;<span class="variable">$num</span>;<span class="variable">$i</span>++)&#123;</span><br><span class="line">	<span class="variable">$word</span>=<span class="title function_ invoke__">rand</span>(<span class="number">0</span>,<span class="number">61</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$word</span>&gt;<span class="number">35</span>)		<span class="keyword">echo</span> <span class="title function_ invoke__">chr</span>(<span class="variable">$word</span>+<span class="number">29</span>);</span><br><span class="line">	<span class="keyword">elseif</span>(<span class="variable">$word</span>&gt;<span class="number">10</span>)	<span class="keyword">echo</span> <span class="title function_ invoke__">chr</span>(<span class="variable">$word</span>+<span class="number">87</span>);</span><br><span class="line">	<span class="keyword">else</span> 				<span class="keyword">echo</span> <span class="variable">$word</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="自訂的函式"><a href="#自訂的函式" class="headerlink" title="自訂的函式"></a>自訂的函式</h1><p>你可以自訂一個函式，透過丟入返回完成任務達到獨立事件處理。</p>
+<p>練習：跟著做，說話小程式</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*custom function*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"><span class="variable">$who</span>,<span class="variable">$num</span></span>)</span>&#123; </span><br><span class="line">	<span class="keyword">echo</span> <span class="variable">$ai_say</span>=<span class="string">&quot;hello &quot;</span>.<span class="variable">$who</span>.<span class="string">&quot;! &quot;</span>;</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$num</span>&gt;<span class="number">60</span>) <span class="keyword">return</span> <span class="string">&quot;You are Great&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$name</span>=<span class="string">&quot;Mark&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$msg</span>=<span class="title function_ invoke__">say</span>(<span class="variable">$name</span>,<span class="number">30</span>);</span><br><span class="line"><span class="comment">// echo $ai_say; //error_sample</span></span><br></pre></td></tr></table></figure>
+
+<p>透過這個小範例有不少地方要注意：</p>
+<ol>
+<li>可以傳入變數，讓函式方便接著處理。</li>
+<li>function 的世界是獨立的，只能透過 () 或 return 傳遞資料，除了特別能力的變數。</li>
+<li>程式由右到左，所以你要能理解 echo 的執行觸發順序。</li>
+<li>return 可以不寫，如果你不需要回傳。</li>
+<li>有 return 情況下，外面程式也可以不理會。</li>
+</ol>
+<p>自我練習：拿前面的密碼產生練習。<br>主程式提供彈性的數量值給副程式。由副程式產生對應數量的密碼給主。然後主程式把資料顯示出來。</p>
+<p>解答：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">pwd</span>(<span class="params"><span class="variable">$many</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$run</span> = <span class="number">1</span>; <span class="variable">$run</span> &lt;= <span class="variable">$many</span>; <span class="variable">$run</span>++) &#123;</span><br><span class="line">		<span class="variable">$num</span> = <span class="title function_ invoke__">rand</span>(<span class="number">8</span>, <span class="number">16</span>);</span><br><span class="line">		<span class="variable">$code</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line">		<span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="variable">$num</span>; <span class="variable">$i</span>++) &#123;</span><br><span class="line">			<span class="variable">$word</span> = <span class="title function_ invoke__">rand</span>(<span class="number">0</span>, <span class="number">61</span>);</span><br><span class="line">			<span class="keyword">if</span> (<span class="variable">$word</span> &gt; <span class="number">35</span>)	<span class="variable">$code</span> .= <span class="title function_ invoke__">chr</span>(<span class="variable">$word</span> + <span class="number">29</span>);</span><br><span class="line">			<span class="keyword">elseif</span> (<span class="variable">$word</span> &gt; <span class="number">10</span>)	<span class="variable">$code</span> .= <span class="title function_ invoke__">chr</span>(<span class="variable">$word</span> + <span class="number">87</span>);</span><br><span class="line">			<span class="keyword">else</span> <span class="variable">$code</span> .= <span class="variable">$word</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="variable">$ary</span>[] = <span class="variable">$code</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$ary</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$num</span> = <span class="number">5</span>;</span><br><span class="line"><span class="variable">$result</span> = <span class="title function_ invoke__">pwd</span>(<span class="variable">$num</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$result</span> <span class="keyword">as</span> <span class="variable">$msg</span>) &#123;</span><br><span class="line">	<span class="keyword">echo</span> <span class="variable">$msg</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="回家作業-1"><a href="#回家作業-1" class="headerlink" title="回家作業 1"></a>回家作業 1</h1><p>隨機 1~100 顆星星填滿你的畫面，每個星星的顏色大小隨機不同。<br>用到 php&#x3D;rand+for 與 HTML&#x3D;DIV+styl</p>
+<p>高手挑戰<br>背景黑色，星星顏色偏向淺色系。讓星星透過 css animate 旋轉且速度不同。</p>
+<h1 id="回家作業-2"><a href="#回家作業-2" class="headerlink" title="回家作業 2"></a>回家作業 2</h1><p>大樂透電腦選號 1 ~ 49，每次產生 5 ~ 10 組樂透號組，每組６個號碼不重複<br>用到 array(),array_values(),sort(),for(),rand(),foreach();</p>
+<div class="note default"><p><strong>以上課題之完整代碼：</strong> <a target="_blank" rel="noopener" href="https://gist.github.com/summer10920/ce630e2dd7fc44c369aef712e5a60b53">view full code</a></p>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+              <a href="/tags/PHP-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 程式設計（假日班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/05-12/php-baseclass-5/" rel="prev" title="[基礎課程] PHP 陣列變數">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] PHP 陣列變數
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05-12/php-baseclass-7/" rel="next" title="[基礎課程] PHP 表單處理">
+                  [基礎課程] PHP 表單處理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

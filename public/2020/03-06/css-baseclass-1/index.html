@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="CSS 的課程教材一共分為五篇章節文章介紹，都是基礎的從零開始的課程並跟隨 CSS3 的觀念技巧，完全沒學過的人可以跟著學習，曾碰過 CSS 的人也可以跳著章節選擇性參考。CSS 是很基本的技術一定要會，任何的排版與外觀技巧都是透過 CSS 完成。學會 CSS 能幫助你在任何 Web 平台（部落格、套版、框架主題、架站包…等等）上做輕度的視覺修改，更厲害的人可以進入設計師領域。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] CSS 教學（一）：觀念與選擇器">
+<meta property="og:url" content="http://summer10920.github.io/2020/03-06/css-baseclass-1/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="CSS 的課程教材一共分為五篇章節文章介紹，都是基礎的從零開始的課程並跟隨 CSS3 的觀念技巧，完全沒學過的人可以跟著學習，曾碰過 CSS 的人也可以跳著章節選擇性參考。CSS 是很基本的技術一定要會，任何的排版與外觀技巧都是透過 CSS 完成。學會 CSS 能幫助你在任何 Web 平台（部落格、套版、框架主題、架站包…等等）上做輕度的視覺修改，更厲害的人可以進入設計師領域。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/lElmG8a.png">
+<meta property="article:published_time" content="2020-03-06T07:55:32.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.184Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="RWD 響應式網頁設計（假日班）">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/lElmG8a.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/03-06/css-baseclass-1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/03-06/css-baseclass-1/","path":"2020/03-06/css-baseclass-1/","title":"[基礎課程] CSS 教學（一）：觀念與選擇器"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] CSS 教學（一）：觀念與選擇器 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSS-%E7%9A%84%E5%9F%BA%E7%A4%8E%E8%A7%80%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">CSS 的基礎觀念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-%E7%9A%84%E5%AF%AB%E6%B3%95%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">CSS 的寫法方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSS-%E7%9A%84%E5%AE%A3%E5%91%8A%E4%BD%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">CSS 的宣告位置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E5%85%A7%E6%A8%A3%E5%BC%8F-Inline-Style"><span class="nav-number">1.2.1.</span> <span class="nav-text">行內樣式 (Inline Style)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A0%81%E9%A6%96%E5%AE%A3%E5%91%8A-Embedded-Style"><span class="nav-number">1.2.2.</span> <span class="nav-text">頁首宣告 (Embedded Style)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E9%80%A3%E7%B5%90-External-Style"><span class="nav-number">1.2.3.</span> <span class="nav-text">外部連結 (External Style)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%AF%E5%85%A5%E6%A8%A3%E5%BC%8F-Import"><span class="nav-number">1.2.4.</span> <span class="nav-text">匯入樣式 (Import)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%AD%B8%E7%9A%84%E5%B1%AC%E6%80%A7%EF%BC%9AColor"><span class="nav-number">1.3.</span> <span class="nav-text">初學的屬性：Color</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B7%B4%E7%BF%92"><span class="nav-number">1.3.1.</span> <span class="nav-text">練習</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%81%B8%E6%93%87%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">選擇器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tag%E3%80%81Class%E3%80%81ID"><span class="nav-number">2.1.</span> <span class="nav-text">Tag、Class、ID</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%EF%BC%88%E6%A8%99%E7%B1%A4%EF%BC%89%E9%81%B8%E6%93%87-%EF%BC%88Type-Selector%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">元素（標籤）選擇 （Type Selector）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%9E%E5%88%A5%E9%81%B8%E6%93%87-%EF%BC%88Class-Selector%EF%BC%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">類別選擇 （Class Selector）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ID-%E9%81%B8%E6%93%87-ID-Selector"><span class="nav-number">2.1.3.</span> <span class="nav-text">ID 選擇 (ID Selector)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A4%87%E5%90%88%E5%AD%90%E9%81%B8%E6%93%87"><span class="nav-number">2.2.</span> <span class="nav-text">複合子選擇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E5%AD%AB%E9%81%B8%E6%93%87"><span class="nav-number">2.2.1.</span> <span class="nav-text">子孫選擇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E9%84%B0%E9%81%B8%E6%93%87-X-Y%EF%BC%88Adjacent-Selector%EF%BC%89"><span class="nav-number">2.2.2.</span> <span class="nav-text">相鄰選擇 X + Y（Adjacent Selector）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E9%84%B0%E7%BE%A4%E9%81%B8%E6%93%87-X-Y"><span class="nav-number">2.2.3.</span> <span class="nav-text">相鄰群選擇 X ~ Y</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%AC%E6%80%A7%E9%81%B8%E6%93%87-X-title"><span class="nav-number">2.2.4.</span> <span class="nav-text">屬性選擇 X[title]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%BD%E9%A1%9E%E5%88%A5"><span class="nav-number">2.3.</span> <span class="nav-text">偽類別</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%A3%E7%B5%90%E5%81%BD%E9%A1%9E"><span class="nav-number">2.3.1.</span> <span class="nav-text">連結偽類</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%A6%E5%AE%9A%E9%81%B8%E6%93%87-not-selector"><span class="nav-number">2.3.2.</span> <span class="nav-text">否定選擇 :not(selector)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%9C%E4%BF%82%E5%81%BD%E9%A1%9E"><span class="nav-number">2.3.3.</span> <span class="nav-text">關係偽類</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%BD%E5%85%83%E7%B4%A0"><span class="nav-number">2.4.</span> <span class="nav-text">偽元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#before-%E8%88%87-after"><span class="nav-number">2.4.1.</span> <span class="nav-text">::before 與 ::after</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#first-letter-%E8%88%87-first-line"><span class="nav-number">2.4.2.</span> <span class="nav-text">::first-letter 與 ::first-line</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#selection"><span class="nav-number">2.4.3.</span> <span class="nav-text">::selection</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSS-%E7%9A%84%E7%B9%BC%E6%89%BF%E8%88%87%E5%84%AA%E5%85%88%E6%AC%8A"><span class="nav-number">3.</span> <span class="nav-text">CSS 的繼承與優先權</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/03-06/css-baseclass-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] CSS 教學（一）：觀念與選擇器 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] CSS 教學（一）：觀念與選擇器<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200306-css-baseclass-1.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-03-06 15:55:32" itemprop="dateCreated datePublished" datetime="2020-03-06T15:55:32+08:00">2020-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/HTML-CSS/" itemprop="url" rel="index"><span itemprop="name">HTML/CSS</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>4,332</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:07:53</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/lElmG8a.png"></p>
+<p>CSS 的課程教材一共分為五篇章節文章介紹，都是基礎的從零開始的課程並跟隨 CSS3 的觀念技巧，完全沒學過的人可以跟著學習，曾碰過 CSS 的人也可以跳著章節選擇性參考。CSS 是很基本的技術一定要會，任何的排版與外觀技巧都是透過 CSS 完成。學會 CSS 能幫助你在任何 Web 平台（部落格、套版、框架主題、架站包…等等）上做輕度的視覺修改，更厲害的人可以進入設計師領域。</p>
+<span id="more"></span>
+
+<h1 id="CSS-的基礎觀念"><a href="#CSS-的基礎觀念" class="headerlink" title="CSS 的基礎觀念"></a>CSS 的基礎觀念</h1><p>CSS 是一種針對 HTML 標籤在實體具現化之後的外觀調整工作，現在以 CSS3 為主技術。之前 HTML 有提到，每個 HTML 標籤視為盒子 (Box) 模式且區分區塊、行內兩種模式。CSS 需要額外編寫並宣告與 HTML 的選擇關係，這樣瀏覽器才會知道哪個標籤該用怎樣的 CSS 外觀。</p>
+<div class="note success"><p><strong>跟著做</strong><br>使用 chrome 瀏覽器，隨意找個網站按下 <kbd>F12</kbd> ，滑鼠隨意點選 <kbd>Elements</kbd> 分籤內的任何 body 內之標籤，接著旁側的 <kbd>Style</kbd> 分籤就是該標籤的外觀樣式 (CSS Style)。</p>
+</div>
+
+<h2 id="CSS-的寫法方式"><a href="#CSS-的寫法方式" class="headerlink" title="CSS 的寫法方式"></a>CSS 的寫法方式</h2><p>與 HTML 不同，屬性與值在兩者是不一樣的描述參數，且 CSS 屬性與值採用複數進行疊加效果，彼此用分號<code>;</code>錯開。而選擇器的填寫名稱，可以是標籤 tagname、類別 class、ID，進階複合或擴展到層級、偽元素、相對位置、屬性…等多選擇。</p>
+<ul>
+<li>HTML：<br><code>&lt;標籤名稱 屬性 A=&quot;值&quot; 屬性 B=&quot;值&quot;&gt;TEXT&lt;/標籤名稱&gt;</code></li>
+<li>CSS：<br><code>選擇器 &#123;屬性 A: 值；屬性 B: 值&#125;</code></li>
+</ul>
+<div class="note primary"><p><strong>素材準備：準備好以下代碼</strong> </p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>CSS Try!!<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">    <span class="comment">&lt;!-- 等等在這裡編寫 --&gt;</span></span></span><br><span class="line"><span class="language-xml">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span></span><br><span class="line">    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ipsa illum sit dicta, similique dolorum, maiores harum</span><br><span class="line">    molestiae animi, non quas iusto. Cum voluptates magni harum, maiores veniam obcaecati consequuntur nam aspernatur</span><br><span class="line">    incidunt aliquid atque quis dolorum enim non dolore a error quae voluptatem nulla numquam dolores natus illo sed</span><br><span class="line">    nesciunt.</span><br><span class="line">  <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>試著在素材上面的 style 區域內進行 CSS 設定，跟著敲打下面三種不同的代碼所得到的效果為何。</p>
+<ul>
+<li><strong>簡單的寫法</strong><figure class="highlight css"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">h1</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>多屬性指定</strong><figure class="highlight css"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">h1</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">  <span class="attribute">background-color</span>: black;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">30px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>多項選擇</strong><figure class="highlight css"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">h1</span>,</span><br><span class="line"><span class="selector-tag">p</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#ffffff</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#000000</span>;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">30px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="CSS-的宣告位置"><a href="#CSS-的宣告位置" class="headerlink" title="CSS 的宣告位置"></a>CSS 的宣告位置</h2><p>一共分為 4 種 CSS 宣告位置，<strong>可重複宣告</strong>相同選擇標籤在不同的宣告位置或屬性，但 CSS 單屬性只會依優先權擇一執行。優先權為固定的，將根據離標籤近且明確性描述強烈的為高優先。</p>
+<h3 id="行內樣式-Inline-Style"><a href="#行內樣式-Inline-Style" class="headerlink" title="行內樣式 (Inline Style)"></a>行內樣式 (Inline Style)</h3><p>最簡單的方式就是直接在該標籤內寫上 style 屬性，這是最浪費資源的寫法且無法重新被其他網頁之標籤元素使用。同時具備最高優先權（由於指定在單一標籤內且夠近，會比頁首內嵌、外部連結的樣式表來的強烈。)</p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">&quot;color:red&quot;</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="頁首宣告-Embedded-Style"><a href="#頁首宣告-Embedded-Style" class="headerlink" title="頁首宣告 (Embedded Style)"></a>頁首宣告 (Embedded Style)</h3><p>宣告本網頁使用的樣式表寫在 <code>&lt;head&gt;&lt;/head&gt;</code>裡（建議可於<code>&lt;script&gt;&lt;/script&gt;</code> JS 執行之前），但同理無法被其他網頁的標籤元素使用，只能在本頁有效。</p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="外部連結-External-Style"><a href="#外部連結-External-Style" class="headerlink" title="外部連結 (External Style)"></a>外部連結 (External Style)</h3><p>與前者位置相同，但將 CSS 樣式表以副檔名為<code>.css</code>文件存放在別處，透過 link 連結方式載入執行。好處可以同一份 css 文件進行多網頁共用且易於集中管理修改。</p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;style.css&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="匯入樣式-Import"><a href="#匯入樣式-Import" class="headerlink" title="匯入樣式 (Import)"></a>匯入樣式 (Import)</h3><p>跟前者相同的用法，其次特點差別在於在 CSS 文件當中，也可以<code>@import</code>其他的 CSS 檔案匯入成為本體一部分。也就是可以將 CSS 分成多段做更多規劃技巧。</p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/*兩種寫法皆可*/</span></span></span><br><span class="line"><span class="language-css">  <span class="keyword">@import</span> url(<span class="string">&quot;fineprint.css&quot;</span>);</span></span><br><span class="line"><span class="language-css">  <span class="keyword">@import</span> <span class="string">&#x27;custom.css&#x27;</span>;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<div class="note warning"><p><strong>科普知識：link 與 import 差別</strong><br>link 屬於 HTML 語法因此為標籤元素，link 元素除了 CSS 文件也可以連結其他類型檔案例如 RSS …等；import 是 CSS 語法因此不是 tag 標籤，等同將分散的 CSS 文件透過匯入 import 成一份 CSS 文件。</p>
+<p>此外 link 因為是 tag，故可透過 JS 的 DOM 規範去控制，反之@import 是無法受 JS 控制（根本不是 HTML 結構）。</p>
+</div>
+
+<div class="note danger"><p><strong>新手陷阱：@import 放置於開頭處</strong><br>使用@import 時必需放正式撰寫 css 之前的第一行，否則會載入失敗。</p>
+</div>
+
+<h2 id="初學的屬性：Color"><a href="#初學的屬性：Color" class="headerlink" title="初學的屬性：Color"></a>初學的屬性：Color</h2><p>為了教學方便，這裡我們挑選簡單的 color 作為第一個學習 CSS 屬性，下達指令針對該標籤進行顏色變化，顏色的值有多種表示方法。方便我們做選擇器的練習</p>
+<figure class="highlight css"><figcaption><span>inherit.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.demo</span> &#123;</span><br><span class="line">  <span class="comment">/*顏色名稱*/</span></span><br><span class="line">  <span class="attribute">color</span>: red; </span><br><span class="line"></span><br><span class="line">  <span class="comment">/*HEX 色碼*/</span></span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#ff0000</span>; </span><br><span class="line"></span><br><span class="line">  <span class="comment">/*RGB 與 alpha*/</span></span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">rgb</span>(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>); </span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">rgba</span>(<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.5</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*hsla（色相角度，飽和度，亮度，透明度）*/</span></span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">hsl</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">50%</span>);</span><br><span class="line">  <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">50%</span>, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="練習"><a href="#練習" class="headerlink" title="練習"></a>練習</h3><ul>
+<li>隨意自行設定標籤與文字內容，接著使用三種可寫入 CSS 的方式，修改標籤文字顏色。</li>
+<li>文字顏色需用到 顏色名稱、HEX 色碼、rgb。<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>CSS Try!!<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">color</span>: <span class="number">#f524f2</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;style.css&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span> <span class="attr">style</span>=<span class="string">&quot;color:red&quot;</span>&gt;</span>行內樣式的紅色<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>頁首<span class="tag">&lt;<span class="name">span</span>&gt;</span>宣告<span class="tag">&lt;/<span class="name">span</span>&gt;</span>的紫色<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><figcaption><span>style.css</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">span</span>&#123;</span><br><span class="line">  <span class="attribute">color</span>:<span class="built_in">rgb</span>(<span class="number">0</span>, <span class="number">17</span>, <span class="number">255</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="選擇器"><a href="#選擇器" class="headerlink" title="選擇器"></a>選擇器</h1><p>CSS 有許多種選擇器可以鎖定目標修改該目標的樣式，常用的選擇器有<code>tag</code>、<code>id</code>、<code>class</code>、<code>複合子</code>。</p>
+<div class="note danger"><p><strong>新手陷阱：CSS 的優先權</strong><br>是根據離標籤越近且明確性描述較高者為優先，大致規則如下，細部隨後續過程來探討：<br>（高優先）style(!important)＞ID＞Class＞Elements 元素（低優先）</p>
+</div>
+
+<h2 id="Tag、Class、ID"><a href="#Tag、Class、ID" class="headerlink" title="Tag、Class、ID"></a>Tag、Class、ID</h2><p>最基礎用途的方式就是直接指定 tag name（大範圍）、class name（複數範圍）、id name（單一範圍）。通常這層級的寫法都影響優先的程度很大。</p>
+<h3 id="元素（標籤）選擇-（Type-Selector）"><a href="#元素（標籤）選擇-（Type-Selector）" class="headerlink" title="元素（標籤）選擇 （Type Selector）"></a>元素（標籤）選擇 （Type Selector）</h3><p>簡單直接大範圍的指定這類型標籤都吃這個選擇，但優先權非常低很容易被其他選擇器搶走。</p>
+<figure class="highlight css"><figcaption><span>cssSelector.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">h1</span> &#123;</span><br><span class="line">    <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>常使用在全站的初始化設定，因為優先權很低不影響後期的二工調整，例如使用<code>body&#123;&#125;</code>來規劃全站主色或是文字尺寸。</p>
+</blockquote>
+<h3 id="類別選擇-（Class-Selector）"><a href="#類別選擇-（Class-Selector）" class="headerlink" title="類別選擇 （Class Selector）"></a>類別選擇 （Class Selector）</h3><ul>
+<li>使用 class 方式可以重複使用，任何指定同個 class 名稱的不同標籤都共用。</li>
+<li>利用優先權效果，可以指定不同 class 錯開位置，得到不同外觀。</li>
+<li>寫法會用<code>.</code>逗點做為開頭。</li>
+<li>類別名稱只允許使用英文、數字、連字<code>-</code>符號和底線<code>_</code>符號。</li>
+<li>句點後的名稱必須以英文開始。</li>
+<li>Class、ID 的名稱有大小寫區分。</li>
+<li>一個 Tag 可以允許擁有多個 class 產生更豐富的樣式。</li>
+</ul>
+<figure class="highlight html"><figcaption><span>cssSelector.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.a</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.b</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.menu</span>&#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>:orange;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 相同元素但需要不同外觀時 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span> <span class="attr">class</span>=<span class="string">&quot;menu&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;a&quot;</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">li</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 重複使用 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">class</span>=<span class="string">&quot;b&quot;</span>&gt;</span>Lorem<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span><span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;b&quot;</span>&gt;</span>Lorem<span class="tag">&lt;/<span class="name">span</span>&gt;</span> ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="ID-選擇-ID-Selector"><a href="#ID-選擇-ID-Selector" class="headerlink" title="ID 選擇 (ID Selector)"></a>ID 選擇 (ID Selector)</h3><ul>
+<li>向身分證一樣，同 HTML 文件只能有一個 ID 名稱不重複，通常用來命名為一個有動機的網頁區塊。</li>
+<li>雖說 id 唯一，還是硬要重複也可以（非標準作法）但不妥當，因為在腳本 (JS) 控制上常使用 id 作 DOM 對象，對 JS 來說，id 必須唯一可識別的，若相同 id 會讓 JS 只認同第一組 id 為目標。</li>
+<li>寫法會用<code>#</code>逗點做為開頭。</li>
+<li>一般來說 CSS 設計師會盡量避免使用 ID，盡可能使用 class，使 ID 節點單純給 html 的<code>link</code>的錨點連結，或是 JS 腳本的對象綁定使用。</li>
+</ul>
+<h2 id="複合子選擇"><a href="#複合子選擇" class="headerlink" title="複合子選擇"></a>複合子選擇</h2><p>複合選擇器，指的是選擇的條件變多了，需要符合多個以上的條件指定。</p>
+<h3 id="子孫選擇"><a href="#子孫選擇" class="headerlink" title="子孫選擇"></a>子孫選擇</h3><ul>
+<li>後代選擇 <code>X Y</code>（Descendant Selector）</li>
+<li>子代選擇 <code>X &gt; Y</code>（Child Selector）</li>
+</ul>
+<figure class="highlight html"><figcaption><span>cssSelector.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">nav</span> <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">nav</span> &gt; <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">nav</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="相鄰選擇-X-Y（Adjacent-Selector）"><a href="#相鄰選擇-X-Y（Adjacent-Selector）" class="headerlink" title="相鄰選擇 X + Y（Adjacent Selector）"></a>相鄰選擇 <code>X + Y</code>（Adjacent Selector）</h3><p>稱為相鄰兄弟（單選）。 它僅僅會選擇剛好在 X 元素之後的 Y 元素。</p>
+<figure class="highlight html"><figcaption><span>cssSelector.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">h1</span> + <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span> <span class="comment">&lt;!--blue--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="相鄰群選擇-X-Y"><a href="#相鄰群選擇-X-Y" class="headerlink" title="相鄰群選擇 X ~ Y"></a>相鄰群選擇 <code>X ~ Y</code></h3><p>稱為相鄰兄弟群（多選）。 它僅僅會選擇剛好在 X 元素之後的同層 Y 元素。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* h2 之後的同層 p 都會被選擇 */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">h2</span> ~ <span class="selector-tag">p</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--blue--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--blue--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Lorem ipsum dolor sit amet.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="屬性選擇-X-title"><a href="#屬性選擇-X-title" class="headerlink" title="屬性選擇 X[title]"></a>屬性選擇 <code>X[title]</code></h3><p>從 tag 的屬性進行選擇，也能根據屬性值做條件上的滿足。</p>
+<ul>
+<li><code>X[Y]</code> : X 持有屬性 Y 之對象</li>
+<li><code>X[Y=&quot;Z&quot;]</code> :X 持有屬性 Y 之對象，且 Y 的值為 Z</li>
+<li><code>X[Y^=&quot;Z&quot;]</code> :X 持有屬性 Y 之對象，且 Y 的值為 Z 開頭</li>
+<li><code>X[Y$=&quot;Z&quot;]</code> :X 持有屬性 Y 之對象，且 Y 的值為 Z 結尾</li>
+<li><code>X[Y*=&quot;Z&quot;]</code> :X 持有屬性 Y 之對象，且 Y 的值為包含 Z</li>
+<li><code>X[Y~=&quot;Z&quot;]</code> :X 持有屬性 Y 之對象，且 Y 的值包含單詞 Z</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 選取 img 標籤屬性為 title 的目標 */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">img</span><span class="selector-attr">[title]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">width</span>: <span class="number">300px</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 選取屬性 type=&#x27;text&#x27; 的目標 */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">input</span><span class="selector-attr">[type=<span class="string">&quot;text&quot;</span>]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span><span class="selector-attr">[href=<span class="string">&quot;http://google.com.tw&quot;</span>]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 選取 href 的屬性值開頭為 http:// 的對象  */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span><span class="selector-attr">[href^=<span class="string">&quot;http://&quot;</span>]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">2em</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 選取 href 的屬性值結尾為 .pdf 的對象  */</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span><span class="selector-attr">[href$=<span class="string">&quot;.pdf&quot;</span>]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: none;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="comment">/* 選取 img 所有 src 屬性值裡面包含單字 2019 的對象；*/</span></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">img</span><span class="selector-attr">[src*=<span class="string">&quot;2019&quot;</span>]</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: none;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">title</span>=<span class="string">&quot;left&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://fakeimg.pl/150x150/&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://fakeimg.pl/150x150/&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://google.com.tw&quot;</span>&gt;</span>Google<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http://yahoo.com.tw&quot;</span>&gt;</span>Yahoo<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">value</span>=<span class="string">&quot;text&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;number&quot;</span> <span class="attr">value</span>=<span class="string">&quot;1234&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="偽類別"><a href="#偽類別" class="headerlink" title="偽類別"></a>偽類別</h2><p>偽類別選擇 (Pseudo Classes Selector)，部分的標籤會提供其他特殊情況下的條件，稱呼為偽類別並使用冒號 <code>:</code> 表示，下列舉例來說：</p>
+<blockquote><p>不少元素都持有各自的偽類別，總類繁多請參考官方</p>
+<footer><strong>w3schools</strong><cite><a target="_blank" rel="noopener" href="https://www.w3schools.com/css/css_pseudo_classes.asp">www.w3schools.com/css/css_pseudo_classes.asp</a></cite></footer></blockquote>
+
+<h3 id="連結偽類"><a href="#連結偽類" class="headerlink" title="連結偽類"></a>連結偽類</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">a</span>&#123;<span class="attribute">text-decoration</span>: none;&#125;</span><br><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">:link</span> &#123; <span class="attribute">color</span>: red;&#125; <span class="comment">/*連結提示*/</span></span><br><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">:visited</span> &#123; <span class="attribute">color</span>: green;&#125; <span class="comment">/*已拜訪過過*/</span></span><br><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">:hover</span> &#123; <span class="attribute">color</span>: orange;&#125; <span class="comment">/*滑過*/</span></span><br><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">:active</span> &#123; <span class="attribute">color</span>: purple;&#125; <span class="comment">/*按下瞬間*/</span></span><br></pre></td></tr></table></figure>
+
+<div class="note danger"><p><strong>常見陷阱：偽類可能是一個組合情況</strong><br>如果要全指定 link4 個偽類，必須要按照 LvHa 原則來排否則效果可能會被覆蓋錯亂。舉例來說<code>:link</code>放在最後那麼所有的效果都會是<code>:link</code>（所覆蓋）。</p>
+</div>
+
+<h3 id="否定選擇-not-selector"><a href="#否定選擇-not-selector" class="headerlink" title="否定選擇 :not(selector)"></a>否定選擇 <code>:not(selector)</code></h3><p>偽類別的一種，如果你需要某選擇 X 範圍排除某選擇 Y。可以這樣使用</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*所有的 div 都選中，但排除持有 class=odd 的對象*/</span></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-pseudo">:not</span>(<span class="selector-class">.odd</span>) &#123;</span><br><span class="line">   <span class="attribute">color</span>: blue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="關係偽類"><a href="#關係偽類" class="headerlink" title="關係偽類"></a>關係偽類</h3><p>原則上就是找這群人之中的兄弟關係之對象。可分兩派：<code>nth-child</code>主要是該父級下的所有子元素之位置；<code>nth-of-type</code>是等於找兄弟之間同標籤之位置。前後差別是用 child 還是以 type 來計算。舉例：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">p</span><span class="selector-pseudo">:nth-child</span>(<span class="number">3</span>) &#123; <span class="comment">/* 範圍為所有 child，該 p 是否該範圍內排序第 3 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">p</span><span class="selector-pseudo">:nth-of-type</span>(<span class="number">3</span>) &#123; <span class="comment">/* 範圍為所有 child 且 同 type，該 p 是否該範圍內排序第 3 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: green;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h3</span>&gt;</span>hhh<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--red--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--green--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h3</span>&gt;</span>hhh<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--red--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h3</span>&gt;</span>hhh<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>ppp<span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="comment">&lt;!--green--&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>選擇器</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p:nth-child(3)</td>
+<td>找到 p 是某父級之所有 child 範圍內，第 3 個（索引最小為 1)</td>
+</tr>
+<tr>
+<td>p:nth-child(3n+1)</td>
+<td>找到 p 是某父級之所有 child 範圍內，第 1,4,7…個</td>
+</tr>
+<tr>
+<td>p:nth-child(3n)</td>
+<td>找到 p 是某父級之所有 child 範圍內，第 3,6,9…個</td>
+</tr>
+<tr>
+<td>p:nth-child(-n+3)</td>
+<td>找到 p 是某父級之所有 child 範圍內，第 1,2,3 個</td>
+</tr>
+<tr>
+<td>p:nth-child(odd)</td>
+<td>找到 p 是某父級之所有 child 範圍內，第單數個 (1,3.5…) 等價 2n+1</td>
+</tr>
+<tr>
+<td>———————</td>
+<td>——————————————————</td>
+</tr>
+<tr>
+<td>p:nth-of-type(3)</td>
+<td>找到這些 p 的父級之第 3 個兒子<code>p</code>。（索引最小為 1)</td>
+</tr>
+<tr>
+<td>p:nth-of-type(3n+1)</td>
+<td>找到這些 p 的父級之第 1,4,7…兒子<code>p</code>。</td>
+</tr>
+<tr>
+<td>p:nth-of-type(3n)</td>
+<td>找到這些 p 的父級之第 3,6,9…兒子<code>p</code>。</td>
+</tr>
+<tr>
+<td>p:nth-of-type(odd)</td>
+<td>找到這些 p 的父級之偶數兒子<code>p</code>。</td>
+</tr>
+<tr>
+<td>p:nth-last-of-type(3)</td>
+<td>找到這些 p 的父級之倒數第 3 個兒子<code>p</code>。（索引最小為 1)</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>選擇器</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p:first-child</td>
+<td>找到 p，且需符合為某父級下之第 1 個兒子（大哥）。</td>
+</tr>
+<tr>
+<td>p:last-child</td>
+<td>找到 p，且需符合為某父級之最後個兒子（老么）。</td>
+</tr>
+<tr>
+<td>p:nth-last-child(3)</td>
+<td>找到 p，且需符合為某父級之倒數第 3 個兒子<code>p</code>。（索引最小為 1)</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>last-child 與 nth-last-child 練習部分，如果是直接寫在 body 內且使用 vscode 的 live server，因為 body 最後被偷多添加了<code>&lt;script&gt;</code>標籤，所以需特別注意。</p>
+</blockquote>
+<div class="note danger"><p><em><em>新手陷阱：</em>-child 容易順序被異動影響</em>*<br>套用在設計上，大多數老手會避免使用<code>*-child</code>來避免因變動添加其他總類元素影響預期之順序。</p>
+</div>
+
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">div</span> <span class="selector-tag">p</span><span class="selector-pseudo">:first-child</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#aaa</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*在製作 ul 橫向選單，左邊框的線可以用此處理*/</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">div</span> <span class="selector-tag">p</span><span class="selector-pseudo">:last-child</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#aaa</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*在製作 ul 橫向選單，右邊框的線可以用此處理*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 奇數圖片往左，偶數圖片往右 */</span></span><br><span class="line"><span class="selector-tag">img</span><span class="selector-pseudo">:nth-of-type</span>(odd) &#123;</span><br><span class="line">  <span class="attribute">float</span>: left;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">img</span><span class="selector-pseudo">:nth-of-type</span>(even) &#123;</span><br><span class="line">  <span class="attribute">float</span>: right;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 從第二個開始選取每個 div 類型的目標 */</span></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-pseudo">:nth-of-type</span>(<span class="number">1</span>n + <span class="number">2</span>) &#123;</span><br><span class="line">  <span class="attribute">margin-left</span>: <span class="number">20px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 所有 li 項目，但排除前 3 個*/</span></span><br><span class="line"><span class="selector-tag">li</span><span class="selector-pseudo">:not</span>(<span class="selector-pseudo">:nth-child</span>(-n + <span class="number">3</span>)) &#123;</span><br><span class="line">  <span class="attribute">display</span>: none;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="偽元素"><a href="#偽元素" class="headerlink" title="偽元素"></a>偽元素</h2><p>W3C 定義裡就只有五個，跟偽類不同這裡使用兩個冒號<code>::</code>開頭，而偽類使用一個冒號<code>:</code>開頭。請 <a target="_blank" rel="noopener" href="https://www.w3schools.com/css/css_pseudo_elements.asp">參考 W3SCHOOL</a>！</p>
+<div class="note danger"><p><strong>新手陷阱：偽元素請習慣用兩個<code>::</code></strong><br>雖然，瀏覽器寫一個冒號也可以正常判斷運作唯獨<code>::selection</code>必須是兩個冒號才能正常運作，不過為了區分用兩個冒號為宜。</p>
+</div>
+
+<h3 id="before-與-after"><a href="#before-與-after" class="headerlink" title="::before 與 ::after"></a>::before 與 ::after</h3><p>before 與 after 兩者都是以 <code>display:inline-block</code> 的屬性存在，<code>::before</code> 是在原本的元素<code>區塊的內容</code>「之前」加入內容，<code>::after</code> 是在原本的元素區塊的內容「之後」加入內容，兩者會繼承原本元素區塊的屬性。</p>
+<p>content 屬性係<code>::before</code> 與 <code>::after</code> 必須具備的屬性，就算只有 <code>content:&quot;&quot;;</code> 都可以，因為沒有 content 的偽元素是不會出現在畫面上，</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span><span class="selector-pseudo">::before</span>, <span class="selector-tag">div</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="string">&quot;WOW!&quot;</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: yellow;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">0</span> <span class="number">1rem</span>;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">margin</span>: <span class="number">0</span> <span class="number">1rem</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: inline-block;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background</span>: green;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">0</span> <span class="number">1rem</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Lorem, ipsum dolor.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>content 是很特別的屬性，它可以使用 attr 直接獲取內容元素的屬性值（attribute）並顯示。使用下列程式碼用法，將會把超連結的 href 內容與 title 內容，透過偽元素一前一後的顯示出來。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span><span class="selector-pseudo">::before</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="built_in">attr</span>(href);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span><span class="selector-pseudo">::after</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">content</span>: <span class="built_in">attr</span>(title);</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: blue;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">a</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: pink;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-decoration</span>: none;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;http:www.google.com&quot;</span> <span class="attr">title</span>=<span class="string">&quot;My Title&quot;</span>&gt;</span>google<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>content 內容是可以「相加」的，直接用一個<kbd>Space</kbd>就可以不斷的累加下去，以下面的程式碼來說，可以在 content 值用雙引號添加文字。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">::before</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&quot;&lt;&quot;</span> <span class="built_in">attr</span>(href) <span class="string">&quot;&gt;&quot;</span>;</span><br><span class="line">  <span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">::after</span> &#123;</span><br><span class="line">  <span class="attribute">content</span>: <span class="string">&quot;&lt;&quot;</span> <span class="built_in">attr</span>(title) <span class="string">&quot;&gt;&quot;</span>;</span><br><span class="line">  <span class="attribute">color</span>: blue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以塞入圖片</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">a</span><span class="selector-pseudo">::before</span>&#123;</span><br><span class="line">  <span class="attribute">content</span>:url（圖片網址） url（圖片網址） url（圖片網址）;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<div class="note danger"><p><strong>新手陷阱：置換元素沒有偽元素</strong><br>比如 <code>&lt;img&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;iframe&gt;</code>，這幾個標籤是不支持類似 img::before 這樣使用。前面說的偽元素相當於在元素內部額外提供假的標籤元素，但 input, img, iframe…等這類置換元素都沒有內容物而是透過屬性得到定義物，所以不能通過偽元素插入到內容的前後。</p>
+</div>
+
+<h3 id="first-letter-與-first-line"><a href="#first-letter-與-first-line" class="headerlink" title="::first-letter 與 ::first-line"></a>::first-letter 與 ::first-line</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* 第一個字母 */</span></span><br><span class="line"><span class="selector-class">.wrapper</span><span class="selector-pseudo">:first</span>-letter &#123;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">3em</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*第一行*/</span></span><br><span class="line"><span class="selector-class">.wrapper</span><span class="selector-pseudo">:first</span>-<span class="selector-tag">line</span> &#123;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">3rem</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="selection"><a href="#selection" class="headerlink" title="::selection"></a>::selection</h3><p>就只是提供文字選取的效果</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-pseudo">::selection</span>&#123;</span><br><span class="line">  <span class="attribute">color</span>:yellow;</span><br><span class="line">  <span class="attribute">background</span>:<span class="number">#543</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="CSS-的繼承與優先權"><a href="#CSS-的繼承與優先權" class="headerlink" title="CSS 的繼承與優先權"></a>CSS 的繼承與優先權</h1><p>每個屬性都有個值叫做<code>inherit</code>（繼承）或<code>unset</code>（未指定），代表請從父級那裏去繼承取得，通常不會特別寫出來（預設值就是繼承父級），但優先問題所以有以下範例：</p>
+<figure class="highlight html"><figcaption><span>inherit.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">  <span class="selector-class">.this</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: red;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css">  <span class="selector-tag">div</span> <span class="selector-class">.this</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: inherit;</span></span><br><span class="line"><span class="language-css">  &#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;color:blue&quot;</span>&gt;</span></span><br><span class="line">    Lorem ipsum <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;this&quot;</span>&gt;</span>dolor<span class="tag">&lt;/<span class="name">span</span>&gt;</span> sit amet.</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>透過 Chrome <kbd>F12</kbd> 對<code>span</code>檢查，可以得到以下三組 color 指定。</p>
+<p>A. <code>div .this&#123;&#125;</code>的<code>color: inherit</code><br>B. <code>.this&#123;&#125;</code>的<code>color: red</code><br>C. 父級 DIV<code>Style Attribute</code>的<code>color: blue</code></p>
+<p>但<code>span</code>優先權討論為：</p>
+<ul>
+<li>A 的優先最高！因為 A 選擇器吃到兩個選擇描述；比起 B 只有一個 class 還強烈；至於 C 是父級繼承來的沒有描述指向到 span ，因此 C 相對弱又遠。</li>
+<li>A 的 color 為<code>inherit</code>所以去吃父級的設定，因此前看父層級<code>div</code>查詢顏色為何。</li>
+<li><code>div</code>的顏色為 blue，所以 A 的顏色同等於父層級的顏色。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RWD-%E9%9F%BF%E6%87%89%E5%BC%8F%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># RWD 響應式網頁設計（假日班）</a>
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03-05/html-baseclass-1/" rel="prev" title="[基礎課程] HTML 基礎新手大全">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] HTML 基礎新手大全
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03-10/css-baseclass-2/" rel="next" title="[基礎課程] CSS 教學（二）：屬性值 - 基本篇">
+                  [基礎課程] CSS 教學（二）：屬性值 - 基本篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

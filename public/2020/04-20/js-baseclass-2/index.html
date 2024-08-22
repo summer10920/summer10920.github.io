@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇介紹 JS 十分重要的兩大模型介紹，如果你希望 JS 能控制並動態調整你的網頁內容。不外乎就是 BOM 與 DOM 模型。BOM 是瀏覽器物件模型，DOM 是文件物件模型，前者是對瀏覽器本身進行操作，而後者是對瀏覽器（可看成容器）內的內容進行操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] JavaScript 教學（二）：BOM 與 DOM">
+<meta property="og:url" content="http://summer10920.github.io/2020/04-20/js-baseclass-2/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="本篇介紹 JS 十分重要的兩大模型介紹，如果你希望 JS 能控制並動態調整你的網頁內容。不外乎就是 BOM 與 DOM 模型。BOM 是瀏覽器物件模型，DOM 是文件物件模型，前者是對瀏覽器本身進行操作，而後者是對瀏覽器（可看成容器）內的內容進行操作。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/D8v3RVP.png">
+<meta property="og:image" content="https://i.imgur.com/kMqEG8t.png">
+<meta property="og:image" content="https://i.imgur.com/CN1gDcE.png">
+<meta property="article:published_time" content="2020-04-20T13:07:53.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.188Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta property="article:tag" content="JavaScript 程式設計（假日班）">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/D8v3RVP.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/04-20/js-baseclass-2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/04-20/js-baseclass-2/","path":"2020/04-20/js-baseclass-2/","title":"[基礎課程] JavaScript 教學（二）：BOM 與 DOM"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] JavaScript 教學（二）：BOM 與 DOM | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84-BOM-%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">常用的 BOM 操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AA%B2%E5%A0%82%E4%BD%9C%E6%A5%AD"><span class="nav-number">1.1.</span> <span class="nav-text">課堂作業</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84-DOM-%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">常用的 DOM 操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#document-%E7%89%A9%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">document 物件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%80%E9%BB%9E%E5%AD%98%E5%8F%96"><span class="nav-number">2.2.</span> <span class="nav-text">節點存取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Event-%E4%BA%8B%E4%BB%B6"><span class="nav-number">2.3.</span> <span class="nav-text">Event 事件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%8F%E9%81%8E-HTML-%E5%B1%AC%E6%80%A7%E8%A7%B8%E7%99%BC"><span class="nav-number">2.3.1.</span> <span class="nav-text">透過 HTML 屬性觸發</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%8F%E9%81%8E-JS-%E7%9B%A3%E8%81%BD%E8%A1%8C%E7%82%BA%E8%A7%B8%E7%99%BC"><span class="nav-number">2.3.2.</span> <span class="nav-text">透過 JS 監聽行為觸發</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%80%E9%BB%9E%E7%9A%84%E5%B1%AC%E6%80%A7%E8%AE%80%E5%AF%AB"><span class="nav-number">2.4.</span> <span class="nav-text">節點的屬性讀寫</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%80%E9%BB%9E%E8%AA%BF%E6%95%B4"><span class="nav-number">2.5.</span> <span class="nav-text">節點調整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AA%B2%E5%A0%82%E7%B7%B4%E7%BF%92"><span class="nav-number">2.6.</span> <span class="nav-text">課堂練習</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AA%B2%E5%A0%82%E4%BD%9C%E6%A5%AD-1"><span class="nav-number">2.7.</span> <span class="nav-text">課堂作業</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/04-20/js-baseclass-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] JavaScript 教學（二）：BOM 與 DOM | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] JavaScript 教學（二）：BOM 與 DOM<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200420-js-baseclass-2.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-04-20 21:07:53" itemprop="dateCreated datePublished" datetime="2020-04-20T21:07:53+08:00">2020-04-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>2,870</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:05:13</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/D8v3RVP.png"><br>本篇介紹 JS 十分重要的兩大模型介紹，如果你希望 JS 能控制並動態調整你的網頁內容。不外乎就是 BOM 與 DOM 模型。BOM 是瀏覽器物件模型，DOM 是文件物件模型，前者是對瀏覽器本身進行操作，而後者是對瀏覽器（可看成容器）內的內容進行操作。</p>
+<span id="more"></span>
+
+<p>透過下圖可理解整個層級觀念。</p>
+<ul>
+<li>BOM 最根部是指 window，也就是本身整個瀏覽器容器。</li>
+<li>DOM 之最根部的地方，就是 document，就是屬於 BOM 之內。DOM 往下可以延伸出各種 HTML 標籤，一個節點就是一個標籤，往下又可以再延伸出「文本」與「屬性」。</li>
+</ul>
+<pre>
+<code class="mermaid">
+graph TD
+subgraph BOM
+Window --&gt; document &amp; history &amp; location &amp; navigator &amp; screen
+end
+document &#x3D;&#x3D;&gt; html
+subgraph DOM
+html --&gt; head &amp; body
+head --&gt; title &amp; meta
+body --&gt; div &amp; table &amp; form &amp; p
+end
+style BOM fill:#f9f,stroke:#333,stroke-width:4px
+style DOM fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5, 5
+</code>
+</pre>
+
+<p>此時 JS 可以由 DOM 去存取並改變 HTML 文件之架構、樣式和內容的方法，簡單來說 JS 可以透過 DOM 提供的方式來對 HTML 做存取與操作，以及同時用 BOM 做一些反應事件。BOM&#x2F;DOM 的最大差別在於：</p>
+<ul>
+<li>BOM: JS 與瀏覽器溝通的窗口，不涉及網頁內容。<br>語法範例 &gt;&gt;  <code>window.alert(&quot;hello world&quot;);</code></li>
+<li>DOM: JS 用來控制網頁的節點與內容的標準。<br>語法範例 &gt;&gt;  <code>window.document.write(&quot;hello world&quot;);</code></li>
+</ul>
+<hr>
+<h1 id="常用的-BOM-操作"><a href="#常用的-BOM-操作" class="headerlink" title="常用的 BOM 操作"></a>常用的 BOM 操作</h1><p>由於最上層一定是 window，所以是可以省略不寫 window。有些是<mark>屬性&#x3D;物件{}</mark>有些是<mark>方法&#x3D;函式 ()</mark>被歸入使用。請參考 MDN 說明 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window">https://developer.mozilla.org/zh-CN/docs/Web/API/Window</a></p>
+<ul>
+<li><p>console()<br>指令輸出</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">//請一行行輸入下列確認差異性</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;helo world&quot;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;same like log&quot;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;it no work&quot;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">warn</span>(<span class="string">&quot;you have trobule&quot;</span>);</span><br><span class="line">ary=[<span class="string">&#x27;apple&#x27;</span>,<span class="string">&#x27;banana&#x27;</span>,<span class="string">&#x27;cup&#x27;</span>];</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">table</span>(ary);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">table</span>(history);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">clear</span>();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>history()<br>提供控制可遊覽紀錄的方式</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">history.<span class="title function_">back</span>(); <span class="comment">//回前頁</span></span><br><span class="line">history.<span class="title function_">forward</span>(); <span class="comment">//下一頁</span></span><br><span class="line">history.<span class="title function_">go</span>(<span class="number">1</span>); <span class="comment">//用數字+-代表前後跳幾頁</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>screen{}<br>提供相關螢幕的數據，更多內容請詳 <a target="_blank" rel="noopener" href="http://www.w3school.com.cn/js/js_window_screen.asp">MDN 說明網址</a></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">screen.<span class="property">width</span>;</span><br><span class="line">screen.<span class="property">availWidth</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>location{}<br>控制 URL 的方式，更多內容請詳 <a target="_blank" rel="noopener" href="https://www.w3schools.com/jsref/obj_location.asp">MDN 說明網址</a></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">location.<span class="property">href</span>; <span class="comment">//取得目前 URL</span></span><br><span class="line">location.<span class="property">href</span>=<span class="string">&quot;https://www.google.com&quot;</span>; <span class="comment">//將目前 URL 指定為某 URL;</span></span><br><span class="line">location.<span class="title function_">assign</span>(<span class="string">&quot;https://www.google.com&quot;</span>); <span class="comment">//指定瀏覽到某 URL;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>open(),close()<br>控制新視窗，更多內容請詳 <a target="_blank" rel="noopener" href="https://www.w3schools.com/jsref/met_win_open.asp">open - MDN 說明網址</a>、<a target="_blank" rel="noopener" href="https://www.w3schools.com/jsref/met_win_close.asp">close - MDN 說明網址</a></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title function_">open</span>(<span class="string">&quot;https://www.w3schools.com&quot;</span>); <span class="comment">//控制打開視窗</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> myzone=<span class="title function_">open</span>(<span class="string">&quot;https://www.w3schools.com&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;width=200,height=100&quot;</span>); <span class="comment">//控制打開視窗</span></span><br><span class="line">myzone.<span class="title function_">close</span>();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>alert(),prompt(),confirm()</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title function_">alert</span>(<span class="string">&quot;hello world&quot;</span>); <span class="comment">//提示視窗</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> ans=<span class="title function_">confirm</span>(<span class="string">&quot;question&quot;</span>); <span class="comment">//提問，回傳布林值</span></span><br><span class="line"><span class="title function_">alert</span>(<span class="string">`you select <span class="subst">$&#123;ans&#125;</span>`</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> ans=<span class="title function_">prompt</span>(<span class="string">&quot;question&quot;</span>,<span class="string">&quot;default value&quot;</span>); <span class="comment">//提問取得字串並回傳</span></span><br><span class="line"><span class="title function_">alert</span>(<span class="string">`you report is <span class="subst">$&#123;ans&#125;</span>`</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>setTimeout(),clearTimeout()</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">end=<span class="number">5</span>*<span class="number">1000</span>;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">delay</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;game over&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">setTimeout</span>(delay,end); <span class="comment">//延後執行</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// var myvar=setTimeout(delay,end);</span></span><br><span class="line"><span class="comment">// clearTimeout(myvar);</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>setInterval(),clearInterval()</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">i=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">reply</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(i);</span><br><span class="line">  i++;</span><br><span class="line">  <span class="keyword">if</span>(i==<span class="number">5</span>) <span class="built_in">clearInterval</span>(time); <span class="comment">//成真時取消 time 的倒數</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> time=<span class="built_in">setInterval</span>(reply,<span class="number">1000</span>); <span class="comment">//每 1 秒重複執行此處</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="課堂作業"><a href="#課堂作業" class="headerlink" title="課堂作業"></a>課堂作業</h2><p>建立空白網頁，使用 ifelse, alert, confirm, prompt，設計一個是非題之闖 5 關遊戲。每題都有提示要不要做，猜對繼續闖關，猜錯直接結束遊戲。主體結構如下：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript"><span class="keyword">function</span> <span class="title function_">gameplay</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">	<span class="number">1.</span> <span class="attr">prompt</span>: 遊戲說明並取得 <span class="variable constant_">NAME</span>=xxx，回饋訊息顯示；</span></span><br><span class="line"><span class="language-javascript">	<span class="number">2.</span> <span class="attr">confirm</span>: 詢問用戶 <span class="variable constant_">XXX</span> 是否要進行遊戲，回饋訊息顯示；</span></span><br><span class="line"><span class="language-javascript">		- <span class="attr">TRUE</span>:</span></span><br><span class="line"><span class="language-javascript">			<span class="keyword">if</span>(qus（問題內容，好訊息，壞訊息，T/F)) <span class="keyword">return</span>;</span></span><br><span class="line"><span class="language-javascript">			恭喜成功；</span></span><br><span class="line"><span class="language-javascript">		- <span class="attr">FALSE</span>:</span></span><br><span class="line"><span class="language-javascript">			不想玩就 <span class="number">881</span>;</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"><span class="keyword">function</span> qus（問題，好，壞，布林）&#123;</span></span><br><span class="line"><span class="language-javascript">	<span class="number">1.</span> <span class="attr">confirm</span>: 顯示題目取得 <span class="title class_">TorF</span>==布林</span></span><br><span class="line"><span class="language-javascript">		- <span class="attr">TRUE</span>: 顯示好訊息</span></span><br><span class="line"><span class="language-javascript">		- <span class="attr">FALSE</span>: 顯示壞訊息 <span class="keyword">return</span> <span class="variable constant_">TRUE</span>;</span></span><br><span class="line"><span class="language-javascript">&#125;</span></span><br><span class="line"><span class="language-javascript"><span class="title function_">gameplay</span>();</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<div class="note default"><p><strong>示範參考：</strong></p>
+<ol>
+<li>標準版本 - <a href="https://summer10920.github.io/studies_TeachDemo_JS/storyGame/">https://summer10920.github.io/studies_TeachDemo_JS/storyGame/</a> </li>
+<li>SweetAlert 版本 - <a href="https://summer10920.github.io/studies_TeachDemo_JS/storyGame_swal/">https://summer10920.github.io/studies_TeachDemo_JS/storyGame_swal/</a></li>
+</ol>
+</div>
+
+<hr>
+<h1 id="常用的-DOM-操作"><a href="#常用的-DOM-操作" class="headerlink" title="常用的 DOM 操作"></a>常用的 DOM 操作</h1><p>由於最上層一定是 window，所以可以省略不寫 window。一般是從 document 開始寫，有些是<mark>屬性&#x3D;物件{}</mark>有些是<mark>方法&#x3D;函式 ()</mark>被歸入使用。請參考 MDN 說明 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Document">https://developer.mozilla.org/zh-CN/docs/Web/API/Document</a></p>
+<p>使用 DOM 時，依據物件路徑一個個往內找。通常語法結過如下，</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> txt=<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>).<span class="property">innerHTML</span>; <span class="comment">//指定為 txt=物件。方法。子屬性</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="document-物件"><a href="#document-物件" class="headerlink" title="document 物件"></a>document 物件</h2><p>在 document 物件底下會存放一些子物件可以直接獲取 HTML 文件內的大群組元素可直接找到，或者下節部分透過 get 方式找到指定條件的範圍元素。</p>
+<table>
+<thead>
+<tr>
+<th>document. 子物件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>document.head</td>
+<td>head 元素，但唯獨屬性不可修改</td>
+</tr>
+<tr>
+<td>document.body</td>
+<td>body 元素，操作例如<code>document.body.style.backgroundColor=&quot;red&quot;;</code></td>
+</tr>
+<tr>
+<td>document.forms</td>
+<td>文件內的全部表單元素之通用集合</td>
+</tr>
+<tr>
+<td>document.links</td>
+<td>文件內的全部具備 href 之元素之通用集合</td>
+</tr>
+<tr>
+<td>document.images</td>
+<td>文件內的全部 img 元素之通用集合</td>
+</tr>
+<tr>
+<td>document.scripts</td>
+<td>文件內的全部 script 元素之通用集合</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>如通用集合內的元素持有 id 或 name 可更快指向找到，例如：</p>
+</blockquote>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://fakeimg.pl/200x200&quot;</span> <span class="attr">name</span>=<span class="string">&quot;aa&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;https://fakeimg.pl/200x200&quot;</span> <span class="attr">id</span>=<span class="string">&quot;bb&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">  consonle.<span class="title function_">log</span>(<span class="variable language_">document</span>.<span class="property">images</span>.<span class="property">aa</span>,<span class="variable language_">document</span>.<span class="property">images</span>.<span class="property">bb</span>);</span></span><br><span class="line"><span class="language-javascript"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="節點存取"><a href="#節點存取" class="headerlink" title="節點存取"></a>節點存取</h2><table>
+<thead>
+<tr>
+<th>document. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getElementById(<em>id</em>)</td>
+<td>以 id 找，唯一值</td>
+</tr>
+<tr>
+<td>getElementsByClassName(<em>name</em>)</td>
+<td>以 class 找（多筆），回傳 array</td>
+</tr>
+<tr>
+<td>getElementsByTagName(<em>name</em>)</td>
+<td>以標籤找（多筆），回傳 array</td>
+</tr>
+<tr>
+<td>getElementsByName(<em>name</em>)</td>
+<td>以表單屬性 name 去找（多筆），回傳 array</td>
+</tr>
+</tbody></table>
+<div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
+<figure class="highlight html"><figcaption><span>cssTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>my list<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span> <span class="attr">id</span>=<span class="string">&quot;demo&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;list&quot;</span>&gt;</span>apple<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span> <span class="attr">class</span>=<span class="string">&quot;list&quot;</span>&gt;</span>banana<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><p>示範如何透過 ById 去讀取修改內容</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">	<span class="keyword">var</span> obj = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>);</span><br><span class="line">	<span class="title function_">alert</span>(obj.<span class="property">innerHTML</span>);</span><br><span class="line">	obj.<span class="property">innerHTML</span> = <span class="string">&quot;&lt;li&gt;AAA&lt;/li&gt;&lt;li&gt;BBB&lt;/li&gt;&quot;</span>; <span class="comment">//抓 HTML 修改</span></span><br><span class="line">	obj.<span class="property">textContent</span> = <span class="string">&quot;&lt;li&gt;AAA&lt;/li&gt;&lt;li&gt;BBB&lt;/li&gt;&quot;</span>; <span class="comment">//抓出文字，遇 HTML 自換符號</span></span><br><span class="line">	<span class="comment">//obj.innerText 同上效果，屬於舊 IE8 語法但 Firefox 不支援</span></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>示範如何透過 ByClass 去得到多組物件並讀取修改內容</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">	<span class="keyword">var</span> food=<span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;list&quot;</span>);</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(food);</span><br><span class="line">	<span class="title function_">alert</span>(food[<span class="number">0</span>].<span class="property">textContent</span>);</span><br><span class="line">	food[<span class="number">0</span>].<span class="property">innerHTML</span>=<span class="string">&quot;&lt;b&gt;AAA&lt;/b&gt;&quot;</span>;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p>示範如何透過標籤去得到多組物件並讀取修改內容</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">  <span class="keyword">var</span> food = <span class="variable language_">document</span>.<span class="title function_">getElementsByTagName</span>(<span class="string">&quot;li&quot;</span>);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(food);</span><br><span class="line">  <span class="title function_">alert</span>(food[<span class="number">1</span>].<span class="property">textContent</span>);</span><br><span class="line">  food[<span class="number">1</span>].<span class="property">innerHTML</span> = <span class="string">&quot;&lt;b&gt;BBB&lt;/b&gt;&quot;</span>;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Event-事件"><a href="#Event-事件" class="headerlink" title="Event 事件"></a>Event 事件</h2><p>Event 的事件非常多，是指當偵測某物件的狀態成立時觸發執行{}某 JS。有分為滑鼠、鍵盤、觸碰裝置、遊覽器、元素等各種事件，通常會搭配自訂函式形成一個互動反應。以下只列舉幾個簡單的事件</p>
+<div class="note default"><p>更多 Event 請參考 <a target="_blank" rel="noopener" href="https://www.w3schools.com/jsref/dom_obj_event.asp">W3Schools 說明網址</a></p>
+</div>
+
+<p><strong>mouse event</strong></p>
+<table>
+<thead>
+<tr>
+<th>document. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onclick,dblclick,onmousedown,onmouseup</td>
+<td>點選，雙點，滑鼠按下，彈起</td>
+</tr>
+<tr>
+<td>oncontextmenu</td>
+<td>滑鼠右鍵</td>
+</tr>
+<tr>
+<td>onmouseover,onmouseout</td>
+<td>滑鼠移入，移出</td>
+</tr>
+<tr>
+<td>onchange</td>
+<td>常用於表單，當內容有變化時</td>
+</tr>
+<tr>
+<td>onfocus</td>
+<td>獲得焦點</td>
+</tr>
+<tr>
+<td>onblur</td>
+<td>失去焦點</td>
+</tr>
+<tr>
+<td>onsubmit</td>
+<td>表單提交</td>
+</tr>
+<tr>
+<td>onreset</td>
+<td>表單重置</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>focus&#x2F;blur有雷同的用法為focusin&#x2F;focusout，兩者差異後者支援冒泡事件但瀏覽器並非都支援</p>
+</blockquote>
+<p><strong>touch event</strong></p>
+<table>
+<thead>
+<tr>
+<th>document. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ontouchcancel</td>
+<td>觸碰取消</td>
+</tr>
+<tr>
+<td>ontouchend</td>
+<td>觸碰離開</td>
+</tr>
+<tr>
+<td>ontouchmove</td>
+<td>觸碰按壓</td>
+</tr>
+<tr>
+<td>ontouchstart</td>
+<td>觸碰按下</td>
+</tr>
+</tbody></table>
+<p><strong>kerboard event</strong></p>
+<table>
+<thead>
+<tr>
+<th>document. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onkeyup</td>
+<td>按鈕彈起</td>
+</tr>
+<tr>
+<td>onkeydown</td>
+<td>按鈕按下</td>
+</tr>
+<tr>
+<td>onkeypress</td>
+<td>按鈕按下並起來</td>
+</tr>
+</tbody></table>
+<p><strong>browser event</strong></p>
+<table>
+<thead>
+<tr>
+<th>window. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onload</td>
+<td>元素載入後時</td>
+</tr>
+<tr>
+<td>onresize</td>
+<td>視窗改變尺寸時</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>這裡的寫法可使用在 HTML 屬性或透過 JS 對元素物件綁定，後面會講到監聽事件之另一種方法</p>
+</blockquote>
+<h3 id="透過-HTML-屬性觸發"><a href="#透過-HTML-屬性觸發" class="headerlink" title="透過 HTML 屬性觸發"></a>透過 HTML 屬性觸發</h3><div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
+<figure class="highlight html"><figcaption><span>eventTry.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onclick demo&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;showalert(&#x27;我是 onclick 效果&#x27;)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onclick&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onmousedown&quot;</span> <span class="attr">onmousedown</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onmouseup&quot;</span> <span class="attr">onmouseup</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onmouseover&quot;</span> <span class="attr">onmouseover</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;onmouseout&quot;</span> <span class="attr">onmouseout</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">&quot;onchange&quot;</span> <span class="attr">onchange</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">&quot;onblur&quot;</span> <span class="attr">onblur</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">value</span>=<span class="string">&quot;onfocus&quot;</span> <span class="attr">onfocus</span>=<span class="string">&quot;whatIs(this)&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;fakeBtn&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">hr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span>&gt;</span>你的鍵盤號碼為：<span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;keycode&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>請跟著做，滑鼠點擊任何地方理解 JS 動作</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">showalert</span>(<span class="params">msg</span>) &#123;</span><br><span class="line">  <span class="title function_">alert</span>(msg);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">whatIs</span>(<span class="params">e</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(e.<span class="property">value</span>); <span class="comment">// 得到 e 物件，取得屬性名為 value 之內容</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (e.<span class="property">style</span>.<span class="property">color</span> == <span class="string">&quot;red&quot;</span>) e.<span class="property">style</span>.<span class="property">color</span> = <span class="literal">null</span>; <span class="comment">//如果是紅色，取消這個色</span></span><br><span class="line">  <span class="keyword">else</span> e.<span class="property">style</span> = <span class="string">&quot;color:red;font-size:30px;&quot;</span>;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`你剛剛按下了<span class="subst">$&#123;value&#125;</span>按鈕`</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">document.getElementById(&quot;fakeBtn&quot;).style = &quot;background-color: aqua;box-shadow: 3px 3px 1px rgba(193, 193, 193, 0.5);cursor: pointer;display:inline;padding:5px&quot;;</span></span><br><span class="line"><span class="comment">document.getElementById(&quot;fakeBtn&quot;).innerHTML = &quot;模擬按鈕&quot;;</span></span><br><span class="line"><span class="comment">document.getElementById(&quot;fakeBtn&quot;).onclick = function () &#123; alert(&quot;onclick&quot;); &#125;;</span></span><br><span class="line"><span class="comment">可以轉成變數來當物件，指向到任何屬性</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">var</span> fakebtn = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;fakeBtn&quot;</span>);</span><br><span class="line">fakebtn.<span class="property">style</span> = <span class="string">&quot;background-color: aqua;box-shadow: 3px 3px 1px rgba(193, 193, 193, 0.5);cursor: pointer;display:inline;padding:5px&quot;</span>;</span><br><span class="line">fakebtn.<span class="property">innerHTML</span> = <span class="string">&quot;假按鈕&quot;</span>;</span><br><span class="line">fakebtn.<span class="property">onclick</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title function_">alert</span>(fakebtn.<span class="property">style</span>.<span class="property">backgroundColor</span>); <span class="comment">//大部分都這樣-變化大寫</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*event 事件 on 鍵盤*/</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getcode</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(event.<span class="property">keyCode</span>);</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;keycode&quot;</span>).<span class="property">textContent</span> = event.<span class="property">keyCode</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">document</span>.<span class="property">onkeydown</span> = getcode;</span><br></pre></td></tr></table></figure>
+
+<h3 id="透過-JS-監聽行為觸發"><a href="#透過-JS-監聽行為觸發" class="headerlink" title="透過 JS 監聽行為觸發"></a>透過 JS 監聽行為觸發</h3><p>使用 addEventListener() 與 removeEventListener() 做可維護管理的事件用函式，直接指定事件與對象。</p>
+<div class="note primary"><p><strong>素材準備：準備代碼以方便下階段的教學練習</strong> </p>
+<figure class="highlight html"><figcaption><span>event_listener.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">id</span>=<span class="string">&quot;ock&quot;</span> <span class="attr">value</span>=<span class="string">&quot;try me&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">id</span>=<span class="string">&quot;canel&quot;</span> <span class="attr">value</span>=<span class="string">&quot;取消 mouseover&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;clearover()&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*一開始 HTML#ock 沒有寫事件，之後透過 addEventListener（什麼動作，執行什麼函式）來添加*/</span></span><br><span class="line"><span class="keyword">var</span> mybtn=<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ock&quot;</span>);</span><br><span class="line">mybtn.<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>,<span class="keyword">function</span>(<span class="params"></span>)&#123;  <span class="comment">//這裡應該用 click 不該用 onclick</span></span><br><span class="line">  <span class="title function_">alert</span>(<span class="string">&quot;it&#x27;s click&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line">mybtn.<span class="title function_">addEventListener</span>(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">mybtn.<span class="title function_">addEventListener</span>(<span class="string">&quot;mouseover&quot;</span>, myfun2);</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">myfun</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="title function_">alert</span>(<span class="string">&quot;it&#x27;s mouseover&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">myfun2</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">alert</span>(<span class="string">&quot;you can do more function&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">clearover</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ock&quot;</span>).<span class="title function_">removeEventListener</span>(<span class="string">&quot;mouseover&quot;</span>,myfun);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="節點的屬性讀寫"><a href="#節點的屬性讀寫" class="headerlink" title="節點的屬性讀寫"></a>節點的屬性讀寫</h2><table>
+<thead>
+<tr>
+<th>element. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>innerHTML</td>
+<td>HTML Cdoe</td>
+</tr>
+<tr>
+<td>textContent</td>
+<td>text string</td>
+</tr>
+<tr>
+<td>attribute.???<br>- name,value,…</td>
+<td>該節點的屬性 (ary), 除了可讀寫現有名稱或值</td>
+</tr>
+<tr>
+<td>setAttribute,removeAttribute</td>
+<td>屬性設定，常用於增刪 class 或 id</td>
+</tr>
+<tr>
+<td>style.???</td>
+<td>該節點的行內樣式，每一個 (???) 樣式都算一個屬性，如果要移除需指定此屬性為 null</td>
+</tr>
+</tbody></table>
+<h2 id="節點調整"><a href="#節點調整" class="headerlink" title="節點調整"></a>節點調整</h2><table>
+<thead>
+<tr>
+<th>document. 方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>createElement()</td>
+<td>建立節點</td>
+</tr>
+<tr>
+<td>removeChild()</td>
+<td>删除子節點</td>
+</tr>
+<tr>
+<td>appendChild()</td>
+<td>增加子節點</td>
+</tr>
+<tr>
+<td>replaceChild()</td>
+<td>替換子節點</td>
+</tr>
+<tr>
+<td>write()</td>
+<td>直接寫入</td>
+</tr>
+</tbody></table>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;demo&quot;</span>&gt;</span>按這裡，由 DOM 觸發 JS<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">&quot;add()&quot;</span>&gt;</span>按這裡由 HTML 觸發 JS<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">function</span> <span class="title function_">add</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="keyword">var</span> btn = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&quot;button&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">      btn.<span class="property">textContent</span> = <span class="string">&quot;YA&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">      <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(btn);</span></span><br><span class="line"><span class="language-javascript">    &#125;;</span></span><br><span class="line"><span class="language-javascript">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;demo&quot;</span>).<span class="property">onclick</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123; <span class="title function_">add</span>() &#125;;</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="課堂練習"><a href="#課堂練習" class="headerlink" title="課堂練習"></a>課堂練習</h2><div class="tabs" id="classtry"><ul class="nav-tabs"><li class="tab active"><a href="#classtry-1">說明</a></li><li class="tab"><a href="#classtry-2">解答</a></li></ul><div class="tab-content"><div class="tab-pane active" id="classtry-1"><ol>
+<li>建立一個 div 預設值為 <code>width: 100px; height: 100px; background-color:red;</code></li>
+<li>理解將 div 設計為正方形、圓形、三角形之 CSS 屬性方式，<a target="_blank" rel="noopener" href="https://www.cnblogs.com/jscode/archive/2012/10/19/2730905.html">參考這裡</a>。</li>
+<li>提供事件按鈕與輸入框，能對 div 做 CSS 變化</li>
+</ol>
+<ul>
+<li>button: 正方形</li>
+<li>button: 圓形</li>
+<li>button: 三角形</li>
+<li>input:text(#color code)&gt;變化背景色</li>
+</ul></div><div class="tab-pane" id="classtry-2"><figure class="highlight html"><figcaption><span>解答</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;myblock&quot;</span> <span class="attr">style</span>=<span class="string">&quot;width:100px;height:100px;background-color: red;&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">hr</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;正方形&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;trans(&#x27;A&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;圓形&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;trans(&#x27;B&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;三角形&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;trans(&#x27;C&#x27;)&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>Color Code: <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">onchange</span>=<span class="string">&quot;color(this.value)&quot;</span> /&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">var</span> zone = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;myblock&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">var</span> clr=zone.<span class="property">style</span>.<span class="property">backgroundColor</span>; <span class="comment">//red</span></span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">function</span> <span class="title function_">trans</span>(<span class="params">re</span>) &#123;</span></span><br><span class="line"><span class="language-javascript">      <span class="keyword">switch</span> (re) &#123;</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">case</span> <span class="string">&quot;A&quot;</span>:</span></span><br><span class="line"><span class="language-javascript">          zone.<span class="property">style</span> = <span class="string">&quot;width:100px;height:100px;background-color:&quot;</span>+clr;</span></span><br><span class="line"><span class="language-javascript">          <span class="keyword">break</span>;</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">case</span> <span class="string">&quot;B&quot;</span>:</span></span><br><span class="line"><span class="language-javascript">          zone.<span class="property">style</span> = <span class="string">&quot;width:100px;height:100px;background-color:&quot;</span>+clr+<span class="string">&quot;;border-radius: 50px;&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">          <span class="keyword">break</span>;</span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">case</span> <span class="string">&quot;C&quot;</span>:</span></span><br><span class="line"><span class="language-javascript">          zone.<span class="property">style</span> = <span class="string">&quot;width:0;height:0;border-left: 50px solid transparent;border-right: 50px solid transparent;border-bottom: 100px solid &quot;</span>+clr+<span class="string">&quot;;&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">          <span class="keyword">break</span>;</span></span><br><span class="line"><span class="language-javascript">      &#125;</span></span><br><span class="line"><span class="language-javascript">    &#125;</span></span><br><span class="line"><span class="language-javascript">    <span class="keyword">function</span> <span class="title function_">color</span>(<span class="params">re</span>)&#123;</span></span><br><span class="line"><span class="language-javascript">      zone.<span class="property">style</span>.<span class="property">backgroundColor</span>=re; <span class="comment">//目前的顏色換掉</span></span></span><br><span class="line"><span class="language-javascript">      clr=re; <span class="comment">//把所有的色變數更新一下</span></span></span><br><span class="line"><span class="language-javascript">    &#125;</span></span><br><span class="line"><span class="language-javascript">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></div></div></div>
+
+<h2 id="課堂作業-1"><a href="#課堂作業-1" class="headerlink" title="課堂作業"></a>課堂作業</h2><p>設計 div 長寬隨意，每次開啟網頁時 BGcolor 隨機色（具提示），提供下列按鈕可立即更改顏色。</p>
+<ul>
+<li><p>基本款</p>
+<ul>
+<li>R 紐，跳出視窗提示輸入數字範圍 0~255，非範圍內重新再問</li>
+<li>G 紐，跳出視窗提示輸入數字範圍 0~255，非範圍內重新再問</li>
+<li>B 紐，跳出視窗提示輸入數字範圍 0~255，非範圍內重新再問</li>
+</ul>
+</li>
+<li><p>完成再挑戰</p>
+<ul>
+<li>+紐，對 RGB 各色值+1，合理範圍內</li>
+<li>-紐，對 RGB 各色值-1，合理範圍內</li>
+<li>input:range 拖曳 bar 代表 (R 色） 0~255 立即有效果</li>
+<li>input:range 拖曳 bar 代表 (G 色） 0~255 立即有效果</li>
+<li>input:range 拖曳 bar 代表 (B 色） 0~255 立即有效果</li>
+<li>? 紐，對 RGB 重新再隨機色</li>
+</ul>
+</li>
+</ul>
+<p>示意圖如下：</p>
+<p><img src="https://i.imgur.com/kMqEG8t.png" alt="基本版"> <img src="https://i.imgur.com/CN1gDcE.png" alt="強化版"></p>
+<div class="note default"><p><strong>示範參考：</strong><br>挑戰版本 - <a href="https://summer10920.github.io/studies_TeachDemo_JS/colorEditor/">https://summer10920.github.io/studies_TeachDemo_JS/colorEditor/</a></p>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+              <a href="/tags/JavaScript-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># JavaScript 程式設計（假日班）</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04-13/js-baseclass-1/" rel="prev" title="[基礎課程] JavaScript 教學（一）：基礎觀念">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] JavaScript 教學（一）：基礎觀念
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04-21/js-sampleclass-1/" rel="next" title="[練習課程] JavaScript 實作（一）：全版面廣告與 Cookie 紀錄">
+                  [練習課程] JavaScript 實作（一）：全版面廣告與 Cookie 紀錄 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

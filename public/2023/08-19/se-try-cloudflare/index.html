@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="不久前未注意到信用卡自動續約失效，舊的 domain 網域期限已過期半個月，等我回神到 Google Domains 後台管理時也來不及續約了，若要拿回這個網域需要破萬的搶救費用。當下覺得對於這個舊網域名稱也沒有很中意或依賴就算了。而最近又開始嘗鮮一些伺服器部屬做學習，果斷還是再買一個新 Domain 來弄。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置">
+<meta property="og:url" content="http://summer10920.github.io/2023/08-19/se-try-cloudflare/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="不久前未注意到信用卡自動續約失效，舊的 domain 網域期限已過期半個月，等我回神到 Google Domains 後台管理時也來不及續約了，若要拿回這個網域需要破萬的搶救費用。當下覺得對於這個舊網域名稱也沒有很中意或依賴就算了。而最近又開始嘗鮮一些伺服器部屬做學習，果斷還是再買一個新 Domain 來弄。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/q7tyXPV.png">
+<meta property="og:image" content="https://i.imgur.com/3s1HgEZ.png">
+<meta property="og:image" content="https://i.imgur.com/Qi4bdDC.png">
+<meta property="article:published_time" content="2023-08-19T07:44:28.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.221Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="DNS">
+<meta property="article:tag" content="Domain">
+<meta property="article:tag" content="SSL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/q7tyXPV.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2023/08-19/se-try-cloudflare/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2023/08-19/se-try-cloudflare/","path":"2023/08-19/se-try-cloudflare/","title":"[系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置 | 洛奇的邪惡組織手札</title><meta name="robots" content="noindex">
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Cloudflare-%E5%8B%95%E6%A9%9F"><span class="nav-number">1.</span> <span class="nav-text">使用 Cloudflare 動機</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%84%AA%E7%BC%BA%E9%BB%9E"><span class="nav-number">1.0.1.</span> <span class="nav-text">優缺點</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B3%BC%E8%B2%B7%E7%B6%B2%E5%9F%9F"><span class="nav-number">1.1.</span> <span class="nav-text">購買網域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E7%B6%B2%E5%9F%9F%E8%88%87%E5%BB%BA%E8%AD%B0%E8%A8%AD%E5%AE%9A"><span class="nav-number">1.2.</span> <span class="nav-text">管理網域與建議設定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%96%80%E6%89%8B%E5%86%8A"><span class="nav-number">1.2.1.</span> <span class="nav-text">快速入門手冊</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNSSEC-%E9%96%8B%E5%95%9F"><span class="nav-number">1.2.2.</span> <span class="nav-text">DNSSEC 開啟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%88%90%E5%8D%80%E5%9F%9F%E8%A8%AD%E5%AE%9A%E7%9A%84%E6%89%80%E9%9C%80%E6%AD%A5%E9%A9%9F"><span class="nav-number">1.2.3.</span> <span class="nav-text">完成區域設定的所需步驟</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">2.</span> <span class="nav-text">參考文獻</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2023/08-19/se-try-cloudflare/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20230819-se-try-cloudflare.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2023-08-19 15:44:28" itemprop="dateCreated datePublished" datetime="2023-08-19T15:44:28+08:00">2023-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Zero-Road/" itemprop="url" rel="index"><span itemprop="name">Zero Road</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Zero-Road/System-Engineer/" itemprop="url" rel="index"><span itemprop="name">System Engineer</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1,513</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:02:45</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/q7tyXPV.png"></p>
+<p>不久前未注意到信用卡自動續約失效，舊的 domain 網域期限已過期半個月，等我回神到 Google Domains 後台管理時也來不及續約了，若要拿回這個網域需要破萬的搶救費用。當下覺得對於這個舊網域名稱也沒有很中意或依賴就算了。而最近又開始嘗鮮一些伺服器部屬做學習，果斷還是再買一個新 Domain 來弄。</p>
+<span id="more"></span>
+
+<h1 id="使用-Cloudflare-動機"><a href="#使用-Cloudflare-動機" class="headerlink" title="使用 Cloudflare 動機"></a>使用 Cloudflare 動機</h1><p>原使用的是 Google Domains 為網域註冊商，由於是 Google 服務快又能整合一起，介面簡單又穩定且基本上算是費用偏划算的選擇。沒有過多的需求下是打算繼續購買的平台。結果看到通知於今年 6 月已經賣給另一家 Squarespace 競爭對手，雖然現在保證過渡期間與接下來一年內價格依然不變，但調查一下 Squarespace 本身現有網域註冊的功能其價格是還偏高，以及 Squarespace 主要為創網提供平台的客戶定位，之後合併也會跟 Google workplace 分離。並不符合我這樣的個人使用，那麼選擇 Google Domains 的理由也不存在了。</p>
+<p>較知名的 goDaddy 與 NameCheap 以全球性規模來說是較知名的註冊商且價格偏高，且周邊服務介紹上不斷推銷加價購買更多功能（尤其是 DNS 管理部分也分為進階費），這樣的供應商選擇會比較適合公司型客戶，並提供客服支援的中小企業直接付費使用。若要費用精打細算就需要找尋比較新創或中小型註冊商，部分使用者也會透過購買這兩家最基本的網域費用，再 DNS 託管給免費的 Cloudflare 進行額外加強的 DNS 管理。此時令人震驚的是，Cloudflare 本身也提供了 domain 購買的服務且價格十分划算（比 Google Domains 還便宜些），同時 Cloudflare 提供的附加服務更是值得喊香的選擇。</p>
+<p>若要學會 DNS 完整活用與管理，勢必 Cloudflare 是很好的機會平台學習，不如就在同一個平台學會購買註冊與 DNS 管理，並且 Cloudflare 也提供了免費 SSL，光是費用總和考量下來這是最佳的選擇方案。以下列出優缺點：</p>
+<h3 id="優缺點"><a href="#優缺點" class="headerlink" title="優缺點"></a>優缺點</h3><p>Cloudflare 免費提供包括 SSL 憑證及 DNSSEC 等功能，以及享有 CDN 網站加速及安全防護等功能，同時也支援繁體中文介面，優點部分在於價格便宜，舉例想購買 <code>lokiwebs.com</code> 這個網域費用，在不同的註冊商購買有些是統一價有些是首年優惠，若以 3 年為折台幣計算如下：</p>
+<table>
+<thead>
+<tr>
+<th>Total Price</th>
+<th>Google Domains</th>
+<th>namecheap</th>
+<th>porkbun</th>
+<th>goDaddy</th>
+<th>Cloudflare</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1 years</td>
+<td>NT 350</td>
+<td>NT 311.45</td>
+<td>NT 310.49</td>
+<td>NT 315</td>
+<td>NT 291.99</td>
+</tr>
+<tr>
+<td>2 years</td>
+<td>NT 700</td>
+<td>NT 622.90</td>
+<td>NT 620.99</td>
+<td>NT 905</td>
+<td>NT 583.97</td>
+</tr>
+<tr>
+<td>3 years</td>
+<td>NT 900</td>
+<td>NT 1215.17</td>
+<td>NT 931.48</td>
+<td>NT 1,370</td>
+<td>NT 875.96</td>
+</tr>
+</tbody></table>
+<p>而缺點部分在頂級域名（TLD）的支援度不夠廣泛，所以台灣域名的<code>.com.tw</code>跟<code>.tw</code>是沒辦法註冊購買的。</p>
+<h2 id="購買網域"><a href="#購買網域" class="headerlink" title="購買網域"></a>購買網域</h2><p>註冊帳號後並收取 email 認證信與回覆確認，再拜訪後台進行註冊網域，註冊網域有一些建議事項：</p>
+<ul>
+<li>可以英文數字跟<code>-</code>符號組合，但盡可能名稱作為一個標誌性 slogan，建議不要太長且一律小寫（可以數字但少見，除非品牌本身是數字像是 yes123 或 104），也避免英文混入 0,1 這樣誤會的數字當英文看，或者用-來命名避免手機輸入網址文字要切換符號頗麻煩。</li>
+<li>以及 TLD 場合性質考量。以 com 來說是最基本便宜不雷的商用性質（約 10 美金）。</li>
+<li>如果這名字太有名，像是 loki.com 就基本上破百萬起跳從仲介商手上買回。有特殊需求場合像是 io,online,app 等等較貴些，或者些冷門的 TLD 域名就便宜些。</li>
+<li>可以考慮一個主要網域名稱，之後隨著應用不同可以用免費的子網域來區分，舉例 google.com 為主網域的品牌，mail.google.com 與 calendar.google.com 就能根據不同應用網站來區分。</li>
+</ul>
+<p><img src="https://i.imgur.com/3s1HgEZ.png" alt="查詢喜歡的 domain 名稱與費用域覽"></p>
+<p>接著就是填寫真實資料與刷海外信用卡了，以美金為收費。雖然資料為真實填寫但 Cloudflare 會幫你自動隱匿 WHOIS 上面的持有人資訊，因此不用擔心洩漏出去。另外在此畫面下預設會自動續訂於到期前 60 日，可以取消自動續訂避免自動扣款看個人需求。</p>
+<p><img src="https://i.imgur.com/Qi4bdDC.png" alt="WHOIS 資訊會是 Cloudflare 不會你個人避免被"></p>
+<h2 id="管理網域與建議設定"><a href="#管理網域與建議設定" class="headerlink" title="管理網域與建議設定"></a>管理網域與建議設定</h2><p>第一次使用難免眼花撩亂，說真的我也是嚇到功能比以前使用的 DNS 託管還多，更不說這些都是免費的。以下是我記錄的設定。</p>
+<h3 id="快速入門手冊"><a href="#快速入門手冊" class="headerlink" title="快速入門手冊"></a>快速入門手冊</h3><p>在一開始的概觀這裡，有個很明顯的按鈕可以進行快速入門手冊，這裡都可以開啟為 on，主要是幫助網址都是以 https 為主，以及透過 Cloudflare 裡啟用 Brotli 壓縮演算法來幫助加快網頁載入速度，不過也要對應你的網站伺服器 (Apache or Nginx) 要開啟或安裝擴展能支援 Brotli 壓縮。</p>
+<ul>
+<li>自動改寫 HTTPS: ON</li>
+<li>一律使用 HTTPS: ON</li>
+<li>Brotli: ON</li>
+</ul>
+<blockquote>
+<p>要檢查你的網站是否提供此技術，可以從 <a target="_blank" rel="noopener" href="https://tools.keycdn.com/brotli-test">Brotli Test</a> 這裡做測試。</p>
+</blockquote>
+<h3 id="DNSSEC-開啟"><a href="#DNSSEC-開啟" class="headerlink" title="DNSSEC 開啟"></a>DNSSEC 開啟</h3><p>拜訪 DNS&gt;設定，進行啟用 DNSSEC。這能幫助 DNS 記錄的加密簽名來保護您的網域防止僞造的 DNS 回應。Cloudflare提供的說明挺完善的</p>
+<h3 id="完成區域設定的所需步驟"><a href="#完成區域設定的所需步驟" class="headerlink" title="完成區域設定的所需步驟"></a>完成區域設定的所需步驟</h3><h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://www.sakamoto.blog/brotli/">如何啟用 Brotli 提高壓縮率來加快載入網頁│坂本 Sakamoto.blog - 探究科技未知領域</a></li>
+</ul>
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DNS/" rel="tag"># DNS</a>
+              <a href="/tags/Domain/" rel="tag"># Domain</a>
+              <a href="/tags/SSL/" rel="tag"># SSL</a>
+          </div>
+
+        
+
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

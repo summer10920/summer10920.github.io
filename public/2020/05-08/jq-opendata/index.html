@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[練習課程] jQuery 基礎實作（二）：OpenData API 串接">
+<meta property="og:url" content="http://summer10920.github.io/2020/05-08/jq-opendata/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/NxJTq7q.png">
+<meta property="og:image" content="https://i.imgur.com/2GU7pux.png">
+<meta property="og:image" content="https://i.imgur.com/toRnzuR.png">
+<meta property="og:image" content="https://i.imgur.com/S6QpKcB.png">
+<meta property="og:image" content="https://i.imgur.com/FcKv9uw.png">
+<meta property="article:published_time" content="2020-05-07T16:46:34.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.191Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta property="article:tag" content="JavaScript 程式設計（假日班）">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/NxJTq7q.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/05-08/jq-opendata/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/05-08/jq-opendata/","path":"2020/05-08/jq-opendata/","title":"[練習課程] jQuery 基礎實作（二）：OpenData API 串接"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[練習課程] jQuery 基礎實作（二）：OpenData API 串接 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF-AJAX-%E8%B7%A8%E5%9F%9F%E5%81%9A%E8%B3%87%E6%96%99%E5%9B%9E%E6%87%89%E4%B8%A6%E4%B8%8D%E5%90%88%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">前端 AJAX 跨域做資料回應並不合法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%EF%BC%9A%E6%B0%A3%E8%B1%A1%E9%96%8B%E6%94%BE%E8%B3%87%E6%96%99%E5%B9%B3%E8%87%BA-Table"><span class="nav-number">2.</span> <span class="nav-text">範例：氣象開放資料平臺 + Table</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%8F%E9%81%8E-postman-%E5%81%9A-api-%E8%A7%A3%E8%AE%80"><span class="nav-number">2.1.</span> <span class="nav-text">透過 postman 做 api 解讀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B7%A8%E5%AF%AB-Ajax-%E5%8F%96%E5%BE%97-JSON-%E6%95%B8%E6%93%9A"><span class="nav-number">2.2.</span> <span class="nav-text">編寫 Ajax 取得 JSON 數據</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A6%8F%E5%8A%83-TABLE-%E7%89%88%E5%9E%8B%E4%B8%A6%E5%A1%9E%E5%85%A5%E5%80%BC"><span class="nav-number">2.3.</span> <span class="nav-text">規劃 TABLE 版型並塞入值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DataTables-JS-%E5%A5%97%E4%BB%B6"><span class="nav-number">2.4.</span> <span class="nav-text">DataTables.JS 套件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Base-Style"><span class="nav-number">2.4.1.</span> <span class="nav-text">Base Style</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bootstrap-Style"><span class="nav-number">2.4.2.</span> <span class="nav-text">Bootstrap Style</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%EF%BC%9A%E6%B0%A3%E8%B1%A1%E9%96%8B%E6%94%BE%E8%B3%87%E6%96%99%E5%B9%B3%E8%87%BA-Chart"><span class="nav-number">3.</span> <span class="nav-text">範例：氣象開放資料平臺 + Chart</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B7%A8%E5%AF%AB-Ajax-%E5%8F%96%E5%BE%97-JSON-%E6%95%B8%E6%93%9A-1"><span class="nav-number">3.1.</span> <span class="nav-text">編寫 Ajax 取得 JSON 數據</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ChartJS-%E5%A5%97%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">ChartJS 套件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%B8%E7%BF%92%E5%AE%98%E7%B6%B2%E7%9A%84-bar-%E7%AF%84%E4%BE%8B"><span class="nav-number">3.2.1.</span> <span class="nav-text">學習官網的 bar 範例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B4%E5%90%88-API-%E8%B3%87%E6%96%99%E4%B8%A6%E8%A6%8F%E5%8A%83-chartjs"><span class="nav-number">3.2.2.</span> <span class="nav-text">整合 API 資料並規劃 chartjs</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AF%84%E4%BE%8B%EF%BC%9A%E6%96%B0%E5%8C%97%E5%B8%82%E6%94%BF%E5%BA%9C%E8%B3%87%E6%96%99%E9%96%8B%E6%94%BE%E5%B9%B3%E5%8F%B0-CROS-%E7%A6%81%E6%AD%A2%E9%80%A3%E7%B7%9A%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">範例：新北市政府資料開放平台 (CROS 禁止連線）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%8F%E9%81%8E-Ajax-%E5%8F%96%E5%BE%97-api-%E5%A4%B1%E6%95%97%E6%99%82"><span class="nav-number">4.1.</span> <span class="nav-text">透過 Ajax 取得 api 失敗時</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%8F%E9%81%8E-php-%E7%9A%84-curl-%E5%8F%96%E5%BE%97-api"><span class="nav-number">4.2.</span> <span class="nav-text">透過 php 的 curl 取得 api</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/05-08/jq-opendata/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[練習課程] jQuery 基礎實作（二）：OpenData API 串接 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [練習課程] jQuery 基礎實作（二）：OpenData API 串接<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200508-jq-opendata.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-05-08 00:46:34" itemprop="dateCreated datePublished" datetime="2020-05-08T00:46:34+08:00">2020-05-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/jQuery/" itemprop="url" rel="index"><span itemprop="name">jQuery</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>4,041</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:07:21</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/NxJTq7q.png"></p>
+<p>在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。</p>
+<span id="more"></span>
+<h1 id="前端-AJAX-跨域做資料回應並不合法"><a href="#前端-AJAX-跨域做資料回應並不合法" class="headerlink" title="前端 AJAX 跨域做資料回應並不合法"></a>前端 AJAX 跨域做資料回應並不合法</h1><p>然而在瀏覽器規範裡不允許前端技術的 JavaScript 能連接到非相同網域的 Ajax 資料請求（安全性問題），因此在使用跨網域的 API 就延伸了無法取得之窘境。目前使用外部 API 有三種解決方式：</p>
+<ol>
+<li>使用後端伺服器 PHP 語言的 crul 進行遠端 API 串接（或其他後端伺服器），再讓同網域的前端 JavaScript 進行 Ajax 取得</li>
+<li>遠端 API 端採用 JSONP 格式，透過請求夾帶遠端所指定之參數（或代號），再透過<code>&lt;script src=&quot;xxx&amp;callback=yyy&quot;&gt;&lt;/script&gt;</code>方式偷渡資料帶回前端，使得一開始 JavaScript 就擁有此物件變數而不是由 JavaScript 作跨網域資料請求</li>
+<li>遠端 API 伺服器使用 W3C 所指定之 CORS 格式，使得此 API 本身受允許被共享資源（遊覽器需支援 CORS)</li>
+</ol>
+<p>因此，通常如果你嘗試進行跨網域 API 串接失敗時做以下確認：</p>
+<ul>
+<li>檢查語法是否有錯，替換曾成功之 URL 是否有正常取得資料 JSON</li>
+<li>可能對方 API 並沒有設定 CROS 開放，檢查對方 API 是否採用 JSONP 做開放連接</li>
+<li>如果是 JSONP 格式就參考對方文件要求，配合所需要的參數做<code>&lt;script url&gt;</code>。對方會用 js 夾帶 callback 方式回傳包好你需要的資源。使用教學請自行參閱網路文章</li>
+<li>如果都沒有代表對方很懶沒特別處理，當你無法要求遠程後端 API 做開放跨域設定時，就使用後端對後端做 API 串接（不會受遊覽器阻擋），透過自己的後端讓前端盡情 Ajax（同網域）。</li>
+</ul>
+<hr>
+<div class="note primary"><p><strong>素材準備：使用中央氣象局提供的天氣 API 做為練習環境</strong><br>我們將開始教學 OpenData 串接，在那之前請先到 <a target="_blank" rel="noopener" href="https://opendata.cwb.gov.tw/index">氣象開放資料平臺</a> 註冊帳號。接下來會利用 2 種範例作為天氣練習使用。</p>
+<p>該平台提供透過 URL 下載檔案以及 RESTful API，簡單來說屬於前端 JS 可以直接存取的 API。唯獨需要有效會員之授權碼，避免流量異常被停權請不要輕易提供他人共用。</p>
+</div>
+
+<h1 id="範例：氣象開放資料平臺-Table"><a href="#範例：氣象開放資料平臺-Table" class="headerlink" title="範例：氣象開放資料平臺 + Table"></a>範例：氣象開放資料平臺 + Table</h1><p>我們採用以下服務 api 為練習<br><strong>一般天氣預報-今明 36 小時天氣預報</strong>：<a target="_blank" rel="noopener" href="https://opendata.cwb.gov.tw/dataset/statisticDays/F-C0032-001">https://opendata.cwb.gov.tw/dataset/statisticDays/F-C0032-001</a></p>
+<h2 id="透過-postman-做-api-解讀"><a href="#透過-postman-做-api-解讀" class="headerlink" title="透過 postman 做 api 解讀"></a>透過 postman 做 api 解讀</h2><p><a target="_blank" rel="noopener" href="https://www.getpostman.com/downloads/">Postman</a> 為第三方軟體，是一個可以模擬 HTTP Request 的工具，其中包含常見的 HTTP 的請求方式，例如： GET 、POST、PUT、DELETE，而它的主要功能就是能夠快速的測試你的 API 是否能夠正常的請求資料，並得到正確的請求結果。</p>
+<p>這裡僅簡單使用，完整應用方式請參考 <a target="_blank" rel="noopener" href="https://ithelp.ithome.com.tw/articles/10201503">網路教學</a>。確認你的 api 能正常讀取資源後，便可以開始規劃前端 Ajax，這裡使用 jQuery 來應用運作。</p>
+<h2 id="編寫-Ajax-取得-JSON-數據"><a href="#編寫-Ajax-取得-JSON-數據" class="headerlink" title="編寫 Ajax 取得 JSON 數據"></a>編寫 Ajax 取得 JSON 數據</h2><ol>
+<li><p>這裡示範完整的寫法，你至少需提供目標位置、請求方式、資料類型、callback 行為。</p>
+</li>
+<li><p>建立 weather_table.html，引用 jQuery 後，先在空白底處執行 script</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> data;</span><br><span class="line">$.<span class="title function_">ajax</span>(&#123;</span><br><span class="line">  <span class="comment">/*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/</span></span><br><span class="line">  <span class="attr">url</span>: <span class="string">&quot;https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=CWB-____&amp;downloadType=WEB&amp;format=JSON&quot;</span>,</span><br><span class="line">  <span class="attr">method</span>: <span class="string">&quot;GET&quot;</span>,</span><br><span class="line">  <span class="attr">dataType</span>: <span class="string">&quot;json&quot;</span>,</span><br><span class="line">  <span class="attr">success</span>: <span class="keyword">function</span> (<span class="params">re</span>) &#123;</span><br><span class="line">    <span class="comment">// console.log(re); //先測試拿到了什麼</span></span><br><span class="line">    <span class="comment">// data=re;  //透過 chrome.f12.console 輸入 data 確認內容</span></span><br><span class="line">    data=re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">location</span>; <span class="comment">//簡化擷取的節點</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>而較新的 jQuery 版本有支援 getJSON 之便利方式，你可以改用以下寫法：</p>
+</li>
+<li><p>getJSON 只要 URL 即可，同時可增加 done 成功與 fail 失敗分別執行不同動作增加應用姓。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/</span></span><br><span class="line">$.<span class="title function_">getJSON</span>(<span class="string">&#x27;https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=CWB-____&amp;downloadType=WEB&amp;format=JSON&#x27;</span>)</span><br><span class="line">  .<span class="title function_">done</span>(<span class="keyword">function</span>(<span class="params">re</span>)&#123;</span><br><span class="line">    data=re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">location</span>;</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">fail</span>(<span class="keyword">function</span>(<span class="params">w</span>)&#123;</span><br><span class="line">    <span class="title function_">alert</span>(<span class="string">&quot;faill openapi,&quot;</span>+w)</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>以上為使用 Ajax 編寫的最低完整限度，當然此範例你可以使用 <code>$.get</code> 來使用，但回傳資料只是一坨 JSON 字串，你還要手動轉成 JSON 物件。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$.<span class="title function_">get</span>(<span class="string">&#x27;https://apiservice.mol.gov.tw/OdService/download/A17010000J-000103-EvF&#x27;</span>,<span class="keyword">function</span>(<span class="params">e</span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(e);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">JSON</span>.<span class="title function_">parse</span>(e));</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li><p>接下來就是等待 Ajax 的 callback 做後續動作，如果網頁只有一個 Ajax 就放在該 callback 內</p>
+</li>
+<li><p>反之如果你需要等待兩個以上 Ajax，你應該利用$.when().then() 來滿足等待事件</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$.<span class="title function_">when</span>(</span><br><span class="line">  $.<span class="title function_">getJSON</span>(url_1).<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123;</span><br><span class="line">    data1 = re;</span><br><span class="line">  &#125;),</span><br><span class="line">  $.<span class="title function_">getJSON</span>(url_2).<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123;</span><br><span class="line">    data2 = re;</span><br><span class="line">  &#125;))</span><br><span class="line">  .<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(data1,data2);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="規劃-TABLE-版型並塞入值"><a href="#規劃-TABLE-版型並塞入值" class="headerlink" title="規劃 TABLE 版型並塞入值"></a>規劃 TABLE 版型並塞入值</h2><ol>
+<li>我們利用 table 來作為資料顯示<figure class="highlight html"><figcaption><span>weather_table.html</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>36H 天氣預報<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">id</span>=<span class="string">&quot;dt&quot;</span> <span class="attr">class</span>=<span class="string">&quot;display compact hover&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>編號<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>地區<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>時間 1<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>時間 2<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>時間 3<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>接著透過 JS 開始做 DOM 塞入，我們在 <code>.done()</code> 這裡補完後續動作。</li>
+<li>這裡會取得 <code>&lt;td&gt;</code> 三組資料，且分別含有天況、圖示、低溫、高溫。<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">.<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123;</span><br><span class="line">  data = re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">location</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; data.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    row = data[i];</span><br><span class="line">    print += <span class="string">`</span></span><br><span class="line"><span class="string">  &lt;tr&gt;</span></span><br><span class="line"><span class="string">    &lt;td&gt;<span class="subst">$&#123;i + <span class="number">1</span>&#125;</span>&lt;/td&gt;</span></span><br><span class="line"><span class="string">    &lt;td&gt;<span class="subst">$&#123;row.locationName&#125;</span>&lt;/td&gt;</span></span><br><span class="line"><span class="string">    &lt;td&gt;<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">0</span>].parameter.parameterName&#125;</span> &lt;img src=&quot;img/night/<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">0</span>].parameter.parameterValue&#125;</span>.svg&quot;&gt; | </span></span><br><span class="line"><span class="string">    溫度 <span class="subst">$&#123;row.weatherElement[<span class="number">2</span>].time[<span class="number">0</span>].parameter.parameterName&#125;</span> ~ <span class="subst">$&#123;row.weatherElement[<span class="number">1</span>].time[<span class="number">0</span>].parameter.parameterName&#125;</span> ℃&lt;/td&gt;</span></span><br><span class="line"><span class="string">    &lt;td&gt;<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">1</span>].parameter.parameterName&#125;</span> &lt;img src=&quot;img/day/<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">1</span>].parameter.parameterValue&#125;</span>.svg&quot;&gt; | </span></span><br><span class="line"><span class="string">    溫度 <span class="subst">$&#123;row.weatherElement[<span class="number">2</span>].time[<span class="number">1</span>].parameter.parameterName&#125;</span> ~ <span class="subst">$&#123;row.weatherElement[<span class="number">1</span>].time[<span class="number">1</span>].parameter.parameterName&#125;</span> ℃&lt;/td&gt;</span></span><br><span class="line"><span class="string">    &lt;td&gt;<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">2</span>].parameter.parameterName&#125;</span> &lt;img src=&quot;img/night/<span class="subst">$&#123;row.weatherElement[<span class="number">0</span>].time[<span class="number">2</span>].parameter.parameterValue&#125;</span>.svg&quot;&gt; | </span></span><br><span class="line"><span class="string">    溫度 <span class="subst">$&#123;row.weatherElement[<span class="number">2</span>].time[<span class="number">2</span>].parameter.parameterName&#125;</span> ~ <span class="subst">$&#123;row.weatherElement[<span class="number">1</span>].time[<span class="number">2</span>].parameter.parameterName&#125;</span> ℃&lt;/td&gt;</span></span><br><span class="line"><span class="string">  &lt;/tr&gt;</span></span><br><span class="line"><span class="string">  `</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  $(<span class="string">&#x27;tbody&#x27;</span>).<span class="title function_">html</span>(print);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>如果希望時間 ISO 轉成我們能控制的 JS 時間，可以這樣規劃<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> hourtext = <span class="keyword">new</span> <span class="title class_">Array</span>();</span><br><span class="line">hourtext[<span class="number">0</span>] = <span class="string">&quot;凌晨&quot;</span>;</span><br><span class="line">hourtext[<span class="number">6</span>] = <span class="string">&quot;白天&quot;</span>;</span><br><span class="line">hourtext[<span class="number">12</span>] = <span class="string">&quot;下午&quot;</span>;</span><br><span class="line">hourtext[<span class="number">18</span>] = <span class="string">&quot;晚上&quot;</span>;</span><br><span class="line"></span><br><span class="line">date1 = <span class="keyword">new</span> <span class="title class_">Date</span>(data[<span class="number">0</span>].<span class="property">weatherElement</span>[<span class="number">0</span>].<span class="property">time</span>[<span class="number">0</span>].<span class="property">startTime</span>); <span class="comment">//轉 date format</span></span><br><span class="line">date2 = <span class="keyword">new</span> <span class="title class_">Date</span>(data[<span class="number">0</span>].<span class="property">weatherElement</span>[<span class="number">0</span>].<span class="property">time</span>[<span class="number">1</span>].<span class="property">startTime</span>); <span class="comment">//轉 date format</span></span><br><span class="line">date3 = <span class="keyword">new</span> <span class="title class_">Date</span>(data[<span class="number">0</span>].<span class="property">weatherElement</span>[<span class="number">0</span>].<span class="property">time</span>[<span class="number">2</span>].<span class="property">startTime</span>); <span class="comment">//轉 date format</span></span><br><span class="line"></span><br><span class="line">$(<span class="string">&#x27;#dt&gt;thead&#x27;</span>).<span class="title function_">find</span>(<span class="string">&#x27;th&#x27;</span>).<span class="title function_">eq</span>(<span class="number">2</span>).<span class="title function_">text</span>(<span class="string">`<span class="subst">$&#123;date1.getFullYear()&#125;</span>-<span class="subst">$&#123;date1.getMonth() + <span class="number">1</span>&#125;</span>-<span class="subst">$&#123;date1.getDate()&#125;</span> <span class="subst">$&#123;hourtext[date1.getHours()]&#125;</span>`</span>);</span><br><span class="line">$(<span class="string">&#x27;#dt&gt;thead&#x27;</span>).<span class="title function_">find</span>(<span class="string">&#x27;th&#x27;</span>).<span class="title function_">eq</span>(<span class="number">3</span>).<span class="title function_">text</span>(<span class="string">`<span class="subst">$&#123;date2.getFullYear()&#125;</span>-<span class="subst">$&#123;date2.getMonth() + <span class="number">1</span>&#125;</span>-<span class="subst">$&#123;date2.getDate()&#125;</span> <span class="subst">$&#123;hourtext[date2.getHours()]&#125;</span>`</span>);</span><br><span class="line">$(<span class="string">&#x27;#dt&gt;thead&#x27;</span>).<span class="title function_">find</span>(<span class="string">&#x27;th&#x27;</span>).<span class="title function_">eq</span>(<span class="number">4</span>).<span class="title function_">text</span>(<span class="string">`<span class="subst">$&#123;date3.getFullYear()&#125;</span>-<span class="subst">$&#123;date3.getMonth() + <span class="number">1</span>&#125;</span>-<span class="subst">$&#123;date3.getDate()&#125;</span> <span class="subst">$&#123;hourtext[date3.getHours()]&#125;</span>`</span>);</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="DataTables-JS-套件"><a href="#DataTables-JS-套件" class="headerlink" title="DataTables.JS 套件"></a>DataTables.JS 套件</h2><p>本範例將接著使用美化表格的視覺套件做練習。這裡會示範 UI 套用原 DataTables 與 Bootstrap 兩種效果與簡單應用，更多參數設定請自行參考官方文件。</p>
+<div class="note primary"><p><strong>素材準備：使用 DataTable.js 套件</strong><br><a target="_blank" rel="noopener" href="https://datatables.net/">DataTable.js</a> 是一個視覺優化的 JS 套件，能將標準 HTML’s Table 代碼進行視覺與功能優化。你可以輕易地動態進行表格操作。提供各種參數，支援各種不同 UI Framework 環境使用 (Boostrap、Jquery UI)，並對應不同的 JS 環境。</p>
+</div>
+
+<h3 id="Base-Style"><a href="#Base-Style" class="headerlink" title="Base Style"></a>Base Style</h3><ol>
+<li><p>透過左側連結　<code>Downolad</code>　進行下載前的選項設定</p>
+</li>
+<li><p>step1：選擇 UI 框架為 <code>DataTables</code>，這裡我們只用最基本的 CSS 樣式</p>
+</li>
+<li><p>step2：選擇套件包為 <code>DataTables</code>，這裡我們需要使用該 JS 外掛工具即可，而 jQuery 我們已經有了就不需要麻煩了</p>
+</li>
+<li><p>Extensions 主要是提供一些進階功能（整合其他 JS 外掛），這裡我們不討論不選取</p>
+</li>
+<li><p>step3：選擇提供方式採 CDN，直接連線選擇 我們的基本 DataTables</p>
+</li>
+<li><p>得到 CDN 後，放置到你的 head 內並排序一下你的 jQuery 位置</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">img</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">height</span>: <span class="number">1em</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接著設定並觸發 DTS，給予 table 標籤 ID，如果需要和效果就用指定 class 編入（依官網 Example 說明）</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">id</span>=<span class="string">&quot;dt&quot;</span> <span class="attr">class</span>=<span class="string">&quot;display compact hover&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>在 JS 內透過 jQuery 去觸發 DTS 效果，建議在 JS 最後執行，也就是 DOM 沒有需再異動後</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;#dt&#x27;</span>).<span class="title class_">DataTable</span>(&#123;&#125;); <span class="comment">//啟用 datatable 套件</span></span><br></pre></td></tr></table></figure></li>
+<li><p>畫面效果如下<br><img src="https://i.imgur.com/2GU7pux.png"></p>
+</li>
+</ol>
+<h3 id="Bootstrap-Style"><a href="#Bootstrap-Style" class="headerlink" title="Bootstrap Style"></a>Bootstrap Style</h3><ol>
+<li>透過左側或主選單連結 <code>Downolad</code> 進行下載前的選項設定</li>
+<li>step1：選擇 UI 外觀框架 Bootstrap，這裡我們引用 BS 的 CSS 樣式</li>
+<li>step2：選擇 DataTables+Bootstrap，我們還沒有 BS，這裡幫忙提供給我們工具包</li>
+<li>Extensions 主要是提供一些進階功能（整合其他 JS 外掛），這裡我們不討論不選取</li>
+<li>step3：選擇 CDN 並拿掉 Concatenate 項目（不要合併），可以清楚看到除了 DTS 還有 BS 也都有了</li>
+<li>從下面代碼可以看到兩者差異<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--DTS base_Style --&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css&quot; /&gt;  --&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">&lt;!--DTS BS_Style --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">href</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--DTS base_JS --&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- &lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js&quot;&gt;&lt;/script&gt;   --&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">&lt;!--DTS BS_JS --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">src</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">img</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">height</span>: <span class="number">1em</span>;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>再來就是將你的 table 根據 BS 的設定做效果調整，舉例<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">id</span>=<span class="string">&quot;dt&quot;</span> <span class="attr">class</span>=<span class="string">&quot;display compact table table-hover table-striped table-dark&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>效果如下<br><img src="https://i.imgur.com/toRnzuR.png"></li>
+</ol>
+<hr>
+<h1 id="範例：氣象開放資料平臺-Chart"><a href="#範例：氣象開放資料平臺-Chart" class="headerlink" title="範例：氣象開放資料平臺 + Chart"></a>範例：氣象開放資料平臺 + Chart</h1><p>同個氣象開放資料平台我們換一個範例，找一個資料較多的 API。我們採用以下服務 api 為練習<br><strong>鄉鎮天氣預報-台灣未來 1 週天氣預報</strong>：<a target="_blank" rel="noopener" href="https://opendata.cwb.gov.tw/dataset/statisticDays/F-D0047-091">https://opendata.cwb.gov.tw/dataset/statisticDays/F-D0047-091</a></p>
+<h2 id="編寫-Ajax-取得-JSON-數據-1"><a href="#編寫-Ajax-取得-JSON-數據-1" class="headerlink" title="編寫 Ajax 取得 JSON 數據"></a>編寫 Ajax 取得 JSON 數據</h2><p>建立 weather_chart.html，引用 jQuery 後，先在空白底處執行 script。我們先請求 OpenData 並試著 console.log 出來看看</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/</span></span><br><span class="line">$.<span class="title function_">getJSON</span>(<span class="string">&#x27;https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-D0047-091?Authorization=CWB-____&amp;downloadType=WEB&amp;format=JSON&#x27;</span>)</span><br><span class="line">  .<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123; <span class="comment">//成功時執行以下區段</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(re); <span class="comment">//先檢查資料物件</span></span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">fail</span>(<span class="keyword">function</span> (<span class="params">w</span>) &#123; <span class="comment">//失敗訊息</span></span><br><span class="line">    <span class="title function_">alert</span>(<span class="string">&quot;get this api fail so said!&quot;</span>);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>這裡我們將會設計為：</p>
+<ol>
+<li>抽取出北部地區四個城市分別為：台北、新北、基隆、桃園</li>
+<li>設計圖形化曲線圖，api 給的時間項目為我們的 x 軸</li>
+<li>該時間的平均溫度為我們的 y 軸</li>
+</ol>
+<h2 id="ChartJS-套件"><a href="#ChartJS-套件" class="headerlink" title="ChartJS 套件"></a>ChartJS 套件</h2><p>本範例將接著使用能將數據做成統計表的視覺套件做練習，只需要指定好所需物件陣列指定就能快速拉出圖表。本篇只介紹一種圖表方式其餘起自行參考官方文件。</p>
+<div class="note primary"><p><strong>素材準備：使用 DataTable.js 套件</strong><br><a target="_blank" rel="noopener" href="https://www.chartjs.org/">Chart.js</a> 是一個專門處理圖表化資料的 JS 外掛，他主要是依賴 canvas 作為繪圖技巧，並提供多種不同的統計圖樣式與形式提供使用。</p>
+</div>
+
+<h3 id="學習官網的-bar-範例"><a href="#學習官網的-bar-範例" class="headerlink" title="學習官網的 bar 範例"></a>學習官網的 bar 範例</h3><ol>
+<li>透過左側連結 <code>Installation</code> 進行取得（這裡演示 CDN 取法）</li>
+<li>轉到 CDN 網址，取得 css 跟 js 兩者即可。放置到你的 head 內並排序一下你的 jQuery 位置<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>接著設定並觸發，參考範例說明在指定處規畫你的 HTML 版面添加具備 ID 的 canvas 元素。<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>北部地區一周天氣溫度<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&quot;width:90%&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">&quot;myChart&quot;</span> <span class="attr">width</span>=<span class="string">&quot;800&quot;</span> <span class="attr">height</span>=<span class="string">&quot;400&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>複製範例上的簡單資料圖表，使用 JavaScript 編寫<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ctx = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;myChart&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> myChart = <span class="keyword">new</span> <span class="title class_">Chart</span>(ctx, &#123;</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;bar&#x27;</span>, <span class="comment">//圖表類型</span></span><br><span class="line">  <span class="attr">data</span>: &#123;  <span class="comment">//圖表資料</span></span><br><span class="line">    <span class="comment">//x 軸之欄位名稱</span></span><br><span class="line">    <span class="attr">labels</span>: [<span class="string">&#x27;Red&#x27;</span>, <span class="string">&#x27;Blue&#x27;</span>, <span class="string">&#x27;Yellow&#x27;</span>, <span class="string">&#x27;Green&#x27;</span>, <span class="string">&#x27;Purple&#x27;</span>, <span class="string">&#x27;Orange&#x27;</span>],</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//資料線細節，結構為 datasets:[&#123;...&#125;,&#123;...&#125;] 如果有多筆</span></span><br><span class="line">    <span class="attr">datasets</span>: [&#123;</span><br><span class="line">      <span class="comment">//資料線標題名稱</span></span><br><span class="line">      <span class="attr">label</span>: <span class="string">&#x27;# of Votes&#x27;</span>,</span><br><span class="line">      <span class="comment">//值</span></span><br><span class="line">      <span class="attr">data</span>: [<span class="number">12</span>, <span class="number">19</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">      <span class="comment">//多顏色對應不同 x 欄位</span></span><br><span class="line">      <span class="attr">backgroundColor</span>: [</span><br><span class="line">        <span class="string">&#x27;rgba(255, 99, 132, 0.2)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(54, 162, 235, 0.2)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(255, 206, 86, 0.2)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(75, 192, 192, 0.2)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(153, 102, 255, 0.2)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(255, 159, 64, 0.2)&#x27;</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="comment">//同上</span></span><br><span class="line">      <span class="attr">borderColor</span>: [</span><br><span class="line">        <span class="string">&#x27;rgba(255, 99, 132, 1)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(54, 162, 235, 1)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(255, 206, 86, 1)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(75, 192, 192, 1)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(153, 102, 255, 1)&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;rgba(255, 159, 64, 1)&#x27;</span></span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">borderWidth</span>: <span class="number">1</span></span><br><span class="line">    &#125;]</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">options</span>: &#123;</span><br><span class="line">    <span class="attr">scales</span>: &#123;</span><br><span class="line">      <span class="attr">yAxes</span>: [&#123;</span><br><span class="line">        <span class="attr">ticks</span>: &#123;</span><br><span class="line">          <span class="comment">//是否 y 軸要從 0 開始，如果不要則整段 option 其實可不寫</span></span><br><span class="line">          <span class="attr">beginAtZero</span>: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li>畫面效果如下<br><img src="https://i.imgur.com/S6QpKcB.png"></li>
+</ol>
+<h3 id="整合-API-資料並規劃-chartjs"><a href="#整合-API-資料並規劃-chartjs" class="headerlink" title="整合 API 資料並規劃 chartjs"></a>整合 API 資料並規劃 chartjs</h3><p>請自行完成動作到已透過 Ajax 取得數據完畢，而以下程式碼都在<code>.done(function(re)&#123;&#125;)</code>內執行</p>
+<ol>
+<li>簡化我們的資料，使找到四個城市資料快些（少打些字）<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*簡化擷取的節點*/</span></span><br><span class="line"><span class="keyword">let</span> kl = re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">locations</span>.<span class="property">location</span>[<span class="number">13</span>]; <span class="comment">//基隆</span></span><br><span class="line"><span class="keyword">let</span> tp = re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">locations</span>.<span class="property">location</span>[<span class="number">16</span>]; <span class="comment">//台北</span></span><br><span class="line"><span class="keyword">let</span> nt = re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">locations</span>.<span class="property">location</span>[<span class="number">18</span>]; <span class="comment">//新北</span></span><br><span class="line"><span class="keyword">let</span> tu = re.<span class="property">cwbopendata</span>.<span class="property">dataset</span>.<span class="property">locations</span>.<span class="property">location</span>[<span class="number">21</span>]; <span class="comment">//桃園</span></span><br><span class="line"><span class="comment">// console.log(kl);</span></span><br></pre></td></tr></table></figure></li>
+<li>整理一些新陣列變數，分別為存有 x 軸之內容，以及各城市的溫度之內容。<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*變數初始化*/</span></span><br><span class="line"><span class="keyword">let</span> date_line = <span class="keyword">new</span> <span class="title class_">Array</span>();</span><br><span class="line"><span class="keyword">let</span> k = <span class="keyword">new</span> <span class="title class_">Array</span>(), t = <span class="keyword">new</span> <span class="title class_">Array</span>(), n = <span class="keyword">new</span> <span class="title class_">Array</span>(), u = <span class="keyword">new</span> <span class="title class_">Array</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; kl.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>.<span class="property">length</span>; i++) &#123;</span><br><span class="line">  <span class="comment">/*write 時間軸*/</span></span><br><span class="line">  date_line[i] = kl.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">startTime</span>.<span class="title function_">substr</span>(<span class="number">0</span>, kl.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">startTime</span>.<span class="property">length</span> - <span class="number">12</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*write 溫度資料*/</span></span><br><span class="line">  k.<span class="title function_">push</span>(kl.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">elementValue</span>.<span class="property">value</span>);</span><br><span class="line">  t.<span class="title function_">push</span>(tp.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">elementValue</span>.<span class="property">value</span>);</span><br><span class="line">  n.<span class="title function_">push</span>(nt.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">elementValue</span>.<span class="property">value</span>);</span><br><span class="line">  u.<span class="title function_">push</span>(tu.<span class="property">weatherElement</span>[<span class="number">1</span>].<span class="property">time</span>[i].<span class="property">elementValue</span>.<span class="property">value</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>引用 chart.js 的參數設定<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ctx = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;myChart&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> myChart = <span class="keyword">new</span> <span class="title class_">Chart</span>(ctx, &#123;</span><br><span class="line">  <span class="attr">type</span>: <span class="string">&#x27;line&#x27;</span>,</span><br><span class="line">  <span class="attr">data</span>: &#123;</span><br><span class="line">    <span class="attr">labels</span>: date_line,</span><br><span class="line">    <span class="attr">datasets</span>: [&#123;</span><br><span class="line">      <span class="comment">//keelung</span></span><br><span class="line">      <span class="attr">label</span>: kl.<span class="property">locationName</span>,</span><br><span class="line">      <span class="attr">data</span>: k,</span><br><span class="line">      <span class="attr">backgroundColor</span>: <span class="string">&#x27;rgba(255, 99, 132, 0.1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderColor</span>: <span class="string">&#x27;rgba(255, 99, 132, 1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderWidth</span>: <span class="number">1</span></span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">//taipei</span></span><br><span class="line">      <span class="attr">label</span>: tp.<span class="property">locationName</span>,</span><br><span class="line">      <span class="attr">data</span>: t,</span><br><span class="line">      <span class="attr">backgroundColor</span>: <span class="string">&#x27;rgba(54, 162, 235, 0.1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderColor</span>: <span class="string">&#x27;rgba(54, 162, 235, 1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderWidth</span>: <span class="number">1</span></span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">//newtaipei</span></span><br><span class="line">      <span class="attr">label</span>: nt.<span class="property">locationName</span>,</span><br><span class="line">      <span class="attr">data</span>: n,</span><br><span class="line">      <span class="attr">backgroundColor</span>: <span class="string">&#x27;rgba(255, 206, 86, 0.1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderColor</span>: <span class="string">&#x27;rgba(255, 206, 86, 1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderWidth</span>: <span class="number">1</span></span><br><span class="line">    &#125;, &#123;</span><br><span class="line">      <span class="comment">//taouang</span></span><br><span class="line">      <span class="attr">label</span>: tu.<span class="property">locationName</span>,</span><br><span class="line">      <span class="attr">data</span>: u,</span><br><span class="line">      <span class="attr">backgroundColor</span>: <span class="string">&#x27;rgba(75, 192, 192, 0.1)&#x27;</span>,</span><br><span class="line">      <span class="attr">borderColor</span>: <span class="string">&#x27;rgba(75, 192, 192, 1)&#x27;</span>,</span><br><span class="line">    &#125;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li>畫面如下<br><img src="https://i.imgur.com/FcKv9uw.png"></li>
+</ol>
+<hr>
+<h1 id="範例：新北市政府資料開放平台-CROS-禁止連線）"><a href="#範例：新北市政府資料開放平台-CROS-禁止連線）" class="headerlink" title="範例：新北市政府資料開放平台 (CROS 禁止連線）"></a>範例：新北市政府資料開放平台 (CROS 禁止連線）</h1><p>該平台為新北市政府的開放資料平台，而這些 OpenData 並不允許前端共享連接使用，這裡將示範如何改由後端伺服器 php 語言取得後再進行轉交給同網域之 JS。</p>
+<p>我們採用以下服務 api 為練習<br>**新北市公共自行車租賃系統 (YouBike)**：<a target="_blank" rel="noopener" href="http://data.ntpc.gov.tw/od/detail?oid=71CD1490-A2DF-4198-BEF1-318479775E8A">http://data.ntpc.gov.tw/od/detail?oid=71CD1490-A2DF-4198-BEF1-318479775E8A</a></p>
+<h2 id="透過-Ajax-取得-api-失敗時"><a href="#透過-Ajax-取得-api-失敗時" class="headerlink" title="透過 Ajax 取得 api 失敗時"></a>透過 Ajax 取得 api 失敗時</h2><ol>
+<li>先用 postman 確認是否可測試 api 正常運作。</li>
+<li>這裡示範 getJSON 用法取得，建立檔案 ntpc_curl.html<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$.<span class="title function_">getJSON</span>(<span class="string">&#x27;http://data.ntpc.gov.tw/od/data/api/54DDDC93-589C-4858-9C95-18B2046CC1FC?$format=json&#x27;</span>)</span><br><span class="line">  .<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(re);</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">fail</span>(<span class="keyword">function</span> (<span class="params">w</span>) &#123;</span><br><span class="line">    <span class="title function_">alert</span>(<span class="string">&quot;faill openapi&quot;</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(w);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+此時能確認不允許前端 JS 直接共享請求，我們改用 php 來完成 api 串接，建立 ntpc_curl_api.php</li>
+</ol>
+<h2 id="透過-php-的-curl-取得-api"><a href="#透過-php-的-curl-取得-api" class="headerlink" title="透過 php 的 curl 取得 api"></a>透過 php 的 curl 取得 api</h2><ol>
+<li>使用 curl 來達到 api 連接，參數說明如註解<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 初始化 CURL</span></span><br><span class="line"><span class="variable">$curl</span> = <span class="title function_ invoke__">curl_init</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 識別發出請求的軟體類型或版本號、該軟體使用的作業系統、還有軟體開發者的字詞串。</span></span><br><span class="line"><span class="comment">// 參考 https://developer.mozilla.org/zh-TW/docs/Web/HTTP/Headers/User-Agent</span></span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$curl</span>, CURLOPT_USERAGENT, <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//要驗證伺服器 SSL 憑證，當拜訪 https 網站時，若未做任何 SSL 相關設定，會出現錯誤。</span></span><br><span class="line"><span class="comment">// 設為 false 為可以接受任何伺服器憑證。</span></span><br><span class="line"><span class="comment">// 參考 https://www.plurk.com/p/e797gs</span></span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$curl</span>, CURLOPT_SSL_VERIFYPEER, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 將 curl_exec() 獲取結果以文字串方式返回，而不是直接印出。</span></span><br><span class="line"><span class="comment">// 如果你只是要轉給前端可以不寫此行（預設 false)，剛好省下最後的 echo 動作</span></span><br><span class="line"><span class="comment">// 反之為 true 可事後要做 echo 給前端（用 Ajax 來取）或透過 php 輸出 HTML</span></span><br><span class="line"><span class="comment">// curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 設定 URL 位置</span></span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$curl</span>, CURLOPT_URL, <span class="string">&quot;http://data.ntpc.gov.tw/od/data/api/54DDDC93-589C-4858-9C95-18B2046CC1FC?\$format=json&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 執行 curl</span></span><br><span class="line"><span class="variable">$result</span> = <span class="title function_ invoke__">curl_exec</span>(<span class="variable">$curl</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 關閉 curl</span></span><br><span class="line"><span class="title function_ invoke__">curl_close</span>(<span class="variable">$curl</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// echo $result;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>回到 ntpc_curl.html，改連結到同網域的後端取得。<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">$.<span class="title function_">getJSON</span>(<span class="string">&#x27;ntpc_curl_api.php&#x27;</span>).<span class="title function_">done</span>(<span class="keyword">function</span> (<span class="params">re</span>) &#123; <span class="comment">//自己做一個後端，再去跟同網域的後端取得</span></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(re);</span><br><span class="line">&#125;).<span class="title function_">fail</span>(<span class="keyword">function</span> (<span class="params">w</span>) &#123;</span><br><span class="line">  <span class="title function_">alert</span>(<span class="string">&quot;faill openapi&quot;</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(w);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li>此時可以正常顯示，整體過程就是：遠端 api &#x3D;&gt; <mark>by_crul</mark> &#x3D;&gt; php &#x3D;&gt;<mark>by Ajax</mark> &#x3D;&gt; js</li>
+</ol>
+<div class="note default"><p><strong>以上三題之完整代碼：</strong> <a target="_blank" rel="noopener" href="https://gist.github.com/summer10920/e70cd0ce7380fc9f89a92059feb8b46a">view full code</a></p>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+              <a href="/tags/JavaScript-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># JavaScript 程式設計（假日班）</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04-29/jq-baseclass-2/" rel="prev" title="[基礎課程] jQuery 教學（二）：Ajax 技術">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] jQuery 教學（二）：Ajax 技術
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05-08/php-baseclass-1/" rel="next" title="[基礎課程] PHP 基礎觀念與環境建置">
+                  [基礎課程] PHP 基礎觀念與環境建置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>
