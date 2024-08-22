@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "npx hexo server",
+    "restart": "npx hexo clean && npx hexo generate",
     "build": "npx hexo generate",
     "clean": "npx hexo clean",
     "deploy": "npx hexo deploy",
