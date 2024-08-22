@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[練習課程] JavaScript 實作（二）：數位時鐘設計">
+<meta property="og:url" content="http://summer10920.github.io/2020/04-21/js-sampleclass-2/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/D8v3RVP.png">
+<meta property="og:image" content="https://i.imgur.com/SJa2KJg.png">
+<meta property="og:image" content="https://i.imgur.com/29lqYod.png">
+<meta property="article:published_time" content="2020-04-21T13:45:13.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.189Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta property="article:tag" content="JavaScript 程式設計（假日班）">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/D8v3RVP.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/04-21/js-sampleclass-2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/04-21/js-sampleclass-2/","path":"2020/04-21/js-sampleclass-2/","title":"[練習課程] JavaScript 實作（二）：數位時鐘設計"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[練習課程] JavaScript 實作（二）：數位時鐘設計 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%96%E7%89%87%E8%A1%A8%E7%A4%BA%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">圖片表示法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML-CSS"><span class="nav-number">1.1.</span> <span class="nav-text">HTML+CSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JS-%E9%83%A8%E5%88%86"><span class="nav-number">1.2.</span> <span class="nav-text">JS 部分</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E5%AD%97%E8%A1%A8%E7%A4%BA%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">文字表示法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML-CSS-1"><span class="nav-number">2.1.</span> <span class="nav-text">HTML+CSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#js-%E9%83%A8%E5%88%86"><span class="nav-number">2.2.</span> <span class="nav-text">js 部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E5%80%91%E9%99%A4%E4%BA%86%E6%99%82%E5%88%86%E7%A7%92%EF%BC%8C%E9%82%84%E8%A6%81%E8%A8%88%E7%AE%97%E5%B9%B4%E6%9C%88%E6%97%A5%E9%80%B1%E3%80%82%E8%A6%81%E6%B3%A8%E6%84%8F%E5%A4%9A%E4%B8%80%E5%80%8B%E5%88%A4%E5%88%A5%EF%BC%8C%E5%A6%82%E6%9E%9C%E6%95%B8%E5%AD%97%E6%AF%94-10-%E5%B0%8F%E8%A6%81%E5%A4%9A%E8%A3%9C%E4%B8%80%E5%80%8B-0-%E5%9C%A8%E5%89%8D%E9%9D%A2%E3%80%82"><span class="nav-number">2.3.</span> <span class="nav-text">我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比 10 小要多補一個 0 在前面。var n_day &#x3D; [&#39;SUN&#39;, &#39;MON&#39;, &#39;TUS&#39;, &#39;WED&#39;, &#39;THR&#39;, &#39;FRI&#39;, &#39;SAT&#39;];function re_time() {  setTimeout(&quot;re_time()&quot;, 1000);  nt &#x3D; new Date();  n_hour &#x3D; nt.getHours(); &#x2F;&#x2F;時  n_min &#x3D; nt.getMinutes();&#x2F;&#x2F;分  n_sec &#x3D; nt.getSeconds();&#x2F;&#x2F;秒 65  n_year &#x3D; nt.getFullYear();&#x2F;&#x2F;年  n_moth &#x3D; nt.getMonth();  n_date &#x3D; nt.getDate();  d_item &#x3D; nt.getDay();  function chk0(num) {    return (num &lt; 10) ? &quot;0&quot; + num : num;  }  document.getElementById(&quot;clk2-time&quot;).textContent &#x3D; &#96;${chk0(n_hour)}:${chk0(n_min)}:${chk0(n_sec)}&#96;;  document.getElementById(&quot;clk2-date&quot;).textContent &#x3D; &#96;${n_year}-${n_moth + 1}-${n_date} ${n_day[d_item]}&#96;;}re_time();</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/04-21/js-sampleclass-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[練習課程] JavaScript 實作（二）：數位時鐘設計 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [練習課程] JavaScript 實作（二）：數位時鐘設計<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200421-js-sampleclass-2.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-04-21 21:45:13" itemprop="dateCreated datePublished" datetime="2020-04-21T21:45:13+08:00">2020-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1,818</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:03:18</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/D8v3RVP.png"><br>本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。</p>
+<span id="more"></span>
+
+<p>大致設計步驟如下：</p>
+<ol>
+<li>使用者一進網頁就先執行一個角色命名的事件 A</li>
+<li>A 結束後，提問是否選擇遊戲開始事件 B，所以畫面上有個 B 事件的按鈕</li>
+<li>事件 B 是連續的多個判斷 T&#x2F;F 路線走向，一但失敗仍可由畫面上的 B 事件按鈕觸發</li>
+<li>如果順利走完事件 B，觸發一個事件 C，主要是把畫面上的 B 事件觸發給取消</li>
+</ol>
+<h1 id="圖片表示法"><a href="#圖片表示法" class="headerlink" title="圖片表示法"></a>圖片表示法</h1><p>你可以透過 <a href="www.freepick.com">www.freepick.com</a> 取得免費圖片資源加以設計，使含有 0~9 跟：的圖案，做成連續且同張圖片即可。如下</p>
+<p><img src="https://i.imgur.com/SJa2KJg.png" alt="digital number"></p>
+<p>每個數字的長寬是 100*100，冒號為 50*100。我們利用 background 代替數字號碼去顯示圖片，但只顯示出 100*100，透過 background-position 去控制要顯示幾號也就是往左或往右推多少 100px。</p>
+<h2 id="HTML-CSS"><a href="#HTML-CSS" class="headerlink" title="HTML+CSS"></a>HTML+CSS</h2><p>先規劃出你的 HTML+CSS。使得畫面有出現最基本的節點能任意控制這些時間欄位。</p>
+<p>HTML 主要顯示三大區域 (.ck) 分別是時 (#ck1,#ck2) 分 (#ck3,#ck4) 秒 (#ck5,#ck6)，每個區域有十位數跟個位數。三大區域之間有冒號做顯示 (.cc)。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;clock1&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;ck&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck1&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c1&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck2&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c2&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;cc&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;ck&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck3&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c3&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck4&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c4&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;cc&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;ck&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck5&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c5&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">&quot;ck6&quot;</span> <span class="attr">class</span>=<span class="string">&quot;c6&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>css 調整好版型，然而 c0~c9 主要是提供每個數字代表多少定位，使其差異內容化。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="number">#222</span>;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-id">#clock1</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">740px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">rgba</span>(<span class="number">88</span>, <span class="number">45</span>, <span class="number">98</span>, <span class="number">0.5</span>);</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">20vh</span> auto;</span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">10px</span>;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.ck</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline-flex;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.c1</span>,<span class="selector-class">.c2</span>,<span class="selector-class">.c3</span>,<span class="selector-class">.c4</span>,<span class="selector-class">.c5</span>,<span class="selector-class">.c6</span>,<span class="selector-class">.c7</span>,<span class="selector-class">.c8</span>,<span class="selector-class">.c9</span>,<span class="selector-class">.c0</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">&quot;number.jpg&quot;</span>);</span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.cc</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">50px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">&quot;number.jpg&quot;</span>);</span><br><span class="line">    <span class="attribute">background-position</span>: <span class="number">50px</span>;</span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span> <span class="number">10px</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.c1</span> &#123;    <span class="attribute">background-position</span>: <span class="number">0px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c2</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">100px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c3</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">200px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c4</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">300px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c5</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">400px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c6</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">500px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c7</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">600px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c8</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">700px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c9</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">800px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c0</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">900px</span>;  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在還沒有 JS 發動之前，畫面效果如下：（出現 123456 是因為 html 這裡是用 c1~c6 做初始預設的 class)<br><img src="https://i.imgur.com/29lqYod.png"></p>
+<p>接著規劃 JS，分為幾個動作思考</p>
+<ol>
+<li>透過 new Date() 去得出目前時間，並將時間整理成六個數字分別代表時分秒的十位數&amp;個位數。然後透過 DOM 去改寫 className 的數值，使得 class 之 c0~c9 可以順利代表數字</li>
+<li>再來是透過 setTimeout 幫助你每 1 秒再執行一次步驟 1，形成無限跑數字的連續效果。</li>
+<li>然後再來思考冒號每 500 毫秒做開關動作（透明度 0 或 1)，你可以規劃每 500 豪秒做 off，每 1000 毫秒做 on</li>
+</ol>
+<h2 id="JS-部分"><a href="#JS-部分" class="headerlink" title="JS 部分"></a>JS 部分</h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">retime</span>(<span class="params"></span>) &#123;<span class="comment">//執行 DOM 的變化</span></span><br><span class="line">  <span class="built_in">setTimeout</span>(retime, <span class="number">1000</span>); <span class="comment">//1 秒之後，去跑 retime 這個動作</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> nt = <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">  <span class="keyword">let</span> n_hour = nt.<span class="title function_">getHours</span>();</span><br><span class="line">  <span class="keyword">let</span> n_min = nt.<span class="title function_">getMinutes</span>();</span><br><span class="line">  <span class="keyword">let</span> n_sec = nt.<span class="title function_">getSeconds</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">//時分秒的個位數</span></span><br><span class="line">  <span class="keyword">let</span> n_hx = n_hour % <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">let</span> n_mx = n_min % <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">let</span> n_sx = n_sec % <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//時分秒的十位數</span></span><br><span class="line">  <span class="keyword">let</span> n_ht = <span class="title class_">Math</span>.<span class="title function_">floor</span>(n_hour / <span class="number">10</span>);</span><br><span class="line">  <span class="keyword">let</span> n_mt = <span class="title class_">Math</span>.<span class="title function_">floor</span>(n_min / <span class="number">10</span>);</span><br><span class="line">  <span class="keyword">let</span> n_st = <span class="title class_">Math</span>.<span class="title function_">floor</span>(n_sec / <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck1&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_ht;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck2&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_hx;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck3&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_mt;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck4&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_mx;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck5&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_st;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;ck6&quot;</span>).<span class="property">className</span> = <span class="string">&quot;c&quot;</span> + n_sx;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;cc&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span>;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;cc&quot;</span>)[<span class="number">1</span>].<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">//有兩行 dom 晚 500 毫秒執行</span></span><br><span class="line">  <span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;cc&quot;</span>)[<span class="number">0</span>].<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementsByClassName</span>(<span class="string">&quot;cc&quot;</span>)[<span class="number">1</span>].<span class="property">style</span>.<span class="property">opacity</span> = <span class="number">0</span>;</span><br><span class="line">  &#125;,<span class="number">500</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">retime</span>();</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="文字表示法"><a href="#文字表示法" class="headerlink" title="文字表示法"></a>文字表示法</h1><p>這裡比較簡單的使用文字就能代表時間，我們把功能擴展到除了時分秒，還有年月日與日期。以及多一個 CSS animation 效果去裝飾 RGB。</p>
+<h2 id="HTML-CSS-1"><a href="#HTML-CSS-1" class="headerlink" title="HTML+CSS"></a>HTML+CSS</h2><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;clock2&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;clk2-time&quot;</span>&gt;</span>12:00:00<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">id</span>=<span class="string">&quot;clk2-date&quot;</span>&gt;</span>2019-12-06 MON<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-id">#clock2</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">600px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">300px</span>;</span><br><span class="line">  <span class="comment">/* background: #555; */</span></span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">50px</span> auto;</span><br><span class="line">  <span class="attribute">text-align</span>: center;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: space-around;</span><br><span class="line">  <span class="attribute">flex-flow</span>: column nowrap;</span><br><span class="line">  <span class="attribute">font-family</span>: <span class="string">&quot;Orbitron&quot;</span>, sans-serif;</span><br><span class="line">  <span class="attribute">animation</span>: light <span class="number">10s</span> linear infinite;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#clk2-time</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">6rem</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-id">#clk2-date</span> &#123;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">3rem</span>;</span><br><span class="line">  <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同時設計一個呼吸燈的效果用 animation 去執行 keyframe。這裡要思考的是，變化從 0 到 100%的時間軸過程中，顏色這裡我們使用 hsla（顏色範圍 0~360, 飽和度 100%, 明度 0~30%, 透明度 1)。方便你控制一個循環的分配顏色，明度稍微差距一些，但主要背景是深色，這裡明度採低值適合。</p>
+<p>顏色我們規劃這裡的 box-shadow 同時寫兩筆濾鏡：分別為盒內陰影 (box-shadow+inset)＋盒外陰影 (box-shadow)，另還有文字陰影 (text-shadow)，高明度的文字顏色 (color)。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@keyframes</span> light &#123;</span><br><span class="line">  <span class="selector-tag">from</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">0</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">10%</span> &#123;</span><br><span class="line">    <span class="comment">/*thin*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="built_in">hsla</span>(<span class="number">36</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">36</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="built_in">hsla</span>(<span class="number">36</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">36</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">36</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">20%</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">72</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">72</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">72</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">72</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">72</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">30%</span> &#123;</span><br><span class="line">    <span class="comment">/*thin*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="built_in">hsla</span>(<span class="number">108</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">108</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="built_in">hsla</span>(<span class="number">108</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">108</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">108</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">40%</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">144</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">144</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">144</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">144</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">144</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">50%</span> &#123;</span><br><span class="line">    <span class="comment">/*thin*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="built_in">hsla</span>(<span class="number">180</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">180</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="built_in">hsla</span>(<span class="number">180</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">180</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">180</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">60%</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">216</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">216</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">216</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">216</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">216</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">70%</span> &#123;</span><br><span class="line">    <span class="comment">/*thin*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="built_in">hsla</span>(<span class="number">252</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">252</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="built_in">hsla</span>(<span class="number">252</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">252</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">252</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">80%</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">288</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">288</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">288</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">288</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">288</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="number">90%</span> &#123;</span><br><span class="line">    <span class="comment">/*thin*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">20px</span> <span class="built_in">hsla</span>(<span class="number">324</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">324</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">10px</span> <span class="built_in">hsla</span>(<span class="number">324</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">324</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">324</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="selector-tag">to</span> &#123;</span><br><span class="line">    <span class="comment">/*fat*/</span></span><br><span class="line">    <span class="attribute">box-shadow</span>: inset <span class="number">0</span> <span class="number">0</span> <span class="number">300px</span> <span class="built_in">hsla</span>(<span class="number">360</span>, <span class="number">100%</span>, <span class="number">15%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">360</span>, <span class="number">100%</span>, <span class="number">0%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">text-shadow</span>: <span class="number">0</span> <span class="number">0</span> <span class="number">200px</span> <span class="built_in">hsla</span>(<span class="number">360</span>, <span class="number">100%</span>, <span class="number">60%</span>, <span class="number">1</span>), <span class="number">0</span> <span class="number">0</span> <span class="number">40px</span> <span class="built_in">hsla</span>(<span class="number">360</span>, <span class="number">100%</span>, <span class="number">30%</span>, <span class="number">1</span>);</span><br><span class="line">    <span class="attribute">color</span>: <span class="built_in">hsla</span>(<span class="number">360</span>, <span class="number">100%</span>, <span class="number">95%</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>還有文字 font，這裡利用 google font 字型 (Share Tech Mono)</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;https://fonts.googleapis.com/css?family=Share+Tech+Mono&amp;display=swap&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="js-部分"><a href="#js-部分" class="headerlink" title="js 部分"></a>js 部分</h2><h2 id="我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比-10-小要多補一個-0-在前面。"><a href="#我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比-10-小要多補一個-0-在前面。" class="headerlink" title="我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比 10 小要多補一個 0 在前面。"></a>我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比 10 小要多補一個 0 在前面。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> n_day = [<span class="string">&#x27;SUN&#x27;</span>, <span class="string">&#x27;MON&#x27;</span>, <span class="string">&#x27;TUS&#x27;</span>, <span class="string">&#x27;WED&#x27;</span>, <span class="string">&#x27;THR&#x27;</span>, <span class="string">&#x27;FRI&#x27;</span>, <span class="string">&#x27;SAT&#x27;</span>];</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">re_time</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="built_in">setTimeout</span>(<span class="string">&quot;re_time()&quot;</span>, <span class="number">1000</span>);</span><br><span class="line">  nt = <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">  n_hour = nt.<span class="title function_">getHours</span>(); <span class="comment">//時</span></span><br><span class="line">  n_min = nt.<span class="title function_">getMinutes</span>();<span class="comment">//分</span></span><br><span class="line">  n_sec = nt.<span class="title function_">getSeconds</span>();<span class="comment">//秒 65</span></span><br><span class="line"></span><br><span class="line">  n_year = nt.<span class="title function_">getFullYear</span>();<span class="comment">//年</span></span><br><span class="line">  n_moth = nt.<span class="title function_">getMonth</span>();</span><br><span class="line">  n_date = nt.<span class="title function_">getDate</span>();</span><br><span class="line">  d_item = nt.<span class="title function_">getDay</span>();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">chk0</span>(<span class="params">num</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (num &lt; <span class="number">10</span>) ? <span class="string">&quot;0&quot;</span> + num : num;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;clk2-time&quot;</span>).<span class="property">textContent</span> = <span class="string">`<span class="subst">$&#123;chk0(n_hour)&#125;</span>:<span class="subst">$&#123;chk0(n_min)&#125;</span>:<span class="subst">$&#123;chk0(n_sec)&#125;</span>`</span>;</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;clk2-date&quot;</span>).<span class="property">textContent</span> = <span class="string">`<span class="subst">$&#123;n_year&#125;</span>-<span class="subst">$&#123;n_moth + <span class="number">1</span>&#125;</span>-<span class="subst">$&#123;n_date&#125;</span> <span class="subst">$&#123;n_day[d_item]&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">re_time</span>();</span><br></pre></td></tr></table></figure></h2><div class="note default"><p><strong>示範參考：</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/summer10920/studies_TeachDemo_JSJQ/tree/master/vanillaJS/digiClock">View Full Code</a></li>
+<li><a href="https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/digiClock/">DEMO Page</a></li>
+</ul>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+              <a href="/tags/JavaScript-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># JavaScript 程式設計（假日班）</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04-21/js-sampleclass-1/" rel="prev" title="[練習課程] JavaScript 實作（一）：全版面廣告與 Cookie 紀錄">
+                  <i class="fa fa-chevron-left"></i> [練習課程] JavaScript 實作（一）：全版面廣告與 Cookie 紀錄
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04-22/js-sampleclass-3/" rel="next" title="[練習課程] JavaScript 實作（三）：類比時鐘設計">
+                  [練習課程] JavaScript 實作（三）：類比時鐘設計 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

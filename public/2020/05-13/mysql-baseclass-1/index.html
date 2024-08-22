@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇將獨立化的學習如何操作資料庫進行數據管理，隨後章節會透過 PHP 對資料庫進行讀取、新增、修改、刪除等四大操作技能。搭配免費的 PHP 伺服器語言，最好的免費資料庫語言為 MySQL，這個伺服器套件在 XAMPP 內就已提供。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] MySQL 基本觀念指令操作">
+<meta property="og:url" content="http://summer10920.github.io/2020/05-13/mysql-baseclass-1/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="本篇將獨立化的學習如何操作資料庫進行數據管理，隨後章節會透過 PHP 對資料庫進行讀取、新增、修改、刪除等四大操作技能。搭配免費的 PHP 伺服器語言，最好的免費資料庫語言為 MySQL，這個伺服器套件在 XAMPP 內就已提供。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/96NYgou.png">
+<meta property="article:published_time" content="2020-05-13T10:10:42.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.194Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta property="article:tag" content="PHP 程式設計（假日班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/96NYgou.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/05-13/mysql-baseclass-1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/05-13/mysql-baseclass-1/","path":"2020/05-13/mysql-baseclass-1/","title":"[基礎課程] MySQL 基本觀念指令操作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] MySQL 基本觀念指令操作 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8B%E7%B4%B9-phpmyadmin-%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">介紹 phpmyadmin 工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-%E8%B3%87%E6%96%99%E6%AC%84%E4%BD%8D%E8%88%87%E5%B1%AC%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">MySQL 資料欄位與屬性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E7%B7%B4%E7%BF%92"><span class="nav-number">3.</span> <span class="nav-text">指令練習</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%9C%E5%B0%8B%E8%AA%9E%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">搜尋語法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E8%AA%9E%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">新增語法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E8%AA%9E%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">修改語法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%AA%E9%99%A4%E8%AA%9E%E6%B3%95"><span class="nav-number">3.4.</span> <span class="nav-text">刪除語法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WHERE-%E6%8C%87%E5%AE%9A%E6%A2%9D%E4%BB%B6"><span class="nav-number">3.5.</span> <span class="nav-text">WHERE 指定條件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIKE-%E6%A8%A1%E7%B3%8A%E6%A2%9D%E4%BB%B6"><span class="nav-number">3.6.</span> <span class="nav-text">LIKE 模糊條件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%82%E9%96%93%E6%A0%BC%E5%BC%8F-%E2%80%9CY-M-D-HH-MM-SS%E2%80%9D"><span class="nav-number">3.7.</span> <span class="nav-text">時間格式  “Y-M-D HH:MM:SS”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LIMIT-%E5%8D%80%E9%96%93%E6%A2%9D%E4%BB%B6"><span class="nav-number">3.8.</span> <span class="nav-text">LIMIT 區間條件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ORDER-BY-%E8%88%87-GROUP-BY"><span class="nav-number">3.9.</span> <span class="nav-text">ORDER BY 與 GROUP BY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E8%A8%82%E6%A8%99%E9%A1%8C%E5%90%8D%E7%A8%B1-as"><span class="nav-number">3.10.</span> <span class="nav-text">自訂標題名稱 as</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E4%B8%BB%E7%B7%B4%E7%BF%92"><span class="nav-number">4.</span> <span class="nav-text">自主練習</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MySQL-%E8%B7%A8-table-%E6%90%9C%E5%B0%8B"><span class="nav-number">5.</span> <span class="nav-text">MySQL 跨 table 搜尋</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E5%AE%B6%E4%BD%9C%E6%A5%AD"><span class="nav-number">5.1.</span> <span class="nav-text">回家作業</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E9%A1%AF%E7%A4%BA-t1-t2-t3-%E7%82%BA%E8%87%A8%E6%99%82%E8%AE%8A%E6%95%B8%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">列出所有顯示 (t1,t2,t3 為臨時變數）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E5%87%BA%E9%97%9C%E8%81%AF%E9%A1%AF%E7%A4%BA-t1-t2-t3-%E7%82%BA%E8%87%A8%E6%99%82%E8%AE%8A%E6%95%B8%EF%BC%89"><span class="nav-number">5.3.</span> <span class="nav-text">列出關聯顯示 (t1,t2,t3 為臨時變數）</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/05-13/mysql-baseclass-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] MySQL 基本觀念指令操作 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] MySQL 基本觀念指令操作<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200513-mysql-baseclass-1.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-05-13 18:10:42" itemprop="dateCreated datePublished" datetime="2020-05-13T18:10:42+08:00">2020-05-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/PHP-MySQL/" itemprop="url" rel="index"><span itemprop="name">PHP/MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>3,063</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:05:34</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/96NYgou.png"></p>
+<p>本篇將獨立化的學習如何操作資料庫進行數據管理，隨後章節會透過 PHP 對資料庫進行讀取、新增、修改、刪除等四大操作技能。搭配免費的 PHP 伺服器語言，最好的免費資料庫語言為 MySQL，這個伺服器套件在 XAMPP 內就已提供。</p>
+<span id="more"></span>
+
+<p>請開始啟用 xampp 的 mysql 服務，並試著在網址上輸入 <strong><a target="_blank" rel="noopener" href="http://127.0.0.1/phpmyadmin/">http://127.0.0.1/phpmyadmin/</a></strong> 登入進行 MySQL 語法練習與操作。</p>
+<hr>
+<h1 id="介紹-phpmyadmin-工具"><a href="#介紹-phpmyadmin-工具" class="headerlink" title="介紹 phpmyadmin 工具"></a>介紹 phpmyadmin 工具</h1><p>MySQL Server 服務啟動之後，你可以開始對這個伺服器服務進行連線，除了 xampp 原生 bin 的 cmd 連線做純文字輸入，你也可以透過一些工具軟體做登入，只要指定到 MySQL 的 IP 位置與帳號密碼即可，預設為 3306 port。而 phpmyadmin 是一套眾所皆知的免費管理工具，採用網頁式進行介面操作，省去純文字指令的煩惱，xampp 也預設提供了 phpmyadmin 工具。</p>
+<p>練習：跟著以下作業操作 phpmyadmin，同時一邊理解 MySQL 的架構</p>
+<ul>
+<li>建立一個 SQL 為 php_study</li>
+<li>建立一個 table 為 ch6_crud</li>
+<li>資料欄位為 id,student,chi,mat 代表索引，學生名，國文分數，數學分數</li>
+<li>嘗試新增幾筆資料，像是老王，77,88 等 3 筆，先理解 phpmyadmin 的介面操作。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>名稱</th>
+<th>類型</th>
+<th>編碼與排序</th>
+<th>屬性</th>
+<th>空值 (Null)</th>
+<th>預設值</th>
+<th>備註</th>
+<th>額外資訊</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>id（主鍵）</td>
+<td>int(10)</td>
+<td></td>
+<td>UNSIGNED</td>
+<td>否</td>
+<td>無</td>
+<td></td>
+<td>AUTO_INCREMENT</td>
+</tr>
+<tr>
+<td>2</td>
+<td>student</td>
+<td>varchar(5)</td>
+<td>utf8mb4_unicode_ci</td>
+<td></td>
+<td>否</td>
+<td>無</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>chi</td>
+<td>int(3)</td>
+<td></td>
+<td></td>
+<td>否</td>
+<td>無</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>mat</td>
+<td>int(3)</td>
+<td></td>
+<td></td>
+<td>否</td>
+<td>無</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>此時，你應該要理解：</strong></p>
+<ol>
+<li>最大單位為 SQL 資料庫，資料庫會擁有權限審核，允許誰可授權操作（雷同一個 excel 檔）</li>
+<li>SQL 資料庫內可以有多個 table 資料表，設計者習慣會把相關資訊存放到一個資料表內。（雷同 excel 的分頁表）</li>
+<li>資料表內由欄位所組成，每個欄位有他的資料型態定義。</li>
+<li>每次新增一筆資料（多項資訊）會放在指定資料表內，同時根據有多少欄位就該塞多少筆資訊。</li>
+<li>資料型態主要分數字、字串、時間類型為主 (<strong>下列粗體為常用型態</strong>，還有其他種類不列舉）</li>
+</ol>
+<h1 id="MySQL-資料欄位與屬性"><a href="#MySQL-資料欄位與屬性" class="headerlink" title="MySQL 資料欄位與屬性"></a>MySQL 資料欄位與屬性</h1><ul>
+<li><p><strong>數值</strong>：<br>任何包含正、負號的整數與小數；（另外還有位元數不舉例，用二進位來表示數字）。<br>ex: </p>
+<ul>
+<li>整數 {TINYINT、SMALLINT、MEDIUMINT、INT、BIGINT}</li>
+<li>小數 {FLOAT、DOUBLE、DECIMAL}</li>
+</ul>
+</li>
+<li><p><strong>字串</strong>：<br>包含一般文字字串（非二進位）；（另外還有編碼字串不舉例，用二進位存放影音資料，但通常我們會直接存放在空間內不會特地放到資料庫內）。<br>ex:</p>
+<ul>
+<li>變動文字串 {VARCHAR、TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT}</li>
+</ul>
+</li>
+<li><p><strong>日期與時間</strong>：<br>包含日期、時間與日期加時間。<br>ex:</p>
+<ul>
+<li>DATE、TIME、DATETIME、YEAR</li>
+</ul>
+</li>
+</ul>
+<p>注意以下觀念：</p>
+<ol>
+<li>資料型態的同類型有不同形態，取決於規劃資料庫的效能策略有不同選擇。大部分的類型都有長度需要宣告。所以根據你的資料特性範圍給予適合的資料長度。</li>
+<li>每個資料表都應該要有 PRIMARY Key（主鍵，做編號且不重複（自動流水號），內容不可為 NULL，這能方便此資料能被搜尋到。</li>
+<li>資料表應該對常被搜尋的對象規劃 INDEX（索引），這能加快資料被查詢到的效率。但會增加變動負擔與儲存。</li>
+<li>如果你將數字的屬性選擇 UNSIGNED，代表沒有負數，可以將使用正數範圍拉長兩倍。</li>
+<li>int(5)，代表 int 的儲存範圍可以到-2147483648~2,147,483,647，固定 4bit 單位存放，數字 5 代表位數符號 (ex:00001)，所以不要誤會數字等於儲存上限。</li>
+<li>varchar(5)，代表字串只能塞 5 個字。</li>
+</ol>
+<h1 id="指令練習"><a href="#指令練習" class="headerlink" title="指令練習"></a>指令練習</h1><p>雖然 phpmyadmin 可以直覺的用滑鼠快速操作指令，但之後要透過 php 對 mysql 下達指令時，也是需要用純文字命令溝通。所以請試著努力學會 CRUD 的基本 SQL 語法。</p>
+<h2 id="搜尋語法"><a href="#搜尋語法" class="headerlink" title="搜尋語法"></a>搜尋語法</h2><p>select 對象欄位 from 資料表。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `ch6_crud`</span><br><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">FROM</span> ch6_crud</span><br></pre></td></tr></table></figure>
+
+<p>撈取對象：</p>
+<ul>
+<li><ul>
+<li>代表 ALL 全部欄位</li>
+</ul>
+</li>
+<li>student 代表 該名欄位</li>
+</ul>
+<p>` 指為 SQL 欄位名稱可不填，注意不可以用’或”<br>‘或”是指資料內容為文字串</p>
+<p>搜尋夾帶條件</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `ch6_crud` <span class="keyword">WHERE</span> `cht`<span class="operator">&gt;=</span><span class="number">60</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">WHERE</span> id<span class="operator">=</span><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="新增語法"><a href="#新增語法" class="headerlink" title="新增語法"></a>新增語法</h2><p>有兩種格式寫法：</p>
+<ul>
+<li><p><strong>第一種，選擇想新增資料的欄位名稱及對應輸入的內容</strong><br>insert into 資料表（欄位，欄位，…) value （內容，內容，…)</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_crud (student, chi, mat) <span class="keyword">VALUES</span> (&quot;阿咪&quot;,<span class="number">77</span>,<span class="number">88</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>第二種，不宣告欄位名稱時對應內容需全部提及，空值為 null</strong><br>insert into 資料表 value 新增內容 </p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_crud <span class="keyword">VALUES</span> (<span class="keyword">null</span>,&quot;小梅&quot;,<span class="number">50</span>,<span class="number">77</span>)</span><br></pre></td></tr></table></figure>
+<p>另外，如果要連續多筆新增到同一個資料表，可用逗號分別（多利用排版）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_crud (student, chi, mat) <span class="keyword">VALUES</span> </span><br><span class="line">(&quot;阿一&quot;,<span class="number">77</span>,<span class="number">88</span>),</span><br><span class="line">(&quot;阿二&quot;,<span class="number">78</span>,<span class="number">88</span>),</span><br><span class="line">(&quot;阿三&quot;,<span class="number">79</span>,<span class="number">88</span>),</span><br><span class="line">(&quot;阿四&quot;,<span class="number">80</span>,<span class="number">88</span>),</span><br><span class="line">(&quot;阿五&quot;,<span class="number">81</span>,<span class="number">88</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="修改語法"><a href="#修改語法" class="headerlink" title="修改語法"></a>修改語法</h2><p>update 資料表 set 被修改的欄位名 &#x3D; 被修改的內容 where 對象欄位 &#x3D; 值</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> ch6_crud <span class="keyword">SET</span> mat<span class="operator">=</span><span class="number">59</span> <span class="keyword">where</span> id<span class="operator">=</span><span class="number">2</span></span><br></pre></td></tr></table></figure>
+<div class="note danger"><p><strong>新手陷阱：</strong><br>修改通常會帶條件，不帶條件會全部都被修改要特別注意。</p>
+</div>
+
+<h2 id="刪除語法"><a href="#刪除語法" class="headerlink" title="刪除語法"></a>刪除語法</h2><p>delete from 資料表 where 指定的欄位 &#x3D; 指定的內容</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">where</span> id<span class="operator">=</span><span class="number">10</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `ch6_crud` <span class="keyword">WHERE</span> `cht`<span class="operator">&gt;=</span><span class="number">60</span></span><br></pre></td></tr></table></figure>
+
+<div class="note danger"><p><strong>新手陷阱：</strong><br>刪除通常會帶條件，不帶條件會全部都被刪除要特別注意。<br>刪除前你可以把<code>DELETE FROM</code>換成<code>SELECT * FROM</code>做測試避免誤刪。</p>
+</div>
+
+<h2 id="WHERE-指定條件"><a href="#WHERE-指定條件" class="headerlink" title="WHERE 指定條件"></a>WHERE 指定條件</h2><p>where 為判斷對象、判斷方式、判斷內容等等（時間、字串需標記””或’’)<br>判斷方式有 <code>&gt;</code>、<code>&lt;</code>、<code>&gt;=</code>、<code>&lt;=</code>、<code>&lt;&gt;</code>、<code>=</code>共 6 種，字串只可使用<code>=</code>、<code>&lt;&gt;</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_crud <span class="keyword">where</span> id<span class="operator">&gt;</span><span class="number">5</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_crud <span class="keyword">where</span> student<span class="operator">=</span>&quot;阿咪&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 AND 與 OR 做多筆條件</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_crud <span class="keyword">where</span> student<span class="operator">=</span>&quot;阿咪&quot; <span class="keyword">or</span> student<span class="operator">=</span>&quot;阿一&quot;;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_crud <span class="keyword">where</span> chi<span class="operator">&gt;</span><span class="number">59</span> <span class="keyword">and</span> mat<span class="operator">&gt;</span><span class="number">59</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="LIKE-模糊條件"><a href="#LIKE-模糊條件" class="headerlink" title="LIKE 模糊條件"></a>LIKE 模糊條件</h2><p>like %對象%，而%代表不固定，組合略分三種模式</p>
+<ul>
+<li>%A &#x3D;&gt; A 結尾的字串</li>
+<li>A% &#x3D;&gt; A 開頭的字串</li>
+<li>%A% &#x3D; &gt; 字串含 A 的對象</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_crud <span class="keyword">where</span> student <span class="keyword">LIKE</span> &quot;阿%&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="時間格式-“Y-M-D-HH-MM-SS”"><a href="#時間格式-“Y-M-D-HH-MM-SS”" class="headerlink" title="時間格式  “Y-M-D HH:MM:SS”"></a>時間格式  “Y-M-D HH:MM:SS”</h2><p>資料庫的時間格式是固定的，如果網頁的顯示有所不同，則由資料撈出來可以用 SQL 函數轉化。</p>
+<p>練習：</p>
+<ol>
+<li>新增資料表 ch6_weather，內容如下。</li>
+<li>新增幾筆天氣資料，內容如下。<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `php_study`.`ch6_weather` ( `id` <span class="type">INT</span> UNSIGNED <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT , `feel` TEXT <span class="keyword">NOT</span> <span class="keyword">NULL</span> , `mydate` <span class="type">DATE</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> , <span class="keyword">PRIMARY</span> KEY (`id`)) ENGINE <span class="operator">=</span> InnoDB;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `ch6_weather` (`id`, `feel`, `mydate`) <span class="keyword">VALUES</span> (<span class="keyword">NULL</span>, <span class="string">&#x27;晴天&#x27;</span>, <span class="string">&#x27;2019-05-15&#x27;</span>), (<span class="keyword">NULL</span>, <span class="string">&#x27;毛毛雨&#x27;</span>, <span class="string">&#x27;2019-05-16&#x27;</span>);</span><br></pre></td></tr></table></figure></li>
+<li>接著透過 DATE_FORMAT 去調整顯示方式<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> DATE_FORMAT(mydate,&quot;%W,%M-%e-%Y&quot;) <span class="keyword">FROM</span> ch6_weather</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="LIMIT-區間條件"><a href="#LIMIT-區間條件" class="headerlink" title="LIMIT 區間條件"></a>LIMIT 區間條件</h2><p>限制只搜尋出 3 筆資料（依索引順序）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `ch6_crud` LIMIT <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<p>限制搜尋第 N 筆 (start 0) 資料的 3 筆資料（依索引順序）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `ch6_crud` LIMIT <span class="number">2</span>,<span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="ORDER-BY-與-GROUP-BY"><a href="#ORDER-BY-與-GROUP-BY" class="headerlink" title="ORDER BY 與 GROUP BY"></a>ORDER BY 與 GROUP BY</h2><p>前者為純排序（預設 ASC)，後者為排序時同時群組化（資料不重複）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> chi</span><br></pre></td></tr></table></figure>
+<p>加上 desc 則遞減</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> chi <span class="keyword">DESC</span></span><br></pre></td></tr></table></figure>
+<p>如果排序需要參考多組 (ex: 同分時，採學號遞減）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> chi <span class="keyword">DESC</span>, mat <span class="keyword">DESC</span></span><br></pre></td></tr></table></figure>
+<p>額外說明：GROUP 能自動跳過重複的內容，通常還會搭配 SUM() 之類的函數，目的是讓列表被整理過。譬如用法（非本篇範例）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> Store, <span class="built_in">SUM</span>(Sales) <span class="keyword">FROM</span> Info <span class="keyword">GROUP</span> <span class="keyword">BY</span> Store;</span><br></pre></td></tr></table></figure>
+
+<h2 id="自訂標題名稱-as"><a href="#自訂標題名稱-as" class="headerlink" title="自訂標題名稱 as"></a>自訂標題名稱 as</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">as</span> &quot;學生&quot;, chi <span class="keyword">as</span> &quot;國文&quot;, mat <span class="keyword">as</span> &quot;數學&quot;, (chi<span class="operator">+</span>mat)<span class="operator">/</span><span class="number">2</span> <span class="keyword">as</span> &quot;平均&quot; <span class="keyword">FROM</span> ch6_crud</span><br></pre></td></tr></table></figure>
+
+<h1 id="自主練習"><a href="#自主練習" class="headerlink" title="自主練習"></a>自主練習</h1><p>根據以下題目說明，試著寫出SQL語法為何：</p>
+<p>ex1: 搜尋 [mat] 60 以上的 [student]</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">from</span> ch6_crud <span class="keyword">WHERE</span> mat<span class="operator">&gt;</span><span class="number">59</span></span><br></pre></td></tr></table></figure>
+
+<p>ex2: 搜尋 [student] 中名字有阿的 [chi] 分數</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student,chi <span class="keyword">from</span> ch6_crud <span class="keyword">WHERE</span> student <span class="keyword">LIKE</span> &quot;阿%&quot;</span><br></pre></td></tr></table></figure>
+
+<p>ex3: 使用語法新增三個學生資料</p>
+<table>
+<thead>
+<tr>
+<th>學生名稱</th>
+<th>數學</th>
+<th>國文</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>蘋果</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr>
+<td>鳳梨</td>
+<td>99</td>
+<td>50</td>
+</tr>
+<tr>
+<td>檸檬</td>
+<td>50</td>
+<td>43</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">into</span> ch6_crud (student,chi,mat) <span class="keyword">VALUES</span> (&quot;蘋果&quot;,<span class="number">100</span>,<span class="number">100</span>), (&quot;鳳梨&quot;,<span class="number">99</span>,<span class="number">50</span>), (&quot;檸檬&quot;,<span class="number">50</span>,<span class="number">43</span>)</span><br></pre></td></tr></table></figure>
+
+<p>ex4: 呈上，數學成績不到 60 的人，數學自動+10 分</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> ch6_crud <span class="keyword">SET</span> mat<span class="operator">=</span>mat<span class="operator">+</span><span class="number">10</span> <span class="keyword">where</span> mat<span class="operator">&lt;</span><span class="number">60</span></span><br></pre></td></tr></table></figure>
+
+<p>ex5: 呈上，如果國文成績+10 分後會超過 100 分的同學資料刪除</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">WHERE</span> chi<span class="operator">+</span><span class="number">10</span><span class="operator">&gt;</span><span class="number">100</span></span><br><span class="line"><span class="keyword">or</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> ch6_crud <span class="keyword">WHERE</span> chi<span class="operator">&gt;</span><span class="number">90</span> （精簡提高效能）</span><br></pre></td></tr></table></figure>
+
+<p>ex6: 搜尋資料表並顯示國文成績最好的三個人 [同學名稱]</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> mat <span class="keyword">DESC</span> LIMIT <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<p>ex7: 搜尋資料表並顯示數學成績第 6 名的 [同學名稱]</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> mat <span class="keyword">DESC</span> LIMIT <span class="number">5</span>,<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>ex8: 呈上，顯示平均成績最差的三個人，並另名為名字，國文，數學，平均之欄位名稱</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> student <span class="keyword">as</span> &quot;名字&quot;,chi <span class="keyword">as</span> &quot;國文&quot;,mat <span class="keyword">as</span> &quot;數學&quot;,(chi<span class="operator">+</span>mat)<span class="operator">/</span><span class="number">2</span> <span class="keyword">as</span> &quot;平均&quot; <span class="keyword">FROM</span> ch6_crud <span class="keyword">ORDER</span> <span class="keyword">BY</span> 平均` LIMIT <span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="MySQL-跨-table-搜尋"><a href="#MySQL-跨-table-搜尋" class="headerlink" title="MySQL 跨 table 搜尋"></a>MySQL 跨 table 搜尋</h1><h2 id="回家作業"><a href="#回家作業" class="headerlink" title="回家作業"></a>回家作業</h2><p>建立以下三組 table，自行評估適合的欄位資料型態（下小節繼續使用）</p>
+<ol>
+<li>建立 table 客戶資料 ch6_customer<table>
+<thead>
+<tr>
+<th>id</th>
+<th>acc(帳號)</th>
+<th>pwd(密碼)</th>
+<th>name(姓名)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>user1</td>
+<td>pwd1</td>
+<td>mr.A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>user2</td>
+<td>pwd2</td>
+<td>mr.B</td>
+</tr>
+<tr>
+<td>3</td>
+<td>user3</td>
+<td>pwd3</td>
+<td>mr.C</td>
+</tr>
+<tr>
+<td>4</td>
+<td>user4</td>
+<td>pwd4</td>
+<td>mr.D</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+  <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> ch6_customer (id <span class="type">int</span>(<span class="number">10</span>) AUTO_INCREMENT, acc text, pwd text, name text, <span class="keyword">PRIMARY</span> KEY(id));</span><br><span class="line"><span class="comment">-- crate table 客戶資料表 （索引欄 整數（長度 10), 客戶帳號 文字串，密碼 文字串，姓名 文字串，primary key（索引值）);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_customer <span class="keyword">VALUES</span> (<span class="keyword">null</span>, &quot;user1&quot;, &quot;pwd1&quot;, &quot;mr.A&quot;), (<span class="keyword">null</span>, &quot;user2&quot;, &quot;pwd2&quot;, &quot;mr.B&quot;), (<span class="keyword">null</span>, &quot;user3&quot;, &quot;pwd3&quot;, &quot;mr.C&quot;), (<span class="keyword">null</span>, &quot;user4&quot;, &quot;pwd4&quot;, &quot;mr.D&quot;);</span><br><span class="line"><span class="comment">-- insert into 資料表 values （空值，帳號，密碼，名稱）, （空值，帳號，密碼，名稱）, （空值，帳號，密碼，名稱）, （空值，帳號，密碼，名稱）;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>建立 table 訂單資料 ch6_order<table>
+<thead>
+<tr>
+<th>id</th>
+<th>product_sn(產品編號)</th>
+<th>order_num(購買數量)</th>
+<th>customer_sn(客戶編號)</th>
+<th>order_time(訂購時間)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+  <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> ch6_order (id <span class="type">int</span>(<span class="number">10</span>) AUTO_INCREMENT, product_sn text, order_num <span class="type">int</span>(<span class="number">10</span>), customer_sn text, order_time DATETIME, <span class="keyword">PRIMARY</span> KEY(id));</span><br><span class="line"><span class="comment">-- crate table 訂單資料表 （索引攔 整數（長度 10), 產品編號 文字串，購買數量 整數（長度 10), 客戶編號 文字串，訂單時間 日時，primary key（索引值）);</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>建立資料 ch6_product<table>
+<thead>
+<tr>
+<th>id</th>
+<th>product_name(產品名稱)</th>
+<th>product_price(產品金額)</th>
+<th>product_desc(產品介紹)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>product1</td>
+<td>100</td>
+<td>it’s 100 dollors</td>
+</tr>
+<tr>
+<td>2</td>
+<td>product2</td>
+<td>200</td>
+<td>it’s 200 dollors</td>
+</tr>
+<tr>
+<td>3</td>
+<td>product3</td>
+<td>300</td>
+<td>it’s 300 dollors</td>
+</tr>
+<tr>
+<td>4</td>
+<td>product4</td>
+<td>400</td>
+<td>it’s 400 dollors</td>
+</tr>
+<tr>
+<td>5</td>
+<td>product5</td>
+<td>500</td>
+<td>it’s 500 dollors</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+  <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> ch6_product (id <span class="type">int</span>(<span class="number">10</span>) AUTO_INCREMENT, product_name text, product_price <span class="type">int</span>(<span class="number">10</span>), product_desc text, <span class="keyword">PRIMARY</span> KEY(id));</span><br><span class="line"><span class="comment">-- crate table 訂單資料表 （索引攔 整數（長度 10), 產品名 文字串，產品價格 浮點數（長度 10, 小數點 2), 產品介紹 文字串，primary key（索引值）);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_product <span class="keyword">VALUES</span> (<span class="keyword">null</span>, &quot;product1&quot;, &quot;100&quot;, &quot;it&#x27;s 100 dollors&quot;), (<span class="keyword">null</span>, &quot;product2&quot;, &quot;200&quot;, &quot;it&#x27;s 200 dollors&quot;), (<span class="keyword">null</span>, &quot;product3&quot;, &quot;300&quot;, &quot;it&#x27;s 300 dollors&quot;),(<span class="keyword">null</span>, &quot;product4&quot;, &quot;400&quot;, &quot;it&#x27;s 400 dollors&quot;), (<span class="keyword">null</span>, &quot;product5&quot;, &quot;500&quot;, &quot;it&#x27;s 500 dollors&quot;);</span><br><span class="line"><span class="comment">-- insert into 資料表 values （空值，產名，價格，描述）, （空值，產名，價格，描述）, （空值，產名，價格，描述）, （空值，產名，價格，描述）, （空值，產名，價格，描述）;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>如果你已完成以上作業，接著手動建立兩筆資料於 ch6_order 內。這裡要注意一下<mark>產品編號</mark>跟<mark>客戶編號</mark>必須是已存在於另兩個 table 內。所以指令為：<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> ch6_order <span class="keyword">VALUES</span> (<span class="keyword">null</span>, <span class="number">2</span>, <span class="number">10</span>, <span class="number">2</span>, NOW()), (<span class="keyword">null</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">4</span>, NOW())</span><br></pre></td></tr></table></figure>
+得到 ch5_order<table>
+<thead>
+<tr>
+<th>id</th>
+<th>product_sn</th>
+<th>buy_num</th>
+<th>customer_sn</th>
+<th>order_time</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>2</td>
+<td>10</td>
+<td>2</td>
+<td>2019-06-21 01:57:27</td>
+</tr>
+<tr>
+<td>2</td>
+<td>4</td>
+<td>5</td>
+<td>4</td>
+<td>2019-06-21 01:57:27</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<h2 id="列出所有顯示-t1-t2-t3-為臨時變數）"><a href="#列出所有顯示-t1-t2-t3-為臨時變數）" class="headerlink" title="列出所有顯示 (t1,t2,t3 為臨時變數）"></a>列出所有顯示 (t1,t2,t3 為臨時變數）</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_customer <span class="keyword">as</span> t1, ch6_product <span class="keyword">as</span> t2, ch6_order <span class="keyword">as</span> t3 <span class="keyword">where</span> <span class="number">1</span></span><br><span class="line"><span class="comment">-- 也可省略 as 為</span></span><br><span class="line"><span class="comment">-- select * from ch6_customer t1, ch6_product t2, ch6_order t3 where 1</span></span><br><span class="line"><span class="comment">-- 臨時變數是為了方便 where 指定</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="列出關聯顯示-t1-t2-t3-為臨時變數）"><a href="#列出關聯顯示-t1-t2-t3-為臨時變數）" class="headerlink" title="列出關聯顯示 (t1,t2,t3 為臨時變數）"></a>列出關聯顯示 (t1,t2,t3 為臨時變數）</h2><p>前者結果下，會發現很多不存在的訂單組合，因此縮小範圍（利用外鍵與內鍵做比對）</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> ch6_customer t1, ch6_product t2, ch6_order t3 </span><br><span class="line"><span class="keyword">where</span> t1.id <span class="operator">=</span> t3.customer_sn <span class="keyword">and</span> t2.id <span class="operator">=</span> t3.product_sn</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>acc</th>
+<th>pwd</th>
+<th>name</th>
+<th>id</th>
+<th>product_name</th>
+<th>product_price</th>
+<th>product_desc</th>
+<th>id</th>
+<th>product_sn</th>
+<th>buy_num</th>
+<th>customer_sn</th>
+<th>order_time</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2</td>
+<td>user2</td>
+<td>pwd2</td>
+<td>mr.B</td>
+<td>2</td>
+<td>product2</td>
+<td>200</td>
+<td>it’s 200 dollors</td>
+<td>1</td>
+<td>2</td>
+<td>10</td>
+<td>2</td>
+<td>2019-06-21 01:57:27</td>
+</tr>
+<tr>
+<td>4</td>
+<td>user4</td>
+<td>pwd4</td>
+<td>mr.D</td>
+<td>4</td>
+<td>product4</td>
+<td>400</td>
+<td>it’s 400 dollors</td>
+<td>2</td>
+<td>4</td>
+<td>5</td>
+<td>4</td>
+<td>2019-06-21 01:57:27</td>
+</tr>
+</tbody></table>
+<p>這樣就是有效的關聯組合（僅兩筆），這樣做屬於正規化處理，好處在於可以彈性不被綁定。譬如個人資料修改或訂單修改，兩者還能關聯起來顯示。資料量小又能彈性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+              <a href="/tags/PHP-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 程式設計（假日班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/05-12/php-baseclass-9/" rel="prev" title="[基礎課程] PHP FILES 檔案上傳">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] PHP FILES 檔案上傳
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05-13/php-baseclass-10/" rel="next" title="[基礎課程] PHP 與 MySQL 連接">
+                  [基礎課程] PHP 與 MySQL 連接 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>

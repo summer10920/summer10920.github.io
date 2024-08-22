@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/config/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/config/favicon-16x16.png">
+  <link rel="mask-icon" href="/assets/config/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 1_loop.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基礎課程] PHP 重複執行迴圈">
+<meta property="og:url" content="http://summer10920.github.io/2020/05-12/php-baseclass-4/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 1_loop.php，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/96NYgou.png">
+<meta property="article:published_time" content="2020-05-12T00:35:51.000Z">
+<meta property="article:modified_time" content="2024-08-22T02:31:12.192Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta property="article:tag" content="PHP 程式設計（假日班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/96NYgou.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/05-12/php-baseclass-4/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/05-12/php-baseclass-4/","path":"2020/05-12/php-baseclass-4/","title":"[基礎課程] PHP 重複執行迴圈"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[基礎課程] PHP 重複執行迴圈 | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#for-%E8%BF%B4%E5%9C%88%E8%99%95%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">for 迴圈處理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B7%B4%E7%BF%92"><span class="nav-number">1.1.</span> <span class="nav-text">基本練習</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%99-for-%E8%BF%B4%E5%9C%88"><span class="nav-number">1.2.</span> <span class="nav-text">雙 for 迴圈</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#while-%E6%A2%9D%E4%BB%B6%E8%BF%B4%E5%9C%88"><span class="nav-number">2.</span> <span class="nav-text">while() 條件迴圈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#do-while-%E6%A2%9D%E4%BB%B6%E8%BF%B4%E5%9C%88"><span class="nav-number">3.</span> <span class="nav-text">do while() 條件迴圈</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#for-vs-while-vs-do-while-%E4%B8%89%E8%80%85%E6%AF%94%E8%BC%83"><span class="nav-number">4.</span> <span class="nav-text">for vs while vs do{} while() 三者比較</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%AE%B6%E4%BD%9C%E6%A5%AD-A"><span class="nav-number">5.</span> <span class="nav-text">回家作業 A</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%AE%B6%E4%BD%9C%E6%A5%AD-B"><span class="nav-number">6.</span> <span class="nav-text">回家作業 B</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/assets/config/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/05-12/php-baseclass-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/assets/config/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[基礎課程] PHP 重複執行迴圈 | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [基礎課程] PHP 重複執行迴圈<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200512-php-baseclass-4.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-05-12 08:35:51" itemprop="dateCreated datePublished" datetime="2020-05-12T08:35:51+08:00">2020-05-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/PHP-MySQL/" itemprop="url" rel="index"><span itemprop="name">PHP/MySQL</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1,231</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:02:14</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/96NYgou.png"></p>
+<p>本篇學習重點為迴圈執行（不含陣列批次處理之語法），主要是透過邏輯判斷是否需要重新執行一段指令碼，能協助連續且重複性的反覆作業。請開始在 Web 目錄下新增檔案 <strong>1_loop.php</strong>，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="for-迴圈處理"><a href="#for-迴圈處理" class="headerlink" title="for 迴圈處理"></a>for 迴圈處理</h1><p>迴圈是只重複的執行一樣的動作，除非達到指定條件才會結束迴圈動作。for() 常見結構為：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=start;<span class="variable">$i</span>&lt;max;<span class="variable">$i</span>++)&#123;</span><br><span class="line">  <span class="comment">#code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>for 的<code>()</code> 內主要有三個宣告動作分別用<kbd>;</kbd>分開，分別為：</p>
+<ul>
+<li>初次動作：第一次執行的宣告動作，之後重複迴圈時忽略此項</li>
+<li>進入條件：每次進來時的條件檢查，當成立時才會執行 <code>&#123; &#125;</code> 內的 <code>#code</code></li>
+<li>離開動作：<code>&#123; #code &#125;</code> 執行結束後，會執行這個動作</li>
+</ul>
+<h2 id="基本練習"><a href="#基本練習" class="headerlink" title="基本練習"></a>基本練習</h2><p>練習：跟著以下行為猜測預期結果</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span>&lt;<span class="number">10</span>;<span class="variable">$i</span>++) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$i</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>理解動作：</p>
+<ol>
+<li>當成是碰到 for() 時，先設定$i 為 0</li>
+<li>接著 0&lt;10 成立，執行 輸出 0，接著$i 做+1 動作</li>
+<li>接著回到 for（），條件 1&lt;10 成立，執行輸出 1，接著$i 做+1 動作</li>
+<li>接著輸出 2,3,4,5,6,7,8,9</li>
+<li>重複直到 10&lt;10 不成立，for 行為結束。</li>
+</ol>
+<p>思考練習，試著印出以下畫面：<br>1<br>4<br>7<br>10</p>
+<p>解答：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$j</span>=<span class="number">1</span>;<span class="variable">$j</span>&lt;=<span class="number">10</span>;<span class="variable">$j</span>+=<span class="number">3</span>)  <span class="keyword">echo</span> <span class="variable">$j</span>.<span class="string">&#x27;&lt;br/&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>到這裡你應該能理解 for 裡面三個宣告的定義與執行時機。</p>
+<p>思考練習：<br>產生★*51 橫向排列顏色漸變，第一個★色碼 rgb(0,0,255)，最後個★色碼 rgb(255,0,0)</p>
+<p>解答：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="variable">$k</span>=<span class="number">0</span>;<span class="variable">$k</span>&lt;<span class="number">256</span>;<span class="variable">$k</span>+=<span class="number">5</span>)</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;color:rgb(&quot;</span>.<span class="variable">$k</span>.<span class="string">&quot;,0,&quot;</span>.(<span class="number">255</span>-<span class="variable">$k</span>).<span class="string">&quot;)&#x27;&gt;★&lt;/span&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="雙-for-迴圈"><a href="#雙-for-迴圈" class="headerlink" title="雙 for 迴圈"></a>雙 for 迴圈</h2><p>如果 for(A) 迴圈裡面又有 for(B)，這種技巧下可以滿足 2 組以上不同的固定變化處理。double for 的邏輯深度到了二維去。思緒要跟著程式一起跑，才能幫助你解開並進入情境。</p>
+<p>思考練習：<br>產生 99 乘法表，排版整齊，前二個方式請挑一個做或挑戰兩個，都挑戰完請挑戰第三個</p>
+<ol>
+<li>用行內+換行標籤。</li>
+<li>用表格標籤</li>
+<li>整合前面練習，利用 style 讓整個乘法表有漸層。</li>
+</ol>
+<p>解答 1: 只靠 span+br 橫向排列</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$m</span>=<span class="number">1</span>;<span class="variable">$m</span>&lt;<span class="number">10</span>;<span class="variable">$m</span>++)&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$n</span>=<span class="number">1</span>;<span class="variable">$n</span>&lt;<span class="number">10</span>;<span class="variable">$n</span>++) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;display:inline-block;width:70px&#x27;&gt;&quot;</span>.<span class="variable">$n</span>.<span class="string">&quot;X&quot;</span>.<span class="variable">$m</span>.<span class="string">&quot;=&quot;</span>.(<span class="variable">$n</span>*<span class="variable">$m</span>).<span class="string">&quot;&lt;/span&gt;&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>解答 2: 利用 table 做縱向排列</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;table border=<span class="string">&#x27;1&#x27;</span>&gt;&lt;tr&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$m</span>=<span class="number">1</span>;<span class="variable">$m</span>&lt;<span class="number">10</span>;<span class="variable">$m</span>++)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;td width=&#x27;75&#x27;&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="variable">$n</span>=<span class="number">1</span>;<span class="variable">$n</span>&lt;<span class="number">10</span>;<span class="variable">$n</span>++) </span><br><span class="line">      <span class="keyword">echo</span> <span class="variable">$m</span>.<span class="string">&quot;*&quot;</span>.<span class="variable">$n</span>.<span class="string">&quot;=&quot;</span>.(<span class="variable">$m</span>*<span class="variable">$n</span>).<span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;/td&gt;&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;/tr&gt;&lt;/table&gt;</span><br></pre></td></tr></table></figure>
+
+<p>解答 3: 整合之前的漸層色練習</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="variable">$clr</span>=<span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$m</span>=<span class="number">1</span>;<span class="variable">$m</span>&lt;<span class="number">10</span>;<span class="variable">$m</span>++)&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="variable">$n</span>=<span class="number">1</span>;<span class="variable">$n</span>&lt;<span class="number">10</span>;<span class="variable">$n</span>++) &#123;</span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;display:inline-block;width:70px;color:rgb(&quot;</span>.<span class="variable">$clr</span>.<span class="string">&quot;,0,&quot;</span>.(<span class="number">255</span>-<span class="variable">$clr</span>).<span class="string">&quot;)&#x27;&gt;&quot;</span>.<span class="variable">$n</span>.<span class="string">&quot;X&quot;</span>.<span class="variable">$m</span>.<span class="string">&quot;=&quot;</span>.(<span class="variable">$n</span>*<span class="variable">$m</span>).<span class="string">&quot;&lt;/span&gt;&quot;</span>;</span><br><span class="line">      <span class="variable">$clr</span>+=<span class="number">5</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="while-條件迴圈"><a href="#while-條件迴圈" class="headerlink" title="while() 條件迴圈"></a>while() 條件迴圈</h1><p>while() 也是迴圈的一種，結構較簡單。跟前者差異在於 while() 只有一個條件判斷是否要執行該段#code。</p>
+<p>練習：模仿 for 的動作</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$i</span> = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> (<span class="variable">$i</span> &lt; <span class="number">10</span>) &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="variable">$i</span>;</span><br><span class="line">  <span class="variable">$i</span>++;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="do-while-條件迴圈"><a href="#do-while-條件迴圈" class="headerlink" title="do while() 條件迴圈"></a>do while() 條件迴圈</h1><p>do while 是 while 的變形版本，比較常見於檢查下，譬如 do 裡面要求使用者收入某資料，透過 while 去判定是否重新做一遍才離開迴圈。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$count</span> = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="variable">$count</span>;</span><br><span class="line">  <span class="variable">$count</span>--;</span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="variable">$count</span>!=<span class="number">0</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="for-vs-while-vs-do-while-三者比較"><a href="#for-vs-while-vs-do-while-三者比較" class="headerlink" title="for vs while vs do{} while() 三者比較"></a>for vs while vs do{} while() 三者比較</h1><p>迴圈的方式大致上以這三種為主，每個的效果跟邏輯差不多都是碰到條件再決定是否要執行重複範圍。你可以用以下的觀念去思考</p>
+<ol>
+<li>for 一行就清楚表示遊戲規則，思緒上會比較清晰，適合簡單的迴圈控制變數增加減少行為。</li>
+<li>while 只有條件，適合自訂遊戲規則，做比較彈性，只要你有能力控制迴圈結束都可以用。</li>
+<li>do while 跟 while 一樣適合自訂遊戲規則，只差別於第一次進入檢查條件，更貼近 for 的效果</li>
+</ol>
+<hr>
+<h1 id="回家作業-A"><a href="#回家作業-A" class="headerlink" title="回家作業 A"></a>回家作業 A</h1><p>練習作業：產生以下預覽（對稱的堆星塔）</p>
+<div style="text-align:center;width:150px">
+<div>★</div>
+<div>★★★</div>
+<div>★★★★★</div>
+<div>★★★★★★★</div>
+<div>★★★★★★★★★</div>
+</div>
+解答：
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;div style=<span class="string">&quot;text-align:center;width:200px&quot;</span>&gt;</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">1</span>;<span class="variable">$i</span>&lt;<span class="number">10</span>;<span class="variable">$i</span>+=<span class="number">2</span>)&#123; <span class="comment">//$i=1,3,5,7,9 pre-for</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$j</span>=<span class="number">1</span>;<span class="variable">$j</span>&lt;=<span class="variable">$i</span>;<span class="variable">$j</span>++)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;★&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="回家作業-B"><a href="#回家作業-B" class="headerlink" title="回家作業 B"></a>回家作業 B</h1><p>練習作業：完成作業 A 的學員，使用 rand 機率分別為 10%(red).20%(yellow).30%(pink).40%(white) 將星星換色 (style)，整個背景為黑色。</p>
+<p>解答：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;div style=<span class="string">&quot;text-align:center;width:200px;background-color:black;&quot;</span>&gt;</span><br><span class="line">  <span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="variable">$i</span> = <span class="number">1</span>; <span class="variable">$i</span> &lt; <span class="number">10</span>; <span class="variable">$i</span> += <span class="number">2</span>) &#123; <span class="comment">//$i=1,3,5,7,9 pre-for</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="variable">$j</span> = <span class="number">1</span>; <span class="variable">$j</span> &lt;= <span class="variable">$i</span>; <span class="variable">$j</span>++) &#123;</span><br><span class="line">      <span class="variable">$clr</span>=<span class="title function_ invoke__">rand</span>(<span class="number">1</span>,<span class="number">100</span>);</span><br><span class="line">      <span class="keyword">if</span>(<span class="variable">$clr</span>&lt;<span class="number">11</span>) <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;color:red&#x27;&gt;★&lt;/span&gt;&quot;</span>;</span><br><span class="line">      <span class="keyword">elseif</span>(<span class="variable">$clr</span>&lt;<span class="number">31</span>) <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;color:yellow&#x27;&gt;★&lt;/span&gt;&quot;</span>;</span><br><span class="line">      <span class="keyword">elseif</span>(<span class="variable">$clr</span>&lt;<span class="number">61</span>) <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;color:pink&#x27;&gt;★&lt;/span&gt;&quot;</span>;</span><br><span class="line">      <span class="keyword">else</span> <span class="keyword">echo</span> <span class="string">&quot;&lt;span style=&#x27;color:white;background-color:black&#x27;&gt;★&lt;/span&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="meta">?&gt;</span></span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<div class="note default"><p><strong>以上課題之完整代碼：</strong> <a target="_blank" rel="noopener" href="https://gist.github.com/summer10920/4b1ff0d75ab8749824070f9ffeb56d67">view full code</a></p>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+              <a href="/tags/PHP-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 程式設計（假日班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/05-12/php-baseclass-3/" rel="prev" title="[基礎課程] PHP 匯入與加載">
+                  <i class="fa fa-chevron-left"></i> [基礎課程] PHP 匯入與加載
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05-12/php-baseclass-5/" rel="next" title="[基礎課程] PHP 陣列變數">
+                  [基礎課程] PHP 陣列變數 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/assets/js/loki.js"></script>
+</body>
+</html>
