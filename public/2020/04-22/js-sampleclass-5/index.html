@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo-loki.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,400,400italic,700,700italic%7CNoto+Sans+TC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"summer10920.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":20,"offset":20},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeIn","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="本篇透過之前的小作業再優化的小遊戲，透過 JS 外掛 SweetAlert2 完成取代提示視窗的事件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[練習課程] JavaScript 實作（五）：小故事遊戲 (Feat.SweetAlert)">
+<meta property="og:url" content="http://summer10920.github.io/2020/04-22/js-sampleclass-5/">
+<meta property="og:site_name" content="洛奇的邪惡組織手札">
+<meta property="og:description" content="本篇透過之前的小作業再優化的小遊戲，透過 JS 外掛 SweetAlert2 完成取代提示視窗的事件。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/D8v3RVP.png">
+<meta property="article:published_time" content="2020-04-21T18:25:06.000Z">
+<meta property="article:modified_time" content="2024-08-21T05:21:26.391Z">
+<meta property="article:author" content="Loki Jiang">
+<meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
+<meta property="article:tag" content="JavaScript 程式設計（假日班）">
+<meta property="article:tag" content="前端網頁開發技術（職前班）">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/D8v3RVP.png">
+
+
+<link rel="canonical" href="http://summer10920.github.io/2020/04-22/js-sampleclass-5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"http://summer10920.github.io/2020/04-22/js-sampleclass-5/","path":"2020/04-22/js-sampleclass-5/","title":"[練習課程] JavaScript 實作（五）：小故事遊戲 (Feat.SweetAlert)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[練習課程] JavaScript 實作（五）：小故事遊戲 (Feat.SweetAlert) | 洛奇的邪惡組織手札</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-146423952-3"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-146423952-3","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&family=Roboto&display=swap" rel="stylesheet">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <canvas id="lokiBanner" width="1920" height="200"></canvas>
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">洛奇的邪惡組織手札</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">I am WebDeveloper!</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">17</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">68</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜尋..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%B8%E6%9C%83-sweetAlert2"><span class="nav-number">1.</span> <span class="nav-text">學會 sweetAlert2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B0%A1%E5%96%AE%E7%9A%84-Alert-%E6%95%88%E6%9E%9C"><span class="nav-number">1.1.</span> <span class="nav-text">簡單的 Alert 效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A8%AD%E8%A8%88%E7%9A%84%E8%A6%96%E7%AA%97%E8%A1%A8%E5%96%AE"><span class="nav-number">1.2.</span> <span class="nav-text">可設計的視窗表單</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A6%8F%E5%8A%83-Story-%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">規劃 Story 流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6-A-%E5%8F%96%E5%BE%97%E8%A7%92%E8%89%B2%E5%90%8D%E7%A8%B1"><span class="nav-number">2.1.</span> <span class="nav-text">事件 A: 取得角色名稱</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6-B-%E6%95%85%E4%BA%8B%E6%9C%AC%E9%AB%94"><span class="nav-number">2.2.</span> <span class="nav-text">事件 B: 故事本體</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6-C-finish-%E7%9A%84%E7%B5%90%E6%9E%9C%E7%95%AB%E9%9D%A2"><span class="nav-number">2.3.</span> <span class="nav-text">事件 C:finish 的結果畫面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTML-%E8%A6%8F%E5%8A%83"><span class="nav-number">2.4.</span> <span class="nav-text">HTML 規劃</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Loki Jiang"
+      src="/images/author_loki.jpg">
+  <p class="site-author-name" itemprop="name">Loki Jiang</p>
+  <div class="site-description" itemprop="description">Time waits for no oneヽ(｀Д´)ﾉ</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/summer10920" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;summer10920" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:summer10920@gmail.com" title="E-Mail → mailto:summer10920@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codepen.io/summer10920/pens/public?grid_type=list" title="CodePen → https:&#x2F;&#x2F;codepen.io&#x2F;summer10920&#x2F;pens&#x2F;public?grid_type&#x3D;list" rel="noopener me" target="_blank"><i class="fab fa-codepen fa-fw"></i>CodePen</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.youtube.com/c/LokiJiang/playlists" title="YouTube → https:&#x2F;&#x2F;www.youtube.com&#x2F;c&#x2F;LokiJiang&#x2F;playlists" rel="noopener me" target="_blank"><i class="fab fa-youtube fa-fw"></i>YouTube</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="回到頂端">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="http://demob17300.lokiwebs.com/" title="http:&#x2F;&#x2F;demob17300.lokiwebs.com&#x2F;" rel="noopener" target="_blank">DemoSite - 網頁設計乙術科</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="http://blog.lokiwebs.com/" title="http:&#x2F;&#x2F;blog.lokiwebs.com&#x2F;" rel="noopener" target="_blank">舊址(停更) - 札記 Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://summer10920.github.io/2020/04-22/js-sampleclass-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/author_loki.jpg">
+      <meta itemprop="name" content="Loki Jiang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="洛奇的邪惡組織手札">
+      <meta itemprop="description" content="Time waits for no oneヽ(｀Д´)ﾉ">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[練習課程] JavaScript 實作（五）：小故事遊戲 (Feat.SweetAlert) | 洛奇的邪惡組織手札">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [練習課程] JavaScript 實作（五）：小故事遊戲 (Feat.SweetAlert)<a href="https://github.com/summer10920/private_hexoBlog/edit/dev/source/_posts/20200422-js-sampleclass-5.md" class="post-edit-link" title="編輯" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+
+      <time title="創建時間：2020-04-22 02:25:06" itemprop="dateCreated datePublished" datetime="2020-04-22T02:25:06+08:00">2020-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-08-21 13:21:26" itemprop="dateModified" datetime="2024-08-21T13:21:26+08:00">2024-08-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/" itemprop="url" rel="index"><span itemprop="name">職訓教材</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%81%B7%E8%A8%93%E6%95%99%E6%9D%90/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="文章字數">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">文章字數：</span>
+      <span>1,854</span>
+    </span>
+    <span class="post-meta-item" title="所需閱讀時間">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+      <span>00:03:22</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/D8v3RVP.png"><br>本篇透過之前的小作業再優化的小遊戲，透過 JS 外掛 SweetAlert2 完成取代提示視窗的事件。</p>
+<span id="more"></span>
+
+<p>大致設計步驟如下：</p>
+<ol>
+<li>使用者一進網頁就先執行一個角色命名的事件 A</li>
+<li>A 結束後，提問是否選擇遊戲開始事件 B，所以畫面上有個 B 事件的按鈕</li>
+<li>事件 B 是連續的多個判斷 T&#x2F;F 路線走向，一但失敗仍可由畫面上的 B 事件按鈕觸發</li>
+<li>如果順利走完事件 B，觸發一個事件 C，主要是把畫面上的 B 事件觸發給取消</li>
+</ol>
+<h1 id="學會-sweetAlert2"><a href="#學會-sweetAlert2" class="headerlink" title="學會 sweetAlert2"></a>學會 sweetAlert2</h1><div class="note default"><p>先前往官方文件取得相關資料 <a target="_blank" rel="noopener" href="https://sweetalert2.github.io/">官方資源網址</a></p>
+</div>
+
+<p>我們大概的理解一下，如何使用 sweetAlert。大致上分簡單用跟專業用語法。都是在 script 內去執行此指令。</p>
+<h2 id="簡單的-Alert-效果"><a href="#簡單的-Alert-效果" class="headerlink" title="簡單的 Alert 效果"></a>簡單的 Alert 效果</h2><p>可以一行就寫完，有分為標題、內文、ICON 類型，你可以只寫 1 組重要的文字其他都不填。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Swal</span>.<span class="title function_">fire</span>(</span><br><span class="line">  <span class="string">&#x27;標題字串&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;內文字串&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;quesion&#x27;</span> <span class="comment">//另可指定 info,warring,error,success</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h2 id="可設計的視窗表單"><a href="#可設計的視窗表單" class="headerlink" title="可設計的視窗表單"></a>可設計的視窗表單</h2><p>參數非常多，需要哪些功能就寫出參數，不寫屬性則部分有預設效果</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; 一個 swal 事件 A 執行</span><br><span class="line">  <span class="attr">title</span>: <span class="string">&#x27;這裡是猜猜遊戲，請輸入角色名字&#x27;</span>, <span class="comment">//標題</span></span><br><span class="line">  <span class="attr">input</span>: <span class="string">&#x27;text&#x27;</span>, <span class="comment">//輸入欄位的類型</span></span><br><span class="line">  <span class="attr">inputValue</span>: <span class="string">&#x27;大俠&#x27;</span>, <span class="comment">//欄位預設值</span></span><br><span class="line">  <span class="attr">showLoaderOnConfirm</span>: <span class="literal">true</span>, <span class="comment">//啟用輸入框</span></span><br><span class="line">  <span class="attr">confirmButtonText</span>: <span class="string">&#x27;我取好了&#x27;</span>, <span class="comment">//確定按鈕之文字</span></span><br><span class="line">  <span class="attr">cancelButtonText</span>: <span class="string">&#x27;略過&#x27;</span>, <span class="comment">//取消按鈕之文字</span></span><br><span class="line">  <span class="attr">showCancelButton</span>: <span class="literal">true</span>, <span class="comment">//提供取消按鈕</span></span><br><span class="line">  <span class="attr">allowOutsideClick</span>: <span class="literal">false</span> <span class="comment">//是窗外的按鈕可否觸發取消事件</span></span><br><span class="line">&#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params">result</span>) &#123; <span class="comment">//按下按鈕後，能得到一個 object</span></span><br><span class="line">  <span class="keyword">if</span> (result.<span class="property">dismiss</span> === <span class="string">&#x27;cancel&#x27;</span>) &#123; <span class="comment">//如果物件。dissmiss=cancel 代表用戶按取消鍵</span></span><br><span class="line">    name = <span class="string">&quot;阿明&quot;</span>;</span><br><span class="line">    <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//如果是取消反應，提供一個 swal 事件 A-1</span></span><br><span class="line">      <span class="attr">title</span>: <span class="string">`不想輸入？別怕~~我不是死神`</span>,</span><br><span class="line">      <span class="attr">text</span>: <span class="string">`那就叫你<span class="subst">$&#123;name&#125;</span>吧，阿明開始闖關吧`</span>,</span><br><span class="line">      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">imageUrl</span>: <span class="string">&#x27;alertgame/00.jpg&#x27;</span>,</span><br><span class="line">      <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">    &#125;).<span class="title function_">then</span>(start);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123; <span class="comment">//反之，就不是按下取消時</span></span><br><span class="line">    name = result.<span class="property">value</span>; <span class="comment">//confirm 的值會存在物件。value</span></span><br><span class="line">    <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//由於不是取消反應，提供一個 swal 事件 A-2</span></span><br><span class="line">      <span class="attr">title</span>: <span class="string">`<span class="subst">$&#123;name&#125;</span>這名字聽起來就專業！`</span>,</span><br><span class="line">      <span class="attr">text</span>: <span class="string">&#x27;請開始闖關挑戰&#x27;</span>,</span><br><span class="line">      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">imageUrl</span>: <span class="string">&#x27;alertgame/01.jpg&#x27;</span>,</span><br><span class="line">      <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">    &#125;).<span class="title function_">then</span>(start); <span class="comment">// 按下確定後，執行叫 start 的 function</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>所以 swal 生成很簡單，你需要什麼就寫什麼，如果需要按鈕後反應或是取得輸入值，都多加一個 <code>.then()</code> 於後面。() 內指定你要執行的 js 代碼，譬如：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">.<span class="title function_">ther</span>(<span class="keyword">function</span>(<span class="params">result</span>)&#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(result); <span class="comment">//result 是 swal 回傳的結果已物件提供。</span></span><br><span class="line">  <span class="keyword">if</span>(result.<span class="property">dismiss</span>===<span class="string">&#x27;cencel&#x27;</span>) <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;被按下了取消&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span>(result.<span class="property">value</span>) <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;使用者輸入了&quot;</span>+result.<span class="property">value</span>);</span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">   * Swal.fire(&#123;</span></span><br><span class="line"><span class="comment">   *   #insert a new swal event be here</span></span><br><span class="line"><span class="comment">   * &#125;);</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>差不到這裡你就能用出基本的 swal，還有更多豐富用法都在官網示範</p>
+<h1 id="規劃-Story-流程"><a href="#規劃-Story-流程" class="headerlink" title="規劃 Story 流程"></a>規劃 Story 流程</h1><h2 id="事件-A-取得角色名稱"><a href="#事件-A-取得角色名稱" class="headerlink" title="事件 A: 取得角色名稱"></a>事件 A: 取得角色名稱</h2><p>先讓網頁執行時跑 gameplay() 透過 swal 取得 name，或者取不到時做何反應。最後兩個結果都能導向執行 start 函式。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> name;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">gameplay</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">&#x27;這裡是猜猜遊戲，請輸入角色名字&#x27;</span>,</span><br><span class="line">    <span class="attr">input</span>: <span class="string">&#x27;text&#x27;</span>,</span><br><span class="line">    <span class="attr">inputValue</span>: <span class="string">&#x27;大俠&#x27;</span>,</span><br><span class="line">    <span class="attr">showLoaderOnConfirm</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">confirmButtonText</span>: <span class="string">&#x27;我取好了&#x27;</span>,</span><br><span class="line">    <span class="attr">cancelButtonText</span>: <span class="string">&#x27;略過&#x27;</span>,</span><br><span class="line">    <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">allowOutsideClick</span>: <span class="literal">false</span></span><br><span class="line">  &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params">result</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (result.<span class="property">dismiss</span> === <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">      name = <span class="string">&quot;阿明&quot;</span>;</span><br><span class="line">      <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">`不想輸入？別怕~~我不是死神`</span>,</span><br><span class="line">        <span class="attr">text</span>: <span class="string">`那就叫你<span class="subst">$&#123;name&#125;</span>吧，阿明開始闖關吧`</span>,</span><br><span class="line">        <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">imageUrl</span>: <span class="string">&#x27;files/00.jpg&#x27;</span>,</span><br><span class="line">        <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">      &#125;).<span class="title function_">then</span>(start);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      name = result.<span class="property">value</span>;</span><br><span class="line">      <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">`<span class="subst">$&#123;name&#125;</span>這名字聽起來就專業！`</span>,</span><br><span class="line">        <span class="attr">text</span>: <span class="string">&#x27;請開始闖關挑戰&#x27;</span>,</span><br><span class="line">        <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">imageUrl</span>: <span class="string">&#x27;files/01.jpg&#x27;</span>,</span><br><span class="line">        <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">      &#125;).<span class="title function_">then</span>(start);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">gameplay</span>();</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件-B-故事本體"><a href="#事件-B-故事本體" class="headerlink" title="事件 B: 故事本體"></a>事件 B: 故事本體</h2><p>這裡就是依賴 swal 的 T&#x2F;F 判斷，如果達到條件就再塞入 then+new swal。形成多層級的連續作業。最後達到目標時，去執行跑 finish 函式</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">start</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> mission;</span><br><span class="line">  <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">`勇者<span class="subst">$&#123;name&#125;</span>，你即將進入了充滿陷阱的迷宮。.`</span>,</span><br><span class="line">    <span class="attr">text</span>: <span class="string">&quot;一旦選錯路就會馬上 GG，你要開始了嗎？&quot;</span>,</span><br><span class="line">    <span class="attr">confirmButtonText</span>: <span class="string">&#x27;出發！&#x27;</span>,</span><br><span class="line">    <span class="attr">cancelButtonText</span>: <span class="string">&#x27;先不要。.&#x27;</span>,</span><br><span class="line">    <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">imageUrl</span>: <span class="string">&#x27;files/10.jpg&#x27;</span>,</span><br><span class="line">    <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">    <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">    <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">  &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (result.<span class="property">dismiss</span> === <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">      <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">`等你準備好挑戰再來吧！`</span>,</span><br><span class="line">        <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">imageUrl</span>: <span class="string">&#x27;files/11.jpg&#x27;</span>,</span><br><span class="line">        <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">`欣賞你的勇氣，開始闖五關吧！`</span>,</span><br><span class="line">        <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">imageUrl</span>: <span class="string">&#x27;files/12.gif&#x27;</span>,</span><br><span class="line">        <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">      &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;<span class="comment">//lv1</span></span><br><span class="line">          <span class="attr">title</span>: <span class="string">&quot;第 1 關：詭異的不明聲音&quot;</span>,</span><br><span class="line">          <span class="attr">text</span>: <span class="string">&quot;遠處發出低沉的怒吼，要前往查看嗎？&quot;</span>,</span><br><span class="line">          <span class="attr">confirmButtonText</span>: <span class="string">&#x27;來瞧瞧！&#x27;</span>,</span><br><span class="line">          <span class="attr">cancelButtonText</span>: <span class="string">&#x27;危險不去&#x27;</span>,</span><br><span class="line">          <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">          <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">          <span class="attr">imageUrl</span>: <span class="string">&#x27;files/20.gif&#x27;</span>,</span><br><span class="line">          <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">          <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">          <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">        &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">if</span> (result.<span class="property">dismiss</span> === <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">            <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">              <span class="comment">//B</span></span><br><span class="line">              <span class="attr">title</span>: <span class="string">&quot;GAME OVER&quot;</span>,</span><br><span class="line">              <span class="attr">text</span>: <span class="string">`因為忽略，找不到廁紙可用的道長對你使出了咒殺`</span>,</span><br><span class="line">              <span class="attr">confirmButtonText</span>: <span class="string">&quot;重新來過&quot;</span>,</span><br><span class="line">              <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">              <span class="attr">imageUrl</span>: <span class="string">&quot;files/21.jpg&quot;</span>,</span><br><span class="line">              <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">            &#125;);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//G</span></span><br><span class="line">              <span class="attr">title</span>: <span class="string">&quot;過關&quot;</span>,</span><br><span class="line">              <span class="attr">text</span>: <span class="string">&quot;原來是沒有廁紙的旅行者，給了他一些廁紙，繼續趕路&quot;</span>,</span><br><span class="line">              <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">              <span class="attr">imageUrl</span>: <span class="string">&#x27;files/22.jpg&#x27;</span>,</span><br><span class="line">              <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">            &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">              <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;<span class="comment">//lv2</span></span><br><span class="line">                <span class="attr">title</span>: <span class="string">&quot;第 2 關：周杰倫的可愛女人&quot;</span>,</span><br><span class="line">                <span class="attr">text</span>: <span class="string">&quot;有個女人受傷跌在地上，去扶她嗎？&quot;</span>,</span><br><span class="line">                <span class="attr">confirmButtonText</span>: <span class="string">&#x27;美女怎啦！&#x27;</span>,</span><br><span class="line">                <span class="attr">cancelButtonText</span>: <span class="string">&#x27;趕路不去&#x27;</span>,</span><br><span class="line">                <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">                <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                <span class="attr">imageUrl</span>: <span class="string">&#x27;files/30.gif&#x27;</span>,</span><br><span class="line">                <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">                <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">                <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">              &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (result.<span class="property">dismiss</span> !== <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">                  <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">                    <span class="comment">//B</span></span><br><span class="line">                    <span class="attr">title</span>: <span class="string">&quot;GAME OVER&quot;</span>,</span><br><span class="line">                    <span class="attr">text</span>: <span class="string">&quot;因為遇到碰瓷，你的旅行已提早結束&quot;</span>,</span><br><span class="line">                    <span class="attr">confirmButtonText</span>: <span class="string">&quot;重新來過&quot;</span>,</span><br><span class="line">                    <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                    <span class="attr">imageUrl</span>: <span class="string">&quot;files/31.gif&quot;</span>,</span><br><span class="line">                    <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                  &#125;);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//G</span></span><br><span class="line">                    <span class="attr">title</span>: <span class="string">&quot;過關&quot;</span>,</span><br><span class="line">                    <span class="attr">text</span>: <span class="string">&quot;沒有任何豔遇發生&quot;</span>,</span><br><span class="line">                    <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                    <span class="attr">imageUrl</span>: <span class="string">&#x27;files/32.jpg&#x27;</span>,</span><br><span class="line">                    <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                  &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                    <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;<span class="comment">//lv3</span></span><br><span class="line">                      <span class="attr">title</span>: <span class="string">&quot;第 3 關：浦島太郎是膩？&quot;</span>,</span><br><span class="line">                      <span class="attr">text</span>: <span class="string">&quot;有個烏龜正被小屁孩欺負，要救嗎？&quot;</span>,</span><br><span class="line">                      <span class="attr">confirmButtonText</span>: <span class="string">&#x27;唉唷救牠！&#x27;</span>,</span><br><span class="line">                      <span class="attr">cancelButtonText</span>: <span class="string">&#x27;趕路不去&#x27;</span>,</span><br><span class="line">                      <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">                      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                      <span class="attr">imageUrl</span>: <span class="string">&#x27;files/40.jpg&#x27;</span>,</span><br><span class="line">                      <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">                      <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">                      <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">                    &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                      <span class="keyword">if</span> (result.<span class="property">dismiss</span> !== <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">                        <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">                          <span class="comment">//B</span></span><br><span class="line">                          <span class="attr">title</span>: <span class="string">&quot;GAME OVER&quot;</span>,</span><br><span class="line">                          <span class="attr">text</span>: <span class="string">&quot;原來小屁孩是官二代，你被黑衣人綁走了&quot;</span>,</span><br><span class="line">                          <span class="attr">confirmButtonText</span>: <span class="string">&quot;重新來過&quot;</span>,</span><br><span class="line">                          <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                          <span class="attr">imageUrl</span>: <span class="string">&quot;files/41.jpg&quot;</span>,</span><br><span class="line">                          <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                        &#125;);</span><br><span class="line">                      &#125;</span><br><span class="line">                      <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//G</span></span><br><span class="line">                          <span class="attr">title</span>: <span class="string">&quot;過關&quot;</span>,</span><br><span class="line">                          <span class="attr">text</span>: <span class="string">&quot;原來是隻鱉，一口反擊了小屁孩，自食惡果&quot;</span>,</span><br><span class="line">                          <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                          <span class="attr">imageUrl</span>: <span class="string">&#x27;files/42.gif&#x27;</span>,</span><br><span class="line">                          <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                        &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                          <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;<span class="comment">//lv4</span></span><br><span class="line">                            <span class="attr">title</span>: <span class="string">&quot;第 4 關：這次變桃太郎膩？&quot;</span>,</span><br><span class="line">                            <span class="attr">text</span>: <span class="string">&quot;有隻狗跟你乞討丸子吃，要給嗎？&quot;</span>,</span><br><span class="line">                            <span class="attr">confirmButtonText</span>: <span class="string">&#x27;餓壞了，吃吧！&#x27;</span>,</span><br><span class="line">                            <span class="attr">cancelButtonText</span>: <span class="string">&#x27;想吃去買阿&#x27;</span>,</span><br><span class="line">                            <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">                            <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="attr">imageUrl</span>: <span class="string">&#x27;files/50.gif&#x27;</span>,</span><br><span class="line">                            <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">                            <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">                            <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">                          &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (result.<span class="property">dismiss</span> !== <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">                              <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;</span><br><span class="line">                                <span class="comment">//B</span></span><br><span class="line">                                <span class="attr">title</span>: <span class="string">&quot;GAME OVER&quot;</span>,</span><br><span class="line">                                <span class="attr">text</span>: <span class="string">&quot;又來了雞跟猴子，誘拐你立即前往鬼島討罰&quot;</span>,</span><br><span class="line">                                <span class="attr">confirmButtonText</span>: <span class="string">&quot;重新來過&quot;</span>,</span><br><span class="line">                                <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                                <span class="attr">imageUrl</span>:</span><br><span class="line">                                  <span class="string">&quot;files/51.jpg&quot;</span>,</span><br><span class="line">                                <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                              &#125;);</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="keyword">else</span> &#123;</span><br><span class="line">                              <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//G</span></span><br><span class="line">                                <span class="attr">title</span>: <span class="string">&quot;過關&quot;</span>,</span><br><span class="line">                                <span class="attr">text</span>: <span class="string">&quot;狗生氣地朝你揮了一拳？沒事發生。.. 前進吧！小氣的勇者&quot;</span>,</span><br><span class="line">                                <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                                <span class="attr">imageUrl</span>: <span class="string">&#x27;files/52.jpg&#x27;</span>,</span><br><span class="line">                                <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                              &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                                <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123;<span class="comment">//lv5</span></span><br><span class="line">                                  <span class="attr">title</span>: <span class="string">&quot;第 5 關：掉落的陷阱？&quot;</span>,</span><br><span class="line">                                  <span class="attr">text</span>: <span class="string">&quot;不小心掉到密室內，牆上發現有謎題該去解嗎？&quot;</span>,</span><br><span class="line">                                  <span class="attr">confirmButtonText</span>: <span class="string">&#x27;解開！&#x27;</span>,</span><br><span class="line">                                  <span class="attr">cancelButtonText</span>: <span class="string">&#x27;小心有詐&#x27;</span>,</span><br><span class="line">                                  <span class="attr">showCancelButton</span>: <span class="literal">true</span>,</span><br><span class="line">                                  <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                                  <span class="attr">imageUrl</span>: <span class="string">&#x27;files/60.jpg&#x27;</span>,</span><br><span class="line">                                  <span class="attr">imageHeight</span>: <span class="number">300</span>,</span><br><span class="line">                                  <span class="attr">confirmButtonColor</span>: <span class="string">&#x27;#3085d6&#x27;</span>,</span><br><span class="line">                                  <span class="attr">cancelButtonColor</span>: <span class="string">&#x27;#d33&#x27;</span></span><br><span class="line">                                &#125;).<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                                  <span class="keyword">if</span> (result.<span class="property">dismiss</span> === <span class="string">&#x27;cancel&#x27;</span>) &#123;</span><br><span class="line">                                    <span class="title class_">Swal</span>.<span class="title function_">fire</span>(</span><br><span class="line">                                      &#123;</span><br><span class="line">                                        <span class="comment">//B</span></span><br><span class="line">                                        <span class="attr">title</span>:<span class="string">&quot;GAME OVER&quot;</span>,</span><br><span class="line">                                        <span class="attr">text</span>:<span class="string">&quot;因為你的疑心病，被困在密室內無法離開&quot;</span>,</span><br><span class="line">                                        <span class="attr">confirmButtonText</span>:<span class="string">&quot;重新來過&quot;</span>,</span><br><span class="line">                                        <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                                        <span class="attr">imageUrl</span>:<span class="string">&quot;files/61.gif&quot;</span>,</span><br><span class="line">                                        <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                                      &#125;</span><br><span class="line">                                    );</span><br><span class="line">                                  &#125;</span><br><span class="line">                                  <span class="keyword">else</span> &#123;</span><br><span class="line">                                    <span class="title class_">Swal</span>.<span class="title function_">fire</span>(&#123; <span class="comment">//G</span></span><br><span class="line">                                      <span class="attr">title</span>: <span class="string">&quot;過關&quot;</span>,</span><br><span class="line">                                      <span class="attr">text</span>: <span class="string">&quot;你帥氣的解出 1+1=2 順利逃脫密室&quot;</span>,</span><br><span class="line">                                      <span class="attr">allowOutsideClick</span>: <span class="literal">false</span>,</span><br><span class="line">                                      <span class="attr">imageUrl</span>: <span class="string">&#x27;files/62.jpg&#x27;</span>,</span><br><span class="line">                                      <span class="attr">imageHeight</span>: <span class="number">300</span></span><br><span class="line">                                    &#125;).<span class="title function_">then</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                                      <span class="title function_">finish</span>(<span class="number">1</span>);</span><br><span class="line">                                    &#125;);</span><br><span class="line">                                  &#125;</span><br><span class="line">                                &#125;);</span><br><span class="line">                              &#125;);</span><br><span class="line">                            &#125;</span><br><span class="line">                          &#125;);</span><br><span class="line">                        &#125;);</span><br><span class="line">                      &#125;</span><br><span class="line">                    &#125;);</span><br><span class="line">                  &#125;);</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;);</span><br><span class="line">            &#125;);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事件-C-finish-的結果畫面"><a href="#事件-C-finish-的結果畫面" class="headerlink" title="事件 C:finish 的結果畫面"></a>事件 C:finish 的結果畫面</h2><p>這裡就是為了區別出故事結束，利用 DOM 去控制畫面改變。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">finish</span>(<span class="params">e</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (e) &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">style</span>.<span class="property">backgroundImage</span> = <span class="string">&quot;url(&#x27;files/bg2.jpg&#x27;)&quot;</span>;</span><br><span class="line">    mybtn.<span class="title function_">removeEventListener</span>(<span class="string">&quot;click&quot;</span>, start);</span><br><span class="line">    mybtn.<span class="property">value</span> = <span class="string">&quot;恭喜過關&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HTML-規劃"><a href="#HTML-規劃" class="headerlink" title="HTML 規劃"></a>HTML 規劃</h2><p>主要兩個，一個是背景圖，一個是觸發 B 事件的按鈕。這兩個都會被 C 事件所改變。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/sweetalert2.all.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">    <span class="selector-tag">body</span> &#123;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background-repeat</span>: no-repeat;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background-size</span>: auto <span class="number">120vh</span>;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">background-position</span>-<span class="attribute">x</span>: center;</span></span><br><span class="line"><span class="language-css">      <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">    &#125;</span></span><br><span class="line"><span class="language-css">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span> <span class="attr">style</span>=<span class="string">&quot;background-image: url(&#x27;files/bg1.jpg&#x27;)&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">value</span>=<span class="string">&quot;繼續挑戰&quot;</span> <span class="attr">id</span>=<span class="string">&quot;btn&quot;</span> <span class="attr">style</span>=<span class="string">&quot;margin:45vh auto;width:20vw&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;js/loki.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<div class="note default"><p><strong>示範參考：</strong> </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/summer10920/studies_TeachDemo_JSJQ/tree/master/vanillaJS/storyGame_swal">View Full Code</a></li>
+<li><a href="https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/storyGame_swal/">DEMO Page</a></li>
+</ul>
+</div>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP-%E8%B3%87%E6%96%99%E5%BA%AB%E7%B6%B2%E9%A0%81%E8%A8%AD%E8%A8%88%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># PHP 資料庫網頁設計（職前班）</a>
+              <a href="/tags/JavaScript-%E7%A8%8B%E5%BC%8F%E8%A8%AD%E8%A8%88%EF%BC%88%E5%81%87%E6%97%A5%E7%8F%AD%EF%BC%89/" rel="tag"># JavaScript 程式設計（假日班）</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E7%B6%B2%E9%A0%81%E9%96%8B%E7%99%BC%E6%8A%80%E8%A1%93%EF%BC%88%E8%81%B7%E5%89%8D%E7%8F%AD%EF%BC%89/" rel="tag"># 前端網頁開發技術（職前班）</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04-22/js-sampleclass-4/" rel="prev" title="[練習課程] JavaScript 實作（四）：打地鼠遊戲">
+                  <i class="fa fa-chevron-left"></i> [練習課程] JavaScript 實作（四）：打地鼠遊戲
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04-23/jq-baseclass-1/" rel="next" title="[基礎課程] jQuery 教學（一）：基礎觀念">
+                  [基礎課程] jQuery 教學（一）：基礎觀念 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    <span class="with-love">
+      <i class="fa fa-star"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">Loki Jiang</span>
+    <span class="post-meta-item-icon with-love">
+      <i class="fas fa-copyright"></i>
+    </span>
+    2020 – 
+    <span itemprop="copyrightYear">2024</span> All rights reserved.
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="總字數">519,958</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon with-love">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">15:45:23</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon with-love">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/summer10920" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"
+    integrity="sha512-lGnVsh3WK0YJ7NX7rQmUu6kqF7vqELuDrUTnxpI2iD86VwI+OlQhi3EAJJZbrBUOfDFOAYAkigxkApHGM2IZTg=="
+    crossorigin="anonymous"></script>
+<script src="/js/loki.js"></script>
+
+</body>
+</html>
