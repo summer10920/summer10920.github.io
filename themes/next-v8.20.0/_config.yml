@@ -301,7 +301,7 @@ related_posts:
 post_edit:
   enable: true
   # url: https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/ # Link for view source
-  url: https://github.com/summer10920/private_hexoBlog/edit/dev/source/ # Link for fork & edit
+  url: https://github.com/summer10920/summer10920.github.io/edit/master/source/ # Link for fork & edit
 
 
 # Show previous post and next post in post footer if exists
