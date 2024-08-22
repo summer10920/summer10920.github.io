@@ -4,7 +4,6 @@
 
 請勿將此專案 fork 後僅更改作者名稱即部署到網站上，這樣的行為屬於冒名使用，違反了開源精神。若要使用此專案，請保留原作者資訊，並在適當位置註明修改者資訊。感謝您的理解與合作。
 
-
 ## 安裝
 首先，請確保你已經安裝了 Node.js 和 npm。然後在專案目錄中執行以下命令來安裝依賴：
 
@@ -19,6 +18,11 @@ npm install
 - 啟動本地伺服器：
   ```bash
   npm start
+  ```
+
+- 重新生成靜態文件：
+  ```bash
+  npm restart
   ```
 
 - 生成靜態文件：
@@ -40,24 +44,26 @@ npm install
 
 此專案使用了以下主要依賴：
 
-- [Hexo](https://hexo.io/)
-- [Hexo CLI](https://github.com/hexojs/hexo-cli)
-- [Hexo CodePen](https://github.com/next-theme/hexo-codepen)
-- [Hexo Deployer Git](https://github.com/hexojs/hexo-deployer-git)
-- [Hexo Generator Archive](https://github.com/hexojs/hexo-generator-archive)
-- [Hexo Generator Category](https://github.com/hexojs/hexo-generator-category)
-- [Hexo Generator Index](https://github.com/hexojs/hexo-generator-index)
-- [Hexo Generator SearchDB](https://github.com/theme-next/hexo-generator-searchdb)
-- [Hexo Generator Tag](https://github.com/hexojs/hexo-generator-tag)
-- [Hexo Hide Posts](https://github.com/next-theme/hexo-hide-posts)
-- [Hexo Renderer EJS](https://github.com/hexojs/hexo-renderer-ejs)
-- [Hexo Renderer Marked](https://github.com/hexojs/hexo-renderer-marked)
-- [Hexo Renderer Stylus](https://github.com/hexojs/hexo-renderer-stylus)
-- [Hexo Server](https://github.com/hexojs/hexo-server)
-- [Hexo Word Counter](https://github.com/willin/hexo-word-counter)
-- [Patch Package](https://github.com/ds300/patch-package)
-- [Browserify](https://github.com/browserify/browserify)
-- [Range Parser](https://github.com/jshttp/range-parser)
+- [Hexo](https://hexo.io/) ^7.3.0
+- [Hexo CLI](https://github.com/hexojs/hexo-cli) ^4.3.2
+- [Hexo CodePen](https://github.com/next-theme/hexo-codepen) ^0.1.1
+- [Hexo Deployer Git](https://github.com/hexojs/hexo-deployer-git) ^4.0.0
+- [Hexo Generator Archive](https://github.com/hexojs/hexo-generator-archive) ^2.0.0
+- [Hexo Generator Category](https://github.com/hexojs/hexo-generator-category) ^2.0.0
+- [Hexo Generator Index](https://github.com/hexojs/hexo-generator-index) ^4.0.0
+- [Hexo Generator SearchDB](https://github.com/theme-next/hexo-generator-searchdb) ^1.4.1
+- [Hexo Generator Tag](https://github.com/hexojs/hexo-generator-tag) ^2.0.0
+- [Hexo Hide Posts](https://github.com/next-theme/hexo-hide-posts) ^0.4.3
+- [Hexo Renderer EJS](https://github.com/hexojs/hexo-renderer-ejs) ^2.0.0
+- [Hexo Renderer Marked](https://github.com/hexojs/hexo-renderer-marked) ^6.3.0
+- [Hexo Renderer Stylus](https://github.com/hexojs/hexo-renderer-stylus) ^3.0.1
+- [Hexo Server](https://github.com/hexojs/hexo-server) ^3.0.0
+- [Hexo Tag Embed](https://github.com/hexojs/hexo-tag-embed) ^1.0.0
+- [Hexo Word Counter](https://github.com/willin/hexo-word-counter) ^0.2.0
+- [Patch Package](https://github.com/ds300/patch-package) ^8.0.0
+- [Browserify](https://github.com/browserify/browserify) ^17.0.0
+- [Range Parser](https://github.com/jshttp/range-parser) ^1.2.1
+- [npm-upgrade](https://github.com/pgilad/npm-upgrade) ^3.1.0
 
 ## 配置
 
@@ -94,7 +100,7 @@ Next 主題的配置文件位於 `themes/next/_config.yml`。你可以在此文�
 
 ## 版本
 
-Hexo 版本：6.3.0
+Hexo 版本：7.3.0
 
 ## 貢獻
 
