@@ -31,11 +31,11 @@ https://summer10920.github.io/studies_TeachDemo_CSSBS/ClassC1_Exam/
 # No.2 設計首頁
 這裡主要是說明各別檔案名稱與用途，可先建立 `index.html`, `main.html`, `guitar_history.html`, `guitar_event.html`, `guitar_learning.html` 等五個檔案即可。接著本節實作只需設計 index.html 的版型設計。
 
-![](https://i.imgur.com/5JsWP3b.png)
+![](assets/images/5JsWP3b.png)
 
 index.html 為主要畫面，參考尺寸需求為設計。並使用區域 `<main>` 作為之後的 iframe 互動區。
 
-![](https://i.imgur.com/VAwmXLX.png)
+![](assets/images/VAwmXLX.png)
 
 - 記得設定網頁標題為「國立科技高中─校園社團介紹網」
 - 採用 flexbox 來設計版面切割，先處理大版面分割，次區域分割下一步驟處理

@@ -8,7 +8,7 @@ tag:
 date: 2022-08-21 13:37:12
 ---
 
-![](https://i.imgur.com/36CA3aE.png)
+![](assets/images/36CA3aE.png)
 本篇將整合過去基本課程 HTML, CSS 相關知識進行經驗整合，透過 Bootstrap 5.2 動手設計簡單一頁式且具備 RWD 之網站設計。
 
 <!-- more -->

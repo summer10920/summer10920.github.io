@@ -27,17 +27,17 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇開始深入探討一些 React 細節高級操作觀念上的的認知學習單元，根據參考官方手冊逐步學習。同時會略過一些對於未來性將捨棄的原有功能。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
-<meta property="og:image" content="https://i.imgur.com/FRyCjho.png">
-<meta property="og:image" content="https://i.imgur.com/6PFkhRX.png">
-<meta property="og:image" content="https://i.imgur.com/hvPOp7M.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/FRyCjho.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/6PFkhRX.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/hvPOp7M.png">
 <meta property="article:published_time" content="2021-11-23T05:24:56.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.213Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.750Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ReactJS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/iWnyS9n.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2021/11-23/js-react-4/">
@@ -275,7 +275,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -322,7 +322,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/iWnyS9n.png"><br>本篇開始深入探討一些 React 細節高級操作觀念上的的認知學習單元，根據參考官方手冊逐步學習。同時會略過一些對於未來性將捨棄的原有功能。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/iWnyS9n.png"><br>本篇開始深入探討一些 React 細節高級操作觀念上的的認知學習單元，根據參考官方手冊逐步學習。同時會略過一些對於未來性將捨棄的原有功能。</p>
 <span id="more"></span>
 <h1 id="深入-JSX"><a href="#深入-JSX" class="headerlink" title="深入 JSX"></a>深入 JSX</h1><p>基本上 JSX 單純只是 React.createElement(component, props, …children) 函式 API 的產物語法糖。假設 JSX 程式碼如下則 React 會自動編譯成：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;<span class="title class_">MyButton</span> color=<span class="string">&quot;blue&quot;</span> shadowSize=&#123;<span class="number">2</span>&#125;&gt;</span><br><span class="line">  <span class="title class_">Click</span> <span class="title class_">Me</span></span><br><span class="line">&lt;/<span class="title class_">MyButton</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/******react complier*****/</span></span><br><span class="line"><span class="title class_">React</span>.<span class="title function_">createElement</span>(</span><br><span class="line">  <span class="title class_">MyButton</span>,</span><br><span class="line">  &#123;<span class="attr">color</span>: <span class="string">&#x27;blue&#x27;</span>, <span class="attr">shadowSize</span>: <span class="number">2</span>&#125;,</span><br><span class="line">  <span class="string">&#x27;Click Me&#x27;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
@@ -580,13 +580,13 @@
 
 <p>傳送 ref 的用途除了對外部底層 DOM 操作，也能對外部組件操作獲得物件實例，此不再示範。</p>
 <h3 id="開發工具上的客製化名稱"><a href="#開發工具上的客製化名稱" class="headerlink" title="開發工具上的客製化名稱"></a>開發工具上的客製化名稱</h3><p>如果使用開發工具觀察組件關係，可發現原本底層組件的名稱已變成 ForwardRef。這是因為已經不是原先一個組件按鈕結構而是由 ForwardRef 所提供的下層組件。如果有需要是可以修改此預設名稱。</p>
-<p><img src="https://i.imgur.com/FRyCjho.png"></p>
+<p><img src="/assets/images/FRyCjho.png"></p>
 <h4 id="方法-1：提供具名函式"><a href="#方法-1：提供具名函式" class="headerlink" title="方法 1：提供具名函式"></a>方法 1：提供具名函式</h4><p>原本是底層組件設計時提供匿名箭頭函式，改為具名的函式做為 ForwardRef 之參數。</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useEffect, useRef &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">FancyButton</span> = <span class="title class_">React</span>.<span class="title function_">forwardRef</span>(</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">hasName1</span>(<span class="params">props, ref</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="language-xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">className</span>=<span class="string">&quot;FancyButton&quot;</span> <span class="attr">ref</span>=<span class="string">&#123;ref&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        &#123;props.children&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">App1</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> refApp1 = <span class="title function_">useRef</span>();</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;refApp1&#x27;</span>, refApp1.<span class="property">current</span>); <span class="comment">//&lt;button class=&quot;FancyButton&quot;&gt;Click 1!&lt;/button&gt;</span></span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">FancyButton</span> <span class="attr">ref</span>=<span class="string">&#123;refApp1&#125;</span>&gt;</span>Click 1!<span class="tag">&lt;/<span class="name">FancyButton</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">App1</span> /&gt;</span></span></span><br><span class="line">  , <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/6PFkhRX.png"></p>
+<p><img src="/assets/images/6PFkhRX.png"></p>
 <h4 id="方法-2：透過具名函式增加-displayName-物件屬性"><a href="#方法-2：透過具名函式增加-displayName-物件屬性" class="headerlink" title="方法 2：透過具名函式增加 displayName 物件屬性"></a>方法 2：透過具名函式增加 displayName 物件屬性</h4><p>同樣是提供具名函式，React 會先判別這個函式物件屬性 displayName 作為名稱，找不到則以該函式名為稱呼。</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">hasName2</span>(<span class="params">props, ref</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">className</span>=<span class="string">&quot;FancyButton&quot;</span> <span class="attr">ref</span>=<span class="string">&#123;ref&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;props.children&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line">hasName2.<span class="property">displayName</span> = <span class="string">&#x27;mdyName2&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">FancyButton</span> = <span class="title class_">React</span>.<span class="title function_">forwardRef</span>(hasName2);</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">App2</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line">  refApp2 = <span class="title class_">React</span>.<span class="title function_">createRef</span>();</span><br><span class="line"></span><br><span class="line">  <span class="title function_">componentDidMount</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;refApp2&#x27;</span>, <span class="variable language_">this</span>.<span class="property">refApp2</span>.<span class="property">current</span>); <span class="comment">//&lt;button class=&quot;FancyButton&quot;&gt;Click 2!&lt;/button&gt;</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="language-xml"><span class="tag">&lt;<span class="name">FancyButton</span> <span class="attr">ref</span>=<span class="string">&#123;this.refApp2&#125;</span> &gt;</span> Click 2!<span class="tag">&lt;/<span class="name">FancyButton</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">render</span>(</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">App2</span> /&gt;</span></span></span><br><span class="line">  , <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>));</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.imgur.com/hvPOp7M.png"></p>
+<p><img src="/assets/images/hvPOp7M.png"></p>
 
     </div>
 

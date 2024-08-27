@@ -9,7 +9,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-05-08 00:46:34
 ---
-![](https://i.imgur.com/NxJTq7q.png)
+![](assets/images/NxJTq7q.png)
 
 在之前的 Ajax 相關練習當中，不論是讀取 JSON 文件或是向後端伺服器請求，我們都是內部進行相對連結且安全。然而常常聽到 API 串接的技術，是指透過外部網路連結到別人站台的 JSON 文件（或其他格式），透過 Ajax 方式載入數據到你的網頁設計形成活絡的動態資訊網頁，也就是數據別人都定期更新幫你準備好了，你儘管去拿。
 
@@ -196,7 +196,7 @@ $('#dt>thead').find('th').eq(4).text(`${date3.getFullYear()}-${date3.getMonth() 
 $('#dt').DataTable({}); //啟用 datatable 套件
 ```
 9. 畫面效果如下
-![](https://i.imgur.com/2GU7pux.png)
+![](assets/images/2GU7pux.png)
 
 ### Bootstrap Style
 1. 透過左側或主選單連結 `Downolad` 進行下載前的選項設定
@@ -238,7 +238,7 @@ $('#dt').DataTable({}); //啟用 datatable 套件
 <table id="dt" class="display compact table table-hover table-striped table-dark">
 ```
 8. 效果如下
-![](https://i.imgur.com/toRnzuR.png)
+![](assets/images/toRnzuR.png)
 
 ---
 
@@ -342,7 +342,7 @@ var myChart = new Chart(ctx, {
 });
 ```
 5. 畫面效果如下
-![](https://i.imgur.com/S6QpKcB.png)
+![](assets/images/S6QpKcB.png)
 
 ### 整合 API 資料並規劃 chartjs
 請自行完成動作到已透過 Ajax 取得數據完畢，而以下程式碼都在`.done(function(re){})`內執行
@@ -412,7 +412,7 @@ var myChart = new Chart(ctx, {
 });
 ```
 4. 畫面如下
-![](https://i.imgur.com/FcKv9uw.png)
+![](assets/images/FcKv9uw.png)
 
 ---
 

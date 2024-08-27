@@ -9,7 +9,7 @@ tag:
 date: 2020-03-05 18:45:42
 ---
 
-![](https://i.imgur.com/arN20ZR.png)
+![](assets/images/arN20ZR.png)
 
 這是給新手 0 程度的 HTML 的基礎教材，如果你有一定的 HTML 概念與標籤觀念，則可跳過本篇。
 

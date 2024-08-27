@@ -9,7 +9,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-04-21 21:45:13
 ---
-![](https://i.imgur.com/D8v3RVP.png)
+![](assets/images/D8v3RVP.png)
 本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。
 <!-- more -->
 
@@ -94,7 +94,7 @@ css 調整好版型，然而 c0\~c9 主要是提供每個數字代表多少定�
 ```
 
 在還沒有 JS 發動之前，畫面效果如下：（出現 123456 是因為 html 這裡是用 c1~c6 做初始預設的 class)
-![](https://i.imgur.com/29lqYod.png)
+![](assets/images/29lqYod.png)
 
 接著規劃 JS，分為幾個動作思考
 1. 透過 new Date() 去得出目前時間，並將時間整理成六個數字分別代表時分秒的十位數&個位數。然後透過 DOM 去改寫 className 的數值，使得 class 之 c0~c9 可以順利代表數字

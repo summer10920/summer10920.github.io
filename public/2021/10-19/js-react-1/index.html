@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="React 是由 Facebook 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用組件 Componet-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Componet 整個零件內。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
-<meta property="og:image" content="https://i.imgur.com/hrUtZFt.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/hrUtZFt.png">
 <meta property="article:published_time" content="2021-10-19T05:09:14.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.211Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.754Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ReactJS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/iWnyS9n.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2021/10-19/js-react-1/">
@@ -273,7 +273,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -320,7 +320,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/iWnyS9n.png"><br>React 是由 Facebook 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用組件 Componet-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Componet 整個零件內。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/iWnyS9n.png"><br>React 是由 Facebook 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用組件 Componet-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Componet 整個零件內。</p>
 <span id="more"></span>
 
 <h1 id="React"><a href="#React" class="headerlink" title="React"></a>React</h1><p>React 的官方教學其實十分完善充裕並提供中文，本篇內容將跟隨官方的手冊摸索進行學習，正式介紹前以下有幾個 React 特性可以討稐。</p>
@@ -541,7 +541,7 @@
 
 <p>利用此特性，將陣列透過 mapr 收集成 JSX 元素標籤的陣列型態。可發現陣列內容如下：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> numbers = [<span class="string">&#x27;Loki&#x27;</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line"><span class="keyword">const</span> listItems = numbers.<span class="title function_">map</span>(<span class="function">(<span class="params">number</span>) =&gt;</span></span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">li</span>&gt;</span>&#123;number&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></span><br><span class="line">);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;listItems&#x27;</span>, listItems);</span><br></pre></td></tr></table></figure>
-<p>其檢查內容為：<br><img src="https://i.imgur.com/hrUtZFt.png"></p>
+<p>其檢查內容為：<br><img src="/assets/images/hrUtZFt.png"></p>
 <p>接著，將此 JSX 陣列直接 render 出來，React 處理時會自動將多筆資料進行批次輸出。</p>
 <figure class="highlight js"><figcaption><span>src/index.js</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">ReactDOM</span> <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> numbers = [<span class="string">&#x27;Loki&#x27;</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line"><span class="keyword">const</span> listItems = numbers.<span class="title function_">map</span>(<span class="function">(<span class="params">number</span>) =&gt;</span></span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">li</span>&gt;</span>&#123;number&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">render</span>(</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">ul</span>&gt;</span>&#123;listItems&#125;<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span>,</span><br><span class="line">  <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 

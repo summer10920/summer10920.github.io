@@ -8,7 +8,7 @@ tag:
   - RWD 響應式網頁設計（假日班）
 date: 2021-03-12 20:10:05
 ---
-![](https://i.imgur.com/36CA3aE.png)
+![](assets/images/36CA3aE.png)
 
 本篇將整合過去基本課程 HTML, CSS, Bootstrap, JS 相關知識進行經驗整合，動手設計簡單一頁式且具備 RWD 之網站設計。由於考量部分學員尚未接觸 JS 課程進度與基礎認知，將集中最後小節於完成後補充。
 
