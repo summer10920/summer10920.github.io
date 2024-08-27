@@ -1,4 +1,8 @@
 {
   "compile-hero.disable-compile-files-on-did-save-code": true,
-  "pasteImage.path": "source/assets/images/"
+  // "pasteImage.path": "source/assets/images/"
+  "pasteImage.path": "${projectRoot}/source/assets/images/",
+  "pasteImage.basePath": "${projectRoot}/source",
+  "pasteImage.forceUnixStyleSeparator": true,
+  "pasteImage.prefix": "/"
 }
