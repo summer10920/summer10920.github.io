@@ -9,7 +9,7 @@ tag:
 date: 2020-03-11 16:05:00
 ---
 
-![](https://i.imgur.com/lElmG8a.png)
+![](assets/images/lElmG8a.png)
 
 若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block & Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。
 

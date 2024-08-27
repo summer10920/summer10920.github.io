@@ -9,7 +9,7 @@ tag:
 date: 2020-03-15 14:23:57
 ---
 
-![](https://i.imgur.com/lElmG8a.png)
+![](assets/images/lElmG8a.png)
 
 本篇進入跟版面調整有關的技巧章節，Float 是很常見的浮動觀念，接著佈局章節會提供一些例子進行設計，最後是非常重要且主流的 flexbox 觀念。也就是網頁排版的重點都包含在這篇文章了。另外其實還有 Grid 跟 RWD 部分將之後由 Bootstrap 去深入學習。
 

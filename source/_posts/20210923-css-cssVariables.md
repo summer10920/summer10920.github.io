@@ -7,7 +7,7 @@ tag:
   - CSS
 date: 2021-09-23 13:13:22
 ---
-![](https://i.imgur.com/v8Pgkpa.png)
+![](assets/images/v8Pgkpa.png)
 本系列主要重點想介紹CSS設計上你該有更好的處理方式來設計，包含你應該熟悉CSS所提供的原生變數、可預處理的Script編譯語言、可預後處理的擴展工具輔助。本第一篇將先會先介紹 CSS3 提供的變數與應用方式來說明。
 
 <!-- more -->

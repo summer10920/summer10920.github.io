@@ -27,23 +27,23 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇深入探討一些 REST API 串接相關技術應用觀念，並使用 Firebase 做為後端實作端點。以及相關用戶身分認證的通用作法，包含 token 驗證機制與路由守衛規劃。以及示範如何透過將靜態元件改為一組動態創建的元件根據事件過程產生。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/WC5iApN.png">
-<meta property="og:image" content="https://i.imgur.com/vKtPpvD.png">
-<meta property="og:image" content="https://i.imgur.com/4yYA2gj.png">
-<meta property="og:image" content="https://i.imgur.com/dGOKVkL.png">
-<meta property="og:image" content="https://i.imgur.com/vYheBJQ.png">
-<meta property="og:image" content="https://i.imgur.com/H3h6Rjh.png">
-<meta property="og:image" content="https://i.imgur.com/KxX6WnR.png">
-<meta property="og:image" content="https://i.imgur.com/OGioB9i.png">
-<meta property="og:image" content="https://i.imgur.com/IrGMTRa.png">
-<meta property="og:image" content="https://i.imgur.com/Rh8VPpi.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/WC5iApN.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/vKtPpvD.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/4yYA2gj.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/dGOKVkL.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/vYheBJQ.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/H3h6Rjh.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/KxX6WnR.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/OGioB9i.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/IrGMTRa.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/Rh8VPpi.png">
 <meta property="article:published_time" content="2023-03-08T06:37:20.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.220Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.738Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="Angular">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/WC5iApN.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/WC5iApN.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2023/03-08/js-angular-5/">
@@ -281,7 +281,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -328,7 +328,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/WC5iApN.png"><br>本篇深入探討一些 REST API 串接相關技術應用觀念，並使用 Firebase 做為後端實作端點。以及相關用戶身分認證的通用作法，包含 token 驗證機制與路由守衛規劃。以及示範如何透過將靜態元件改為一組動態創建的元件根據事件過程產生。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/WC5iApN.png"><br>本篇深入探討一些 REST API 串接相關技術應用觀念，並使用 Firebase 做為後端實作端點。以及相關用戶身分認證的通用作法，包含 token 驗證機制與路由守衛規劃。以及示範如何透過將靜態元件改為一組動態創建的元件根據事件過程產生。</p>
 <span id="more"></span>
 
 <h1 id="Http-Request-伺服器請求"><a href="#Http-Request-伺服器請求" class="headerlink" title="Http Request 伺服器請求"></a>Http Request 伺服器請求</h1><p>本節將介紹如何跟後端進行連線作業，透過 API 的方式進行串接。而 API 常見的 Server 連線方式有 REST 或 GraphQL 等，我們將以 REST 方式進行教導，以及搭配免費的虛擬後端做測試，減少開發練習的環境複雜性。<br>前端的 API 是指用於在網頁應用程式中通過瀏覽器與伺服器進行溝通的程式接口。API 可以是一個單獨的 JavaScript 函數，也可以是一組由伺服器提供的 RESTful API 端點。</p>
@@ -367,7 +367,7 @@
 <li>來到專案頁面選擇 Realtime Database 並建立可即時性的資料庫，選擇新加坡網速會稍快些。</li>
 <li>選擇以測試模式啟動，使得全公開可以任意連線（練習用）。此時可見到 URL 請求網址使用。</li>
 </ul>
-<p><img src="https://i.imgur.com/vKtPpvD.png"><br><img src="https://i.imgur.com/4yYA2gj.png"><br><img src="https://i.imgur.com/dGOKVkL.png"><br><img src="https://i.imgur.com/vYheBJQ.png"></p>
+<p><img src="/assets/images/vKtPpvD.png"><br><img src="/assets/images/4yYA2gj.png"><br><img src="/assets/images/dGOKVkL.png"><br><img src="/assets/images/vYheBJQ.png"></p>
 <div class="note info"><p><strong>Firebase</strong><br>可以用作網站的真實後端。Firebase 提供了一個全面的後端解決方案，包括用戶身份驗證、資料庫、雲端存儲、主機、分析和通知等功能，這些功能可以幫助你快速構建高效可靠的網站。</p>
 <p>Firebase 的資料庫功能提供了實時數據庫（Realtime Database）和雲端 FireStore 兩個選項，這些都是 NoSQL 資料庫，可以存儲結構化和非結構化數據。Firebase 還提供了用戶身份驗證，可以通過電子郵件、社交媒體等方式進行註冊和登錄，以及用於管理和保護數據的安全規則。Firebase 的主機功能可以部署和管理網站代碼，而分析和通知功能可以幫助你了解用戶行為和互動並進行即時反饋。</p>
 <p>總體而言，Firebase 是一個強大而靈活的後端解決方案，可以滿足大多數網站的需求。</p>
@@ -452,7 +452,7 @@
 <p>隨著操作解析，第一次刪除按鈕會要求後端刪除資料，回應後前也刪除資料。隨事後更新按鈕按下則後端回傳空陣列使前端呈現無資料。</p>
 <h2 id="Error-事件處置"><a href="#Error-事件處置" class="headerlink" title="Error 事件處置"></a>Error 事件處置</h2><p>進行 API 串接時，可能根據一些狀況產生非預期的行為進行回報。HttpClient 在發送 HTTP 請求時，如果收到非 2xx 的狀態碼，就會產生錯誤。錯誤對象包含多個屬性，前端可針對這部分做期望的錯誤考量處置。</p>
 <p>首先我們先將 Firebase 的 read 權限進行關閉，使得 API 進行 GET 會發生錯誤的拒絕連線問題。來到 Firebase 網頁後台即時資料庫的規則參數，調整 read 為 false 拒絕寫入。</p>
-<p><img src="https://i.imgur.com/H3h6Rjh.png"></p>
+<p><img src="/assets/images/H3h6Rjh.png"></p>
 <p>現在任何的 GET 操作都能<kbd>F12</kbd> &gt; network 發現 401 連線錯誤。接下來會介紹三種方式處理 Error 作業，介紹順序以逐漸由高而推薦。</p>
 <h3 id="訂閱-HttpClient-的-HttpErrorResponse"><a href="#訂閱-HttpClient-的-HttpErrorResponse" class="headerlink" title="訂閱 HttpClient 的 HttpErrorResponse"></a>訂閱 HttpClient 的 HttpErrorResponse</h3><p>使用 HttpClient 當發生錯誤時，不會進入正常 Response 環節（也就是原本的 pipe 管道不會觸發進行）。而是會以第二組參數回傳。因此訂閱此 httpClient 結果，能在第二個回傳參數做 Error 工作。唯一的缺點是如果沒有使用訂閱去處理此 API，我們會不知道發生什麼事。</p>
 <p>若要將錯誤資訊顯示於畫面上，可規劃一個本地變數 errorMsg 為 null，當訂閱於發生錯誤時將錯誤資訊存於此。模板根據邏輯判斷是否有內容則顯示畫面上。</p>
@@ -594,12 +594,12 @@
 <ul>
 <li>根據 firebase 文檔教學，點選”建構&gt;Authentication”，新增一組登入方式為”電子郵件&#x2F;密碼”做為我們登入方式</li>
 </ul>
-<p><img src="https://i.imgur.com/KxX6WnR.png"><br><img src="https://i.imgur.com/OGioB9i.png"></p>
+<p><img src="/assets/images/KxX6WnR.png"><br><img src="/assets/images/OGioB9i.png"></p>
 <blockquote>
 <p>REST API 文件<br>你可以從 <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/database?hl=zh-tw">Firebase 說明文件</a> 去了解如何進行 REST API 之完整應用規劃。在此我們會用到的 <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/auth?hl=zh-tw">auth 功能文件</a> 當中的<mark><a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/auth?hl=zh-tw#section-create-email-password">使用電子郵件&#x2F;密碼註冊</a></mark>與<mark><a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/auth?hl=zh-tw#section-sign-in-email-password">使用電子郵件&#x2F;密碼登錄</a></mark>。</p>
 </blockquote>
 <h3 id="註冊-API"><a href="#註冊-API" class="headerlink" title="註冊 API"></a>註冊 API</h3><p>從 <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/auth?hl=zh-tw#section-create-email-password">使用電子郵件&#x2F;密碼註冊</a> 文件當中，已提供指定的端點 URL, 請求 require 格式，回應 response 格式。</p>
-<p><img src="https://i.imgur.com/IrGMTRa.png"></p>
+<p><img src="/assets/images/IrGMTRa.png"></p>
 <blockquote>
 <p>[API_KEY] 可以從專案總覽&gt;專案設定&gt;一般設定&gt;網路 API 金鑰找到。而文件內因中文翻譯請改用英文確認 Property Name 為屬性名稱。</p>
 </blockquote>
@@ -655,7 +655,7 @@
 <figure class="highlight typescript"><figcaption><span>auth.component.ts</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="title function_">onSubmit</span>(<span class="params"><span class="attr">form</span>: <span class="title class_">NgForm</span></span>) &#123;</span><br><span class="line">  <span class="comment">// console.log(form.value);</span></span><br><span class="line">  <span class="keyword">if</span> (form.<span class="property">invalid</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">isLoginMode</span>) &#123;</span><br><span class="line">    <span class="comment">// 登入作業</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 註冊作業</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isLoading</span> = <span class="literal">true</span>;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">AuthService</span>.<span class="title function_">singUp</span>(form.<span class="property">value</span>.<span class="property">email</span>, form.<span class="property">value</span>.<span class="property">password</span>).<span class="title function_">subscribe</span>(</span><br><span class="line">      <span class="function"><span class="params">resData</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(resData);</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">isLoading</span> = <span class="literal">false</span>;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// console.error(error);</span></span><br><span class="line">        <span class="comment">// this.isError = error.error.error.message;</span></span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">isError</span> = error;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">isLoading</span> = <span class="literal">false</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  form.<span class="title function_">reset</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="登入-API"><a href="#登入-API" class="headerlink" title="登入 API"></a>登入 API</h3><p>從 <a target="_blank" rel="noopener" href="https://firebase.google.com/docs/reference/rest/auth?hl=zh-tw#section-sign-in-email-password">使用電子郵件&#x2F;密碼登錄</a> 文件當中，已提供指定的端點 URL, 請求 require 格式，回應 response 格式。</p>
-<p><img src="https://i.imgur.com/Rh8VPpi.png"></p>
+<p><img src="/assets/images/Rh8VPpi.png"></p>
 <h4 id="編寫-auth-service-ts-與元件"><a href="#編寫-auth-service-ts-與元件" class="headerlink" title="編寫 auth.service.ts 與元件"></a>編寫 auth.service.ts 與元件</h4><p>同樣的作業規劃 signIn 方法，特別注意 response 回傳的 type 多一個<code>registered?:boolean</code>。</p>
 <ul>
 <li>因此 interface 多增加一個非必要的此項目做為共用 AuthResponseData TypeModel。</li>

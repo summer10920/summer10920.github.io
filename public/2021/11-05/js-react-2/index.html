@@ -27,16 +27,16 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇續接初階篇之後的實作思考練習，透過步驟一步步從原型視覺稿到實體呈現。本篇根據官方手冊逐步跟隨完成動作並根據自己的邏輯思考完成。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/iWnyS9n.png">
-<meta property="og:image" content="https://i.imgur.com/EDXcdGu.png">
-<meta property="og:image" content="https://i.imgur.com/nTEFEFn.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/EDXcdGu.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/nTEFEFn.png">
 <meta property="article:published_time" content="2021-11-05T14:25:05.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.211Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.756Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="ReactJS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/iWnyS9n.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/iWnyS9n.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2021/11-05/js-react-2/">
@@ -274,7 +274,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -321,7 +321,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/iWnyS9n.png"><br>本篇續接初階篇之後的實作思考練習，透過步驟一步步從原型視覺稿到實體呈現。本篇根據官方手冊逐步跟隨完成動作並根據自己的邏輯思考完成。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/iWnyS9n.png"><br>本篇續接初階篇之後的實作思考練習，透過步驟一步步從原型視覺稿到實體呈現。本篇根據官方手冊逐步跟隨完成動作並根據自己的邏輯思考完成。</p>
 <span id="more"></span>
 
 <p>首先需求如下：</p>
@@ -330,12 +330,12 @@
 <li>透過與設計師溝通後希望呈現的畫面如下：<ul>
 <li>顯示商品並規劃分類區域</li>
 <li>動態輸入過濾輸入商品名稱</li>
-<li>可篩選庫存商品<br><img src="https://i.imgur.com/EDXcdGu.png"></li>
+<li>可篩選庫存商品<br><img src="/assets/images/EDXcdGu.png"></li>
 </ul>
 </li>
 </ol>
 <h1 id="拆解成-Component"><a href="#拆解成-Component" class="headerlink" title="拆解成 Component"></a>拆解成 Component</h1><p>第一步先將視覺搞評估分解出有那些 React 組件做成 UI。如果設計師已提供的 PhotoShop 圖層名稱也可以拿來當作組件名稱。思考如何分解時根據 Single-responsibility principle(SRP) 單一職責原則將一個組件只負責一件事就好。這裡可分析出使用到 5 組 Componet 以及層級架構如下：</p>
-<p><img src="https://i.imgur.com/nTEFEFn.png"></p>
+<p><img src="/assets/images/nTEFEFn.png"></p>
 <ul>
 <li><strong>FilterableProductTable（橘）</strong>： 包含整個範例<ul>
 <li><strong>SearchBar（藍）</strong>： 使用者輸入</li>

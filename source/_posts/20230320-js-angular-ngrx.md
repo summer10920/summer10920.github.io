@@ -10,7 +10,7 @@ date: 2023-03-20 16:08:50
 # hidden: true
 ---
 
-![](https://i.imgur.com/q0DRxPm.png)
+![](assets/images/q0DRxPm.png)
 
 NgRx 是一個強大，且功能完整的 Angular 狀態管理套件，在我們的應用程式越來越複雜的時候，它很適合用來管理一些資料狀態，並透過適度的抽象化以及加入一定的規範，降低整體程式的耦合性，打造出更好維護及管理的程式碼。
 
@@ -27,7 +27,7 @@ state 是指整個前端的資料狀態為何。過去我們跟後端進行存�
 
 NgRx 本身是參考 React 框架的 Redux 而延伸來的。是一種額外的 state 管理應用 library。他的理念是透過大型集中 store 儲存你的 app，所有的元件與服務都能彼此交換資料但都需要從 store 來存取 state。它提供了一個 `@ngrx/store` 提供了一個「乘載狀態的容器」，幫助我們存放所有前面提到的全域狀態，並提供一致的方法來進行存取，也就是我們限制了存取的「位置」和「方式」藉此來達到一定程度的控管。
 
-![](https://i.imgur.com/3Gr4nsy.png)
+![](assets/images/3Gr4nsy.png)
 
 圖中的 Component 與 Service 是 Angular 內的已知單元，其他 NgRx 的角色有：
 

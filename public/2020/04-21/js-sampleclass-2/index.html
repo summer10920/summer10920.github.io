@@ -27,17 +27,17 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/D8v3RVP.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/D8v3RVP.png">
 <meta property="og:image" content="https://i.imgur.com/SJa2KJg.png">
-<meta property="og:image" content="https://i.imgur.com/29lqYod.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/29lqYod.png">
 <meta property="article:published_time" content="2020-04-21T13:45:13.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.189Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.783Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="PHP 資料庫網頁設計（職前班）">
 <meta property="article:tag" content="JavaScript 程式設計（假日班）">
 <meta property="article:tag" content="前端網頁開發技術（職前班）">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/D8v3RVP.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/D8v3RVP.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2020/04-21/js-sampleclass-2/">
@@ -275,7 +275,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -322,7 +322,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/D8v3RVP.png"><br>本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。</p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/D8v3RVP.png"><br>本篇介紹兩種寫法，一種是透過圖片來代表圖片文字，另一個是直接改值（需考量補 0）。</p>
 <span id="more"></span>
 
 <p>大致設計步驟如下：</p>
@@ -341,7 +341,7 @@
 <p>css 調整好版型，然而 c0~c9 主要是提供每個數字代表多少定位，使其差異內容化。</p>
 <figure class="highlight css"><table><tr><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">  <span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background</span>: <span class="number">#222</span>;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-id">#clock1</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">740px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">rgba</span>(<span class="number">88</span>, <span class="number">45</span>, <span class="number">98</span>, <span class="number">0.5</span>);</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">20vh</span> auto;</span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">10px</span>;</span><br><span class="line">    <span class="attribute">display</span>: flex;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.ck</span> &#123;</span><br><span class="line">    <span class="attribute">display</span>: inline-flex;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.c1</span>,<span class="selector-class">.c2</span>,<span class="selector-class">.c3</span>,<span class="selector-class">.c4</span>,<span class="selector-class">.c5</span>,<span class="selector-class">.c6</span>,<span class="selector-class">.c7</span>,<span class="selector-class">.c8</span>,<span class="selector-class">.c9</span>,<span class="selector-class">.c0</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">&quot;number.jpg&quot;</span>);</span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.cc</span> &#123;</span><br><span class="line">    <span class="attribute">width</span>: <span class="number">50px</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100px</span>;</span><br><span class="line">    <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">&quot;number.jpg&quot;</span>);</span><br><span class="line">    <span class="attribute">background-position</span>: <span class="number">50px</span>;</span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">margin</span>: <span class="number">0</span> <span class="number">10px</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="selector-class">.c1</span> &#123;    <span class="attribute">background-position</span>: <span class="number">0px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c2</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">100px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c3</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">200px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c4</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">300px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c5</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">400px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c6</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">500px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c7</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">600px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c8</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">700px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c9</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">800px</span>;  &#125;</span><br><span class="line">  <span class="selector-class">.c0</span> &#123;    <span class="attribute">background-position</span>: -<span class="number">900px</span>;  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
 
-<p>在還沒有 JS 發動之前，畫面效果如下：（出現 123456 是因為 html 這裡是用 c1~c6 做初始預設的 class)<br><img src="https://i.imgur.com/29lqYod.png"></p>
+<p>在還沒有 JS 發動之前，畫面效果如下：（出現 123456 是因為 html 這裡是用 c1~c6 做初始預設的 class)<br><img src="/assets/images/29lqYod.png"></p>
 <p>接著規劃 JS，分為幾個動作思考</p>
 <ol>
 <li>透過 new Date() 去得出目前時間，並將時間整理成六個數字分別代表時分秒的十位數&amp;個位數。然後透過 DOM 去改寫 className 的數值，使得 class 之 c0~c9 可以順利代表數字</li>

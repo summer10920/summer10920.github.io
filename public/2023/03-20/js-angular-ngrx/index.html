@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="洛奇的邪惡組織手札">
 <meta property="og:description" content="NgRx 是一個強大，且功能完整的 Angular 狀態管理套件，在我們的應用程式越來越複雜的時候，它很適合用來管理一些資料狀態，並透過適度的抽象化以及加入一定的規範，降低整體程式的耦合性，打造出更好維護及管理的程式碼。">
 <meta property="og:locale" content="zh_TW">
-<meta property="og:image" content="https://i.imgur.com/q0DRxPm.png">
-<meta property="og:image" content="https://i.imgur.com/3Gr4nsy.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/q0DRxPm.png">
+<meta property="og:image" content="http://summer10920.github.io/assets/images/3Gr4nsy.png">
 <meta property="article:published_time" content="2023-03-20T08:08:50.000Z">
-<meta property="article:modified_time" content="2024-08-22T02:31:12.221Z">
+<meta property="article:modified_time" content="2024-08-27T02:26:22.736Z">
 <meta property="article:author" content="Loki Jiang">
 <meta property="article:tag" content="JavaScript">
 <meta property="article:tag" content="Angular">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/q0DRxPm.png">
+<meta name="twitter:image" content="http://summer10920.github.io/assets/images/q0DRxPm.png">
 
 
 <link rel="canonical" href="http://summer10920.github.io/2023/03-20/js-angular-ngrx/">
@@ -273,7 +273,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-22 10:31:12" itemprop="dateModified" datetime="2024-08-22T10:31:12+08:00">2024-08-22</time>
+      <time title="修改時間：2024-08-27 10:26:22" itemprop="dateModified" datetime="2024-08-27T10:26:22+08:00">2024-08-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -320,7 +320,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p><img src="https://i.imgur.com/q0DRxPm.png"></p>
+    <div class="post-body" itemprop="articleBody"><p><img src="/assets/images/q0DRxPm.png"></p>
 <p>NgRx 是一個強大，且功能完整的 Angular 狀態管理套件，在我們的應用程式越來越複雜的時候，它很適合用來管理一些資料狀態，並透過適度的抽象化以及加入一定的規範，降低整體程式的耦合性，打造出更好維護及管理的程式碼。</p>
 <span id="more"></span>
 
@@ -332,7 +332,7 @@
 </ul>
 <p>雖然這些資料流問題可使用更加明確的路線與可用方法來解決但會更於複雜。因此依賴 NgRx 可不強迫影響這些執行結果。NgRx 是 Angular 另外一塊模組，能幫助我們大型開發應用上更有效率的妥善管理整個 Application state 應用狀態的方式。</p>
 <p>NgRx 本身是參考 React 框架的 Redux 而延伸來的。是一種額外的 state 管理應用 library。他的理念是透過大型集中 store 儲存你的 app，所有的元件與服務都能彼此交換資料但都需要從 store 來存取 state。它提供了一個 <code>@ngrx/store</code> 提供了一個「乘載狀態的容器」，幫助我們存放所有前面提到的全域狀態，並提供一致的方法來進行存取，也就是我們限制了存取的「位置」和「方式」藉此來達到一定程度的控管。</p>
-<p><img src="https://i.imgur.com/3Gr4nsy.png"></p>
+<p><img src="/assets/images/3Gr4nsy.png"></p>
 <p>圖中的 Component 與 Service 是 Angular 內的已知單元，其他 NgRx 的角色有：</p>
 <ul>
 <li>Store：用來存放所有 State 的地方</li>

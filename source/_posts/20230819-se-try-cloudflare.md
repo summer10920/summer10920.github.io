@@ -11,7 +11,7 @@ date: 2023-08-19 15:44:28
 hidden: true
 ---
 
-![](https://i.imgur.com/q7tyXPV.png)
+![](assets/images/q7tyXPV.png)
 
 不久前未注意到信用卡自動續約失效，舊的 domain 網域期限已過期半個月，等我回神到 Google Domains 後台管理時也來不及續約了，若要拿回這個網域需要破萬的搶救費用。當下覺得對於這個舊網域名稱也沒有很中意或依賴就算了。而最近又開始嘗鮮一些伺服器部屬做學習，果斷還是再買一個新 Domain 來弄。
 
