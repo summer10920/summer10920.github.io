@@ -79,12 +79,17 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 也是還沒設定好，我們稍晚示範如何在 VSCode 環境下去使用 Git。
 
-## 部屬環境
-如果你曾安裝過 git 跟 nvs 的獨立安裝程式，這些獨立程式會在安裝過程上幫助你在 windows 內部屬本機的 PATH 變數，讓這台電腦的 terminal 可以執行 git 指令跟 nvs 指令。然而我們現在要改用 portable 版本，自然就沒有獨立程式所包含的 PATH 設定，所以需要自己寫一個腳本來設定讓 terminal 認識 git 指令跟 nvs 指令。
+## 部屬 VSCode 所需環境
+如果你曾安裝過 git 跟 nvs 的獨立安裝程式，這些獨立程式會在安裝過程上幫助你在 windows 內部屬本機的 PATH 變數，讓這台電腦的 terminal 可以執行 git 指令跟 nvs 指令。然而我們現在要改用 VSCode portable 版本，自然就沒有獨立程式所包含的 PATH 設定，所以需要讓 Portable VSCode 能夠去使用我們的 Portable Git 與 NVS。
 
-另外，對於 VSCode 的整合性，會使用 VSCode 提供的終端機操作，而不是 windows 的 cmd 或 powershell 來執行。因此，我們會在 VSCode 的 settings.json 內規劃終端機的自訂選單。
+這裡提供兩種方法，有不同的用法與差異。
 
-### 增加終端機選單
+### 方法一：使用自訂終端機選單
+保留 VSCode 整個介面環境仍使用本機 PATH，只有特定的 terminal 才使用 portable git 與 nvs。這個方法適合不想去使用 VSCode 整合的 Git 視窗化操作，而是習慣 command 操作的人。最大差異應該只有 git 了，因為 NVS 不論如何都是 command 操作才能使用。
+
+我們需要透過使用 VSCode 提供的終端機操作執行，而不是 windows 的 cmd 或 powershell 來執行。因此，我們會在 VSCode 的 settings.json 內規劃終端機的自訂選單。之後還需要寫一個腳本來設定讓自訂 terminal 認識執行 git 指令跟 nvs 指令。
+
+#### 增加終端機選單
 輸入指令或 F1 開啟設定，搜尋`>Open User Settings`，找到指定處`terminal.integrated.profiles.windows`裡面，增加一個自訂命名的`Loki Portable`的終端機選單。這裡能讓你選擇使用哪一個終端機來執行終端機指令。由於我們寫在 User 的 Settings.json，所以這裡的設定套用到 VSCode 的整個 User 設定，因此個人電腦上同帳戶的 VSCode 也會吃到此設定（透過 Sync 功能），這是比較方便的方法，之後只要帳號登入就能使用。
 
 一旦透過選擇了`Loki Portable`，就會執行`K:\VSCode-Portable-Tools\setup_portable-path.ps1`這個腳本，這個腳本會設定好 PATH 變數，讓你可以在 terminal 裡面直接使用 git 指令跟 nvs 指令。
@@ -117,8 +122,8 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 ![](/assets/images/2024-08-27-23-51-00.png)
 
-### 編寫腳本
-我們要寫一個根據 powershell 的腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去設定好 PATH 變數，使得 VSCode 內的終端機可以直接使用 git 指令跟 nvs 指令。建立一個指定的檔案為 `K:\VSCode-Portable-Tools\setup_portable-path.ps1`，注意編碼格式為 UTF-8(BOM) 不然中文會亂碼。
+#### 編寫 ps1 腳本
+我們要寫一個根據 powershell 的腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去設定好 PATH 變數，使得 VSCode 內自訂的`Loki Portable`終端機環境可以直接使用 portable git 指令跟 portable nvs 指令。建立一個指定的檔案為 `K:\VSCode-Portable-Tools\setup_portable-path.ps1`，注意編碼格式為 UTF-8(BOM) 不然中文會亂碼。
 
 setup_portable-path.ps1 腳本的內容主要為：
 
@@ -139,7 +144,6 @@ $gitPortablePath = "$portablePath/PortableGit/bin"
 $gitWindowsPath = (& where git -ErrorAction SilentlyContinue) | Select-Object -First 1 | Split-Path
 $nvsPortablePath = "$portablePath/nvs-1.7.1"
 $nvsWindowsPath = (& where nvs -ErrorAction SilentlyContinue) | Select-Object -First 1 | Split-Path
-$sshConfigPath = "$portablePath/ssh/config"
 
 # 設置 Git 路徑
 if (Test-Path "$gitPortablePath/git.exe") { 
@@ -173,9 +177,6 @@ $gitVersion = (& git --version 2>&1) -replace '\s+', ' '
 $nvsPath = if ($env:NVS_PATH) { $env:NVS_PATH } else { "未找到" }
 $nvsVersion = (& nvs --version 2>&1) -replace '\s+', ' '
 
-# 獲取 SSH 版本
-$sshVersion = (& ssh -V 2>&1) -replace '\s+', ' '
-
 # 打印表格
 Write-Host ("| 項目" + "`t" * 2 + "| 路徑" + "`t" * 6 + "| 版本 " + "`t" * 6 + "|") -ForegroundColor White
 Write-Host ("| ------" + "`t" * 1 + "| ------" + "`t" * 5 + "| ------ " + "`t" * 5 + "|") -ForegroundColor White
@@ -197,7 +198,7 @@ Write-Host "leave" -ForegroundColor Green -NoNewline
 Write-Host "' 來解除環境變數並退出 PowerShell。"
 ```
 
-### 允許執行腳本
+#### 允許執行腳本
 試著點選`Loki Portable`的終端機選單，看看是否能正常執行。應該會發生拒絕執行腳本的錯誤，這是因為 Windows 10 預設的 PowerShell 執行原則是 Restricted，所以不允許執行未簽署的腳本。要解決這個問題讓這台電腦可以執行我們剛寫的腳本，要試著打開。
 
 PowerShell 有 4 種執行原則：
@@ -212,7 +213,7 @@ PowerShell 有 4 種執行原則：
 
 現在試著點選`Loki Portable`的終端機選單，看看是否能正常執行。
 
-## Git push 權限
+#### Git push 權限
 以推送到 github 的情況舉例，當在電腦上第一次設定了遠端分支並嘗試 push 時，會遇到需要輸入帳號密碼的狀況，這是因為 Git 在嘗試連接到遠端伺服器時，需要驗證你的身份。，未來 push 就不需要再次輸入。這個驗證資訊紀錄被存放在本機的 `~/.git-credentials` 文件中是固定的，因此陌生電腦上會留下這個驗證資訊。
 
 如果陌生電腦沒有用過 VSCode 跟 Git，比較沒有什麼問題。因為這台電腦經過你初次 push 且登入後，就已經記住你的 github 身分驗證資訊，所以之後不會再跳出來認證身分錯誤或失敗，所以目前為止應該已經可以正常使用 Portable 來操作 VSCode 與 Git push。
@@ -338,7 +339,6 @@ Write-Host "' 來解除環境變數並退出 PowerShell。"
 ```
 
 這樣設置後，Git 將使用你的 SSH 金鑰進行身份驗證，而不是使用系統存儲的憑證。每次在新的電腦上使用時，只需確保 SSH 配置檔案和金鑰檔案在正確的 portable 位置即可。同時你可以保留 https 方式的遠端 git 設定，讓你可以在自己電腦上都能採用 https 正常 push（不需要 ssh key)，只有當你在陌生電腦上使用 portable git 時又剛好遇到卡在別人身分無法透過 https 進行 git push 時，才需要使用 SSH 金鑰進行身份驗證來 git push。繞過了 https 會吃憑證的問題。
-
 
 # 參考文獻
 - ChatGPT
