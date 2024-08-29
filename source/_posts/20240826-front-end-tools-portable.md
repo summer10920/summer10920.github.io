@@ -38,7 +38,7 @@ hidden: true
 - 指定隨身碟的磁碟代號，讓這些路徑固定不會跑掉。
 - 從官方網站下載指定的軟體 portable 版本，並初始一些設定放入隨身碟。
 - 編寫終端機腳本，讓這些軟體可以透過終端機指令啟動電腦環境。
-- 規劃 git push 的伺服器設定，如果有需要避開陌生電腦的已存在的 gitg 授權設定。
+- 規劃 git push 的伺服器設定，如果有需要避開陌生電腦的已存在的 git 授權設定。
 
 ## 隨身儲存裝置
 首先需要 USB 隨身碟一至兩個，需要考量這個隨身碟是否能承受大量的寫入讀取動作。尤其是當 Node.js 環境與 VSCode 掛載時會影響到讀取次數。因此你可以選擇外接硬碟那種像是 M2 這種類型比較能像一般電腦硬碟承受讀寫次數，然而讀取速度就看電腦的接口裝置（可能是 USB3 或 TypeC，但這不太能去考量借用電腦的硬體規格，因此不用去考慮速度問題）。我自己是使用找到兩支少用的普通 USB 3.0 隨身碟，比較好的拿來當軟體（槽）使用，較差的當作專案儲存（槽）用。
@@ -102,7 +102,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 大致上為要求把 git（包含 git user 才能存放 git 登入身分） 跟 nvs 的 path 路徑都指定給 VSCode，讓 VSCode 啟動時，是使用這些 PATH 來部屬。這樣整個 VSCode 包含提供的原始碼控制以及終端機功能都能使用你指定的 PATH 設定。
 
-此時你可以試著開啟VSCode並在終端機功能的操作下是否可以正常使用 git指令與nvs指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝git的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的.gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
+此時你可以試著開啟 VSCode 並在終端機功能的操作下是否可以正常使用 git 指令與 nvs 指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝 git 的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的。gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
 
 ```git K:\VSCode-Portable-Tools\PortableGit\.gitconfig
 [core]
@@ -136,8 +136,58 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的.gitconfig。也可以試試 `git config --global --list` 能否透過portable VSCode 開啟修改。
+現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的。gitconfig。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
 
+### Portable 的 Settings.json 部分不同步
+如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。除了剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是），你也可以使用 VSCode 的`settingsSync.ignoredSettings`來指定排除的同步。
+
+`settingsSync.ignoredSettings`的設定可以允許你不同電腦上的 VSCode 的 settings.json 內有哪些屬性值不進行替換。注意這裏特別提到屬性值，是因為 VSCode 的設計是，他仍然會對整個 settings.json 的 JSON 文件做版本控制。如果 A 電腦的`GIT_CONFIG_GLOBAL`屬性有寫，而 B 沒有存在`GIT_CONFIG_GLOBAL`屬性，那 Sync 動作還是會把這個視為版本更新，把兩邊同步了。早期我一直以為這是有 BUG 的設計。後來才知道，VSCode 會先檢查兩邊的屬性版本變多還是變少。然後再根據`settingsSync.ignoredSettings`的要求，對於指定的屬性值是否替換。所以為了避免你必須對我們的 A(portable) 電腦指定這些屬性值為`K:...`，然後 B(install) 電腦保持使用預設位置的屬性值（使用電腦系統 PATH 參數）。這樣兩邊都有屬性，只是不會被 sync 進行**屬性值異動**。
+
+參考以下設定再次調整 settings.json。（這裡我多了 php.executablePath 也做忽略，額外參考）
+
+```json Portable VSCode
+{
+  //...
+  "settingsSync.ignoredSettings": [
+    "php.executablePath",
+    "terminal.integrated.env.windows"
+  ], // setting.json 屬性忽略同步
+  /********************************* portable 專屬設定 ***********************************/
+  // for PHP IntelliSense, 讓 vscode 能看懂 php 幫你檢查錯誤或語法建議
+  "php.executablePath": "K:/xampp/php/php.exe",
+  "php.validate.executablePath": "K:/xampp/php/php.exe",
+  // for Portable 裝置下的 PATH 綁定
+  "terminal.integrated.env.windows": {
+    "GIT_CONFIG_GLOBAL": "K:/VSCode-Portable-Tools/PortableGit/.gitconfig",
+    "GIT_PATH": "K:/VSCode-Portable-Tools/PortableGit/bin",
+    "NVS_PATH": "K:/VSCode-Portable-Tools/nvs-1.7.1",
+    "PATH": "K:/VSCode-Portable-Tools/PortableGit/bin;K:/VSCode-Portable-Tools/nvs-1.7.1;%PATH%"
+  },
+}
+```
+
+```json Install VSCode
+{
+  //...
+  "settingsSync.ignoredSettings": [
+    "php.executablePath",
+    "terminal.integrated.env.windows"
+  ], // setting.json 屬性忽略同步
+  /********************************* portable 專屬設定 ***********************************/
+  // for PHP IntelliSense, 讓 vscode 能看懂 php 幫你檢查錯誤或語法建議
+  "php.executablePath": "${env:PHP_EXECUTABLE_PATH}",
+  "php.validate.executablePath": "${env:PHP_VALIDATE_EXECUTABLE_PATH}",
+  // for Portable 裝置下的 PATH 綁定
+  "terminal.integrated.env.windows": {
+    "GIT_CONFIG_GLOBAL": "${env:GIT_CONFIG_GLOBAL}",
+    "GIT_PATH": "${env:GIT_PATH}",
+    "NVS_PATH": "${env:NVS_PATH}",
+    "PATH": "${env:PATH}"
+  },
+}
+```
+
+>注意，兩邊的屬性都要對應出現，ignoredSettings 只針對 value 不同步而已。
 
 ### 使用自訂終端機 profiles 來檢查
 不清楚是否掛載成功指定到 portable git 與 nvs。我們可以編寫一個環境資訊的自訂 profiles，這個自訂只有初始顯示用途才開始使用正常的 PowerShell。每當在 VSCode 內的終端機功能畫面下，使用這個 terminal profile 時先顯示我們想知道的工具資訊。
@@ -174,16 +224,15 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 ![](/assets/images/2024-08-29-10-41-11.png)
 
-
 #### 環境資訊的 ps1 腳本
-接著寫一個 powershell 的前置作業腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去檢查目前能使用的PATH資訊有哪些。我們要檢查的是現在的GIT跟NVS是哪裡來的。並將版本也顯示出來。為了方便些我還多寫了node與npm資訊檢查，如果你的NVS有成功設定default，他會一併被捕獲。
+接著寫一個 powershell 的前置作業腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去檢查目前能使用的 PATH 資訊有哪些。我們要檢查的是現在的 GIT 跟 NVS 是哪裡來的。並將版本也顯示出來。為了方便些我還多寫了 node 與 npm 資訊檢查，如果你的 NVS 有成功設定 default，他會一併被捕獲。
 
 建立一個指定的檔案為 `K:\VSCode-Portable-Tools\path-check.ps1`，注意編碼格式為 UTF-8 With BOM 不然中文會亂碼。
 
 腳本的內容主要為：
 
-- Get-CommandInfo 為負責查找指定名稱的path路徑與版本。
-- Write-Item 顯示指定名稱的path路徑與版本。
+- Get-CommandInfo 為負責查找指定名稱的 path 路徑與版本。
+- Write-Item 顯示指定名稱的 path 路徑與版本。
 - 透過指定的名稱迴圈，去批次查找與顯示。
 
 ```ps1 K:\VSCode-Portable-Tools\path-check.ps1
@@ -231,7 +280,7 @@ foreach ($command in $commands) {
 試著點選`Loki PATH Check`的終端機選單，看看是否能正常執行。應該會發生拒絕執行腳本的錯誤，這是因為 Windows 10 預設的 PowerShell 執行原則是 Restricted，所以不允許執行未簽署的腳本。要解決這個問題讓這台電腦可以執行我們剛寫的腳本，要試著打開。
 
 PowerShell 有 4 種執行原則：
-- Restricted：所有 PowerShell Script 皆無法執行。(Windows 系統預設）
+- Restricted：所有 PowerShell Script 皆無法執行 （為 Windows 系統預設）。
 - AllSigned：所有 PowerShell Script 都要經過受信任的發行者簽屬過後才可執行。
 - RemoteSigned：針對從異地下載下來的 PowerShell Script 需要經過受信任的發行者簽屬過後才可執行，本機的 PowerShell Script 可直接執行。
 - Unrestricted：無限制，所有 PowerShell Script 皆可執行。
@@ -244,9 +293,7 @@ PowerShell 有 4 種執行原則：
 
 ![](/assets/images/2024-08-29-10-51-12.png)
 
-也可以試著去操作VSCode的原始碼控制功能，看看是否正常使用。現在的
-
-
+也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。現在的
 
 <!-- 
 
@@ -260,8 +307,6 @@ PowerShell 有 4 種執行原則：
 我們能 portable 的是把程式安裝在隨身碟，至於 git 把認證資訊寫死在這台電腦位置內，這個問題我們就沒辦法控制了。導致這台電腦的 git 遠端操作都是這台電腦下的別人身分且自動嘗試登入，不會使用或詢問你的帳戶重新認證。GIT 本身就沒有考慮到一台電腦有兩個帳戶需要切換身分別的狀況。
 
 為了解決這個問題，需要一些技巧嘗試避開這個問題。
-
-
 
 ### 設定 SSH 認證
 為了解決這個問題，我們可以使用 SSH 金鑰來進行身份驗證，而不是使用帳號密碼。以下是設定 SSH 認證的步驟：
