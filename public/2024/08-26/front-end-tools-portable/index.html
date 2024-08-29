@@ -32,10 +32,10 @@
 <meta property="og:image" content="http://summer10920.github.io/assets/images/2024-08-29-10-41-11.png">
 <meta property="og:image" content="http://summer10920.github.io/assets/images/2024-08-29-10-51-12.png">
 <meta property="article:published_time" content="2024-08-26T15:33:50.000Z">
-<meta property="article:modified_time" content="2024-08-29T08:36:44.401Z">
+<meta property="article:modified_time" content="2024-08-29T08:51:02.805Z">
 <meta property="article:author" content="Loki Jiang">
-<meta property="article:tag" content="Git&#x2F;GitHub">
 <meta property="article:tag" content="VSCode">
+<meta property="article:tag" content="Git&#x2F;GitHub">
 <meta property="article:tag" content="NodeJS">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://summer10920.github.io/assets/images/2024-08-28-00-51-14.png">
@@ -276,7 +276,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2024-08-29 16:36:44" itemprop="dateModified" datetime="2024-08-29T16:36:44+08:00">2024-08-29</time>
+      <time title="修改時間：2024-08-29 16:51:02" itemprop="dateModified" datetime="2024-08-29T16:51:02+08:00">2024-08-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -377,7 +377,7 @@
 <p>然後再回到剛剛 settings.json 也把 git 的 global config 也綁到 portable VScode 內。變成</p>
 <figure class="highlight json"><figcaption><span>K:\VSCode-Portable-Tools\VSCode-win32-x64-1.84.2\data\user-data\User\settings.json</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="comment">//...</span></span><br><span class="line">  <span class="comment">/********************************* portable 專屬設定 start ***********************************/</span></span><br><span class="line">  <span class="attr">&quot;terminal.integrated.env.windows&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;GIT_CONFIG_GLOBAL&quot;</span><span class="punctuation">:</span> <span class="string">&quot;K:/VSCode-Portable-Tools/PortableGit/.gitconfig&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;GIT_PATH&quot;</span><span class="punctuation">:</span> <span class="string">&quot;K:/VSCode-Portable-Tools/PortableGit/bin&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;NVS_PATH&quot;</span><span class="punctuation">:</span> <span class="string">&quot;K:/VSCode-Portable-Tools/nvs-1.7.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;PATH&quot;</span><span class="punctuation">:</span> <span class="string">&quot;K:/VSCode-Portable-Tools/PortableGit/bin;K:/VSCode-Portable-Tools/PortableGit/usr/bin;K:/VSCode-Portable-Tools/nvs-1.7.1;%PATH%&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="comment">/********************************* portable 專屬設定 end *************************************/</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<p>現在試著執行 <code>git config --global --list</code> 看看是不是你的 portable 版本的<code>.gitconfig</code>。也可以試試 <code>git config --global --list</code> 能否透過 portable VSCode 開啟修改。</p>
+<p>現在試著執行 <code>git config --global --list</code> 看看是不是你的 portable 版本的<code>.gitconfig</code>。也可以試試 <code>git config --global --edit</code> 能否透過 portable VSCode 開啟修改。</p>
 <h3 id="Portable-的-Settings-json-部分不同步"><a href="#Portable-的-Settings-json-部分不同步" class="headerlink" title="Portable 的 Settings.json 部分不同步"></a>Portable 的 Settings.json 部分不同步</h3><p>如剛剛提到的，這裡的<code>terminal.integrated.env.windows</code>屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是）</p>
 <p>除此之外，其實你也可以使用 VSCode 的<code>settingsSync.ignoredSettings</code>來指定排除的同步。</p>
 <p><code>settingsSync.ignoredSettings</code>的設定可以允許你不同電腦上的 VSCode 的 settings.json 內有哪些<strong>屬性值</strong>不進行替換。注意這裏特別提到<strong>屬性值</strong>，是因為 VSCode 的設計是，他仍然會對整個 settings.json 的 JSON 文件做版本控制。如果 A 電腦的<code>GIT_CONFIG_GLOBAL</code>屬性有寫，而 B 沒有存在<code>GIT_CONFIG_GLOBAL</code>屬性，那 Sync 動作還是會把這個視為版本更新，把兩邊同步了。早期我一直以為這是有 BUG 的設計。後來才知道，VSCode 會根據版控管理邏輯去同步兩邊的屬性變多還是少。然後再根據<code>settingsSync.ignoredSettings</code>的要求，對於指定的<strong>屬性值</strong>是否替換。</p>
@@ -435,8 +435,8 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Git-GitHub/" rel="tag"># Git/GitHub</a>
               <a href="/tags/VSCode/" rel="tag"># VSCode</a>
+              <a href="/tags/Git-GitHub/" rel="tag"># Git/GitHub</a>
               <a href="/tags/NodeJS/" rel="tag"># NodeJS</a>
           </div>
 

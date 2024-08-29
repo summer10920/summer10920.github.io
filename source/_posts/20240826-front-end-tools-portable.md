@@ -151,7 +151,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的`.gitconfig`。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
+現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的`.gitconfig`。也可以試試 `git config --global --edit` 能否透過 portable VSCode 開啟修改。
 
 ### Portable 的 Settings.json 部分不同步
 如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是）
