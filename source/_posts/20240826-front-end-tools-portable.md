@@ -102,7 +102,22 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 大致上為要求把 git（包含 git user 才能存放 git 登入身分） 跟 nvs 的 path 路徑都指定給 VSCode，讓 VSCode 啟動時，是使用這些 PATH 來部屬。這樣整個 VSCode 包含提供的原始碼控制以及終端機功能都能使用你指定的 PATH 設定。
 
-此時你可以試著開啟VSCode並在終端機功能的操作下是否可以正常使用 git指令與nvs指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝git的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的.gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
+另外也讓 vscode 去知道 git path 的位置在哪，這裡 git.path 可以用優先順序，先找 K: 否則再找 C：底下的安裝位置。其他 git 參數可參考。
+
+```json K:\VSCode-Portable-Tools\VSCode-win32-x64-1.84.2\data\user-data\User\settings.json
+{
+  //...
+  "git.autofetch": true,
+  "git.inputValidationLength": 200,
+  "git.inputValidationSubjectLength": 200,
+  "git.path": [
+    "K:\\VSCode-Portable-Tools\\PortableGit\\bin\\git.exe",
+    "C:\\Users\\Loki\\AppData\\Roaming\\Code\\User\\lokiTools\\Git\\bin\\git.exe"
+  ],
+}
+```
+
+此時你可以試著開啟 VSCode 並在終端機功能的操作下是否可以正常使用 git 指令與 nvs 指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝 git 的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的。gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
 
 ```git K:\VSCode-Portable-Tools\PortableGit\.gitconfig
 [core]
@@ -136,8 +151,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的.gitconfig。也可以試試 `git config --global --list` 能否透過portable VSCode 開啟修改。
-
+現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的。gitconfig。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
 
 ### 使用自訂終端機 profiles 來檢查
 不清楚是否掛載成功指定到 portable git 與 nvs。我們可以編寫一個環境資訊的自訂 profiles，這個自訂只有初始顯示用途才開始使用正常的 PowerShell。每當在 VSCode 內的終端機功能畫面下，使用這個 terminal profile 時先顯示我們想知道的工具資訊。
@@ -154,7 +168,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
       "icon": "terminal-powershell"
     },
     //...
-    "Loki PATH Check": { //portable-path
+    "Loki PATH Check": { //check path info
       "source": "PowerShell",
       "icon": "terminal-powershell",
       "args": [
@@ -174,16 +188,15 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 ![](/assets/images/2024-08-29-10-41-11.png)
 
-
 #### 環境資訊的 ps1 腳本
-接著寫一個 powershell 的前置作業腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去檢查目前能使用的PATH資訊有哪些。我們要檢查的是現在的GIT跟NVS是哪裡來的。並將版本也顯示出來。為了方便些我還多寫了node與npm資訊檢查，如果你的NVS有成功設定default，他會一併被捕獲。
+接著寫一個 powershell 的前置作業腳本，讓我們的終端機啟用時會先執行這個腳本，這個腳本需要幫助我們去檢查目前能使用的 PATH 資訊有哪些。我們要檢查的是現在的 GIT 跟 NVS 是哪裡來的。並將版本也顯示出來。為了方便些我還多寫了 node 與 npm 資訊檢查，如果你的 NVS 有成功設定 default，他會一併被捕獲。
 
 建立一個指定的檔案為 `K:\VSCode-Portable-Tools\path-check.ps1`，注意編碼格式為 UTF-8 With BOM 不然中文會亂碼。
 
 腳本的內容主要為：
 
-- Get-CommandInfo 為負責查找指定名稱的path路徑與版本。
-- Write-Item 顯示指定名稱的path路徑與版本。
+- Get-CommandInfo 為負責查找指定名稱的 path 路徑與版本。
+- Write-Item 顯示指定名稱的 path 路徑與版本。
 - 透過指定的名稱迴圈，去批次查找與顯示。
 
 ```ps1 K:\VSCode-Portable-Tools\path-check.ps1
@@ -244,9 +257,7 @@ PowerShell 有 4 種執行原則：
 
 ![](/assets/images/2024-08-29-10-51-12.png)
 
-也可以試著去操作VSCode的原始碼控制功能，看看是否正常使用。現在的
-
-
+也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。現在的
 
 <!-- 
 
@@ -260,8 +271,6 @@ PowerShell 有 4 種執行原則：
 我們能 portable 的是把程式安裝在隨身碟，至於 git 把認證資訊寫死在這台電腦位置內，這個問題我們就沒辦法控制了。導致這台電腦的 git 遠端操作都是這台電腦下的別人身分且自動嘗試登入，不會使用或詢問你的帳戶重新認證。GIT 本身就沒有考慮到一台電腦有兩個帳戶需要切換身分別的狀況。
 
 為了解決這個問題，需要一些技巧嘗試避開這個問題。
-
-
 
 ### 設定 SSH 認證
 為了解決這個問題，我們可以使用 SSH 金鑰來進行身份驗證，而不是使用帳號密碼。以下是設定 SSH 認證的步驟：
