@@ -102,6 +102,21 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 
 大致上為要求把 git（包含 git user 才能存放 git 登入身分） 跟 nvs 的 path 路徑都指定給 VSCode，讓 VSCode 啟動時，是使用這些 PATH 來部屬。這樣整個 VSCode 包含提供的原始碼控制以及終端機功能都能使用你指定的 PATH 設定。
 
+另外也讓 vscode 去知道 git path 的位置在哪，這裡 git.path 可以用優先順序，先找 K: 否則再找 C：底下的安裝位置。其他 git 參數可參考。
+
+```json K:\VSCode-Portable-Tools\VSCode-win32-x64-1.84.2\data\user-data\User\settings.json
+{
+  //...
+  "git.autofetch": true,
+  "git.inputValidationLength": 200,
+  "git.inputValidationSubjectLength": 200,
+  "git.path": [
+    "K:\\VSCode-Portable-Tools\\PortableGit\\bin\\git.exe",
+    "C:\\Users\\Loki\\AppData\\Roaming\\Code\\User\\lokiTools\\Git\\bin\\git.exe"
+  ],
+}
+```
+
 此時你可以試著開啟 VSCode 並在終端機功能的操作下是否可以正常使用 git 指令與 nvs 指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝 git 的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的。gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
 
 ```git K:\VSCode-Portable-Tools\PortableGit\.gitconfig
@@ -204,7 +219,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
       "icon": "terminal-powershell"
     },
     //...
-    "Loki PATH Check": { //portable-path
+    "Loki PATH Check": { //check path info
       "source": "PowerShell",
       "icon": "terminal-powershell",
       "args": [
