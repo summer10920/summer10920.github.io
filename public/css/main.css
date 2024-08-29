@@ -1369,7 +1369,7 @@ pre code {
   transition: all 0.2s ease-in-out;
 }
 .links-of-author a::before {
-  background: #f978ff;
+  background: #5e9cb9;
   display: inline-block;
   margin-right: 3px;
   transform: translateY(-2px);
@@ -2758,6 +2758,9 @@ header.header {
 :root {
   --main: #e91061;
   --text-color: #333;
+}
+* {
+  word-break: break-all;
 }
 .mermaid {
   background: transparent;

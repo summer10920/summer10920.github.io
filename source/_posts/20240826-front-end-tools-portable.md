@@ -8,12 +8,12 @@ tag:
   - NodeJS
   - VSCode
 date: 2024-08-26 23:33:50
-hidden: true
+# hidden: true
 ---
 
 ![](/assets/images/2024-08-28-00-51-14.png)
 
-因工作上場地不同，需要有多台電腦之間使用 VSCode 開發工具並進行遠端分支 Git 操作。之前曾經簡單寫過 [這篇](http://localhost:4000/2020/12-30/article-nodejs/?highlight=%E5%85%8D%E5%AE%89%E8%A3%9D#Node-%E7%9A%84%E5%85%8D%E5%AE%89%E8%A3%9D-%EF%BC%88%E5%85%A9%E7%A8%AE%E6%96%B9%E5%BC%8F%EF%BC%89) 提到如何規劃一個 USB，但因為時間過久以及有些做法已經更新，所以這次重新重新整理並獨立一篇記錄下來。如果有需要可以參考使用。
+因工作上場地不同，需要有多台電腦之間使用 VSCode 開發工具並進行遠端分支 Git 操作。之前在這篇 {% post_link article-nodejs %} 曾經簡單提到如何規劃一個 USB，但因為時間過久以及有些做法已經更新，所以這次整理新做法並獨立一篇記錄下來。如果有需要可以參考使用。
 
 <!-- more -->
 ---
@@ -117,7 +117,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-此時你可以試著開啟 VSCode 並在終端機功能的操作下是否可以正常使用 git 指令與 nvs 指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝 git 的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的。gitconfig 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
+此時你可以試著開啟 VSCode 並在終端機功能的操作下是否可以正常使用 git 指令與 nvs 指令。但可以注意到當輸入`git config --global --list` 仍然還是電腦端已安裝 git 的 .gitconfig 為預設。為了避免我們也是需要手動建立一個。你可以直接複製你電腦端的`.gitconfig` 一份到 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig`。只是注意如果有設定 core.editor 記得改回 portableVSCode 位置。
 
 ```git K:\VSCode-Portable-Tools\PortableGit\.gitconfig
 [core]
@@ -151,22 +151,26 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的。gitconfig。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
+現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的`.gitconfig`。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
 
 ### Portable 的 Settings.json 部分不同步
-如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。除了剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是），你也可以使用 VSCode 的`settingsSync.ignoredSettings`來指定排除的同步。
+如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是）
 
-`settingsSync.ignoredSettings`的設定可以允許你不同電腦上的 VSCode 的 settings.json 內有哪些屬性值不進行替換。注意這裏特別提到屬性值，是因為 VSCode 的設計是，他仍然會對整個 settings.json 的 JSON 文件做版本控制。如果 A 電腦的`GIT_CONFIG_GLOBAL`屬性有寫，而 B 沒有存在`GIT_CONFIG_GLOBAL`屬性，那 Sync 動作還是會把這個視為版本更新，把兩邊同步了。早期我一直以為這是有 BUG 的設計。後來才知道，VSCode 會先檢查兩邊的屬性版本變多還是變少。然後再根據`settingsSync.ignoredSettings`的要求，對於指定的屬性值是否替換。所以為了避免你必須對我們的 A(portable) 電腦指定這些屬性值為`K:...`，然後 B(install) 電腦保持使用預設位置的屬性值（使用電腦系統 PATH 參數）。這樣兩邊都有屬性，只是不會被 sync 進行**屬性值異動**。
+除此之外，其實你也可以使用 VSCode 的`settingsSync.ignoredSettings`來指定排除的同步。
 
-參考以下設定再次調整 settings.json。（這裡我多了 php.executablePath 也做忽略，額外參考）
+`settingsSync.ignoredSettings`的設定可以允許你不同電腦上的 VSCode 的 settings.json 內有哪些**屬性值**不進行替換。注意這裏特別提到**屬性值**，是因為 VSCode 的設計是，他仍然會對整個 settings.json 的 JSON 文件做版本控制。如果 A 電腦的`GIT_CONFIG_GLOBAL`屬性有寫，而 B 沒有存在`GIT_CONFIG_GLOBAL`屬性，那 Sync 動作還是會把這個視為版本更新，把兩邊同步了。早期我一直以為這是有 BUG 的設計。後來才知道，VSCode 會根據版控管理邏輯去同步兩邊的屬性變多還是少。然後再根據`settingsSync.ignoredSettings`的要求，對於指定的**屬性值**是否替換。
 
-```json Portable VSCode
+所以為了避免發生屬性消失，你必須對 A 環境的 portable VSCode 的 settings.json 指定這些**屬性值**為`K:\*`，然後 B 環境 install VSCode 保持使用原預設位置的**屬性值**（可使用電腦 PATH 參數）。
+
+這樣兩邊都有屬性，只是不會被 sync 進行**屬性值**異動。參考以下設定再次調整 settings.json。（這裡我多了 php.executablePath 也做忽略，額外參考）
+
+```json Portable VSCode's settings.json
 {
   //...
   "settingsSync.ignoredSettings": [
     "php.executablePath",
     "terminal.integrated.env.windows"
-  ], // setting.json 屬性忽略同步
+  ], // settings.json 屬性忽略同步
   /********************************* portable 專屬設定 ***********************************/
   // for PHP IntelliSense, 讓 vscode 能看懂 php 幫你檢查錯誤或語法建議
   "php.executablePath": "K:/xampp/php/php.exe",
@@ -181,13 +185,13 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-```json Install VSCode
+```json Install VSCode's settings.json
 {
   //...
   "settingsSync.ignoredSettings": [
     "php.executablePath",
     "terminal.integrated.env.windows"
-  ], // setting.json 屬性忽略同步
+  ], // settings.json 屬性忽略同步
   /********************************* portable 專屬設定 ***********************************/
   // for PHP IntelliSense, 讓 vscode 能看懂 php 幫你檢查錯誤或語法建議
   "php.executablePath": "${env:PHP_EXECUTABLE_PATH}",
@@ -202,7 +206,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
->注意，兩邊的屬性都要對應出現，ignoredSettings 只針對 value 不同步而已。
+>注意，兩邊的屬性都要對應出現，ignoredSettings 只針對 values 忽略同步而已。
 
 ### 使用自訂終端機 profiles 來檢查
 不清楚是否掛載成功指定到 portable git 與 nvs。我們可以編寫一個環境資訊的自訂 profiles，這個自訂只有初始顯示用途才開始使用正常的 PowerShell。每當在 VSCode 內的終端機功能畫面下，使用這個 terminal profile 時先顯示我們想知道的工具資訊。
@@ -308,137 +312,7 @@ PowerShell 有 4 種執行原則：
 
 ![](/assets/images/2024-08-29-10-51-12.png)
 
-也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。現在的
-
-<!-- 
-
-#### Git push 權限
-以推送到 github 的情況舉例，當在電腦上第一次設定了遠端分支並嘗試 push 時，會遇到需要輸入帳號密碼的狀況，這是因為 Git 在嘗試連接到遠端伺服器時，需要驗證你的身份。，未來 push 就不需要再次輸入。這個驗證資訊紀錄被存放在本機的 `~/.git-credentials` 文件中是固定的，因此陌生電腦上會留下這個驗證資訊。
-
-如果陌生電腦沒有用過 VSCode 跟 Git，比較沒有什麼問題。因為這台電腦經過你初次 push 且登入後，就已經記住你的 github 身分驗證資訊，所以之後不會再跳出來認證身分錯誤或失敗，所以目前為止應該已經可以正常使用 Portable 來操作 VSCode 與 Git push。
-
-我要說的是，如果這台陌生電腦是另一個人常使用 VSCode 的環境，代表的是這台電腦已經記住那個人的 github 身分資訊。因此即使用你的 portable git 去 push 時，會看到一個錯誤訊息，指出遠端伺服器拒絕連接。這是因為你自己的遠端 Git 儲存庫不允許那個人的 github 身分做上傳，所以拒絕了當下的 push 請求。
-
-我們能 portable 的是把程式安裝在隨身碟，至於 git 把認證資訊寫死在這台電腦位置內，這個問題我們就沒辦法控制了。導致這台電腦的 git 遠端操作都是這台電腦下的別人身分且自動嘗試登入，不會使用或詢問你的帳戶重新認證。GIT 本身就沒有考慮到一台電腦有兩個帳戶需要切換身分別的狀況。
-
-為了解決這個問題，需要一些技巧嘗試避開這個問題。
-
-### 設定 SSH 認證
-為了解決這個問題，我們可以使用 SSH 金鑰來進行身份驗證，而不是使用帳號密碼。以下是設定 SSH 認證的步驟：
-
-1. 在隨身碟中生成 SSH 金鑰對：
-   打開 PowerShell, 執行以下命令：
-   ```powershell
-   ssh-keygen -t rsa -b 4096 -C "你的郵箱" -f "K:/VSCode-Portable-Tools/ssh/id_rsa"
-   ```
-   過程會詢問 passphrase 提示詞可以 enter 跳過，這會在指定路徑生成一對金鑰檔案：id_rsa（私鑰）和 id_rsa.pub（公鑰）。
-
-2. 將公鑰添加到你的 GitHub 帳戶：
-   - 複製 id_rsa.pub 檔案的內容（使用 VSCode 開啟，整個代碼都要複製）
-   - 登入 GitHub, 進入 Settings > SSH and GPG keys
-   - 點擊 "New SSH key", 貼上公鑰內容並保存
-
-3. 在隨身碟中創建 SSH 配置檔案：
-   在 "K:/VSCode-Portable-Tools/ssh/" 目錄下創建名為 "config" 的檔案，內容如下：
-   ```
-   Host github.com
-       HostName github.com
-       User git
-       IdentityFile K:/VSCode-Portable-Tools/ssh/id_rsa
-       IdentitiesOnly yes
-   ```
-
-4. 修改 Git 配置以多增加使用 SSH:
-   在你的專案目錄中，執行：
-   ```
-   git remote set-url origin-ssh git@github.com:summer10920/summer10920.github.io.git
-git@github.com:summer10920/summer10920.github.io.git
-   ```
-
-### 重寫可認出 SSH 的環境腳本
-我們要重新追加剛剛的 ps1 腳本，讓他可以在我們指定的終端機環境認出 SSH 的設定。
-
-```ps1 K:\VSCode-Portable-Tools\setup_portable-path.ps1
-$OutputEncoding = [System.Text.Encoding]::UTF8
-
-# 宣告基本路徑變數
-$portablePath = "K:/VSCode-Portable-Tools"
-
-# 宣告軟體路徑變數
-$gitPortablePath = "$portablePath/PortableGit/bin"
-$gitWindowsPath = (& where git -ErrorAction SilentlyContinue) | Select-Object -First 1 | Split-Path
-$nvsPortablePath = "$portablePath/nvs-1.7.1"
-$nvsWindowsPath = (& where nvs -ErrorAction SilentlyContinue) | Select-Object -First 1 | Split-Path
-$sshConfigPath = "$portablePath/ssh/config"
-
-# 設置 Git 路徑
-if (Test-Path "$gitPortablePath/git.exe") { 
-    $env:GIT_PATH = $gitPortablePath 
-} elseif ($gitWindowsPath) { 
-    $env:GIT_PATH = [System.IO.Path]::GetDirectoryName($gitWindowsPath) 
-} else { 
-    throw "未安裝 Git 或未能找到 Git 路徑" 
-}
-
-# 設置 NVS 路徑
-if (Test-Path "$nvsPortablePath/nvs.cmd") { 
-    $env:NVS_PATH = $nvsPortablePath 
-} elseif ($nvsWindowsPath) { 
-    $env:NVS_PATH = [System.IO.Path]::GetDirectoryName($nvsWindowsPath) 
-} else { 
-    throw "未安裝 NVS 或未能找到 NVS 路徑" 
-}
-
-# 更新 PATH 環境變量
-$env:PATH = "$env:GIT_PATH;$env:NVS_PATH;$env:PATH"
-
-# 更新 SSH 配置
-if (Test-Path $sshConfigPath) {
-    $env:GIT_SSH_COMMAND = "ssh -F $sshConfigPath"
-    $sshConfigSet = $true
-} else {
-    $sshConfigSet = $false
-    Write-Host "SSH 配置文件未找到：$sshConfigPath" -ForegroundColor Red
-}
-
-# 輸出環境資訊
-Write-Host "環境資訊：" -ForegroundColor Cyan
-
-# 獲取 Git 路徑和版本
-$gitPath = if ($env:GIT_PATH) { $env:GIT_PATH } else { "未找到" }
-$gitVersion = (& git --version 2>&1) -replace '\s+', ' '
-
-# 獲取 NVS 路徑和版本
-$nvsPath = if ($env:NVS_PATH) { $env:NVS_PATH } else { "未找到" }
-$nvsVersion = (& nvs --version 2>&1) -replace '\s+', ' '
-
-# 獲取 SSH 版本
-$sshVersion = (& ssh -V 2>&1) -replace '\s+', ' '
-
-# 打印表格
-Write-Host ("| 項目" + "`t" * 2 + "| 路徑" + "`t" * 6 + "| 版本 " + "`t" * 6 + "|") -ForegroundColor White
-Write-Host ("| ------" + "`t" * 1 + "| ------" + "`t" * 5 + "| ------ " + "`t" * 5 + "|") -ForegroundColor White
-Write-Host ("| Git 路徑" + "`t" * 1 + "| $gitPath" + "`t" * 1 + "| $gitVersion " + "`t" * 3 + "|") -ForegroundColor White
-Write-Host ("| NVS 路徑" + "`t" * 1 + "| $nvsPath" + "`t" * 2 + "| $nvsVersion " + "`t" * 5 + "|") -ForegroundColor White
-Write-Host ("| SSH 配置" + "`t" * 1 + "| $sshConfigPath" + "`t" * 2 + "| $sshVersion " + "`t" * 1 + "|") -ForegroundColor White
-
-# 定義清理並退出的函數
-function leave {
-    Remove-Item env:GIT_PATH -ErrorAction SilentlyContinue
-    Remove-Item env:NVS_PATH -ErrorAction SilentlyContinue
-    Remove-Item env:GIT_SSH_COMMAND -ErrorAction SilentlyContinue
-    Write-Host "環境變數已解除，正常卸載此外部儲存裝置" -ForegroundColor Yellow
-    Start-Sleep -Seconds 2  # 暫停 2 秒以顯示信息
-    exit
-}
-
-# 保持 PowerShell 打開，並提示用戶使用 leave 來退出
-Write-Host "`n 輸入 '" -NoNewline
-Write-Host "leave" -ForegroundColor Green -NoNewline
-Write-Host "' 來解除環境變數並退出 PowerShell。"
-```
-
-這樣設置後，Git 將使用你的 SSH 金鑰進行身份驗證，而不是使用系統存儲的憑證。每次在新的電腦上使用時，只需確保 SSH 配置檔案和金鑰檔案在正確的 portable 位置即可。同時你可以保留 https 方式的遠端 git 設定，讓你可以在自己電腦上都能採用 https 正常 push（不需要 ssh key)，只有當你在陌生電腦上使用 portable git 時又剛好遇到卡在別人身分無法透過 https 進行 git push 時，才需要使用 SSH 金鑰進行身份驗證來 git push。繞過了 https 會吃憑證的問題。 -->
+也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。
 
 # 參考文獻
 - ChatGPT
