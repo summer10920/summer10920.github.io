@@ -110,10 +110,7 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
   "git.autofetch": true,
   "git.inputValidationLength": 200,
   "git.inputValidationSubjectLength": 200,
-  "git.path": [
-    "K:\\VSCode-Portable-Tools\\PortableGit\\bin\\git.exe",
-    "C:\\Users\\Loki\\AppData\\Roaming\\Code\\User\\lokiTools\\Git\\bin\\git.exe"
-  ],
+  "git.path": "K:\\VSCode-Portable-Tools\\PortableGit\\bin\\git.exe",
 }
 ```
 
@@ -151,12 +148,10 @@ VSCode 來說，有必要可以看一下進入 [免安裝說明](https://code.vi
 }
 ```
 
-現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的`.gitconfig`。也可以試試 `git config --global --edit` 能否透過 portable VSCode 開啟修改。
+現在試著執行 `git config --global --list` 看看是不是你的 portable 版本的`.gitconfig`。也可以試試 `git config --global --list` 能否透過 portable VSCode 開啟修改。
 
 ### Portable 的 Settings.json 部分不同步
-如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性，為我們希望作用在 Portable VSCode 上，如果正式 install VSCode 就不想使用到 Portable 的 PATH 設定。剛提到你需要手動的去註解在 install VSCode 上（比較麻煩便是）
-
-除此之外，其實你也可以使用 VSCode 的`settingsSync.ignoredSettings`來指定排除的同步。
+如剛剛提到的，這裡的`terminal.integrated.env.windows`屬性將會是你 VSCode 同步的 PATH 設定屬性之一，他會被套用工作電腦 (install VSCode) 跟臨時電腦 (portable VSCode)。然而我只希望作用在 Portable VSCode 上，因此正式 install VSCode 就不想使用到 Portable 的相關 PATH 設定。就變成你需要在指定的工作電腦 (install VSCode) 上手動的去註解（每次同步影響，比較麻煩便是），你也可以使用 VSCode 的`settingsSync.ignoredSettings`來指定排除的 VSCode 屬性同步。
 
 `settingsSync.ignoredSettings`的設定可以允許你不同電腦上的 VSCode 的 settings.json 內有哪些**屬性值**不進行替換。注意這裏特別提到**屬性值**，是因為 VSCode 的設計是，他仍然會對整個 settings.json 的 JSON 文件做版本控制。如果 A 電腦的`GIT_CONFIG_GLOBAL`屬性有寫，而 B 沒有存在`GIT_CONFIG_GLOBAL`屬性，那 Sync 動作還是會把這個視為版本更新，把兩邊同步了。早期我一直以為這是有 BUG 的設計。後來才知道，VSCode 會根據版控管理邏輯去同步兩邊的屬性變多還是少。然後再根據`settingsSync.ignoredSettings`的要求，對於指定的**屬性值**是否替換。
 
@@ -312,7 +307,157 @@ PowerShell 有 4 種執行原則：
 
 ![](/assets/images/2024-08-29-10-51-12.png)
 
-也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。
+也可以試著去操作 VSCode 的原始碼控制功能，看看是否正常使用。現在的
+
+## 部屬遠端 git
+目前而言的 Portable VSCode 可以在本機終端機環境上使用 git 操作管理。然而要連線到 github 進行 push 操作還無法得到授權，在工作電腦(install VSCode)上受到 VSCode 初始操作引導安裝時，預設行為下會使用 https 以及 windows 的 Windows Credential Manager（即 Git Credential Manager 的一部分，這是一個內置在 Windows 中的憑證管理系統） 存入到電腦系統碟下。
+
+然而，為了避開使用到陌生電腦內可能已存在他人帳號的GCM，我們要避開HTTPS的GCM認證，改用SSH方式進行登入。透過隨身碟持有私鑰方式跟GitHub 進行登入認證。
+
+### 設定 SSH 認證
+首先我們可以建立 SSH 金鑰來進行身份驗證，而不是使用帳號密碼。以下是設定 SSH 認證的步驟：
+
+1. 在隨身碟中生成 SSH 金鑰對：
+   打開 PowerShell, 執行以下命令：
+   ```powershell
+   ssh-keygen -t rsa -b 4096 -C "你的郵箱" -f "K:/VSCode-Portable-Tools/ssh/id_rsa"
+   ```
+   過程會詢問 passphrase 提示詞可以 enter 跳過，這會在指定路徑生成一對金鑰檔案：id_rsa（私鑰）和 id_rsa.pub（公鑰）。
+
+2. 將公鑰添加到你的 GitHub 帳戶：
+   - 複製 id_rsa.pub 檔案的內容（使用 VSCode 開啟，整個代碼都要複製）
+   - 登入 GitHub, 進入 Settings > SSH and GPG keys
+   - 點擊 "New SSH key", 貼上公鑰內容並保存
+
+3. 在隨身碟中創建 SSH 配置檔案：
+   在 "K:/VSCode-Portable-Tools/ssh/" 目錄下創建名為 "config" 的檔案，內容如下：
+   ```
+   Host github.com
+       HostName github.com
+       User git
+       IdentityFile K:/VSCode-Portable-Tools/ssh/id_rsa
+       IdentitiesOnly yes
+   ```
+
+4. 建立 Git 配置下的遠端分支位置，增加使用 SSH方式連線，在你的專案目錄中，執行：
+   ```
+    git remote set-url origin-ssh git@github.com:summer10920/summer10920.github.io.git
+    git@github.com:summer10920/summer10920.github.io.git
+   ```
+
+### portable VSCode 綁定 SSH
+回到這個portable VSCode 的 setting.json 添加
+
+```json
+  "terminal.integrated.env.windows": {
+    "GIT_CONFIG_GLOBAL": "K:/VSCode-Portable-Tools/PortableGit/.gitconfig",
+    "GIT_PATH": "K:/VSCode-Portable-Tools/PortableGit/bin",
+    "NVS_PATH": "K:/VSCode-Portable-Tools/nvs-1.7.1",
+    "PATH": "K:/VSCode-Portable-Tools/PortableGit/bin;K:/VSCode-Portable-Tools/PortableGit/usr/bin;K:/VSCode-Portable-Tools/nvs-1.7.1;%PATH%",
+    "SSH_CONFIG": "K:/VSCode-Portable-Tools/ssh/config",
+    "GIT_SSH_COMMAND": "ssh -F K:/VSCode-Portable-Tools/ssh/config -i K:/VSCode-Portable-Tools/ssh/id_rsa"
+  },
+```
+
+
+
+### 重寫可認出 SSH 的環境腳本
+我們要重新追加剛剛的 ps1 腳本，讓他可以在我們指定的終端機環境認出 SSH 的設定。
+
+```ps1 K:\VSCode-Portable-Tools\path-check.ps1
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+function Get-CommandInfo {
+    param (
+        [string]$commandName
+    )
+    
+    $command = Get-Command $commandName -ErrorAction SilentlyContinue
+    $path = if ($command) { $command.Source } else { "未找到" }
+
+    # 獲取版本資訊，簡化條件邏輯
+    $version = if ($command) {
+        if ($commandName -eq 'ssh') {
+            # 對於 ssh 使用 -V
+            (& $commandName -V 2>&1) -replace '\s+', ' '
+        } else {
+            # 對於其他命令使用 --version
+            (& $commandName --version 2>&1) -replace '\s+', ' '
+        }
+    } else {
+        "未安裝"
+    }
+    
+    return @{ Path = $path; Version = $version }
+}
+
+function Write-Item {
+    param (
+        [string]$itemName,
+        [hashtable]$commandInfo
+    )
+    Write-Host ($itemName) -ForegroundColor Cyan -NoNewline
+    Write-Host ("`t" * 2 + "| ") -NoNewline
+    Write-Host $commandInfo.Path -ForegroundColor Green -NoNewline
+    Write-Host ("`t" * 1) -NoNewline
+    Write-Host $commandInfo.Version -ForegroundColor Yellow
+}
+
+function DisplayAllCommands {
+    # Header
+    Write-Host "環境資訊" -ForegroundColor Cyan -NoNewline
+    Write-Host ("" + "`t" * 1 + "| ") -NoNewline
+    Write-Host "使用路徑" -ForegroundColor Green -NoNewline
+    Write-Host " vs " -NoNewline
+    Write-Host "版本" -ForegroundColor Yellow
+    Write-Host ("------" + "`t" * 2 + "| ------") -ForegroundColor White
+
+    # Items
+    $commands = @("Git", "NVS", "npm", "node", "ssh")
+    foreach ($command in $commands) {
+        Write-Item $command (Get-CommandInfo $command.ToLower())
+    }
+}
+
+# 首次顯示所有命令信息
+DisplayAllCommands
+
+# 主循環，決定是否刷新輸出
+do {
+    $input = Read-Host "是否刷新所有命令的輸出? (any/n) "
+    if ($input -eq 'n') {
+        Write-Host "Bye!" -ForegroundColor Yellow
+        break
+    } else {
+        Clear-Host
+        DisplayAllCommands
+    }
+} while ($true)
+```
+
+另外設定 git config 的 global 全局設定綁定，他會生成在 `K:\VSCode-Portable-Tools\PortableGit\.gitconfig` 內。
+
+```bash
+git config --global core.sshCommand "ssh -i K:/VSCode-Portable-Tools/ssh/id_rsa -o IdentitiesOnly=yes"
+```
+
+
+<!-- 這樣設置後，Git 將使用你的 SSH 金鑰進行身份驗證，而不是使用系統存儲的憑證。每次在新的電腦上使用時，只需確保 SSH 配置檔案和金鑰檔案在正確的 portable 位置即可。同時你可以保留 https 方式的遠端 git 設定，讓你可以在自己電腦上都能採用 https 正常 push（不需要 ssh key)，只有當你在陌生電腦上使用 portable git 時又剛好遇到卡在別人身分無法透過 https 進行 git push 時，才需要使用 SSH 金鑰進行身份驗證來 git push。繞過了 https 會吃憑證的問題。 -->
+
+
+<!-- 
+
+#### Git push 權限
+以推送到 github 的情況舉例，當在電腦上第一次設定了遠端分支並嘗試 push 時，會遇到需要輸入帳號密碼的狀況，這是因為 Git 在嘗試連接到遠端伺服器時，需要驗證你的身份。，未來 push 就不需要再次輸入。這個驗證資訊紀錄被存放在本機的 `~/.git-credentials` 文件中是固定的，因此陌生電腦上會留下這個驗證資訊。
+
+如果陌生電腦沒有用過 VSCode 跟 Git，比較沒有什麼問題。因為這台電腦經過你初次 push 且登入後，就已經記住你的 github 身分驗證資訊，所以之後不會再跳出來認證身分錯誤或失敗，所以目前為止應該已經可以正常使用 Portable 來操作 VSCode 與 Git push。
+
+我要說的是，如果這台陌生電腦是另一個人常使用 VSCode 的環境，代表的是這台電腦已經記住那個人的 github 身分資訊。因此即使用你的 portable git 去 push 時，會看到一個錯誤訊息，指出遠端伺服器拒絕連接。這是因為你自己的遠端 Git 儲存庫不允許那個人的 github 身分做上傳，所以拒絕了當下的 push 請求。
+
+我們能 portable 的是把程式安裝在隨身碟，至於 git 把認證資訊寫死在這台電腦位置內，這個問題我們就沒辦法控制了。導致這台電腦的 git 遠端操作都是這台電腦下的別人身分且自動嘗試登入，不會使用或詢問你的帳戶重新認證。GIT 本身就沒有考慮到一台電腦有兩個帳戶需要切換身分別的狀況。
+
+為了解決這個問題，需要一些技巧嘗試避開這個問題。 -->
 
 # 參考文獻
 - ChatGPT
+
