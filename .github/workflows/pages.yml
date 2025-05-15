@@ -1,4 +1,4 @@
-name: Pages
+name: Deploy Nexo Blog to Github Pages
 
 on:
   push:
