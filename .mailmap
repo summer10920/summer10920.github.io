@@ -1,9 +1,9 @@
 # Git Mailmap - 統一貢獻者身份
 # 格式：正確的名稱 <正確的email> 錯誤的名稱 <錯誤的email>
 
-# 統一所有身份到主要的 GitHub 身份
-Loki Jiang <37170364+summer10920@users.noreply.github.com> kai <cgk0910@gmail.com>
-Loki Jiang <37170364+summer10920@users.noreply.github.com> ouyujyun <ouyujyun@gmail.com>
-Loki Jiang <37170364+summer10920@users.noreply.github.com> summer10920 <summer10920@gmail.com>
-Loki Jiang <37170364+summer10920@users.noreply.github.com> summer10921 <summer10921@gmail.com>
-Loki Jiang <37170364+summer10920@users.noreply.github.com> Loki Jiang <summer10920@gmail.com> 
+# 統一所有身份到主要身份 Loki Jiang <summer10920@gmail.com>
+Loki Jiang <summer10920@gmail.com> kai <cgk0910@gmail.com>
+Loki Jiang <summer10920@gmail.com> ouyujyun <ouyujyun@gmail.com>
+Loki Jiang <summer10920@gmail.com> summer10920 <summer10920@gmail.com>
+Loki Jiang <summer10920@gmail.com> summer10921 <summer10921@gmail.com>
+Loki Jiang <summer10920@gmail.com> Loki Jiang <37170364+summer10920@users.noreply.github.com> 
