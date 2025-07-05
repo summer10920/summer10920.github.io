@@ -1,0 +1,180 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Hexo Blog 教學文章撰寫規則
+
+## 專案概述
+這是一個使用 Hexo 框架的技術教學部落格，專門撰寫 HTML/CSS、程式設計等基礎課程教材。文章以繁體中文撰寫，針對初學者設計，包含豐富的程式碼範例和實用技巧。
+
+## 文章結構規範
+
+### Front Matter 格式
+每篇文章必須包含以下 front matter：
+```yaml
+---
+title: "[基礎課程] 課程標題"
+categories:
+  - 職訓教材
+  - 技術分類 (如 HTML/CSS, JavaScript, PHP)
+tag:
+  - 相關標籤
+  - 課程名稱
+date: YYYY-MM-DD HH:mm:ss
+---
+```
+
+### 文章開頭結構
+1. 插入封面圖片：`![](assets/images/圖片名稱.png)`
+2. 簡短介紹段落（2-3 句話）
+3. 插入閱讀全文分隔符：`<!-- more -->`
+
+## Hexo 特殊標籤語法
+
+### 提示框標籤
+- `{% note default %}內容{% endnote %}` - 預設提示
+- `{% note primary %}內容{% endnote %}` - 主要提示  
+- `{% note success %}內容{% endnote %}` - 成功提示
+- `{% note info %}內容{% endnote %}` - 資訊提示
+- `{% note warning %}內容{% endnote %}` - 警告提示
+- `{% note danger %}內容{% endnote %}` - 危險提示
+
+### 多媒體標籤
+- `{% youtube video_id %}` - 嵌入 YouTube 影片
+- `{% vimeo video_id %}` - 嵌入 Vimeo 影片
+- `{% jsfiddle username/code_id js,html,css,result dark 100% 500 %}` - 嵌入 JSFiddle
+- `{% codepen username code_id [html,css,result 250] %}` - 嵌入 CodePen
+
+### 互動元素
+- `{% tabs 標籤名,1 %}<!-- tab -->內容<!-- endtab -->{% endtabs %}` - 分頁標籤
+- `{% button url, 按鈕文字, 圖示, 標題 %}` - 按鈕元素
+- `{% label default@文字 %}` - 標籤元素
+
+### 引用與區塊
+- `{% blockquote 作者 來源網址 %}內容{% endblockquote %}` - 引用區塊
+- `{% cq %}引用文字{% endcq %}` - 簡短引用
+
+### 圖片展示
+- `{% gp 5-3 %}圖片列表{% endgp %}` - 圖庫模式
+
+## 程式碼範例規範
+
+### 檔案命名格式
+```語言 檔案名稱.副檔名
+程式碼內容
+```
+
+### 常用程式碼區塊
+- HTML 範例使用 `index.html` 作為預設檔名
+- CSS 範例使用 `style.css` 作為預設檔名
+- JavaScript 範例使用 `script.js` 作為預設檔名
+
+## 撰寫風格指南
+
+### 語言使用
+- 全文使用繁體中文
+- 技術術語保持英文原文，並在首次出現時提供中文解釋
+- 避免使用過於複雜的術語，保持初學者友好
+
+### 內容結構
+1. **觀念解釋**：先解釋概念和原理
+2. **語法說明**：提供完整的語法格式
+3. **範例展示**：給出具體的程式碼範例
+4. **實際應用**：展示在真實場景中的使用方式
+5. **注意事項**：使用適當的提示框標籤
+
+### 範例命名慣例
+- 使用語義化的變數名稱
+- 範例內容貼近實際應用場景
+- 註解使用繁體中文，解釋清楚每個步驟
+
+## 特殊元素使用指南
+
+### 小技巧提示
+使用 `{% note info %}` 包裝：
+```
+{% note info %}
+  **小技巧：標題**
+  具體內容說明
+{% endnote %}
+```
+
+### 重要警告
+使用 `{% note warning %}` 或 `{% note danger %}` 包裝：
+```
+{% note warning %}
+  **注意事項**
+  警告內容
+{% endnote %}
+```
+
+### 跟著做練習
+使用 `{% note success %}` 包裝：
+```
+{% note success %}
+  **跟著做：**
+  練習步驟
+{% endnote %}
+```
+
+### 素材準備
+使用 `{% note primary %}` 包裝：
+```
+{% note primary %}
+  **素材準備：**
+  所需檔案或工具
+{% endnote %}
+```
+
+## 程式碼註解規範
+
+### HTML 註解
+```html
+<!-- 這是 HTML 註解，用來說明程式碼的用途 -->
+```
+
+### CSS 註解
+```css
+/* 這是 CSS 註解，解釋樣式的目的 */
+```
+
+### JavaScript 註解
+```javascript
+// 這是 JavaScript 單行註解
+/* 這是 JavaScript 多行註解 */
+```
+
+## 鍵盤快捷鍵標記
+使用 `<kbd>` 標籤標記鍵盤按鍵：
+- `<kbd>F12</kbd>` - 單一按鍵
+- `<kbd>Ctrl</kbd>+<kbd>C</kbd>` - 組合鍵
+
+## 文章內連結
+- `{% post_link 文章檔名 %}` - 連結到其他文章
+- 外部連結使用完整的 URL
+- 內部資源使用相對路徑
+
+## 圖片處理
+- 圖片統一放在 `assets/images/` 目錄
+- 使用語義化的檔案名稱
+- 為圖片添加適當的 alt 屬性
+
+## 撰寫檢查清單
+1. ✅ Front matter 格式正確
+2. ✅ 文章結構清晰（標題層級正確）
+3. ✅ 程式碼範例完整可執行
+4. ✅ 使用適當的提示框標籤
+5. ✅ 註解清楚易懂
+6. ✅ 中英文混用格式正確
+7. ✅ 圖片和連結正常運作
+8. ✅ 適當使用 hexo 特殊標籤
+
+## 常見錯誤避免
+- 不要在 `<!-- more -->` 前放置 hexo 標籤
+- 提示框標籤需要正確的結尾標籤
+- 程式碼區塊的語言標示要正確
+- 避免過度使用 `!important` 或其他強制性語法
+
+
+這份規則將確保您的技術教學文章具有一致性、可讀性和教育價值。 
