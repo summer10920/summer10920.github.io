@@ -1,5 +1,5 @@
 ---
-title: "[基礎課程] CSS 基礎教學（二）：屬性值 - 基本篇"
+title: "[基礎課程] CSS 教學（二）：屬性值 - 基本篇"
 categories:
   - 職訓教材
   - HTML/CSS
@@ -98,7 +98,7 @@ body {
 
 網頁字型的來源可以分為四大類，各有其優缺點和適用場景：
 
-##### 1. 系統通用字型
+##### 系統通用字型
 
 這些是各個作業系統都支援的基本字型分類：
 
@@ -118,7 +118,7 @@ body {
 襯線體指的是在字母筆畫的開始及結束部位有額外裝飾的字型，在中文環境中類似明體字。這些裝飾有助於文字的可讀性，特別是在印刷媒體上。
 {% endblockquote %}
 
-##### 2. 系統指定字型
+##### 系統指定字型
 
 使用作業系統內建的特定字型：
 
@@ -132,7 +132,7 @@ body {
 **優點：** 具有平台特色，載入速度快  
 **缺點：** 跨平台一致性差，需要多重備選方案
 
-##### 3. 外部字型檔案
+##### 外部字型檔案
 
 提供自訂 TTF/OTF 字型檔案：
 
@@ -161,7 +161,7 @@ body {
 使用自訂字型時務必注意著作權問題！商業字型通常需要購買授權才能在網站上使用。建議優先使用開源字型或確認已取得合法授權。
 {% endnote %}
 
-##### 4. 線上字型服務（推薦）
+##### 線上字型服務（推薦）
 
 使用 CDN 字型服務，如 Google Fonts：
 
@@ -3099,3 +3099,878 @@ table {
 ```
 前提是必須設定表格總寬度，適用於欄位寬度固定的情況。
 {% endnote %}
+
+
+# CSS 原生變數 (Custom Properties)
+
+CSS 原生變數（正式名稱為 Custom Properties）是現代 CSS 的強大功能，讓我們能夠在樣式表中定義和重複使用變數。這項技術大幅提升了 CSS 的可維護性和靈活性，是現代網頁開發不可或缺的工具。
+
+{% note primary %}
+**學習重點**
+- 理解 CSS 原生變數的概念和語法
+- 掌握變數的作用域和繼承機制
+- 學會在實際專案中應用變數
+- 了解變數與 JavaScript 的互動方式
+- 掌握變數的最佳實踐和命名規範
+{% endnote %}
+
+## 基本概念與語法
+
+CSS 原生變數使用 `--` 前綴來定義，並透過 `var()` 函數來使用。這個功能讓我們能夠將重複使用的值抽取成變數，提升程式碼的可讀性和維護性。
+
+### 定義與使用變數
+
+```css
+/* 定義變數 */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --font-size-large: 1.25rem;
+  --border-radius: 8px;
+  --spacing-unit: 1rem;
+}
+
+/* 使用變數 */
+.button {
+  background-color: var(--primary-color);
+  font-size: var(--font-size-large);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-unit);
+}
+
+.card {
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacing-unit) * 1.5);
+}
+```
+
+### 語法規則
+
+{% note info %}
+**重要語法規則**
+- **定義**：`--變數名稱: 值;`
+- **使用**：`var(--變數名稱)`
+- **備用值**：`var(--變數名稱, 備用值)`
+- **變數名稱**：區分大小寫，可包含字母、數字、連字符、底線
+- **作用域**：遵循 CSS 的層疊和繼承規則
+{% endnote %}
+
+```css
+/* 變數命名範例 */
+:root {
+  --main-color: #333;          /* ✅ 推薦：語義化命名 */
+  --font-size-h1: 2rem;        /* ✅ 推薦：描述性命名 */
+  --z-index-modal: 1000;       /* ✅ 推薦：功能性命名 */
+  
+  --color1: red;               /* ❌ 避免：無意義命名 */
+  --big: 20px;                 /* ❌ 避免：模糊命名 */
+}
+
+/* 使用備用值 */
+.element {
+  color: var(--text-color, #333);           /* 如果變數未定義，使用 #333 */
+  font-size: var(--custom-size, 1rem);      /* 如果變數未定義，使用 1rem */
+}
+```
+
+## 作用域與繼承
+
+CSS 變數具有作用域特性，可以在不同層級定義，並遵循 CSS 的層疊和繼承規則。
+
+### 全域變數與局部變數
+
+```css
+/* 全域變數：定義在 :root 中 */
+:root {
+  --global-primary: #007bff;
+  --global-secondary: #6c757d;
+  --global-spacing: 1rem;
+}
+
+/* 局部變數：定義在特定選擇器中 */
+.dark-theme {
+  --primary-color: #0d6efd;
+  --background-color: #212529;
+  --text-color: #ffffff;
+}
+
+.light-theme {
+  --primary-color: #0066cc;
+  --background-color: #ffffff;
+  --text-color: #333333;
+}
+
+/* 使用變數 */
+.theme-container {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.button {
+  background-color: var(--primary-color);
+  padding: var(--global-spacing);
+}
+```
+
+### 變數的繼承機制
+
+```html index.html
+<div class="parent">
+  <div class="child">
+    <div class="grandchild">內容</div>
+  </div>
+</div>
+```
+
+```css style.css
+/* 變數會沿著 DOM 樹繼承 */
+.parent {
+  --text-size: 16px;
+  --text-color: #333;
+}
+
+.child {
+  --text-color: #666;  /* 覆蓋父層的變數 */
+  font-size: var(--text-size);    /* 繼承父層的 --text-size */
+  color: var(--text-color);       /* 使用自己定義的 --text-color */
+}
+
+.grandchild {
+  /* 繼承 .child 的所有變數 */
+  font-size: var(--text-size);    /* 16px */
+  color: var(--text-color);       /* #666 */
+}
+```
+
+## 實際應用場景
+
+### 主題切換系統
+
+CSS 變數最常見的應用是建立主題切換系統，透過改變根級變數來實現整站的主題變換。
+
+```html theme-demo.html
+<div class="theme-switcher">
+  <button onclick="setTheme('light')">淺色主題</button>
+  <button onclick="setTheme('dark')">深色主題</button>
+  <button onclick="setTheme('blue')">藍色主題</button>
+</div>
+
+<div class="demo-content">
+  <div class="card">
+    <h3>主題展示卡片</h3>
+    <p>這個卡片會根據選擇的主題改變外觀。</p>
+    <button class="btn">按鈕範例</button>
+  </div>
+</div>
+```
+
+```css theme-styles.css
+/* 基礎變數定義 */
+:root {
+  /* 淺色主題（預設） */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --accent-color: #007bff;
+  --border-color: #dee2e6;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色主題 */
+[data-theme="dark"] {
+  --bg-primary: #212529;
+  --bg-secondary: #343a40;
+  --text-primary: #ffffff;
+  --text-secondary: #adb5bd;
+  --accent-color: #0d6efd;
+  --border-color: #495057;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* 藍色主題 */
+[data-theme="blue"] {
+  --bg-primary: #e3f2fd;
+  --bg-secondary: #bbdefb;
+  --text-primary: #0d47a1;
+  --text-secondary: #1565c0;
+  --accent-color: #2196f3;
+  --border-color: #90caf9;
+  --shadow: 0 2px 4px rgba(33, 150, 243, 0.2);
+}
+
+/* 應用變數的樣式 */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.card h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.btn {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+
+/* 主題切換按鈕 */
+.theme-switcher {
+  text-align: center;
+  padding: 2rem;
+}
+
+.theme-switcher button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-switcher button:hover {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
+}
+```
+
+```javascript script.js
+// 主題切換功能
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('preferred-theme', theme);
+}
+
+// 載入儲存的主題
+document.addEventListener('DOMContentLoaded', function() {
+  const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+  setTheme(savedTheme);
+});
+```
+
+### 響應式變數系統
+
+使用 CSS 變數可以輕鬆建立響應式的設計系統：
+
+```css
+/* 響應式間距系統 */
+:root {
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+}
+
+/* 平板以上調整變數 */
+@media (min-width: 768px) {
+  :root {
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    --font-size-base: 1.125rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 1.875rem;
+  }
+}
+
+/* 桌機調整變數 */
+@media (min-width: 1024px) {
+  :root {
+    --spacing-lg: 2.5rem;
+    --spacing-xl: 4rem;
+    
+    --font-size-2xl: 2rem;
+  }
+}
+
+/* 使用響應式變數 */
+.container {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
+}
+
+.section-title {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-lg);
+}
+```
+
+### 元件化設計系統
+
+```css
+/* 按鈕元件變數系統 */
+:root {
+  /* 按鈕尺寸 */
+  --btn-padding-sm: 0.25rem 0.5rem;
+  --btn-padding-md: 0.5rem 1rem;
+  --btn-padding-lg: 0.75rem 1.5rem;
+  
+  --btn-font-size-sm: 0.875rem;
+  --btn-font-size-md: 1rem;
+  --btn-font-size-lg: 1.125rem;
+  
+  /* 按鈕顏色 */
+  --btn-primary-bg: #007bff;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #6c757d;
+  --btn-secondary-text: #ffffff;
+  --btn-success-bg: #28a745;
+  --btn-success-text: #ffffff;
+  --btn-danger-bg: #dc3545;
+  --btn-danger-text: #ffffff;
+  
+  /* 按鈕狀態 */
+  --btn-hover-transform: translateY(-1px);
+  --btn-hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --btn-transition: all 0.3s ease;
+}
+
+/* 基礎按鈕樣式 */
+.btn {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--btn-transition);
+  font-family: inherit;
+}
+
+.btn:hover {
+  transform: var(--btn-hover-transform);
+  box-shadow: var(--btn-hover-shadow);
+}
+
+/* 按鈕尺寸 */
+.btn-sm {
+  padding: var(--btn-padding-sm);
+  font-size: var(--btn-font-size-sm);
+}
+
+.btn-md {
+  padding: var(--btn-padding-md);
+  font-size: var(--btn-font-size-md);
+}
+
+.btn-lg {
+  padding: var(--btn-padding-lg);
+  font-size: var(--btn-font-size-lg);
+}
+
+/* 按鈕顏色 */
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+}
+
+.btn-success {
+  background-color: var(--btn-success-bg);
+  color: var(--btn-success-text);
+}
+
+.btn-danger {
+  background-color: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+}
+```
+
+## 與 JavaScript 的互動
+
+CSS 變數可以透過 JavaScript 動態修改，這讓我們能夠建立更互動的使用者體驗。
+
+### 動態修改變數
+
+```html dynamic-demo.html
+<div class="interactive-demo">
+  <h3>動態顏色調整</h3>
+  
+  <div class="controls">
+    <label>
+      主要顏色：
+      <input type="color" id="primaryColor" value="#007bff">
+    </label>
+    
+    <label>
+      字體大小：
+      <input type="range" id="fontSize" min="12" max="24" value="16">
+      <span id="fontSizeValue">16px</span>
+    </label>
+    
+    <label>
+      圓角大小：
+      <input type="range" id="borderRadius" min="0" max="20" value="8">
+      <span id="borderRadiusValue">8px</span>
+    </label>
+  </div>
+  
+  <div class="demo-box">
+    <p>這個區塊會即時反映上方的設定變化</p>
+    <button class="demo-btn">互動按鈕</button>
+  </div>
+</div>
+```
+
+```css dynamic-styles.css
+.interactive-demo {
+  --demo-primary: #007bff;
+  --demo-font-size: 16px;
+  --demo-border-radius: 8px;
+  
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: var(--demo-border-radius);
+}
+
+.controls {
+  margin-bottom: 2rem;
+}
+
+.controls label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: var(--demo-font-size);
+}
+
+.controls input {
+  margin-left: 0.5rem;
+}
+
+.demo-box {
+  background-color: var(--demo-primary);
+  color: white;
+  padding: var(--demo-font-size);
+  border-radius: var(--demo-border-radius);
+  text-align: center;
+}
+
+.demo-box p {
+  font-size: var(--demo-font-size);
+  margin-bottom: 1rem;
+}
+
+.demo-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: calc(var(--demo-font-size) * 0.5) var(--demo-font-size);
+  border-radius: var(--demo-border-radius);
+  font-size: var(--demo-font-size);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.demo-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+```
+
+```javascript dynamic-script.js
+// 取得控制元素
+const primaryColorInput = document.getElementById('primaryColor');
+const fontSizeInput = document.getElementById('fontSize');
+const borderRadiusInput = document.getElementById('borderRadius');
+const fontSizeValue = document.getElementById('fontSizeValue');
+const borderRadiusValue = document.getElementById('borderRadiusValue');
+
+// 取得根元素
+const root = document.documentElement;
+
+// 主要顏色變更
+primaryColorInput.addEventListener('input', function(e) {
+  root.style.setProperty('--demo-primary', e.target.value);
+});
+
+// 字體大小變更
+fontSizeInput.addEventListener('input', function(e) {
+  const value = e.target.value + 'px';
+  root.style.setProperty('--demo-font-size', value);
+  fontSizeValue.textContent = value;
+});
+
+// 圓角大小變更
+borderRadiusInput.addEventListener('input', function(e) {
+  const value = e.target.value + 'px';
+  root.style.setProperty('--demo-border-radius', value);
+  borderRadiusValue.textContent = value;
+});
+
+// 讀取 CSS 變數值
+function getCSSVariable(name) {
+  return getComputedStyle(root).getPropertyValue(name);
+}
+
+// 範例：取得目前的主要顏色
+console.log('目前主要顏色:', getCSSVariable('--demo-primary'));
+```
+
+## 進階技巧與最佳實踐
+
+### 變數計算與組合
+
+```css
+/* 使用 calc() 計算變數 */
+:root {
+  --base-size: 1rem;
+  --scale-ratio: 1.25;
+  
+  --size-xs: calc(var(--base-size) / var(--scale-ratio));
+  --size-sm: var(--base-size);
+  --size-md: calc(var(--base-size) * var(--scale-ratio));
+  --size-lg: calc(var(--base-size) * var(--scale-ratio) * var(--scale-ratio));
+  --size-xl: calc(var(--base-size) * var(--scale-ratio) * var(--scale-ratio) * var(--scale-ratio));
+}
+
+/* 顏色變數組合 */
+:root {
+  --primary-hue: 210;
+  --primary-saturation: 100%;
+  
+  --primary-50: hsl(var(--primary-hue), var(--primary-saturation), 95%);
+  --primary-100: hsl(var(--primary-hue), var(--primary-saturation), 90%);
+  --primary-500: hsl(var(--primary-hue), var(--primary-saturation), 50%);
+  --primary-900: hsl(var(--primary-hue), var(--primary-saturation), 10%);
+}
+
+/* 間距系統 */
+:root {
+  --spacing-unit: 0.25rem;
+  
+  --space-1: var(--spacing-unit);
+  --space-2: calc(var(--spacing-unit) * 2);
+  --space-3: calc(var(--spacing-unit) * 3);
+  --space-4: calc(var(--spacing-unit) * 4);
+  --space-6: calc(var(--spacing-unit) * 6);
+  --space-8: calc(var(--spacing-unit) * 8);
+}
+```
+
+### 組織與命名規範
+
+{% tabs variable-organization,1 %}
+<!-- tab 命名規範 -->
+**CSS 變數命名最佳實踐**
+
+```css
+/* ✅ 推薦的命名方式 */
+:root {
+  /* 語義化命名 */
+  --color-primary: #007bff;
+  --color-secondary: #6c757d;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  
+  /* 功能性命名 */
+  --font-size-heading: 2rem;
+  --font-size-body: 1rem;
+  --font-size-small: 0.875rem;
+  
+  /* 組件命名 */
+  --button-padding: 0.5rem 1rem;
+  --button-border-radius: 4px;
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  /* 系統級命名 */
+  --z-index-modal: 1000;
+  --z-index-tooltip: 1010;
+  --transition-default: all 0.3s ease;
+}
+
+/* ❌ 避免的命名方式 */
+:root {
+  --blue: #007bff;        /* 太具體，不語義化 */
+  --big: 2rem;           /* 模糊不清 */
+  --x: 10px;             /* 完全無意義 */
+  --color1: red;         /* 數字編號 */
+}
+```
+<!-- endtab -->
+
+<!-- tab 檔案組織 -->
+**CSS 變數檔案組織結構**
+
+```css
+/* variables.css - 主變數檔案 */
+
+/* ==========================================================================
+   系統級變數
+   ========================================================================== */
+
+:root {
+  /* 顏色系統 */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-500: #6b7280;
+  --color-gray-900: #111827;
+  
+  /* 間距系統 */
+  --space-px: 1px;
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-8: 2rem;
+  
+  /* 字體系統 */
+  --font-family-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: ui-monospace, monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  
+  /* 陰影系統 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  /* 轉場效果 */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+}
+
+/* ==========================================================================
+   語義化變數
+   ========================================================================== */
+
+:root {
+  /* 主要顏色 */
+  --color-primary: var(--color-blue-600);
+  --color-secondary: var(--color-gray-600);
+  --color-success: var(--color-green-600);
+  --color-warning: var(--color-yellow-600);
+  --color-danger: var(--color-red-600);
+  
+  /* 文字顏色 */
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --text-muted: var(--color-gray-500);
+  
+  /* 背景顏色 */
+  --bg-primary: var(--color-white);
+  --bg-secondary: var(--color-gray-50);
+  --bg-accent: var(--color-gray-100);
+}
+
+/* ==========================================================================
+   組件變數
+   ========================================================================== */
+
+:root {
+  /* 按鈕 */
+  --btn-padding-sm: var(--space-1) var(--space-2);
+  --btn-padding-md: var(--space-2) var(--space-4);
+  --btn-padding-lg: var(--space-3) var(--space-6);
+  --btn-border-radius: 0.375rem;
+  
+  /* 卡片 */
+  --card-padding: var(--space-6);
+  --card-border-radius: 0.5rem;
+  --card-shadow: var(--shadow-md);
+  
+  /* 表單 */
+  --input-padding: var(--space-2) var(--space-3);
+  --input-border: 1px solid var(--color-gray-300);
+  --input-border-radius: 0.375rem;
+}
+```
+<!-- endtab -->
+
+<!-- tab 主題管理 -->
+**進階主題管理系統**
+
+```css
+/* themes.css - 主題管理檔案 */
+
+/* 基礎主題變數 */
+:root {
+  --theme-transition: all 0.3s ease;
+}
+
+/* 淺色主題 */
+:root,
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  
+  --border-primary: #dee2e6;
+  --border-secondary: #e9ecef;
+  
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 深色主題 */
+[data-theme="dark"] {
+  --bg-primary: #212529;
+  --bg-secondary: #343a40;
+  --bg-tertiary: #495057;
+  
+  --text-primary: #f8f9fa;
+  --text-secondary: #adb5bd;
+  --text-muted: #6c757d;
+  
+  --border-primary: #495057;
+  --border-secondary: #343a40;
+  
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 自動主題（跟隨系統） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-primary: #212529;
+    --bg-secondary: #343a40;
+    --bg-tertiary: #495057;
+    
+    --text-primary: #f8f9fa;
+    --text-secondary: #adb5bd;
+    --text-muted: #6c757d;
+    
+    --border-primary: #495057;
+    --border-secondary: #343a40;
+    
+    --shadow-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* 應用主題變數 */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: var(--theme-transition);
+}
+
+.card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+```
+<!-- endtab -->
+{% endtabs %}
+
+## 瀏覽器支援與注意事項
+
+{% note warning %}
+**瀏覽器支援狀況**
+CSS 原生變數在現代瀏覽器中得到良好支援：
+- **Chrome 49+** ✅
+- **Firefox 31+** ✅  
+- **Safari 9.1+** ✅
+- **Edge 16+** ✅
+- **IE** ❌ 不支援
+
+對於需要支援舊版瀏覽器的專案，可以考慮使用 PostCSS 等工具進行轉換。
+{% endnote %}
+
+### 漸進增強策略
+
+```css
+/* 提供備用值給不支援的瀏覽器 */
+.button {
+  background-color: #007bff;                    /* 備用值 */
+  background-color: var(--primary-color);      /* 現代瀏覽器 */
+  
+  padding: 0.5rem 1rem;                        /* 備用值 */
+  padding: var(--button-padding);              /* 現代瀏覽器 */
+}
+
+/* 使用 @supports 檢測支援 */
+@supports (--css: variables) {
+  .enhanced-component {
+    /* 只有支援 CSS 變數的瀏覽器才會套用 */
+    background-color: var(--dynamic-color);
+  }
+}
+
+/* 使用 CSS.supports() 在 JavaScript 中檢測 */
+if (CSS.supports('--css', 'variables')) {
+  // 瀏覽器支援 CSS 變數
+  document.documentElement.style.setProperty('--dynamic-color', '#ff0000');
+} else {
+  // 使用備用方案
+  document.body.style.backgroundColor = '#ff0000';
+}
+```
+
+## 效能與最佳實踐
+
+{% note success %}
+**CSS 變數最佳實踐**
+
+**效能優化**
+- 將常用變數定義在 `:root` 中，減少查找時間
+- 避免過度嵌套變數定義
+- 合理使用變數，不要為了使用而使用
+
+**維護性提升**
+- 建立一致的命名規範
+- 將變數組織到專門的檔案中
+- 為變數添加註解說明用途
+- 定期檢視和清理未使用的變數
+
+**團隊協作**
+- 建立變數使用指南
+- 統一團隊內的變數命名規則
+- 使用設計系統來定義變數值
+- 提供變數使用範例和文件
+{% endnote %}
+
+透過學習 CSS 原生變數，你已經掌握了現代 CSS 開發的重要技術。這項功能不僅能提升程式碼的可維護性，還能讓你建立更靈活、更易於管理的樣式系統。在實際專案中，建議從小範圍開始應用，逐漸建立起完整的變數系統。

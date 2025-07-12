@@ -6,551 +6,1573 @@ categories:
 tag:
   - RWD 響應式網頁設計（假日班）
   - PHP 資料庫網頁設計（職前班）
+  - CSS 盒子模型
+  - CSS 定位
 date: 2020-03-11 16:05:00
 ---
 
 ![](assets/images/lElmG8a.png)
 
-若順著教材讀到這裡，你會發現很多 CSS 的控制成敗都跟 block 或 inline 有關。這裡我們會完整介紹什麼是盒子模型 (Block & Inline)，有了完整的盒子概念後，就能接著會介紹如何去定位這些元素到指定的位置，學完這篇能幫助你整個 CSS 切版功力大幅提升。
+在前面的課程中，我們已經了解到很多 CSS 的控制效果都與 block 或 inline 有關。這篇文章將深入介紹盒子模型 (Box Model) 的核心概念，以及現代 CSS 定位技術。掌握這些知識後，你將能夠精確控制網頁版面配置，讓切版技能大幅提升。
 
 <!-- more -->
 
 # 盒子模型 Box Model
-- CSS 是盒子的世界，分為兩種基本盒子分為區塊盒（block box）與行內盒（inline box）。
-- 在編寫 CSS 時先確認 HTML 標籤的原型是區塊標籤還是行內標籤，這寫 CSS 時非常重要的事。
-- HTML 的每個標籤都可以視為盒子，當使用了標籤等於建立盒子產生容器區塊，也稱為內容區域。
-- 外距、內距的單位百分比 %，是根據父元素的<mark>單位</mark>做為計算，也就是單位 % 不論是上下左右的內外距都是依外層寬高值而影響。
-- img 圖片雖為行內元素，但表現像 inline-block，非常適合解釋 background-color 包含 padding。
-- 有些標籤會有瀏覽器預設的上下外距，例如 h、p、body、ul。
 
-以 div 區塊標籤、span 行內標籤為經典代表。
+盒子模型是 CSS 版面設計的核心概念，它描述了每個 HTML 元素在頁面中如何被渲染成一個矩形盒子。理解盒子模型不僅能幫助你精確控制元素的大小和位置，更是學習進階 CSS 技術（如 Flexbox 和 Grid）的重要基礎。
 
-```html
-<div class="block_box">Lorem ipsum dolor sit amet.</div>
-<span class="inline_box">Lorem ipsum dolor sit amet.</span>
-```
+在這個章節中，我們將從盒子的基本類型開始，逐步學習盒子模型的各個參數，最後了解現代 CSS 的 box-sizing 屬性。這些知識將成為你日後進行複雜版面設計的堅實基礎。
 
-## 區塊盒（block box）
-常見的區塊型標籤：div、h1、p、ul、li...
-
-1. block 可用 margin 與 padding 屬性，標籤前後都有<mark>結束斷行</mark>處理，且會填滿撐大父元素，預設自動占滿整體寬度。
-2. 會將高度延展到可容納它本身所存放的所有東西，也就是利用內容去撐開它的高度。
-3. block 並不會受到 vertical-align 影響。
-
->區塊盒的內容區域（width）、內距（padding）、邊框（border）、外距（margin）屬性都是有效可指定的。
-
-## 行內盒（inline box）
-常見的行內型標籤：span、a、em...
-
-1. 循規蹈矩且前後不會結束斷行，內容多少寬就多少，即是設定 width、height 都不會有作用。
-2. 上下的 margin 無效，但左右的 margin 依舊有效。
-3. padding、border 上下左右皆有效。
-4. height 與 width 屬性無效，原因在於行內無法設定寬、高。
-5. 可以被 vertical-align 影響。
-
-## 行內區塊盒（inline-block box）
-算是兩者的合併體系，主要可以當作不會斷行 (inline) 且可以彈性指定內外距 (block)。
-
-1. 繼承 inline，預設內容多少寬度就多少，不會強迫換行。
-2. 繼承 block，可使用 margin, padding, width, hegiht, border 都可指定。
-
-## 舉例示範
-使用標籤產生盒子，即產生容器區塊，目前內容區域沒有東西，瀏覽畫面還看不到東西
-
-```html
-<div></div>
-<span></span>
-```
-
-block 一旦有了內容後，產生了有內容的內容區域，內容區域會以區塊（block）或行內（inline）來顯示。
-
-1. 區塊是橫行霸道的佔位王，即便它的內容很少，也要佔據整列。 
-2. 區塊可以自由使用寬（width）、高（height）、內距（padding）、外距（margin）
-
-```html
-<div>Lorem ipsum dolor sit amet.</div>
-```
-
-inline 行內是循規蹈矩的乖乖排，它的內容就已經是它的寬度，許多行內盒子會依序乖乖排好自己的位置。 行內不能設定寬、高，上、下外距無效。
-
-```html
-<span>Lorem ipsum dolor sit amet.</span>
-```
-
-{% note warning %}
-**科普知識：initial、inherit、unset**
-如果有機會，你會發現很多屬性基本上都額外支援這三個通用值，決定目前的元素取值來源如何判斷但實用性不高。分為 initial（預設：繼承父層）、inherit（該標籤原始樣貌）、unset（清除不指定）。
+{% note primary %}
+**學習重點**
+- 理解盒子模型的四個組成部分（content、padding、border、margin）
+- 掌握三種基本盒子類型的差異（block、inline、inline-block）
+- 學會計算元素的實際佔用空間
+- 了解 box-sizing 屬性如何改變盒子計算方式
 {% endnote %}
 
-## 盒子模型參數
 ![Image](https://i.imgur.com/j6U9BhG.png)
 
->計算一個區塊實際寬度為：實際總寬度 = width + padding + border + margin。
-
-| 內容區域       | 內距    | 邊框   | 外距   |
-| -------------- | ------- | ------ | ------ |
-| content(width) | padding | border | margin |
-
-- 可看到的尺寸：內容區域、內距、邊框。
-- 看不到的尺寸：外距。
-
-### width、height
-盒子設定的寬、高是內容的容器，如果高沒有設定則是 auto，隨著內容長高。
-
-```css
-div {
-  width: 500px;
-  height: 500px;
-  background-color: #777;
-}
-```
-
-### Margin、Padding
-padding 內距沒有負值，margin 外距可以有負值。
-
-```css
-/*margin*/
-margin:{**length**|auto};
-margin-{direction}:{**length**|auto};
-/*
-  可全部或局部
-  direction= top, right, bottom, left
-
-  或四邊設定法 => 水平 垂直 | top right bottom left
-*/
-margin: 0 0;
-margin: 0 0 0 0;
-
-/* 區塊置中，block 元素一定要設定寬度 */
-margin: 0 auto;
-
-/* padding*/
-padding:{**length**};
-padding-{direction}:{**length**};
-/*
-  可全部或局部
-  direction= top, right, bottom, left
-
-  或四邊設定法 => 水平 垂直 | top right bottom left
-*/
-padding: 0 0;
-padding: 0 0 0 0;
-```
-
-{% note warning %}
-**科普知識：外距重疊現象（margin collapsing）**
-若有兩個 block 容器的 margin 重疊，`大的 margin 會吃掉小的 margin`，較大的外距才會有效果，較小的會被瓦解。
+{% note info %}
+**重要觀念**
+- CSS 的世界就是盒子的世界
+- 每個 HTML 標籤都會產生一個盒子
+- 盒子的行為由 display 屬性決定
+- 盒子由四個部分組成：內容區域 (content)、內距 (padding)、邊框 (border) 和外距 (margin)
 {% endnote %}
 
-### Border
-邊框最主要的三個屬性分別是 style 樣式、width 寬度、color 顏色。
+## 基本類型 (Display 屬性）
 
-| border-style | 說明                                         |
-| ------------ | -------------------------------------------- |
-| dotted       | 方格點                                       |
-| dashed       | 短線                                         |
-| double       | 雙實線 （border-width 屬性值是兩條線的總和） |
-| groove       | 看起來像刻入頁面                             |
-| ridge        | 看起來像凸出頁面                             |
-| inset        | 看起來像嵌入頁面                             |
-| outset       | 看起來像浮雕                                 |
+CSS 中的每個元素都會產生一個盒子，而這個盒子的行為類型主要由 `display` 屬性決定。了解不同盒子類型的特性是掌握版面配置的關鍵。
 
->dotted 會依照 border-width 改變方格的大小及間距，如果邊框是 10px，那麼方格則是 10px 且每個點之間有 10px 的間距。
+`display` 屬性是 CSS 中最重要的屬性之一，它決定了元素如何顯示以及如何與其他元素互動。每個 HTML 元素都有預設的 display 值，但我們可以透過 CSS 來改變它。
 
-**Border 樣式：**
-```css
-/********************************** border-style */
-border-style:{value};
-border-{direction}-style:{value};
-/*
-  可全部或局部
-  value=dotted, dashed, double, groove, ridge, inset
-  direction= top, right, bottom, left
+### Display 屬性完整概覽
 
-  或四邊設定法 => 水平 垂直 | top right bottom left
-*/
-border-style: dotted dashed;
-border-style: dotted dashed double ridge;
-```
-**Border 顏色：**
-```css
-/********************************** border-color*/
-border-color:{color};
-border-{direction}-color:{color};
-/*
-  可全部或局部
-  color=dotted, dashed, double, groove, ridge, inset
-  direction= top, right, bottom, left
+| Display 值       | 特性摘要               | 常見用途       | 本課程         |
+| ---------------- | ---------------------- | -------------- | -------------- |
+| **block**        | 獨占一行，可設定尺寸   | 區塊佈局、容器 | ✅ **重點介紹** |
+| **inline**       | 同行排列，不可設定尺寸 | 文字標記、連結 | ✅ **重點介紹** |
+| **inline-block** | 同行排列，可設定尺寸   | 按鈕、小元件   | ✅ **重點介紹** |
+| **flex**         | 彈性盒子佈局           | 現代一維佈局   | 📚 後續課程     |
+| **grid**         | 網格佈局               | 現代二維佈局   | 📚 後續課程     |
+| **table**        | 表格佈局               | 模擬表格行為   | ⚠️ 較少使用     |
+| **table-cell**   | 表格儲存格             | 垂直置中技巧   | ⚠️ 已過時       |
+| **table-row**    | 表格行                 | 表格結構       | ⚠️ 較少使用     |
+| **list-item**    | 列表項目               | 自訂列表樣式   | ⚠️ 特殊用途     |
+| **none**         | 完全隱藏               | 動態顯示/隱藏  | 🔧 工具屬性     |
+| **contents**     | 移除自身盒子           | 特殊佈局需求   | 🔧 進階用法     |
 
-  或四邊設定法 => 水平 垂直 | top right bottom left
-*/
-border-color: red blue green yellow;
-```
-**Border 寬度：**
-```css
-/********************************** border-width */
-border-width:{medium|thin|thick|*length*};
-border-{direction}-width:{medium|thin|thick|*length*};
-/*
-  可全部或局部
-  direction= top, right, bottom, left
+{% note info %}
+**學習重點說明**
+本課程專注於三個基礎且重要的 display 類型：
+- **Block**：理解區塊佈局的基礎
+- **Inline**：掌握行內元素的特性
+- **Inline-Block**：學會混合模式的應用
 
-  或四邊設定法 => 水平 垂直 | top right bottom left
-*/
-  border-color: red blue green yellow;
-```
+**Flexbox** 和 **CSS Grid** 是現代佈局的強大工具，將在專門的課程中深入介紹。
+{% endnote %}
 
-#### border 簡寫屬性
-1. Border 簡寫屬性只針對 width | style | color 之組合三項應用，複選最需少一項（其他項則自動為預設），最多三個。
-2. 一但使用 Border 縮寫方式後，原本的所有 border-style,border-width,border-color 都會失效。則縮寫為主要優先且不互通。
-3. border 簡寫也有全部或局部，可分開指定。
+#### 如何改變 Display 類型
 
 ```css
-/********************************** border */
-border:{width} | {style} | {color};
-border-{direction}:{width} | {style} | {color};;
-/*
-  可全部或局部
-  direction= top, right, bottom, left
-*/
-  border: 5px solid #f00;
-  border-bottom: 10px solid #0f0;
-```
+/* 將預設為 inline 的 span 改為 block */
+span {
+  display: block;
+}
 
-#### border-radius 圓角
-1. border-radius 其實也是個簡寫屬性，其實是`border-top-left-radius`、`border-top-right-radius`、`border-bottom-right-radius`、`border-bottom-left-radius`所簡化並對應四邊角。
-2. 除了原本功能的局部（上述所寫），縮寫屬性時可支援全部、四邊設定 (↖↘ ↙↗ 或 ↖ ↗ ↘ ↙)。
-3. 簡寫時所塞入單位為該角上的遮罩圓之半徑，一個單位上的半徑有分水平向跟垂直向。
-![Image](https://i.imgur.com/WKXpVNl.png)
-4. 硬要說的話其實有 8 個圓角錨點（雙半徑），完整寫法為`border-radius: 10px 20px 30px 40px / 50px 60px 70px 80px`各別代表水平組↖ ↗ ↘ ↙ <kbd>/</kbd> 垂直組↖ ↗ ↘ ↙;
-5. 當部分錨點未指定時，會自動尋找簡寫屬性的該單位之合併規則描述。
-  {% blockquote Fancy Border Radius Generator https://9elements.github.io/fancy-border-radius/full-control.html %}
-  如果很難懂，可以透過這個網站工具清楚說明錨點的設定變化。
-  {% endblockquote %}
-示範如下：
-```css
-/********************************** border-width */
-div{
-  border-radius: 10px;　/*all*/
-  border-radius: 25% 10%; /* ↖↘ ↙↗ */
-  border-radius: 10px 20px 30px 40px; /* ↖ ↗ ↘ ↙ */
+/* 將預設為 block 的 div 改為 inline */
+div {
+  display: inline;
+}
 
-  border-radius: 1em/5em;
-  /* 等同於： */
-  border-top-left-radius:     1em 5em;
-  border-top-right-radius:    1em 5em;
-  border-bottom-right-radius: 1em 5em;
-  border-bottom-left-radius:  1em 5em;
-
-  border-radius: 4px 3px 6px / 2px 4px;
-  /* 等同於： */
-  border-top-left-radius:     4px 2px;
-  border-top-right-radius:    3px 4px;
-  border-bottom-right-radius: 6px 2px;
-  border-bottom-left-radius:  3px 4px;
+/* 創建可設定尺寸的行內元素 */
+.button {
+  display: inline-block;
+  width: 120px;
+  height: 40px;
 }
 ```
 
-6. 當 border-collapse: collapse 成立時（共享 border)，圓角化將無效。
-7. 就算 border 不存在，圓角效果也能影響 background。
+#### 元素的隱藏
+除了 `display: none` 可以隱藏元素外，還有 `visibility` 屬性：
 
-範例步驟：
+- `display: none`：完全移除元素，不佔用任何空間，元素不存在於頁面中
+- `visibility: hidden`：隱藏元素但仍佔用原本的空間，元素依然存在於頁面中
+
+使用情境：
+- 需要完全移除元素且出現於版面上：使用 `display: none`
+- 需要保持版面結構完整，只是視覺上隱藏：使用 `visibility: hidden`
+
+```html index.html
+<div class="visibility-demo">
+  <h4>元素隱藏差異示範</h4>
+  
+  <div class="demo-section">
+    <h5>使用 display: none</h5>
+    <div class="box">盒子 1</div>
+    <div class="box display-none">盒子 2 （隱藏）</div>
+    <div class="box">盒子 3</div>
+  </div>
+  
+  <div class="demo-section">
+    <h5>使用 visibility: hidden</h5>
+    <div class="box">盒子 1</div>
+    <div class="box visibility-hidden">盒子 2 （隱藏）</div>
+    <div class="box">盒子 3</div>
+  </div>
+</div>
+```
+
+```css style.css
+.visibility-demo {
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.demo-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.box {
+  display: inline-block;
+  width: 120px;
+  height: 80px;
+  background: #3498db;
+  color: white;
+  text-align: center;
+  line-height: 80px;
+  margin: 5px;
+  border-radius: 4px;
+}
+
+/* display: none - 完全移除，不佔空間 */
+.display-none {
+  display: none;
+}
+
+/* visibility: hidden - 隱藏但佔用空間 */
+.visibility-hidden {
+  visibility: hidden;
+}
+```
+
+**觀察結果：**
+- 使用 `display: none` 的盒子 2 完全消失，盒子 1 和盒子 3 緊挨在一起
+- 使用 `visibility: hidden` 的盒子 2 看不見，但盒子 1 和盒子 3 之間保持原本的間距
+
+#### 預設 Display 值參考
+
+了解各元素的預設 display 值有助於理解它們的行為：
+
 ```css
-div {
-  width: 500px;
-  height: 500px;
+/* 常見 Block 元素 */
+div, p, h1-h6, ul, ol, li, section, article, header, footer, main, nav {
+  display: block; /* 瀏覽器預設值 */
+}
 
-  /* 邊框 */
-  border-width: 10px;
-  border-style: dotted;
-  /* 
-  Multiset ↑ → ↓ ←
-  border-style: dashed dotted double solid;
-  */
+/* 常見 Inline 元素 */
+span, a, em, strong, code, img, input, button {
+  display: inline; /* 瀏覽器預設值 */
+}
 
-  /* color */
-  border-color: #000;
-  /* 
-  Multiset ↑ → ↓ ←
-  border-color: red blue yellow green;
-  */
+/* 特殊情況 */
+li {
+  display: list-item; /* 預設有項目符號 */
+}
+```
 
-  /* 縮寫 */
-  border: 10px solid #000;
+現在讓我們深入了解這三個基礎類型的詳細特性和應用方式。
 
-  /* 圓角 */
-  border-radius: 10px;
-  /*
-  Multiset  ↖ ↗ ↘ ↙ 
-  border-radius: 10px 10px 10px 10px;
-  */
+### Block 區塊盒
 
-  /* 盒子陰影 */
-  box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.2);
-  /* 
-  水平 (+右-左）、
-  垂直 (+下-上）、
-  模糊半徑 (0 或+不能-)、
-  延展性 (+為擴展-為內縮）、
-  顏色、inset（內陰影） 
-  */
+區塊盒是最重要的盒子類型，它們會獨占一行並可以設定各種尺寸屬性。理解區塊盒的行為對於控制版面佈局至關重要。
+
+**常見的區塊型標籤：**
+`div`、`h1`、`p`、`ul`、`li`、`main`、`section`、`article`、`header`、`footer`...
+
+**特性：**
+1. 獨占一行，會自動換行
+2. 可以設定 `width`、`height`、`margin`、`padding`
+3. 預設寬度會填滿父容器 (width: 100%)
+4. 高度由內容決定 (height: auto)
+
+```html index.html
+<div class="block-example">我是區塊元素</div>
+<div class="block-example">我也是區塊元素</div>
+<p class="block-example">我是段落標籤</p>
+```
+
+```css style.css
+.block-example {
+  width: 300px;
+  height: 100px;
+  background-color: #e3f2fd;
+  border: 2px solid #1976d2;
+  margin: 10px;
+  padding: 20px;
+  /* 每個區塊元素都會獨占一行 */
+}
+```
+
+### Inline 行內盒
+
+行內盒與區塊盒相反，它們會在同一行中排列，適合用於文字內容的標記。了解行內盒的限制對於避免版面問題很重要。
+
+**常見的行內型標籤：**
+`span`、`a`、`em`、`strong`、`code`、`img`、`input`...
+
+**特性：**
+1. 不會自動換行，會依序排列在同一行
+2. 無法設定 `width` 和 `height`
+3. 上下的 `margin` 無效，左右有效
+4. `padding` 和 `border` 上下左右都有效，但不會影響行高
+
+```html index.html
+<span class="inline-example">行內元素 1</span>
+<span class="inline-example">行內元素 2</span>
+<span class="inline-example">行內元素 3</span>
+```
+
+```css style.css
+.inline-example {
+  background-color: #fff3e0;
+  border: 2px solid #f57c00;
+  margin: 10px; /* 只有左右有效 */
+  padding: 10px;
+  /* width: 100px; 無效！無法設定寬度 */
+  /* height: 50px; 無效！無法設定高度 */
+}
+```
+
+### Inline-Block 行內區塊盒
+
+行內區塊盒結合了區塊盒和行內盒的優點，在某些情況下很有用，但現代 CSS 有更好的替代方案。
+
+**特性：**
+1. 可以在同一行並排顯示（like inline）
+2. 可以設定 `width`、`height`、`margin`、`padding`（like block）
+3. 預設寬度由內容決定（不是 100%）
+
+```html index.html
+<div class="inline-block-example">盒子 1</div>
+<div class="inline-block-example">盒子 2</div>
+<div class="inline-block-example">盒子 3</div>
+```
+
+```css style.css
+.inline-block-example {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background-color: #f3e5f5;
+  border: 2px solid #7b1fa2;
+  margin: 10px;
+  padding: 10px;
+}
+```
+
+#### Inline-Block 的常見問題：間格現象
+
+{% note warning %}
+**重要！Inline-Block 的間格問題**
+當使用 `display: inline-block` 時，元素之間會出現意外的空隙。這是因為 HTML 中的**空白字符**（空格、換行符、tab）會被瀏覽器視為文字空格並渲染出來。
+{% endnote %}
+
+**問題範例**
+```html index.html
+<div class="container">
+  <div class="box">盒子 1</div>
+  <div class="box">盒子 2</div>
+  <div class="box">盒子 3</div>
+</div>
+```
+
+```css style.css
+.box {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background-color: #3498db;
+  border: 2px solid #2980b9;
+}
+```
+
+**結果：三個盒子之間會有大約 4px 的間隙**
+
+**為什麼會有間格？**
+
+```html
+<!-- HTML 中的空白字符會被渲染 -->
+<span>文字 1</span> <span>文字 2</span>
+<!--        ↑這個空格會顯示出來-->
+
+<!-- inline-block 元素被當作「巨大的文字」處理 -->
+<div class="inline-block">盒子 1</div>
+<div class="inline-block">盒子 2</div>
+<!--  ↑這個換行符會被當作空格處理-->
+```
+
+{% note info %}
+**深入理解**
+- `inline-block` 元素本質上是「巨大的文字字符」
+- HTML 中任何空白字符（空格、換行、tab）都會被瀏覽器合併成一個空格
+- 這個空格的寬度取決於父元素的 `font-size` 和 `font-family`
+- 這就是為什麼 `font-size: 0` 能解決問題的原因
+{% endnote %}
+
+**解決方案比較**
+
+```html index.html
+<div class="comparison">
+  <div class="problem-section">
+    <h4>有間格問題</h4>
+    <div class="has-gap">
+      <div class="item">1</div>
+      <div class="item">2</div>
+      <div class="item">3</div>
+    </div>
+  </div>
+  
+  <div class="solution-section">
+    <h4>解決間格問題</h4>
+    <div class="no-gap">
+      <div class="item">1</div>
+      <div class="item">2</div>
+      <div class="item">3</div>
+    </div>
+  </div>
+  
+  <div class="modern-section">
+    <h4>現代 Flexbox 解決方案</h4>
+    <div class="flexbox-solution">
+      <div class="item">1</div>
+      <div class="item">2</div>
+      <div class="item">3</div>
+    </div>
+  </div>
+</div>
+```
+
+```css style.css
+.comparison {
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.problem-section,
+.solution-section,
+.modern-section {
+  margin-bottom: 2rem;
+}
+
+.item {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  background-color: #e74c3c;
+  color: white;
+  text-align: center;
+  line-height: 80px;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+/* 問題：有間格 */
+.has-gap .item {
+  /* 預設會有間格 */
+}
+
+/* 解決方案 1：font-size: 0 */
+.no-gap {
+  font-size: 0;
+}
+
+.no-gap .item {
+  font-size: 16px;
+}
+
+/* 解決方案 2：Flexbox */
+.flexbox-solution {
+  display: flex;
+  gap: 0; /* 明確控制間距 */
 }
 ```
 
 {% note success %}
-**跟著做：用 border-radius 劃一個圓型**
-```css
-p {
-  width: 50px;
-  height: 50px;
-  border: 1px solid #000;
-  border-radius: 50%;
-}
-```
+**現代最佳實踐**
+現在我們有更好的版面配置工具：
+- **Flexbox**：一維排列（行或列）
+- **CSS Grid**：二維排列（行和列）
+- 這些技術比傳統的 `inline-block` 更強大且易用
+- 自動解決間格問題，且提供更多佈局控制選項
 {% endnote %}
 
-#### outline 外側
-是外側的 border 效果，雖然視覺上算占用 margin 上，但實際上他屬於 border 項目。
+**何時仍需要 Inline-Block？**
 
 ```css
-div {
-  width:500px;
-  height:500px;
-  /* 外框 */
-  /* 
-  outline-width: 10px;
-  outline-style: solid;
-  outline-color: #000; 
-  */
-  border: 10px solid red;
-  outline: 10px solid #000;
+/* 文字中的標籤或徽章 */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  background-color: #007bff;
+  color: white;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+/* 需要與文字對齊的圖標 */
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
 }
 ```
 
-### 小節練習：算出以下 margin、width 之 auto 值
+**使用時機建議**
+- ✅ 文字中的小元件（標籤、圖標）
+- ✅ 需要與文字基線對齊的元素
+- ❌ 主要佈局結構（用 Flexbox 或 Grid）
+- ❌ 需要精確控制間距的元素排列
+
+## 模型參數
+
+了解盒子的基本類型後，現在我們來深入學習盒子模型的各個參數。這些參數決定了盒子的尺寸、外觀和間距，是精確控制版面的關鍵。
+
+### Margin 和 Padding
+
+Margin 和 Padding 是控制元素間距的兩個重要屬性，雖然都用於創建空間，但它們的作用位置和行為有著重要差異。
+
+#### 基本概念與語法
+
+**Margin（外距）vs Padding（內距）**
+
+| 屬性    | 位置     | 特性               | 負值     | 背景顯示 |
+| ------- | -------- | ------------------ | -------- | -------- |
+| Margin  | 元素外部 | 透明，會發生重疊   | ✅ 支援   | ❌ 不顯示 |
+| Padding | 元素內部 | 顯示背景，不會重疊 | ❌ 不支援 | ✅ 顯示   |
+
+**語法格式**
+```css
+/* 完整寫法 */
+margin-top: 10px;
+margin-right: 20px;
+margin-bottom: 10px;
+margin-left: 20px;
+
+/* 簡寫方式 */
+margin: 10px;                    /* 四邊相同 */
+margin: 10px 20px;               /* 上下 10px，左右 20px */
+margin: 10px 20px 15px;          /* 上 10px，左右 20px，下 15px */
+margin: 10px 20px 15px 25px;     /* 上右下左（順時針） */
+
+/* Padding 語法相同 */
+padding: 10px 20px;
+
+/* 常用技巧 */
+margin: 0 auto;                  /* 區塊元素水平置中 */
+```
+
+#### 長度單位完整解析
+
+CSS 中的長度單位會直接影響響應式設計的效果，選擇合適的單位是關鍵。
+
+**1. 絕對單位**
+```css
+/* 最常用 */
+margin: 20px;     /* 像素，固定大小 */
+padding: 15px;
+
+/* 其他絕對單位（較少使用） */
+margin: 1cm;      /* 公分 */
+padding: 10mm;    /* 公釐 */
+```
+
+**2. 相對單位**
+```css
+/* 相對於字體大小 */
+margin: 1em;      /* 相對於當前元素字體大小 */
+padding: 1.5rem;  /* 相對於根元素字體大小 */
+
+/* 相對於視窗大小 */
+margin: 5vw;      /* 視窗寬度的 5% */
+padding: 3vh;     /* 視窗高度的 3% */
+```
+
+**3. 百分比單位 - 重要概念**
+
+{% note danger %}
+**重要！百分比計算基準**
+Margin 和 Padding 的百分比**都是基於父容器的寬度**計算：
+- `margin-top: 10%` ← 基於父容器**寬度**，不是高度！
+- `padding-top: 20%` ← 基於父容器**寬度**，不是高度！
+{% endnote %}
+
+```css
+/* 範例：父容器寬度 400px */
+.child {
+  margin-top: 10%;     /* 40px (10% × 400px) */
+  padding-top: 5%;     /* 20px (5% × 400px) */
+  margin-left: 12.5%;  /* 50px (12.5% × 400px) */
+}
+```
+
+**4. Auto 值 - 自動計算**
+
+`auto` 是一個特殊值，不同屬性中的行為有所不同：
+
+```css
+/* Auto 的行為差異 */
+.example {
+  width: auto;        /* 填滿可用空間 */
+  height: auto;       /* 根據內容決定 */
+  margin: auto;       /* 自動分配剩餘空間 */
+  padding: auto;      /* 無效！不支援 */
+}
+```
+
+**Auto 置中技巧**
+```css
+/* 水平置中 - 最常用 */
+.center-block {
+  width: 600px;       /* 必須設定寬度 */
+  margin: 0 auto;     /* 上下 0，左右自動平分 */
+}
+
+/* 響應式容器置中 */
+.responsive-container {
+  max-width: 1200px;  /* 最大寬度限制 */
+  width: 100%;        /* 填滿可用空間 */
+  margin: 0 auto;     /* 始終置中 */
+  padding: 0 20px;    /* 左右內距 */
+}
+```
+
+#### 進階應用與技巧
+
+**1. Margin 負值應用**
+
+Margin 支援負值，可以創造特殊效果：
+
+```css
+/* 元素移動和重疊 */
+.move-up {
+  margin-top: -20px;   /* 向上移動 */
+}
+
+.overlap {
+  margin-right: -30px; /* 讓下一個元素重疊過來 */
+}
+```
+
+**實際應用場景**
+```css
+/* 卡片重疊效果 */
+.card-stack .card:not(:first-child) {
+  margin-left: -20px;
+}
+
+/* 突破容器限制 */
+.hero-image {
+  margin-left: -50px;
+  margin-right: -50px;
+}
+
+/* 微調對齊 */
+.icon-text {
+  margin-top: -2px;    /* 圖標與文字對齊 */
+}
+```
+
+**2. 外距重疊現象**
+
+{% note info %}
+**Margin Collapsing**
+垂直相鄰的區塊元素 margin 會重疊，取較大值：
+- 元素 A：`margin-bottom: 20px`
+- 元素 B：`margin-top: 30px`
+- 實際間距：30px（不是 50px）
+
+使用 Flexbox 或 Grid 可以避免這個問題。
+{% endnote %}
+
+**3. 現代間距管理**
+
+使用 CSS 自訂屬性統一管理間距：
+
+```css
+:root {
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+}
+
+.card {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-right: var(--spacing-sm);
+}
+```
+
+#### Auto 值的邏輯練習
+
+理解 `auto` 值的計算邏輯對於掌握盒子模型非常重要。讓我們通過實際練習來深入了解 `auto` 在不同情況下如何運作。
+
 {% note primary %}
-**素材準備：準備代碼以方便下階段的教學練習** 
-```html
-<style>
-  div {
-    width: 500px;
-    background: black;
-  }
-  p {
-    height: 30px;
-    background: #aaa;
-  }
-</style>
-<div>
-  <p></p>
+**素材準備**
+準備以下基礎代碼，方便進行各種 auto 值的計算練習：
+{% endnote %}
+
+```html index.html
+<div class="container">
+  <p class="test-box"></p>
 </div>
 ```
-{% endnote %}
-試著根據不同的追加屬性之描述，對 p 的盒子現象進行了解
 
-1. 求 p 的 margin-left 的 auto 值。
+```css style.css
+.container {
+    width: 500px;
+    background: black;
+  padding: 10px;
+  }
+
+.test-box {
+    height: 30px;
+    background: #aaa;
+  /* 不同的練習會在這裡添加不同的屬性 */
+}
+```
+
+**練習一：計算 margin-left 的 auto 值**
+
+{% tabs auto-practice-1,1 %}
+<!-- tab 題目 -->
+**題目：**求 p 的 margin-left 的 auto 值
+
 ```css
-p {
+.test-box {
   width: 100px;
   margin-left: auto;
   margin-right: 100px;
 }
 ```
-> ANS: p 的 margin-left:auto 經計算後為 300px
 
-2. 分析 margin 狀況與實際值
-```css
-p {
-  width: 100px;
-  margin-left: 100px;
-  margin-right: 100px;
-}
-```
-> ANS: 此情況會產生過度受限 (Overconstrained)，結果 margin-right 會被迫成為 auto（算出 300px)
+**請思考：**
+- 容器寬度是 500px
+- 元素寬度是 100px  
+- margin-right 是 100px
+- margin-left: auto 會是多少？
 
-3. 求 width 的 auto 值
-```css
-p {
-  /* width 不寫時也會預設為 auto */
-  /* width: auto; */
-  margin-left: 100px;
-  margin-right: 100px;
-}
-```
-> ANS: width 計算後為 300px
+<!-- endtab -->
+<!-- tab 解答 -->
+**分析過程：**
+- 容器寬度：500px
+- 元素寬度：100px
+- margin-right：100px
+- 剩餘空間：500 - 100 - 100 = 300px
+- **答案：margin-left: auto = 300px**
 
-4. 求 margin 左右的實際值
+**解釋：**
+當只有一個值為 auto 時，該值會自動計算剩餘的所有空間。
+<!-- endtab -->
+{% endtabs %}
+
+**練習二：經典置中效果**
+
+{% tabs auto-practice-2,1 %}
+<!-- tab 題目 -->
+**題目：**求 margin 左右的實際值
+
 ```css
-p {
+.test-box {
   width: 300px;
   margin-left: auto;
   margin-right: auto;
 }
 ```
-> ANS: margin 左右會平均的分配到 100px，也就是常見的至中效果。
 
-5. 求 width 跟 marget 的狀況與實際值
+**請思考：**
+- 容器寬度是 500px
+- 元素寬度是 300px
+- 左右 margin 都是 auto，會如何分配？
+
+<!-- endtab -->
+<!-- tab 解答 -->
+**分析過程：**
+- 容器寬度：500px
+- 元素寬度：300px
+- 剩餘空間：500 - 300 = 200px
+- 左右 margin 平均分配：200px ÷ 2 = 100px
+- **答案：margin-left = margin-right = 100px（置中效果）**
+
+**解釋：**
+當左右 margin 都為 auto 時，會平均分配剩餘空間，這就是常見的水平置中效果。
+<!-- endtab -->
+{% endtabs %}
+
+**Auto 值計算規則總結**
+
 ```css
-p {
-  width: auto;
-  margin-left: auto;
-  margin-right: 100px;
+/* 規則優先順序 */
+.auto-logic {
+  /* 1. 如果只有一個 auto，該值會自動計算 */
+  width: 200px;
+  margin-left: auto;      /* 計算剩餘空間 */
+  margin-right: 50px;
+  
+  /* 2. 如果左右 margin 都是 auto，會平均分配（置中） */
+  width: 200px;
+  margin-left: auto;      /* 平均分配 */
+  margin-right: auto;     /* 平均分配 */
+  
+  /* 3. 如果 width 也是 auto，width 優先獲得空間 */
+  width: auto;           /* 優先分配 */
+  margin-left: auto;     /* 重置為 0 */
+  margin-right: 50px;
 }
 ```
-> ANS: 會以 width 為準算出 400px，margin-left 為 0
 
-6. 求 width 跟 marget 的狀況與實際值
+### Border 邊框
+
+Border 邊框是盒子模型中可見的邊界線，它定義了元素的視覺邊界。邊框位於 padding 和 margin 之間，會影響元素的總尺寸計算。
+
+#### 基本語法與設定
 ```css
-p {
-  width: auto;
-  margin-left: auto;
-  margin-right: auto;
+/* 完整寫法 */
+border-width: 2px;
+border-style: solid;
+border-color: #333;
+
+/* 簡寫語法 */
+border: 2px solid #333;
+
+/* 個別邊框設定 */
+border-top: 3px solid #e74c3c;
+border-right: 1px dashed #3498db;
+border-bottom: 2px dotted #2ecc71;
+border-left: 4px solid #f39c12;
+```
+
+#### 邊框樣式
+```css
+/* 常用邊框樣式 */
+.solid-border { border: 2px solid #333; }
+.dashed-border { border: 2px dashed #333; }
+.dotted-border { border: 2px dotted #333; }
+.double-border { border: 4px double #333; }
+.groove-border { border: 4px groove #333; }
+.ridge-border { border: 4px ridge #333; }
+.inset-border { border: 4px inset #333; }
+.outset-border { border: 4px outset #333; }
+```
+
+#### 現代邊框技巧
+```css
+/* 漸層邊框 */
+.gradient-border {
+  border: 3px solid;
+  border-image: linear-gradient(45deg, #ff6b6b, #4ecdc4) 1;
+}
+
+/* 透明邊框（保留空間） */
+.transparent-border {
+  border: 10px solid transparent;
+  background-clip: padding-box; /* 背景不延伸到邊框 */
+}
+
+/* 陰影替代邊框 */
+.shadow-border {
+  border: none;
+  box-shadow: 0 0 0 2px #333; /* 不影響佈局的「邊框」 */
 }
 ```
-> ANS: 會以 width 為準算出 500px，margin 左右皆為 0
 
-## 常見的屬性組合
-box 模型常常會搭配以下的屬性做組合上的變化。
+{% note info %}
+**小提示：background-clip 屬性**
+`background-clip` 控制背景的繪製範圍：
+- `border-box`（預設）：背景延伸到邊框外緣
+- `padding-box`：背景只延伸到內距區域，不包含邊框
+- `content-box`：背景只在內容區域顯示
 
-### display
-調整元素的顯示方式，通常拿來切換 block 與 inline，隱藏用途，或是直接改用 flexbox 或 table 的調整。
+在透明邊框範例中，使用 `background-clip: padding-box` 可以防止背景色顯示在透明邊框區域，讓透明邊框的效果更明顯。
+{% endnote %}
 
-| display      | 說明        |
-| ------------ | ----------- |
-| block        | 區塊        |
-| inline       | 行內        |
-| inline-block | 行內區塊    |
-| flex         | 彈性盒      |
-| inline-flex  | 行內彈性盒  |
-| table        | 父容器      |
-| table-cell   | 子容器變 td |
-| table-row    | 子容器變 tr |
-| none         | 消失        |
+### outline
+Outline（輪廓）是另一個用於在元素周圍繪製線條的屬性，但它與 border 有著重要的區別。Outline 主要用於焦點指示器和無障礙設計，是現代網頁開發中不可忽視的屬性。
 
-### min-width & max-width
-最小寬度與最大寬度的限定屬性，好處於能安全的混合搭配其他長度單位，使得瀏覽器在不同的 viewpoint 上有不同的長度單位可規範。
+#### Outline vs Border 核心差異
 
-- min-width：當瀏覽器過窄時 box 開始擠壓。當 width 達到指定 min-width 時將固定此寬度為優先，並停止擠壓內容。
-- max-width：當瀏覽器過大時 box 開始延展。當 width 達到指定 max-width 時將固定此寬度為優先，並停止延展內容。
+| 特性         | Border       | Outline          |
+| ------------ | ------------ | ---------------- |
+| **佔用空間** | ✅ 會影響佈局 | ❌ 不佔用空間     |
+| **個別設定** | ✅ 可設定四邊 | ❌ 只能統一設定   |
+| **形狀限制** | ✅ 總是矩形   | ❌ 可以非矩形     |
+| **主要用途** | 裝飾、邊界   | 焦點指示、無障礙 |
+| **性能影響** | 可能觸發重排 | 只觸發重繪       |
 
-> 也有 min-height & max-height，但如果 max-height 設定內容超過該高度時，內容會溢出 overflow。
+#### 基本語法
 
-舉例 1: 最大寬度為 500px，若小於 500px 寬度會以 40% 設定
+```css
+/* 完整寫法 */
+outline-width: 2px;
+outline-style: solid;
+outline-color: #007bff;
 
-```html
-<style>
-  p {
-    width: 40%;
-    max-width: 500px;
-    height: 300px;
-  }
-</style>
-<div>
-  <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque temporibus numquam omnis eaque, aliquam officiis magni aperiam molestias ipsa! Sunt sed magnam iste perspiciatis autem fuga nostrum pariatur labore totam odio ipsa quis quasi itaque, recusandae velit amet voluptatum corrupti voluptates optio sint odit. Omnis sint, fuga ut ipsum quasi fugiat autem asperiores animi voluptatum earum pariatur iusto rerum assumenda dignissimos possimus repudiandae quis quisquam? Rerum quaerat praesentium dolore corporis nihil voluptatibus ad odio atque ut laborum expedita, modi et a, nobis beatae nostrum molestias? Porro, doloribus rem sit blanditiis eos exercitationem eveniet autem laudantium consectetur sapiente saepe ipsum voluptatum.</p>
+/* 簡寫語法 */
+outline: 2px solid #007bff;
+
+/* 常用樣式 */
+outline: 1px solid #333;
+outline: 2px dashed #ff6b6b;
+outline: 3px dotted #28a745;
+
+/* 移除輪廓 */
+outline: none; /* 注意：影響無障礙性 */
+outline: 0;    /* 同上 */
+```
+
+#### Outline-offset 偏移
+
+Outline 還有一個獨特的屬性 `outline-offset`，可以控制輪廓與元素邊緣的距離：
+
+```css
+.element {
+  outline: 2px solid #007bff;
+  outline-offset: 4px; /* 輪廓距離元素邊緣 4px */
+}
+
+/* 負值會讓輪廓向內偏移 */
+.inward-outline {
+  outline: 2px solid #e74c3c;
+  outline-offset: -4px; /* 輪廓在元素內部 */
+}
+```
+
+#### 實際應用場景
+
+**1. 焦點指示器（最重要用途）**
+
+```css
+/* 按鈕焦點樣式 */
+.btn:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* 表單元素焦點 */
+input:focus,
+textarea:focus {
+  outline: 2px solid #28a745;
+  outline-offset: 1px;
+}
+
+/* 自訂焦點樣式 */
+.custom-focus:focus {
+  outline: 3px dashed #ff6b6b;
+  outline-offset: 3px;
+}
+```
+
+**2. 不影響佈局的邊框效果**
+
+```html index.html
+<div class="comparison">
+  <div class="border-example">使用 Border</div>
+  <div class="outline-example">使用 Outline</div>
 </div>
 ```
 
-舉例 2: 先控制最大寬度！不管介面有多大都不會超出這個範圍。當瀏覽器小於指定的 max-width 1200px 寬度時，會用原先設定的寬度百分比 80% 來計算。
+```css style.css
+.comparison {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
 
-```css
-.container {
-    width: 80%;
-    max-width: 1200px;
-    margin: 0 auto;
-    height: 300px;
+.border-example,
+.outline-example {
+  width: 150px;
+  height: 100px;
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* Border 會影響佈局 */
+.border-example:hover {
+  border: 3px solid #007bff;
+  /* 元素會因為 border 而變大，可能影響周圍元素 */
+}
+
+/* Outline 不會影響佈局 */
+.outline-example:hover {
+  outline: 3px solid #28a745;
+  outline-offset: 2px;
+  /* 元素大小不變，不會影響周圍元素 */
 }
 ```
 
-### Box-sizing
-重新定義 Box 寬度計算方式。
+**3. 無障礙設計的重要性**
 
-| Box-sizing  | 說明                               |
-| ----------- | ---------------------------------- |
-| content-box | width = content area，預設         |
-| border-box  | width = content + padding + border |
-
-在 border-box 模式下，border、padding 都會算在寬度裡面，只需考量處理 margin。bootstrap 便是採用 border-box 模式。
+{% note danger %}
+**重要！無障礙注意事項**
+永遠不要移除焦點輪廓而不提供替代方案！許多使用者依賴鍵盤導航，焦點輪廓是他們了解當前位置的唯一方式。
 
 ```css
-*, *::after, *::before {
+/* ❌ 危險：直接移除焦點輪廓 */
+button:focus {
+  outline: none; /* 影響無障礙性 */
+}
+
+/* ✅ 正確：提供自訂焦點樣式 */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+  /* 或其他明顯的視覺指示 */
+}
+```
+{% endnote %}
+
+**4. 創意輪廓效果**
+
+```css
+/* 多重輪廓效果（使用 box-shadow 配合） */
+.multi-outline {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 123, 255, 0.2);
+}
+
+/* 動畫輪廓 */
+.animated-outline {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color 0.3s ease;
+}
+
+.animated-outline:hover {
+  outline-color: #28a745;
+}
+
+/* 不規則形狀的輪廓 */
+.irregular-shape {
+  border-radius: 50% 20% 80% 30%;
+  outline: 3px solid #e74c3c;
+  outline-offset: 5px;
+  /* outline 會跟隨元素的形狀 */
+}
+```
+
+#### 現代最佳實踐
+
+```css
+/* 現代焦點樣式系統 */
+:focus {
+  outline: 2px solid transparent; /* 基礎設定 */
+}
+
+:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* 按鈕類元素 */
+.btn:focus-visible {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+/* 表單元素 */
+.form-control:focus {
+  outline: 2px solid #28a745;
+  outline-offset: 1px;
+}
+
+/* 連結元素 */
+a:focus-visible {
+  outline: 2px dashed #dc3545;
+  outline-offset: 2px;
+}
+```
+
+#### 除錯和開發工具
+
+```css
+/* 開發階段：顯示所有元素的輪廓 */
+* {
+  outline: 1px solid red !important;
+}
+
+/* 只在開發模式下顯示 */
+.debug * {
+  outline: 1px solid rgba(255, 0, 0, 0.3) !important;
+  outline-offset: -1px;
+}
+```
+
+{% note success %}
+**Outline 重點總結**
+- **不佔用空間**：不會影響元素佈局和周圍元素位置
+- **無障礙重要性**：是鍵盤導航使用者的重要視覺指示
+- **性能優勢**：只觸發重繪，不會觸發重排
+- **無法個別設定**：只能統一設定四邊的樣式
+- **支援 offset**：可以控制輪廓與元素的距離
+- **跟隨形狀**：會跟隨元素的實際形狀（包括圓角）
+{% endnote %}
+
+### Border-radius 圓角效果
+
+`border-radius` 是一個獨立的屬性，用於創建圓角效果。它與 `border` 沒有直接關係，即使 `border: 0` 也能使用 `border-radius`。這個屬性可以讓矩形元素的角落變成圓形或橢圓形，是現代網頁設計的重要工具。
+
+![Image](https://i.imgur.com/WKXpVNl.png)
+
+#### 基本概念與語法應用
+
+**重要觀念：**
+- `border-radius` 影響的是元素的**整體形狀**，不只是邊框
+- 它會同時影響背景、內容區域、陰影等
+- 即使沒有邊框，圓角效果依然存在
+
+**語法格式**
+
+```css
+/* 1. 統一圓角 */
+border-radius: 8px;          /* 四個角都是 8px */
+border-radius: 50%;          /* 四個角都是 50% */
+
+/* 2. 對稱圓角 */
+border-radius: 10px 20px;    /* 對角線相同：左上右下 10px，右上左下 20px */
+
+/* 3. 三個值 */
+border-radius: 10px 20px 30px; /* 左上 10px，右上左下 20px，右下 30px */
+
+/* 4. 四個值 */
+border-radius: 10px 20px 30px 40px; /* 左上、右上、右下、左下（順時針） */
+
+/* 5. 個別角落設定 */
+border-top-left-radius: 10px;
+border-top-right-radius: 20px;
+border-bottom-right-radius: 30px;
+border-bottom-left-radius: 40px;
+```
+
+#### 常見應用場景
+
+```css
+/* 微妙圓角 - 適合正式設計 */
+.subtle-card {
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 中等圓角 - 平衡的選擇 */
+.moderate-card {
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 1.5rem;
+}
+
+/* 大圓角 - 友好親和的感覺 */
+.friendly-card {
+  border-radius: 24px;
+  background-color: #f8f9fa;
+  padding: 2rem;
+}
+
+/* 圓角按鈕 */
+.btn-rounded {
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* 圓角圖片 */
+.image-rounded {
+  border-radius: 12px;
+  overflow: hidden; /* 確保圖片不超出圓角 */
+}
+```
+
+#### 創意形狀範例
+
+```html index.html
+<div class="shape-gallery">
+  <div class="shape circle">圓形</div>
+  <div class="shape oval">橢圓</div>
+  <div class="shape pill">膠囊</div>
+  <div class="shape semi-circle">半圓</div>
+</div>
+```
+
+```css style.css
+.shape-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.shape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+  margin: 0.5rem;
+}
+
+/* 完全圓形 */
+.circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;        /* 關鍵：50% 會創建完美圓形 */
+}
+
+/* 橢圓形 */
+.oval {
+  width: 120px;
+  height: 80px;
+  border-radius: 50%;        /* 自動適應元素尺寸 */
+}
+
+/* 膠囊形狀 */
+.pill {
+  width: 150px;
+  height: 50px;
+  border-radius: 25px;       /* 高度的一半 */
+  /* 或者使用 border-radius: 9999px; 足夠大的值 */
+}
+
+/* 半圓形 */
+.semi-circle {
+  width: 100px;
+  height: 50px;
+  border-radius: 100px 100px 0 0; /* 只有上方兩個角有圓角 */
+}
+```
+
+{% note info %}
+**實用工具推薦**
+想要創建更複雜的圓角效果嗎？推薦使用這個線上工具：
+**Fancy Border Radius Generator**
+https://9elements.github.io/fancy-border-radius/full-control.html
+
+這個工具可以：
+- 視覺化調整複雜的 border-radius 效果
+- 即時預覽結果
+- 生成對應的 CSS 程式碼
+- 支援橢圓形圓角的進階設定
+{% endnote %}
+
+## Box-sizing
+
+在前面的學習中，我們發現傳統盒子模型有一個計算上的困擾：當你設定 `width: 300px`，實際寬度卻可能是 350px！這就是為什麼需要 `box-sizing` 屬性來解決這個問題。
+
+Box-sizing 屬性改變了瀏覽器計算盒子尺寸的方式，是現代 CSS 的重要技術。
+
+### 問題展示：版面破版的真實情況
+
+讓我們用一個實際的兩欄佈局來展示問題：
+
+```html index.html
+<div class="layout-demo">
+  <h3>傳統盒子模型 - 版面破版</h3>
+  <div class="container content-box-demo">
+    <div class="column">
+      <h4>左欄</h4>
+      <p>設定寬度：50%<br>
+      實際佔用：50% + 42px</p>
+    </div>
+    <div class="column">
+      <h4>右欄</h4>
+      <p>設定寬度：50%<br>
+      實際佔用：50% + 42px</p>
+    </div>
+  </div>
+  
+  <h3>現代盒子模型 - 完美呈現</h3>
+  <div class="container border-box-demo">
+    <div class="column">
+      <h4>左欄</h4>
+      <p>設定寬度：50%<br>
+      實際佔用：50%</p>
+    </div>
+    <div class="column">
+      <h4>右欄</h4>
+      <p>設定寬度：50%<br>
+      實際佔用：50%</p>
+    </div>
+  </div>
+</div>
+```
+
+```css style.css
+.layout-demo {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.layout-demo h3 {
+  margin: 30px 0 15px 0;
+  color: #333;
+}
+
+.container {
+  border: 2px solid #28a745;
+  padding: 10px;
+  margin-bottom: 20px;
+  background: white;
+  /* 使用 inline-block 技巧避免間格 */
+  font-size: 0;
+}
+
+.column {
+  display: inline-block;
+  width: 50%;
+  padding: 20px;
+  border: 1px solid #007bff;
+  background: #e3f2fd;
+  vertical-align: top;
+  font-size: 16px; /* 恢復字體大小 */
+}
+
+/* 問題展示：content-box 模式 */
+.content-box-demo {
+  border-color: #dc3545; /* 紅色表示問題 */
+}
+
+.content-box-demo .column {
+  box-sizing: content-box;
+  /* 實際寬度 = 50% + 20px×2 + 1px×2 = 50% + 42px */
+  /* 兩欄總寬度 = 100% + 84px，超出容器！ */
+}
+
+/* 解決方案：border-box 模式 */
+.border-box-demo .column {
+  box-sizing: border-box;
+  /* 實際寬度 = 50%（包含 padding 和 border） */
+  /* 兩欄總寬度 = 100%，完美符合容器！ */
+}
+```
+
+**觀察結果**：
+- 第一個容器（紅框）：兩欄擠在一起，因為總寬度超過 100%
+- 第二個容器（綠框）：兩欄完美並排，總寬度正好 100%
+
+### 兩種模式的核心差異
+
+| 模式                        | 寬度計算                          | 實際案例                                                       | 問題     |
+| --------------------------- | --------------------------------- | -------------------------------------------------------------- | -------- |
+| **content-box**<br>（預設） | `width` = 內容區域                | `width: 50%` + `padding: 20px` + `border: 1px`<br>= 50% + 42px | 容易破版 |
+| **border-box**<br>（推薦）  | `width` = 內容 + padding + border | `width: 50%` 就是 50%<br>內容區域自動調整                      | 不會破版 |
+
+### 現代標準做法與實際應用
+
+**全域設定（推薦）**
+
+```css
+/* 現代 CSS 的標準做法 */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 ```
-> 有些設計師建議將所有元素都設定為 border-box，更容易計算盒子的寬度。
 
-### overflow
-如果對區塊設定高度 Height，內容如果超過高度則會產生內容溢出。所以設定頁面元素高度的鐵則是不要設定，若超出時可以設定 overflow 如何處理溢出。
+**實際應用範例**
 
+```html index.html
+<div class="modern-layout">
+  <div class="sidebar">
+    <h3>側欄</h3>
+    <p>固定寬度 300px</p>
+  </div>
+  <div class="main-content">
+    <h3>主要內容</h3>
+    <p>自動填滿剩餘空間</p>
+  </div>
+</div>
+
+<div class="form-example">
+  <h3>表單範例</h3>
+  <input type="text" class="form-control" placeholder="使用者名稱">
+  <input type="email" class="form-control" placeholder="電子郵件">
+  <button class="btn">送出</button>
+</div>
+```
+
+```css style.css
+/* 響應式佈局 */
+.modern-layout {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sidebar {
+  width: 300px;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  /* 確實佔用 300px，不會更多 */
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  /* 自動填滿剩餘空間 */
+}
+
+/* 表單元素 */
+.form-example {
+  padding: 2rem;
+  max-width: 500px;
+  margin: 2rem auto;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  /* 真正的 100% 寬度，不會超出容器 */
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+  .modern-layout {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .sidebar {
+    width: 100%;
+  }
+}
+```
+
+### 為什麼 border-box 是現代首選？
+
+**1. 直觀性 - 所見即所得**
 ```css
-p.one {
-  border: 1px solid #000;
-  max-width: 600px;
-  height: 100px;
-  overflow: hidden;
-}
-
-p.two {
-  border: 1px solid #000;
-  max-width: 600px;
-  height: 100px;
-  overflow: scroll;
+.element {
+  width: 300px;    /* 真正佔用 300px */
+  padding: 20px;   /* 內容區域自動調整為 260px */
+  border: 1px solid #ddd;
 }
 ```
 
-更細一點的參數如 overflow-x 與 overflow-y，能對 x 與 y 軸進行溢出處理。
-
-**舉例：使用 max-height 來建立純 CSS 的捲動軸**
-```html
-<style>
-    .slider {
-        max-height: 200px;
-        overflow-y: hidden;
-        width: 300px;
-    }
-
-    .slider:hover {
-        max-height: 600px;
-        overflow-y: scroll;
-    }
-</style>
-```
-
-### visibility
-visibility 屬性可以讓盒子隱藏不見，但將原有的位置保留下來，反而 display:none 並不會保留空間下來。
-
+**2. 響應式友好 - 永不破版**
 ```css
-.a {
-    /* visible、hidden */
-    visibility: hidden;
+.responsive-grid {
+  width: 33.33%;   /* 永遠不會超過 33.33% */
+  padding: 1rem;
+  border: 1px solid #ddd;
 }
 ```
+
+**3. 計算簡單 - 減少錯誤**
+```css
+/* 不用再計算複雜的數學 */
+.three-columns {
+  width: calc(100% / 3);  /* 簡單明瞭 */
+  padding: 1rem;
+  border: 1px solid #ddd;
+}
+```
+
+{% note success %}
+**Box-sizing 關鍵重點**
+- 解決傳統盒子模型計算複雜的問題
+- `border-box` 讓元素尺寸更直觀（所見即所得）
+- 現代 CSS 的標準做法，主流框架都採用
+- 響應式設計的必備技術，避免版面破版
+- 建議全域設定：`* { box-sizing: border-box; }`
+{% endnote %}
+
+透過 Box-sizing 的學習，你將能更精確地控制元素大小，建立穩定不破版的響應式佈局！
 
 # 定位 Position
-- 最重要的定位方式為`絕對定位`與`相對定位`。定位時都需要咬著一個容器（空間座標）才能讓元素之後能進行偏移座標。按道理來說容器（座標）應該是指父容器，但這不是絕對的。
-- 容器區塊 (containing block) 就是包含元素的區塊，譬如`<html><body></body></html>`這現象 html 就是屬於 body 的父容器，同理 body 也將會是所有網頁元素的大容器。
-- 元素生成時會從父容器那取得初始顯示位置，如果：
-   1. 該元素設定為`相對定位`=> 初始顯示位置不變、保留容器給的`Containing 位置`、以`Containing 位置`給的容器範圍為空間座標，以自己的空間座標做相對偏移。
-   2. 該元素設定為`絕對定位`=> 初始顯示位置不變、捨棄容器給的`Containing 位置`，向祖先尋找最近已存在 Position 的空間座標做基準（最後找不到則認 viewpoint)，以別人的空間座標做絕對偏移。
-   3. 該元素設定為`固定定位`=> 初始顯示位置不變、捨棄容器給的`Containing 位置`，直接向瀏覽器的 viewpoint 做基準，以網頁的空間座標做絕對偏移。
 
-- 每產生一個具備偏移座標的 Position 時，就等於一個圖層產生，就能使用 z-index 屬性做圖層堆疊控制。
+定位（Position）是 CSS 中強大的佈局工具，它允許你精確控制元素在頁面中的位置。理解定位的概念對於創建複雜的版面效果至關重要，從簡單的元素偏移到複雜的重疊效果，都需要運用定位技術。
 
-## 相對定位 relative
-設定 `position:relative`，區塊會以原本顯示的位置為基準可以指定上下左右偏移。 與 absolute 不同的是，區塊原本的空間仍會保留。若只設定了 position:relative，卻沒有指定偏移則顯示上不會有什麼明顯有什麼改變。
+{% note primary %}
+**學習重點**
+- 理解定位的基本概念：相對定位、絕對定位、固定定位
+- 掌握定位參考點（containing block）的查找規則
+- 學會使用 z-index 控制元素層級
+- 了解現代定位的最佳實踐和應用場景
+{% endnote %}
 
-## 絕對定位 absolute
-當子元素設定 `position:absolute`，區塊會暫時以目前位置顯示，並脫離原本的區塊空間並向上尋找持有定位（可以是 relative 或是 absolute) 的容器做偏移基準，也就是版面基準點來定位，畫面上因為脫離了所以原本容器內的空間將會釋放掉。
+## 定位基礎概念
+每個定位元素都需要一個**參考點**來計算其位置，這個參考點稱為「包含塊」（containing block）。不同的定位類型會使用不同的參考點：
 
-- 若定位的容器是 block，`Containing 範圍`會設為該容器的 padding 之邊緣。
-- 若定位的容器是 inline，`Containing 範圍`會設為該容器的 content 之邊緣。
-- 若定位的容器不存在，`Containing 範圍`定義為網頁的整體容器區塊。
-- 設定 position 才可以使用 z-index 屬性。（重要）
+```css
+/* 元素的定位參考點查找邏輯 */
+.element {
+  position: relative;  /* 參考點：自己的原始位置 */
+  position: absolute;  /* 參考點：最近的已定位祖先元素 */
+  position: fixed;     /* 參考點：瀏覽器視窗 */
+  position: sticky;    /* 參考點：滾動容器 */
+}
+```
 
-## 固定定位 position:fixed
-absolute 與 fixed 的行為很像，不一樣的地方在於 absolute 元素的定位是會去找有安排定位之容器，真的找不到才會採網頁的定位之容器。fixed 是直接任網頁的定位之容器當偏移基準。
+| 定位類型     | 脫離文檔流 | 參考點         | 原始空間 | 主要用途             |
+| ------------ | ---------- | -------------- | -------- | -------------------- |
+| **static**   | ❌          | -              | ✅ 保留   | 預設模式             |
+| **relative** | ❌          | 自己原始位置   | ✅ 保留   | 微調位置、建立參考點 |
+| **absolute** | ✅          | 最近已定位祖先 | ❌ 釋放   | 精確定位、重疊效果   |
+| **fixed**    | ✅          | 瀏覽器視窗     | ❌ 釋放   | 固定導航、彈窗       |
+| **sticky**   | 部分脫離   | 滾動容器       | ✅ 保留   | 黏性標題、側邊欄     |
 
-## 範例說明 relative & absolute & fixed
-這裡直接實作比較三者差異會更容易理解。準備一個 5*4 的方塊圖，試著讓資料在畫面中央。
+## 相對定位（Relative）
+
+相對定位是最溫和的定位方式，元素會基於自己的原始位置進行偏移，但**不會脫離文檔流**。
+
+### 基本特性
+
+```css
+.relative-element {
+  position: relative;
+  top: 20px;    /* 向下偏移 20px */
+  left: 30px;   /* 向右偏移 30px */
+}
+```
+
+**重要特性：**
+- 元素在文檔流中的原始空間**會被保留**
+- 其他元素不會佔用這個空間
+- 主要用於微調位置或作為絕對定位的參考點
+
+### 實際應用場景
+
+```css
+/* 1. 微調元素位置 */
+.icon {
+  position: relative;
+  top: 2px;  /* 與文字對齊 */
+}
+
+/* 2. 建立定位上下文 */
+.card {
+  position: relative;  /* 為子元素提供定位參考 */
+}
+
+.card .badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* 3. 層級控制 */
+.overlay {
+  position: relative;
+  z-index: 10;
+}
+```
+
+## 絕對定位（Absolute）
+
+絕對定位讓元素完全脫離文檔流，基於最近的已定位祖先元素進行定位。這是創建複雜佈局效果的強大工具。
+
+### 參考點查找機制
+
+絕對定位元素會向上查找最近的已定位（非 static）祖先元素：
+
+```css
+/* 定位上下文建立 */
+.container {
+  position: relative;  /* 建立定位上下文 */
+}
+
+.absolute-child {
+  position: absolute;
+  top: 0;
+  right: 0;
+  /* 相對於 .container 定位 */
+}
+```
+
+**查找規則：**
+1. 如果父容器是 `block` 元素，參考其 padding 區域
+2. 如果父容器是 `inline` 元素，參考其 content 區域  
+3. 如果找不到已定位的祖先，參考初始包含塊（通常是 `<html>`）
+
+{% note info %}
+**注意：Transform 的影響**
+祖先元素的 `transform` 屬性會影響 `absolute` 元素的包含塊查找。
+{% endnote %}
+
+## 固定定位（Fixed）
+
+固定定位讓元素相對於瀏覽器視窗進行定位，即使頁面滾動也會保持固定位置。
+
+```css
+/* 固定頂部導航 */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 1000;
+}
+
+/* 浮動按鈕 */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+```
+
+{% note info %}
+**注意：Transform 的影響**
+祖先元素的 `transform` 屬性會影響 `fixed` 元素的定位基準。
+{% endnote %}
+
+## 定位實戰練習
+
+### 基礎練習：三種定位模式比較
 
 {% note primary %}
 **素材準備：準備代碼以方便下階段的教學練習** 
@@ -621,14 +1643,12 @@ body {
 {% endnote %}
 
 {% note info %}
-**小技巧**：inline 的 4px 間格
-此時你應該發現畫面的排版不如預期正確，因為需要修正 inline 所影響的 4px 間格。這裡提供兩種方法解決：（方法很多可以上網科普）
+**解決 Inline-Block 間隙問題**
+此時你會發現畫面的排版不如預期，因為 inline-block 元素之間有空白字符產生的間隙。這裡提供兩種現代解決方案：
 
-**方法一：消除看不見的文字**
+**方法一：消除空白字符（推薦）**
 ```css
-/*
-  消除 4px 方法一：容器沒有文字尺寸，子元素再弄回尺寸
-*/
+/* 父容器設定 font-size: 0，子元素恢復字體大小 */
 .bigbox {
   font-size: 0;
 }
@@ -637,102 +1657,693 @@ body {
 }
 ```
 
-**方法二：捨棄 inline 改用 block+float**
+**方法二：使用 Flexbox（現代推薦）**
 ```css
-/*
-  消除 4px 方法二：改浮動方式，注意容器溢位問題
-*/
+/* 更現代的解決方案 */
 .bigbox {
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  width: 300px;
 }
 .box {
-  /* display: inline-block; */
-  display: block;
-  float: left;
+  /* 移除 display: inline-block */
+}
+```
+
+**方法三：使用 Grid（最現代）**
+```css
+.bigbox {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  width: 300px;
 }
 ```
 {% endnote %}
 
-1. 後續教學上我們採用**方法一**來解決 （較多狀況可以解析，如果可以兩法都去理解）。此時你的畫面應該如下：
+後續教學採用**方法一**來解決間隙問題。完成後你的畫面應該如下：
+
 ![Image](https://i.imgur.com/vCQc7zp.png)
 
-2. 添加三種 position 效果到各位置。理解這些定位點解析：
+### 添加定位效果
+
 ```css style.css
+/* 相對定位：保留原始空間，相對自己偏移 */
 .relative {
   position: relative;
   background: brown;
   top: -30px;
   left: -30px;
-  /* 空間仍在僅偏移 */
+  /* 注意：原始空間仍然被保留 */
 }
 
+/* 絕對定位：脫離文檔流，尋找定位參考點 */
 .absolute {
   position: absolute;
   background: blueviolet;
-  /* 預設位置不變，父容器失去該元素 */
+  /* 預設會在原始位置顯示，但已脫離文檔流 */
+  /* 其他元素會佔用它原本的空間 */
 }
 
-.fixed{
+/* 固定定位：相對於瀏覽器視窗定位 */
+.fixed {
   position: fixed;
   background: darkgreen;
-  /* 解讀奇怪的預設位置 =>
-    1. 因為 inline-block 關係，會緊鄰前者旁邊
-    2. 失去父容器的強迫換行，所以 overflow
+  /* 行為分析：
+     1. 由於 inline-block 特性，會嘗試在前一個元素旁邊顯示
+     2. 脫離文檔流，父容器無法約束其換行行為
+     3. 可能會 overflow 到視窗邊緣
   */
 }
 ```
 
-3. 試著解讀以下各種狀況：
-  - .absolute 設定偏移量 (top,bottom,left,right) 尋找落點
-  - .bigbox, .main, body 選一組設定 relative，尋找。absolute 落點
-  - .fixed 設定偏移量 (top,bottom,left,right) 尋找落點
-  - 3 組都設定 z-index 屬性，帶入正值與負值解析圖層位置
-  - 挑幾組號碼給他指定 absolute 或 relative 看看圖層位置
+### 深入練習
+
+試著理解以下各種情況：
+
+1. **絕對定位的參考點查找**
+   ```css
+   .absolute {
+     position: absolute;
+     top: 20px;
+     left: 20px;
+   }
+   
+   /* 分別為 .bigbox, .main, body 設定 position: relative */
+   /* 觀察 .absolute 元素的定位參考點變化 */
+   ```
+
+2. **固定定位的視窗參考**
+   ```css
+   .fixed {
+     position: fixed;
+     top: 50px;
+     right: 50px;
+   }
+   ```
+
+3. **層級控制實驗**
+   ```css
+   .relative { z-index: 3; }
+   .absolute { z-index: 1; }
+   .fixed { z-index: 2; }
+   
+   /* 嘗試不同的 z-index 值，包括負值 */
+   ```
 
 ### 預覽範例效果
 {% jsfiddle summer10920/21uwnvbt html,css,result dark 100% 768 %}
 
-### 利用 absolute 特性 拿來做水平垂直至中。
-素材中是使用 body 指定 flex 方式設計。另一個方式為：
+## Z-Index 層級控制
+
+只有已定位的元素（非 static）才能使用 z-index 來控制層級順序。
 
 ```css
-.main{
+.layer-1 {
+  position: relative;
+  z-index: 1;
+}
+
+.layer-2 {
   position: absolute;
-  left: 50%;
+  z-index: 2;  /* 在 layer-1 之上 */
+}
+
+.layer-3 {
+  position: fixed;
+  z-index: 999;  /* 在最上層 */
+}
+```
+
+### 層疊上下文（Stacking Context）
+
+每個元素都可能創建新的層疊上下文，內部的 z-index 只在該上下文中有效：
+
+```css
+/* 建立新的層疊上下文 */
+.stacking-context {
+  position: relative;
+  z-index: 1;
+  /* 內部的 z-index 只在此上下文中有效 */
+}
+
+.child-high {
+  position: absolute;
+  z-index: 9999;  /* 仍然在父上下文的限制內 */
+}
+```
+
+### 現代 Z-Index 管理
+
+```css
+/* 使用 CSS 自訂屬性統一管理 */
+:root {
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+.modal {
+  z-index: var(--z-modal);
+}
+
+.tooltip {
+  z-index: var(--z-tooltip);
+}
+```
+
+## Transform 對定位的影響
+
+`transform` 屬性會創建新的**定位上下文**（containing block），這會影響 `absolute` 和 `fixed` 元素的定位基準。這是現代 CSS 開發中一個重要但經常被忽略的陷阱。
+
+### 影響原理
+
+當元素具有 `transform` 屬性時，該元素會：
+1. 建立新的定位上下文
+2. 成為後代 `absolute` 和 `fixed` 元素的包含塊
+3. 改變原本的定位基準查找規則
+
+### 對 Absolute 定位的影響
+
+```css
+/* 問題範例 */
+.grandparent {
+  /* 沒有 position，但有 transform */
+  transform: scale(1);
+}
+
+.parent {
+  position: relative;  /* 原本預期的包含塊 */
+}
+
+.child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* 實際上會相對於 .grandparent 定位，而不是 .parent */
+}
+```
+
+**更新後的包含塊查找規則：**
+1. 有 `transform` 屬性的祖先元素 → 成為包含塊
+2. 最近的已定位（非 static）祖先元素 → 成為包含塊  
+3. 初始包含塊（通常是 `<html>`） → 最後的包含塊
+
+### 對 Fixed 定位的影響
+
+```css
+/* 問題範例 */
+.modal-container {
+  transform: translateX(0);  /* 創建新的定位上下文 */
+}
+
+.modal {
+  position: fixed;
   top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 不再相對於視窗，而是相對於 .modal-container */
+}
+```
+
+**結果：**
+- `fixed` 元素不再相對於瀏覽器視窗定位
+- 而是相對於具有 `transform` 的祖先元素定位
+- 失去了固定在視窗中的效果
+
+### 常見問題場景
+
+這個問題在以下情況特別常見：
+
+```css
+/* 1. 動畫效果 */
+.animated-container {
+  transform: translateX(100px);
+  transition: transform 0.3s ease;
+}
+
+/* 2. 居中容器 */
+.centered-container {
   transform: translate(-50%, -50%);
 }
-```
 
-{% note danger %}
-**新手陷阱：當子元素 fixed 遇到 父容器 Transform**
-雖然表面上說 fixed 直接參考 viewpoint，但根據上面至中效果你會發現一個問題，那就是 案例中的小方塊 fixed 在向上尋找 viewpoint 時，途中遇到到 `.main` 父容器這裡的 transform，會導致放棄尋找 viewpoint 而定位至此。
-
-如果要排除此現象，你得想辦法不要出現 transform 的 position 至中寫法：
-```css
-.main{
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin:auto;
+/* 3. 縮放效果 */
+.scaled-container {
+  transform: scale(1.1);
 }
 ```
 
+### 解決方案
+
+#### 方案一：避免不必要的 Transform
+
+```css
+/* ❌ 問題：使用 transform 導致定位問題 */
+.container {
+  transform: translateX(100px);
+}
+
+/* ✅ 解決：改用其他方式實現效果 */
+.container {
+  margin-left: 100px;
+  /* 或使用 position: relative; left: 100px; */
+}
+
+/* 動畫效果的替代方案 */
+.slide-in-page {
+  /* transform: translateX(100%); 避免 */
+  margin-left: 100%;  /* 替代方案 */
+  transition: margin-left 0.3s ease;
+}
+```
+
+#### 方案二：讓 Fixed 元素靠近 HTML
+
+```html
+<!-- ❌ 問題：fixed 元素被深度嵌套 -->
+<div class="app">
+  <div class="page-wrapper">
+    <div class="content-container">
+      <div class="transform-element">
+        <div class="fixed-modal">模態框</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ 解決：將 fixed 元素移到接近 body 的位置 -->
+<div class="app">
+  <div class="fixed-modal">模態框</div>
+  <div class="page-wrapper">
+    <div class="content-container">
+      <div class="transform-element">
+        <!-- 內容 -->
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+```css
+/* 確保 fixed 元素在 body 的直接子級 */
+body > .fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+```
+
+#### 方案三：建立合適的 Absolute 參考點
+
+```html
+<!-- ❌ 問題：absolute 元素參考太遠的祖先 -->
+<div class="transform-grandparent">
+  <div class="middle-container">
+    <div class="parent">
+      <div class="absolute-child">我會參考 transform-grandparent</div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ 解決：在合適的位置建立參考點 -->
+<div class="transform-grandparent">
+  <div class="middle-container">
+    <div class="parent positioned-parent">
+      <div class="absolute-child">我會參考 positioned-parent</div>
+    </div>
+  </div>
+</div>
+```
+
+```css
+/* 在合適的層級建立定位上下文 */
+.positioned-parent {
+  position: relative;  /* 明確建立定位上下文 */
+}
+
+/* 實際應用範例 */
+.card {
+  position: relative;  /* 為子元素建立明確的參考點 */
+}
+
+.card .badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* 參考 .card，而不是更遠的祖先 */
+}
+```
+
+#### 方案四：重新安排 HTML 結構
+
+```html
+<!-- ❌ 問題結構 -->
+<div class="transform-container">
+  <div class="content">
+    <div class="fixed-element">固定元素</div>
+    <div class="absolute-element">絕對定位元素</div>
+  </div>
+</div>
+
+<!-- ✅ 優化結構 -->
+<div class="fixed-element">固定元素</div>
+<div class="absolute-parent">
+  <div class="absolute-element">絕對定位元素</div>
+</div>
+<div class="transform-container">
+  <div class="content">
+    <!-- 一般內容 -->
+  </div>
+</div>
+```
+
+{% note success %}
+**Transform 影響解決重點**
+- **避免不必要的 Transform**：優先考慮其他 CSS 屬性
+- **Fixed 元素靠近 HTML**：將 fixed 元素放在 body 的直接子級
+- **Absolute 建立近距離參考**：在合適的父級設定 position: relative
+- **重新安排 HTML 結構**：分離有 transform 的元素和定位元素
+- **明確建立定位上下文**：避免意外的包含塊查找
 {% endnote %}
 
-## 黏性定位 position:sticky
-這是一個結合了 position:relative （進入）和 position:fixed （離開）的特性，適用像是 header-nav 選單效果，會先以 relative 效果方式正常出現，當元素離開 viewport 時因為溢出成立導致會轉成 fixed 效果。
+## 黏性定位（Sticky）
 
-以下部分情況下使用 sticky 會失敗（就是 fixed 條件失敗）：
+黏性定位是現代 CSS 的強大功能，結合了相對定位和固定定位的特性。元素在滾動時會從相對定位切換到固定定位。
 
-- 未指定特定偏移量 (top,bottom,left,right)＝＞　導致離開時沒有絕對位置。
-- 父元素的 overflow 屬性值為 hidden, auto, scroll＝＞　無法溢出導致不成立。
-- body height:100%＝＞元素永遠離不開 viewpoint。
+### 工作原理
 
-## 小節練習 - Postition
-請使用 CSS 的 postion 屬性試著做出以下畫面，點符號利用 absolute 做出。每個骰子的尺寸為 200px，點符號尺寸為骰子的 0.2 倍大。
+```css
+.sticky-header {
+  position: sticky;
+  top: 0;  /* 必須指定偏移值 */
+  background: white;
+  z-index: 10;
+}
+```
+
+**行為模式：**
+1. **正常狀態**：像 `position: relative` 一樣正常顯示
+2. **觸發條件**：當元素滾動到指定位置時
+3. **黏性狀態**：像 `position: fixed` 一樣固定在指定位置
+
+### 常見失效原因
+
+{% note danger %}
+**Sticky 失效的常見原因**
+1. **未指定偏移值**：必須設定 top、bottom、left 或 right
+2. **父容器 overflow 問題**：父元素設定了 `overflow: hidden/auto/scroll`
+3. **高度限制**：父容器高度不足以產生滾動
+4. **祖先元素干擾**：祖先元素的某些屬性會阻止黏性效果
+{% endnote %}
+
+```css
+/* 正確的 sticky 設定 */
+.sticky-nav {
+  position: sticky;
+  top: 0;              /* 必須指定 */
+  background: white;
+  z-index: 100;
+}
+
+/* 確保父容器支援 sticky */
+.container {
+  /* overflow: hidden;  會導致 sticky 失效 */
+  overflow: visible;    /* 或不設定 overflow */
+}
+```
+
+### 現代 Sticky 應用技巧
+
+以下是一些實用的 sticky 定位應用範例：
+
+```html sticky-demo.html
+<div class="sticky-demo">
+  <h3>黏性定位應用範例</h3>
+  
+  <!-- 黏性導航列 -->
+  <nav class="sticky-nav">
+    <ul>
+      <li><a href="#section1">章節 1</a></li>
+      <li><a href="#section2">章節 2</a></li>
+      <li><a href="#section3">章節 3</a></li>
+    </ul>
+  </nav>
+  
+  <!-- 內容區域 -->
+  <section id="section1" class="content-section">
+    <h4 class="sticky-title">章節 1 標題</h4>
+    <p>這是章節 1 的內容。..</p>
+    <p>更多內容讓頁面可以滾動。..</p>
+  </section>
+  
+  <section id="section2" class="content-section">
+    <h4 class="sticky-title">章節 2 標題</h4>
+    <p>這是章節 2 的內容。..</p>
+    <p>更多內容讓頁面可以滾動。..</p>
+  </section>
+  
+  <section id="section3" class="content-section">
+    <h4 class="sticky-title">章節 3 標題</h4>
+    <p>這是章節 3 的內容。..</p>
+    <p>更多內容讓頁面可以滾動。..</p>
+  </section>
+  
+  <!-- 黏性側邊欄 -->
+  <aside class="sticky-sidebar">
+    <h4>相關連結</h4>
+    <ul>
+      <li><a href="#">連結 1</a></li>
+      <li><a href="#">連結 2</a></li>
+      <li><a href="#">連結 3</a></li>
+    </ul>
+  </aside>
+</div>
+```
+
+```css sticky-demo.css
+.sticky-demo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* 黏性導航列 */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 2px solid #ddd;
+  z-index: 100;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+.sticky-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 2rem;
+}
+
+.sticky-nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.sticky-nav a:hover {
+  background-color: #f0f0f0;
+}
+
+/* 黏性章節標題 */
+.sticky-title {
+  position: sticky;
+  top: 80px;  /* 避免與導航列重疊 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  margin: 0 0 1rem 0;
+  border-radius: 8px;
+  z-index: 90;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* 內容區域 */
+.content-section {
+  margin-bottom: 3rem;
+  min-height: 800px;  /* 確保有足夠高度產生滾動 */
+}
+
+.content-section p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+/* 黏性側邊欄 */
+.sticky-sidebar {
+  position: sticky;
+  top: 120px;
+  float: right;
+  width: 200px;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-left: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sticky-sidebar h4 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.sticky-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sticky-sidebar li {
+  margin-bottom: 0.5rem;
+}
+
+.sticky-sidebar a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.sticky-sidebar a:hover {
+  color: #0056b3;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .sticky-sidebar {
+    position: static;
+    float: none;
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .sticky-title {
+    top: 70px;
+  }
+  
+  .sticky-nav {
+    padding: 0.5rem 0;
+  }
+  
+  .sticky-nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+```
+
+**應用技巧重點：**
+
+1. **層級管理**：使用不同的 `top` 值避免黏性元素重疊
+2. **視覺回饋**：為黏性元素添加陰影或背景，讓使用者知道它們處於固定狀態
+3. **響應式適配**：在小螢幕上考慮將黏性元素改為靜態定位
+4. **性能優化**：避免在黏性元素上使用過多的動畫效果
+
+{% note success %}
+**Sticky 實用場景**
+- **導航列**：頁面頂部導航在滾動時保持可見
+- **章節標題**：長文章中的章節標題在滾動時保持可見
+- **側邊欄**：工具欄或相關連結在滾動時跟隨
+- **表格標題**：大型表格的標題列在滾動時保持可見
+- **返回頂部按鈕**：在特定位置出現並保持可見
+{% endnote %}
+
+## 現代定位技巧
+
+在現代網頁設計中，定位（Positioning）技巧不僅影響版面配置，也直接關係到使用者體驗。透過靈活運用 CSS 的多種定位方式，可以實現元素的精確擺放、層級控制與響應式調整。以下將介紹幾種常見且實用的現代定位方法，協助你打造更具彈性與美感的網頁介面。
+
+<!-- more -->
+
+### 元素居中的多種方法
+
+```css
+/* 方法 1：Transform 居中（最常用） */
+.center-transform {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 方法 2：Margin Auto 居中 */
+.center-margin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 200px;
+  height: 100px;
+  margin: auto;
+}
+
+/* 方法 3：Flexbox 居中（推薦） */
+.center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 方法 4：Grid 居中 */
+.center-grid {
+  display: grid;
+  place-items: center;
+}
+```
+
+### 響應式定位
+
+```css
+/* 響應式固定定位 */
+.responsive-fixed {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+@media (max-width: 768px) {
+  .responsive-fixed {
+    bottom: 10px;
+    right: 10px;
+    transform: scale(0.8);
+  }
+}
+
+/* 條件式黏性定位 */
+@supports (position: sticky) {
+  .conditional-sticky {
+    position: sticky;
+    top: 0;
+  }
+}
+```
+
+## 小節練習：骰子定位
+
+請使用 CSS 的 position 屬性製作以下骰子畫面。每個骰子尺寸為 200px，點符號尺寸為骰子的 0.2 倍大。
 
 {% tabs posdemo,1 %}
 <!-- tab 題目預覽-->
@@ -839,31 +2450,302 @@ body {
 <!-- endtab -->
 {% endtabs %}
 
+{% note success %}
+**Position 定位重點總結**
+- **相對定位**：保留空間，相對自己偏移，常用於建立定位上下文
+- **絕對定位**：脫離文檔流，相對於最近已定位祖先，適合精確定位
+- **固定定位**：相對於瀏覽器視窗，適合固定導航和懸浮元素
+- **黏性定位**：現代響應式設計的強大工具，注意使用條件
+- **Z-Index**：只對已定位元素有效，注意層疊上下文的影響
+- **現代實踐**：優先考慮 Flexbox 和 Grid，定位作為特殊效果的補充
+{% endnote %}
+
 # 總思考練習
 
-## 卡片排版
-思考以下問題：
+本章節透過兩個實際案例來綜合應用前面學到的盒子模型與定位技術。請仔細觀察範例，思考背後的 CSS 原理，並檢驗自己對核心概念的理解程度。
 
-1. 單看預覽，hot 定位的方式透過什麼方式完成
-2. 為何檢查`<div class="container">`的參數只有寬度沒有高度
-3. 在 CSS 代碼中為何沒有`box-sizing: border-box;`時，整個卡片會跑版。
+{% note primary %}
+**練習目標**
+- 綜合運用盒子模型計算方式
+- 理解定位技術的實際應用
+- 分析版面配置的問題與解決方案
+- 掌握 z-index 層級控制的原理
+{% endnote %}
+
+## 練習一：響應式卡片佈局
+
+觀察以下卡片佈局範例，分析其背後的 CSS 實作原理：
 
 {% jsfiddle summer10920/63oaphu8 result,html,css, dark 100% 500 %}
 
-### 解答
+### 思考問題
 
-1. 父容器 relation 與子元素 absolute 與 top&right
-2. 父容器有綁定 width 但子元素 float
-3. 父容器總寬 960，瀏覽器預設是 content-box(width = content) 模式所以全部算入一共是 m20+b2+p20+w300=>342\*3>960 超過，反之 border-box 模式 (width = content + padding + border) 下為 m20+w300=320*3=960。
+{% note info %}
+**問題分析**
+請仔細觀察上方範例，思考以下問題：
 
-## 廣告鎖頻
-本練習包含 JQ 語法負責按鈕控制（未學習過不影響本題思考），思考以下問題：
+1. **定位分析**：觀察 "HOT" 標籤的位置，它是如何實現精確定位的？
+2. **容器高度**：為什麼 `<div class="container">` 只設定寬度而沒有設定高度？
+3. **盒子模型計算**：如果移除 `box-sizing: border-box`，為什麼會造成版面破版？
+{% endnote %}
 
-1. 為何預覽上 div.content 無法被選取文字，其原理為何。
-2. 試著理解本題 AD 的水平垂直至中的方法。
+### 深入解析
+
+{% tabs card-analysis,1 %}
+<!-- tab HOT 標籤定位 -->
+**HOT 標籤定位原理**
+
+HOT 標籤的定位是透過**父子定位組合**實現的：
+
+```css
+/* 父容器建立定位上下文 */
+.card {
+  position: relative;  /* 建立定位參考點 */
+}
+
+/* 子元素絕對定位 */
+.hot-badge {
+  position: absolute;
+  top: 10px;           /* 距離父容器頂部 10px */
+  right: 10px;         /* 距離父容器右側 10px */
+  z-index: 10;         /* 確保在其他元素之上 */
+}
+```
+
+**關鍵原理：**
+- 父容器 `position: relative` 建立定位上下文
+- 子元素 `position: absolute` 脫離文檔流，相對於父容器定位
+- 使用 `top` 和 `right` 屬性精確控制位置
+<!-- endtab -->
+
+<!-- tab 容器高度設計 -->
+**容器高度的設計邏輯**
+
+容器只設定寬度而不設定高度的原因：
+
+```css
+.container {
+  width: 960px;        /* 固定寬度控制整體版面 */
+  /* height: auto;     自動高度，由內容決定 */
+}
+
+.card {
+  float: left;         /* 浮動排列 */
+  width: 300px;        /* 每個卡片固定寬度 */
+  /* height: auto;     卡片高度由內容決定 */
+}
+```
+
+**設計考量：**
+- **響應式內容**：卡片高度應該根據內容自動調整
+- **版面彈性**：不同卡片的內容長度可能不同
+- **浮動行為**：浮動元素會自動計算高度來包含內容
+<!-- endtab -->
+
+<!-- tab 盒子模型計算 -->
+**Box-sizing 對版面的影響**
+
+透過數學計算分析為什麼會破版：
+
+```css
+/* 傳統 content-box 模式 */
+.card {
+  width: 300px;        /* 內容寬度 */
+  padding: 20px;       /* 左右 padding 各 20px */
+  border: 2px solid;   /* 左右 border 各 2px */
+  margin: 0 20px;      /* 左右 margin 各 20px */
+}
+```
+
+**計算過程：**
+```
+單個卡片實際佔用寬度 = width + padding + border + margin
+= 300px + (20px × 2) + (2px × 2) + (20px × 2)
+= 300px + 40px + 4px + 40px
+= 384px
+
+三個卡片總寬度 = 384px × 3 = 1152px
+容器寬度 = 960px
+
+結果：1152px > 960px → 版面破版！
+```
+
+**border-box 解決方案：**
+```css
+.card {
+  box-sizing: border-box;
+  width: 300px;        /* 總寬度（包含 padding 和 border） */
+  /* 實際佔用 = 300px + 40px margin = 340px */
+  /* 三個卡片 = 340px × 3 = 1020px < 960px ✗ */
+}
+```
+
+**完整解決方案：**
+```css
+.card {
+  box-sizing: border-box;
+  width: 280px;        /* 調整寬度以適應容器 */
+  /* 實際佔用 = 280px + 40px margin = 320px */
+  /* 三個卡片 = 320px × 3 = 960px ✓ */
+}
+```
+<!-- endtab -->
+{% endtabs %}
+
+## 練習二：模態框 (Modal) 定位技術
+
+觀察以下模態框範例，分析其定位與層級控制的實作方式：
 
 {% jsfiddle summer10920/9scL73q6 result,html,css,js dark 100% 500 %}
 
-### 解答
-1. `.ad`最上面設定 z-index，下一層的`.all`，最後一層是 body 其他的元素。
-2. 利用 fixed 變成圖層後，box 範圍利用 left,right,top,bottom 故意 0 撐大邊界使得 margin:auto 幫忙置中，前提是 content 必須要有固定的 w 跟 h 才能讓 auto 計算得出來。
+{% note warning %}
+**程式碼說明**
+此範例包含 jQuery 語法來控制模態框的開關，但重點是理解 CSS 定位技術的應用。如果您尚未學習 JavaScript，可以專注於 CSS 部分的分析。
+{% endnote %}
+
+### 思考問題
+
+{% note info %}
+**問題分析**
+請仔細觀察上方範例，思考以下問題：
+
+1. **層級控制**：為什麼背景內容無法被選取？背後的層級控制原理為何？
+2. **居中技術**：模態框如何實現水平垂直完美居中？
+{% endnote %}
+
+### 技術解析
+
+{% tabs modal-analysis,1 %}
+<!-- tab 層級控制原理 -->
+**Z-index 層級控制分析**
+
+模態框的層級結構如下：
+
+```css
+/* 層級 1：背景內容（最底層） */
+.content {
+  /* 預設 z-index: auto; */
+  /* 無法被選取是因為被上層覆蓋 */
+}
+
+/* 層級 2：模態框遮罩層 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;       /* 覆蓋所有背景內容 */
+}
+
+/* 層級 3：模態框內容（最上層） */
+.modal-content {
+  position: fixed;
+  z-index: 1001;       /* 在遮罩層之上 */
+}
+```
+
+**層級控制效果：**
+- **背景內容**：被遮罩層覆蓋，無法互動
+- **遮罩層**：阻止背景互動，提供視覺分離
+- **模態框**：最上層，優先接收使用者互動
+<!-- endtab -->
+
+<!-- tab 居中技術分析 -->
+**Fixed 定位居中技術**
+
+模態框使用 `position: fixed` 配合 `margin: auto` 實現居中：
+
+```css
+.modal-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* 固定尺寸 */
+  width: 500px;
+  height: 300px;
+  
+  /* 自動居中 */
+  margin: auto;
+}
+```
+
+**居中原理解析：**
+
+1. **建立定位上下文**：`position: fixed` 讓元素脫離文檔流
+2. **撐滿整個視窗**：`top: 0; left: 0; right: 0; bottom: 0`
+3. **自動計算剩餘空間**：`margin: auto` 在四個方向平均分配空間
+4. **固定尺寸**：必須設定 `width` 和 `height` 才能讓 `margin: auto` 計算
+
+**數學計算：**
+```
+水平居中：
+剩餘空間 = 視窗寬度 - 模態框寬度
+左右 margin = 剩餘空間 ÷ 2
+
+垂直居中：
+剩餘空間 = 視窗高度 - 模態框高度  
+上下 margin = 剩餘空間 ÷ 2
+```
+
+**替代方案：Transform 居中**
+```css
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 不需要設定 right, bottom, margin */
+}
+```
+<!-- endtab -->
+{% endtabs %}
+
+## 學習重點回顧
+
+{% note success %}
+**核心概念總結**
+
+透過這兩個練習，我們複習了以下重要概念：
+
+**盒子模型應用**
+- `box-sizing: border-box` 簡化寬度計算
+- 精確的數學計算避免版面破版
+- 容器與子元素的尺寸關係
+
+**定位技術應用**
+- 相對定位建立定位上下文
+- 絕對定位實現精確元素定位
+- 固定定位創建模態框效果
+
+**層級控制技巧**
+- Z-index 建立合理的層級結構
+- 遮罩層阻止背景互動
+- 視覺層次的重要性
+
+**居中技術比較**
+- `margin: auto` 配合定位實現居中
+- `transform` 提供另一種居中方案
+- 不同方法的適用場景
+
+**現代最佳實踐**
+- 使用 `box-sizing: border-box` 作為全域設定
+- 建立合理的定位上下文
+- 注意響應式設計的考量
+{% endnote %}
+
+{% note info %}
+**進階學習建議**
+
+掌握本章內容後，建議繼續學習：
+- **Flexbox 佈局**：更強大的一維排列工具
+- **CSS Grid**：二維網格佈局系統
+- **CSS Transform**：2D/3D 變換效果
+- **CSS Animation**：流暢的動畫效果
+- **響應式設計**：多裝置適配技術
+{% endnote %}
+
