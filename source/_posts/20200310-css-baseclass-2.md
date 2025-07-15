@@ -2308,9 +2308,14 @@ li {
 使用 `list-style-image` 時，建議圖片尺寸不要超過 16x16 像素，否則可能影響行高和對齊。
 {% endnote %}
 
-### 清單巢狀結構與樣式
+### 收入應用範例
+在本章節，我們將整理一些經典且實用的清單應用範例，幫助你靈活運用 CSS 打造各種不同風格的清單設計。這些範例涵蓋了從基礎到進階的技巧，適合初學者實作與練習。
 
-#### 多層清單設計
+
+#### 清單巢狀結構與樣式
+在網頁設計中，巢狀清單（Nested List）是結構化資訊與多層次分類的常見工具。透過 CSS，我們可以靈活調整巢狀清單的符號樣式與縮排，讓內容層次更加清晰易讀。
+
+
 ```html
 <style>
   .nested-list {
@@ -2357,7 +2362,7 @@ li {
 </ul>
 ```
 
-### 清單製作導航選單
+#### 清單製作導航選單
 
 製作水平導航選單是清單的常見應用，需要掌握以下技巧：
 
@@ -2504,88 +2509,17 @@ li {
 </ul>
 ```
 
-### 解決 inline-block 空隙問題
-
-在使用 `inline-block` 排列清單項目時，會出現約 4px 的間隙問題，這是因為 HTML 中的換行符號被當作文字節點處理。
-
-{% note warning %}
-**常見問題：inline-block 間隙**
-這個問題只在 `display: inline-block` 時出現，是因為 HTML 標籤間的換行符號被視為文字內容。
-{% endnote %}
-
-#### 解決方案比較
-
-{% tabs solutions,1 %}
-<!-- tab HTML 結構調整 -->
-**方法一：調整 HTML 結構**
-```html
-<!-- 移除標籤間的換行 -->
-<ul>
-  <li><a href="#">關於我們</a></li><li><a href="#">產品介紹</a></li><li><a href="#">客戶案例</a></li><li><a href="#">售後服務</a></li>
-</ul>
-
-<!-- 或使用註解分隔 -->
-<ul>
-  <li><a href="#">關於我們</a></li><!--
-  --><li><a href="#">產品介紹</a></li><!--
-  --><li><a href="#">客戶案例</a></li><!--
-  --><li><a href="#">售後服務</a></li>
-</ul>
-```
-**優點：** 徹底解決問題  
-**缺點：** HTML 程式碼不易閱讀
-<!-- endtab -->
-<!-- tab CSS margin 調整 -->
-**方法二：負 margin 消除**
-```css
-.nav-list li {
-  display: inline-block;
-  margin-right: -4px; /* 消除間隙 */
-}
-```
-**優點：** HTML 結構清晰  
-**缺點：** 間隙大小可能因字型而異，不夠精確
-<!-- endtab -->
-<!-- tab 字型大小歸零 -->
-**方法三：父元素字型歸零**
-```css
-.nav-list {
-  font-size: 0; /* 讓換行符號沒有寬度 */
-}
-
-.nav-list li {
-  font-size: 16px; /* 重新設定字型大小 */
-  display: inline-block;
-}
-```
-**優點：** 完全解決問題，HTML 結構清晰  
-**缺點：** 需要重新設定字型大小
-<!-- endtab -->
-<!-- tab 使用 Flexbox -->
-**方法四：使用 Flexbox（推薦）**
-```css
-.nav-list {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-list li {
-  /* 不需要設定 display: inline-block */
-}
-```
-**優點：** 現代化解決方案，功能強大  
-**缺點：** 需要了解 Flexbox 語法
-<!-- endtab -->
-{% endtabs %}
-
-### 清單的創意應用
-清單元素除了基本的項目展示外，還能透過 CSS 創造出各種創意的視覺效果。從步驟指示器到時間軸，從卡片佈局到互動選單，清單的應用範圍非常廣泛。
-
 {% note info %}
-**創意應用重點**
-掌握 CSS 計數器、偽元素、Flexbox 等技術，可以讓清單元素發揮更大的設計潛力。
+眼尖的你發現了嗎？
+仔細觀察上面的 .dropdown-nav 範例，你會發現選單項目之間有約 4px 的間隙。這是因為我們使用了 display: inline-block 來排列選單項目，而 HTML 標籤之間的換行符號被瀏覽器當作文字節點處理，產生了這個間隙。
+這個問題在下一篇 CSS 教學中會詳細介紹解決方案，包括：
+為什麼會出現這個間隙
+四種不同的解決方法
+每種方法的優缺點比較
+現代化的最佳實踐
+現在先記住這個現象，下一篇我們會深入探討！
 {% endnote %}
+
 
 #### 步驟指示器
 ```html
@@ -3018,9 +2952,6 @@ th {
 </div>
 ```
 
-### 表格進階技巧
-在掌握了基本的表格樣式後，我們可以進一步學習一些進階的表格技巧，讓表格更加實用和美觀。這些技巧包括固定表頭、可排序功能、以及更豐富的視覺效果。
-
 #### 固定表頭
 ```css
 .fixed-header-table {
@@ -3043,50 +2974,6 @@ th {
 }
 ```
 
-#### 可排序表格
-```html
-<style>
-  .sortable-table th {
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-  }
-  
-  .sortable-table th:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .sortable-table th::after {
-    content: '↕';
-    position: absolute;
-    right: 10px;
-    opacity: 0.3;
-  }
-  
-  .sortable-table th.sort-asc::after {
-    content: '↑';
-    opacity: 1;
-  }
-  
-  .sortable-table th.sort-desc::after {
-    content: '↓';
-    opacity: 1;
-  }
-</style>
-
-<table class="sortable-table">
-  <thead>
-    <tr>
-      <th onclick="sortTable(0)">姓名</th>
-      <th onclick="sortTable(1)">年齡</th>
-      <th onclick="sortTable(2)">薪資</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- 資料行 -->
-  </tbody>
-</table>
-```
 
 {% note info %}
 **小技巧：表格效能優化**
