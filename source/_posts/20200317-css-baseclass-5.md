@@ -16,346 +16,624 @@ CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS
 <!-- more -->
 
 # 變形 Transform
-必須作用在 block、inline-block（包含 flex 彈性盒）上。CSS 變形特點不會影響周遭其他的元素，舉例旋轉一個元素 45deg，有可能會壓在上下左右的元素之上。變形的值為函數並歸類出四種類型。
 
-例如`transform: translate(50%, 50%) rotate(45deg);`此寫法，同時間使用多組函式時，應該用空格進行多組函式值。
+CSS 變形（Transform）屬性可讓元素進行平移、縮放、旋轉、傾斜等視覺變化，常用於動畫、互動效果與版面調整。變形不會影響其他元素的排版，僅改變自身的呈現方式。現代瀏覽器皆已完整支援 2D 與 3D 變形。CSS 變形讓網頁元素能夠進行動態視覺變化，提升互動性與設計彈性。常見應用如按鈕點擊縮放、圖片旋轉、卡片翻轉等，都是利用 transform 屬性實現。
 
-{% note primary %}
-**素材準備：準備代碼以方便下階段的教學練習** 
-設計畫面中心的示範方塊圖且文字垂中，將 transition 的範例結果透過`::after` 呈現出來。
+{% note info %}
+**學習重點**
+在學習 CSS 變形之前，請先理解以下核心概念：
+- 變形只改變元素的視覺呈現，不影響文件流
+- 2D 變形包含平移、縮放、旋轉、傾斜四大基本操作
+- 3D 變形需要設定透視點（perspective）才能看到立體效果
+- 變形原點（transform-origin）決定變形的參考中心點
+{% endnote %}
+
+## 觀念解釋
+
+transform 屬性可同時套用多種變形函式，語法如下：
+
+```css
+transform: translate(50px, 20px) scale(1.2) rotate(45deg) skew(10deg, 5deg);
+```
+- 多個函式以空格分隔，依序套用。
+- 變形不會影響元素在文件流中的位置（不會推擠其他元素）。
+
+{% note info %}
+**小技巧：硬體加速**
+部分 transform（如 translate3d）可觸發 GPU 加速，提升動畫效能。
+{% endnote %}
+
+## 函式說明
+
+| 函式        | 說明     | 範例                       |
+| ----------- | -------- | -------------------------- |
+| translate   | 平移     | translate(10px, 20px)      |
+| scale       | 縮放     | scale(1.5, 0.5)            |
+| rotate      | 旋轉     | rotate(45deg)              |
+| skew        | 傾斜     | skew(10deg, 5deg)          |
+| matrix      | 矩陣變形 | matrix(1, 0, 0, 1, 30, 20) |
+| perspective | 3D 透視  | perspective(500px)         |
+| translate3d | 3D 平移  | translate3d(10px,0,20px)   |
+| scale3d     | 3D 縮放  | scale3d(1,2,1)             |
+| rotate3d    | 3D 旋轉  | rotate3d(1,1,0,45deg)      |
+
+## 完整示範
+在本節中，我們將透過實際範例，展示 CSS transform 屬性的各種常見用法，包括平移（translate）、縮放（scale）、旋轉（rotate）、傾斜（skew）等。每個範例都會搭配說明，幫助你理解 transform 如何影響元素的外觀與位置，並能靈活運用於網頁互動設計中。
 
 ```html
-<!--本篇利用 ::after 模擬出變形差異比較-->
 <style>
-  body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
+  .transform-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1024px;
+    height: 600px;
+    margin: 2rem auto;
+    justify-items: center;
     align-items: center;
-    height: 100vh;
+  }
+
+  .grid-item {
+    border: 1px solid #000;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .transform-base {
+    border: 1px solid #000;
+    width: 100px;
+    height: 100px;
+    background: #4e91f9;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px #0002;
+    /* 不加 transition，純粹展示 transform */
+  }
+
+  .transform-translate {
+    transform: translate(20px, 10px);
+  }
+
+  .transform-scale {
+    transform: scale(1.3, 0.7);
+  }
+
+  .transform-rotate {
+    transform: rotate(25deg);
+  }
+
+  .transform-skew {
+    transform: skew(20deg, 0deg);
+  }
+
+  .transform-origin {
+    transform-origin: left bottom;
+    transform: rotate(-30deg);
+  }
+
+  .transform-label {
     text-align: center;
-    color: white;
+    margin-top: 0.5rem;
+    color: #333;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
   }
 
-  .box {
-    width: 100px;
-    height: 100px;
-    background: #FF0000;
-    line-height: 100px;
-    position: relative;
+  .advanced-matrix {
+    transform: matrix(1, 0.2, 0.2, 1, 20, 10);
   }
 
-  .box::after {
-    content: "transform";
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0.5;
-    background: #0000FF;
+  .advanced-perspective-box {
+    transform: perspective(120px) rotateY(30deg);
+  }
+
+  .advanced-translate3d {
+    transform: translate3d(20px, 10px, 30px);
+  }
+
+  .advanced-scale3d {
+    transform: scale3d(1.2, 0.8, 1.5);
+  }
+
+  .advanced-rotate3d {
+    transform: rotate3d(1, 1, 0, 45deg);
   }
 </style>
-<div class="box">Befault</div>
-```
-{% endnote %}
-
-## translate 平移
-- translateX()、translateY() 稱為「平移函式」能左右或上下移動，但不能沿 z 軸前後移動。
-- 接受用長度或百分比表示距離，px、em、%，正值往右或上，負值為往左或下。
-- 使用 translate(x,y) 能同時對 x 軸與 y 軸平移，但如果不寫 y 值則預設為 0，也就 translate(2em) 等同 translateX(2em)。
-- 如果變形函數中`使用百分比 (%) 做為移動的數據，以元素本身的 box 尺寸為百分比計算基準`。注意，這和 CSS box 以容納區 (containing block) 尺寸為計算基準不同。
-
-```css
-.box::after{
-  /* transform: translate(50px, 50px); */
-  transform: translate(50%, 50%);
-  /* 若是某 x,y 值不需設定，一定要設定成 0 */
-  /* transform: translate(0, 100px); */
-  /* transform: translate(100px, 0); */
-}
-```
-
-## scale 縮放
-- 能依據指定值縮放大小，用`負值會呈現倒影型態`。數值是倍數，舉例 scaleX(2) 變成轉換前的兩倍，scaleY(0.5) 讓元素高度減半，`無法使用百分比`不過Chrome仍可用，仍建議以係數比控制。
-- 可同時讓兩軸縮放，舉例 scale(2,0.5) 會讓元素縮放兩倍寬 (X)，一半高 (Y)。如果只填一個值 就會等同樣比例縮放兩軸。
-
-```css
-.box::after{
-  transform: scale(3.5);
-  /* transform: scale(3.5, 1.5); */
-
-  /* transform 函式可累加，用空格分開 */
-  /* transform: translate(50%, 50%) scale(1.2); */
-}
-```
-
-## rotate 旋轉
-可三維空間分別控制 rotateX()、rotateY()、rotateZ()。若單一使用 rotate() 則是二維空間順時旋轉，可負值且單位為 deg（degree）。
-
-```css
-.box::after {
-  transform: translate(100%) rotate(45deg);
-}
-```
-
-## skew 歪斜
-- skewX()、skewY()、skew()，有正、負值，skew(30deg)，記得要加單位 deg，
-- skew() 第一個數值是 x 的歪斜角， 接著才是 y 的歪斜角，如果省略 y 歪斜角，就視為 0。
-
-```css
-.box::after {
-  transform: translate(100%) skew(45deg);
-}
-```
-
-## transform-origin 變形點
-- 另外獨立的屬性指定，transform-origin 可以設定元素上的原點，元素旋轉時會對著這個原點旋轉
-- 為複合屬性，先指定 x 水平， y 垂直，最後是選填的 z 軸方向，彼此之間以空格間隔。
-- 數值可以是單位 em、px、%、left、right、top、bottom；center。
-- z 軸只能用長度值（一般會是 px)，不能夠使用關鍵字與百分比值。
-- 預設值為 50% 50%(box 中心點），若省略 Y 值不寫將視為 center (50%) 。
-
-> transform-origin 對於使用 translate 平移沒有效果。
-
-```css
-.box::after {
-  transform: rotate(30deg);
-  /* 以下四個設定都一樣 ，只設定一個值，另一值會被認定 center */
-  transform-origin: center center;
-  transform-origin: 50% 50%;
-  transform-origin: center;
-  transform-origin: 50%;
-}
+<div class="transform-grid">
+  <div class="grid-item">
+    <div class="transform-base">預設</div>
+    <div class="transform-label">無 transform</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base transform-translate">translate</div>
+    <div class="transform-label">平移</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base transform-scale">scale</div>
+    <div class="transform-label">縮放</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base transform-rotate">rotate</div>
+    <div class="transform-label">旋轉</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base transform-skew">skew</div>
+    <div class="transform-label">傾斜</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base transform-origin">origin</div>
+    <div class="transform-label">變形原點</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base advanced-matrix">matrix</div>
+    <div class="advanced-label">矩陣變形</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base advanced-perspective-box">perspective</div>
+    <div class="advanced-label">3D 透視</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base advanced-translate3d">translate3d</div>
+    <div class="advanced-label">3D 平移</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base advanced-scale3d">scale3d</div>
+    <div class="advanced-label">3D 縮放</div>
+  </div>
+  <div class="grid-item">
+    <div class="transform-base advanced-rotate3d">rotate3d</div>
+    <div class="advanced-label">3D 旋轉</div>
+  </div>
+</div>
 ```
 
 {% note warning %}
-**科普知識：3D 版的 Transform**
-CSS 另外還有的 3D 變形控制，這需要額外的進階深入介紹沒有加入本篇教材，有機會另開文章解說。簡單來說：
-- translateZ() 數值為長度值（不允許百分比），需搭配 perspective() 才能做出維度空間。
-- translate3d() 設定少於 3 個數值時並不會帶入預設值，一定要 3 個數值。
-- scale3d() 設定數值跟 translate3d 一樣要 3 個數值。
+**注意事項**
+transform 只改變元素的視覺呈現，不會影響實際佔位與文件流。若需改變排版，請搭配 position 或 margin 使用。
+
+- **matrix**：可同時進行多種 2D 變形（平移、縮放、傾斜、旋轉），但語法較不直觀，通常由 [工具產生](https://angrytools.com/css-generator/transform/)。
+- **perspective**：給予 3D 變形時的「景深」效果，需搭配 3D 變形函式（如 rotateY）。
+- **translate3d/scale3d/rotate3d**：分別為 3D 空間的平移、縮放、旋轉，第三個參數為 z 軸。
 {% endnote %}
+
+## 精選範例
+
+### 漂浮卡片陰影
+```html index.html
+<style>
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.card-float {
+  width: 200px;
+  height: 120px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin: 2rem auto;
+  transition: transform 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+}
+.card-float:hover {
+  transform: translateY(-16px) scale(1.05) rotate(-2deg);
+  box-shadow: 0 8px 32px #0003;
+}
+</style>
+<div class="card-float">滑鼠移上來！</div>
+```
+
+### 3D 翻轉卡片
+
+```html index.html
+<style>
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.flip-card {
+  width: 180px;
+  height: 120px;
+  perspective: 800px;
+  margin: 2rem auto;
+}
+.flip-card-inner {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(.4,2,.6,1);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%; height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.flip-card-front {
+  background: #4e91f9; color: #fff;
+}
+.flip-card-back {
+  background: #fff; color: #4e91f9;
+  transform: rotateY(180deg);
+  border: 1px solid #4e91f9;
+}
+</style>
+<div class="flip-card">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">前面</div>
+    <div class="flip-card-back">背面</div>
+  </div>
+</div>
+```
+
+### 漸進式縮放按鈕
+
+```html index.html
+<style>
+.btn-zoom {
+  padding: 0.8em 2em;
+  background: linear-gradient(90deg, #4e91f9, #6dd5ed);
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(.4,2,.6,1);
+}
+.btn-zoom:hover {
+  transform: scale(1.15) rotate(-3deg);
+}
+</style>
+<button class="btn-zoom">Zoom Me</button>
+```
+
+{% note success %}
+**跟著做：Transform 練習**
+1. 嘗試修改上述範例中的數值，觀察不同效果
+2. 練習組合多個 transform 函式
+3. 實驗不同的 transform-origin 設定
+4. 嘗試製作自己的 3D 翻轉效果
+{% endnote %}
+
+---
 
 # 轉場 Transition
-轉場是指從何開始到哪裡結束之動畫過程。你需要指定出開始與結束兩種不同的樣式屬性。舉例來說：
 
-1. 初始樣式為 `background:red`，結束樣式為 `background:blue`。
-2. 瀏覽器會將兩個樣式間的變化形成動畫過渡效果。
-3. 指定觸發時機行為，藉由 CSS 的擬類別觸發動畫，最常見的是`:hover`。
-4. transition 寫在觸發前才可來回轉場，寫在觸發後只會轉場過去，無法變回。
+CSS 轉場（Transition）屬性可讓元素在屬性值變化時，產生平滑的動畫過渡效果。常見應用如滑鼠移入按鈕時顏色、大小、透明度等變化，讓網頁互動更自然、流暢。轉場的核心概念是「從一個狀態平滑過渡到另一個狀態」，不需額外寫 JavaScript，只要設定好屬性即可。
 
-轉場可以分為四個屬性來指定，或者可以用縮寫（通常）來表示：
+{% note primary %}
+**素材準備：**
+在學習 CSS 轉場之前，請準備以下基礎知識：
+- 了解 CSS 選擇器與偽類（:hover、:focus、:active）
+- 熟悉基本的 CSS 屬性（color、background、width、height 等）
+- 理解時間單位（秒 s、毫秒 ms）與速度曲線概念
+{% endnote %}
 
-| 屬性                         | 預設值 | 說明                                                              |
-| ---------------------------- | ------ | ----------------------------------------------------------------- |
-| `transition-property`        | all    | 指定哪些 CSS 屬性受過渡轉場效果。沒指定到的屬性會瞬間變化沒有效果 |
-| `transition-duration`        | 0      | 指定該轉場需幾秒內完成，單位為 s                                  |
-| `transition-timing-function` | ease   | 指定過渡為哪種漸變函式，一共有 6 種過渡效果                       |
-| `transition-delay`           | 0      | 指定幾秒過後才執行轉場，單位為 s                                  |
+## 觀念解釋
 
-縮寫方式 `transition: property duration timing-function delay`; 
+- 轉場通常搭配偽類（如 :hover、:focus、:active）或 class 切換使用。
+- 只要有屬性值變化，且該屬性有 transition 設定，就會產生動畫效果。
+- 轉場不會自動重複播放，僅在屬性值變化時觸發。
+
+{% note warning %}
+**重要觀念：transition 必須寫在「變化前」的狀態**
+
+transition 屬性必須寫在預設狀態（如原本的 class 或 :hover 前），這樣不論「進入」或「返回」都會有動畫效果。
+
+如果只寫在變化後的 class（如 .active），當 class 被移除時，transition 也會消失，返回時就沒有動畫。
+
+**正確寫法：**
 ```css
-/* 縮寫：屬性    持續時間      速度曲線    延遲時間*/
-transition: all 1s ease-in 0s;
-/* 簡單寫法 */
-transition: all 2s; /*default is append ease 0s */
+.box {
+  transition: background 0.4s;
+}
+.box:hover {
+  background: #6dd5ed;
+}
 ```
 
-## 單屬性或多屬性
-可指定單某 CSS 屬性對象做轉場參數，若需要多屬性則連續設定轉場參數並使用<kbd>,</kbd>分開。
-
+**錯誤寫法：**
 ```css
-/*
-transition-property（預設 all）
-transition-duration（預設 0s）
-transition-timing-function（ease 預設、ease-in、linear、ease-out、ease-in-out）
-transition-delay（預設 0s）
- */
+.box:hover {
+  transition: background 0.4s;
+  background: #6dd5ed;
+}
+```
+這樣只有滑鼠移入有動畫，移出時就沒有。
+{% endnote %}
 
-/* 縮寫且單筆 */
-div {
+{% note info %}
+**小技巧：哪些屬性能轉場？**  
+大多數數值型屬性（如 color、background-color、width、height、opacity、transform 等）都能平滑過渡，但 display、position 等無法 transition。
+
+**可 transition 的屬性類型舉例：**
+- **長度單位**：px、em、rem、%、vw、vh 等（如 width、height、margin、padding）
+- **角度單位**：deg、rad（如 rotate、skew）
+- **顏色型**：色碼（#fff、#123456）、rgb、rgba、hsl、hsla（如 color、background-color、border-color）
+- **透明度**：opacity
+- **transform**：translate、scale、rotate、skew 等
+- **其他**：box-shadow、border-radius、letter-spacing、line-height ...
+
+**無法 transition 的屬性：**
+- display、position、float、z-index、visibility ...
+{% endnote %}
+
+## 語法說明
+
+| 屬性                         | 預設值 | 說明                                                         |
+| ---------------------------- | ------ | ------------------------------------------------------------ |
+| `transition-property`        | all    | 指定哪些 CSS 屬性受過渡轉場效果                              |
+| `transition-duration`        | 0      | 轉場持續時間（秒 s 或毫秒 ms）                               |
+| `transition-timing-function` | ease   | 速度曲線（如 ease、linear、ease-in、ease-out、cubic-bezier） |
+| `transition-delay`           | 0      | 延遲多久後才開始轉場                                         |
+
+**縮寫語法：**
+```css
+transition: property duration timing-function delay;
+```
+例如：
+```css
+transition: background-color 0.4s ease-in 0s;
+```
+
+## 範例展示
+CSS transition 主要用於讓屬性值的變化過程變得平滑自然，常見於滑鼠移入、點擊、聚焦等互動時，讓網頁元素的顏色、大小、透明度等產生動畫效果。接下來將透過多個實用範例，幫助你掌握 transition 的語法與實際應用方式。
+
+### 基本轉場：滑鼠移入改變背景色
+
+```html index.html
+<style>
+.btn-transition {
+  padding: 1em 2em;
+  background: #4e91f9;
+  color: #fff;
+  border: none;
+  border-radius: 32px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.4s, color 0.4s;
+}
+.btn-transition:hover {
+  background: #6dd5ed;
+  color: #222;
+}
+</style>
+<button class="btn-transition">滑鼠移上來</button>
+```
+
+### 多屬性轉場：同時改變大小與圓角
+
+```html index.html
+<style>
+.box-transition {
   width: 100px;
-  transition: width 1s ease 1s;
+  height: 100px;
+  background: #fbc531;
+  border-radius: 8px;
+  margin: 2rem auto;
+  transition: width 0.5s, height 0.5s, border-radius 0.5s;
 }
-div:hover {
-  width: 500px;
+.box-transition:hover {
+  width: 180px;
+  height: 60px;
+  border-radius: 32px;
 }
+</style>
+<div class="box-transition"></div>
+```
 
-/* 縮寫且多筆 */
-div {
-  width: 50px;
-  height: 50px;
-  background: #000;
-  transform: scale(1);
-  border-radius: 1px;
-  transition: transform 1s ease, border-radius 1s ease-out;
+### transform 結合 transition
+
+```html index.html
+<style>
+.demo-transform-transition {
+  width: 100px;
+  height: 100px;
+  background: #44bd32;
+  margin: 2rem auto;
+  border-radius: 12px;
+  transition: transform 0.5s cubic-bezier(.4,2,.6,1);
 }
-div:hover {
-  transform: scale(2);
+.demo-transform-transition:hover {
+  transform: scale(1.2) rotate(10deg);
+}
+</style>
+<div class="demo-transform-transition"></div>
+```
+
+### 延遲與自訂速度曲線
+
+```html index.html
+<style>
+.delay-demo {
+  width: 100px;
+  height: 100px;
+  background: #e17055;
+  margin: 2rem auto;
+  border-radius: 12px;
+  transition: background 0.3s 0.5s, border-radius 0.6s cubic-bezier(.68,-0.55,.27,1.55);
+}
+.delay-demo:hover {
+  background: #00b894;
   border-radius: 50%;
 }
-
-/* 完整列出且多筆，順序需相對應 */
-div {
-  transition-property: color, background-color, border-color;
-  transition-duration: 0.25s, 0.75s, 2s;
-  transition-timing-function: ease, ease-in, linear;
-  transition-delay: 0, 0, 0, 0;
-  
-  /* 或是以下寫法 */
-  transition: color 0.25s ease 0, background-color 0.75s ease-in 0, border-color 2s linear 0;
-}
+</style>
+<div class="delay-demo"></div>
 ```
 
 {% note warning %}
-**科普知識：transition-property**
-轉場對應的屬性對象除了 all 全部，也能指定單一或多筆的 CSS 某一屬性，根據官方說法以下屬性都能適用：
-
-rotate, scale, translate, skew, width, height, color, background-color, border-color, border-width, font-size, line-height, letter-spacing, word-spacing, margin, padding, opacity, top, right, bottom, left
+**注意事項**  
+- transition 只會在屬性值「變化」時觸發，初始狀態不會自動播放。
+- 無法 transition 的屬性（如 display、position）不會有動畫效果。
+- 多屬性 transition 時，建議明確列出每個屬性，避免瀏覽器預設 all 造成效能浪費。
 {% endnote %}
 
-## 範例：轉場動畫
-
-```css
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
-  color: white;
-}
-
-.box {
-  width: 100px;
-  height: 100px;
-  background: #FF0000;
-  line-height: 100px;
-  position: relative;
-}
-
-.box::after {
-  content: "transform";
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: #0000FF;
-  transform-origin: right bottom;
-  transition: 2s;
-  opacity: 0;
-}
-
-.box:hover::after {
-  transform: rotate(75deg);
-  opacity: 1;
-}
-```
-
-## 範例：多屬性效果
-
-```css
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
-  color: white;
-}
-
-.box {
-  width: 100px;
-  height: 100px;
-  background: #FF0000;
-  line-height: 100px;
-  position: relative;
-}
-
-.box::after {
-  content: "transform";
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: #0000FF;
-  transform-origin: right top;
-  opacity: 0;
-  /* transition-property: opacity, top, width, transform;
-  transition-duration: 0.5s, 0.5s, 0.5s, 0.5s;
-  transition-timing-function: ease, ease, ease, ease;
-  transition-delay: 0s, 0.5s, 1s, 1.5s; */
-
-  /*或多筆一行寫完*/
-  transition: opacity 0.5s ease 0s, top 0.5s ease 0.5s, width 0.5s ease 1s, transform 0.5s ease 1.5s;
-}
-
-.box:hover::after {
-  transform: rotate(90deg);
-  opacity: 1;
-  top: 100px;
-  width: 200px;
-}
-```
-{% note danger %}
-**新手陷阱：秒差下的多屬性**
-使用不同屬性進行 transition 時，當你設計了（順向）連續動作在不同時間上。有可能導致你（順向）返回動畫上的延遲產生誤會效果。
+{% note success %}
+**跟著做：Transition 練習**
+1. 嘗試修改 transition 的時間與速度曲線
+2. 練習為不同屬性設定不同的 transition 時間
+3. 實驗 transition-delay 的延遲效果
+4. 結合 transform 製作更豐富的互動效果
 {% endnote %}
+
+---
 
 # 動畫 Animation
-轉場跟動畫不太相同的是，前者轉場是選擇器 A 跟選擇器 B 之間的過渡效果（通常是：hover)，當偵測到選擇器 B 成立時（觸發）由指定的選擇器 A 開始轉場；後者動畫是只需要對選擇器 B 宣告一個動畫播放即可，不用指定選擇器 A 是誰。
 
-建立動畫的步驟為：
-1. 建立一組關鍵影格（keyframe）包含了動畫名稱、起始 (from) 之屬性為何、結束 (to) 之屬性為何。
-2. 定義相關動畫參數到指定的選擇器上，可以為該動畫設定時間、延遲、速度與次數等設定。
-3. 設定 Keyframe 的所有 CSS 屬性時，同樣需要注意該元素是否適合這些屬性變化結合，譬如 linline 與 hieght。
-4.  animation-delay 延遲時間設定為「負值」時，則不是延遲而是變成跳秒播放。舉例`animation-duration:5s`，`animation-delay:-2s`，代表直接從第 2 秒的影格位置播放並 3 秒後停止 ( 類似 5-2=3 的概念 )。
+CSS 動畫（Animation）屬性可讓元素自動播放一連串的動畫效果，無需使用 JavaScript。動畫可用於強調重點、吸引注意、製作 loading、icon 動畫等，現代網頁設計中非常常見。
 
-## 動畫屬性
+{% note info %}
+**動畫與轉場的差異**
+在學習 CSS 動畫之前，請先理解動畫與轉場的主要差異：
 
-| 屬性                      | 預設值  | 說明               | 單位與值                                        |
-| ------------------------- | ------- | ------------------ | ----------------------------------------------- |
-| animation-name            |         | 動畫名稱           |                                                 |
-| animation-duration        | 0       | 動畫持續時間       | *s（秒）, *ms（毫秒）                           |
-| animation-timing-function | ease    | 動畫加速度函式     | ease, linear, ease-in, ease-out, ease-in-out    |
-| animation-delay           | 0       | 動畫延遲播放時間   | *s（秒）, *ms（毫秒）                           |
-| animation-iteration-count | 1       | 動畫播放次數       | 數字或 infinite。                               |
-| animation-direction       | normal  | 動畫播放方向       | normal, reverse, alternate, alternate-reverse。 |
-| animation-fill-mode       | none    | 動畫播放前後模式   | none, forwards, backwards, both。               |
-| animation-play-state      | running | 動畫播放或暫停狀態 | running, paused。                               |
+**轉場（Transition）：**
+- 需要觸發條件（如 :hover、class 切換）
+- 只有兩個狀態（開始→結束）
+- 無法循環播放
+- 適合簡單的狀態變化
+
+**動畫（Animation）：**
+- 可自動播放，無需觸發
+- 可設定多個關鍵影格
+- 可循環播放（infinite）
+- 適合複雜的動態效果
+{% endnote %}
+
+## 觀念解釋
+
+- **動畫（animation）** 與 **轉場（transition）** 最大差異：
+  - transition 只在「屬性值變化」時觸發，且需有互動（如 :hover、class 切換）。
+  - animation 可自動循環播放，無需互動即可持續運作。
+- 動畫可設定多個關鍵影格（keyframes），描述動畫過程中每個階段的狀態。
+- 可同時設定多個動畫於同一元素。
+
+{% note info %}
+**小技巧：動畫與轉場何時用？**
+- 需要「自動播放、循環、複雜動作」→ animation
+- 只需「互動時平滑過渡」→ transition
+{% endnote %}
+
+## 語法說明
+在 CSS 動畫中，必須先使用 `@keyframes` 定義動畫的關鍵影格（keyframes），描述動畫從開始到結束的每個階段狀態。接著，於目標元素上宣告 `animation` 屬性，指定要套用哪一個 keyframes 動畫，才能讓動畫效果生效。
+
+### 宣告關鍵影格
+在 CSS 動畫中，`@keyframes` 就像是一份「動畫腳本」，用來描述動畫從開始到結束的每個階段狀態。你可以將動畫過程切分為不同的「進度百分比」（例如 0%、50%、100%），在每個百分比設定元素的樣式，讓動畫能夠平滑地從一個狀態過渡到另一個狀態。
+
+除了使用百分比外，`from` 和 `to` 也是常用的語法糖，分別代表 0%（起始）和 100%（結束）。這讓你可以更直覺地撰寫動畫腳本：
 
 ```css
-/* 循環交替或反向播放
-  animation-direction:
-    normal（默認，正常播放）
-    reverse（反向播放）
-    alternate（輪流交替播放，動畫在奇數次 1,3,5 正向播放，在偶數次 2,4,6 反向播放）
-    alternate-reverse（動畫在奇數次 1,3,5 反向播放，在偶數次 2,4,6 正向播放）
-*/
-
-/*  
-  animation-fill-mode: 
-    forwards（保留動畫結束後的樣式，例如顏色、位置）
-    backwards（返回動畫一開始的樣式，例如顏色、位置） 
-*/
+@keyframes 動畫名稱 {
+  0%   { /* 起始狀態 */ }
+  50%  { /* 中間狀態 */ }
+  100% { /* 結束狀態 */ }
+}
 ```
 
-## 縮寫方式
-動畫縮寫，名稱和持續時間是必要，其他數值可以省略，設計樣式時請使用動畫縮寫。
+{% note info %}
+**from/to 的意義與省略說明**
+- `from` 等同於 `0%`，`to` 等同於 `100%`，可混用百分比或 from/to。
+- 只寫 `to`，則動畫從元素當前（或初始）屬性值過渡到 `to` 設定的狀態。
+- 只寫 `from`，則動畫從 `from` 狀態到元素當前（或初始）屬性值。
+- 若元素本身已設定初始屬性，@keyframes 可只寫 `to`，from 會自動以元素初始值為第一偵。
+
+**範例：**
 ```css
-animation:name duration | timing-function | delay | iteration-count | direction | fill-mode | play-state;
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+// 元素初始 opacity: 0;，動畫會從 0 過渡到 1
+```
+{% endnote %}
+
+### 套用動畫屬性
+在 CSS 動畫中，除了必須指定動畫名稱（`animation-name`）與關鍵影格外，還有許多屬性可以細緻控制動畫的行為，例如動畫持續時間、延遲、播放次數、播放方向、加速度曲線、動畫結束時的狀態等。這些屬性可以單獨設定，也可以使用縮寫語法一次設定多個參數，讓動畫效果更加豐富且靈活。
+
+{% note info %}
+**小技巧：animation 屬性組合**
+- animation 相關屬性可依需求單獨設定，也可用縮寫語法一次設定全部，提升程式碼簡潔度。
+- 建議初學者先熟悉各屬性的意義，再嘗試縮寫語法。
+{% endnote %}
+
+```css
+.selector {
+  animation-name: 動畫名稱；
+  animation-duration: 2s; /* 持續時間 */
+  animation-timing-function: ease; /* 速度曲線 */
+  animation-delay: 0s; /* 延遲 */
+  animation-iteration-count: infinite; /* 播放次數 */
+  animation-direction: alternate; /* 播放方向 */
+  animation-fill-mode: both; /* 動畫前後狀態 */
+}
 ```
 
-## 範例練習
+`animation` 屬性可以將多個動畫相關設定合併為一行，語法如下：
+
+```css
+animation: 名稱 持續時間 速度曲線 延遲 次數 方向 填充；
+```
+
+### 常用屬性說明
+
+| 屬性                      | 預設值  | 說明               | 範例值                                        |
+| ------------------------- | ------- | ------------------ | --------------------------------------------- |
+| animation-name            |         | 動畫名稱           | fadeIn、slide、myAnim                         |
+| animation-duration        | 0       | 動畫持續時間       | 2s、500ms                                     |
+| animation-timing-function | ease    | 動畫加速度函式     | ease、linear、ease-in、cubic-bezier(...)      |
+| animation-delay           | 0       | 動畫延遲播放時間   | 0.5s、1s、-2s                                 |
+| animation-iteration-count | 1       | 動畫播放次數       | 數字、infinite                                |
+| animation-direction       | normal  | 動畫播放方向       | normal、reverse、alternate、alternate-reverse |
+| animation-fill-mode       | none    | 動畫前後狀態       | none、forwards、backwards、both               |
+| animation-play-state      | running | 動畫播放或暫停狀態 | running、paused                               |
+
+{% note info %}
+**animation-delay 負值說明**
+- 當 animation-delay 設為負值時，動畫會「從中間某一進度」直接開始，而不是延遲。例如 animation-duration: 5s; animation-delay: -2s; 代表動畫一開始就從第 2 秒的影格播放，並在 3 秒後結束（5-2=3）。這常用於多個動畫交錯時，讓它們不同步。
+{% endnote %}
+
+{% note info %}
+**animation-direction 各選項說明**
+- normal：每次都從頭到尾（0%→100%）
+- reverse：每次都從尾到頭（100%→0%）
+- alternate：奇數次正向（0%→100%），偶數次反向（100%→0%）
+- alternate-reverse：奇數次反向（100%→0%），偶數次正向（0%→100%）
+這些選項可讓動畫來回播放或只單向播放。
+{% endnote %}
+
+{% note info %}
+**animation-fill-mode 用途與選項**
+- none（預設）：動畫結束後恢復到原始狀態。
+- forwards：動畫結束後停留在最後一格（100% 狀態）。
+- backwards：動畫延遲期間就先套用起始格（0% 狀態）。
+- both：同時套用 forwards 與 backwards 效果。
+這對於希望動畫結束後保留最後狀態非常實用。
+{% endnote %}
+
+## 範例展示
+CSS animation 可製作多種效果，以下為常見應用：
 
 ### 基本範例 1
 
-```html
+```html index.html
 <style>
   body {
     background: #333;
@@ -536,117 +814,142 @@ div.rgb {
 <div class="rgb">Loki</div>
 ```
 
-### 範例預覽
+{% note warning %}
+**注意事項**
+- animation 會自動循環（若設 infinite），不需互動即可播放。
+- animation-fill-mode: forwards 可讓動畫結束後停留在最後一格。
+- 多動畫時，屬性值順序需與 animation 屬性順序對應。
+- 動畫過多或過於複雜，可能影響效能，建議適量使用。
+{% endnote %}
 
 {% jsfiddle summer10920/d241xjvg result dark 100% 500 %}
 
+{% note success %}
+**跟著做：Animation 練習**
+1. 嘗試修改 @keyframes 中的百分比與屬性值
+2. 練習使用不同的 animation-direction 選項
+3. 實驗 animation-fill-mode 的效果差異
+4. 嘗試製作自己的 loading 動畫
+{% endnote %}
+
 # 媒體查詢 Media Query
-網頁會先查詢 media 指定之 Query 邏輯性 (true/false)，如果 media 條件符合再針對這些屬性套入 css 樣式表。網頁是否載入 CSS 樣式表的方式如下：
+媒體查詢（Media Query）是 CSS3 的一項強大功能，讓你可以根據不同裝置的螢幕寬度、高度、解析度、顏色模式等條件，動態切換不同的 CSS 樣式。這是響應式網頁設計（RWD）的基礎。
 
-- **在 HTML 內使用**
-在視窗 screen 時會邏輯成立 style.css，列印時則會邏輯成立 print.css。
+{% note primary %}
+**學習目標**
+在學習媒體查詢之前，請先了解以下核心概念：
+- 響應式網頁設計（RWD）的基本原理
+- 不同裝置的螢幕尺寸與特性
+- CSS 選擇器與層疊規則
+- 斷點（Breakpoint）的設計原則
+{% endnote %}
+
+## 觀念解釋
+- 讓同一份 HTML 能在手機、平板、桌機等不同裝置上自動調整版型。
+- 提升使用者體驗，讓內容在各種螢幕下都好閱讀。
+- 可針對列印、深色模式、無障礙等需求做專屬樣式。
+
+{% note info %}
+**小技巧：常見斷點設計**
+- 手機：max-width: 768px
+- 平板：min-width: 769px and max-width: 1024px  
+- 桌機：min-width: 1025px
+- 大螢幕：min-width: 1200px
+{% endnote %}
+
+## 語法說明
+媒體查詢（Media Query）的語法主要是利用 `@media` 關鍵字，搭配條件（如螢幕寬度、裝置類型等）來指定特定情境下要套用的 CSS 樣式。這讓我們可以針對不同裝置或環境，靈活調整網頁的外觀與排版。媒體查詢的基本語法如下：
+
+### 宣告方式與位置
+在 CSS 中，媒體查詢（Media Query）可以用多種方式撰寫，包含直接在 CSS 檔案內部、HTML 的 `<link>` 標籤、或是使用 `@import`。選擇合適的寫法與位置，能讓你的樣式更有彈性，也方便維護大型專案。
+
+#### CSS 內部寫法
+
+```css
+@media 條件 {
+  /* 這裡的 CSS 只會在條件成立時生效 */
+}
+```
+**範例：**
+```css
+@media (max-width: 600px) {
+  body { background: #fbc531; }
+}
+/* 當螢幕寬度小於等於 600px 時，body 背景變黃色。 */
+```
+
+#### HTML link 標籤用法
+
 ```html
-<link rel="stylesheet" type="text/css" media="screen" href="style.css">
-<link rel="stylesheet" type="text/css" media="print" href="print.css">
+<link rel="stylesheet" media="(max-width: 600px)" href="mobile.css" >
+<!-- 這樣只有在螢幕寬度小於等於 600px 時才會載入 mobile.css。 -->
+<link rel="stylesheet" media="screen" href="style.css">
+<!-- 這樣只有在螢幕模式下才會載入 mobile.css。 -->
+<link rel="stylesheet" media="print" href="print.css">
+<!-- 這樣只有在列印模式下才會載入 mobile.css。 -->
 ```
 
-- **在 CSS 內使用**
-如果直接寫在 CSS 裡，下列的寫法也是一樣的概念。
-```css
-@media screen{
-  /*css code*/
-}
-@media print{
-  /*css code*/
-}
-```
-
-- **使用@import**
-如果你喜歡在 CSS 文件內使用@import，也可以根據不同的 media 特性，import 不同的 css。
-```css
-@import "style.css";
-@import "print.css" print;
-```
-
-## 類型與特性
-- 類型 (Types)：主要是根據用戶端裝置為何，目前主要的 Media 類型有以下四種。
-- 特性 (Fratures)：主要是網頁環境上的細部描述為何，可分為四大類型（大多市面上只應用 viewport)。
-
-### 類型 - Media Type
-| 類型   | 說明                                                          |
-| ------ | ------------------------------------------------------------- |
-| all    | 所有裝置。                                                    |
-| print  | 列印裝置，包含使用列印預覽產生的所有畫面 ( 例如列印為 pdf )。 |
-| screen | 螢幕裝置，不屬於 print 和 speech 的設備。                     |
-| speech | 朗讀裝置，針對可以「讀出」頁面的無障礙工具設備。              |
-
-> tty、tv、projection、handheld、braille、embossed 和 aural 因為在 Level 4 已經描述未來不支援不多做介紹。
-
-### 特性 - 視窗或頁面尺寸 ( Viewport/Page Dimensions )
-| 特徵         | 說明                                                                                                |
-| ------------ | --------------------------------------------------------------------------------------------------- |
-| width        | 螢幕寬度，支援 max-width 和 min-width。                                                             |
-| height       | 螢幕高度，支援 max-height 和 min-height。                                                           |
-| aspect-ratio | 螢幕長寬比例，支援 max-aspect-ratio 和 min-aspect-ratio。( 長寬比的寫法格式為 1/1、1680/720... 等 ) |
-| orientation  | 螢幕旋轉方向，有兩個選項：portrait 和 landscape。 ( portrait 為直向，landscape 為橫向 )             |
-
-### 特性 - 顯示品質 ( Display Quality )
-| 特徵            | 說明                                                                                                                                                                                                                                                                              |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| resolution      | 解析度 ( dpi、ppx... 等 )，支援 max-resolution 和 min-resolution                                                                                                                                                                                                                  |
-| scan            | 電視掃描方式，有兩個選項：interlace 和 progressive。 ( interlace 為交錯式掃描，奇數偶數掃描線交錯，progressive 為漸進式掃描，是現在大多數電視採用的方式 )                                                                                                                         |
-| update          | 更新媒體，有三個選項：none、slow 和 fast。( none 表示不會更新的顯示裝置，例如印出來的文件，slow 表示更新速度慢的顯示裝置，fast 表示更新速度快的裝置，例如電腦螢幕 )                                                                                                               |
-| overflow-block  | 當內容包含 block 特性並超過邊界範圍，有四個選項：none、scroll、optional-paged 和 paged。( none 表示任何超過範圍都不顯示，例如看板，scroll 表示可滾動查看超出範圍，例如電腦螢幕，optional-paged 表示可手動查看超出的內容，例如簡報，paged 表示超出的內容會以分頁顯示，例如印表機 ) |
-| overflow-inline | 當內容包含 inline 特性並超過邊界範圍，有兩個選項：none 和 scroll。                                                                                                                                                                                                                |
-| grid            | 網格媒體，兩個選項：0 和 1。                                                                                                                                                                                                                                                      |
-
-### 特性 - 顏色 ( Color )
-| 特徵        | 說明                                                                                                                       |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------- |
-| color       | 輸出裝置的色彩位元數，若數值為 0 則代表黑白裝置，支援 max-color 和 min-color。                                             |
-| color-index | 輸出裝置的色彩索引位元數，支援 max-color-index 和 min-color-index。                                                        |
-| monochrome  | 單色媒體功能，若數值為 0 表示「不是」單色設備。                                                                            |
-| color-gamut | 輸出裝置色域，有三個選項：srgb、p3 和 rec2020。( 絕大多數的顯示器都支援 srgb，而 p3 的色域比 srgb 更廣且包含 srgb，rec2020 | 比 p3 更大且包含 p3 ) |
-
-### 特性 - 互動 ( Interaction )
-| 特徵                 | 說明                                                                                                               |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| pointer、any-pointer | 指標裝置 ( 例如滑鼠 ) 的準確性，有三個選項：none、coarse 和 fine。( none 表示沒有指標裝置，coarse 表示精度較差的指 | 標裝置，像是觸控螢幕，fine 表示精度比較高的裝置，像是滑鼠或手寫筆 ) |
-| hover、any-hover     | 裝置具備 hover 的能力，有兩個選項：none 和 hover。                                                                 |
-
-> 可以使用 Types（多個）跟 Fratures（多個）兩大類別進行邏輯條件，也可複數組合 AND、OR、NOT（少用）使用。
-
-## Media 的寫法
-- Media 類型宣告先寫，如果是 all 類型（預設）可以省略。
-- 條件如果同時需要 (AND)，使用 and 分隔
-- 條件如果某項成立即可 (OR)，使用逗號分隔
-- Fratures 特性類型記得用小括弧 () 包覆
+#### @import 寫法
 
 ```css
-@media screen and (min-width: 480px) {
-  /*
-  成立條件 AND
-    螢幕裝置
-    且
-    寬度符合：min-width:480px （需 480px 以上）
-  */
+@import url('print.css') print;
+/* 這樣只有在列印時才會載入 print.css。 */
+```
+
+### 媒體查詢的條件類型
+媒體查詢（Media Query）可以根據不同的條件來套用對應的 CSS 樣式。這些條件主要分為「媒體類型」與「媒體特性」，讓我們能夠針對裝置的類型、螢幕尺寸、解析度等多種情境，靈活調整網頁的外觀。以下將介紹常見的媒體查詢條件類型與其應用方式。
+
+#### 媒體類型（Media Type）
+
+| 類型   | 說明                     |
+| ------ | ------------------------ |
+| all    | 所有裝置（預設）         |
+| screen | 螢幕裝置（手機、電腦等） |
+| print  | 列印裝置                 |
+| speech | 朗讀裝置                 |
+
+> **小技巧**：大多數情況下可省略 `all`，直接寫特性條件即可。
+
+#### 媒體特性（Media Features）
+
+| 特性          | 說明                     | 範例                         |
+| ------------- | ------------------------ | ---------------------------- |
+| width/height  | 螢幕寬高                 | (max-width: 600px)           |
+| orientation   | 直向/橫向                | (orientation: portrait)      |
+| resolution    | 解析度（dpi, dppx）      | (min-resolution: 2dppx)      |
+| aspect-ratio  | 長寬比                   | (aspect-ratio: 16/9)         |
+| color-scheme  | 色彩模式（亮/暗）        | (prefers-color-scheme: dark) |
+| pointer/hover | 指標裝置、是否支援 hover | (hover: hover)               |
+
+> **常見誤區**：`max-width` 是「小於等於」而不是「小於」！
+
+### 媒體查詢條件組合
+
+媒體查詢可以用下列方式組合多個條件：
+
+- **AND（且）**：所有條件都需成立，語法為 `@media 條件 1 and 條件 2`
+- **OR（或）**：任一條件成立即可，語法為 `@media 條件 1, 條件 2`
+- **NOT（非）**：排除某條件，語法為 `@media not 條件`
+
+```css
+/* AND：螢幕且寬度小於等於 768px 時生效 */
+@media screen and (max-width: 768px) {
+  /* 這裡的 CSS 只會在螢幕且寬度小於等於 768px 時生效 */
 }
-@media (max-width: 700px), print {
-  /*
-  成立條件 OR
-    寬度符合 max-width:700px （不超過 700px ）
-    或
-    列印裝置也成立
-  */
+
+/* OR：螢幕寬度小於等於 600px 或列印時生效 */
+@media (max-width: 600px), print {
+  /* 這裡的 CSS 只要符合任一條件就會生效 */
 }
-@media (min-width: 400px) and (max-width: 700px) {
-  /*
-  寬度符合 400px~700px 時
-  */
+
+/* NOT：僅在非列印裝置且螢幕寬度小於等於 600px 時生效 */
+@media not print and (max-width: 600px){
+  /* 只有在非列印裝置且螢幕寬度小於等於 600px 時，這裡的 CSS 才會生效 */
 }
 ```
 
-## 範例說明
+## 範例展示
+在本節中，我們將透過實際的 CSS 媒體查詢（Media Query）範例，說明如何根據不同裝置或螢幕寬度調整網頁樣式。這些範例有助於你理解 RWD（響應式網頁設計）的基本應用方式，並能靈活運用於各種專案中。
 
 ### 四種寬度區間的顏色變化
 ```css
@@ -672,31 +975,17 @@ div.rgb {
 }
 ```
 
-### 768px 以上時，呈現兩欄
+### 斷點切換版型（兩欄→單欄）
+
 ```html
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-  }
-  .box {
-    width: 100%;
-    height: 50vh;
-  }
-  .bg1 {
-    background: #fbc531;
-  }
-  .bg2 {
-    background: #44bd32;
-  }
-
-  @media (min-width: 768px) {
-    .box {
-      width: 50%;
-      height: 100vh;
-      float: left;
-    }
-  }
+.container { display: flex; }
+.left, .right { flex: 1; min-width: 0; padding: 1rem; }
+.left { background: #fbc531; }
+.right { background: #4e91f9; color: #fff; }
+@media (max-width: 768px) {
+  .container { flex-direction: column; }
+}
 </style>
 <div class="box bg1"></div>
 <div class="box bg2"></div>
@@ -758,6 +1047,25 @@ div.rgb {
 ### RWD Table 方法 1
 透過隱藏部分 th,td 達到。練習資料來源：https://job.taiwanjobs.gov.tw/Internet/index/docDetail.aspx?uk=844&docid=6718
 ```html
+<style>
+table {
+  width: calc(100% - 20px);
+  line-height: 2rem;
+  margin: 10px;
+  font-family: 'microsoft jhenghei';
+  border-bottom: 2px solid #000;
+}
+thead {
+  background: black;
+  color: white;
+}
+tbody>tr:nth-child(even) {
+  background: lightgray;
+}
+td {
+  padding: 0 5px;
+}
+</style>
 <table>
   <thead>
     <tr><th>服務站名</th><th>電話</th><th>傳真</th><th>地址</th></tr>
@@ -786,25 +1094,6 @@ div.rgb {
     <tr><td>臺北青年職涯發展中心</td><td>(02)2977-0755</td><td>(02)2977-0765</td><td>新北市三重區重新路 4 段 12 號 3 樓</td></tr>
   </tbody>
 </table>
-```
-```css
-table {
-  width: calc(100% - 20px);
-  line-height: 2rem;
-  margin: 10px;
-  font-family: 'microsoft jhenghei';
-  border-bottom: 2px solid #000;
-}
-thead {
-  background: black;
-  color: white;
-}
-tbody>tr:nth-child(even) {
-  background: lightgray;
-}
-td {
-  padding: 0 5px;
-}
 ```
 
 RWD 關鍵為
