@@ -41,7 +41,7 @@ date: 2020-03-11 16:05:00
 - 盒子由四個部分組成：內容區域 (content)、內距 (padding)、邊框 (border) 和外距 (margin)
 {% endnote %}
 
-## 基本類型 (Display 屬性）
+## Display 屬性
 
 CSS 中的每個元素都會產生一個盒子，而這個盒子的行為類型主要由 `display` 屬性決定。了解不同盒子類型的特性是掌握版面配置的關鍵。
 
@@ -166,6 +166,90 @@ div {
 **觀察結果：**
 - 使用 `display: none` 的盒子 2 完全消失，盒子 1 和盒子 3 緊挨在一起
 - 使用 `visibility: hidden` 的盒子 2 看不見，但盒子 1 和盒子 3 之間保持原本的間距
+
+#### 元素的透明
+
+除了 `display` 和 `visibility` 外，`opacity` 是另一種控制元素可見性的方式。它提供了更細緻的透明度控制，讓元素可以部分透明而非完全隱藏。
+
+**Opacity 特性：**
+- 控制元素的透明度（0 = 完全透明，1 = 完全不透明）
+- 元素仍然佔用空間並參與版面佈局
+- 可以設定 0-1 之間的小數值
+- 子元素會繼承父元素的透明度
+
+```html index.html
+<style>
+.opacity-demo {
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.demo-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.box {
+  display: inline-block;
+  width: 120px;
+  height: 80px;
+  background: #3498db;
+  color: white;
+  text-align: center;
+  line-height: 80px;
+  margin: 5px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* 不同透明度設定 */
+.opacity-100 { opacity: 1.0; }
+.opacity-75 { opacity: 0.75; }
+.opacity-50 { opacity: 0.5; }
+.opacity-25 { opacity: 0.25; }
+.opacity-0 { opacity: 0.0; }
+
+/* 透明度繼承示範 */
+.parent-opacity {
+  opacity: 0.3;
+  background: #e74c3c;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.child-element {
+  background: #2ecc71;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  /* 會繼承父元素的 0.3 透明度 */
+}
+</style>
+<div class="opacity-demo">
+  <h4>透明度效果示範</h4>
+  
+  <div class="demo-section">
+    <h5>不同透明度層級</h5>
+    <div class="box opacity-100">完全不透明 (1.0)</div>
+    <div class="box opacity-75">75% 不透明 (0.75)</div>
+    <div class="box opacity-50">50% 不透明 (0.5)</div>
+    <div class="box opacity-25">25% 不透明 (0.25)</div>
+    <div class="box opacity-0">完全透明 (0.0)</div>
+  </div>
+  
+  <div class="demo-section">
+    <h5>透明度繼承效果</h5>
+    <div class="parent-opacity">
+      <div class="child-element">子元素會繼承父元素的透明度</div>
+    </div>
+  </div>
+</div>
+```
 
 #### 預設 Display 值參考
 
@@ -638,89 +722,127 @@ Margin 支援負值，可以創造特殊效果：
 {% endnote %}
 
 ```html index.html
-<div class="container">
-  <p class="test-box"></p>
-</div>
-```
-
-```css style.css
-.container {
+<style>
+  .container {
     width: 500px;
-    background: black;
-  padding: 10px;
+    background: darkcyan;
+    padding: 20px 10px;
   }
 
-.test-box {
+  div {
     height: 30px;
-    background: #aaa;
-  /* 不同的練習會在這裡添加不同的屬性 */
-}
+    background: lightblue;
+  }
+</style>
+<main class="container">
+  <div class="test-box-1">求 ml auto 值</div>
+  <hr>
+  <div class="test-box-2">求 ml, mr 狀況</div>
+  <hr>
+  <div class="test-box-3">求 w auto 值</div>
+  <hr>
+  <div class="test-box-4">求 ml, mr auto 值</div>
+  <hr>
+  <div class="test-box-5">求 w auto, ml auto 值</div>
+  <hr>
+  <div class="test-box-6">求 w auto, mr auto, ml auto 值</div>
+</main>
 ```
-
-**練習一：計算 margin-left 的 auto 值**
 
 {% tabs auto-practice-1,1 %}
 <!-- tab 題目 -->
-**題目：**求 p 的 margin-left 的 auto 值
+**題目：**求 div 的 margin-left 的 auto 值
 
 ```css
-.test-box {
+.test-box-1 {
   width: 100px;
   margin-left: auto;
   margin-right: 100px;
 }
 ```
-
-**請思考：**
-- 容器寬度是 500px
-- 元素寬度是 100px  
-- margin-right 是 100px
-- margin-left: auto 會是多少？
-
 <!-- endtab -->
 <!-- tab 解答 -->
-**分析過程：**
-- 容器寬度：500px
-- 元素寬度：100px
-- margin-right：100px
-- 剩餘空間：500 - 100 - 100 = 300px
-- **答案：margin-left: auto = 300px**
-
-**解釋：**
-當只有一個值為 auto 時，該值會自動計算剩餘的所有空間。
+300px。當只有一個值為 auto 時，該值會自動計算剩餘的所有空間。
 <!-- endtab -->
 {% endtabs %}
-
-**練習二：經典置中效果**
-
 {% tabs auto-practice-2,1 %}
 <!-- tab 題目 -->
 **題目：**求 margin 左右的實際值
 
 ```css
-.test-box {
+.test-box-2 {
+  width: 100px;
+  margin-left: 100px;
+  margin-right: 100px;
+}
+```
+<!-- endtab -->
+<!-- tab 解答 -->
+此情況會產生過度受限 (Overconstrained)，結果 margin-right 會被迫成為 auto（算出 300px)
+<!-- endtab -->
+{% endtabs %}
+{% tabs auto-practice-3,1 %}
+<!-- tab 題目 -->
+**題目：**求 width 的 auto 值
+
+```css
+.test-box-3 {
+  width: auto;
+  margin-left: 100px;
+  margin-right: 100px;
+}
+```
+<!-- endtab -->
+<!-- tab 解答 -->
+300px，width 預設就是 auto。等價不用指定，為剩餘最大值。
+<!-- endtab -->
+{% endtabs %}
+{% tabs auto-practice-4,1 %}
+<!-- tab 題目 -->
+**題目：**求 margin 左右的實際值
+
+```css
+.test-box-4 {
   width: 300px;
   margin-left: auto;
   margin-right: auto;
 }
 ```
-
-**請思考：**
-- 容器寬度是 500px
-- 元素寬度是 300px
-- 左右 margin 都是 auto，會如何分配？
-
 <!-- endtab -->
 <!-- tab 解答 -->
-**分析過程：**
-- 容器寬度：500px
-- 元素寬度：300px
-- 剩餘空間：500 - 300 = 200px
-- 左右 margin 平均分配：200px ÷ 2 = 100px
-- **答案：margin-left = margin-right = 100px（置中效果）**
+margin 左右會平均的分配到 100px，也就是常見的至中效果。
+<!-- endtab -->
+{% endtabs %}
+{% tabs auto-practice-5,1 %}
+<!-- tab 題目 -->
+**題目：**求 width 跟 margin 的狀況與實際值
 
-**解釋：**
-當左右 margin 都為 auto 時，會平均分配剩餘空間，這就是常見的水平置中效果。
+```css
+.test-box-5 {
+  width: auto;
+  margin-left: auto;
+  margin-right: 100px;
+}
+```
+<!-- endtab -->
+<!-- tab 解答 -->
+width 400, margin left。剩餘空間先指定給 width。沒有其他空間給 margin left。
+<!-- endtab -->
+{% endtabs %}
+{% tabs auto-practice-6,1 %}
+<!-- tab 題目 -->
+**題目：**求 width 跟 margin 的狀況與實際值
+
+```css
+.test-box-6 {
+  width: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+```
+<!-- endtab -->
+<!-- tab 解答 -->
+width 500, margin 皆 0。剩餘空間先指定給 width。沒有其他空間給 margin left 與 right。
 <!-- endtab -->
 {% endtabs %}
 
@@ -1541,6 +1663,13 @@ Box-sizing 屬性改變了瀏覽器計算盒子尺寸的方式，是現代 CSS �
 祖先元素的 `transform` 屬性會影響 `absolute` 元素的包含塊查找。
 {% endnote %}
 
+{% note success %}
+**小知識：Inline 元素的定位轉變**
+許多人在同時需要為 `inline`（內聯）元素設定寬度（width）和高度（height），以及設定定位（position），會特定將其轉換為 `block`（區塊）使得支援寬高，其實這個步驟是多餘的。
+
+將 `inline` 元素的 `position` 設為 `absolute` 或 `fixed`，該元素就會自動脫離文字流，並轉變為可設定寬高的定位元素，不再受限於原本的內聯特性。
+{% endnote %}
+
 ## 固定定位（Fixed）
 
 固定定位讓元素相對於瀏覽器視窗進行定位，即使頁面滾動也會保持固定位置。
@@ -1815,6 +1944,115 @@ body {
   z-index: var(--z-tooltip);
 }
 ```
+
+## 小節練習：骰子定位
+
+請使用 CSS 的 position 屬性製作以下骰子畫面。每個骰子尺寸為 200px，點符號尺寸為骰子的 0.2 倍大。
+
+{% tabs posdemo,1 %}
+<!-- tab 題目預覽-->
+{% jsfiddle summer10920/rpxjzevc result dark 100% 500 %}
+<!-- endtab -->
+<!-- tab 解答-->
+```html CSS_CLS3_totalTest.html
+<div class="container">
+  <div class="dice">
+    <div class="point red at5"></div>
+  </div>
+  <div class="dice">
+    <div class="point at1"></div>
+    <div class="point at9"></div>
+  </div>
+  <div class="dice">
+    <div class="point at1"></div>
+    <div class="point at5"></div>
+    <div class="point at9"></div>
+  </div>
+  <div class="dice">
+    <div class="point at1"></div>
+    <div class="point at3"></div>
+    <div class="point at7"></div>
+    <div class="point at9"></div>
+  </div>
+  <div class="dice">
+    <div class="point at1"></div>
+    <div class="point at3"></div>
+    <div class="point at5"></div>
+    <div class="point at7"></div>
+    <div class="point at9"></div>
+  </div>
+  <div class="dice">
+    <div class="point at1"></div>
+    <div class="point at3"></div>
+    <div class="point at4"></div>
+    <div class="point at6"></div>
+    <div class="point at7"></div>
+    <div class="point at9"></div>
+  </div>
+</div>
+```
+```css style.css
+.dice {
+  width: 200px;
+  height: 200px;
+  border: 2px solid #000;
+  border-radius: 1rem;
+  display: inline-block;
+  background: linear-gradient(45deg, #fff, #ccc);
+  box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.point {
+  width: 20%;
+  height: 20%;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+}
+
+.red {
+  background: red;
+}
+
+.at1 {
+  left: 10%;
+  top: 10%;
+}
+.at3 {
+  right: 10%;
+  top: 10%;
+}
+.at4 {
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+}
+.at5 {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.at6 {
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.at7 {
+  left: 10%;
+  bottom: 10%;
+}
+.at9 {
+  right: 10%;
+  bottom: 10%;
+}
+
+.container {
+  text-align: center;
+}
+```
+<!-- endtab -->
+{% endtabs %}
 
 ## Transform 對定位的影響
 
@@ -2271,6 +2509,17 @@ body > .fixed-header {
 - **返回頂部按鈕**：在特定位置出現並保持可見
 {% endnote %}
 
+
+{% note success %}
+**Position 定位重點總結**
+- **相對定位**：保留空間，相對自己偏移，常用於建立定位上下文
+- **絕對定位**：脫離文檔流，相對於最近已定位祖先，適合精確定位
+- **固定定位**：相對於瀏覽器視窗，適合固定導航和懸浮元素
+- **黏性定位**：現代響應式設計的強大工具，注意使用條件
+- **Z-Index**：只對已定位元素有效，注意層疊上下文的影響
+- **現代實踐**：優先考慮 Flexbox 和 Grid，定位作為特殊效果的補充
+{% endnote %}
+
 ## 現代定位技巧
 
 在現代網頁設計中，定位（Positioning）技巧不僅影響版面配置，也直接關係到使用者體驗。透過靈活運用 CSS 的多種定位方式，可以實現元素的精確擺放、層級控制與響應式調整。以下將介紹幾種常見且實用的現代定位方法，協助你打造更具彈性與美感的網頁介面。
@@ -2340,125 +2589,6 @@ body > .fixed-header {
   }
 }
 ```
-
-## 小節練習：骰子定位
-
-請使用 CSS 的 position 屬性製作以下骰子畫面。每個骰子尺寸為 200px，點符號尺寸為骰子的 0.2 倍大。
-
-{% tabs posdemo,1 %}
-<!-- tab 題目預覽-->
-{% jsfiddle summer10920/rpxjzevc result dark 100% 500 %}
-<!-- endtab -->
-<!-- tab 解答-->
-```html CSS_CLS3_totalTest.html
-<div class="container">
-  <div class="dice">
-    <div class="point red at5"></div>
-  </div>
-  <div class="dice">
-    <div class="point at1"></div>
-    <div class="point at9"></div>
-  </div>
-  <div class="dice">
-    <div class="point at1"></div>
-    <div class="point at5"></div>
-    <div class="point at9"></div>
-  </div>
-  <div class="dice">
-    <div class="point at1"></div>
-    <div class="point at3"></div>
-    <div class="point at7"></div>
-    <div class="point at9"></div>
-  </div>
-  <div class="dice">
-    <div class="point at1"></div>
-    <div class="point at3"></div>
-    <div class="point at5"></div>
-    <div class="point at7"></div>
-    <div class="point at9"></div>
-  </div>
-  <div class="dice">
-    <div class="point at1"></div>
-    <div class="point at3"></div>
-    <div class="point at4"></div>
-    <div class="point at6"></div>
-    <div class="point at7"></div>
-    <div class="point at9"></div>
-  </div>
-</div>
-```
-```css style.css
-.dice {
-  width: 200px;
-  height: 200px;
-  border: 2px solid #000;
-  border-radius: 1rem;
-  display: inline-block;
-  background: linear-gradient(45deg, #fff, #ccc);
-  box-shadow: 0.2rem 0.2rem 0.5rem rgba(0, 0, 0, 0.5);
-  position: relative;
-}
-
-.point {
-  width: 20%;
-  height: 20%;
-  background: black;
-  border-radius: 50%;
-  position: absolute;
-}
-
-.red {
-  background: red;
-}
-
-.at1 {
-  left: 10%;
-  top: 10%;
-}
-.at3 {
-  right: 10%;
-  top: 10%;
-}
-.at4 {
-  top: 50%;
-  left: 10%;
-  transform: translateY(-50%);
-}
-.at5 {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-.at6 {
-  right: 10%;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.at7 {
-  left: 10%;
-  bottom: 10%;
-}
-.at9 {
-  right: 10%;
-  bottom: 10%;
-}
-
-.container {
-  text-align: center;
-}
-```
-<!-- endtab -->
-{% endtabs %}
-
-{% note success %}
-**Position 定位重點總結**
-- **相對定位**：保留空間，相對自己偏移，常用於建立定位上下文
-- **絕對定位**：脫離文檔流，相對於最近已定位祖先，適合精確定位
-- **固定定位**：相對於瀏覽器視窗，適合固定導航和懸浮元素
-- **黏性定位**：現代響應式設計的強大工具，注意使用條件
-- **Z-Index**：只對已定位元素有效，注意層疊上下文的影響
-- **現代實踐**：優先考慮 Flexbox 和 Grid，定位作為特殊效果的補充
-{% endnote %}
 
 # 總思考練習
 
@@ -2748,4 +2878,3 @@ HOT 標籤的定位是透過**父子定位組合**實現的：
 - **CSS Animation**：流暢的動畫效果
 - **響應式設計**：多裝置適配技術
 {% endnote %}
-
