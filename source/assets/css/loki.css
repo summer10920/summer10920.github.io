@@ -1,0 +1,8 @@
+@import "code.css";
+
+div.note {
+  ul {
+    list-style-position: inside;
+    padding-left: 0;
+  }
+}
