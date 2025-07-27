@@ -1,7 +1,7 @@
 ---
 title: '[學習之路] CSS 預處理器 Sass'
 categories:
-  - Zero Road
+  - Misc Notes
   - Web Fronted
 tag:
   - SASS

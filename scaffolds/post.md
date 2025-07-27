@@ -3,10 +3,11 @@
 title: '[前端框架] React - 基礎學習'
 date: {{ date }}
 categories:
-  - Zero Road
+  - Misc Notes
   - Web Fronted
 tag:
   - Untagged
+hidden:false
 ---
 
 ![](https://i.imgur.com/KgMI01E.png)

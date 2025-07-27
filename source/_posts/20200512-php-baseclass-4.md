@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] PHP 重複執行迴圈"
 categories:
-  - 職訓教材
+  - Archived Courses
   - PHP/MySQL
 tag:
   - PHP 程式設計（假日班）

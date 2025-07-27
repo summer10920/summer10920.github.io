@@ -1,7 +1,7 @@
 ---
 title: "[實作課程] PHP 與 MySQL 資料處理實作"
 categories:
-  - 職訓教材
+  - Archived Courses
   - PHP/MySQL
 tag:
   - PHP 程式設計（假日班）

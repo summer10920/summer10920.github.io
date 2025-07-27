@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] Bootstrap4 實作：一頁式網站"
 categories:
-  - 職訓教材
+  - Archived Courses
   - Bootstrap
 tag:
   - RWD 響應式網頁設計（假日班）

@@ -32,7 +32,7 @@ date: YYYY-MM-DD HH:mm:ss
 
 ## Hexo 特殊標籤語法
 
-### 提示框標籤
+### 卡片式提示框標籤
 - `{% note default %}內容{% endnote %}` - 預設提示
 - `{% note primary %}內容{% endnote %}` - 主要提示  
 - `{% note success %}內容{% endnote %}` - 成功提示
@@ -57,6 +57,30 @@ date: YYYY-MM-DD HH:mm:ss
 
 ### 圖片展示
 - `{% gp 5-3 %}圖片列表{% endgp %}` - 圖庫模式
+
+### 心智圖與流程圖
+
+使用 Mermaid 標籤繪製流程圖、關係圖、概念圖：
+
+```
+{% mermaid graph TD %}
+    A["節點 A"]
+    B["節點 B"]
+    A --> B
+{% endmermaid %}
+```
+
+#### 圖表類型
+- **流程圖**：`graph TD` 展示程式執行流程
+- **關係圖**：`graph LR` 展示概念關聯
+- **心智圖**：使用 `subgraph` 分組概念
+
+#### 設計原則
+- 節點文字用雙引號：`A["節點文字"]`
+- 中文換行用 `<br/>`：`A["第一行<br/>第二行"]`
+- 使用 `style` 添加顏色樣式
+- 複雜圖表拆分成多個小圖
+
 
 ## 程式碼範例規範
 

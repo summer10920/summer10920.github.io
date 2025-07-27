@@ -1,7 +1,7 @@
 ---
 title: "[學習之路] VSCode 的技巧大補帖"
 categories:
-  - Zero Road
+  - Misc Notes
   - Tools
 tag:
   - VSCode

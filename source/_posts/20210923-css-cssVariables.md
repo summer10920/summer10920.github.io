@@ -1,7 +1,7 @@
 ---
 title: '[學習之路] CSS 進階的原生變數'
 categories:
-  - Zero Road
+  - Misc Notes
   - Web Fronted
 tag:
   - CSS

@@ -1,7 +1,7 @@
 ---
 title: "[學習之路] Git 與 GitHub 版本管理工具"
 categories:
-  - Zero Road
+  - Misc Notes
   - Tools
 tag:
   - Git/GitHub

@@ -1,8 +1,15 @@
 @import "code.css";
 
-div.note {
-  ul {
-    list-style-position: inside;
-    padding-left: 0;
+.post-body div.note {
+  > ul {
+    padding-left: 1.2rem;
+    li {
+      > *:last-child {
+        margin-bottom: 1rem;
+      }
+    }
+    p {
+      margin: 0;
+    }
   }
 }

@@ -1,7 +1,7 @@
 ---
 title: '[系統工程] Cloudflare - Domain、DNS、SSL 從購買到部屬的網域建置'
 categories:
-  - Zero Road
+  - Misc Notes
   - System Engineer
 tag:
   - DNS

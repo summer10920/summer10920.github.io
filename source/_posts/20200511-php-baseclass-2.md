@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] PHP 條件判斷邏輯"
 categories:
-  - 職訓教材
+  - Archived Courses
   - PHP/MySQL
 tag:
   - 前端網頁開發技術（職前班）

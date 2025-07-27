@@ -1,7 +1,7 @@
 ---
 title: "[學習之路] 重新認識你知道的 HTML、CSS、JavaScript"
 categories:
-  - Zero Road
+  - Misc Notes
   - Web Fronted
 tag:
   - HTML

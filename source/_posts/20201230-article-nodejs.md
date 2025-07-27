@@ -1,7 +1,7 @@
 ---
 title: "[學習之路] Node.js 入門教學"
 categories:
-  - Zero Road
+  - Misc Notes
   - Web Fronted
 tag:
   - JavaScript

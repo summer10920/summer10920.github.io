@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] Bootstrap4 教學（一）：初始與排版"
 categories:
-  - 職訓教材
+  - Archived Courses
   - Bootstrap
 tag:
   - RWD 響應式網頁設計（假日班）

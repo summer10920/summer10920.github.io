@@ -1,4 +1,5 @@
 figure.highlight,
-pre {
+pre,
+.post-body .note figure.highlight {
   margin-bottom: 3rem;
 }
