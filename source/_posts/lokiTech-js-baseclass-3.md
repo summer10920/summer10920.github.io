@@ -58,9 +58,9 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
 {% endmermaid %}
 
 ### 兩者的關係
-- **BOM** 是瀏覽器的整體模型，`window` 是其根物件
-- **DOM** 是 BOM 的一部分，`document` 物件代表整個 HTML 文件
-- 我們通常透過 `window.document` 來存取 DOM
+- **BOM** 是瀏覽器的整體模型，`window` 物件代表瀏覽器視窗本身，是 BOM 的根物件，包含多項模型物件以及所有全域物件、函式和變數。BOM 提供了 JavaScript 與瀏覽器溝通的介面。
+- **DOM** 是 BOM 的一部分，`document` 物件代表整個 HTML 文件，它是 DOM 的根物件。透過 DOM，我們可以存取和操作網頁中的所有 HTML 元素、屬性和內容。DOM 將 HTML 文件視為一個樹狀結構，每個元素都是樹中的一個節點，這使得我們能夠輕鬆地遍歷、修改和管理網頁內容
+- 我們應該透過 `window.document` 來存取 DOM，但因為 window 是所有的 root，所以也可以直接使用 `document` 來存取
 
 {% note info %}
 **重要觀念：**
@@ -70,6 +70,7 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
 {% endnote %}
 
 ## BOM 基礎操作
+瀏覽器物件模型（BOM）提供了豐富的操作介面，讓我們能夠控制瀏覽器的各種行為和功能。以下我們將介紹一些最常用且實用的 BOM 操作方法，這些方法可以幫助我們更好地掌握瀏覽器的互動能力。
 
 ### window 物件
 `window` 是 BOM 的根物件，代表整個瀏覽器視窗。在瀏覽器環境中，全域變數和函數都屬於 `window` 物件。
@@ -84,11 +85,25 @@ let globalVar = "全域變數";
 console.log(window.globalVar); // "全域變數"
 ```
 
-### 常用的 BOM 方法
+window 物件還提供了許多實用的方法。
 
-BOM 提供了豐富的方法來與瀏覽器互動。這些方法可以分為幾個主要類別，每種類別都有其特定的用途和應用場景。讓我們從最常用的對話框方法開始學習。
+| 方法                 | 描述           | 用途               |
+| -------------------- | -------------- | ------------------ |
+| `window.scrollTo()`  | 滾動到指定位置 | 頁面導航、錨點跳轉 |
+| `window.scrollBy()`  | 相對滾動       | 平滑滾動效果       |
+| `window.print()`     | 列印當前頁面   | 列印功能           |
+| `window.focus()`     | 讓視窗獲得焦點 | 視窗管理           |
+| `window.blur()`      | 讓視窗失去焦點 | 視窗管理           |
+| `window.moveTo()`    | 移動視窗位置   | 視窗定位           |
+| `window.resizeTo()`  | 調整視窗大小   | 視窗尺寸控制       |
+| `window.innerWidth`  | 視窗內部寬度   | 響應式設計         |
+| `window.innerHeight` | 視窗內部高度   | 響應式設計         |
+| `window.outerWidth`  | 視窗外部寬度   | 視窗管理           |
+| `window.outerHeight` | 視窗外部高度   | 視窗管理           |
 
-#### 1. 對話框方法
+### 對話框 alert、confirm、prompt
+請在瀏覽器控制台中逐一執行下述程式碼，觀察不同對話框的效果。
+
 ```javascript
 // 基本提示框
 alert("這是一個提示訊息");
@@ -108,14 +123,9 @@ if (name) {
 }
 ```
 
-{% note success %}
-**跟著做：**
-請在瀏覽器控制台中逐一執行上述程式碼，觀察不同對話框的效果。
-{% endnote %}
-
-#### 2. 計時器方法
-
+### 計時器 setTimeout、setInterval
 計時器是 JavaScript 中非常重要的功能，它允許我們在指定的時間後執行程式碼，或者重複執行某些操作。這在製作動畫、自動更新內容等場景中非常有用。
+
 ```javascript
 // setTimeout - 延遲執行
 let timeoutId = setTimeout(function() {
@@ -123,7 +133,7 @@ let timeoutId = setTimeout(function() {
 }, 3000);
 
 // clearTimeout - 取消延遲執行
-// clearTimeout(timeoutId);
+clearTimeout(timeoutId);
 
 // setInterval - 重複執行
 let counter = 0;
@@ -146,39 +156,45 @@ let intervalId = setInterval(function() {
 - 即使計時器已經執行完成，清除操作也不會出錯
 {% endnote %}
 
-#### 3. 視窗控制
+### 視窗控制 open
+視窗控制功能允許我們程式化地操作瀏覽器視窗，包括開啟新視窗、調整視窗大小等。不過需要注意的是，現代瀏覽器基於安全考量可能對這些功能有所限制。
 
-視窗控制功能允許我們程式化地操作瀏覽器視窗，包括開啟新視窗、調整視窗大小等。不過需要注意的是，現代瀏覽器基於安全考量對這些功能有所限制。
 ```javascript
 // 開啟新視窗
 let newWindow = window.open("https://www.google.com", "_blank", "width=500,height=400");
 
 // 關閉視窗
-// newWindow.close(); // 只能在同源視窗中使用
+newWindow.close(); // 只能在同源視窗中使用
 
 // 調整視窗大小
-// window.resizeTo(800, 600); // 現代瀏覽器可能限制此功能
+window.resizeTo(800, 600); // 現代瀏覽器可能限制此功能
 ```
 
-### location 物件
+{% note warning %}
+**注意事項：**
+- 基於安全考量，現代瀏覽器對某些 BOM 操作可能有限制
+- 彈出視窗可能被瀏覽器阻擋
+- 某些方法需要用戶互動才能執行
+{% endnote %}
 
-`location` 物件是 BOM 中處理 URL 和頁面導向的重要工具。它包含了當前頁面的完整 URL 資訊，並提供了豐富的方法來操作和導向頁面。無論是獲取當前頁面資訊還是進行頁面跳轉，`location` 物件都是不可或缺的。
+### location 物件
+BOM 中處理 URL 和頁面導向的重要工具。它包含了當前頁面的完整 URL 資訊，並提供了豐富的方法來操作和導向頁面。無論是獲取當前頁面資訊還是進行頁面跳轉，`location` 物件都是不可或缺的。
 
 ```javascript
 // 獲取當前 URL
 console.log(location.href);
 
 // 導向到新頁面 - 方法一：直接設定 href
-// location.href = "https://www.google.com";
+location.href = "https://www.google.com";
 
 // 導向到新頁面 - 方法二：使用 assign() 方法
-// location.assign("https://www.google.com");
+location.assign("https://www.google.com");
 
 // 導向到新頁面 - 方法三：使用 replace() 方法（替換當前頁面）
-// location.replace("https://www.google.com");
+location.replace("https://www.google.com");
 
 // 重新載入頁面
-// location.reload();
+location.reload();
 
 // 獲取 URL 各部分
 console.log("協議：" + location.protocol); // https:
@@ -202,8 +218,17 @@ console.log("路徑：" + location.pathname); // /page.html
 - **表單提交後**：通常使用 `replace()` 防止重複提交
 {% endnote %}
 
-### screen 物件
+location 物件還有一些實用的屬性。
 
+| 屬性                | 描述           | 用途         |
+| ------------------- | -------------- | ------------ |
+| `location.search`   | URL 查詢參數   | 參數解析     |
+| `location.hash`     | URL 錨點部分   | 單頁應用路由 |
+| `location.origin`   | 協議+主機+端口 | 同源檢測     |
+| `location.port`     | 端口號         | 環境檢測     |
+| `location.hostname` | 主機名稱       | 域名檢測     |
+
+### screen 物件
 `screen` 物件提供了關於用戶螢幕的詳細資訊，包括螢幕尺寸、色彩深度、像素密度等。這些資訊在響應式設計、適配不同設備和優化用戶體驗時非常重要。
 
 ```javascript
@@ -229,31 +254,52 @@ console.log("螢幕方向：" + screen.orientation.type); // 螢幕方向（land
 - **用戶體驗**：避免內容超出螢幕範圍
 {% endnote %}
 
-### history 物件
+screen 物件還有一些實用的屬性。
 
-`history` 物件讓我們能夠程式化地控制瀏覽器的前進、後退功能。這在製作單頁應用程式（SPA）或需要自訂導航行為的網頁中非常有用。透過 `history` 物件，我們可以實現更靈活的頁面導航體驗。
+| 屬性                 | 描述           | 用途     |
+| -------------------- | -------------- | -------- |
+| `screen.availLeft`   | 可用區域左邊距 | 視窗定位 |
+| `screen.availTop`    | 可用區域上邊距 | 視窗定位 |
+| `screen.colorDepth`  | 色彩深度       | 圖片品質 |
+| `screen.pixelDepth`  | 像素深度       | 顯示品質 |
+| `screen.orientation` | 螢幕方向       | 適配設計 |
+
+### history 物件
+能夠程式化地控制瀏覽器的前進、後退功能。這在製作單頁應用程式（SPA）或需要自訂導航行為的網頁中非常有用。透過 `history` 物件，我們可以實現更靈活的頁面導航體驗。
 
 ```javascript
 // 回到上一頁
-// history.back();
+history.back();
 
 // 前往下一頁
-// history.forward();
+history.forward();
 
 // 跳轉指定頁數（正數前進，負數後退）
-// history.go(-2); // 回到前兩頁
+history.go(-2); // 回到前兩頁
 ```
 
-{% note warning %}
-**注意事項：**
-- 基於安全考量，現代瀏覽器對某些 BOM 操作有限制
-- 彈出視窗可能被瀏覽器阻擋
-- 某些方法需要用戶互動才能執行
-{% endnote %}
+history 物件提供更多導航控制功能。
 
-## 其他重要的 BOM 物件與方法
+| 方法                     | 描述         | 用途         |
+| ------------------------ | ------------ | ------------ |
+| `history.pushState()`    | 新增歷史記錄 | 單頁應用路由 |
+| `history.replaceState()` | 替換歷史記錄 | 路由狀態管理 |
+| `history.length`         | 歷史記錄數量 | 導航狀態檢測 |
+| `history.state`          | 當前狀態     | 狀態管理     |
 
+## 其他 BOM 物件與方法
 除了前面介紹的核心物件外，BOM 還提供了許多其他有用的物件和方法。這些物件在特定場景下非常有用，值得了解它們的存在和基本用途。
+
+### Console API
+| 方法                | 描述     | 用途     |
+| ------------------- | -------- | -------- |
+| `console.log()`     | 一般日誌 | 除錯輸出 |
+| `console.warn()`    | 警告訊息 | 警告輸出 |
+| `console.error()`   | 錯誤訊息 | 錯誤輸出 |
+| `console.table()`   | 表格輸出 | 資料展示 |
+| `console.group()`   | 分組輸出 | 日誌組織 |
+| `console.time()`    | 計時開始 | 性能測量 |
+| `console.timeEnd()` | 計時結束 | 性能測量 |
 
 ### navigator 物件
 提供瀏覽器和系統的詳細資訊，常用於檢測瀏覽器類型和功能支援。
@@ -284,74 +330,70 @@ console.log("螢幕方向：" + screen.orientation.type); // 螢幕方向（land
 - `removeItem(key)` - 刪除資料
 - `clear()` - 清除所有資料
 
-### 其他 window 方法
-window 物件還提供了許多實用的方法。
+```javascript demo.js
+// localStorage 範例
+// ----------------------------------------------------------------
+// 儲存用戶偏好設定
+localStorage.setItem('theme', 'dark');
+localStorage.setItem('language', 'zh-TW');
 
-| 方法                 | 描述           | 用途               |
-| -------------------- | -------------- | ------------------ |
-| `window.scrollTo()`  | 滾動到指定位置 | 頁面導航、錨點跳轉 |
-| `window.scrollBy()`  | 相對滾動       | 平滑滾動效果       |
-| `window.print()`     | 列印當前頁面   | 列印功能           |
-| `window.focus()`     | 讓視窗獲得焦點 | 視窗管理           |
-| `window.blur()`      | 讓視窗失去焦點 | 視窗管理           |
-| `window.moveTo()`    | 移動視窗位置   | 視窗定位           |
-| `window.resizeTo()`  | 調整視窗大小   | 視窗尺寸控制       |
-| `window.innerWidth`  | 視窗內部寬度   | 響應式設計         |
-| `window.innerHeight` | 視窗內部高度   | 響應式設計         |
-| `window.outerWidth`  | 視窗外部寬度   | 視窗管理           |
-| `window.outerHeight` | 視窗外部高度   | 視窗管理           |
+// 讀取儲存的資料
+console.log('主題：', localStorage.getItem('theme')); // 主題：dark
+console.log('語言：', localStorage.getItem('language')); // 語言：zh-TW
 
-### 其他 location 屬性
-location 物件還有一些實用的屬性。
+// 檢查儲存空間是否可用，或者儲存情況都可能拋出異常
+function checkStorageSupport() {
+  try {
+      localStorage.setItem('test', 'test');
+      localStorage.removeItem('test');
+  
+      // 以下情況可能會拋出異常：
+      // 1. 儲存空間已滿 （超過 5-10MB 限制）
+      // 2. 瀏覽器隱私模式下無法使用 localStorage
+      // 3. 用戶禁用了 Web Storage 功能
+      // 4. 存取權限被拒絕
+      // 5. 儲存的值不是合法的字串格式
+      return true; // 支援 localStorage
+  } catch (e) {
+      console.log('localStorage 不可用：', e.message);
+      return false; // 不支援 localStorage
+  }
+}
 
-| 屬性                | 描述           | 用途         |
-| ------------------- | -------------- | ------------ |
-| `location.search`   | URL 查詢參數   | 參數解析     |
-| `location.hash`     | URL 錨點部分   | 單頁應用路由 |
-| `location.origin`   | 協議+主機+端口 | 同源檢測     |
-| `location.port`     | 端口號         | 環境檢測     |
-| `location.hostname` | 主機名稱       | 域名檢測     |
+// 清除特定資料
+localStorage.removeItem('theme');
 
-### 其他 history 方法
-history 物件提供更多導航控制功能。
+// sessionStorage 範例
+// ----------------------------------------------------------------
+// 儲存表單狀態
+sessionStorage.setItem('formData', JSON.stringify({
+  name: '張三',
+  email: 'zhang@example.com',
+  message: '這是一個測試訊息'
+}));
 
-| 方法                     | 描述         | 用途         |
-| ------------------------ | ------------ | ------------ |
-| `history.pushState()`    | 新增歷史記錄 | 單頁應用路由 |
-| `history.replaceState()` | 替換歷史記錄 | 路由狀態管理 |
-| `history.length`         | 歷史記錄數量 | 導航狀態檢測 |
-| `history.state`          | 當前狀態     | 狀態管理     |
+// 讀取表單資料
+const formData = JSON.parse(sessionStorage.getItem('formData'));
+console.log('表單資料：', formData);
 
-### 其他 screen 屬性
-screen 物件還有一些實用的屬性。
+// 清除特定資料
+sessionStorage.clear(); // 清除所有 sessionStorage 資料
+```
 
-| 屬性                 | 描述           | 用途     |
-| -------------------- | -------------- | -------- |
-| `screen.availLeft`   | 可用區域左邊距 | 視窗定位 |
-| `screen.availTop`    | 可用區域上邊距 | 視窗定位 |
-| `screen.colorDepth`  | 色彩深度       | 圖片品質 |
-| `screen.pixelDepth`  | 像素深度       | 顯示品質 |
-| `screen.orientation` | 螢幕方向       | 適配設計 |
+{% note info %}
+**小技巧：**
+- localStorage 資料會永久保存，除非手動刪除
+- sessionStorage 資料在關閉分頁後會自動清除
+- 儲存容量限制約為 5-10MB
+- 只能儲存字串，物件需要先轉換為 JSON
+{% endnote %}
 
-### 其他重要物件
-
-#### Performance API
+### Performance API
 | 方法/屬性            | 描述         | 用途     |
 | -------------------- | ------------ | -------- |
 | `performance.now()`  | 高精度時間戳 | 性能測量 |
 | `performance.memory` | 記憶體使用   | 性能監控 |
 | `performance.timing` | 頁面載入時間 | 性能分析 |
-
-#### Console API
-| 方法                | 描述     | 用途     |
-| ------------------- | -------- | -------- |
-| `console.log()`     | 一般日誌 | 除錯輸出 |
-| `console.warn()`    | 警告訊息 | 警告輸出 |
-| `console.error()`   | 錯誤訊息 | 錯誤輸出 |
-| `console.table()`   | 表格輸出 | 資料展示 |
-| `console.group()`   | 分組輸出 | 日誌組織 |
-| `console.time()`    | 計時開始 | 性能測量 |
-| `console.timeEnd()` | 計時結束 | 性能測量 |
 
 {% note info %}
 **使用建議：**
@@ -407,12 +449,9 @@ DOM 中有多種節點類型：
 - **屬性節點**：HTML 屬性（如 `id`、`class`）
 
 ## DOM 元素選擇
-
 在 DOM 操作中，第一步就是要找到我們想要操作的元素。JavaScript 提供了多種方法來選擇元素，每種方法都有其特定的使用場景和優缺點。掌握這些選擇方法是進行 DOM 操作的基礎。
 
-### 基本選擇方法
-
-#### 透過 ID 選擇
+### getElementById
 ```html
 <div id="myDiv">這是一個 div</div>
 ```
@@ -447,7 +486,7 @@ console.log(element); // <div id="myDiv">這是一個 div</div>
 ```
 {% endnote %}
 
-#### 透過標籤名稱選擇
+### getElementsByTagName
 ```javascript
 // 選擇所有 p 標籤（回傳 HTMLCollection）
 let paragraphs = document.getElementsByTagName("p");
@@ -455,14 +494,14 @@ console.log(paragraphs.length); // 2
 console.log(paragraphs[0]); // 第一個 p 元素
 ```
 
-#### 透過類別名稱選擇
+### getElementsByClassName
 ```javascript
 // 選擇所有 class 為 "text" 的元素（回傳 HTMLCollection）
 let textElements = document.getElementsByClassName("text");
 console.log(textElements.length); // 2
 ```
 
-#### 透過 name 屬性選擇
+### getElementsByName
 ```html
 <input type="text" name="username" value="使用者名稱">
 ```
@@ -473,9 +512,149 @@ let inputs = document.getElementsByName("username");
 console.log(inputs[0].value); // "使用者名稱"
 ```
 
-#### 使用 document 子物件
+### querySelector （推薦）
+除了傳統的選擇方法，現代瀏覽器還支援更強大和靈活的 `querySelector` 方法。這些方法使用 CSS 選擇器語法，讓元素選擇變得更加直觀和強大。`querySelector` 系列方法是目前推薦使用的選擇方法。
 
-除了透過選擇方法存取元素外，`document` 物件還提供了一些直接存取的子物件，這些物件代表 HTML 文件中的重要結構元素。
+```javascript
+// 選擇第一個符合條件的元素 （返回 Element 物件）
+let firstP = document.querySelector("p");
+let title = document.querySelector("#title");
+let textClass = document.querySelector(".text");
+
+// 選擇所有符合條件的元素（回傳 NodeList）
+let allTexts = document.querySelectorAll(".text");
+let allButtons = document.querySelectorAll("button");
+```
+
+{% note info %}
+**小技巧：**
+- `querySelector` 使用 CSS Selector 語法，只回傳第一個符合的元素
+- `querySelectorAll` 使用 CSS Selector 語法，回傳所有符合的元素
+{% endnote %}
+
+### DOM 選擇器返回值差異
+不同的 DOM 選擇方法會返回不同類型的物件，了解這些差異對於正確操作 DOM 元素非常重要。
+
+**返回值類型說明：**
+| 選擇方法                 | 返回值類型           | 數量 | 更新機制 | 可用方法            |
+| ------------------------ | -------------------- | ---- | -------- | ------------------- |
+| `getElementById`         | Element 物件 或 null | 單一 | 靜態     | Element 方法        |
+| `getElementsByTagName`   | HTMLCollection       | 多個 | 動態     | HTMLCollection 方法 |
+| `getElementsByClassName` | HTMLCollection       | 多個 | 動態     | HTMLCollection 方法 |
+| `querySelector`          | Element 物件 或 null | 單一 | 靜態     | Element 方法        |
+| `querySelectorAll`       | NodeList             | 多個 | 靜態     | NodeList 方法       |
+
+#### Element 物件
+```javascript
+// 返回 Element 物件的方法
+const element1 = document.getElementById('myId');
+const element2 = document.querySelector('.myClass');
+
+console.log(element1); // Element 物件或 null
+console.log(element2); // Element 物件或 null
+
+// 可以直接操作
+if (element1) {
+    element1.textContent = '修改內容';
+    element1.style.color = 'red';
+    element1.addEventListener('click', function() {
+        console.log('點擊事件');
+    });
+}
+```
+
+#### HTMLCollection
+```javascript
+// 返回 HTMLCollection 的方法
+const elements1 = document.getElementsByTagName('p');
+const elements2 = document.getElementsByClassName('text');
+
+console.log(elements1); // HTMLCollection 物件
+console.log(elements2); // HTMLCollection 物件
+
+// 特點：動態更新
+console.log(elements1.length); // 假設有 2 個元素
+
+// 新增元素後，HTMLCollection 會自動更新
+const newP = document.createElement('p');
+document.body.appendChild(newP);
+console.log(elements1.length); // 自動變成 3 個
+
+// 只能使用數字索引存取
+for (let i = 0; i < elements1.length; i++) {
+    elements1[i].style.color = 'blue';
+}
+```
+
+#### NodeList
+```javascript
+// 返回 NodeList 的方法
+const elements = document.querySelectorAll('p');
+
+console.log(elements); // NodeList 物件
+
+// 特點：靜態集合，不會自動更新
+console.log(elements.length); // 假設有 2 個元素
+
+// 新增元素後，NodeList 不會更新
+const newP = document.createElement('p');
+document.body.appendChild(newP);
+console.log(elements.length); // 仍然是 2 個
+
+// 可以使用 forEach 方法
+elements.forEach(element => {
+    element.style.color = 'green';
+});
+
+// 也可以使用數字索引
+for (let i = 0; i < elements.length; i++) {
+    elements[i].style.fontSize = '16px';
+}
+```
+
+#### HTMLCollection vs NodeList 差異
+```javascript
+// HTMLCollection - 動態更新範例
+const dynamicElements = document.getElementsByTagName('div');
+console.log('初始數量：', dynamicElements.length); // 假設 3 個
+
+// 新增元素
+const newDiv = document.createElement('div');
+document.body.appendChild(newDiv);
+
+console.log('新增後數量：', dynamicElements.length); // 自動變成 4 個
+
+// NodeList - 靜態集合範例
+const staticElements = document.querySelectorAll('div');
+console.log('初始數量：', staticElements.length); // 假設 3 個
+
+// 新增元素
+const newDiv2 = document.createElement('div');
+document.body.appendChild(newDiv2);
+
+console.log('新增後數量：', staticElements.length); // 仍然是 3 個
+
+// 需要重新查詢才能獲得更新後的結果
+const updatedElements = document.querySelectorAll('div');
+console.log('重新查詢後：', updatedElements.length); // 現在是 4 個
+```
+
+{% note warning %}
+**重要提醒：**
+- HTMLCollection 是動態的，會自動反映 DOM 的變化
+- NodeList 是靜態的，DOM 變化後需要重新查詢
+- 在迴圈中修改 DOM 時要特別注意這個差異
+{% endnote %}
+
+{% note info %}
+**最佳實踐：**
+- 現代開發推薦使用 `querySelector` 系列方法
+- 需要動態更新時考慮使用 `getElementsBy*` 方法
+- 在複雜的 DOM 操作中，重新查詢比依賴動態更新更安全
+{% endnote %}
+
+### 使用 document 子物件
+除了透過選擇方法存取元素外，`document` 物件還提供了一些快速直接存取的子物件，這些物件代表 HTML 文件中的重要結構元素。
 
 | document. 子物件   | 描述                                                            |
 | ------------------ | --------------------------------------------------------------- |
@@ -485,6 +664,17 @@ console.log(inputs[0].value); // "使用者名稱"
 | `document.links`   | 文件內的全部具備 href 之元素之通用集合                          |
 | `document.images`  | 文件內的全部 img 元素之通用集合                                 |
 | `document.scripts` | 文件內的全部 script 元素之通用集合                              |
+
+**返回值類型說明：**
+
+| document. 子物件   | 返回值類型     | 特點                 |
+| ------------------ | -------------- | -------------------- |
+| `document.head`    | Element 物件   | 單一元素，可直接操作 |
+| `document.body`    | Element 物件   | 單一元素，可直接操作 |
+| `document.forms`   | HTMLCollection | 動態集合，會自動更新 |
+| `document.links`   | HTMLCollection | 動態集合，會自動更新 |
+| `document.images`  | HTMLCollection | 動態集合，會自動更新 |
+| `document.scripts` | HTMLCollection | 動態集合，會自動更新 |
 
 ```javascript
 // 直接存取 document 子物件
@@ -514,80 +704,30 @@ console.log(document.scripts.length); // 腳本數量
 **document 子物件的特點：**
 - 這些是 `document` 物件的直接屬性，無需使用選擇方法
 - 提供了快速存取常用元素的方式
-- 回傳的是 HTMLCollection 或單一元素
+- `document.head` 和 `document.body` 返回 Element 物件，可直接操作
+- `document.forms`、`document.links`、`document.images`、`document.scripts` 返回 HTMLCollection，具有動態更新特性
 - 在實際開發中非常實用
 {% endnote %}
-
-### 現代選擇方法（querySelector）
-
-除了傳統的選擇方法，現代瀏覽器還支援更強大和靈活的 `querySelector` 方法。這些方法使用 CSS 選擇器語法，讓元素選擇變得更加直觀和強大。`querySelector` 系列方法是目前推薦使用的選擇方法。
-
-除了傳統方法，現代瀏覽器支援更強大的 `querySelector` 方法：
-
-```javascript
-// 選擇第一個符合條件的元素
-let firstP = document.querySelector("p");
-let title = document.querySelector("#title");
-let textClass = document.querySelector(".text");
-
-// 選擇所有符合條件的元素（回傳 NodeList）
-let allTexts = document.querySelectorAll(".text");
-let allButtons = document.querySelectorAll("button");
-```
-
-{% note info %}
-**NodeList vs HTMLCollection 差異：**
-- **HTMLCollection**：`getElementsBy*` 方法回傳，是動態集合
-  - 會自動更新，當 DOM 改變時集合會同步更新
-  - 只能使用數字索引存取
-  - 範例：`document.getElementsByTagName("p")`
-
-- **NodeList**：`querySelectorAll` 方法回傳，是靜態集合
-  - 不會自動更新，DOM 改變時集合不會同步更新
-  - 可以使用數字索引或 `forEach` 方法
-  - 範例：`document.querySelectorAll("p")`
-
-**實際差異範例：**
-```javascript
-// HTMLCollection - 動態更新
-let elements1 = document.getElementsByTagName("p");
-console.log(elements1.length); // 假設有 2 個 p 元素
-
-// 新增一個 p 元素
-let newP = document.createElement("p");
-document.body.appendChild(newP);
-
-console.log(elements1.length); // 自動變成 3 個
-
-// NodeList - 靜態集合
-let elements2 = document.querySelectorAll("p");
-console.log(elements2.length); // 假設有 2 個 p 元素
-
-// 新增一個 p 元素
-let newP2 = document.createElement("p");
-document.body.appendChild(newP2);
-
-console.log(elements2.length); // 仍然是 2 個，不會自動更新
-```
-{% endnote %}
-
-
-{% note info %}
-**小技巧：**
-- `querySelector` 使用 CSS 選擇器語法，更直觀
-- `querySelector` 只回傳第一個符合的元素
-- `querySelectorAll` 回傳所有符合的元素
-{% endnote %}
-
 
 ## DOM 內容操作
 
 找到元素後，下一步就是對元素進行操作。DOM 提供了豐富的方法來讀取和修改元素的內容、屬性和樣式。這些操作是動態網頁開發的核心，讓我們能夠創造豐富的用戶體驗。
 
-### 讀取和修改內容
+### 內容操作
 
 #### innerHTML vs textContent
+兩種不同的內容操作方式，各有其特點和使用場景：
+
+| 特性      | innerHTML              | textContent    |
+| --------- | ---------------------- | -------------- |
+| HTML 標籤 | 會解析並渲染           | 視為純文字顯示 |
+| 執行效率  | 較慢（解析 HTML 渲染） | 較快           |
+| 安全性    | 需注意 XSS 風險        | 較安全         |
+| 使用場景  | 需要 HTML 結構時       | 純文字內容時   |
+
 ```javascript
+// demo > 內容操作
+// --------------------------------------------------
 let element = document.getElementById("title");
 
 // 讀取內容
@@ -597,30 +737,25 @@ console.log(element.textContent); // "我的網頁"
 // 修改內容
 element.innerHTML = "<em>新的標題</em>"; // 支援 HTML 標籤
 element.textContent = "純文字標題"; // 只支援純文字
-```
-
-#### 實際範例
-```javascript
-// 獲取元素
-let container = document.getElementById("container");
-let btn = document.getElementById("btn");
-
-// 讀取內容
-console.log("容器內容：" + container.innerHTML);
-
-// 修改按鈕文字
-btn.textContent = "已點擊";
 
 // 動態添加內容
+let container = document.getElementById("container");
 container.innerHTML += "<p>新添加的段落</p>";
 ```
 
+{% note info %}
+**使用建議：**
+- 需要動態插入 HTML 結構時使用 `innerHTML`
+- 只需要處理純文字時使用 `textContent`
+- 處理使用者輸入時優先使用 `textContent` 避免 XSS 風險
+{% endnote %}
+
 ### 屬性操作
 
-除了內容操作，我們還需要能夠讀取和修改元素的屬性。屬性操作包括 HTML 屬性和 CSS 樣式，這些都是動態網頁開發中不可或缺的技能。
-
-#### 讀取和設定屬性
+#### 基本屬性操作
 ```javascript
+// demo > HTML 元素屬性
+// --------------------------------------------------
 let element = document.getElementById("title");
 
 // 讀取屬性
@@ -635,8 +770,59 @@ element.setAttribute("data-custom", "自訂屬性值");
 element.removeAttribute("data-custom");
 ```
 
-#### 樣式操作
+#### 使用 setAttribute 設定 style
+除了直接操作 `style` 物件，也可以使用 `setAttribute` 方法來設定樣式：
+
 ```javascript
+// demo > 使用 setAttribute 設定 style
+// --------------------------------------------------
+let element = document.getElementById("title");
+
+// 方法一：直接設定 style 屬性
+element.setAttribute("style", "color: red; font-size: 24px; background-color: #f0f0f0;");
+
+// 方法二：使用模板字串
+element.setAttribute("style", `
+    color: blue;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+`);
+
+// 方法三：動態組合樣式
+let color = "green";
+let fontSize = "20px";
+element.setAttribute("style", `color: ${color}; font-size: ${fontSize};`);
+```
+
+{% note info %}
+**setAttribute vs style 物件：**
+- `setAttribute("style", "css字串")` - 完全覆蓋所有樣式
+- `element.style.property = value` - 精確控制單一屬性
+- 選擇哪種方法取決於具體需求
+{% endnote %}
+
+### 樣式操作
+
+#### 樣式設定方法對比
+DOM 提供了多種方式來設定元素的 CSS 樣式，每種方法都有其適用場景：
+
+| 方法            | 特點                       | 適用場景             |
+| --------------- | -------------------------- | -------------------- |
+| 逐個設定        | 精確控制，不會影響其他樣式 | 單一屬性修改         |
+| 直接設定 style  | 完全覆蓋所有樣式           | 需要重新設定所有樣式 |
+| Object.assign() | 批量設定，程式碼簡潔       | 需要設定多個相關樣式 |
+| cssText         | 一次性設定，效能較好       | 大量樣式設定         |
+| setProperty()   | 支援 CSS 變數和複雜值      | CSS 變數和特殊屬性   |
+| setAttribute()  | 使用字串設定，靈活性高     | 動態組合樣式         |
+
+#### 逐個設定樣式
+```javascript
+// demo > 逐個設定樣式
+// --------------------------------------------------
 let element = document.getElementById("title");
 
 // 直接設定樣式
@@ -648,15 +834,74 @@ element.style.fontSize = "24px";
 console.log(element.style.color); // "red"
 ```
 
-{% note success %}
-**跟著做：**
-請在瀏覽器控制台中執行以下程式碼，觀察元素變化：
+#### 批量設定樣式
 ```javascript
-let title = document.getElementById("title");
-title.style.color = "blue";
-title.style.fontSize = "32px";
-title.textContent = "動態修改的標題";
+// demo > 批量設定樣式
+// --------------------------------------------------
+let element = document.getElementById("title");
+
+// 方法一：使用 Object.assign() 批量設定
+Object.assign(element.style, {
+    color: "blue",
+    backgroundColor: "#e8f4fd",
+    fontSize: "28px",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: "10px",
+    border: "2px solid #007bff",
+    borderRadius: "5px"
+});
+
+// 方法二：使用 cssText 設定多個樣式
+element.style.cssText = `
+    color: green;
+    background-color: #f8f9fa;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    border: 3px solid #28a745;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+`;
+
+// 方法三：直接設定 style 屬性（會覆蓋所有現有樣式）
+element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padding: 10px;";
 ```
+
+#### 進階樣式操作
+```javascript
+// demo > 進階樣式操作
+// --------------------------------------------------
+let element = document.getElementById("title");
+
+// 使用 setProperty() 設定 CSS 變數
+element.style.setProperty('--custom-color', '#ff6b6b');
+element.style.setProperty('--custom-size', '20px');
+
+// 使用 setAttribute 動態設定樣式
+let theme = "dark";
+let styles = theme === "dark" 
+    ? "color: white; background-color: #333;" 
+    : "color: black; background-color: #fff;";
+element.setAttribute("style", styles);
+```
+
+{% note warning %}
+**重要提醒：**
+- 直接設定 `element.style = "css字串"` 會覆蓋元素的所有現有樣式
+- 如果需要保留某些樣式，建議使用 `cssText` 或 `Object.assign()`
+- `setAttribute("style", "css字串")` 也會完全覆蓋現有樣式
+- 在複雜的樣式操作中，建議先備份原有樣式
+{% endnote %}
+
+{% note info %}
+**最佳實踐：**
+- 單一屬性修改使用 `element.style.property = value`
+- 多個相關樣式使用 `Object.assign()` 或 `cssText`
+- 需要動態組合樣式時使用 `setAttribute()`
+- CSS 變數操作使用 `setProperty()`
+- 完全重新設定樣式時使用直接賦值或 `setAttribute()`
 {% endnote %}
 
 ## 事件處理基礎
