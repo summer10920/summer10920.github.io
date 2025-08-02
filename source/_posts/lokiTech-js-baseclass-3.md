@@ -1,5 +1,5 @@
 ---
-title: "[基礎課程] JavaScript 教學（二）：BOM 與 DOM"
+title: "[基礎課程] JavaScript 教學（三）：BOM 與 DOM"
 categories:
   - 職訓教材
   - JavaScript
@@ -15,18 +15,30 @@ date: 2020-04-20 21:07:53
 
 <!-- more -->
 
-## 什麼是 BOM 與 DOM？
+# 什麼是 BOM 與 DOM？
 
 在開始學習具體操作之前，我們需要先理解這兩個模型的基本概念：
 
-### BOM（Browser Object Model）
+## BOM（Browser Object Model）
 BOM 是瀏覽器物件模型，它提供了 JavaScript 與瀏覽器本身互動的介面。透過 BOM，我們可以：
 - 控制瀏覽器視窗
 - 操作瀏覽器歷史記錄
 - 獲取螢幕資訊
 - 控制 URL 導向
 
-### DOM（Document Object Model）
+{% mermaid graph TD %}
+    subgraph BOM["瀏覽器物件模型 (BOM)"]
+        Window["window 物件"]
+        Window --> History["history 物件"]
+        Window --> Location["location 物件"]
+        Window --> Navigator["navigator 物件"]
+        Window --> Screen["screen 物件"]
+        Window --> Document["document 物件"]
+    end
+    style BOM fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+{% endmermaid %}
+
+## DOM（Document Object Model）
 DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，讓 JavaScript 能夠：
 - 存取和修改 HTML 元素
 - 改變元素的樣式和內容
@@ -57,7 +69,7 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
     style DOM fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
 {% endmermaid %}
 
-### 兩者的關係
+## 兩者的關係
 - **BOM** 是瀏覽器的整體模型，`window` 物件代表瀏覽器視窗本身，是 BOM 的根物件，包含多項模型物件以及所有全域物件、函式和變數。BOM 提供了 JavaScript 與瀏覽器溝通的介面。
 - **DOM** 是 BOM 的一部分，`document` 物件代表整個 HTML 文件，它是 DOM 的根物件。透過 DOM，我們可以存取和操作網頁中的所有 HTML 元素、屬性和內容。DOM 將 HTML 文件視為一個樹狀結構，每個元素都是樹中的一個節點，這使得我們能夠輕鬆地遍歷、修改和管理網頁內容
 - 我們應該透過 `window.document` 來存取 DOM，但因為 window 是所有的 root，所以也可以直接使用 `document` 來存取
@@ -69,10 +81,10 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
 - 兩者配合使用，可以創造豐富的網頁互動體驗
 {% endnote %}
 
-## BOM 基礎操作
+# BOM 操作
 瀏覽器物件模型（BOM）提供了豐富的操作介面，讓我們能夠控制瀏覽器的各種行為和功能。以下我們將介紹一些最常用且實用的 BOM 操作方法，這些方法可以幫助我們更好地掌握瀏覽器的互動能力。
 
-### window 物件
+## window 物件
 `window` 是 BOM 的根物件，代表整個瀏覽器視窗。在瀏覽器環境中，全域變數和函數都屬於 `window` 物件。
 
 ```javascript
@@ -87,21 +99,30 @@ console.log(window.globalVar); // "全域變數"
 
 window 物件還提供了許多實用的方法。
 
-| 方法                 | 描述           | 用途               |
-| -------------------- | -------------- | ------------------ |
-| `window.scrollTo()`  | 滾動到指定位置 | 頁面導航、錨點跳轉 |
-| `window.scrollBy()`  | 相對滾動       | 平滑滾動效果       |
-| `window.print()`     | 列印當前頁面   | 列印功能           |
-| `window.focus()`     | 讓視窗獲得焦點 | 視窗管理           |
-| `window.blur()`      | 讓視窗失去焦點 | 視窗管理           |
-| `window.moveTo()`    | 移動視窗位置   | 視窗定位           |
-| `window.resizeTo()`  | 調整視窗大小   | 視窗尺寸控制       |
-| `window.innerWidth`  | 視窗內部寬度   | 響應式設計         |
-| `window.innerHeight` | 視窗內部高度   | 響應式設計         |
-| `window.outerWidth`  | 視窗外部寬度   | 視窗管理           |
-| `window.outerHeight` | 視窗外部高度   | 視窗管理           |
+| 方法                                  | 描述           | 用途               |
+| ------------------------------------- | -------------- | ------------------ |
+| `window.scrollTo(x, y)`               | 滾動到指定位置 | 頁面導航、錨點跳轉 |
+| `window.scrollBy(x, y)`               | 相對滾動       | 平滑滾動效果       |
+| `window.print()`                      | 列印當前頁面   | 列印功能           |
+| `window.focus()`                      | 讓視窗獲得焦點 | 視窗管理           |
+| `window.blur()`                       | 讓視窗失去焦點 | 視窗管理           |
+| `window.moveTo(x, y)`                 | 移動視窗位置   | 視窗定位           |
+| `window.resizeTo(width, height)`      | 調整視窗大小   | 視窗尺寸控制       |
+| `window.open(url, target, features)`  | 開啟新視窗     | 彈出視窗控制       |
+| `window.close()`                      | 關閉視窗       | 視窗管理           |
+| `window.alert(message)`               | 顯示提示對話框 | 用戶提示           |
+| `window.confirm(message)`             | 顯示確認對話框 | 用戶確認           |
+| `window.prompt(message, default)`     | 顯示輸入對話框 | 用戶輸入           |
+| `window.setTimeout(callback, delay)`  | 延遲執行       | 計時器功能         |
+| `window.setInterval(callback, delay)` | 重複執行       | 計時器功能         |
+| `window.clearTimeout(id)`             | 取消延遲執行   | 計時器控制         |
+| `window.clearInterval(id)`            | 取消重複執行   | 計時器控制         |
+| `window.innerWidth`                   | 視窗內部寬度   | 響應式設計         |
+| `window.innerHeight`                  | 視窗內部高度   | 響應式設計         |
+| `window.outerWidth`                   | 視窗外部寬度   | 視窗管理           |
+| `window.outerHeight`                  | 視窗外部高度   | 視窗管理           |
 
-### 對話框 alert、confirm、prompt
+## 對話框 alert、confirm、prompt
 請在瀏覽器控制台中逐一執行下述程式碼，觀察不同對話框的效果。
 
 ```javascript
@@ -123,7 +144,7 @@ if (name) {
 }
 ```
 
-### 計時器 setTimeout、setInterval
+## 計時器 setTimeout、setInterval
 計時器是 JavaScript 中非常重要的功能，它允許我們在指定的時間後執行程式碼，或者重複執行某些操作。這在製作動畫、自動更新內容等場景中非常有用。
 
 ```javascript
@@ -156,7 +177,7 @@ let intervalId = setInterval(function() {
 - 即使計時器已經執行完成，清除操作也不會出錯
 {% endnote %}
 
-### 視窗控制 open
+## 視窗控制 open
 視窗控制功能允許我們程式化地操作瀏覽器視窗，包括開啟新視窗、調整視窗大小等。不過需要注意的是，現代瀏覽器基於安全考量可能對這些功能有所限制。
 
 ```javascript
@@ -177,7 +198,7 @@ window.resizeTo(800, 600); // 現代瀏覽器可能限制此功能
 - 某些方法需要用戶互動才能執行
 {% endnote %}
 
-### location 物件
+## location 物件
 BOM 中處理 URL 和頁面導向的重要工具。它包含了當前頁面的完整 URL 資訊，並提供了豐富的方法來操作和導向頁面。無論是獲取當前頁面資訊還是進行頁面跳轉，`location` 物件都是不可或缺的。
 
 ```javascript
@@ -220,15 +241,22 @@ console.log("路徑：" + location.pathname); // /page.html
 
 location 物件還有一些實用的屬性。
 
-| 屬性                | 描述           | 用途         |
-| ------------------- | -------------- | ------------ |
-| `location.search`   | URL 查詢參數   | 參數解析     |
-| `location.hash`     | URL 錨點部分   | 單頁應用路由 |
-| `location.origin`   | 協議+主機+端口 | 同源檢測     |
-| `location.port`     | 端口號         | 環境檢測     |
-| `location.hostname` | 主機名稱       | 域名檢測     |
+| 屬性/方法                | 描述           | 用途         |
+| ------------------------ | -------------- | ------------ |
+| `location.href`          | 完整 URL       | URL 操作     |
+| `location.protocol`      | 協議部分       | URL 解析     |
+| `location.host`          | 主機+端口      | URL 解析     |
+| `location.hostname`      | 主機名稱       | 域名檢測     |
+| `location.port`          | 端口號         | 環境檢測     |
+| `location.pathname`      | 路徑部分       | URL 解析     |
+| `location.search`        | URL 查詢參數   | 參數解析     |
+| `location.hash`          | URL 錨點部分   | 單頁應用路由 |
+| `location.origin`        | 協議+主機+端口 | 同源檢測     |
+| `location.assign(url)`   | 導向新頁面     | 頁面導航     |
+| `location.replace(url)`  | 替換當前頁面   | 頁面導航     |
+| `location.reload(force)` | 重新載入頁面   | 頁面刷新     |
 
-### screen 物件
+## screen 物件
 `screen` 物件提供了關於用戶螢幕的詳細資訊，包括螢幕尺寸、色彩深度、像素密度等。這些資訊在響應式設計、適配不同設備和優化用戶體驗時非常重要。
 
 ```javascript
@@ -264,7 +292,7 @@ screen 物件還有一些實用的屬性。
 | `screen.pixelDepth`  | 像素深度       | 顯示品質 |
 | `screen.orientation` | 螢幕方向       | 適配設計 |
 
-### history 物件
+## history 物件
 能夠程式化地控制瀏覽器的前進、後退功能。這在製作單頁應用程式（SPA）或需要自訂導航行為的網頁中非常有用。透過 `history` 物件，我們可以實現更靈活的頁面導航體驗。
 
 ```javascript
@@ -280,26 +308,29 @@ history.go(-2); // 回到前兩頁
 
 history 物件提供更多導航控制功能。
 
-| 方法                     | 描述         | 用途         |
-| ------------------------ | ------------ | ------------ |
-| `history.pushState()`    | 新增歷史記錄 | 單頁應用路由 |
-| `history.replaceState()` | 替換歷史記錄 | 路由狀態管理 |
-| `history.length`         | 歷史記錄數量 | 導航狀態檢測 |
-| `history.state`          | 當前狀態     | 狀態管理     |
+| 方法/屬性                                 | 描述         | 用途         |
+| ----------------------------------------- | ------------ | ------------ |
+| `history.back()`                          | 回到上一頁   | 瀏覽器導航   |
+| `history.forward()`                       | 前往下一頁   | 瀏覽器導航   |
+| `history.go(n)`                           | 跳轉指定頁數 | 瀏覽器導航   |
+| `history.pushState(state, title, url)`    | 新增歷史記錄 | 單頁應用路由 |
+| `history.replaceState(state, title, url)` | 替換歷史記錄 | 路由狀態管理 |
+| `history.length`                          | 歷史記錄數量 | 導航狀態檢測 |
+| `history.state`                           | 當前狀態     | 狀態管理     |
 
-## 其他 BOM 物件與方法
+## 其他的物件與方法
 除了前面介紹的核心物件外，BOM 還提供了許多其他有用的物件和方法。這些物件在特定場景下非常有用，值得了解它們的存在和基本用途。
 
 ### Console API
-| 方法                | 描述     | 用途     |
-| ------------------- | -------- | -------- |
-| `console.log()`     | 一般日誌 | 除錯輸出 |
-| `console.warn()`    | 警告訊息 | 警告輸出 |
-| `console.error()`   | 錯誤訊息 | 錯誤輸出 |
-| `console.table()`   | 表格輸出 | 資料展示 |
-| `console.group()`   | 分組輸出 | 日誌組織 |
-| `console.time()`    | 計時開始 | 性能測量 |
-| `console.timeEnd()` | 計時結束 | 性能測量 |
+| 方法                              | 描述     | 用途     |
+| --------------------------------- | -------- | -------- |
+| `console.log(message, ...args)`   | 一般日誌 | 除錯輸出 |
+| `console.warn(message, ...args)`  | 警告訊息 | 警告輸出 |
+| `console.error(message, ...args)` | 錯誤訊息 | 錯誤輸出 |
+| `console.table(data)`             | 表格輸出 | 資料展示 |
+| `console.group(label)`            | 分組輸出 | 日誌組織 |
+| `console.time(label)`             | 計時開始 | 性能測量 |
+| `console.timeEnd(label)`          | 計時結束 | 性能測量 |
 
 ### navigator 物件
 提供瀏覽器和系統的詳細資訊，常用於檢測瀏覽器類型和功能支援。
@@ -329,64 +360,8 @@ history 物件提供更多導航控制功能。
 - `getItem(key)` - 讀取資料
 - `removeItem(key)` - 刪除資料
 - `clear()` - 清除所有資料
-
-```javascript demo.js
-// localStorage 範例
-// ----------------------------------------------------------------
-// 儲存用戶偏好設定
-localStorage.setItem('theme', 'dark');
-localStorage.setItem('language', 'zh-TW');
-
-// 讀取儲存的資料
-console.log('主題：', localStorage.getItem('theme')); // 主題：dark
-console.log('語言：', localStorage.getItem('language')); // 語言：zh-TW
-
-// 檢查儲存空間是否可用，或者儲存情況都可能拋出異常
-function checkStorageSupport() {
-  try {
-      localStorage.setItem('test', 'test');
-      localStorage.removeItem('test');
-  
-      // 以下情況可能會拋出異常：
-      // 1. 儲存空間已滿 （超過 5-10MB 限制）
-      // 2. 瀏覽器隱私模式下無法使用 localStorage
-      // 3. 用戶禁用了 Web Storage 功能
-      // 4. 存取權限被拒絕
-      // 5. 儲存的值不是合法的字串格式
-      return true; // 支援 localStorage
-  } catch (e) {
-      console.log('localStorage 不可用：', e.message);
-      return false; // 不支援 localStorage
-  }
-}
-
-// 清除特定資料
-localStorage.removeItem('theme');
-
-// sessionStorage 範例
-// ----------------------------------------------------------------
-// 儲存表單狀態
-sessionStorage.setItem('formData', JSON.stringify({
-  name: '張三',
-  email: 'zhang@example.com',
-  message: '這是一個測試訊息'
-}));
-
-// 讀取表單資料
-const formData = JSON.parse(sessionStorage.getItem('formData'));
-console.log('表單資料：', formData);
-
-// 清除特定資料
-sessionStorage.clear(); // 清除所有 sessionStorage 資料
-```
-
-{% note info %}
-**小技巧：**
-- localStorage 資料會永久保存，除非手動刪除
-- sessionStorage 資料在關閉分頁後會自動清除
-- 儲存容量限制約為 5-10MB
-- 只能儲存字串，物件需要先轉換為 JSON
-{% endnote %}
+- `key(index)` - 取得指定索引的鍵名
+- `length` - 儲存項目數量
 
 ### Performance API
 | 方法/屬性            | 描述         | 用途     |
@@ -404,10 +379,9 @@ sessionStorage.clear(); // 清除所有 sessionStorage 資料
 - 常用方法建議熟記，不常用的可以查閱文件
 {% endnote %}
 
-## DOM 基礎概念
+# DOM 操作
 DOM 將 HTML 文件表示為一個樹狀結構，每個 HTML 元素都是一個節點（Node）。透過這個結構，JavaScript 可以精確地找到並操作任何元素。
 
-### DOM 樹狀結構
 ```html
 <!DOCTYPE html>
 <html>
@@ -442,14 +416,13 @@ DOM 將 HTML 文件表示為一個樹狀結構，每個 HTML 元素都是一個�
     style Body fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 {% endmermaid %}
 
-### 節點類型
+## DOM 元素選擇
+在 DOM 操作中，第一步就是要找到我們想要操作的元素。JavaScript 提供了多種方法來選擇元素，每種方法都有其特定的使用場景和優缺點。掌握這些選擇方法是進行 DOM 操作的基礎。
+
 DOM 中有多種節點類型：
 - **元素節點**：HTML 標籤（如 `<div>`、`<p>`）
 - **文字節點**：標籤內的文字內容
 - **屬性節點**：HTML 屬性（如 `id`、`class`）
-
-## DOM 元素選擇
-在 DOM 操作中，第一步就是要找到我們想要操作的元素。JavaScript 提供了多種方法來選擇元素，每種方法都有其特定的使用場景和優缺點。掌握這些選擇方法是進行 DOM 操作的基礎。
 
 ### getElementById
 ```html
@@ -709,13 +682,11 @@ console.log(document.scripts.length); // 腳本數量
 - 在實際開發中非常實用
 {% endnote %}
 
-## DOM 內容操作
+## DOM 元件操作
 
 找到元素後，下一步就是對元素進行操作。DOM 提供了豐富的方法來讀取和修改元素的內容、屬性和樣式。這些操作是動態網頁開發的核心，讓我們能夠創造豐富的用戶體驗。
 
-### 內容操作
-
-#### innerHTML vs textContent
+### 內容操作 (innerHTML, textContent)
 兩種不同的內容操作方式，各有其特點和使用場景：
 
 | 特性      | innerHTML              | textContent    |
@@ -751,8 +722,6 @@ container.innerHTML += "<p>新添加的段落</p>";
 {% endnote %}
 
 ### 屬性操作
-
-#### 基本屬性操作
 ```javascript
 // demo > HTML 元素屬性
 // --------------------------------------------------
@@ -770,44 +739,7 @@ element.setAttribute("data-custom", "自訂屬性值");
 element.removeAttribute("data-custom");
 ```
 
-#### 使用 setAttribute 設定 style
-除了直接操作 `style` 物件，也可以使用 `setAttribute` 方法來設定樣式：
-
-```javascript
-// demo > 使用 setAttribute 設定 style
-// --------------------------------------------------
-let element = document.getElementById("title");
-
-// 方法一：直接設定 style 屬性
-element.setAttribute("style", "color: red; font-size: 24px; background-color: #f0f0f0;");
-
-// 方法二：使用模板字串
-element.setAttribute("style", `
-    color: blue;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    border: 2px solid #007bff;
-    border-radius: 5px;
-`);
-
-// 方法三：動態組合樣式
-let color = "green";
-let fontSize = "20px";
-element.setAttribute("style", `color: ${color}; font-size: ${fontSize};`);
-```
-
-{% note info %}
-**setAttribute vs style 物件：**
-- `setAttribute("style", "css字串")` - 完全覆蓋所有樣式
-- `element.style.property = value` - 精確控制單一屬性
-- 選擇哪種方法取決於具體需求
-{% endnote %}
-
 ### 樣式操作
-
-#### 樣式設定方法對比
 DOM 提供了多種方式來設定元素的 CSS 樣式，每種方法都有其適用場景：
 
 | 方法            | 特點                       | 適用場景             |
@@ -840,7 +772,10 @@ console.log(element.style.color); // "red"
 // --------------------------------------------------
 let element = document.getElementById("title");
 
-// 方法一：使用 Object.assign() 批量設定
+// 方法一：直接設定 style 屬性（會覆蓋所有現有樣式）
+element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padding: 10px;";
+
+// 方法二：使用 Object.assign() 批量設定
 Object.assign(element.style, {
     color: "blue",
     backgroundColor: "#e8f4fd",
@@ -852,7 +787,7 @@ Object.assign(element.style, {
     borderRadius: "5px"
 });
 
-// 方法二：使用 cssText 設定多個樣式
+// 方法三：使用 cssText 設定多個樣式
 element.style.cssText = `
     color: green;
     background-color: #f8f9fa;
@@ -864,9 +799,6 @@ element.style.cssText = `
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 `;
-
-// 方法三：直接設定 style 屬性（會覆蓋所有現有樣式）
-element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padding: 10px;";
 ```
 
 #### 進階樣式操作
@@ -876,6 +808,8 @@ element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padd
 let element = document.getElementById("title");
 
 // 使用 setProperty() 設定 CSS 變數
+element.style.setProperty("margin", "1px 2px");
+element.style.setProperty('color', 'red', 'important');
 element.style.setProperty('--custom-color', '#ff6b6b');
 element.style.setProperty('--custom-size', '20px');
 
@@ -889,9 +823,9 @@ element.setAttribute("style", styles);
 
 {% note warning %}
 **重要提醒：**
-- 直接設定 `element.style = "css字串"` 會覆蓋元素的所有現有樣式
+- 直接設定 `element.style = "css 字串"` 會覆蓋元素的所有現有樣式
 - 如果需要保留某些樣式，建議使用 `cssText` 或 `Object.assign()`
-- `setAttribute("style", "css字串")` 也會完全覆蓋現有樣式
+- `setAttribute("style", "css 字串")` 也會完全覆蓋現有樣式
 - 在複雜的樣式操作中，建議先備份原有樣式
 {% endnote %}
 
@@ -904,14 +838,44 @@ element.setAttribute("style", styles);
 - 完全重新設定樣式時使用直接賦值或 `setAttribute()`
 {% endnote %}
 
-## 事件處理基礎
+#### 使用 setAttribute 設定 style
+除了直接操作 `style` 物件，也可以使用 `setAttribute` 方法來設定樣式：
 
-事件處理是 JavaScript 與用戶互動的核心機制。透過事件處理，我們可以響應用戶的各種操作，如點擊、滑鼠移動、鍵盤輸入等。掌握事件處理是製作互動網頁的關鍵技能。
+```javascript
+// demo > 使用 setAttribute 設定 style
+// --------------------------------------------------
+let element = document.getElementById("title");
 
-### 什麼是事件？
-事件是網頁中發生的動作，如點擊、滑鼠移動、鍵盤按下等。JavaScript 可以監聽這些事件並執行相應的程式碼。
+// 方法一：直接設定 style 屬性
+element.setAttribute("style", "color: red; font-size: 24px; background-color: #f0f0f0;");
 
-### 常見事件類型
+// 方法二：使用模板字串
+element.setAttribute("style", `
+    color: blue;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+`);
+
+// 方法三：動態組合樣式
+let color = "green";
+let fontSize = "20px";
+element.setAttribute("style", `color: ${color}; font-size: ${fontSize};`);
+```
+
+{% note info %}
+**setAttribute vs style 物件：**
+- `setAttribute("style", "css 字串")` - 完全覆蓋所有樣式
+- `element.style.property = value` - 精確控制單一屬性
+- 選擇哪種方法取決於具體需求
+{% endnote %}
+
+## 事件處理
+
+事件處理是 JavaScript 與用戶互動的核心機制。透過事件處理，我們可以響應用戶的各種操作，如點擊、滑鼠移動、鍵盤輸入等。JavaScript 可以監聽這些事件並執行相應的程式碼。
 
 | 事件類型   | 事件名稱    | 描述         |
 | ---------- | ----------- | ------------ |
@@ -1061,252 +1025,707 @@ removeBtn.addEventListener("click", function() {
 - 在組件卸載或頁面切換時特別重要
 {% endnote %}
 
-### 事件物件
-事件處理器會自動接收一個事件物件，包含事件的詳細資訊：
+### event 物件
+事件處理器會自動接收一個 event 物件，包含事件的詳細資訊。這個事件物件提供了豐富的屬性和方法，讓我們能夠深入了解事件的發生情況和相關資訊。
 
-```javascript
+| 屬性/方法                 | 描述                              | 用途                   |
+| ------------------------- | --------------------------------- | ---------------------- |
+| `event.type`              | 事件類型（如 "click"、"keydown"） | 判斷事件類型           |
+| `event.target`            | 觸發事件的元素                    | 獲取事件目標           |
+| `event.currentTarget`     | 當前處理事件的元素                | 事件委派時區分目標     |
+| `event.clientX/clientY`   | 滑鼠在視窗中的座標                | 滑鼠位置追蹤           |
+| `event.pageX/pageY`       | 滑鼠在頁面中的座標                | 頁面座標計算           |
+| `event.screenX/screenY`   | 滑鼠在螢幕中的座標                | 螢幕座標計算           |
+| `event.key`               | 按下的按鍵                        | 鍵盤事件處理           |
+| `event.keyCode`           | 按鍵的鍵碼                        | 鍵盤事件處理           |
+| `event.ctrlKey`           | Ctrl 鍵是否按下                   | 組合鍵檢測             |
+| `event.shiftKey`          | Shift 鍵是否按下                  | 組合鍵檢測             |
+| `event.altKey`            | Alt 鍵是否按下                    | 組合鍵檢測             |
+| `event.preventDefault()`  | 阻止預設行為                      | 表單提交、連結跳轉控制 |
+| `event.stopPropagation()` | 阻止事件冒泡                      | 事件傳播控制           |
+
+#### 事件綁定方式的 event 物件獲取
+
+前面我們學習了三種事件綁定方式，現在讓我們看看每種方式如何獲取和使用事件物件：
+
+##### 方法一：HTML 屬性方式
+
+```html
+<button onclick="handleClick(event)">點擊我</button>
+<input type="text" onchange="handleChange(event)">
+<input type="text" onkeydown="handleKeyDown(event)">
+
+<script>
+// HTML 屬性方式需要手動傳遞 event 參數
+function handleClick(event) {
+    console.log("事件類型：" + event.type);
+    console.log("目標元素：" + event.target.tagName);
+    console.log("滑鼠位置：" + event.clientX + ", " + event.clientY);
+    console.log("是否按下 Ctrl：" + event.ctrlKey);
+}
+
+function handleChange(event) {
+    console.log("輸入值：" + event.target.value);
+    console.log("事件類型：" + event.type);
+}
+
+function handleKeyDown(event) {
+    console.log("按下的鍵：" + event.key);
+    console.log("鍵碼：" + event.keyCode);
+    
+    // 阻止 Enter 鍵的預設行為
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        console.log("已阻止 Enter 鍵的預設行為");
+    }
+}
+</script>
+```
+
+{% note info %}
+**HTML 屬性方式特點：**
+- 必須手動傳遞 `event` 參數
+- 語法：`onclick="handleClick(event)"`
+- 事件物件會自動傳入，但需要在函數參數中接收
+{% endnote %}
+
+##### 方法二：JavaScript 綁定方式
+
+```html
+<button id="myButton">點擊我</button>
+<input type="text" id="myInput">
+
+<script>
+let button = document.getElementById("myButton");
+let input = document.getElementById("myInput");
+
+// JavaScript 綁定方式，事件物件自動傳入
+button.onclick = function(event) {
+    console.log("事件類型：" + event.type);
+    console.log("目標元素：" + event.target.tagName);
+    console.log("滑鼠位置：" + event.clientX + ", " + event.clientY);
+    console.log("是否按下 Ctrl：" + event.ctrlKey);
+};
+
+input.onchange = function(event) {
+    console.log("輸入值：" + event.target.value);
+    console.log("事件類型：" + event.type);
+};
+
+input.onkeydown = function(event) {
+    console.log("按下的鍵：" + event.key);
+    console.log("鍵碼：" + event.keyCode);
+    
+    // 阻止 Enter 鍵的預設行為
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        console.log("已阻止 Enter 鍵的預設行為");
+    }
+};
+</script>
+```
+
+{% note info %}
+**JavaScript 綁定方式特點：**
+- 事件物件自動傳入函數參數
+- 語法：`element.onclick = function(event) { ... }`
+- 不需要手動傳遞 event 參數
+{% endnote %}
+
+##### 方法三：addEventListener 方式（推薦）
+
+```html
+<button id="myButton">點擊我</button>
+<input type="text" id="myInput">
+
+<script>
+let button = document.getElementById("myButton");
+let input = document.getElementById("myInput");
+
+// addEventListener 方式，事件物件自動傳入
 button.addEventListener("click", function(event) {
     console.log("事件類型：" + event.type);
-    console.log("目標元素：" + event.target);
+    console.log("目標元素：" + event.target.tagName);
+    console.log("當前目標：" + event.currentTarget.tagName);
     console.log("滑鼠位置：" + event.clientX + ", " + event.clientY);
+    console.log("是否按下 Ctrl：" + event.ctrlKey);
+});
+
+input.addEventListener("change", function(event) {
+    console.log("輸入值：" + event.target.value);
+    console.log("事件類型：" + event.type);
+});
+
+input.addEventListener("keydown", function(event) {
+    console.log("按下的鍵：" + event.key);
+    console.log("鍵碼：" + event.keyCode);
+    
+    // 阻止 Enter 鍵的預設行為
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        console.log("已阻止 Enter 鍵的預設行為");
+    }
+});
+
+// 可以綁定多個事件處理器
+button.addEventListener("click", function(event) {
+    console.log("第二個點擊事件處理器");
+    console.log("事件時間戳：" + event.timeStamp);
+});
+</script>
+```
+
+{% note success %}
+**addEventListener 方式特點：**
+- 事件物件自動傳入函數參數
+- 語法：`element.addEventListener("event", function(event) { ... })`
+- 可以綁定多個事件處理器
+- 支援事件委派
+- 提供 `currentTarget` 屬性區分事件委派
+{% endnote %}
+
+#### 三種方式的對比
+
+| 特性           | HTML 屬性方式 | JavaScript 綁定 | addEventListener |
+| -------------- | ------------- | --------------- | ---------------- |
+| 事件物件傳遞   | 需手動傳遞    | 自動傳入        | 自動傳入         |
+| 多個處理器支援 | ❌             | ❌               | ✅                |
+| 事件委派支援   | ❌             | ❌               | ✅                |
+| 程式碼分離     | ❌             | ✅               | ✅                |
+| 維護性         | 差            | 中等            | 好               |
+| 現代開發推薦   | ❌             | ❌               | ✅                |
+
+{% note warning %}
+**重要提醒：**
+- HTML 屬性方式是唯一需要手動傳遞 `event` 參數的方式
+- JavaScript 綁定和 addEventListener 都會自動傳入事件物件
+- 現代開發推薦使用 addEventListener 方式
+- 事件物件在所有方式中都是相同的，包含相同的屬性和方法
+{% endnote %}
+
+#### 實際應用範例
+以下將透過幾個常見的實務範例，展示如何運用事件處理來提升網頁互動性與用戶體驗。這些範例涵蓋滑鼠、鍵盤、表單等不同場景，幫助你靈活掌握事件的應用。
+
+##### 禁用右鍵選單與選取文字
+```js
+document.addEventListener('contextmenu', function(event) {
+  event.preventDefault();
+  alert('右鍵已被禁用');
+  return false;
+});
+
+document.addEventListener('selectstart', function(event) {
+  event.preventDefault();
+  alert('禁用選取文字');
+  return false;
 });
 ```
 
-## 實作練習
+##### 鍵盤快捷鍵
+```js
+document.addEventListener('keydown', function (event) {
+  // Ctrl + S 儲存
+  if (event.ctrlKey && event.key === 's') {
+    event.preventDefault();
+    console.log('執行儲存操作');
+  }
 
-理論學習固然重要，但真正的技能提升來自於實際操作。透過以下練習，我們將把前面學習的知識應用到實際場景中，幫助您更好地理解和掌握 BOM 與 DOM 的操作。
+  // Ctrl + Z 復原
+  if (event.ctrlKey && event.key === 'z') {
+    event.preventDefault();
+    console.log('執行復原操作');
+  }
 
-### 練習一：簡單的互動按鈕
+  // ESC 鍵關閉
+  if (event.key === 'Escape') {
+    console.log('關閉當前視窗或對話框');
+  }
+});
+```
 
-{% note primary %}
-**素材準備：**
-```html interactive-button.html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>互動按鈕練習</title>
-    <style>
-        .button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>互動按鈕練習</h1>
-    <button id="changeColorBtn" class="button">改變顏色</button>
-    <button id="changeTextBtn" class="button">改變文字</button>
-    <div id="displayArea" style="padding: 20px; border: 1px solid #ccc; margin: 20px;">
-        這裡是顯示區域
+##### 滑鼠拖拽功能
+```html
+<style>
+  #draggable {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    width: 100px;
+    height: 100px;
+    background-color: red;
+  }
+</style>
+
+<div id="draggable">Drag me</div>
+
+<script>
+  createDraggableElement(document.getElementById('draggable'));
+
+  function createDraggableElement(element) {
+    let isDragging = false;
+    let initMouseX, initMouseY, initElementX, initElementY;
+
+    element.addEventListener('mousedown', function (event) {
+      isDragging = true;
+      initMouseX = event.clientX;
+      initMouseY = event.clientY;
+      initElementX = element.offsetLeft;
+      initElementY = element.offsetTop;
+
+      // 阻止文字選取
+      event.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (event) {
+      if (!isDragging) return;
+
+      const mouseMoveX = event.clientX - initMouseX;
+      const mouseMoveY = event.clientY - initMouseY;
+
+      element.style.left = (initElementX + mouseMoveX) + 'px';
+      element.style.top = (initElementY + mouseMoveY) + 'px';
+    });
+
+    document.addEventListener('mouseup', function (event) {
+      isDragging = false;
+    });
+  }
+</script>
+```
+
+##### 表單驗證與提交控制
+```html
+<style>
+  #myForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+  }
+
+  fieldset {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+
+<form id="myForm">
+  <fieldset>
+    <legend>Enter your email</legend>
+    <div class="form-group">
+      <input type="email" id="email" placeholder="Enter your email">
+      <div id="error-message" style="color: red; font-size: 14px; margin-top: 5px; display: none;"></div>
     </div>
-    
-    <script>
-        // 在這裡實作互動功能
-    </script>
-</body>
-</html>
+    <button type="submit">Submit</button>
+  </fieldset>
+</form>
+
+<script>
+  const emailInput = document.getElementById('email');
+  const errorMessage = document.getElementById('error-message');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // 當輸入框失去焦點時立即驗證
+  emailInput.addEventListener('blur', function () {
+    const email = this.value.trim();
+
+    if (email === '') {
+      // 如果為空，隱藏錯誤訊息
+      errorMessage.style.display = 'none';
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      errorMessage.textContent = '請輸入有效的電子郵件地址';
+      errorMessage.style.display = 'block';
+    } else {
+      // 驗證通過，隱藏錯誤訊息
+      errorMessage.style.display = 'none';
+    }
+  });
+
+  // 表單提交時的驗證
+  document.getElementById('myForm').addEventListener('submit', function (event) {
+    const email = emailInput.value.trim();
+
+    if (email === '' || !emailRegex.test(email)) {
+      event.preventDefault();
+      if (email === '') {
+        errorMessage.textContent = '請輸入電子郵件地址';
+      } else {
+        errorMessage.textContent = '請輸入有效的電子郵件地址';
+      }
+      errorMessage.style.display = 'block';
+      return false;
+    }
+
+    console.log('表單驗證通過，準備提交');
+  });
+</script>
 ```
+
+{% note info %}
+**事件物件的重要概念：**
+- `event.target`：實際觸發事件的元素
+- `event.currentTarget`：當前處理事件的元素（在事件委派中很有用）
+- `event.preventDefault()`：阻止元素的預設行為
+- `event.stopPropagation()`：阻止事件繼續冒泡
+- 事件物件在事件處理函數中自動傳入，無需手動傳遞
 {% endnote %}
 
-**實作要求：**
-1. 點擊「改變顏色」按鈕時，隨機改變顯示區域的背景顏色
-2. 點擊「改變文字」按鈕時，改變顯示區域的文字內容
-3. 當滑鼠移入按鈕時，在控制台顯示訊息
-
-```javascript
-// 實作程式碼
-let changeColorBtn = document.getElementById("changeColorBtn");
-let changeTextBtn = document.getElementById("changeTextBtn");
-let displayArea = document.getElementById("displayArea");
-
-// 顏色陣列
-let colors = ["#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#feca57"];
-
-// 改變顏色功能
-changeColorBtn.addEventListener("click", function() {
-    let randomColor = colors[Math.floor(Math.random() * colors.length)];
-    displayArea.style.backgroundColor = randomColor;
-    console.log("背景顏色已改變為：" + randomColor);
-});
-
-// 改變文字功能
-changeTextBtn.addEventListener("click", function() {
-    let texts = ["Hello World!", "JavaScript 很有趣！", "DOM 操作很簡單", "繼續學習吧！"];
-    let randomText = texts[Math.floor(Math.random() * texts.length)];
-    displayArea.textContent = randomText;
-});
-
-// 滑鼠移入事件
-changeColorBtn.addEventListener("mouseover", function() {
-    console.log("滑鼠移入改變顏色按鈕");
-});
-
-changeTextBtn.addEventListener("mouseover", function() {
-    console.log("滑鼠移入改變文字按鈕");
-});
-```
-
-### 練習二：表單驗證
-
-表單驗證是網頁開發中非常常見的需求。透過這個練習，我們將學習如何結合事件處理和 DOM 操作來實現即時的表單驗證功能，這在實際的網頁應用中非常重要。
-
-{% note primary %}
-**素材準備：**
-```html form-validation.html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>表單驗證練習</title>
-    <style>
-        .form-group {
-            margin: 10px 0;
-        }
-        .error {
-            color: red;
-            font-size: 12px;
-        }
-        .success {
-            color: green;
-            font-size: 12px;
-        }
-    </style>
-</head>
-<body>
-    <h1>表單驗證練習</h1>
-    <form id="myForm">
-        <div class="form-group">
-            <label for="username">使用者名稱：</label>
-            <input type="text" id="username" name="username">
-            <span id="usernameError" class="error"></span>
-        </div>
-        
-        <div class="form-group">
-            <label for="email">電子郵件：</label>
-            <input type="email" id="email" name="email">
-            <span id="emailError" class="error"></span>
-        </div>
-        
-        <div class="form-group">
-            <label for="age">年齡：</label>
-            <input type="number" id="age" name="age">
-            <span id="ageError" class="error"></span>
-        </div>
-        
-        <button type="submit">提交</button>
-    </form>
-    
-    <script>
-        // 在這裡實作表單驗證
-    </script>
-</body>
-</html>
-```
+{% note warning %}
+**注意事項：**
+- HTML 屬性方式需要手動傳遞 `event` 參數
+- JavaScript 方式的事件物件會自動傳入
+- 某些事件（如 `keydown`）需要元素獲得焦點才能觸發
+- 使用 `preventDefault()` 時要謹慎，確保不會影響用戶體驗
 {% endnote %}
 
-**實作要求：**
-1. 使用者名稱不能為空，且長度至少 3 個字元
-2. 電子郵件必須符合基本格式
-3. 年齡必須是數字，且範圍在 1-120 之間
-4. 提交時顯示驗證結果
+### 事件傳播機制：捕獲與冒泡
 
-```javascript
-// 實作程式碼
-let form = document.getElementById("myForm");
-let username = document.getElementById("username");
-let email = document.getElementById("email");
-let age = document.getElementById("age");
+JavaScript 的事件傳播分為三個階段：**捕獲階段**、**目標階段**、**冒泡階段**。完整的事件傳播順序是：先從 document 向下捕獲到目標元素，然後在目標元素觸發，最後從目標元素向上冒泡到 document。
 
-// 驗證函數
-function validateUsername() {
-    let value = username.value.trim();
-    let error = document.getElementById("usernameError");
+{% mermaid graph TD %}
+subgraph EventFlow["DOM 結構"]
+  Document["document"]
+  Body["body"]
+  Container["container"]
+  Outer["outer"]
+  Inner["inner"]
+  
+  Document --> Body
+  Body --> Container
+  Container --> Outer
+  Outer --> Inner
+end
+subgraph Phases["傳播階段"]
+  Phase1["1. 捕獲階段<br/>document → body → container → outer → inner"]
+  Phase2["2. 目標階段<br/>inner (目標元素)"]
+  Phase3["3. 冒泡階段<br/>inner → outer → container → body → document"]
+end
+
+style Phase1 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+style Phase2 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+style Phase3 fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+{% endmermaid %}
+
+#### 事件捕獲（Event Capturing）
+事件捕獲是指事件從 document 開始，向下傳播到目標元素的過程。在這個階段，事件會先觸發最外層的元素，然後逐層向下傳播。
+
+#### 事件冒泡（Event Bubbling）
+事件冒泡是指事件從目標元素開始，向上傳播到 document 的過程。在這個階段，事件會先觸發目標元素，然後逐層向上傳播。
+
+{% mermaid graph TD %}
+    subgraph DOM["DOM 結構"]
+        Document["document"]
+        Document --> Body["body"]
+        Body --> Ul["ul#todoList"]
+        Ul --> Li1["li 項目 1"]
+        Ul --> Li2["li 項目 2"]
+        Ul --> Li3["li 項目 3"]
+    end
     
-    if (value === "") {
-        error.textContent = "使用者名稱不能為空";
-        return false;
-    } else if (value.length < 3) {
-        error.textContent = "使用者名稱至少需要 3 個字元";
-        return false;
-    } else {
-        error.textContent = "";
-        return true;
-    }
-}
-
-function validateEmail() {
-    let value = email.value.trim();
-    let error = document.getElementById("emailError");
-    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    subgraph EventFlow["事件冒泡流程"]
+        Click1["1. 點擊 li 項目 2"]
+        Click1 --> Bubble1["2. 事件冒泡到 ul"]
+        Bubble1 --> Bubble2["3. 事件冒泡到 body"]
+        Bubble2 --> Bubble3["4. 事件冒泡到 document"]
+    end
     
-    if (value === "") {
-        error.textContent = "電子郵件不能為空";
-        return false;
-    } else if (!emailRegex.test(value)) {
-        error.textContent = "請輸入有效的電子郵件格式";
-        return false;
-    } else {
-        error.textContent = "";
-        return true;
-    }
-}
+    style Click1 fill:#ff6b6b,stroke:#d63031,stroke-width:2px
+    style Bubble1 fill:#74b9ff,stroke:#0984e3,stroke-width:2px
+    style Bubble2 fill:#a29bfe,stroke:#6c5ce7,stroke-width:2px
+    style Bubble3 fill:#fd79a8,stroke:#e84393,stroke-width:2px
+{% endmermaid %}
 
-function validateAge() {
-    let value = parseInt(age.value);
-    let error = document.getElementById("ageError");
-    
-    if (isNaN(value)) {
-        error.textContent = "請輸入有效的年齡";
-        return false;
-    } else if (value < 1 || value > 120) {
-        error.textContent = "年齡必須在 1-120 之間";
-        return false;
-    } else {
-        error.textContent = "";
-        return true;
-    }
-}
+#### 觀察事件傳播（捕獲與冒泡）
 
-// 綁定驗證事件
-username.addEventListener("blur", validateUsername);
-email.addEventListener("blur", validateEmail);
-age.addEventListener("blur", validateAge);
+讓我們透過一個實際的範例來觀察完整的事件傳播過程，包括捕獲階段和冒泡階段：
 
-// 表單提交事件
-form.addEventListener("submit", function(event) {
-    event.preventDefault(); // 阻止表單預設提交
-    
-    let isUsernameValid = validateUsername();
-    let isEmailValid = validateEmail();
-    let isAgeValid = validateAge();
-    
-    if (isUsernameValid && isEmailValid && isAgeValid) {
-        alert("表單驗證成功！");
-        console.log("表單資料：", {
-            username: username.value,
-            email: email.value,
-            age: age.value
-        });
-    } else {
-        alert("請修正表單錯誤後再提交");
-    }
-});
+
+{% note info %}
+**addEventListener 的第三個參數：**
+- `addEventListener(event, handler, false)` 或省略：在冒泡階段觸發（預設）
+- `addEventListener(event, handler, true)`：在捕獲階段觸發
+- 這個參數控制事件監聽器在哪個階段執行
+{% endnote %}
+
+```html
+<style>
+  .container {
+    border: 2px solid #007bff;
+    background-color: #e3f2fd;
+  }
+
+  .outer {
+    border: 2px solid #28a745;
+    background-color: #d4edda;
+  }
+
+  .inner {
+    border: 2px solid #dc3545;
+    background-color: #f8d7da;
+  }
+</style>
+
+<h1>事件傳播觀察（捕獲與冒泡）</h1>
+<p>點擊最內層的紅色區域，在瀏覽器控制台觀察完整的事件傳播過程</p>
+<div class="container" id="container">
+  <h3>Container （最外層）</h3>
+  <div class="outer" id="outer">
+    <h3>Outer （中間層）</h3>
+    <div class="inner" id="inner">
+      <h3>Inner （最內層）</h3>
+      <p>點擊這裡觀察事件冒泡</p>
+    </div>
+  </div>
+</div>
+<hr>
+<button id="clearConsole">清除 Console</button>
+
+<script>
+  // 為每個層級綁定點擊事件（冒泡階段）
+  document.getElementById('container').addEventListener('click', function (event) {
+    console.log('🟦 Container 接收到點擊事件（冒泡階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 3 ? '冒泡' : '其他');
+    console.log('---');
+  });
+
+  document.getElementById('outer').addEventListener('click', function (event) {
+    console.log('🟩 Outer 接收到點擊事件（冒泡階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 3 ? '冒泡' : '其他');
+    console.log('---');
+  });
+
+  document.getElementById('inner').addEventListener('click', function (event) {
+    console.log('🟥 Inner 接收到點擊事件（目標階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 2 ? '目標' : '其他');
+    console.log('---');
+  });
+
+  // ※ 第三個參數 true 表示在捕獲階段觸發
+  // ---------------------------------------------------------------------
+
+  // 為每個層級綁定點擊事件（捕獲階段）
+  document.getElementById('container').addEventListener('click', function (event) {
+    console.log('🔵 Container 接收到點擊事件（捕獲階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 1 ? '捕獲' : '其他');
+    console.log('---');
+  }, true); // 第三個參數 true 表示在捕獲階段觸發
+
+  document.getElementById('outer').addEventListener('click', function (event) {
+    console.log('🟢 Outer 接收到點擊事件（捕獲階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 1 ? '捕獲' : '其他');
+    console.log('---');
+  }, true); // 第三個參數 true 表示在捕獲階段觸發
+
+  document.getElementById('inner').addEventListener('click', function (event) {
+    console.log('🔴 Inner 接收到點擊事件（捕獲階段）');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('   事件階段：', event.eventPhase === 1 ? '捕獲' : '其他');
+    console.log('---');
+  }, true); // 第三個參數 true 表示在捕獲階段觸發
+
+  // 清除 Console 按鈕
+  document.getElementById('clearConsole').addEventListener('click', function () {
+    console.clear();
+  });
+</script>
 ```
 
-## 進階概念
+從上述程式碼的執行結果，我們可以歸納出完整的事件傳播機制：
 
+#### 事件傳播的關鍵觀察點：
+
+1. **完整的事件傳播順序**：
+   - **捕獲階段**：Container → Outer → Inner（從外到內）
+   - **目標階段**：Inner（目標元素）
+   - **冒泡階段**：Inner → Outer → Container（從內到外）
+
+2. **event.target**：始終指向實際被點擊的元素（Inner）
+3. **event.currentTarget**：指向當前處理事件的元素（各層級）
+4. **event.eventPhase**：表示事件階段（1=捕獲，2=目標，3=冒泡）
+5. **addEventListener 的第三個參數**：true 表示捕獲階段，false 表示冒泡階段
+
+{% note info %}
+**觀察重點：**
+- 當點擊 Inner 時，完整的事件傳播順序是：
+  - 🔵 Container（捕獲）→ 🟢 Outer（捕獲）→ 🔴 Inner（捕獲）
+  - 🟥 Inner（目標）
+  - 🟩 Outer（冒泡）→ 🟦 Container（冒泡）
+- `event.target` 在所有階段都是 "inner"
+- `event.currentTarget` 會分別是各層級的元素
+- 捕獲階段先於冒泡階段執行
+- 這正是事件委派能夠工作的原理
+{% endnote %}
+
+#### 阻止事件冒泡
+現在讓我們觀察如何阻止事件冒泡。在 outer 的點擊事件中添加 `event.stopPropagation()`：
+
+```html
+<style>
+  .container {
+    border: 2px solid #007bff;
+    background-color: #e3f2fd;
+  }
+
+  .outer {
+    border: 2px solid #28a745;
+    background-color: #d4edda;
+  }
+
+  .inner {
+    border: 2px solid #dc3545;
+    background-color: #f8d7da;
+  }
+</style>
+
+<h1>阻止事件冒泡觀察</h1>
+<p>點擊紅色區域，觀察 Outer 阻止冒泡後的效果</p>
+
+<div class="container" id="container">
+  <h3>Container （最外層）</h3>
+  <div class="outer" id="outer">
+    <h3>Outer （中間層）</h3>
+    <div class="inner" id="inner">
+      <h3>Inner （最內層）</h3>
+      <p>點擊這裡觀察事件冒泡被阻止</p>
+    </div>
+  </div>
+</div>
+<hr>
+<button id="clearConsole">清除 Console</button>
+
+<script>
+  // 為每個層級綁定點擊事件
+  document.getElementById('container').addEventListener('click', function (event) {
+    console.log('🟦 Container 接收到點擊事件');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('---');
+  });
+
+  document.getElementById('outer').addEventListener('click', function (event) {
+    console.log('🟩 Outer 接收到點擊事件');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('🚫 阻止事件冒泡');
+    event.stopPropagation(); // 阻止事件繼續向上冒泡
+    console.log('---');
+  });
+
+  document.getElementById('inner').addEventListener('click', function (event) {
+    console.log('🟥 Inner 接收到點擊事件');
+    console.log('   目標元素：', event.target.id);
+    console.log('   當前元素：', event.currentTarget.id);
+    console.log('---');
+  });
+
+  // 清除 Console 按鈕
+  document.getElementById('clearConsole').addEventListener('click', function () {
+    console.clear();
+  });
+</script>
+```
+
+阻止冒泡的觀察重點：
+
+- **事件傳播順序**：Inner → Outer（在 Outer 被阻止）
+- **Container 不會接收到事件**：因為 Outer 阻止了冒泡
+- **event.stopPropagation() 的作用**：阻止事件繼續向上傳播
+- **實際應用場景**：防止事件影響到父元素或其他層級
+
+{% note warning %}
+**重要提醒：**
+- `event.stopPropagation()` 會阻止事件繼續冒泡
+- 使用時要謹慎，確保不會影響其他功能
+- 在事件委派中要特別注意，可能影響父元素的事件處理
+{% endnote %}
+
+### 事件委派
+事件委派是基於事件冒泡機制的一種優雅解決方案。利用事件冒泡機制，將事件監聽器綁定在父元素上，而不是每個子元素上。當子元素的事件發生時，事件會冒泡到父元素，父元素的事件處理器就能捕獲到這個事件。
+
+```html
+<ul id="todoList">
+  <li>項目 1</li>
+  <li>項目 2</li>
+  <li>項目 3</li>
+</ul>
+
+<script>
+  let todoList = document.getElementById("todoList");
+
+  // 傳統方式：為每個 li 元素綁定事件（不推薦）
+  // let items = document.querySelectorAll('#todoList li');
+  // items.forEach(item => {
+  //   item.addEventListener('click', function() {
+  //     this.style.textDecoration = 'line-through';
+  //   });
+  // });
+
+  // 事件委派方式：只在父元素 ul 上綁定一個事件處理器
+  todoList.addEventListener("click", function (event) {
+    // 檢查事件是否來自 li 元素
+    if (event.target.tagName === "LI") {
+      // 切換刪除線樣式
+      event.target.style.textDecoration =
+        event.target.style.textDecoration === "line-through" ? "none" : "line-through";
+      
+      console.log("點擊了：" + event.target.textContent);
+      console.log("實際觸發元素：" + event.target.tagName);
+      console.log("事件處理元素：" + event.currentTarget.tagName);
+    }
+  });
+</script>
+```
+
+事件委派 vs 傳統方式的對比
+
+| 特性           | 傳統方式               | 事件委派方式           |
+| -------------- | ---------------------- | ---------------------- |
+| 事件監聽器數量 | 每個子元素一個（5 個） | 只在父元素一個（1 個） |
+| 記憶體使用     | 較多                   | 較少                   |
+| 程式碼複雜度   | 簡單                   | 需要檢查事件目標       |
+| 效能           | 較差                   | 較好                   |
+
+{% note info %}
+**事件委派的關鍵概念：**
+- **event.target**：實際觸發事件的元素（如被點擊的 li）
+- **event.currentTarget**：當前處理事件的元素（如綁定監聽器的 ul）
+- **事件冒泡**：事件從子元素向上傳播到父元素的機制
+- **效能優勢**：只需要一個事件監聽器就能處理多個子元素的事件
+{% endnote %}
+
+{% note warning %}
+**注意事項：**
+- 事件委派需要檢查 `event.target` 來確定實際觸發事件的元素
+- 不是所有事件都會冒泡（如 focus、blur 不會冒泡）
+- 使用 `event.stopPropagation()` 會阻止事件冒泡，影響事件委派
+{% endnote %}
+
+## DOM 節點操作
 在掌握了基礎的 DOM 操作後，我們可以進一步學習一些進階概念。這些概念將幫助您更深入地理解 DOM 的運作機制，並能夠處理更複雜的網頁互動需求。
 
-### DOM 節點操作
-
-#### 創建新元素
+### 創建新元素
 ```javascript
 // 創建新的 div 元素
 let newDiv = document.createElement("div");
@@ -1317,7 +1736,7 @@ newDiv.className = "new-element";
 document.body.appendChild(newDiv);
 ```
 
-#### 移除元素
+### 移除元素
 ```javascript
 // 移除指定元素
 let elementToRemove = document.getElementById("elementToRemove");
@@ -1326,7 +1745,7 @@ if (elementToRemove) {
 }
 ```
 
-#### 插入元素
+### 插入元素
 ```javascript
 // 在指定元素前插入新元素
 let newElement = document.createElement("p");
@@ -1335,43 +1754,11 @@ let targetElement = document.getElementById("target");
 targetElement.parentNode.insertBefore(newElement, targetElement);
 ```
 
-### 事件委派
-
-當網頁中有大量相似元素需要相同的事件處理時，為每個元素都綁定事件處理器會造成效能問題。事件委派是一種優雅的解決方案，它利用事件冒泡機制來統一處理多個元素的事件。
-當有多個相似元素需要相同事件處理時，可以使用事件委派：
-
-```html
-<ul id="todoList">
-    <li>項目 1</li>
-    <li>項目 2</li>
-    <li>項目 3</li>
-</ul>
-```
-
-```javascript
-let todoList = document.getElementById("todoList");
-
-// 使用事件委派處理所有 li 元素的點擊
-todoList.addEventListener("click", function(event) {
-    if (event.target.tagName === "LI") {
-        event.target.style.textDecoration = "line-through";
-        console.log("點擊了：" + event.target.textContent);
-    }
-});
-```
-
-{% note info %}
-**事件委派的優點：**
-- 減少事件監聽器數量
-- 動態添加的元素自動具有事件處理
-- 提高效能
-{% endnote %}
-
-## 課堂作業
+# 課堂作業
 
 透過實際的專案練習，我們可以將所學知識整合應用。以下作業將幫助您鞏固學習成果，並培養解決實際問題的能力。建議您獨立完成這些作業，這將是檢驗學習效果的最佳方式。
 
-### 作業一：簡單的待辦事項清單
+## 作業一：簡單的待辦事項清單
 
 建立一個待辦事項清單，具備以下功能：
 1. 可以添加新的待辦項目
@@ -1379,7 +1766,7 @@ todoList.addEventListener("click", function(event) {
 3. 可以刪除已完成的項目
 4. 顯示未完成項目的數量
 
-### 作業二：顏色選擇器
+## 作業二：顏色選擇器
 
 顏色選擇器是一個實用的工具，結合了多種 DOM 操作技巧。這個作業將考驗您對事件處理、樣式操作和用戶介面設計的綜合運用能力。
 
@@ -1397,7 +1784,7 @@ todoList.addEventListener("click", function(event) {
 - 動畫效果
 {% endnote %}
 
-## 總結
+# 總結
 
 經過這篇教學的學習，您已經掌握了 JavaScript BOM 與 DOM 的核心概念和實作技巧。這些知識是現代網頁開發的基礎，將為您後續學習更進階的 JavaScript 概念奠定堅實的基礎。
 
@@ -1416,4 +1803,101 @@ todoList.addEventListener("click", function(event) {
 - [MDN Web Docs - DOM](https://developer.mozilla.org/zh-TW/docs/Web/API/Document_Object_Model)
 - [MDN Web Docs - BOM](https://developer.mozilla.org/zh-TW/docs/Web/API/Window)
 - [JavaScript 事件參考](https://developer.mozilla.org/zh-TW/docs/Web/Events)
+{% endnote %}
+
+## cookie 物件
+`document.cookie` 提供了對瀏覽器 cookie 的存取功能。cookie 是儲存在用戶瀏覽器中的小型文字檔案，常用於儲存用戶偏好設定、會話資訊等。
+
+```javascript
+// 設定 cookie
+document.cookie = "username=John; expires=Thu, 18 Dec 2024 12:00:00 UTC; path=/";
+
+// 讀取所有 cookie
+console.log(document.cookie); // "username=John; theme=dark; language=zh-TW"
+
+// 設定 cookie 的完整語法
+document.cookie = "name=value; expires=date; path=path; domain=domain; secure; samesite=value";
+```
+
+{% note info %}
+**cookie 參數說明：**
+- `name=value`：cookie 的名稱和值
+- `expires=date`：過期時間（GMT 格式）
+- `path=path`：cookie 的作用路徑
+- `domain=domain`：cookie 的作用域名
+- `secure`：僅在 HTTPS 連線時傳送
+- `samesite=value`：防止 CSRF 攻擊（Strict/Lax/None）
+{% endnote %}
+
+**常用 cookie 操作：**
+- `document.cookie = "name=value"` - 設定簡單 cookie
+- `document.cookie = "name=value; expires=date"` - 設定過期時間
+- `document.cookie = "name=value; path=/"` - 設定作用路徑
+- `document.cookie = "name=; expires=Thu, 01 Jan 1970 00:00:00 UTC"` - 刪除 cookie
+
+{% note warning %}
+**cookie 使用注意事項：**
+- 每個 cookie 最大 4KB
+- 每個域名最多 20 個 cookie
+- 需要考慮安全性（XSS、CSRF 攻擊）
+- 現代開發中建議使用 localStorage/sessionStorage
+- 某些瀏覽器可能阻擋第三方 cookie
+{% endnote %}
+
+```javascript demo.js
+// localStorage 範例
+// ----------------------------------------------------------------
+// 儲存用戶偏好設定
+localStorage.setItem('theme', 'dark');
+localStorage.setItem('language', 'zh-TW');
+
+// 讀取儲存的資料
+console.log('主題：', localStorage.getItem('theme')); // 主題：dark
+console.log('語言：', localStorage.getItem('language')); // 語言：zh-TW
+
+// 檢查儲存空間是否可用，或者儲存情況都可能拋出異常
+function checkStorageSupport() {
+  try {
+      localStorage.setItem('test', 'test');
+      localStorage.removeItem('test');
+  
+      // 以下情況可能會拋出異常：
+      // 1. 儲存空間已滿 （超過 5-10MB 限制）
+      // 2. 瀏覽器隱私模式下無法使用 localStorage
+      // 3. 用戶禁用了 Web Storage 功能
+      // 4. 存取權限被拒絕
+      // 5. 儲存的值不是合法的字串格式
+      return true; // 支援 localStorage
+  } catch (e) {
+      console.log('localStorage 不可用：', e.message);
+      return false; // 不支援 localStorage
+  }
+}
+
+// 清除特定資料
+localStorage.removeItem('theme');
+
+// sessionStorage 範例
+// ----------------------------------------------------------------
+// 儲存表單狀態
+sessionStorage.setItem('formData', JSON.stringify({
+  name: '張三',
+  email: 'zhang@example.com',
+  message: '這是一個測試訊息'
+}));
+
+// 讀取表單資料
+const formData = JSON.parse(sessionStorage.getItem('formData'));
+console.log('表單資料：', formData);
+
+// 清除特定資料
+sessionStorage.clear(); // 清除所有 sessionStorage 資料
+```
+
+{% note info %}
+**小技巧：**
+- localStorage 資料會永久保存，除非手動刪除
+- sessionStorage 資料在關閉分頁後會自動清除
+- 儲存容量限制約為 5-10MB
+- 只能儲存字串，物件需要先轉換為 JSON
 {% endnote %}
