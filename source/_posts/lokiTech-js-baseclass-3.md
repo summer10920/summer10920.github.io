@@ -722,6 +722,8 @@ container.innerHTML += "<p>新添加的段落</p>";
 {% endnote %}
 
 ### 屬性操作
+可以直接透過 JavaScript 來操作 HTML 元素的屬性。這包括讀取、修改和刪除屬性。以下是一些常見的屬性操作方法：
+
 ```javascript
 // demo > HTML 元素屬性
 // --------------------------------------------------
@@ -742,84 +744,14 @@ element.removeAttribute("data-custom");
 ### 樣式操作
 DOM 提供了多種方式來設定元素的 CSS 樣式，每種方法都有其適用場景：
 
-| 方法            | 特點                       | 適用場景             |
-| --------------- | -------------------------- | -------------------- |
-| 逐個設定        | 精確控制，不會影響其他樣式 | 單一屬性修改         |
-| 直接設定 style  | 完全覆蓋所有樣式           | 需要重新設定所有樣式 |
-| Object.assign() | 批量設定，程式碼簡潔       | 需要設定多個相關樣式 |
-| cssText         | 一次性設定，效能較好       | 大量樣式設定         |
-| setProperty()   | 支援 CSS 變數和複雜值      | CSS 變數和特殊屬性   |
-| setAttribute()  | 使用字串設定，靈活性高     | 動態組合樣式         |
-
-#### 逐個設定樣式
-```javascript
-// demo > 逐個設定樣式
-// --------------------------------------------------
-let element = document.getElementById("title");
-
-// 直接設定樣式
-element.style.color = "red";
-element.style.backgroundColor = "#f0f0f0";
-element.style.fontSize = "24px";
-
-// 讀取樣式
-console.log(element.style.color); // "red"
-```
-
-#### 批量設定樣式
-```javascript
-// demo > 批量設定樣式
-// --------------------------------------------------
-let element = document.getElementById("title");
-
-// 方法一：直接設定 style 屬性（會覆蓋所有現有樣式）
-element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padding: 10px;";
-
-// 方法二：使用 Object.assign() 批量設定
-Object.assign(element.style, {
-    color: "blue",
-    backgroundColor: "#e8f4fd",
-    fontSize: "28px",
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: "10px",
-    border: "2px solid #007bff",
-    borderRadius: "5px"
-});
-
-// 方法三：使用 cssText 設定多個樣式
-element.style.cssText = `
-    color: green;
-    background-color: #f8f9fa;
-    font-size: 32px;
-    font-weight: bold;
-    text-align: center;
-    padding: 15px;
-    border: 3px solid #28a745;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-`;
-```
-
-#### 進階樣式操作
-```javascript
-// demo > 進階樣式操作
-// --------------------------------------------------
-let element = document.getElementById("title");
-
-// 使用 setProperty() 設定 CSS 變數
-element.style.setProperty("margin", "1px 2px");
-element.style.setProperty('color', 'red', 'important');
-element.style.setProperty('--custom-color', '#ff6b6b');
-element.style.setProperty('--custom-size', '20px');
-
-// 使用 setAttribute 動態設定樣式
-let theme = "dark";
-let styles = theme === "dark" 
-    ? "color: white; background-color: #333;" 
-    : "color: black; background-color: #fff;";
-element.setAttribute("style", styles);
-```
+| 方法              | 特點                             | 適用場景             |
+| ----------------- | -------------------------------- | -------------------- |
+| `element.style.*` | 精確控制 style，不會影響其他樣式 | 單一屬性修改         |
+| `element.style`   | 完全覆蓋 style 所有樣式          | 需要重新設定所有樣式 |
+| Object.assign()   | 批量設定，程式碼簡潔             | 需要設定多個相關樣式 |
+| cssText           | 一次性設定，效能較好             | 大量樣式設定         |
+| setProperty()     | 支援 CSS 變數和複雜值            | CSS 變數和特殊屬性   |
+| setAttribute()    | 使用字串設定，靈活性高           | 動態組合樣式         |
 
 {% note warning %}
 **重要提醒：**
@@ -838,39 +770,79 @@ element.setAttribute("style", styles);
 - 完全重新設定樣式時使用直接賦值或 `setAttribute()`
 {% endnote %}
 
-#### 使用 setAttribute 設定 style
-除了直接操作 `style` 物件，也可以使用 `setAttribute` 方法來設定樣式：
-
-```javascript
-// demo > 使用 setAttribute 設定 style
-// --------------------------------------------------
-let element = document.getElementById("title");
-
-// 方法一：直接設定 style 屬性
-element.setAttribute("style", "color: red; font-size: 24px; background-color: #f0f0f0;");
-
-// 方法二：使用模板字串
-element.setAttribute("style", `
-    color: blue;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    border: 2px solid #007bff;
-    border-radius: 5px;
-`);
-
-// 方法三：動態組合樣式
-let color = "green";
-let fontSize = "20px";
-element.setAttribute("style", `color: ${color}; font-size: ${fontSize};`);
-```
-
 {% note info %}
 **setAttribute vs style 物件：**
 - `setAttribute("style", "css 字串")` - 完全覆蓋所有樣式
 - `element.style.property = value` - 精確控制單一屬性
 - 選擇哪種方法取決於具體需求
+{% endnote %}
+
+
+以下是表格中提到的所有方法的完整範例：
+
+```javascript
+// demo > 完整樣式操作方法對照
+// --------------------------------------------------
+let element = document.getElementById("title");
+
+// 1. element.style.* - 精確控制單一屬性
+element.style.color = "red";
+element.style.fontSize = "24px";
+element.style.backgroundColor = "#f0f0f0";
+
+console.log(element.style.color); // "red"
+
+// 2. element.style - 直接設定 style 屬性（會覆蓋所有現有樣式）
+element.style = "color: purple; background-color: #f0f0f0; font-size: 24px; padding: 10px;";
+
+// 3. Object.assign() - 批量設定，程式碼簡潔
+Object.assign(element.style, {
+    color: "blue",
+    backgroundColor: "#e8f4fd",
+    fontSize: "28px",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: "10px",
+    border: "2px solid #007bff",
+    borderRadius: "5px"
+});
+
+// 4. cssText - 使用 cssText 一次性設定，效能較好
+element.style.cssText = `
+    color: green;
+    background-color: #f8f9fa;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    padding: 15px;
+    border: 3px solid #28a745;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+`;
+
+// 5. setProperty() - 支援 CSS 原生變數和複雜值
+element.style.setProperty("margin", "1px 2px");
+element.style.setProperty('color', 'red', 'important');
+element.style.setProperty('--custom-color', '#ff6b6b');
+element.style.setProperty('--custom-size', '20px');
+element.style.setProperty('--custom-border', '2px solid #007bff');
+
+// 6. setAttribute() - HTML 屬性控制方法，靈活性高
+let theme = "dark";
+let styles = theme === "dark" 
+    ? "color: white; background-color: #333;" 
+    : "color: black; background-color: #fff;";
+element.setAttribute("style", styles);
+```
+
+{% note info %}
+**各方法特點總結：**
+- **element.style.*** - 最精確，適合單一屬性修改
+- **element.style** - 完全覆蓋，適合重新設定所有樣式
+- **Object.assign()** - 程式碼簡潔，適合批量設定
+- **cssText** - 效能最佳，適合大量樣式設定
+- **setProperty()** - 功能最強，支援 CSS 原生變數和 important
+- **setAttribute()** - 靈活性最高，適合動態組合樣式
 {% endnote %}
 
 ## 事件處理
@@ -1094,8 +1066,8 @@ function handleKeyDown(event) {
 ```html
 <button id="myButton">點擊我</button>
 <input type="text" id="myInput">
-
-<script>
+    
+    <script>
 let button = document.getElementById("myButton");
 let input = document.getElementById("myInput");
 
@@ -1122,7 +1094,7 @@ input.onkeydown = function(event) {
         console.log("已阻止 Enter 鍵的預設行為");
     }
 };
-</script>
+    </script>
 ```
 
 {% note info %}
@@ -1245,7 +1217,7 @@ document.addEventListener('keydown', function (event) {
 
 ##### 滑鼠拖拽功能
 ```html
-<style>
+    <style>
   #draggable {
     position: absolute;
     left: 100px;
@@ -1314,16 +1286,16 @@ document.addEventListener('keydown', function (event) {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-</style>
+        }
+    </style>
 
-<form id="myForm">
+    <form id="myForm">
   <fieldset>
     <legend>Enter your email</legend>
-    <div class="form-group">
+        <div class="form-group">
       <input type="email" id="email" placeholder="Enter your email">
       <div id="error-message" style="color: red; font-size: 14px; margin-top: 5px; display: none;"></div>
-    </div>
+        </div>
     <button type="submit">Submit</button>
   </fieldset>
 </form>
@@ -1369,7 +1341,7 @@ document.addEventListener('keydown', function (event) {
 
     console.log('表單驗證通過，準備提交');
   });
-</script>
+    </script>
 ```
 
 {% note info %}
@@ -1408,7 +1380,7 @@ subgraph EventFlow["DOM 結構"]
 end
 subgraph Phases["傳播階段"]
   Phase1["1. 捕獲階段<br/>document → body → container → outer → inner"]
-  Phase2["2. 目標階段<br/>inner (目標元素)"]
+  Phase2["2. 目標階段<br/>inner （目標元素）"]
   Phase3["3. 冒泡階段<br/>inner → outer → container → body → document"]
 end
 
@@ -1449,7 +1421,6 @@ style Phase3 fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
 #### 觀察事件傳播（捕獲與冒泡）
 
 讓我們透過一個實際的範例來觀察完整的事件傳播過程，包括捕獲階段和冒泡階段：
-
 
 {% note info %}
 **addEventListener 的第三個參數：**
