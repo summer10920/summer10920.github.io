@@ -11,7 +11,7 @@ date: 2024-08-26 23:33:50
 # hidden: true
 ---
 
-![](/assets/images/2024-08-28-00-51-14.png)
+![](/assets/images/banner/vs-code.png)
 
 因工作上場地不同，需要有多台電腦之間使用 VSCode 開發工具並進行遠端分支 Git 操作。之前在這篇 {% post_link article-nodejs %} 曾經簡單提到如何規劃一個 USB，但因為時間過久以及有些做法已經更新，所以這次整理新做法並獨立一篇記錄下來。如果有需要可以參考使用。
 

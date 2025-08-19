@@ -9,7 +9,7 @@ tag:
 date: 2020-05-11 23:50:51
 ---
 
-![](assets/images/96NYgou.png)
+![](assets/images/banner/php.png)
 
 本篇開始透過介紹程式的基礎邏輯去學會相關 PHP 語法指令，請開始在 Web 目錄下新增檔案 **2_ifelse.php**，為了簡化程式碼結構將不再建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 <!-- more -->

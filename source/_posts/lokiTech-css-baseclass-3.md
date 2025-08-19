@@ -6,14 +6,14 @@ categories:
 tag:
   - RWD 響應式網頁設計（假日班）
   - PHP 資料庫網頁設計（職前班）
-  - CSS 盒子模型
-  - CSS 定位
-date: 2020-03-11 16:05:00
+  - CSS3
+  - 前端入門
+date: 2025-07-04 16:05:00
 ---
 
-![](assets/images/lElmG8a.png)
+![](assets/images/banner/css.png)
 
-在前面的課程中，我們已經了解到很多 CSS 的控制效果都與 block 或 inline 有關。這篇文章將深入介紹盒子模型 (Box Model) 的核心概念，以及現代 CSS 定位技術。掌握這些知識後，你將能夠精確控制網頁版面配置，讓切版技能大幅提升。
+我們已經了解到很多 CSS 的控制效果都與 block 或 inline 有關。這篇文章將深入介紹盒子模型 (Box Model) 的核心概念，以及現代 CSS 定位技術。掌握這些知識後，你將能夠精確控制網頁版面配置，讓切版技能大幅提升。
 
 <!-- more -->
 

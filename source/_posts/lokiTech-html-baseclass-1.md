@@ -6,10 +6,12 @@ categories:
 tag:
   - RWD 響應式網頁設計（假日班）
   - PHP 資料庫網頁設計（職前班）
-date: 2020-03-05 18:45:42
+  - HTML5
+  - 前端入門
+date: 2025-07-01 18:45:42
 ---
 
-![](assets/images/arN20ZR.png)
+![](assets/images/banner/html5.png)
 
 這是一份專為 HTML 初學者設計的基礎教材，涵蓋從零開始的 HTML 學習路徑。如果你已經具備基本的 HTML 概念與標籤使用經驗，建議可以直接跳過本篇內容。
 

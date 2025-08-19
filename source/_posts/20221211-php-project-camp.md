@@ -8,7 +8,7 @@ tag:
 date: 2022-12-11 21:38:38
 ---
 
-![](assets/images/96NYgou.png)
+![](assets/images/banner/php.png)
 
 本篇將利用 css 與 javascript 之前端課程專案網站作為對應的網頁資料系統，並出分為後台採用混和型開發與前台 api 分離型開發。在此，試著將網站所需資料透過 php 資料處理輸出至 html 網頁。
 

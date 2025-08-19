@@ -6,13 +6,12 @@ categories:
 tag:
   - RWD 響應式網頁設計（假日班）
   - PHP 資料庫網頁設計（職前班）
-  - CSS 布局
-  - FlexBox
-  - CSS Grid
-date: 2020-03-15 14:23:57
+  - CSS3
+  - 前端入門
+date: 2025-07-05 14:23:57
 ---
 
-![](assets/images/lElmG8a.png)
+![](assets/images/banner/css.png)
 
 本篇將深入探討現代 CSS 布局技術，從傳統的 Float 開始，重點介紹目前主流的 FlexBox 和 CSS Grid 技術。您將學會如何選擇適合的布局方法，掌握一維和二維布局的核心概念，並能夠設計出現代化的響應式網頁布局。
 

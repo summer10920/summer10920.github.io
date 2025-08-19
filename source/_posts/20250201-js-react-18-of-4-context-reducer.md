@@ -8,7 +8,7 @@ tag:
 date: 2025-02-02 13:09:14
 ---
 
-![](assets/images/iWnyS9n.png)
+![](assets/images/banner/react.png)
 
 React 依賴 Status 去管理多層元件下的渲染時機，以及利用 props 由上層去傳遞下層做資料取得。隨著元件複雜化，有些事情變得很繁瑣，因此我們需要額外了解 Context 與 Reducer 的應用。
 

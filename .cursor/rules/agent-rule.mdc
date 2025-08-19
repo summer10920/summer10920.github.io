@@ -1,0 +1,28 @@
+Rule Name: agent-terminal-policy
+Description: 禁止自動執行終端與建置相關指令（Hexo / NPM / Git）
+---
+description:
+globs:
+alwaysApply: true
+---
+# Agent Terminal / Build Policy
+
+## 原則
+- 禁止自動呼叫 run_terminal_cmd 類工具
+- 不要自動執行任何終端指令（npm、npx、hexo、git 等）。
+- 如需執行指令：只提供「建議指令」文字，不要實際執行；等待我明確同意後再跑。
+- 不要在背景執行長時間任務（no background jobs）。
+- 完成編輯後，不要自動觸發建置/測試流程，除非我主動要求。
+
+## 禁止直接執行（舉例）
+- npx hexo clean / generate / server / deploy
+- npm run build / restart / deploy
+- git push / git tag / 任何會改動遠端狀態的 git 指令
+
+## Hexo 專項
+- 永遠不要自動執行 hexo 相關命令；只提供可複製的命令建議。
+- 若我主動要求，僅回覆建議順序：
+  1) npx hexo clean
+  2) npx hexo generate
+  3) npx hexo server
+  4) npx hexo deploy

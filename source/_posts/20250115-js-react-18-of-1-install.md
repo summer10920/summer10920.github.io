@@ -7,7 +7,7 @@ tag:
   - JavaScript 程式設計（假日班）
 date: 2025-01-15 13:09:14
 ---
-![](assets/images/iWnyS9n.png)
+![](assets/images/banner/react.png)
 React 是由 Facebook (Meta) 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用組件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Component 整個零件內。
 
 <!-- more -->

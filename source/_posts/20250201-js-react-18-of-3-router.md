@@ -8,7 +8,7 @@ tag:
 date: 2025-02-01 13:09:14
 ---
 
-![](/assets/images/2025-02-01-16-27-10.png)
+![](/assets/images/banner/react-router.png)
 
 隨著 React 的了解越多，我們需要大量練習於不同頁面。為了更好的統一實作於同一份專案上，我們需要額外使用 React 生態下的另一個特別套件 React Router。這是一個能夠很好的動態出不同路由有不同的 React 檔案，但本體網頁上還是同一份 SPA 下的渲染差異輸出。
 

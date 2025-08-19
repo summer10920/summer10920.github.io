@@ -7,7 +7,7 @@ tag:
   - JavaScript 程式設計（假日班）
 date: 2025-01-17 13:09:14
 ---
-![](assets/images/iWnyS9n.png)
+![](assets/images/banner/react.png)
 
 本篇一開始將利用 Vite 所產生的預設專案內容環境進行理解開發部屬流程。同時一邊詳細地基本介紹 React 相關基礎知識撰寫技巧。在這裡可以學習所需要的 React。本篇使用的版本為最新的 React 18，部分 API 與用途稍有不同且新穎。
 

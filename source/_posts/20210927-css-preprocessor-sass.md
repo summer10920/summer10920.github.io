@@ -8,7 +8,7 @@ tag:
   - CSS
 date: 2021-09-27 18:06:58
 ---
-![](assets/images/KgMI01E.png)
+![](assets/images/banner/scss.png)
 本篇介紹 Sass 這套預處理器，他能將大型專案上編寫 CSS 不易維護的問題進行改善。使用 Sass 的 Script 語言來進行 CSS 開發，再透過編譯 complier 後轉為瀏覽器可閱讀的 CSS。
 
 <!-- more -->

@@ -8,7 +8,7 @@ tag:
 date: 2022-11-15 23:03:07
 ---
 
-![](assets/images/D8v3RVP.png)
+![](assets/images/banner/js.png)
 本篇將整合過去基本課程 JavaScript 相關知識進行經驗整合，並接續上期課程 RWD 響應式網頁設計（假日班）期末實作。我們將開發一些商務動態元件模組，你將會接觸到訂房功能模組設計，動態載入效果以及一些小功能。
 
 <!-- more -->

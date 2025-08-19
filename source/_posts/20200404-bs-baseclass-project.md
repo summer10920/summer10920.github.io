@@ -8,6 +8,7 @@ tag:
   - PHP 資料庫網頁設計（職前班）
 date: 2020-04-04 15:11:36
 ---
+![](assets/images/banner/bootstrap.png)
 
 本篇將整合過去基本課程 HTML, CSS, Bootstrap, JS 相關知識進行經驗整合，動手設計簡單一頁式且具備 RWD 之網站設計。由於考量部分學員尚未接觸 JS 課程進度與基礎認知，將集中最後小節於完成後補充。
 

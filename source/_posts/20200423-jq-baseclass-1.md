@@ -9,7 +9,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-04-23 02:16:09
 ---
-![](assets/images/NxJTq7q.png)
+![](assets/images/banner/jquery.png)
 
 JQuery 主要是主打 write less,do more 為精神，也就是幫助你減少 JavaScript 的撰寫程式，更容易做更多的處理。
 <!-- more -->

@@ -8,7 +8,7 @@ tag:
   - 前端網頁開發技術（職前班）
 date: 2020-05-13 19:10:42
 ---
-![](assets/images/96NYgou.png)
+![](assets/images/banner/php.png)
 
 PHP 與 MySQL 的連線方式，傳統方式為透過 mysql_content() 進行連線請求（經年代久用因此資源很多，請自行透過書籍或網路來學習）。本篇採用較新熱門的 PDO 連線方式進行教學說明。請開始在 Web 目錄下新增檔案 **1_pdo.php**，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 <!-- more -->

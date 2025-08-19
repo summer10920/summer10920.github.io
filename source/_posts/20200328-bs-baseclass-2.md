@@ -8,6 +8,7 @@ tag:
   - PHP 資料庫網頁設計（職前班）
 date: 2020-03-28 12:45:49
 ---
+![](assets/images/banner/bootstrap.png)
 
 本章節分為兩節介紹分別是 Content 內容與 Utilities 通用。這些都比較偏向基礎或常用的 class 公式使用度偏高。完整學習這些後，靜態設計 Bootstrap 就算學的七八成了（可以出門騙吃騙吃）。
 

@@ -7,9 +7,11 @@ tag:
   - JavaScript 程式設計（假日班）
   - PHP 資料庫網頁設計（職前班）
   - 前端網頁開發技術（職前班）
-date: 2020-04-14 17:27:33
+  - JavaScript
+  - 前端入門
+date: 2025-08-02 17:27:33
 ---
-![](assets/images/D8v3RVP.png)
+![](assets/images/banner/js.png)
 
 JavaScript 是現代網頁開發不可或缺的程式語言，它讓原本靜態的 HTML 網頁能夠擁有動態互動功能。本教學將從零開始，循序漸進地介紹 JavaScript 的基礎觀念。
 

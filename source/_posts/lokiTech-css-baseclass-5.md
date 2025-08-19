@@ -6,10 +6,12 @@ categories:
 tag:
   - RWD 響應式網頁設計（假日班）
   - PHP 資料庫網頁設計（職前班）
-date: 2020-03-17 18:31:49
+  - CSS3
+  - 前端入門
+date: 2025-07-06 18:31:49
 ---
 
-![](assets/images/lElmG8a.png)
+![](assets/images/banner/css.png)
 
 CSS 的最後一篇基本課程，收錄一些偏於動態或視覺效果的 CSS 屬性，也提及到 CSS 動畫與轉場的動態播放，以及跨平台十分重要的 Media Query 媒體查詢。這些都算是能讓 CSS 更生動豐富且靈活，使網頁體驗上更有感受。
 

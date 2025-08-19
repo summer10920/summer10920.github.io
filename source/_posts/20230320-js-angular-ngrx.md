@@ -10,7 +10,7 @@ date: 2023-03-20 16:08:50
 # hidden: true
 ---
 
-![](assets/images/q0DRxPm.png)
+![](assets/images/banner/ngrx.png)
 
 NgRx 是一個強大，且功能完整的 Angular 狀態管理套件，在我們的應用程式越來越複雜的時候，它很適合用來管理一些資料狀態，並透過適度的抽象化以及加入一定的規範，降低整體程式的耦合性，打造出更好維護及管理的程式碼。
 

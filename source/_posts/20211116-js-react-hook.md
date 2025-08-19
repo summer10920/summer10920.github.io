@@ -9,7 +9,7 @@ tag:
 date: 2021-11-16 11:59:04
 ---
 
-![](assets/images/iWnyS9n.png)
+![](assets/images/banner/react.png)
 Hook 是 React 自版本 16.8 開始推廣出來的新功能，主要是用於不需要 class 就能輕鬆使用 state 的方式。出現的動機主要是避免開發人員對於 class 的 this 定義容易混淆，且將使用邏輯更容易直接上手。
 
 <!-- more -->
