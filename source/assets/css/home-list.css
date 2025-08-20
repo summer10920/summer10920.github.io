@@ -1,0 +1,76 @@
+.main-inner.index.posts-expand {
+  .post-block {
+    article.post-content {
+      background: white;
+      margin-bottom: 30px;
+      padding: 30px;
+      position: relative;
+      z-index: 0;
+
+      .post-header {
+        margin-bottom: 10px;
+
+        .post-title a {
+          &:hover {
+            color: var(--link-color-hover);
+          }
+        }
+
+        .post-meta-container a {
+          color: var(--link-color-hover);
+        }
+      }
+
+      .post-body {
+        a.fancybox {
+          position: absolute;
+          bottom: 0;
+          height: 100%;
+          width: 50%;
+          pointer-events: none;
+          border: 0;
+          animation-fill-mode: none;
+          filter: opacity(0.5);
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            margin: 0;
+          }
+        }
+
+        p {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+      .post-footer {
+        display: none;
+      }
+    }
+
+    &:nth-child(odd) > .post-content a.fancybox {
+      right: 0;
+      img {
+        mask-image: linear-gradient(to right, #0000 0%, #0008);
+      }
+    }
+
+    &:nth-child(even) > .post-content a.fancybox {
+      left: 0;
+      img {
+        mask-image: linear-gradient(to left, #0000 0%, #0008);
+      }
+    }
+  }
+
+  .pagination {
+    .current {
+      background-color: var(--main-color);
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.main-inner.archive.posts-collapse {
+  .post-content {
+    &::before {
+      background-color: var(--main-color);
+      margin-left: -1px;
+      width: 2px;
+      opacity: 0.5;
+    }
+
+    .collection-title::before,
+    .posts-collapse .post-content .collection-year::before,
+    .post-header::before {
+      background-color: var(--main-color);
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.posts-expand header.post-header {
+  .post-meta-item-icon {
+    margin: 0 3px;
+  }
+
+  a.post-edit-link {
+    font-size: calc((1.5em / 2));
+    opacity: 0.25;
+    margin-top: calc((1.5em / 4));
+
+    &:hover {
+      color: var(--main-color);
+      opacity: 1;
+    }
+  }
+}

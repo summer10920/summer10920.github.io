@@ -31,7 +31,6 @@ custom_file_path:
   #mixin: source/_data/mixins.styl
   style: source/_data/styles.styl
 
-
 # ---------------------------------------------------------------
 # Scheme Settings
 # ---------------------------------------------------------------
@@ -44,7 +43,6 @@ scheme: Muse
 
 # Dark Mode
 darkmode: false
-
 
 # ---------------------------------------------------------------
 # Site Information Settings
@@ -86,7 +84,6 @@ open_graph:
     #fb_admins: <fb:admin_id>
     #fb_app_id: <fb:app_id>
 
-
 # ---------------------------------------------------------------
 # Menu Settings
 # ---------------------------------------------------------------
@@ -109,7 +106,6 @@ menu:
 menu_settings:
   icons: true
   badges: true
-
 
 # ---------------------------------------------------------------
 # Sidebar Settings
@@ -198,7 +194,6 @@ toc:
   # Maximum heading depth of generated toc.
   max_depth: 6
 
-
 # ---------------------------------------------------------------
 # Footer Settings
 # See: https://theme-next.js.org/docs/theme-settings/footer
@@ -237,7 +232,6 @@ footer:
     gongan_num:
     # The icon for gongan beian. Login and See: https://beian.mps.gov.cn/web/business/businessHome/website
     gongan_icon_url:
-
 
 # ---------------------------------------------------------------
 # Post Settings
@@ -303,11 +297,9 @@ post_edit:
   # url: https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/ # Link for view source
   url: https://github.com/summer10920/summer10920.github.io/edit/master/source/ # Link for fork & edit
 
-
 # Show previous post and next post in post footer if exists
 # Available values: left | right | false
 post_navigation: left
-
 
 # ---------------------------------------------------------------
 # Custom Page Settings
@@ -334,7 +326,6 @@ calendar:
   showDeleted: false
   singleEvents: true
   maxResults: 250
-
 
 # ---------------------------------------------------------------
 # Misc Theme Settings
@@ -417,7 +408,6 @@ github_banner:
   enable: true
   permalink: https://github.com/summer10920
 
-
 # ---------------------------------------------------------------
 # Font Settings
 # ---------------------------------------------------------------
@@ -469,7 +459,6 @@ font:
     external: true
     family:
 
-
 # ---------------------------------------------------------------
 # SEO Settings
 # See: https://theme-next.js.org/docs/theme-settings/seo
@@ -499,7 +488,6 @@ yandex_site_verification:
 # Baidu Webmaster tools verification.
 # See: https://ziyuan.baidu.com/site
 baidu_site_verification:
-
 
 # ---------------------------------------------------------------
 # Tags Settings
@@ -577,7 +565,6 @@ math:
     # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex
     copy_tex: false
 
-
 # ---------------------------------------------------------------
 # External Libraries
 # See: https://theme-next.js.org/docs/third-party-services/external-libraries
@@ -623,7 +610,6 @@ quicklink:
   # Default (true) will attempt to use the fetch() API if supported (rather than link[rel=prefetch]).
   priority: true
 
-
 # ---------------------------------------------------------------
 # Animation Settings
 # ---------------------------------------------------------------
@@ -662,7 +648,6 @@ canvas_ribbon:
   size: 300 # The width of the ribbon
   alpha: 0.6 # The transparency of the ribbon
   zIndex: -1 # The display level of the ribbon
-
 
 # ---------------------------------------------------------------
 # Comments Settings
@@ -751,7 +736,6 @@ utterances:
 # For more information: https://isso-comments.de
 isso: # <data_isso>
 
-
 # ---------------------------------------------------------------
 # Post Widgets & Content Sharing Services
 # See: https://theme-next.js.org/docs/third-party-services/post-widgets
@@ -763,7 +747,6 @@ addtoany:
   buttons:
     - facebook
     - twitter
-
 
 # ---------------------------------------------------------------
 # Statistics and Analytics
@@ -851,7 +834,6 @@ busuanzi_count:
   post_views: true
   post_views_icon: far fa-eye
 
-
 # ---------------------------------------------------------------
 # Search Services
 # See: https://theme-next.js.org/docs/third-party-services/search-services
@@ -874,7 +856,6 @@ local_search:
   unescape: false
   # Preload the search data when the page loads.
   preload: false
-
 
 # ---------------------------------------------------------------
 # Chat Services
@@ -902,7 +883,6 @@ chatra:
 tidio:
   enable: false
   key: # Public Key, get it from dashboard. See: https://www.tidio.com/panel/settings/developer
-
 
 # ---------------------------------------------------------------
 # CDN Settings

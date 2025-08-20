@@ -62,11 +62,11 @@ const
   lokiKeyword = WordCloud(document.getElementById('lokiBanner'), {
     list: list,
     minFontSize: 10,
-    backgroundColor: '#666',
+    backgroundColor: '#777',
     color: function (word, weight) {
       const rand = Math.floor(Math.random() * 5);
-      return weight > 10 ? ['#E9106122', '#E9106133', '#E9106144', '#E9106155', '#E9106166'][rand] :
-        ['#0006', '#1116', '#2226', '#3336', '#4446'][rand];
+      return weight > 10 ? ['#E9106111', '#E9106122', '#E9106133', '#E9106144', '#E9106155'][rand] :
+        ['#0005', '#1115', '#2225', '#3335', '#4445', '#5555', '#6665'][rand];
     },
     rotateRatio: 0.5,
     rotationSteps: 2,

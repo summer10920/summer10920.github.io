@@ -1,0 +1,16 @@
+.main-inner.page.posts-expand {
+  .category-all > .category-list {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .category-list-item {
+      margin: 10px;
+      flex: 1 0 auto;
+
+      > a {
+        color: var(--main-color);
+        font-weight: bold;
+      }
+    }
+  }
+}
