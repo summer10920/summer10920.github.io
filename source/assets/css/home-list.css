@@ -7,20 +7,6 @@
       position: relative;
       z-index: 0;
 
-      .post-header {
-        margin-bottom: 10px;
-
-        .post-title a {
-          &:hover {
-            color: var(--link-color-hover);
-          }
-        }
-
-        .post-meta-container a {
-          color: var(--link-color-hover);
-        }
-      }
-
       .post-body {
         a.fancybox {
           position: absolute;

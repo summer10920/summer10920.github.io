@@ -13,13 +13,14 @@
 
 main {
   background: var(--main-bg-color);
-  min-height: calc(100vh - 66px - 3px);
+  min-height: calc(100vh - 42px - 3px);
 }
 
 a {
   color: var(--link-color);
   &:hover {
     color: var(--link-color-hover);
+    border-color: var(--link-color-hover);
   }
 }
 

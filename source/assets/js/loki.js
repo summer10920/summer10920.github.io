@@ -76,3 +76,51 @@ const
     shrinkToFit: true,
     wait: 50
   });
+
+
+// 格式化 busuanzi 數值，加上千分位逗號分隔符
+// --------------------------------------------------------------------------
+function formatBusuanziNumber() {
+  const uvElement = document.getElementById('busuanzi_value_site_uv');
+  const pvElement = document.getElementById('busuanzi_value_site_pv');
+
+  if (uvElement) {
+    const originalValue = uvElement.textContent;
+    if (originalValue && !isNaN(originalValue)) {
+      const formattedValue = parseInt(originalValue).toLocaleString();
+      uvElement.textContent = formattedValue;
+    }
+  }
+
+  if (pvElement) {
+    const originalValue = pvElement.textContent;
+    if (originalValue && !isNaN(originalValue)) {
+      const formattedValue = parseInt(originalValue).toLocaleString();
+      pvElement.textContent = formattedValue;
+    }
+  }
+}
+
+// 等待 DOM 載入完成後執行格式化
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(formatBusuanziNumber, 1000);
+
+  const observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      if (mutation.type === 'childList') {
+        formatBusuanziNumber();
+      }
+    });
+  });
+
+  const uvContainer = document.getElementById('busuanzi_container_site_uv');
+  const pvContainer = document.getElementById('busuanzi_container_site_pv');
+
+  if (uvContainer) {
+    observer.observe(uvContainer, { childList: true, subtree: true });
+  }
+
+  if (pvContainer) {
+    observer.observe(pvContainer, { childList: true, subtree: true });
+  }
+});

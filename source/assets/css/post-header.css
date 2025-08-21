@@ -1,4 +1,22 @@
 .posts-expand header.post-header {
+  margin-bottom: 10px;
+
+  .post-title a {
+    &:hover {
+      color: var(--link-color-hover);
+    }
+  }
+
+  .post-meta-container {
+    font-size: 1rem;
+    a {
+      color: var(--link-color-hover);
+      &:hover {
+        border-color: var(--link-color-hover);
+      }
+    }
+  }
+
   .post-meta-item-icon {
     margin: 0 3px;
   }
