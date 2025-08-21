@@ -50,9 +50,8 @@
       color: var(--main-color);
       background: #ddd;
       margin: 0 0.25rem;
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 1px 5px;
+      font-size: 1em;
+      padding: 4px 8px;
     }
 
     .headerlink {
@@ -108,6 +107,13 @@
         background: unset;
       }
 
+      .code-lang {
+        opacity: 0.5;
+        right: 2rem;
+        top: 0.5rem;
+        font-size: 1rem;
+      }
+
       .table-container {
         background: var(--highlight-background);
       }
@@ -156,10 +162,8 @@
 
       > ul {
         padding-left: 1.2rem;
-        li {
-          > *:last-child {
-            margin-bottom: 1rem;
-          }
+        li > *:last-child {
+          margin-bottom: 1rem;
         }
         p {
           margin: 0;

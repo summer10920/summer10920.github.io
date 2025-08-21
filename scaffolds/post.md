@@ -7,7 +7,8 @@ categories:
   - Web Fronted
 tag:
   - Untagged
-hidden:false
+hidden: true
+
 ---
 
 ![](https://i.imgur.com/banner/scss.png)

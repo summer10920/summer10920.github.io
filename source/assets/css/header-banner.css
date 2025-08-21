@@ -37,10 +37,12 @@
 
           i {
             font-size: 1.25rem;
+            letter-spacing: normal;
           }
 
           .badge {
             transition: 1s;
+            letter-spacing: normal;
           }
 
           &:hover,

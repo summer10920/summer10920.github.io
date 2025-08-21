@@ -498,7 +498,6 @@ CSS transition 主要用於讓屬性值的變化過程變得平滑自然，常�
 4. 結合 transform 製作更豐富的互動效果
 {% endnote %}
 
----
 
 # 動畫 Animation
 

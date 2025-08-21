@@ -1,7 +1,8 @@
 {%- if theme.busuanzi_count.enable %}
   {%- if theme.vendors.busuanzi %}
-  <script{{ pjax }} async src="{{ theme.vendors.busuanzi }}"></script>
+    <script{{ pjax }} async src="{{ theme.vendors.busuanzi }}"></script>
   {%- else %}
-  <script{{ pjax }} async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    {# <script{{ pjax }} async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script> #}
+    <script defer src="https://vercount.one/js"></script>
   {%- endif %}
 {%- endif %}
