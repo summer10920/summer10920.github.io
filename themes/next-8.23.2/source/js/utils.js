@@ -374,7 +374,7 @@ NexT.utils = {
         // scrollHeight isn't reliable for transitioning child items.
         // The last nav-item in a list has a margin-bottom of 5px.
         navChildHeight += (singleHeight * activateEle.childElementCount) + 5;
-        activateEle.style.setProperty('--height', `${navChildHeight}px`);
+        activateEle.style.setProperty('--height', `${navChildHeight + 10}px`);
       }
       activateEle = activateEle.parentElement;
     }
@@ -418,7 +418,7 @@ NexT.utils = {
     if (index === 0) {
       const nav = tocPanel.querySelector('.nav');
       if (nav) {
-        postTOCHeight = parseInt(nav.style.getPropertyValue('--height'), 10);
+        postTOCHeight = parseInt(nav.style.getPropertyValue('--height'), 10 + 10);
       }
     }
     const panelHeights = [

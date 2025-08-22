@@ -2,7 +2,7 @@
 title: "[學習之路] TypeScript 的基礎"
 categories:
   - Misc Notes
-  - Web Fronted
+  - Web Frontend
 tag:
   - JavaScript
   - TypeScript

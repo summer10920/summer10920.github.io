@@ -1,8 +1,8 @@
 @import "reboot.css";
 @import "header-banner.css";
 @import "sidebar.css";
-@import "post-header.css";
+@import "all-posts-expand.css";
 @import "home-list.css";
 @import "category.css";
-@import "archives.css";
+@import "all-posts-collapse.css";
 @import "post-page.css";

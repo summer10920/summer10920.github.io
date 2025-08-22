@@ -2,7 +2,7 @@
 title: '[學習之路] CSS 預處理器 Sass'
 categories:
   - Misc Notes
-  - Web Fronted
+  - Web Frontend
 tag:
   - SASS
   - CSS

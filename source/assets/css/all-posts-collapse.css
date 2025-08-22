@@ -1,4 +1,5 @@
-.main-inner.archive.posts-collapse {
+.main-inner.archive.posts-collapse,
+.main-inner.category.posts-collapse {
   .post-content {
     &::before {
       background-color: var(--main-color);

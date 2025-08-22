@@ -2,7 +2,7 @@
 title: "[學習之路] Ajax 的相關領域技術與應用"
 categories:
   - Misc Notes
-  - Web Fronted
+  - Web Frontend
 tag:
   - JavaScript
   - jQuery

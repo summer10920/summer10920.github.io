@@ -2,7 +2,7 @@
 title: '[學習之路] CSS 進階的原生變數'
 categories:
   - Misc Notes
-  - Web Fronted
+  - Web Frontend
 tag:
   - CSS
 date: 2021-09-23 13:13:22

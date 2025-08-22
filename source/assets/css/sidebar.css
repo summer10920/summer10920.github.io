@@ -26,6 +26,10 @@
       background-color: var(--main-color);
       border-radius: 2px;
     }
+
+    .nav-item.active {
+      padding-bottom: 10px;
+    }
   }
 
   .back-to-top {

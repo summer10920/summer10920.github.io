@@ -2,7 +2,7 @@
 title: "[學習之路] 重新認識你知道的 HTML、CSS、JavaScript"
 categories:
   - Misc Notes
-  - Web Fronted
+  - Web Frontend
 tag:
   - HTML
   - CSS
