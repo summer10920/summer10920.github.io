@@ -264,7 +264,7 @@ CSS 與前者的 CSS 差不多，只差別於不再利用 CSS 動畫完成自轉
 ## JS 部分
 這裡就重新編輯每次的指針位置，放置在 body 內即可。初始時要先算一次位置（借用前者 JS 出現過的`pos_s`,`pos_s`,`pos_s`)，但之後需重新每秒取得新的`pos_s`,`pos_s`,`pos_s`再透過 DOM 去修改角度。
 
-```javascript
+```js
 /*初始先 ON 一遍 DOM*/
 document.getElementsByClassName('osec4')[0].style.transform=`rotate(${x}deg)`;
 document.getElementsByClassName('omin4')[0].style.transform=`rotate(${y}deg)`;

@@ -63,7 +63,7 @@ JS 的 Ajax 應用需要透過標準物件 `XMLHttpRequest()` 來完成初始化
 設定 HTTP 請求標頭（request header）值。必須於 open() 之後、在 send() 之前。
 - open()：
 初始化一個請求。此方法用於 JavaScript 中；若要在 native code 中初始化請求，請以 openRequest() 作為替代。
-```javascript
+```js
 open(
     DOMString method,  //GET or POST
     DOMString url, //target URL
@@ -77,19 +77,19 @@ open(
 
 ### 完整作業順序說明
 1. 宣告 XMLHttpRequest
-```javascript
+```js
 let jsAjax = new XMLHttpRequest(); // 宣告 HTTP 請求之標準物件
 console.log(jsAjax.readyState); // 0 => 已經產生一個 XMLHttpRequest，但是還沒連結要撈的資料
 ```
 2. 指定位置與送出
   - GET 方式：通常用於直接拿資料（不送資料），如真有必要直接寫在 URL 編碼上來提供。
-```javascript GET
+```js GET
 jsAjax.open("GET", "test.json", true); //設定方法與傳送位置，布林值預設為 true（非同步），可指定 true 來執行同步作業。
 console.log(jsAjax.readyState); // 1 => 用了 open，但是還沒傳資料
 jsAjax.send(); //傳送資料，沒有要送可以 null 不輸入
 ```
   - POST 方式（以 Form-Data 傳送）：與傳統表單一樣，需要特別宣告 `setRequestHeader` 方式。
-```javascript POST
+```js POST
 /*********POST 方式：如果你要傳 Form 資料給後端，資料格式如同 URL***********/
 jsAjax.open("POST", "test.php"); //設定方法與傳送位置，布林值預設為 true（非同步）
 
@@ -111,7 +111,7 @@ $data = file_get_contents('php://input',1);
 echo $data; // form=data&number=1
 ```
   - POST 方式（以 Request Payload 傳送）：使用 JSON 方式傳送而不是傳統的 Form 表單內容。
-```javascript POST
+```js POST
 /*********POST 方式：如果你要傳 JSON 或文串給後端，後端需要以 Request Payload 方式處理***********/
 jsAjax.open("POST", "test.php"); //設定方法與傳送位置，布林值預設為 true（非同步）
 
@@ -142,7 +142,7 @@ print_r(json_decode($data));
 3. 取得資料來自 responseText
 這裡可以分成兩種做法，分別是可透過事件 onreadystatechange（狀態變化時觸發）或 onload（作業結束）來完成回應之後續作業。
    - onreadystatechange
-```javascript Method1:onreadystatechange
+```js Method1:onreadystatechange
 jsAjax.onreadystatechange = () => { //一個 EventHandler（事件處理器）函式，會於 readyState 屬性之狀態改變時被呼叫。
   console.log(jsAjax.readyState); // 2 （偵測到用 send) -> 3 （資料 loading 中） -> 4 （你撈到資料了，數據已經接收到）
 
@@ -162,7 +162,7 @@ jsAjax.onreadystatechange = () => { //一個 EventHandler（事件處理器）�
 }
 ```
    - onload
-```javascript
+```js
 jsAjax.onload = () => {
   console.log(jsAjax.status, jsAjax.readyState, "method2");   // 200 4 "method2"
   /******do something********/
@@ -194,7 +194,7 @@ HTTP 請求的方式 GET 或 POST。預設為 GET 可省略不寫
 beforeSend：
 請求之前時所需執行的函式，也就是 Ajax 對 HTTP 請求之前的階段，並將整個請求之 XHR 物件透過傳遞變數給你。
 
-```javascript
+```js
 $.ajax({
   type: "GET",
   url: "test.php",
@@ -229,7 +229,7 @@ print_r($_GET);
 ### 介紹其他寫法
 - jQuery.getJSON(url,data,success(data,status,xhr))
 快速取得 JSON，必要為 url 與 success 函式而其他看需求，同時支援 JSONP 的用途。scucces 分別能提供三種傳遞變數，分別是取回資料、請求狀態、整個 XML(XMLHttpRequest) 之物件
-```javascript
+```js
 $.getJSON("test.json", { form: "data", number: 1 }, (result) => {
   console.log("success:", result);
 });
@@ -249,7 +249,7 @@ $.ajax({
 ```
 - $.get(url,data,success(response,status,xhr),dataType)
 同以下寫法：
-```javascript
+```js
 $.ajax({
   url: url,
   data: data,
@@ -259,7 +259,7 @@ $.ajax({
 ```
 - $.post(url,data,success(response,status,xhr),dataType)
 同以下寫法：
-```javascript
+```js
 $.ajax({
   type:'POST',
   url: url,
@@ -270,7 +270,7 @@ $.ajax({
 ```
 - $.getScript(url,success(response,status,xhr))
 能獲取來自另一個地方的腳本，通常讀取當下瀏覽器就會運行了所以不用指定 datatype，與`<script src>`不同的是你可以決定何時加載。同等以下寫法：
-```javascript
+```js
 $.ajax({
   type:'GET',
   url: url,
@@ -278,7 +278,7 @@ $.ajax({
 });
 ```
 簡單範例如下：
-```javascript
+```js
 $.getScript("test.js",(re)=>{
   console.log("done",re);
 });
@@ -287,7 +287,7 @@ this is form test.js
 done console.log("this is form test.js");
 */
 ```
-```javascript test.js
+```js test.js
 console.log("this is form test.js");
 ```
 - $(selector).load(url)
@@ -322,7 +322,7 @@ console.log("this is form test.js");
 
 - done()、fail()、always()
 提供成功結果、失敗結果、完成結果之回傳執行，舉例來說：
-```javascript
+```js
 $.ajax({
   type: "GET",
   url: "test.php",
@@ -372,7 +372,7 @@ print_r($_GET);
 ```
 - then(doneCallbacks,failCallbacks)
 then 也是 Promise 下的產物，能提供同步延遲後的成功與失敗行為，簡單來說可以一筆取代 done() 與 fail() 的兩筆宣告。
-```javascript
+```js
 $.ajax({
   type: "GET",
   url: "test.php",
@@ -392,7 +392,7 @@ $.ajax({
 - when(Ajax,Ajax)
 提供解決多個非同步問題下的回呼執行處理，隨著多個 Deferred 物件提供給 when() 執行，由 when 來收集這些返回的集合體再從 when 本身的 Deferred 物件來執行本身 then 或其他方法 (done,fail,always) 來執行所有結果。
 1. 如果 when() 的參數安插一個 Ajax 語法會回傳內容、狀態、XHR 物件，你可以接上 then() 來執行。
-```javascript
+```js
 $.when(
   $.ajax({
     url: "text1.txt"   // string "HELLO" in File
@@ -402,7 +402,7 @@ $.when(
 });
 ```
 2. 如果 when() 的參數安插多個 Ajax 語法會回傳內容、狀態、XHR 物件，你可以接上 then() 來執行。
-```javascript
+```js
 $.when(
   $.ajax({
     url: "text1.txt"
@@ -427,7 +427,7 @@ HELLO
 WORLD
 ```
 3. 如果 when() 的參數沒有指定，也會進行 Promise 處理返回，由於沒有請求只會 return 乾淨的 XHR 物件。如參數不是 Ajax 指令 (Deferred)，則會直接 Callback 還你，相信你不會做這無聊的事。
-```javascript
+```js
 $.when("AAA").then((e)=>{
   console.log(e);//AAA
 });
@@ -446,7 +446,7 @@ $.when("AAA").then((e)=>{
 5. 在那之前先 return response.json() 出來給下一個 then()。
 6. 第二個 then 將接受到 JSON 資料，才算真正取得內容。
 
-```javascript
+```js
 fetch('test.json', {
   method: 'GET'
 }).then((response) => {
@@ -475,7 +475,7 @@ fetch('test.json')
 使用方法，如 *GET, POST, PUT, DELETE
 - headers:
 表頭類型可以是 Headers 物件或 ByteString 值。舉例寫法：
-```javascript
+```js
 headers: {
   'user-agent': 'Mozilla/4.0 MDN Example',
   'content-type': 'application/json'
@@ -504,7 +504,7 @@ request 認證應用，表示用戶代理在跨網請求下能否發送 Cookie�
 
 ### 使用範例
 - POST Request：(by FormData)
-```javascript
+```js
 let data = new FormData(); // 需使用 FormData 建構式來做資料，由 body 去偵測採用 FormData 傳送
   data.append("form","data");
   data.append("number",1);
@@ -532,7 +532,7 @@ echo $_SERVER["REQUEST_METHOD"]; //GET
 print_r($_POST);
 ```
 - POST Request：(by Request Payload)
-```javascript
+```js
 fetch("test.php", {
   method: "POST",
   body: JSON.stringify({ //須 JSON 物件轉成字串，後端才能判讀
@@ -557,7 +557,7 @@ echo "Request Payload:".$data; // {"form":"data","number":1}
 ```
 - 確認成功與失敗
 遇到 CORS 或 server 設定錯誤導致 network error 時，promise 會 reject 並附上 TypeError 的回應，但在權限或類似問題導致 404 的常見狀況下，卻不會導致 network error。因此是否成功的正確方式，應包含檢查 promise resolved, 以及檢查 Response.ok 的屬性是否為 true。
-```javascript
+```js
 fetch('404.json') //此 URL 故意不存在情況下
   .then(response => {
     console.log(response);
@@ -570,7 +570,7 @@ fetch('404.json') //此 URL 故意不存在情況下
 ```
 - 多筆 Request 同時進行 Fetch
 可透過 Promise.all() 方進行等待作業，最後一起 then() 完成動作。
-```javascript
+```js
 Promise.all([
   fetch("textr1.txt").then(re => re.text()), // 'HELLO' string in file
   fetch("text2.txt").then(re => re.text()) // 'WORLD' string in file
@@ -581,7 +581,7 @@ Promise.all([
 ### 停止取得
 近期瀏覽器可以使用 AbortController API 來完成停止需求，等同於 xhr.abort() 行為或 xhr.onabort() 事件。
 
-```javascript
+```js
 const controller = new AbortController();
 fetch('test.json', {
   signal: controller.signal
@@ -604,7 +604,7 @@ fetch 尚未普及的年代的產物（目前也是很多人使用且為了脫�
 ### 初次使用 Axios API（取得 JSON)
 類似 jQuery 的 Ajax 方法與 fetch 的 promiise，其語法為 axios(config)。除了完整寫法 axios API，也有其他簡寫方式，完整寫法如下：
 
-```javascript
+```js
 axios({
   method: 'get',
   url: 'test.json'
@@ -626,7 +626,7 @@ axios({
 HTTP 請求的方式 GET 或 POST。預設為 GET 可省略不寫
 - headers:
 表頭類型可以是 Headers 物件或 ByteString 值。舉例寫法：
-```javascript
+```js
 headers: {
   'user-agent': 'Mozilla/4.0 MDN Example',
   'content-type': 'application/json'
@@ -654,7 +654,7 @@ headers: new Headers({
 #### promise 前後處理
 - onUploadProgress:(function), onDownloadProgress:(function)
 在上下傳時可執行的函式，並可提供 ProgressEvent 物件作為傳遞參數
-```javascript
+```js
 onUploadProgress: function (progressEvt) { console.log(progressEvt) },
 onDownloadProgress: function (progressEvt) { console.log(progressEvt) }
 ```
@@ -663,7 +663,7 @@ onDownloadProgress: function (progressEvt) { console.log(progressEvt) }
 - transformRequest:[function(data){return}], transformResponse:[function(data){return}]
   - Request 前的資料可以先處理，你可以提交之前對 data 做調整。此功能只對 PUT, POST, PATCH 有效。
   - Response 前的資料可以先做處理。你可以提交之前對 data 做調整。此功能只對 PUT, POST, PATCH 有效。
-```javascript
+```js
 axios({
   method: 'post',
   url: 'test.php',
@@ -700,7 +700,7 @@ echo json_encode($_POST);
 判斷請求的網址狀態值為多少才會執行 Promise 的 reject 作業。預設操作為 `return 200 <= status && status < 300;`
 - proxy:object
 定義代理伺服器，其中參數 auth 為 proxy 驗證帳密。
-```javascript
+```js
 proxy: {
   host: '127.0.0.1',
   port: 9000,
@@ -721,7 +721,7 @@ proxy: {
 
 ### 介紹所有 axios 速寫法
 - axios.get(url, config)
-```javascript
+```js
 axios.get("test.php", {
   params: {
     form: 'data',
@@ -736,7 +736,7 @@ echo json_encode($_GET);
 ```
 - axios.post(url, data, config)
 沒有特別處理時，傳的內容會是 Payload
-```javascript Request Payload
+```js Request Payload
 axios.post("test.php", {
   form: 'data',
   number: 1
@@ -752,7 +752,7 @@ $data = file_get_contents('php://input', 1);
 echo $data; //{"form":"data","number":1}
 ```
 如果要用 FormData 傳過來，就不要用 json 格式，而是用 formData 來建構物件。
-```javascript
+```js
 let bodyFormData = new FormData();
 bodyFormData.append("form", "data");
 bodyFormData.append("number", 1);
@@ -766,7 +766,7 @@ echo json_encode($_POST);
 ```
 - axios.all()
 多筆 Request 同時進行，並藉由 axios.spread() 取出所有的 response。
-```javascript
+```js
 axios.all([
   axios.get("text1.txt"), //string HELLO in file
   axios.get("text2.txt") //string WORLD in file
@@ -789,7 +789,7 @@ axios.all([
 - axios.options(url, config) // 檢查用，預先發送的請求是否安全。確認該地址採用的協定、要求的表頭等資訊。
 - axios.create(config) //自定義設定 axios
 
-```javascript
+```js
 axios.get("test.json").then(response => {
   console.log(response); //整個回應物件在此
   console.log(response.data); //內容在此
@@ -798,7 +798,7 @@ axios.get("test.json").then(response => {
 
 ## 認識 Promise
 promise 從 ES6 的新語法，主要是解決程式執行順序上發生不同步的問題。也就是程式繼續往下跑不會等待某行的結果，這是為了工作效率而預定作業方式。例如可由 settimeout 來實現此問題：
-```javascript
+```js
 let str = "AA";
 setTimeout(() => {
   str = "BB";
@@ -807,7 +807,7 @@ console.log(str); //發生非同步執行緒問題，此程式不會等上面的
 ```
 
 因此許多 Ajax 應用方式因為需要從別處拿資料回來才能繼續執行，就可以選擇是否要求 async（非同步）為關閉。舉例 juqery 的舊方式 (1.5 版本開始也已改 promise 方法，像是 then 應用）：
-```javascript
+```js
 let data=null;
 $.ajax({
   url:"test.json",
@@ -829,7 +829,7 @@ Promise 直白點就是對你許下承諾（相信我，我一定會把佐助帶
 
 使用 Promise 建構式時，需要提供 resolve 與 reject 兩個函式參數，分別在 fulfill 及 reject 階段作為 resolve 與 reject 函式的傳遞 status，使得。then() 與。catch() 能收到資料做後續作業。語法結構如下：
 
-```javascript
+```js
 const myPromise = new Promise((resolve, reject) => {
   resolve(status); // 成功時
   reject(status); // 失敗時
@@ -840,7 +840,7 @@ const myPromise = new Promise((resolve, reject) => {
 
 舉個例子：我們需要等到 Promise 工作完成後，根據某條件下成功或失敗決定要往 then 還是 catch 做之後的處理。整體作業是同步的，then 跟 catch 一定會等 Promise 作業結束才會觸發。
 
-```javascript
+```js
 const mytime = new Promise((resolve, reject) => {
   const rand = Math.random();
   (rand > 0.5) ? resolve("BIG") : reject("SMALL");
@@ -851,7 +851,7 @@ const mytime = new Promise((resolve, reject) => {
 
 回到工作階段說明圖，then() 透過 return 繼續緊接 then() 或 catch()，繼續往下一個階段但已經跟 Promise 無關，只是單純的往後面跑。下面範例不加入失敗考量，直接都是成功的連續 then 執行。
 
-```javascript
+```js
 const sayABC = new Promise((resolve, reject) => {
   console.log("A");  //A
   setTimeout(() => resolve("B"), 1000);  //1 秒後將 B 傳送到成功事件
@@ -869,7 +869,7 @@ const sayABC = new Promise((resolve, reject) => {
 ```
 
 由於 then 可以 return，因此我們可以把一個 promise.then() 塞到另一個 promise 內形成連鎖的請求同步。
-```javascript
+```js
 const say123 = new Promise((res, rej) => {
   console.log(1); //這裡跑一，建構 Promise 當下有 run
   setTimeout(() => res(2), 3000); // 3 秒後會送數字 2 給 say123.then()
@@ -892,7 +892,7 @@ new Promise((resolve, reject) => {
 
 如果是想印出 AB12，你應該在 AB 的 then() 才去建構出顯示 12 的 Promise。形成完整的同步處理並善用 then(return) 應用。
 
-```javascript
+```js
 new Promise((resolve, reject) => {
   console.log("A"); //A at time 0
   setTimeout(() => resolve("B"), 1000);
@@ -914,7 +914,7 @@ new Promise((resolve, reject) => {
 ### Promise 多項目方法
 - Promise.all()
 提供需要多個 promise 一起運作，同時最後一起跑到 then() 作業。提供參數為陣列寫法（可以是 Promise 物件也可以是一般變數內容。返回的資料也是陣列結構。
-```javascript
+```js
 Promise.all([
   new Promise(resolve=>setTimeout(resolve("A"),1000)),
   new Promise(resolve=>setTimeout(resolve("B"),1000)),
@@ -923,7 +923,7 @@ Promise.all([
 ]).then(data=>console.log(data)); //(4) ["A", "B", 1, 2]
 ```
 注意的是如果只要有 Promise 是 reject 狀態，會導致 promise.all().then() 不會運作。
-```javascript
+```js
 Promise.all([
   new Promise(resolve => setTimeout(resolve("A"), 1000)),
   new Promise(resolve => setTimeout(resolve("B"), 1000)),
@@ -934,7 +934,7 @@ Promise.all([
 ```
 - Promise.allSettled()
 Promise.all() 的完整版，回傳的不會是內容而是整個 reponse 資訊，這樣不會因為某個 promise 失敗而導致停擺。你可以自行去取得各自的內容與應對。
-```javascript
+```js
 Promise.allSettled([
   new Promise(resolve => setTimeout(resolve("A"), 1000)),
   new Promise(resolve => setTimeout(resolve("B"), 1000)),
@@ -952,7 +952,7 @@ Promise.allSettled([
 ```
 - Promise.race()
 與 Promise.all 雷同，但只會取得第一個最快成功的 promise 就結束，但要注意只要一個失敗就會整個停擺。
-```javascript
+```js
 Promise.race([
   new Promise(resolve => setTimeout(resolve, 3000, "A")),
   new Promise(resolve => setTimeout(resolve, 1000, "B")),
@@ -961,7 +961,7 @@ Promise.race([
 
 ### async 與 awit 
 一種讓 promise 更好寫的方法。主要重點是兩個關鍵字宣告，async 放在某個函式前面代表這個函式等於 promise 且 return 出來的必定是成功的 resolved。
-```javascript
+```js
 async function fn(){
   return "A";
 }
@@ -976,7 +976,7 @@ fn().then(console.log);
 ```
 
 另外的關鍵字 await，他必須是放在 async 裡面。主要是當 async 函式內的 promise 執行 resolve 才會觸發。也就拿來替代 then() 的寫法。
-```javascript
+```js
 async function fn() {
   let mypro = new Promise(resolve => setTimeout(resolve, 1000, "A"));
   let ans = await mypro; //這裡發生同步，會等待 promise 完成 resolve
@@ -993,7 +993,7 @@ fn();
 ```
 
 然而 async 內要發生 reject 事件指定 throw 即可。他會將資料傳給 catch 內。且會中斷整個函式執行。
-```javascript
+```js
 const fn = async () => {
   throw "error";  //same reject
   return "A"; //same resolve
@@ -1010,7 +1010,7 @@ fn().then(console.log).catch(console.log); //error
 ```
 
 舉例來說，使用 fetch() 函式本身會有自己 reject 事件，因此我們可以用 try-catch 來做一個語法表示。
-```javascript
+```js
 const fn = async () => {
   try {
     let response = await fetch('error.json');
@@ -1023,7 +1023,7 @@ const fn = async () => {
 fn();
 ```
 如果不使用 try-catch 來做外框，那麼 catch 是落在 fn 本體身上。
-```javascript
+```js
 const fn = async () => {
   let response = await fetch('error.json');
   console.log(response);//獲得一個完整 response 物件
@@ -1205,7 +1205,7 @@ print_r($data2);
 - 透過第三方線上跳板 cors-anywhere 
 若沒有能力自己架設伺服器，[cors-anywhere](https://github.com/Rob--W/cors-anywhere) 提供專門解決 CORS 的免費伺服器跳板，根據使用方式說明只需設定以下代碼即可。
 
-```javascript
+```js
 const cors = 'https://cors-anywhere.herokuapp.com/'; // use cors-anywhere to fetch api data
 const url = 'https://tw.rter.info/capi.php'; // origin api url
 fetch(`${cors}${url}`)

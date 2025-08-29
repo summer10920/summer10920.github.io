@@ -277,7 +277,7 @@ HTML5 的音樂播放格式為 MP3、WAV、OGG 為主。範例如下：
   - Boolean(1 | 0) + Number => Number
 - 巢狀函式：function A 內可以宣告 function B 且執行，可惜的是 function A 以外的地方不認識 function B 且無法使用。
 - 變數型態的原始 vs 物件：
-```javascript
+```js
 let a = "A";
 let objA1 = new String("A");
 let objA2 = new String("A");
@@ -296,7 +296,7 @@ console.log(aryA == aryB, aryA.toString() == aryB.toString()); //false true
 */
 ```
 - 物件型態之變數特點：
-```javascript
+```js
 let num = 1,
   bool = true;
 function room1(num, bool) {
@@ -321,7 +321,7 @@ console.log(str, objAry); //A1 (3) ["B1", "B2", "B3"]
 ```
 - 函式的 arguments 參數陣列
   其實函式所有的傳入參數都會偷存放到 arguments 之偽陣列（物件），即使函式沒有設計參數也能同樣運作。
-```javascript
+```js
 function roomA(aa, bb) {
   // console.log(aa,bb);
   console.log(roomA.arguments);
@@ -333,7 +333,7 @@ roomA(1, 2); //Arguments(2) [1, 2, callee: ƒ, Symbol(Symbol.iterator): ƒ]
 roomB(3, 4); //Arguments(2) [3, 4, callee: ƒ, Symbol(Symbol.iterator): ƒ]
 ```
 - 自訂函式傳遞變數的選擇，也可以是一個函數型變數
-```javascript
+```js
 let msg = "hello world",
   print = (e) => {
     console.log(e);
@@ -353,7 +353,7 @@ say(msg, print);
   6. 如果有需要監看指定的對象參數，可在 Watch 標籤視窗透過 `+` 符號自行手動輸入。
   7. 任何時候按下 <kbd>F8</kbd> 則會取消中斷點直接全程跑完代碼。
 - JSON 與 String 格式轉換：
-```javascript
+```js
 const txt='{"a":"dog","b":"cat"}'; //string
 const jsn={c:"mouse",d:"horse"}; //json
 console.log(JSON.parse(txt)); //{a: "dog", b: "cat"} | json
@@ -364,7 +364,7 @@ console.log(JSON.stringify(jsn)); //"{"c":"mouse","d":"horse"}"  | string
   - 自訂資料物件：自行使用 JSON 格式去設計創造出想要的物件資料。
   - BOM 本體模型：瀏覽器本體的物件，可以輕易去操作使用瀏覽器功能與網頁內容 (DOM) 調整。
 - 自訂物件的刪除屬性方式：
-```javascript
+```js
 let obj = new Object();
 obj.name = "Loki";
 obj.age = "18";
@@ -373,7 +373,7 @@ console.log(obj);
 ```
 - 自定義建構函式物件：你可以像內建物件那樣的自定義。
 下面的方法是透過 fn 宣告來當作類別觀念的建構子（原本上沒有 class 寫法），而 ES6 提供了 Class 寫法可自行 [參考這裡](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Classes)
-```javascript
+```js
 function fn(blood, height, weight) {
   this.b = blood;
   this.h = height;
@@ -394,7 +394,7 @@ userB.print(); //O 型、165 公分、70 公斤
 //雖然沒有傳遞參數，仍可以使用物件導向找到該屬性位置直接寫入
 ```
 - Function Object 使用方法：以字串方式設定 FN 參數
-```javascript
+```js
 let say1 = new Function('console.log("hello world")');
 say1(); // hello world
 
@@ -402,7 +402,7 @@ let say2 = new Function("name", "return `hi! ${name}`;");
 console.log(say2("Loki")); // hi! Loki
 ```
 - 函式型態物件的 call 方法
-```javascript
+```js
 function fn1(blood, height, weight) {
   this.b = blood;
   this.h = height;
@@ -430,7 +430,7 @@ print.call(userB); //method2 use call to print 'O 型、163 公分、65 公斤'
 ```
 - prototype 原型練（原生練）
   任何內建 Object 或自訂 object 都有各自的屬性或方法，我們稱呼為 prototype。每當使用 new 來宣告新物件時會繼承原本 object 的屬性或方法（但不是複製方式，所以記憶體共用減少負擔），你可以容易去對這些原生練調整或追加，即使是 new 之後也沒關係，畢竟是繼承方式。
-```javascript
+```js
 function fn1(blood, height, weight) {
   //is 建構函式
   // this.name="User";  //is 區間變數
@@ -453,7 +453,7 @@ userA.print(); // Loki：B 型、185 公分、82 公斤
 ```
 - Closure 閉包觀念 （物件導向）
   在函式內的普通區域變數在函式執行結束後會消失，如果是巢狀且採用匿名函式將可以形成閉包空間，所有的函式都能夠記住被創造的當下的環境以及變數。這是一種物件導向觀念，透過 Closure 特性設計出 private member。
-```javascript
+```js
 function closure(a) {
   this.fnGet = function () {
     return a;
@@ -468,7 +468,7 @@ val.fnSet(20);
 val.fnGet(); //20
 ```
 - 建構出來的函式物件可加載靜態屬性
-```javascript
+```js
 function fn1(blood, height, weight) {
   //is 建構函式
   // this.name="User";  //is 區間變數
@@ -487,7 +487,7 @@ fn1.test = "AAA"; // is 靜態屬性，不會繼承給 userA
 console.log(fn1.test, userA.test);
 ```
 - prototype 原生練的繼承
-```javascript
+```js
 function fn1(blood, height, weight) {
   //is 建構函式
   this.b = blood;
@@ -505,7 +505,7 @@ let msg = new show("Loki"); //msg 成為函式物件，
 msg.pr(); // Loki：B 型、185 公分、82 公斤
 ```
 - 命名空間規劃觀念
-```javascript
+```js
 ////method1: 以物件方式呼叫執行函式
 let fn1 = (() => {
   let num = 1;
@@ -552,7 +552,7 @@ fn1 為物件，透過函式執行 ()() 來呼叫：
 */
 ```
 - 命名空間的用途
-```javascript
+```js
 ////method1: 以物件方式呼叫執行函式
 fn = () => {
   let num = 1;
@@ -578,13 +578,13 @@ userB.next(); //2
 ```
 - 物件的屬性 Implicit vs Explicit
   宣告變數時雖然都是物件但可以分為隱性或顯性，最大差異在於後者有提供 prototype 原生練且透過內建或自訂函式來生成。
-```javascript
+```js
 let a = "AAA"; //隱式
 let b = new String("BBB"); //顯式
 console.log(a, b); ///AAA String {"BBB"}
 ```
 - 建構子 constructor 與原生練 prototype
-```javascript
+```js
 function info(name, height, weight) { //傳統的Prototype-based的寫法
   //在函式內宣告這些建構子 constructor
   this.name = name;
@@ -612,7 +612,7 @@ console.log(user1.message());
 > constructor 與 prototype 都能共用擁有，最大差異於前者是獨立占用記憶體（每次 new 都會占用記憶體），後者是繼承方式因此記憶體只有一處
 - hasOwnProperty() | in | isPrototypeOf()
   查詢 constructor 建構子是否存在於函式物件內、以及查詢某變數是否存在於函式物件內、查詢某函式物件是某曾繼承於指定物件宣告來源。
-```javascript
+```js
 function test() {
   this.str1 = "ABC";
 }
@@ -635,7 +635,7 @@ console.log(
 ```
 - toString() | valueOf()
   當宣告某物件後，如需要檢查內容可以透過。toString() 將物件以字串方式回傳，或透過 valueOf() 將內容取出，不同型態的會有不同的字串格式。
-```javascript
+```js
 let a = new Array("A", "B", "C");
 a.toString(); //"A,B,C"
 a.valueOf(); //(3)["A", "B", "C"]
@@ -649,7 +649,7 @@ b.valueOf(); //1607418212678
   1. 其餘參數是 arguments 物件被傳入到函式當下還未指定成變數名稱的引數。
   2. arguments 物件不是實際陣列，而其餘參數是實體陣列（可調用 sort, map, forEach, pop)。
   3. arguments 物件自身有額外功能例如 callee 屬性。
-```javascript
+```js
 //其餘參數陣列可被解構(直接將參數陣列讀出來)
 function fun1(...[a, b, c]) {
   console.log(a + b + c);
@@ -686,7 +686,7 @@ fun3("-", 4, 5); // (3) [1, 2, 3]
 ```
 - 解構賦值 Destructuring assignment
 可以把陣列或物件中的資料解開擷取成為獨立變數。
-```javascript 陣列解構
+```js 陣列解構
 let a, b, ary;
 
 //對陣列解構：
@@ -720,7 +720,7 @@ console.log(prt, data); // 1 (3) [2, 3, 4]
 [prt, ...data] = data;
 console.log(prt, data); // 2 (2) [3, 4]
 ```
-```javascript 物件解構
+```js 物件解構
 let a, b, ary;
 
 //對物件解構：
@@ -763,7 +763,7 @@ const css = { "background-color": "red" };
 const { "background-color": backgroundColor } = css;
 console.log(backgroundColor); //red
 ```
-```javascript 陣列解構與物件解構的混和
+```js 陣列解構與物件解構的混和
   const data = [
     { id: 1, name: "Loki" },
     { id: 2, name: "July" }
@@ -776,7 +776,7 @@ console.log(backgroundColor); //red
 
 - 箭頭函式 
 比函式還簡短的語法。它沒有自己的 this、arguments、super、new.target 等語法。適用於非方法的函式但不能被用作 constructor 建構式。
-```javascript 基本寫法
+```js 基本寫法
 /*method 1*/
 const demo1 = (a, b, c) => {
   console.log(a, b, c);
@@ -821,7 +821,7 @@ const demo5 = () => { //沒有傳遞變數需保留 ()
 }
 ```
 - 進階應用
-```javascript
+```js
 //簡化 return 應用時，當表示式用 () 包起來時，則{}將被當作 JSON 資料格式
 const demo6 = () => ({
   dog: "lucky",
@@ -855,7 +855,7 @@ fun(); //1 2 "lucky" "mimi"
 ### String
 
 - new String()
-```javascript
+```js
 let a = "AAA";
 let b = new String("BBB");
 console.log(a, b); ///AAA String {"BBB"}
@@ -868,21 +868,21 @@ console.log(a, b); ///AAA String {"BBB"}
   能將非英數字元（中文、空白、標點符號）轉換為 URL 編碼，也能反向轉回。細節上中文採用%uXXXX、空白與符號為%XX(XX 皆為 16 進位）。
 - toLowerCase()|toUpperCase()
   能將字串進行大小寫轉換
-```javascript
+```js
 let a = "A",
   b = new String("B");
 console.log(a.toLowerCase(), b.toLowerCase()); //a b
 ```
 - charAt()|charCodeAt()
   取得字串當中的字元，索引值 index 最初始處為 0 開始計算
-```javascript
+```js
 let a = "ABCD";
 console.log(a.charAt(2)); //C by char
 console.log(a.charCodeAt(2)); //67 by char's unicode value  (C=67)
 ```
 - indexOf() | lastIndexOf() | match() | search()
   提供字串的搜尋方法
-```javascript
+```js
 let a = "ABCDEA";
 a.indexOf("C"); // 預設 index 0 開始查找，找到回傳 index 值 為 2，找到一個就結束了
 a.indexOf("C", 3); // 從 index 3 開始找，因為找不到回傳 -1
@@ -896,7 +896,7 @@ a.search("C"); // to index of ，回傳 2
 ```
 - replace() | split() | substr() | substring() | concat()
   字串的替換分割取出
-```javascript
+```js
 let a = "ABCDEDCBA";
 let r1 = a.replace("AB", "F"); // 產生字串替換接著回存到 a
 console.log(r1); //FCDEDCBA
@@ -918,13 +918,13 @@ console.log(r5); //ABCDEDCBAXX
 
 - new Array() 宣告
   你可以選擇指定長度（一個參數）或直接寫入（多個參數），也能使用空陣列
-```javascript
+```js
 let a = new Array(100, 200); //[100,200]
 let b = new Array(3); //[empty*3]
 ```
 - join() | reverse() | sort() | concat()
   陣列轉字串排序合併
-```javascript
+```js
 let a = new Array("A", "C", "B");
 
 console.log(a.join()); // 將陣列轉成字串並回傳，間格為，符號。如 A,C,B
@@ -944,7 +944,7 @@ console.log(c); // ["A", "B", "C", "D", "E"]
 ### Date
 
 - UTC 之時間表示方式，取寫可 get 也能 set，適用各種格式應用。
-```javascript
+```js
 let time = new Date();
 console.log(time); //Mon Dec 07 2020 20:29:25 GMT+0800 （台北標準時間）
 console.log(time.getHours(), time.getUTCHours()); // 20 12
@@ -952,7 +952,7 @@ console.log(time.getHours(), time.getUTCHours()); // 20 12
 ```
 - getTimezoneOffset() | toUTCString() | toLocaleString() | getTime() | Date.now()
   時間轉換方式：UTC 時間差、轉 UTC、轉指定時區時間、時間戳記
-```javascript
+```js
 let time = new Date();
 console.log(time); //Mon Dec 07 2020 20:29:25 GMT+0800 （台北標準時間）
 console.log(time.getTimezoneOffset()); //與 UTC 時間差 | -480 (min) = > -8H
@@ -988,7 +988,7 @@ Date.now() 為靜態函式，指定目前時間之時間戳記
 ### Error
 
 每當執行時發生錯誤會自動產生的物件，能取得執行時的錯誤訊息，提供錯誤碼 (number)、字串 (massage)、描述 (description)。需呈現例外處理透過`try { } catch (error) { } finally { }`結構呼叫：
-```javascript
+```js
 let x = 10;
 try {
   //塞入需測試的代碼
@@ -1013,7 +1013,7 @@ try {
   參數若提供 false, 0, null, NaN, 空字串則產生布林物件為 false，否則其他都會是 true。
 - new Function()
   普通的函式本身就是一種物件，所以此方式 new 宣告是一樣的結果。
-```javascript
+```js
 function fn1(x, y) {
   return x + y;
 }
@@ -1024,7 +1024,7 @@ let fn2 = new Function("x", "y", "return (x+y)");
   Global 物件本身不能使用 new 來建立，因為這類型物件都是 JS 引擎初始化時自動產生的，包含 Infinity 或 NaN 物件，這些物件本身不帶有名字只是一個屬性狀態。因此他不是提供給使用者來建立，而是提供主體程式使用產生。
 - new Number()
   建立一個具有數字型態的物件變數
-```javascript
+```js
 let a = new Number("5");
 let b = "5";
 console.log(typeof a, typeof b); //object string
@@ -1036,7 +1036,7 @@ console.log(
 在不是使用建構式的情境中（即不用 new 運算子）, Number 可以被用來轉換型別，譬如輸入 `Number.MAX_VALUE` 取得 JS 可以表現之最大值。
 -new Object()
 所有 JS 物件的祖宗物件，可以拿來自訂物件或建立內建物件。
-```javascript
+```js
 let obja = new Object();
 obja.name = "Loki";
 obja.age = "18";
@@ -1072,7 +1072,7 @@ console.log(obja, objb); //{name: "Loki"} {name: "Loki"}
 ```
 - screen.name
   提供螢幕的解析寬高、視界寬高、色彩數
-```javascript
+```js
 console.log(`
 解析度寬高=${screen.width}*${screen.height}\n
 view 視界寬高=${screen.availWidth}*${screen.availHeight}\n
@@ -1081,7 +1081,7 @@ view 視界寬高=${screen.availWidth}*${screen.availHeight}\n
 ```
 - navigator
   提供瀏覽器與用戶相關資訊
-```javascript
+```js
 let bs = navigator;
 console.log(`
 瀏覽器程式碼名稱：${bs.appCodeName}\n
@@ -1108,7 +1108,7 @@ HTTP 協定下的 user agent 資料：Mozilla/5.0 (Windows NT 10.0; Win64; x64) 
   歷史紀錄，可指定紀錄往上一頁、下一頁、或指定 num 數（<0 為上幾頁，>0 為下幾頁，0 為重整）。history.length 能查出全部記錄總數。
 - location
   目前 URL 之詳細資料，你可以讀也可以直接改變內容（形成轉址）。
-```javascript
+```js
 // location.href = "https://www.google.com"; //修改 URL 為 Google 網址，而不是轉走網頁所以沒有歷史紀錄可回上頁
 let loc = location;
 console.log(`
@@ -1127,7 +1127,7 @@ get 變數，例？p=3&v=5: ${loc.search}\n
 
 - document.open() | close() | write(str)
   這是一種對當前文件重新編譯的操作，open 開啟文件重新改寫內容，close 結束並關閉文件改寫。如果已關閉文件時進行 write 行為等於重新改寫內容，反之未關閉的情況下可以接著 write()
-```javascript
+```js
 document.open();
 document.write("<p>Hello world!</p>");
 document.write("<p>I am a fish</p>");
@@ -1190,7 +1190,7 @@ document.close();
   獲得節點的參考定位 XY 與空間寬高，也能查參考定位之上層節點為誰（這跟 position 空間有關，沒有特別指定情況下參考定位之上層節點通常是 body)
 - 節點物件之 scrollIntoView(option)
   能類似 HTML 錨點連結效果，滾動畫面至該節點位置。可指定簡易參數 true（預設） 為節點之 top、false 為節點之 bottom，或細部參數 (behavior, block, inline) 採用物件寫法。
-```javascript
+```js
 for (const key in window.document) {
   //增加畫面內容高度
   document.write(`${key}:${window.document[key]}<br>`);
@@ -1638,20 +1638,20 @@ setTimeout(() => {
 
 - 邏輯運算子
   AND 特性，其 true&&20 結果為 20，你可以這樣取代 if 控制。
-```javascript
+```js
 let a = 1,
   b = 1;
 c = a == b && 20; //if(a==b) c=20;
 ```
 OR 特性部分，當讀取到 true 時會自動忽略||之後的運算，結果為本體變數。
-```javascript
+```js
 let c = a || 10; // c=(a==true)?a:10;
 //true: a!=0,a!=null
 //false: a=0,a=null
 ```
 - DOM
   如果你很常使用 DOM 單項目節點探找，可以試著簡化操作
-```javascript
+```js
 const get(who)=document.querySelector(who);
 const demo1=get("#id");
 const demo2=get(".class");
@@ -1661,7 +1661,7 @@ const demo3=get("#id>span");
 ## 小品練習
 
 - 猜數字
-```javascript
+```js
 const rand = Math.floor(Math.random() * 99) + 1;
 let ans = 0,
   times = 0,

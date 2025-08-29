@@ -155,7 +155,7 @@ date: 2025-08-04 01:32:41
 有一些 DOM 可以規劃為全域變數，方便利於所有 function 都能接受使用。同時將代碼規劃為初始執行區域，以及可用的函式。
 包含以下：
 
-```javascript
+```js
 // public variables
 // -----------------------------------------------------------
 const time = document.getElementById('time');

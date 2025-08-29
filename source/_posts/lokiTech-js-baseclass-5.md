@@ -21,7 +21,7 @@ date: 2025-08-05 17:27:33
 
 所謂「非同步（Asynchronous）」就是讓瀏覽器在等待這些耗時任務（例如：網路請求、檔案讀取、計時器）完成的同時，主執行緒仍能繼續處理其他工作、維持畫面互動與回應；反之，「同步（Synchronous）」會讓執行緒被卡住，導致畫面凍結、操作停滯，造成不佳的使用者體驗。
 
-```javascript blocking-vs-async.js
+```js blocking-vs-async.js
 // 同步：刻意阻塞（busy wait）模擬「卡住」現象
 function blockingSleep(ms) {
   const end = Date.now() + ms;
@@ -77,7 +77,7 @@ console.log('非同步結束（先印出）');
 在練習中，我們使用 `setTimeout` 來模擬真實 API 的等待時間。這讓我們可以在沒有實際後端服務的情況下，體驗非同步程式設計的各種情況。
 {% endnote %}
 
-```javascript callback-hell.js
+```js callback-hell.js
 // 模擬 API 函數：每個都需要約 2 秒等待時間，並可能發生錯誤
 // -----------------------------------------------------------------------
 function getUserAPI(id, callback, onError) {
@@ -235,7 +235,7 @@ Promise 是 JavaScript 內建的「建構函式（Constructor）」物件。當�
 - 這種設計讓非同步流程像「流程圖」一樣直觀易懂。
 {% endnote %}
 
-```javascript promise-basic.js
+```js promise-basic.js
 // 建立 Promise（隨機成功或失敗）
 function wait(ms) {
   return new Promise((resolve, reject) => {
@@ -287,7 +287,7 @@ wait(500)
 #### 對比 Promise 的建立
 以下比較「快捷方法」與「基本用法」的差異。使用 `Promise.resolve()` 或 `Promise.reject()` **會直接跳過 pending 狀態**，不像 `new Promise(...)` 需要經過 resolve/reject 才改變狀態。這讓程式碼更簡潔，也更適合用於條件判斷或預設值處理。
 
-```javascript promise-creation.js
+```js promise-creation.js
 // 快捷方法 1：使用 Promise.resolve()（推薦）
 Promise.resolve('成功').then(console.log);
 
@@ -304,7 +304,7 @@ new Promise((resolve, reject) => reject(new Error('失敗'))).catch(console.erro
 #### 實際應用場景
 在實務開發中，`Promise.resolve()` 與 `Promise.reject()` 不只是語法糖，更是提升非同步流程彈性與可讀性的利器。這兩個方法常用於「條件判斷」、「參數驗證」以及「統一錯誤處理」等場景，能讓程式碼更簡潔、易於維護。以下整理幾個常見應用情境，協助你靈活掌握這些快捷技巧。若遇到尚未學過的語法，可先略過本節，日後再回來複習。
 
-```javascript promise-real-world.js
+```js promise-real-world.js
 // 場景 1：條件式 API 呼叫
 // ----------------------------------------------------------------
 async function getUserData(userId) {
@@ -373,7 +373,7 @@ Promise 的強大之處在於可以「鏈式呼叫」，每個 `.then()` 的回�
 {% endnote %}
 
 #### 鏈式呼叫：資料傳遞
-```javascript promise-chain.js
+```js promise-chain.js
 // Promise.resolve() 是建立「已完成」Promise 的快捷方法
 // 等同於：new Promise((resolve) => resolve(1))
 Promise.resolve(1)
@@ -395,7 +395,7 @@ Promise.resolve(1)
 ```
 
 #### 錯誤傳遞：集中處理
-```javascript promise-error-chain.js
+```js promise-error-chain.js
 // 錯誤會跳過所有 .then()，直接到最近的 .catch()
 Promise.resolve(1)
   .then((n) => {
@@ -433,7 +433,7 @@ Promise.resolve(1)
 ### 解決巢狀地獄
 現在我們將前面的巢狀地獄範例改寫成 Promise 版本，你會看到程式碼變得更加清晰易讀：
 
-```javascript promise-solution.js
+```js promise-solution.js
 // 將原本的 API 函數改寫為 Promise 版本
 // -----------------------------------------------------------------------
 function getUserPromise(id) {
@@ -565,7 +565,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 #### Promise.all
 `Promise.all()` 會等待所有 Promise 都成功完成，如果任何一個失敗，整個 Promise.all 就會失敗。
 
-```javascript promise-all.js
+```js promise-all.js
 // 建立測試用的 Promise 函數
 function createTask(name, delay, shouldFail = false) {
   return new Promise((resolve, reject) => {
@@ -613,7 +613,7 @@ Promise.all([
 #### Promise.allSettled
 `Promise.allSettled()` 會等待所有 Promise 都完成，不管成功或失敗，都會回傳每個 Promise 的狀態。
 
-```javascript promise-allSettled.js
+```js promise-allSettled.js
 console.log('=== Promise.allSettled ===');
 Promise.allSettled([
   createTask('任務 A', 300),
@@ -639,7 +639,7 @@ Promise.allSettled([
 #### Promise.race
 `Promise.race()` 會回傳最先完成的 Promise，不管是成功還是失敗。
 
-```javascript promise-race.js
+```js promise-race.js
 console.log('=== Promise.race ===');
 Promise.race([
   createTask('任務 A', 300),
@@ -673,7 +673,7 @@ Promise.race([
 #### Promise.any
 `Promise.any()` 會等待第一個成功的 Promise，如果全部失敗才會失敗。
 
-```javascript promise-any.js
+```js promise-any.js
 console.log('=== Promise.any ===');
 Promise.any([
   createTask('任務 A', 300),
@@ -716,7 +716,7 @@ Promise.any([
 ### 載入圖片的非同步操作
 圖片載入是一個常見的非同步操作。傳統上我們會監聽 `onload` 和 `onerror` 事件，但這種寫法容易造成巢狀結構。利用 Promise，可以將圖片載入流程包裝成一個易於串接與錯誤處理的非同步任務，讓程式碼更簡潔、可讀性更高。
 
-```javascript image-load-promise.js
+```js image-load-promise.js
 function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -747,7 +747,7 @@ async/await 的主要目的是**讓非同步程式碼看起來像同步程式碼
 **為什麼需要 async？**
 `async` 是為了使用 `await` 而存在的。`await` 只能在 `async` 函式內使用，這是 JavaScript 的語法規則。
 
-```javascript
+```js
 // ❌ 錯誤：在一般函式內使用 await
 function wrongFunction() {
   const result = await somePromise(); // 語法錯誤！
@@ -764,7 +764,7 @@ async function correctFunction() {
 **async 函式的特性**
 除了讓你使用 `await` 之外，async 函式還有一個特性：會自動將回傳值包裝成 Promise。透過這個特性，讓 async 函式仍可以與 Promise 鏈式呼叫相容。
 
-```javascript
+```js
 // 一般函式
 // ---------------------------------------------------------
 function normalFunction() {
@@ -786,7 +786,7 @@ asyncFunction().then(console.log); // "Hello"
 ### 與 Promise 對比差異
 在學習 JavaScript 的非同步處理時，`Promise` 和 `async/await` 是兩種常見的寫法。雖然它們本質上都基於 Promise，但語法和錯誤處理方式有所不同。本節將透過範例，對比這兩種寫法的差異，幫助你理解何時該選用哪一種方式。
 
-```javascript comparison.js
+```js comparison.js
 // 基礎工具函數
 // ---------------------------------------------------------
 function wait(ms) {
@@ -864,7 +864,7 @@ asyncVersion();
 - **結合使用**：在 `async/await` 函式內使用 `Promise.all` 來併行執行獨立任務
 {% endnote %}
 
-```javascript async-vs-promise-all.js
+```js async-vs-promise-all.js
 // 基礎工具函數
 // ---------------------------------------------------------
 function wait(ms, label) {
@@ -974,7 +974,7 @@ JSON 是一種基於 JavaScript 物件語法的資料格式，但它是純文字
 
 在 JavaScript 中，我們經常需要在 JSON 字串和 JavaScript 物件之間進行轉換：
 
-```javascript json-basics.js
+```js json-basics.js
 // JavaScript 物件
 // --------------------------------------------
 const user = {
@@ -1021,7 +1021,7 @@ console.log(prettyJson);
 
 ### JSON 的常見錯誤和注意事項
 
-```javascript json-common-errors.js
+```js json-common-errors.js
 // 1. JSON 語法錯誤
 try {
   // ❌ 錯誤：JSON 中的字串必須用雙引號
@@ -1110,7 +1110,7 @@ console.log('自訂日期格式：', customDateJson);
 ### 基本語法
 Fetch API 需要傳入目標網址（url）及相關選項（options），其回傳值為一個 Promise 物件，因此可透過 `.then()` 處理成功結果，或用 `.catch()` 捕捉錯誤，靈活管理非同步請求流程。
 
-```javascript
+```js
 fetch(url, options?)
   .then(response => response.json())
   .then(data => console.log(data))
@@ -1129,7 +1129,7 @@ fetch(url, options?)
 
 當使用 Fetch API 取得資料時，大多數 API 都會回傳 JSON 格式的資料。了解如何正確處理 JSON 解析是使用 Fetch API 的關鍵。
 
-```javascript fetch-json-handling.js
+```js fetch-json-handling.js
 // 1. 基本的 JSON 解析
 async function fetchUserData() {
   try {
@@ -1269,7 +1269,7 @@ fetchMultipleUsers();
 
 你也可以利用 async/await 語法來更直覺地處理 fetch 非同步請求，讓程式碼更易讀且結構更清晰。
 
-```javascript
+```js
 async function fetchData() {
   try {
     const response = await fetch(url, options?);
@@ -1370,7 +1370,7 @@ GET 請求用於從伺服器取得資料，通常不會改變伺服器狀態。�
 - **長度限制**：URL 長度有限制
 {% endnote %}
 
-```javascript fetch-get.js
+```js fetch-get.js
 // 基本 GET 請求：取得單一資料
 async function getTodo(id) {
   try {
@@ -1435,7 +1435,7 @@ POST 請求用於向伺服器發送資料，通常會建立新的資源。這是
 - **長度限制**：沒有 URL 長度限制
 {% endnote %}
 
-```javascript fetch-post.js
+```js fetch-post.js
 // 基本 POST 請求：建立新資料
 async function createPost(postData) {
   try {
@@ -1532,7 +1532,7 @@ submitForm(formData)
 ##### 常見的傳遞與接收
 示範如何使用 fetch 搭配完整的 options 物件，向 JSONPlaceholder API 發送 POST 請求，並自訂 HTTP 標頭與傳送 JSON 格式資料
 
-```javascript
+```js
 fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',                    // 設定 HTTP 方法
   headers: {                         // 設定請求標頭
@@ -1559,7 +1559,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 
 **JSON 資料傳送**
 最常見的 API 資料格式，用於傳送結構化的資料。
-```javascript
+```js
 // JSON 資料傳送範例
 fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',
@@ -1592,7 +1592,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 
 **表單資料傳送**
 傳統的 HTML 表單提交格式，用於簡單的鍵值對資料。
-```javascript
+```js
 // 表單資料傳送範例
 fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',
@@ -1651,7 +1651,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 **檔案上傳**
 用於上傳檔案到伺服器，支援多種檔案類型。
 
-```javascript
+```js
 // 檔案上傳範例
 function uploadFile(file) {
   const formData = new FormData();
@@ -1695,7 +1695,7 @@ uploadFile(mockFile)
 **多部分資料傳送**
 同時傳送文字資料和檔案，適合複雜的表單提交。
 
-```javascript
+```js
 // 多部分資料傳送範例
 function uploadWithData(file, userData) {
   const formData = new FormData();
@@ -1778,7 +1778,7 @@ HTTP 標頭是前端與伺服器溝通的重要橋樑，除了標準的標頭外
 **基本用法**
 以下範例展示如何在 fetch 請求中加入自訂 HTTP 標頭（Custom Headers）。自訂標頭常用於 API 版本控管、請求追蹤、或傳遞專案特定資訊。只需在 headers 物件中加入自訂欄位（通常以 `X-` 開頭），即可讓前後端溝通更靈活。
 
-```javascript
+```js
 fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',
   headers: {
@@ -1805,7 +1805,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 **API 版本控制**
 這個範例示範如何用自訂標頭 `X-API-Version` 來指定要呼叫的 API 版本，讓前端可以根據需求切換不同版本的 API。
 
-```javascript
+```js
 function createAPIClient(version = 'v1') {
   const baseURL = 'https://api.example.com';
   
@@ -1856,7 +1856,7 @@ apiV2.getUsers().then(users => console.log('V2 格式：', users));
 **請求追蹤與除錯**
 這個範例示範如何在每一次發送 fetch 請求時，自動產生唯一的請求 ID，並將其加入自訂 HTTP 標頭，方便後端進行請求追蹤與除錯。
 
-```javascript
+```js
 function createRequestTracker() {
   let requestCount = 0;
   
@@ -1919,7 +1919,7 @@ tracker.trackedRequest('https://jsonplaceholder.typicode.com/posts/1')
 **功能開關與實驗性功能**
 示範如何用「功能開關」(Feature Toggle) 控制伺服器端的特定功能開啟或關閉，並將狀態透過自訂 HTTP 標頭傳遞給後端，方便進行 A/B 測試或實驗性功能管理。
 
-```javascript
+```js
 function createFeatureToggle() {
   const features = {
     newUI: true,
@@ -1980,7 +1980,7 @@ console.log('新 UI 狀態：', featureToggle.getFeatureStatus('newUI'));
 **統計分析與使用者行為追蹤**
 示範如何透過自訂 HTTP 標頭，將使用者行為（如瀏覽頁面、點擊按鈕等）資訊傳遞到後端伺服器，達到統計分析與行為追蹤的目的。
 
-```javascript
+```js
 function createAnalyticsTracker() {
   const sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
   const userAgent = navigator.userAgent;
@@ -2039,7 +2039,7 @@ console.log('追蹤器已建立，Session ID：', analytics.sessionId);
 **動態標頭管理**
 這個範例展示如何建立一個「動態標頭管理系統」，可以靈活設定、移除或取得 HTTP 請求的自訂標頭，並透過統一的 request 方法發送帶有這些標頭的 fetch 請求，方便管理 API 請求時的標頭資訊。
 
-```javascript
+```js
 function createHeaderManager() {
   const defaultHeaders = {
     'Content-Type': 'application/json',
@@ -2128,7 +2128,7 @@ setTimeout(() => {
 - **實際應用**：在真實應用中，cookies 通常由伺服器設定，用於同域請求
 {% endnote %}
 
-```javascript
+```js
 document.cookie = 'sessionId=abc123; path=/';
 document.cookie = 'userId=456; path=/';
 document.cookie = 'cart=item1,item2; path=/';
@@ -2152,7 +2152,7 @@ fetch('/api/test', {  // 向當前網域發送請求
 
 {% note info %}
 **後端（伺服器）如何提取 cookies：**
-```javascript
+```js
 // 伺服器端（Node.js/Express 範例）
 app.get('/api/users', (req, res) => {
   // 從 HTTP 標頭中提取 cookies
@@ -2202,7 +2202,7 @@ app.get('/api/users', (req, res) => {
 
 {% note info %}
 **伺服器端設定範例**
-```javascript
+```js
 // Node.js/Express 範例
 app.get('/api/data', (req, res) => {
   // 設定快取 1 小時
@@ -2232,7 +2232,7 @@ fetch 的 `cache` 參數讓前端可以覆蓋伺服器的快取設定，主動�
 
 **實際操作範例**
 
-```javascript
+```js
 // 1. 強制重新載入（確保最新資料）
 fetch('https://jsonplaceholder.typicode.com/posts/1', {
   cache: 'reload'  // 忽略快取，直接向伺服器請求
@@ -2299,7 +2299,7 @@ console.log('第二次請求：Status 200 (from cache) 或 Status 304 (Not Modif
 
 **基本用法**
 
-```javascript
+```js
 // 1. 建立 AbortController
 const controller = new AbortController();
 
@@ -2325,7 +2325,7 @@ controller.abort();  // 觸發取消事件
 
 **實際應用：可取消的搜尋功能**
 
-```javascript
+```js
 // 模擬搜尋功能
 let searchController = null;
 
@@ -2379,7 +2379,7 @@ setTimeout(() => startSearch('world'), 1000);  // 1 秒後開始新搜尋，會�
 
 **進階用法：超時控制**
 
-```javascript
+```js
 // 結合 AbortController 和 setTimeout 實現超時控制
 function fetchWithTimeout(url, timeoutMs = 5000) {
   const controller = new AbortController();
@@ -2411,7 +2411,7 @@ fetchWithTimeout('https://jsonplaceholder.typicode.com/posts', 3000)
 
 **多個請求的統一管理**
 
-```javascript
+```js
 // 管理多個可取消的請求
 class RequestManager {
   constructor() {
@@ -2666,7 +2666,7 @@ RESTful API 設計中，**資料結構的一致性**是確保 API 易於理解�
 
 **資料結構一致性的核心觀念：**
 
-```javascript
+```js
 // 定義使用者資源的完整資料結構
 interface UserResource {
   id: number;
@@ -2857,7 +2857,7 @@ interface UserResource {
 ### 以路徑區分資料類型與子分類
 在設計 API 時，常透過不同的 URL 路徑來區分各種資料類型，並根據需求進行 CRUD（建立、讀取、更新、刪除）操作。例如 `/users` 代表使用者資料，`/posts` 代表文章資料。每個主要路徑下還可以細分子資源，例如 `/users/1/posts` 代表特定使用者的文章。這種結構有助於讓資料分類更清晰，並方便管理與擴充。
 
-```javascript
+```js
 // 以 RESTful API 路徑設計區分不同資料類型與子分類
 
 // 使用者資料（Users）相關 API
@@ -2898,7 +2898,7 @@ DELETE /cart/items/:itemId   // 從購物車移除指定商品
 - **免費**：不需要註冊或 API Key
 {% endnote %}
 
-```javascript restful-api-client.js
+```js restful-api-client.js
 // 建立 RESTful API 工具
 function createUserAPI(baseURL = 'https://jsonplaceholder.typicode.com') {
   // 統一的錯誤處理函數
@@ -3127,7 +3127,7 @@ name=value; expires=date; path=/; domain=example.com; secure; httponly
 
 ### Cookie 的基本操作
 
-```javascript cookie-basics.js
+```js cookie-basics.js
 // 1. 設定 Cookie（簡單版本）
 function setSimpleCookie(name, value, days = 7) {
   const expires = new Date();
@@ -3179,7 +3179,7 @@ deleteCookie('theme');  // 刪除主題設定
 
 ### Cookie 的進階用法
 
-```javascript cookie-advanced.js
+```js cookie-advanced.js
 // 進階 Cookie 設定函數
 function setCookie(name, value, options = {}) {
   const {
@@ -3264,7 +3264,7 @@ Web Storage 是 HTML5 引入的現代儲存機制，包含 `localStorage` 和 `s
 
 `localStorage` 用於儲存需要長期保存的資料，即使關閉瀏覽器分頁或重新啟動瀏覽器，資料仍然存在。
 
-```javascript localStorage-basics.js
+```js localStorage-basics.js
 // localStorage 基本操作
 // ----------------------------------------------------------------
 
@@ -3337,7 +3337,7 @@ console.log('所有 localStorage 資料：', getAllLocalStorage());
 
 `sessionStorage` 的資料只在當前分頁有效，關閉分頁後資料就會消失。這讓它特別適合儲存暫存資料，如表單狀態、購物車內容等。
 
-```javascript sessionStorage-basics.js
+```js sessionStorage-basics.js
 // sessionStorage 基本操作
 // ----------------------------------------------------------------
 
@@ -3405,7 +3405,7 @@ console.log('購物車內容：', getCart());
 
 #### 主題切換功能
 
-```javascript theme-switcher.js
+```js theme-switcher.js
 // 主題切換功能實作
 // ----------------------------------------------------------------
 
@@ -3457,7 +3457,7 @@ console.log('目前主題：', themeManager.getCurrentTheme());
 
 #### 購物車功能
 
-```javascript shopping-cart.js
+```js shopping-cart.js
 // 購物車功能實作
 // ----------------------------------------------------------------
 
@@ -3561,7 +3561,7 @@ console.log('更新後總價：', cart.getTotal());
 
 Session 認證是傳統的認證方式，伺服器會保存使用者的會話狀態。
 
-```javascript session-auth.js
+```js session-auth.js
 // Session 認證範例（前端部分）
 // ----------------------------------------------------------------
 
@@ -3633,7 +3633,7 @@ if (currentUser) {
 
 Token 認證是現代的認證方式，伺服器簽發包含使用者資訊的 token。
 
-```javascript token-auth.js
+```js token-auth.js
 // Token 認證範例（前端部分）
 // ----------------------------------------------------------------
 
@@ -3779,7 +3779,7 @@ async function getUserProfile() {
 
 在實際開發中，我們需要妥善處理儲存相關的錯誤，確保應用程式的穩定性。
 
-```javascript storage-error-handling.js
+```js storage-error-handling.js
 // 儲存錯誤處理模式
 // ----------------------------------------------------------------
 

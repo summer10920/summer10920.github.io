@@ -1552,7 +1552,7 @@ header a.active:after{
 2. 調整 LOGO 的錨點對象為 `#lokiSlider`。
 2. 開發 JS 做法為：每次滾動時觸發 spy 函式，檢查所有 section 的 scroll 值是否與目前 scroll 相同，成立就替換選單的 a.active
 3. 最後記得網頁載入時需先跑一遍 spy 函式，避免載入時沒有 a.active
-```javascript custom.js
+```js custom.js
 window.onload = function () {
   const offset = document.querySelector('#lokiMenu').offsetHeight;
   let sections = {};
@@ -1596,7 +1596,7 @@ window.onload = function () {
 <a class="btn btn-warning text-light" href="#lokiSlider"><i class="fas fa-angle-double-up fa-2x"></i></a>
 ```
 3. 開發 JS 做法為：每次點擊時，根據 href 對象找到offset偏移量，並根據時間曲線規劃每影格進行移動到該處。
-```javascript custom.js
+```js custom.js
 // scroll to id  => idea by https://gist.github.com/andjosh/6764939
 document.querySelectorAll("#lokiMenu a,footer a").forEach(e => {
   e.onclick = function (event) {
@@ -1656,7 +1656,7 @@ function scrollToId(toY, duration) {
   - 每次滾動時觸發此函式。
   - 每次寬度時觸發此函式。
 5. 最後記得網頁初次載入時需先跑一遍此函式，避免載入時沒有初始效果。
-```javascript custom.js
+```js custom.js
 const offset = document.querySelector('#lokiMenu').offsetHeight;
 ...
 let scrollSpy = () => {

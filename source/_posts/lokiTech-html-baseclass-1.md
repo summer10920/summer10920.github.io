@@ -1075,7 +1075,7 @@ video 標籤用於嵌入影片內容：
 ```
 
 **JavaScript 檢測自動播放支援：**
-```javascript
+```js
 // 檢測自動播放是否被允許
 video.play().then(() => {
   // 自動播放成功
@@ -4207,7 +4207,7 @@ document.querySelectorAll('[role="button"]').forEach(button => {
 - **重要性**：讓視覺障礙者即時了解頁面狀態變化
 
 **5. 鍵盤導航支援**
-```javascript
+```js
 document.querySelectorAll('[role="button"]').forEach(button => {
   button.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.key === ' ') {

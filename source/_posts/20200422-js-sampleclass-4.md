@@ -28,7 +28,7 @@ date: 2020-04-22 02:25:06
 
 ## 簡單的 Alert 效果
 可以一行就寫完，有分為標題、內文、ICON 類型，你可以只寫 1 組重要的文字其他都不填。
-```javascript
+```js
 Swal.fire(
   '標題字串',
   '內文字串',
@@ -38,7 +38,7 @@ Swal.fire(
 
 ## 可設計的視窗表單
 參數非常多，需要哪些功能就寫出參數，不寫屬性則部分有預設效果
-```javascript
+```js
 Swal.fire({ 一個 swal 事件 A 執行
   title: '這裡是猜猜遊戲，請輸入角色名字', //標題
   input: 'text', //輸入欄位的類型
@@ -73,7 +73,7 @@ Swal.fire({ 一個 swal 事件 A 執行
 ```
 所以 swal 生成很簡單，你需要什麼就寫什麼，如果需要按鈕後反應或是取得輸入值，都多加一個 `.then()` 於後面。() 內指定你要執行的 js 代碼，譬如：
 
-```javascript
+```js
 .ther(function(result){
   console.log(result); //result 是 swal 回傳的結果已物件提供。
   if(result.dismiss==='cencel') console.log("被按下了取消");
@@ -93,7 +93,7 @@ Swal.fire({ 一個 swal 事件 A 執行
 ## 事件 A: 取得角色名稱
 先讓網頁執行時跑 gameplay() 透過 swal 取得 name，或者取不到時做何反應。最後兩個結果都能導向執行 start 函式。
 
-```javascript
+```js
 var name;
 function gameplay() {
   Swal.fire({
@@ -134,7 +134,7 @@ gameplay();
 ## 事件 B: 故事本體
 這裡就是依賴 swal 的 T/F 判斷，如果達到條件就再塞入 then+new swal。形成多層級的連續作業。最後達到目標時，去執行跑 finish 函式
 
-```javascript
+```js
 function start() {
   let mission;
   Swal.fire({
@@ -347,7 +347,7 @@ function start() {
 ## 事件 C:finish 的結果畫面
 這裡就是為了區別出故事結束，利用 DOM 去控制畫面改變。
 
-```javascript
+```js
 function finish(e) {
   if (e) {
     document.body.style.backgroundImage = "url('files/bg2.jpg')";

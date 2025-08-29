@@ -160,7 +160,7 @@ echo NPM Version = v%npmver%
 # 入門操作
 Node 操作原理是透過終端機指令 `node *.js` 去解讀 JS 語法。如果有 console 時會直接由 node 回應給終端機輸出。假設有個檔案為：
 
-```javascript helloworld.js
+```js helloworld.js
 console.log("Hello World");
 ```
 
@@ -201,7 +201,7 @@ undefined
 
 ### exit 中斷操作
 當代碼遇到 `process.exit()` 代表當前執行碼結束。或使用 event 事件遇到 exit 行程結束時觸發指定動作。
-```javascript
+```js
 console.log(1);
 process.on('exit',()=>{ //當 process 遇到發生 exit 事件時做以下執行
   console.log('done');
@@ -215,7 +215,7 @@ console.log(3); //不會被執行到
 ### nextTick 指定下次執行
 由於 Node.js 採用事件迴圈方式來消化代碼，使得非同步與非阻擋式 I/O 能順利後續處理。你也能指定將 callback 內容安排至下一次事件迴圈時第一個執行處。
 
-```javascript
+```js
 console.log(1);
 process.nextTick(()=>{
   console.log("next");//此 callback 作業是下一次事件迴圈時觸發。
@@ -226,7 +226,7 @@ console.log(2);
 ## 全域變數
 執行 Node 應用時，能透過 `__filename` 與 `__dirname` 全域變數來取得該應用程式所在之檔案名稱或目錄，對於需要找到相對路徑處理上有很大的幫助。
 
-```javascript index.js
+```js index.js
 console.log(`
   dirname 應用目錄 ${__dirname}
   filename 檔案路徑 ${__filename}
@@ -388,7 +388,7 @@ found 0 vulnerabilities
 跟隨範例，設計一個模組在專案目錄下建立 mod.js 進行設計。注意需要將資料回傳給應用時需指定 exports 來回應。
 
 ##### 方法一：將 exports 當作物件，指定三種名稱函式
-```javascript mod.js
+```js mod.js
 exports.en = function (userName) {
   console.log('Hello! ' + userName);
 };
@@ -400,7 +400,7 @@ exports.hk = function (userName) {
 };
 ```
 ##### 方法二：將完整的物件指定給 export
-```javascript mod.js 
+```js mod.js 
 const hello = {
   en: function (userName) {
     console.log('Hello! ' + userName);
@@ -433,7 +433,7 @@ module.exports = {
 ```
 #### 發出 request 取得結果
 接著建立 test.js 檔案編寫 Node 應用，注意檔案路徑上的差異。我們透過 request 來請求載入結果存成變數，這個 MyMod 將是一個物件資料。就能直接指定物件屬性來取得函式結果。
-```javascript test.js 
+```js test.js 
 /*
   自訂模組的 requare 時需指定相對路徑，而原生或 npm 包裝的模組不需要
   .js 副檔名可省略，將會自動去尋找屬於 js 副檔名之檔名
@@ -519,7 +519,7 @@ found 0 vulnerabilities
 
 此時你可以回到根目錄的 package.json 內查看 dependencies 部分，會寫到這個模組需要依賴 express 套件。未來如果別人從 npm 安裝你這個模組時，會自動安裝 express 使你的自訂模組正常運行。你也可以試著從 `/node_moudles/express/package.json` 查看 dependencies 資訊，代表這個模組也依賴很多別人的套件。也就是為何你只安裝 express 卻在 `/node_moudles/` 被強迫載入一堆你不認識的模組套件。回話題到 test.js 設定 express 的調用：
 
-```javascript
+```js
 const express = require('express');
 const app = express();
 
@@ -562,7 +562,7 @@ Example app listening at http://localhost:3000
 #### 檔案資訊
 透過 `fs.stat()` 方式獲得檔案情報，需要從 callback 的參數來獲得。不建議於進行檔案讀寫時額外用此方法確認之失敗手續，你應該直接用那些讀寫方法且若 err 則直接處理失敗手續。
 
-```javascript index.js
+```js index.js
 const fs = require('fs');
 fs.stat('text.txt',function(err,stats){ //若檔案有誤，將產生 err 之錯誤物件
 
@@ -579,7 +579,7 @@ fs.stat('text.txt',function(err,stats){ //若檔案有誤，將產生 err 之錯
 #### 檔案讀取
 檔案 I/O 存取操作的相關類別、方法、事件。讀取檔案的行為本身又可以分為同步 `fs.readFileSync(path[, options])` 與非同步 `fs.readFile(path[, options], callback)`：
 
-```javascript 非同步
+```js 非同步
 /**********file:test.txt 
 hello
 **************************/
@@ -596,7 +596,7 @@ L:\nodeDemo>node test.js
 world
 hello
 ```
-```javascript 同步
+```js 同步
 /**********file:test.txt 
 hello
 **************************/
@@ -615,7 +615,7 @@ world
 #### 寫入檔案
 寫入檔案方式為 `fs.writeFile(file, data[, options], callback)`，指定路徑若檔案不存在則新增，反之為覆蓋。
 
-```javascript
+```js
 const fs = require('fs');
 fs.writeFile('hero.txt','Loki',(err)=>{  //[, options] 預設為 UTF8 可省略
   if(err) throw err;
@@ -625,7 +625,7 @@ fs.writeFile('hero.txt','Loki',(err)=>{  //[, options] 預設為 UTF8 可省略
 
 對已存在（不覆蓋）的檔案進行插入文字方式為 `fs.appendFile(path, data[, options], callback)`
 
-```javascript
+```js
 const fs = require('fs');
 fs.appendFile('hero.txt','_Jiang',(err)=>{  //[, options] 預設為 UTF8 可省略
   if(err) throw err;
@@ -640,7 +640,7 @@ fs.appendFile('hero.txt','_Jiang',(err)=>{  //[, options] 預設為 UTF8 可省�
 #### 刪除檔案與更名
 刪除檔案的方式為 `fs.unlink(path, callback)`，修改檔案名稱的方式為 `fs.rename(oldPath, newPath, callback)`
 
-```javascript
+```js
 // const fs = require('fs'); 
 // fsrequire('fs').unlink('hero.txt', () => {.... same as ↓
 require('fs').unlink('hero.txt', () => {
@@ -670,7 +670,7 @@ require('fs').unlink('hero.txt', () => {
 
 為了連續性作業示範，開啟檔案後我們將內容讀取動作 fs.read(fd, buffer, offset, length, position, callback)，並最後將檔案關閉 fs.close(fd, callback)。
 
-```javascript test.js
+```js test.js
 const fs = require('fs');
 fs.open('test.txt', 'r', function (err, fd) {
   if (err) return console.error(err);
@@ -699,7 +699,7 @@ hello
 ### events 事件
 [events](http://nodejs.cn/api/events.html) 為提供事件監聽與處理的方法，在 Node.js 的一些物件（透過 Emitter 觸發器）來觸發指定事件 (Listener) 進行呼叫函式。
 
-```javascript index.js
+```js index.js
 const EventEmitter = require('events');
 const lokiEvent=new EventEmitter(); // 新事件
 
@@ -714,7 +714,7 @@ lokiEvent.emit('todo'); // 觸發 lokiEvent 事件的 todo （觸發器名稱）
 ### buffer 緩衝區
 [Buffer](http://nodejs.cn/api/buffer.html) 為處理二進位資料時的物件，要求作業系統之記憶體空間配額。當使用 fs 檔案讀取時會用到存放處理，Buffer 在全域下不需要使用 require 就能使用。
 
-```javascript index.js
+```js index.js
 const bf = Buffer.from('Loki', 'utf8');
 
 console.log(bf); //<Buffer 4c 6f 6b 69>
@@ -726,7 +726,7 @@ console.log(bf.toString('base64')); // hello
 ### path 路徑
 [path](http://nodejs.cn/api/path.html) 主要是在進行 fs 檔案目錄之操作讀取寫入時，會遇到的字串轉換處理。
 
-```javascript index.js
+```js index.js
 const path = require('path');
 
 /* normalize 協助拔除 `.`, `..`, `\\`，以及修正如 windows 作業系統的路徑表示符號 */
@@ -767,7 +767,7 @@ console.log(path.dirname(__filename));
 ## net 通訊服務
 TCP 是 HTTP 通訊的基礎協定，作為 Server 與 Client 的封包傳送，用於一些底層上的資料確認通信使用。這不是網頁媒體使用，而只是一種資訊封包傳送技術。使用方式為透過 [net](http://nodejs.cn/api/net.html#net_net) 模組來進行架設 TCP 伺服器。我們需要設計兩個應用程式分別為 server.js 與 client.js，TCP 伺服器保持監聽模式等待 Client 進行連線進一步取得 Client 資料，並回應資料還給 Client。
 
-```javascript server.js
+```js server.js
 const net = require('net');
 const server = net.createServer(function (myConnect) {
 
@@ -798,7 +798,7 @@ server.listen(port, host, function () {
   console.log(`伺服器服務中。...${host}:${port}`);
 });
 ```
-```javascript client.js
+```js client.js
 const net = require('net');
 const client = new net.Socket(); //建立 Socket
 
@@ -840,7 +840,7 @@ HTTP 架構於前者 TCP 之上層協定，能作為 Web Server 與瀏覽器之�
 當瀏覽器對伺服器進行 HTTP 請求時獲得文字回應方式：
 
 1. 指定資料夾並建立 js 檔案，準備以下內容：
-```javascript webServerTXT.js
+```js webServerTXT.js
 const http = require('http');  //宣告原生模組 http
 
 //建立伺服器且提供網頁狀態、HEAD 資訊、網頁內容
@@ -875,7 +875,7 @@ L:\nodeTest>node webServerTXT.js
 
 我們也可以直接回應一個網頁格式的內容，這裡我們寫得更簡速些，另注意 HEAD 資訊改為 `text/html`。
 
-```javascript webServerHTML.js
+```js webServerHTML.js
 require('http').createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.write(`
@@ -906,7 +906,7 @@ L:\nodeDemo>node webServerHTML
 
 也能傳送 JSON 資料給請求端，注意 HEAD 宣告改為 `application/json`。
 
-```javascript webServerJSON.js
+```js webServerJSON.js
 const http = require('http');
 const server = http.createServer((request, response) => {
   response.writeHead(200, { 'Content-Type': 'application/json' }); //設定 response HEAD
@@ -920,7 +920,7 @@ server.listen(3000, () => {
 
 關於 request 用途， `http.createServer` 所產生的 callback 之中，除了能指定 response 內容作為我們的目標網頁，request 也能提供非常多有用的 [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) 來源資訊。譬如我們可以取得請求方的資料如 URL、HEAD、DATA
 
-```javascript test.js
+```js test.js
 const http = require('http');  //宣告原生模組 http
 const server = http.createServer((request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' }); //設定 response HEAD
@@ -937,7 +937,7 @@ server.listen(3000, "127.0.0.1", () => {
 ### 回應檔案
 前面來說都是透過 JavaScript 來會應指定的文字，我們可以搭配 fs 模組取得內容進行回應。以下寫法為直接找到指定目錄，同時可以直接根據 URL 檔案名稱找到該目錄下的相同檔名，這裡多餘地利用 `require('path').basename(req.url)` 來過濾多餘路徑僅判斷檔名就好（不論 URL 的分類路徑）。以下前置先建立目錄 public 與 HTML 檔案 `index.html`, `a.html`, `b.html`, `page404.html`。
 
-```javascript webServerHTML.js
+```js webServerHTML.js
 const http = require('http');
 const fs = require('fs');
 
@@ -973,7 +973,7 @@ server.listen(3333, '127.0.0.1', function () {
 
 ### 路由處理
 路由是指透過 URL 請求路徑來判斷執行的檔案讀取，呈現一種靜態檔案與動態網頁內容的變化。舉例來說，可以根據請求的網址內容做不同的網址名稱（不需要副檔名）來找到指定的路徑檔案，以下前置與上節相同都有 public 目錄與數個檔案。：
-```javascript webRouter.js
+```js webRouter.js
 const http = require('http');
 const fs = require('fs');
 
@@ -1040,7 +1040,7 @@ http.createServer((request, response) => {
 
 接著設計 node 應用，這裡多引用 `require('querystring')` 能幫助我們將表單資料（為二進位資料，需進行 toString 才能變成文字串資料）轉換成 JSON 格式。
 
-```javascript webRouterForm
+```js webRouterForm
 const http = require('http');
 const fs = require('fs');
 const qs = require('querystring');
@@ -1112,7 +1112,7 @@ Express 是一個知名常用的網路應用程式開發框架，提供開發者
 1. 於既定目錄下執行 npm init 初始化並填寫基本資訊，利用 init 來協助建立 package.json，過程中的參數事項可自行評估填寫或略過。
 2. 將 express 相依安裝到專案目錄。另外可添加 `--save` 參數進行安裝，這能幫我們自動安裝相依關係清單中的模組。
 
-```javascript
+```js
 L:\nodeDemo>npm init
 This utility will walk you through creating a package.json file.
 It only covers the most common items, and tries to guess sensible defaults.
@@ -1169,7 +1169,7 @@ L:\nodeDemo>
 1. 規劃練習檔案路徑為 `/formDir/post.html`, `/formDir/delete.html`, `/public/index.html`，內容隨意輸入能判別即可。
 2. 規劃以下 index.js 檔案，並於終端機輸入 `node .` 或 `node ./` 即可執行嘗試並指定 URL 測試。這裡不用檔名是因為 index.js 命名技巧關係。
 
-```javascript index.js
+```js index.js
 const express = require('express');
 const app = express();
 
@@ -1302,7 +1302,7 @@ GET /favicon.ico 404 12.350 ms - 1012
  
 以及兩個重要檔案：
 - app.js：用於 Express.js 運作 Web 的核心檔案。主要是將 Expres 相關環境連結搞定。以下附上註解部分說明。
-```javascript app.js
+```js app.js
 var createError = require('http-errors');
 var express = require('express'); //載入 Expres 模組
 var path = require('path');
@@ -1354,14 +1354,14 @@ module.exports = app;
 ```
 - package.json：相關定義檔案，包含版本號、資訊相依模組內容等。
 - bin/www：建立 Web 服務的核心檔案，而預設埠 3000 也是在此設定。
-```javascript bin/www
+```js bin/www
 var port = normalizePort(process.env.PORT || '3000'); //預設 port 號
 app.set('port', port);
 ```
 
 #### 手動添加路由與 View 網頁
 這裡我們將示範如何手動添加路由與 Jade 樣板引擎的 MVC 規劃的 View 頁面。首先需要對 `app.js` 進行載入路由與新增路由。
-```javascript app.js
+```js app.js
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var customRouter=require('./routes/custom'); //custom Route require
@@ -1373,7 +1373,7 @@ app.use('/users', usersRouter);
 app.use('/custom', customRouter); // custom Route add
 ```
 接著設計我們的 `routes/custom.js` 檔案（可以拿 index.js 來改）。
-```javascript custom.js
+```js custom.js
 var express = require('express');
 var router = express.Router();
 
@@ -1497,7 +1497,7 @@ COMMIT;
 
 接著為了與 MySQL 連結我們需要安裝 mysql 模組，進行全域安裝後嘗試簡單使用 test.js 來進行測試。
 
-```javascript test.js
+```js test.js
 const mysql = require('mysql');
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -1538,7 +1538,7 @@ The data is:  [
 ```
 #### Express 內使用 SELECT
 沿用之前的 lokiApp 應用，我們將規劃一個路由作為顯示資料庫 SELECT 結果，並透過 jade 進行模板輸出。同樣的在那之前 mysql 模組已全域安裝完成。步驟修改處相同流程，先至 app.js 進行添加路由位置，未來只要網址輸入 `/animal` 則將指向到 `/routes/animal` 執行內容。
-```javascript app.js
+```js app.js
 var animalRouter=require('./routes/animal'); /////////////////////////////custom SQL SELECT
 
 //...
@@ -1548,7 +1548,7 @@ app.use('/animal', animalRouter); // custom Route add
 
 接著到 routes 目錄新增 animal.js 進行應用程式編寫，每當有人到達指定 URL 請求時進行以下作業：
 
-```javascript animal.js
+```js animal.js
 var express = require('express');
 var router = express.Router();
 var content = require('./dbContent'); //將 DB 連結資訊以另外的地方編寫，再匯入回傳作為變數 content 之內容，此檔案位置為相同目錄下
@@ -1568,7 +1568,7 @@ router.get('/', function (req, res) {
 //最後進行 Export 匯出
 module.exports = router;
 ```
-```javascript dbContent.js
+```js dbContent.js
 const mysql = require('mysql');
 module.export = mysql.createConnection({
   host: 'localhost',

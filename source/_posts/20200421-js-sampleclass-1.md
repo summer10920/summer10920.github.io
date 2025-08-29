@@ -116,7 +116,7 @@ body {
 # 廣告區的點擊事件
 HTML 部分我們已經先寫好了 event 事件，所以對應到兩個 function 作業，分別是網址轉址以及 disaply 隱藏。
 
-```javascript
+```js
 function adclose() {
   document.getElementById("myFull").style.display = "none";
 }
@@ -128,7 +128,7 @@ function adgoto() {
 目前為止，你已經可以成功控制廣告的關閉作業。此時有些設計師不喜歡在 HTML 太明顯在做什麼事件，你可以思考如何使 event 事件不要這麼明顯。
 
 添加到 JS 內，同時已可以將 HTML 的 event 宣告都清除掉。
-```javascript
+```js
 // 這裡能替代不透過 HTML 去寫，而是直接用 JS 去指定 event 的動作要求。
 document.getElementById("myFull").onclick = adclose; //以 JSDOM 方式去指定該物件的 onclick 響應為何
 document.getElementById("myContent").getElementsByTagName("img")[0].onclick = adgoto; //以 JSDOM 方式去指定該物件的 onclick 響應為何
@@ -143,7 +143,7 @@ JS 也可以使用 cookie，但相對於 PHP 來說讀取方式較為麻煩（�
 不可直接用檔案開啟方式執行 html 閱讀，要使用 WebServer 方式走 http 請求，來能被瀏覽器許可 cookie 使用。
 {% endnote %}
 
-```javascript
+```js
 /*select*/
 console.log(document.cookie); //可以看到目前有哪些
 
@@ -172,7 +172,7 @@ document.cookie="watchedAd=yes;expires="+dd.toUTCString();
 4. 自己動手寫吧，以下示範能堪用就好。
 
 設計可找到 COOKIE 的函式，提供兩種方法則一即可：
-```javascript
+```js
 // 方法1
 function findCook1(name) {
   var ckary = document.cookie.split("; "); //割除分開為array
@@ -201,7 +201,7 @@ function findCook2(name) {
 最後，就能開始設計每次載入時，設計判斷是否已經有了 cookie，最對應的 document 顯示調整。
 若要增加此 cookie，同時指定有效到今晚午夜前
 
-```javascript
+```js
 //開始指定 cookie，有同時有效時間為午夜前
 var eatCook=findCook1("watchedAd");
 if(!eatCook){//還沒有設定

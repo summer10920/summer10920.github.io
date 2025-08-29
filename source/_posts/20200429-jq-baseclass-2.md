@@ -35,7 +35,7 @@ JavaScript 的 Ajax 相對來說比較複雜且完整參數指令（可自行查
 ## $.get() vs $.post()
 你如果能理解一般表單進行資料提交或存取時，你可以選擇 get 或 post 方式，透過該超全域變數進行資料傳遞，在 Ajax 也是同樣原理提交變數到另一個網頁去，。基本語法結過如下（以 post 為例，get 不再重複解釋）
 
-```javascript
+```js
 $.post(url,data,callback,type);
 //url 目標網址，將資料送給何者網頁
 //data 為傳遞的變數透過 post/get 轉為超全域變數，能以 JSON 陣列塞入多筆資料
@@ -44,7 +44,7 @@ $.post(url,data,callback,type);
 ```
 
 這是前者屬於簡化後的$.post 用法，同等於後者完整的$.Ajax 用法。
-```javascript
+```js
 $.ajax({
   type: 'POST',
   url: url,
@@ -258,7 +258,7 @@ switch ($_GET['do']) {
 
 ## SELECT 篇：Ajax 資料請求
 1. 先確認後端這裡會提供完整的 HTML 代碼給我們，我們不需要自行規劃 HTML。因此前端大致語法如下：
-```javascript
+```js
 /* $.post 寫法 */
 $.post("api.php?do=select", {start}, function (result) {
   $("tbody").html(result);
@@ -280,7 +280,7 @@ $.ajax({
 3. 此外，因配合新生成的 DOM 還沒有事件偵測，所以重新指定點擊事件，將預告指定給 chginput 函式
 4. 為了完整性練習，這裡先把第 1 步驟的 Ajax 使用 loading 包住，透過函式運行來達到載入效果。
 5. 我們可以控制每次載入幾筆，所以另外可以設計一個按鈕去觸發 loading 就能十筆的載入更多。
-```javascript
+```js
 /*select*/
 let start = 0;
 function loading() {
@@ -319,7 +319,7 @@ loading();
 3. 利用 this 或 item 對象，找到 tr 位置，並直接整個 tr>td 替換掉。
 4. td 替換透過 itiem.eq() 來進行 text 轉 input:value
 5. 最後補上一個儲存按鈕，為了省去因新 DOM 需要重新綁定 click 事件，透過 onclick 直接寫好。
-```javascript
+```js
 /*update before DOM transform*/
 function chginput() {
   let item = $(this).parent().siblings();
@@ -345,7 +345,7 @@ function chginput() {
 8. 接著透過 Ajax 成功的將資料交由後端處理，此時你應該等到回傳後確定更新成功才適合作畫面更新
 9. 由於還有更新時間，我們希望後端能告訴我們 cdate 值
 10. 畫面更新時，重新將目前 input.val 變回新值 text 並重新翻新 DOM 與 click 事件綁定
-```javascript
+```js
 /*update after DOM transform*/
 function chgtxt(who) {
   const data = $(who).parents("tr").find("input").serialize();
@@ -382,7 +382,7 @@ function chgtxt(who) {
 3. data 部分使用 JSON，可以塞變數 `{Variables}`或 `{name:value}`，單一個資料傳遞不能直接使用變數。
 4. 如果刪除成功後端會提供內容給前端，如果偵測到有內容回傳代表刪除成功，DOM 直接 remove() 就好
 
-```javascript
+```js
     /*delete*/
     function del(who) {
       let id = $(who).parent().siblings().eq(0).text();
@@ -427,7 +427,7 @@ function chgtxt(who) {
 ```
 2. 透過新增大按鈕觸發函式 `activeForm`，這裡會生成 HTML 進行淡入。
 3. 如果使用者想取消，我們需要幫助淡出，但 form 可以不用特別清除，下次淡入前都會覆蓋該 HTML
-```javascript
+```js
 /*insert*/
 function activeForm() {
   $(".insertzone").html(`
@@ -453,7 +453,7 @@ function closeAddform() {
 ```
 4. 當使用者送出時，因為我們使用 Ajax 進行提交。所以能不使用 form 的 submit 功能（甚至你可以不用 form 了），使用 DOM 進行資料收集再改由 Ajax 發送。
 5. 然而有使用分流加載的關係，所以這裡乾脆重新撈取資料。否則考量的狀況會分為目前是否再最後的加載而是否調整 DOM，需要更多機制去判斷。
-```javascript
+```js
 function sendForm(who) {
   const data = $(who).parents("form").find("input").serialize();
   $.post("api.php?do=insert", data, function (result) {
@@ -603,7 +603,7 @@ switch ($_GET['do']) {
 ```
 3. 除了電影，其他選單先不提供 option，強迫用戶先選電影再做其他指定。
 4. 電影資料來自後端提供，由於資料未處理，需於 JavaScript 進行 DOM 修改
-```javascript
+```js
 /* 資料初始化 */
 
 // $.getJSON("api.php?do=getmovie",function(result){
@@ -625,7 +625,7 @@ $.get("api.php", { "do": "getmovie" }, function (result) {
 ```
 5. 當電影變化時或觸發此函式時，能提供日期 option 項目。
 6. 資料需要自行整理成 HTML 進行 DOM 修改。
-```javascript
+```js
 /*根據目前所選之電影，進行可販售日期*/
 function gd() {
   let mv = $("#sm").val();
@@ -645,7 +645,7 @@ function gd() {
 9.  先設計一個資料陣列 time 做資料紀錄且初始化。後端指定的 1 \~ 7 場次，在前端代表 0 \~ 6 需特別注意。
 10. 透過迴圈檢查訂單，將找到的各時段賣票數累加回我們紀錄。
 11. 此外，不合理的時間場次需要忽略顯示，如果播放日為今天且時間場次已過期都要忽略顯示。
-```javascript
+```js
 /*根據目前所選之電影與販售日期，進行票數之計算*/
 function gt() {
   let dv = $("#sd").val();
@@ -741,7 +741,7 @@ switch ($_GET['do']) {
 ```
 6. check 負責提交後端做帳號判斷，如果帳號可使用，將 flag 設為 1
 7. checkflag 是負責表單提交的審查，如果 flag 是 0 則不允許提交
-```javascript
+```js
 var flag = 0; //0=未檢測，1=已檢測
 function check() {
   let acc = $("input[name=acc]").val();

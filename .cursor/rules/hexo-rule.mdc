@@ -169,7 +169,7 @@ date: YYYY-MM-DD HH:mm:ss
 ```
 
 ### JavaScript 註解
-```javascript
+```js
 // 這是 JavaScript 單行註解
 /* 這是 JavaScript 多行註解 */
 ```

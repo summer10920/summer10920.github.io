@@ -49,7 +49,7 @@ date: 2020-05-08 00:46:34
 ## 編寫 Ajax 取得 JSON 數據
 1. 這裡示範完整的寫法，你至少需提供目標位置、請求方式、資料類型、callback 行為。
 2. 建立 weather_table.html，引用 jQuery 後，先在空白底處執行 script
-```javascript
+```js
 var data;
 $.ajax({
   /*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/
@@ -66,7 +66,7 @@ $.ajax({
 
 3. 而較新的 jQuery 版本有支援 getJSON 之便利方式，你可以改用以下寫法：
 4. getJSON 只要 URL 即可，同時可增加 done 成功與 fail 失敗分別執行不同動作增加應用姓。
-```javascript
+```js
 /*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/
 $.getJSON('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=CWB-____&downloadType=WEB&format=JSON')
   .done(function(re){
@@ -77,7 +77,7 @@ $.getJSON('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Author
   });
 ```
 5. 以上為使用 Ajax 編寫的最低完整限度，當然此範例你可以使用 `$.get` 來使用，但回傳資料只是一坨 JSON 字串，你還要手動轉成 JSON 物件。
-```javascript
+```js
 $.get('https://apiservice.mol.gov.tw/OdService/download/A17010000J-000103-EvF',function(e){
   console.log(e);
   console.log(JSON.parse(e));
@@ -85,7 +85,7 @@ $.get('https://apiservice.mol.gov.tw/OdService/download/A17010000J-000103-EvF',f
 ```
 6. 接下來就是等待 Ajax 的 callback 做後續動作，如果網頁只有一個 Ajax 就放在該 callback 內
 7. 反之如果你需要等待兩個以上 Ajax，你應該利用$.when().then() 來滿足等待事件
-```javascript
+```js
 $.when(
   $.getJSON(url_1).done(function (re) {
     data1 = re;
@@ -118,7 +118,7 @@ $.when(
 ```
 2. 接著透過 JS 開始做 DOM 塞入，我們在 `.done()` 這裡補完後續動作。
 3. 這裡會取得 `<td>` 三組資料，且分別含有天況、圖示、低溫、高溫。
-```javascript
+```js
 .done(function (re) {
   data = re.cwbopendata.dataset.location;
 
@@ -141,7 +141,7 @@ $.when(
 })
 ```
 4. 如果希望時間 ISO 轉成我們能控制的 JS 時間，可以這樣規劃
-```javascript
+```js
 var hourtext = new Array();
 hourtext[0] = "凌晨";
 hourtext[6] = "白天";
@@ -192,7 +192,7 @@ $('#dt>thead').find('th').eq(4).text(`${date3.getFullYear()}-${date3.getMonth() 
 <table id="dt" class="display compact hover">
 ```
 8. 在 JS 內透過 jQuery 去觸發 DTS 效果，建議在 JS 最後執行，也就是 DOM 沒有需再異動後
-```javascript
+```js
 $('#dt').DataTable({}); //啟用 datatable 套件
 ```
 9. 畫面效果如下
@@ -250,7 +250,7 @@ $('#dt').DataTable({}); //啟用 datatable 套件
 ## 編寫 Ajax 取得 JSON 數據
 建立 weather_chart.html，引用 jQuery 後，先在空白底處執行 script。我們先請求 OpenData 並試著 console.log 出來看看
 
-```javascript
+```js
 /*本代碼已拔除授權代碼將無效化，請使用自身帳號授權碼*/
 $.getJSON('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-D0047-091?Authorization=CWB-____&downloadType=WEB&format=JSON')
   .done(function (re) { //成功時執行以下區段
@@ -294,7 +294,7 @@ $.getJSON('https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-D0047-091?Author
 </body>
 ```
 4. 複製範例上的簡單資料圖表，使用 JavaScript 編寫
-```javascript
+```js
 var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx, {
   type: 'bar', //圖表類型
@@ -348,7 +348,7 @@ var myChart = new Chart(ctx, {
 請自行完成動作到已透過 Ajax 取得數據完畢，而以下程式碼都在`.done(function(re){})`內執行
 
 1. 簡化我們的資料，使找到四個城市資料快些（少打些字）
-```javascript
+```js
 /*簡化擷取的節點*/
 let kl = re.cwbopendata.dataset.locations.location[13]; //基隆
 let tp = re.cwbopendata.dataset.locations.location[16]; //台北
@@ -357,7 +357,7 @@ let tu = re.cwbopendata.dataset.locations.location[21]; //桃園
 // console.log(kl);
 ```
 2. 整理一些新陣列變數，分別為存有 x 軸之內容，以及各城市的溫度之內容。
-```javascript
+```js
 /*變數初始化*/
 let date_line = new Array();
 let k = new Array(), t = new Array(), n = new Array(), u = new Array();
@@ -374,7 +374,7 @@ for (let i = 0; i < kl.weatherElement[1].time.length; i++) {
 }
 ```
 3. 引用 chart.js 的參數設定
-```javascript
+```js
 var ctx = document.getElementById('myChart');
 var myChart = new Chart(ctx, {
   type: 'line',
@@ -425,7 +425,7 @@ var myChart = new Chart(ctx, {
 ## 透過 Ajax 取得 api 失敗時
 1. 先用 postman 確認是否可測試 api 正常運作。
 2. 這裡示範 getJSON 用法取得，建立檔案 ntpc_curl.html
-```javascript
+```js
 $.getJSON('http://data.ntpc.gov.tw/od/data/api/54DDDC93-589C-4858-9C95-18B2046CC1FC?$format=json')
   .done(function (re) {
     console.log(re);
@@ -471,7 +471,7 @@ curl_close($curl);
 ?>
 ```
 2. 回到 ntpc_curl.html，改連結到同網域的後端取得。
-```javascript
+```js
 $.getJSON('ntpc_curl_api.php').done(function (re) { //自己做一個後端，再去跟同網域的後端取得
   console.log(re);
 }).fail(function (w) {

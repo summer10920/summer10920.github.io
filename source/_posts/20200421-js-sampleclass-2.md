@@ -102,7 +102,7 @@ css 調整好版型，然而 c0\~c9 主要是提供每個數字代表多少定�
 3. 然後再來思考冒號每 500 毫秒做開關動作（透明度 0 或 1)，你可以規劃每 500 豪秒做 off，每 1000 毫秒做 on
 
 ## JS 部分
-```javascript
+```js
 function retime() {//執行 DOM 的變化
   setTimeout(retime, 1000); //1 秒之後，去跑 retime 這個動作
 
@@ -265,7 +265,7 @@ retime();
 
 ## js 部分
 我們除了時分秒，還要計算年月日週。要注意多一個判別，如果數字比 10 小要多補一個 0 在前面。
-```javascript
+```js
 var n_day = ['SUN', 'MON', 'TUS', 'WED', 'THR', 'FRI', 'SAT'];
 function re_time() {
   setTimeout("re_time()", 1000);

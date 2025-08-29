@@ -59,7 +59,7 @@ JavaScript 是一種程式語言，具有以下特點：
 
 讓我們從最簡單的程式開始學習。在 JavaScript 中，我們可以使用 `console.log()` 來輸出訊息：
 
-```javascript first-program.js
+```js first-program.js
 console.log("Hello, World!");
 ```
 
@@ -75,7 +75,7 @@ console.log("Hello, World!");
 
 除了 `console.log()` 之外，還有其他輸出方式：
 
-```javascript output-methods.js
+```js output-methods.js
 // 一般訊息
 console.log("這是一般訊息");
 
@@ -192,7 +192,7 @@ alert("這是彈出視窗");
 </html>
 ```
 
-```javascript script.js
+```js script.js
 // 外部 JavaScript 檔案
 document.addEventListener('DOMContentLoaded', function() {
     console.log("外部 JavaScript 檔案已載入！");
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 JavaScript 有兩種註解方式：
 
-```javascript comments.js
+```js comments.js
 // 這是單行註解
 // 任何在 // 後面的文字都會被忽略
 
@@ -277,7 +277,7 @@ console.log("這行會被執行"); // 這行後面的註解不會執行
 
 ### 註解的用途
 
-```javascript comment-usage.js
+```js comment-usage.js
 // 程式說明
 console.log("歡迎來到 JavaScript 世界");
 
@@ -311,7 +311,7 @@ let result = 5 * 3 + 2; // 先乘除後加減，結果是 17
 
 現代 JavaScript 主要使用 `let` 和 `const` 來宣告變數：
 
-```javascript variable-declaration.js
+```js variable-declaration.js
 // 使用 let 宣告可以改變的變數
 let name = "小明";
 let age = 25;
@@ -323,7 +323,7 @@ const SCHOOL_NAME = "資訊學院";
 
 ### 變數的使用
 
-```javascript variable-usage.js
+```js variable-usage.js
 // 宣告變數
 let userName = "小華";
 let userAge = 30;
@@ -342,7 +342,7 @@ console.log(userAge);  // 28
 
 ### let vs const
 
-```javascript let-vs-const.js
+```js let-vs-const.js
 // let：可以重新賦值
 let score = 85;
 score = 90; // 允許
@@ -371,7 +371,7 @@ console.log(student.age); // 21
 
 如果直接賦值給一個沒有宣告的變數，會創建隱式全域變數（或稱呼為臨時變數），這是很危險的做法：
 
-```javascript implicit-global.js
+```js implicit-global.js
 // 危險的做法：沒有使用 let 或 const
 userName = "小明"; // 創建了全域變數，很危險！
 
@@ -383,7 +383,7 @@ let userName = "小明"; // 明確宣告變數
 
 全域變數可以在任何位置讀取或修改。當不同程式碼範圍都有變數想要暫存資料時，可能會不小心用到別人的變數，覆蓋掉別人的資料：
 
-```javascript variable-collision.js
+```js variable-collision.js
 // 全域變數：任何地方都可以存取和修改
 userName = "小明";
 
@@ -408,7 +408,7 @@ showGreeting();  // 你好，處理中。..（資料被破壞了！）
 
 `let` 因為作用域的關係，即使重複撞名在每段程式碼內，也不會發生共用變數。作用域是指花括號 `{}` 包圍的範圍：
 
-```javascript scope-protection.js
+```js scope-protection.js
 // 使用 let 宣告，有作用域保護
 let userName = "小明";
 
@@ -431,7 +431,7 @@ showGreeting();  // 你好，小明（資料沒有被破壞）
 
 #### 作用域範例
 
-```javascript scope-example.js
+```js scope-example.js
 let globalVar = "全域變數";
 
 {
@@ -464,7 +464,7 @@ JavaScript 有幾種基本的資料型別，了解這些型別是程式設計的
 
 ### 數字（Number）
 
-```javascript number-type.js
+```js number-type.js
 // 整數
 let age = 25;
 let count = 100;
@@ -496,7 +496,7 @@ console.log(Math.sqrt(-1)); // NaN（負數開平方根）
 
 ### 字串（String）
 
-```javascript string-type.js
+```js string-type.js
 // 使用雙引號
 let message = "Hello, World!";
 
@@ -521,7 +521,7 @@ console.log(multiLine);   // 這是、n 多行、n 字串
 
 ### 布林值（Boolean）
 
-```javascript boolean-type.js
+```js boolean-type.js
 // 只有兩個值：true 或 false
 let isStudent = true;
 let isGraduated = false;
@@ -538,7 +538,7 @@ console.log(isLoggedIn);   // false
 
 ### 檢查資料型別
 
-```javascript typeof-operator.js
+```js typeof-operator.js
 let name = "小明";
 let age = 25;
 let isStudent = true;
@@ -559,7 +559,7 @@ console.log(typeof undefined_var); // undefined
 
 ### 特殊值
 
-```javascript special-values.js
+```js special-values.js
 // undefined：未定義的值
 let notDefined;
 console.log(notDefined); // undefined
@@ -592,7 +592,7 @@ JavaScript 會自動進行型別轉換，但有時會產生意外的結果。建
 
 ### 算術運算子
 
-```javascript arithmetic-operators.js
+```js arithmetic-operators.js
 let a = 10;
 let b = 3;
 
@@ -615,7 +615,7 @@ console.log(count); // 5
 
 ### 賦值運算子
 
-```javascript assignment-operators.js
+```js assignment-operators.js
 let score = 100;
 
 score = score + 10;  // 基本賦值
@@ -635,7 +635,7 @@ console.log(message); // Hello World
 
 ### 比較運算子
 
-```javascript comparison-operators.js
+```js comparison-operators.js
 let x = 5;
 let y = "5";
 
@@ -669,7 +669,7 @@ console.log("10" > "9"); // false （字串比較，不是數字比較）
 
 ### 邏輯運算子
 
-```javascript logical-operators.js
+```js logical-operators.js
 let isAdult = true;
 let hasLicense = false;
 let hasInsurance = true;
@@ -696,7 +696,7 @@ console.log((isAdult && hasLicense) || hasInsurance); // true
 除了基本的邏輯判斷功能外，邏輯運算子在實務上還有許多靈活的應用方式。這些進階用法將在後續課程中詳細介紹，目前只需先建立初步印象即可。
 
 **短路求值：**
-```javascript
+```js
 // 決定要不要執行某個操作
 isLoggedIn && console.log("歡迎回來！");  // 只有 isLoggedIn 為 true 才執行
 
@@ -705,7 +705,7 @@ let userName = userInput || "訪客";  // 如果 userInput 為空，使用 "訪�
 ```
 
 **布林值轉換：**
-```javascript
+```js
 // 快速轉換為布林值
 console.log(!0);      // true（0 轉為 false，再取反）
 console.log(!null);    // true（null 轉為 false，再取反）
@@ -715,7 +715,7 @@ console.log(!!"hello"); // true（字串轉為 true）
 
 ### 三元運算子
 
-```javascript ternary-operator.js
+```js ternary-operator.js
 let age = 20;
 
 // 傳統 if-else
@@ -744,7 +744,7 @@ console.log(level); // 良好
 
 ### 字串的建立與模板字串
 
-```javascript string-creation.js
+```js string-creation.js
 // 單引號
 let message1 = 'Hello, World!';
 
@@ -778,7 +778,7 @@ console.log(multiLine);
 
 ### 字串連接與處理
 
-```javascript string-processing.js
+```js string-processing.js
 let firstName = "王";
 let lastName = "小明";
 
@@ -805,7 +805,7 @@ console.log(path);  // C:\Users\Documents
 
 ### 字串屬性和方法
 
-```javascript string-methods.js
+```js string-methods.js
 let text = "Hello, JavaScript World!";
 
 // 取得字串長度
@@ -856,7 +856,7 @@ console.log(text.slice(7, 2));      // （回傳空字串）
 
 ### 實用的字串處理
 
-```javascript string-practical.js
+```js string-practical.js
 let email = "  user@example.com  ";
 let message = "Hello, World!";
 let data = "apple,banana,orange,grape";
@@ -928,7 +928,7 @@ console.log(cleanName); // john_doe
 
 最基本的條件判斷是 `if` 語句，當條件為 `true` 時執行程式碼：
 
-```javascript if-statement.js
+```js if-statement.js
 let age = 20;
 
 if (age >= 18) {
@@ -959,7 +959,7 @@ if (isLoggedIn) {
 
 當我們需要在條件不成立時執行其他程式碼時，使用 `if-else` 語句：
 
-```javascript if-else.js
+```js if-else.js
 let score = 85;
 
 if (score >= 60) {
@@ -990,7 +990,7 @@ if (hour < 12) {
 
 使用 `else if` 可以處理多個條件：
 
-```javascript multiple-conditions.js
+```js multiple-conditions.js
 let score = 85;
 
 if (score >= 90) {
@@ -1035,7 +1035,7 @@ if (age < 13) {
 
 `else if` 其實是巢狀單行的 `else { if }` 的語法糖。也就是說，下面兩種寫法效果完全一樣：
 
-```javascript
+```js
 // 常見寫法
 if (score >= 90) {
   console.log("A");
@@ -1064,7 +1064,7 @@ if (score >= 90) {
 
 使用邏輯運算子組合多個條件：
 
-```javascript compound-conditions.js
+```js compound-conditions.js
 let age = 25;
 let hasLicense = true;
 let hasInsurance = false;
@@ -1106,7 +1106,7 @@ if (!isRaining) {
 
 當需要根據一個變數的不同值執行不同程式碼時，`switch` 語句會比多個 `if-else` 更清晰：
 
-```javascript switch-statement.js
+```js switch-statement.js
 let day = 3;
 
 switch (day) {
@@ -1163,7 +1163,7 @@ switch (grade) {
 - 如果省略 break，當條件成立時，會連同後面所有 case 的程式碼一起執行，直到遇到 break 或 switch 結束。
 
 **範例：**
-```javascript switch-break-demo.js
+```js switch-break-demo.js
 let fruit = "apple";
 switch (fruit) {
   case "apple":
@@ -1188,7 +1188,7 @@ switch (fruit) {
 
 ## 條件判斷的最佳實踐
 
-```javascript best-practices.js
+```js best-practices.js
 // 1. 使用明確的條件
 let userAge = 25;
 let userName = "小明";
@@ -1291,7 +1291,7 @@ BMI = 65 ÷ (1.7 × 1.7) = 65 ÷ 2.89 = 22.5
 <!-- endtab -->
 
 <!-- tab 答案 -->
-```javascript conditional-practice-answers.js
+```js conditional-practice-answers.js
 // 練習 1：成績等級判斷
 let score = 95;
 let grade;
@@ -1365,7 +1365,7 @@ console.log(`身高 ${height}cm，體重 ${weight}kg，BMI ${bmi.toFixed(1)}，�
 
 ## for 迴圈
 
-```javascript for-loop.js
+```js for-loop.js
 // 基本 for 迴圈
 for (let i = 1; i <= 5; i++) {
     console.log(`第 ${i} 次執行`);
@@ -1386,7 +1386,7 @@ console.log(sum); // 55
 - `i--`：將變數 i 的值「減 1」（遞減），等同於 `i = i - 1` 或 `i -= 1`
 
 這兩個運算子常用於 for 迴圈的計數控制：
-```javascript
+```js
 for (let i = 0; i < 5; i++) {
   console.log(i); // 0, 1, 2, 3, 4
 }
@@ -1401,7 +1401,7 @@ for (let j = 5; j > 0; j--) {
 - `i--` 與 `--i` 亦同理
 
 **範例：**
-```javascript increment-demo.js
+```js increment-demo.js
 let a = 5;
 console.log(a++); // 5（先印出 5，再加 1）
 console.log(a);   // 6
@@ -1420,7 +1420,7 @@ console.log(++b); // 6（先加 1，再印出 6）
 
 ## while 迴圈
 
-```javascript while-loop.js
+```js while-loop.js
 // while 迴圈
 let count = 1;
 while (count <= 5) {
@@ -1440,7 +1440,7 @@ while (number <= 100) {
 
 ## do-while 迴圈
 
-```javascript do-while-loop.js
+```js do-while-loop.js
 // do-while 迴圈（至少執行一次）
 let input = 0;
 do {
@@ -1456,7 +1456,7 @@ do {
 - `continue`：**結束本次迴圈**，直接進入下一輪判斷，不會執行本輪剩下的程式碼。
 
 **範例：**
-```javascript break-continue-demo.js
+```js break-continue-demo.js
 for (let i = 1; i <= 10; i++) {
     if (i === 5) {
         break; // 當 i 等於 5 時跳出迴圈
@@ -1488,7 +1488,7 @@ for (let i = 1; i <= 10; i++) {
 
 ## 巢狀迴圈
 
-```javascript nested-loop.js
+```js nested-loop.js
 // 九九乘法表
 for (let i = 1; i <= 9; i++) {
     let row = "";

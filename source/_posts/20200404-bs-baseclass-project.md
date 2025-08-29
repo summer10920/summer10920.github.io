@@ -1442,7 +1442,7 @@ header, .nav-link{
 ```
 
 3. 開發 JS 做法為：每次點擊選單時，根據 href 對象當作 JQ 選擇對象之 offset 位置，並試圖移動到該 offset 處
-```javascript custom.js
+```js custom.js
 // scroll to id
 $("#lokimenu a, #scrolltop a").click(function () {
   let who = $(this).attr("href");
@@ -1473,7 +1473,7 @@ header a.active:after{
 ```
 2. 開發 JS 做法為：每次滾動時觸發 spy 函式，檢查所有 section 的 scroll 值是否與目前 scroll 相同，成立就替換選單的 a.active
 3. 最後記得網頁載入時需先跑一遍 spy 函式，避免載入時沒有 a.active
-```javascript custom.js
+```js custom.js
 $(window).scroll(() => {
   spy(); // scroll spy
 });
@@ -1516,7 +1516,7 @@ header{
   - 每次滾動時觸發此函式。
   - 每次寬度時觸發此函式。
 5. 最後記得網頁初次載入時需先跑一遍此函式，避免載入時沒有初始效果。
-```javascript custom.js
+```js custom.js
 $(window).scroll(() => {
   spy(); // scroll spy
   bgmenu(); //check menu bg

@@ -97,7 +97,7 @@ Alert 也提供 JS 操作相關說明，可以整合到你的 JS 腳本內去，
 
 2. 使用 JS 指令直接對某 JQ 對象的`[data-dismiss]`進行 alert close 之動作
 
-```javascript
+```js
 //透過 JQ 選擇器找到該處執行 alert 事件之 close 行為，向上層（包含自己）尋找 class=alert 對象然後關閉它 */
 $('.show').alert('close'); //選擇器填什麼都可以只要能向上找到。alert 對象
 ```
@@ -554,7 +554,7 @@ value=true(default), false
 
 或者改由 JS 的 JSON 參數指定法，將對象的 `.carusel` 初始化（同對應前面 `[data-name]` 之名稱）：
 
-```javascript
+```js
 $('.carousel').carousel({
   interval:500,
   keyboard:false,
@@ -564,7 +564,7 @@ $('.carousel').carousel({
 
 還有一些 JS 的指令控制，舉幾個例子為
 
-```javascript
+```js
 $('.carousel').carousel('prev');
 $('.carousel').carousel(1);
 ```
@@ -788,14 +788,14 @@ form 的公式稍微複雜且多樣化，公式不一定要跟著套用，跟外
 1. HTML5 本來就有自己的表單驗證效果（高優先），如果你希望關閉可添加屬性 `form[novalidate]`，將改為使用 Boostrap 的驗證效果。
 2. Bootstrap 的所有驗證效果是寫在`form.was-validated`，需要透過手動 JS 方式去控制添加移除，達到驗證結果的顯示隱藏。包含 AJAX 這種提交完需取消檢查，也需自行透過 JS 移除 `.was-validated` 之 Class 名稱。
 3. 想要單獨操作可改 JS 控制單筆 `input.{is-valid|is-invalid}` 來觸發指定對象外觀，就不用在表單上填入 `.was-validated` 做全部控制。
-```javascript
+```js
 $("#validationCustom01").addClass("is-valid");
 ```
 4. 驗證的 (input, textarea, select) 所發出綠色或紅色提示框，是 Bootstrap 採用偽元素：invalid & :valid 所固定編寫的 CSS。
 5. 接續上話題，偽元素：invalid & :valid 根據 HTML5 檢查合理性作業下 (required 與 type 屬性）所提供的外觀 CSS 處理。
 
 6. 總結來說，你需要自行**編寫 JS 腳本來控制**遞交表單時進行判斷欄位滿足條件，若不成立時清除遞交動作指令並添加 `form.was-validated` ：
-```javascript
+```js
 var demoform = document.getElementsByClassName('needs-validation')[0];
 demoform.addEventListener('submit', function(event) {
   //檢查 demoform 是否有檢核與驗證滿足條件。
@@ -840,7 +840,7 @@ Bootstrap 為了統一外觀（擺脫原本 checkobx 跟 radio 的 HTML5 框架�
 </div>
 ```
 > checkbox 有特別的偽類 `:indeterminate`，跟 `:invalid, :valid` 同應用，處於一種預設情況下之不明確的項目。可以透過 JSJQ 來控制初始調整。如下例：
-```javascript
+```js
 document.getElementById("customCheck").indeterminate=true; // js version
 $('#demoCheck').prop('indeterminate', true); // jq version
 ```
@@ -1047,7 +1047,7 @@ $('#demoCheck').prop('indeterminate', true); // jq version
 ```
 
 Bootstrap.js 已設計好這些 a:link 的錨點控制行為為`$().tab`操作，因此你可以手動 JS 觸發這些動作：
-```javascript
+```js
 $('#controldemo a[href="#profile"]').tab('show') // Select tab by name
 $('#controldemo a:first-child').tab('show') // Select first tab
 $('#controldemo a:last-child').tab('show') // Select last tab
@@ -1112,7 +1112,7 @@ $('#controldemo a:nth-child(3)').tab('show') // Select third tab
 可對 model 進行 JS 控制或參數調整（詳閱官方說明），舉例來說，若想想關閉灰透的互動，有兩種方法：
 
 1. 透過 JS 腳本設定
-```javascript
+```js
 $('#modaldemo').modal({
   backdrop:'static',
   show:false
@@ -1199,7 +1199,7 @@ $('#modaldemo').modal({
 
 Bootstrap.js 已設計好這些 a:link 的錨點控制行為為$().tab 操作，因此你可以手動 JS 觸發這些動作：
 
-```javascript
+```js
 $('#myTab a[href="#profile"]').tab('show') // Select tab by name
 $('#myTab li:first-child a').tab('show') // Select first tab
 $('#myTab li:last-child a').tab('show') // Select last tab
@@ -1472,7 +1472,7 @@ https://bootstrap.hexschool.com/docs/4.2/components/popovers/#options
 toast 提供像是曝光秒數 (data-delay)，自動消失 (data-autohide) 等應用參數，可以用 HTML 的 data 屬性或是 JS 物件宣告指定。
 
 1. 透過手動 JS 進行顯示，但預設只有 500 豪秒曝光且會自動隱藏。
-```javascript
+```js
 $('.toast').toast('show');
 ```
 2. 修改曝光豪秒方式，可透過 HTML 屬性 [data-delay=*] 或 JS 物件參數操作。

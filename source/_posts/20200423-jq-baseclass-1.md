@@ -43,7 +43,7 @@ JQuery 是一個由原生 JavaScript 所開發出來的開源函式庫，主要�
 # 語法說明
 使用 jQuery 的`$()`為基礎並會變成 jQuery 的元件（物件型態），透過此 jQuery 元件進行相關程式指令。若要接續其他動作則以物件指向來進行行為規劃，舉例來說：
 
-```javascript
+```js
 //語法為 $（對象）. 行為（參數/任務）
 $('li.list').addClass('color');
 ```
@@ -53,7 +53,7 @@ $('li.list').addClass('color');
 > 也可使用`jQuery()` 來代表 `$()` 之寫法，如果無法使用該符號情況下（跟某套件衝突）。
 
 JQ 可接續其他對象或動作並能連續指定多種，譬如
-```javascript
+```js
 $('li.list').next().css('background-color','red').addClass('color');
 ```
 1. 此為<mark>先</mark>找到 DOM 中的 li 標籤同時有 class name 為 list，<mark>接著</mark>下一個標籤為對象
@@ -62,7 +62,7 @@ $('li.list').next().css('background-color','red').addClass('color');
 
 如果需要，你也可以把 $() 存入變數，基本上只是將 jQuery 物件位置存為變數等待被拿來指向用。
 
-```javascript
+```js
 var li=$('li.list');
 li.addClass('color');
 ```
@@ -107,7 +107,7 @@ jQuery 開頭都是 `$()` 函數進行元件套用，事實上同等於 `jQuery(
 ```
 
 JQ 的 DOM 存取方式是透過 selector 來達到索引目標，會先轉換為 jQuery 之元件來取得後續行為。選取元件的方式範圍廣泛，主要概念採用了同於 CSS 的層級觀念。
-```javascript
+```js
 $(selector)  //基本的選擇器寫法
 ```
 selector 為文字串格式，舉例方式如下：

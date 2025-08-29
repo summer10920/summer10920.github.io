@@ -3253,7 +3253,7 @@ body {
 }
 ```
 
-```javascript script.js
+```js script.js
 // 主題切換功能
 function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -3500,7 +3500,7 @@ CSS 變數可以透過 JavaScript 動態修改，這讓我們能夠建立更互�
 }
 ```
 
-```javascript dynamic-script.js
+```js dynamic-script.js
 // 取得控制元素
 const primaryColorInput = document.getElementById('primaryColor');
 const fontSizeInput = document.getElementById('fontSize');

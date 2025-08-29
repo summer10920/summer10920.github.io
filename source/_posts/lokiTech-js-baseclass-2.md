@@ -59,7 +59,7 @@ JavaScript 是一種「腳本語言」（Scripting Language），最初設計用
 通常建議使用 `[]` 來建立「陣列實例」（Array instance），這樣建立出來的物件會自動擁有所有陣列方法（如 push、pop、forEach 等），語法簡潔且不易混淆。只有建立出「陣列實例」時，才能使用這些陣列專屬的方法。
 
 
-```javascript array-creation.js
+```js array-creation.js
 // 方法 1：使用方括號（推薦）
 let emptyArray = [];
 let fruits = ["蘋果", "香蕉", "橘子"];
@@ -91,7 +91,7 @@ console.log(numbers2); // [1, 2, 3, 4, 5]
 - 需要注意特殊情況
 
 **特殊情況：**
-```javascript
+```js
 // 使用 new Array() 時要注意
 let arr1 = new Array(3);    // 建立長度為 3 的空陣列 [empty × 3]
 let arr2 = [3];             // 建立包含數字 3 的陣列 [3]
@@ -109,7 +109,7 @@ console.log(arr2[0]);       // 3
 
 ### 存取陣列元素
 
-```javascript array-access.js
+```js array-access.js
 let colors = ["紅", "綠", "藍"];
 
 // 存取元素（索引從 0 開始）
@@ -125,7 +125,7 @@ console.log(colors); // ["紅", "黃", "藍"]
 console.log(colors.length); // 3
 ```
 ### 陣列與迴圈
-```javascript array-loop.js
+```js array-loop.js
 let students = ["小明", "小華", "小李", "小王"];
 
 // 使用 for 迴圈遍歷陣列
@@ -154,7 +154,7 @@ Array（陣列）是 JavaScript 中用來儲存多個資料的資料結構。每
 #### 常用方法
 在 JavaScript 中，陣列（Array）本身是一種線性資料結構，允許我們根據不同需求，利用內建方法實現「先進先出」（FIFO, First-In-First-Out）或「後進先出」（FILO, First-In-Last-Out，也稱 LIFO）等資料存取行為。例如，`push()` 和 `pop()` 方法可讓陣列像堆疊（stack）一樣運作（LIFO），而 `push()` 搭配 `shift()` 則可模擬佇列（queue）的行為（FIFO）。
 
-```javascript array-methods.js
+```js array-methods.js
 let animals = ["狗", "貓"];
 
 // 在尾端新增元素
@@ -178,7 +178,7 @@ console.log(animals);     // ["狗", "貓"]
 
 除了基本的新增與刪除操作外，陣列也提供了檢查元素是否存在、尋找特定資料的位置，以及將整個陣列快速轉換為字串等常用功能。
 
-```javascript array-practical.js
+```js array-practical.js
 let numbers = [1, 2, 3, 4, 5];
 
 // 檢查是否包含某個元素
@@ -239,7 +239,7 @@ console.log(fruits.join(", ")); // 蘋果，香蕉，橘子
   - 將字串轉成字元陣列
   - 產生指定長度的陣列
 
-```javascript array-from-demo.js
+```js array-from-demo.js
 // 將 Set 轉成陣列
 let s = new Set([1, 2, 3]);
 let arr1 = Array.from(s);
@@ -257,14 +257,14 @@ console.log(arr3); // [0, 1, 2, 3, 4]
 
 #### Array.isArray
 `Array.isArray()` 用來判斷某個值是否為陣列，回傳布林值。
-```javascript
+```js
 Array.isArray([1,2,3]); // true
 Array.isArray('abc');   // false
 ```
 
 #### Array.of
 `Array.of()` 根據傳入的參數建立一個新陣列（和 `new Array()` 不同，單一數字也會變成元素）。
-```javascript
+```js
 Array.of(3);        // [3]
 Array.of(1,2,3);    // [1,2,3]
 new Array(3);       // [empty × 3]（長度為3的空陣列）
@@ -283,7 +283,7 @@ new Array(3);       // [empty × 3]（長度為3的空陣列）
 
 ### 建立物件
 
-```javascript object-creation.js
+```js object-creation.js
 // 建立空物件
 let emptyObject = {};
 
@@ -300,7 +300,7 @@ console.log(person);
 
 ### 存取物件屬性
 
-```javascript object-access.js
+```js object-access.js
 let car = {
     brand: "Toyota",
     model: "Camry",
@@ -328,7 +328,7 @@ console.log(car["engine"]);    // undefined
 
 #### 處理不存在的屬性
 
-```javascript object-safe-access.js
+```js object-safe-access.js
 let user = {
     name: "小明",
     age: 25
@@ -385,7 +385,7 @@ console.log("聯絡方式：", { email, phone });
 
 ### 新增和刪除屬性
 
-```javascript object-modify.js
+```js object-modify.js
 let book = {
     title: "JavaScript 入門",
     author: "張三"
@@ -403,7 +403,7 @@ console.log(book);
 
 ### 物件與迴圈
 
-```javascript object-loop.js
+```js object-loop.js
 let student = {
     name: "小華",
     age: 22,
@@ -426,7 +426,7 @@ if ("name" in student) {
 
 在 JavaScript 中，`Object` 是一個內建的建構函式，它提供了許多有用的靜態方法來處理物件。我們已經知道可以用 `{}` 來建立物件，但也可以用 `new Object()` 來建立：
 
-```javascript object-constructor.js
+```js object-constructor.js
 // 兩種建立物件的方式
 let obj1 = {};                    // 物件字面量語法
 let obj2 = new Object();          // Object 建構函式
@@ -451,7 +451,7 @@ console.log(person); // {name: "小明", age: 25}
 - 例如：用物件字面量 `{}` 或 `new Object()` 建立的物件，其 `constructor` 都指向內建的 `Object` 函式。
 - 這個屬性可以用來判斷物件是由哪個建構函式產生的，也常用於物件型別的檢查。
 
-```javascript constructor-demo.js
+```js constructor-demo.js
 let arr = [];
 console.log(arr.constructor === Array); // true
 let obj = {};
@@ -462,7 +462,7 @@ console.log(obj.constructor === Object); // true
 - `constructor` 屬性可被覆蓋或修改，並非絕對安全的型別判斷方式。
 - 更嚴謹的型別判斷可用 `instanceof` 或 `Object.prototype.toString.call(obj)`。
 
-```javascript instanceof-demo.js
+```js instanceof-demo.js
 let arr = [];
 console.log(arr instanceof Array); // true
 console.log(arr instanceof Object); // true
@@ -499,7 +499,7 @@ console.log(Object.prototype.toString.call(new Date())); // [object Date]
 
 `Object` 建構函式提供了許多有用的靜態方法，讓我們能夠更方便地處理物件：
 
-```javascript object-static-methods.js
+```js object-static-methods.js
 let car = {
     brand: "Toyota",
     model: "Camry",
@@ -555,7 +555,7 @@ console.log("空物件？", isEmpty); // 空物件？ true
 
 當我們需要重複執行相同的程式碼時，函式可以讓程式更簡潔、更容易維護：
 
-```javascript why-functions.js
+```js why-functions.js
 // 沒有使用函式的重複程式碼
 console.log("歡迎來到我們的網站！");
 console.log("今天是美好的一天！");
@@ -580,7 +580,7 @@ showWelcome();
 
 函式是 JavaScript 中最重要的概念之一，讓我們來學習函式的基本語法和各種用法：
 
-```javascript function-syntax.js
+```js function-syntax.js
 // 函式宣告
 function greet() {
     console.log("Hello, World!");
@@ -602,7 +602,7 @@ sayHello("小華"); // Hello, 小華！
 
 函式可以接收參數來處理不同的資料：
 
-```javascript function-parameters.js
+```js function-parameters.js
 // 單一參數
 function square(number) {
     let result = number * number;
@@ -626,7 +626,7 @@ add(10, 20); // 10 + 20 = 30
 
 函式可以使用 `return` 語句來回傳結果：
 
-```javascript function-return.js
+```js function-return.js
 // 有回傳值的函式
 function multiply(a, b) {
     return a * b;
@@ -646,7 +646,7 @@ console.log(`總價：${total}`); // 總價：300
 
 ES6 引入了預設參數，讓我們可以為參數設定預設值：
 
-```javascript function-default-params.js
+```js function-default-params.js
 // 預設參數
 function introduce(name, age = 0, city = "未知") {
     console.log(`我是 ${name}，${age} 歲，住在 ${city}`);
@@ -678,7 +678,7 @@ introduce("小李", 30, "台北");          // 我是 小李，30 歲，住在 �
 JSDoc 是 JavaScript 常用的標準化註解格式，主要用於說明「函式、參數、回傳值」等資訊。這種註解不僅讓程式碼更容易閱讀，也能被工具自動產生 API 文件，提升團隊協作效率。
 
 **基本語法：**
-```javascript
+```js
 /**
  * 這是函式的說明文字
  * @param {型別} 參數名稱 - 參數用途說明
@@ -699,7 +699,7 @@ function add(a, b) {
 - 輸入 `/**` 然後按 <kbd>Enter</kbd>，可自動產生 JSDoc 樣板
 
 **範例：**
-```javascript
+```js
 /**
  * Check if the person is at least 18 years old based on the given birth year.
  * @param {number} birthYear - The year of birth (e.g., 2005)
@@ -718,7 +718,7 @@ function isAdult(birthYear) {
 
 箭頭函式是 ES6 引入的新語法，提供更簡潔的函式撰寫方式：
 
-```javascript arrow-functions.js
+```js arrow-functions.js
 // 傳統函式
 function add(a, b) {
     return a + b;
@@ -750,7 +750,7 @@ sayHello();                    // Hello!
 
 除了函式宣告外，JavaScript 還支援匿名函式（函式表達式）的寫法。這種方式讓我們能夠將函式賦值給變數：
 
-```javascript anonymous-functions.js
+```js anonymous-functions.js
 // 函式宣告（提升）
 function greet(name) {
     console.log(`Hello, ${name}!`);
@@ -781,7 +781,7 @@ console.log(result); // 8
 
 #### 函式宣告 vs 函式表達式
 
-```javascript function-declaration-vs-expression.js
+```js function-declaration-vs-expression.js
 // 函式宣告 - 會被提升 (hoisting)
 sayHello("小明"); // 可以正常執行
 
@@ -801,7 +801,7 @@ sayGoodbye("小華"); // 可以正常執行
 
 #### 匿名函式的實際應用
 
-```javascript anonymous-functions-usage.js
+```js anonymous-functions-usage.js
 // 1. 作為回調函式
 let numbers = [1, 2, 3, 4, 5];
 
@@ -855,14 +855,14 @@ console.log(operation(10, 5)); // 可能是 15 或 5
 {% note warning %}
 **注意事項：**
 - **函式宣告（Function Declaration）會被提升（Hoisting）**：在 JavaScript 中，使用 `function` 關鍵字宣告的函式，會在程式執行前自動被提升到目前作用域的最上方，因此你可以在函式定義之前就呼叫該函式。例如：
-  ```javascript
+  ```js
   greet(); // 可以正常執行
   function greet() {
       console.log("Hello!");
   }
   ```
 - **函式表達式（Function Expression）不會被提升**：將函式賦值給變數的寫法（如 `let fn = function() {}`），必須先定義後才能使用，否則會出現錯誤。這是因為只有變數名稱會被提升，函式內容不會被提升。例如：
-  ```javascript
+  ```js
   sayHi(); // 這裡會出錯
   let sayHi = function() {
       console.log("Hi!");
@@ -870,7 +870,7 @@ console.log(operation(10, 5)); // 可能是 15 或 5
   ```
 - **匿名函式（Anonymous Function）常用於回呼函式（Callback）與事件處理**：匿名函式沒有名稱，通常直接作為參數傳遞給其他函式，例如陣列的 `forEach`、事件監聽（`addEventListener`）等，讓程式更靈活。
 - **IIFE（Immediately Invoked Function Expression，立即執行函式表達式）常用於建立私有作用域**：IIFE 是一種定義後立即執行的匿名函式，常用來避免變數污染全域命名空間，或建立私有變數。例如：
-  ```javascript
+  ```js
   (function() {
       // 這裡的變數只在這個函式內有效
       let secret = "隱藏資訊";
@@ -884,7 +884,7 @@ console.log(operation(10, 5)); // 可能是 15 或 5
 
 在一開始的變數章節中，我們已經學習了變數的基本概念。現在讓我們深入探討函式中的變數作用域，了解全域變數和區域變數在函式中的行為：
 
-```javascript variable-scope.js
+```js variable-scope.js
 // 全域變數
 let globalVar = "我是全域變數";
 
@@ -931,7 +931,7 @@ console.log(localVar); // 錯誤！無法存取區域變數
 
 #### 基本閉包範例
 
-```javascript closure-basic.js
+```js closure-basic.js
 function outerFunction() {
   let message = "Hello from outer function";
   
@@ -1118,7 +1118,7 @@ myFunction(); // 輸出：Hello from outer function
 
 #### 計數器閉包
 
-```javascript closure-counter.js
+```js closure-counter.js
 function createCounter() {
   let count = 0; // 私有變數
   
@@ -1200,7 +1200,7 @@ console.log(counter.getCount()); // 2
 #### 模組化閉包
 函式裡面宣告兩個小函式，透過物件的寫法回傳給外部。
 
-```javascript closure-module.js
+```js closure-module.js
 function Module() {
   // 共享的作用域變數
   let animalCount = 0;
@@ -1303,7 +1303,7 @@ console.log(animalModule.stats()); // 輸出：{ totalCalls: 3, lastAnimal: '狗
 
 #### 基本 this 範例
 
-```javascript this-basic.js
+```js this-basic.js
 function room() {
   console.log(this.word); // 印出 this 物件內的 word 變數
 }
@@ -1372,7 +1372,7 @@ obj.second.goto(); // 輸出：C (this 指向 obj.second)
 
 #### 現代 JavaScript 中的 this
 
-```javascript this-modern.js
+```js this-modern.js
 // 1. 全域環境中的 this
 console.log(this); // 在瀏覽器中指向 window，在 Node.js 中指向 global
 
@@ -1460,7 +1460,7 @@ person.birthday(); // 輸出：生日快樂！現在 26 歲了
 ### forEach
 對陣列中的每個元素執行指定的動作，常用於遍歷或輸出資料。
 
-```javascript array-foreach.js
+```js array-foreach.js
 let fruits = ["蘋果", "香蕉", "橘子"];
 fruits.forEach(function(item, index) {
   console.log(index, item);
@@ -1473,7 +1473,7 @@ fruits.forEach(function(item, index) {
 ### map
 將每個元素轉換為新值，並回傳一個新陣列，常用於資料格式轉換。
 
-```javascript array-map.js
+```js array-map.js
 let numbers = [1, 2, 3];
 let doubled = numbers.map(n => n * 2);
 console.log(doubled); // [2, 4, 6]
@@ -1482,7 +1482,7 @@ console.log(doubled); // [2, 4, 6]
 ### filter
 篩選出符合條件的元素，回傳新陣列，常用於資料過濾。
 
-```javascript array-filter.js
+```js array-filter.js
 let scores = [80, 55, 90, 70];
 let passed = scores.filter(score => score >= 60);
 console.log(passed); // [80, 90, 70]
@@ -1491,7 +1491,7 @@ console.log(passed); // [80, 90, 70]
 ### find
 尋找第一個符合條件的元素，回傳該元素本身，常用於搜尋特定資料。
 
-```javascript array-find.js
+```js array-find.js
 let users = [
   { name: "小明", age: 18 },
   { name: "小華", age: 22 }
@@ -1503,7 +1503,7 @@ console.log(user); // { name: "小華", age: 22 }
 ### some
 檢查陣列中是否有任何一個元素符合條件，回傳布林值，常用於條件判斷。
 
-```javascript array-some.js
+```js array-some.js
 let arr = [1, 3, 5, 8];
 let hasEven = arr.some(n => n % 2 === 0);
 console.log(hasEven); // true
@@ -1512,7 +1512,7 @@ console.log(hasEven); // true
 ### every
 檢查陣列中是否所有元素都符合條件，回傳布林值，常用於整體驗證。
 
-```javascript array-every.js
+```js array-every.js
 let arr = [2, 4, 6];
 let allEven = arr.every(n => n % 2 === 0);
 console.log(allEven); // true
@@ -1521,7 +1521,7 @@ console.log(allEven); // true
 ### reduce
 將陣列歸納為單一值，常用於加總、統計等彙總運算。
 
-```javascript array-reduce.js
+```js array-reduce.js
 let nums = [1, 2, 3, 4];
 let sum = nums.reduce((acc, cur) => acc + cur, 0);
 console.log(sum); // 10
@@ -1533,7 +1533,7 @@ console.log(sum); // 10
 
 ### 陣列的重組
 
-```javascript spread-array.js
+```js spread-array.js
 let ary = [1, 2, 3];
 let newAry = [...ary, 4, 5];
 console.log(newAry); // [1, 2, 3, 4, 5]
@@ -1546,7 +1546,7 @@ console.log(merged); // [1, 2, 3, 4]
 
 ### 物件的重組
 
-```javascript spread-object.js
+```js spread-object.js
 let obj = { name: "小明", age: 18 };
 let newObj = { ...obj, city: "台北" };
 console.log(newObj); // { name: "小明", age: 18, city: "台北" }
@@ -1574,7 +1574,7 @@ console.log(updated); // { name: "小華", age: 18 }
 
 ### 陣列的解構賦值
 
-```javascript array-destructuring.js
+```js array-destructuring.js
 let arr = [10, 20, 30];
 let [a, b, c] = arr;
 console.log(a); // 10
@@ -1609,7 +1609,7 @@ console.log(others);  // [30, 40, 50]
 
 ### 物件的解構賦值
 
-```javascript object-destructuring.js
+```js object-destructuring.js
 let person = { name: "小明", age: 18, city: "台北", job: "學生" };
 let { name, age } = person;
 console.log(name); // 小明
@@ -1641,7 +1641,7 @@ console.log(rest); // { age: 18, city: "台北", job: "學生" }
 
 ### 巢狀解構
 
-```javascript nested-destructuring.js
+```js nested-destructuring.js
 let user = {
   info: { id: 1, username: "loki" },
   scores: [90, 80, 70]
@@ -1658,7 +1658,7 @@ console.log(first, second); // 90 80
 
 解構也常用於函式參數，讓函式更易讀且靈活：
 
-```javascript function-param-destructuring.js
+```js function-param-destructuring.js
 function printUser({ name, age }) {
   console.log(`姓名：${name}，年齡：${age}`);
 }
@@ -1667,7 +1667,7 @@ printUser({ name: "小華", age: 22 });
 
 ### 交換變數
 
-```javascript swap-destructuring.js
+```js swap-destructuring.js
 let a = 1, b = 2;
 [a, b] = [b, a];
 console.log(a, b); // 2 1
@@ -1695,7 +1695,7 @@ console.log(a, b); // 2 1
 
 ### 物件屬性值的各種類型
 
-```javascript object-property-types.js
+```js object-property-types.js
 const person = {
   // 基本資料類型
   name: '小明',           // 字串
@@ -1753,7 +1753,7 @@ console.log(person.info.getInfo());         // 小明, 25 歲
 
 ### 物件方法定義的兩種語法
 
-```javascript object-methods-syntax.js
+```js object-methods-syntax.js
 const calculator = {
   // 方法 1：簡寫語法（ES6+，推薦）
   add(a, b) {
@@ -1785,7 +1785,7 @@ console.log(calculator.divide(6, 2));   // 3
 
 ### 物件屬性值的動態操作
 
-```javascript object-dynamic-properties.js
+```js object-dynamic-properties.js
 const user = {
   name: '使用者',
   age: 30
@@ -1821,7 +1821,7 @@ console.log(user.hasOwnProperty('age')); // true
 
 ### 物件屬性值的進階應用
 
-```javascript object-advanced-properties.js
+```js object-advanced-properties.js
 // 1. 計算屬性名稱（ES6+）
 const propertyName = 'dynamicProperty';
 const dynamicObj = {
@@ -1869,7 +1869,7 @@ const processedUser = processUser({
 
 ### 物件屬性值的類型檢查
 
-```javascript object-type-checking.js
+```js object-type-checking.js
 const mixedObject = {
   string: '字串',
   number: 42,
@@ -1924,7 +1924,7 @@ JavaScript 提供了許多功能強大的「內建物件」與「建構函式」
 - `forEach(fn)`：遍歷所有元素
 
 ### 範例
-```javascript set-demo.js
+```js set-demo.js
 let s = new Set();
 s.add(1);
 s.add(2);
@@ -1974,7 +1974,7 @@ console.log(ary); // [1, 3, 4]
 - `forEach(fn)`：遍歷所有鍵值對
 
 ### 範例
-```javascript map-demo.js
+```js map-demo.js
 let map = new Map();
 map.set('name', '小明');
 map.set(123, '數字 key');
@@ -2035,7 +2035,7 @@ for (let [key, value] of map) {
 - `Math.sqrt(x)`：開根號
 
 ### 範例
-```javascript math-demo.js
+```js math-demo.js
 console.log(Math.PI);           // 3.141592653589793
 console.log(Math.abs(-10));     // 10
 console.log(Math.round(2.7));   // 3
@@ -2050,11 +2050,11 @@ console.log(Math.sqrt(16));     // 4
 {% note info %}
 **小技巧：Math.random() 產生隨機整數**
 - 產生 1~10 的隨機整數：
-  ```javascript
+  ```js
   let n = Math.floor(Math.random() * 10) + 1;
   ```
 - 產生指定範圍的隨機整數：
-  ```javascript
+  ```js
   function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -2073,7 +2073,7 @@ console.log(Math.sqrt(16));     // 4
 <!-- tab 答案 -->
 **Set + while 寫法（有放回抽樣）**
 
-```javascript lotto-demo.js
+```js lotto-demo.js
 // 產生 1~46 的大樂透號碼，隨機取 6 個不重複並排序 （有放回抽樣）
 function getLottoNumbers() {
   const numbers = new Set();
@@ -2089,7 +2089,7 @@ console.log(getLottoNumbers()); // 例如：[3, 8, 15, 22, 34, 45]
 
 **抽球寫法（無放回抽樣）**
 
-```javascript lotto-demo.js
+```js lotto-demo.js
 function getLottoNumbers() {
   let pool = Array.from({ length: 46 }, (_, i) => i + 1);
   let selected = [];
@@ -2145,7 +2145,7 @@ console.log("由字串建立日期：", isoDate);
 - `getTime()`：取得自 1970/1/1 00:00:00 UTC 以來的「時間戳記」（Timestamp，單位為毫秒，millisecond）
 - `toLocaleString()`：格式化日期字串，會根據瀏覽器用戶的地區（Locale）自動顯示對應的日期與時間格式
 
-```javascript date-demo.js
+```js date-demo.js
 let now = new Date();
 console.log(now); // 當下時間
 console.log(now.getFullYear()); // 年
@@ -2162,7 +2162,7 @@ console.log(d.toLocaleDateString());
 
 {% note info %}
 **小技巧：計算兩個日期的天數差**
-  ```javascript
+  ```js
 d1 = new Date('2024-08-01');
 d2 = new Date('2024-08-10');
 let diff = (d2 - d1) / (1000 * 60 * 60 * 24);
@@ -2181,7 +2181,7 @@ console.log(diff); // 9
 - `setTime(timestamp)`：設定時間戳記
 - `setMilliseconds(ms)`：設定毫秒（0~999）
 
-```javascript date-set-demo.js
+```js date-set-demo.js
 let date = new Date();
 console.log('原始時間：', date.toLocaleString());
 
@@ -2210,7 +2210,7 @@ console.log('自訂日期：', customDate.toLocaleString());
 
 {% note info %}
 **小技巧：使用 set 方法調整日期**
-```javascript
+```js
 // 將日期調整到下個月的同一天
 function nextMonthSameDay(date) {
     let newDate = new Date(date);
@@ -2250,7 +2250,7 @@ console.log('下一小時：', nextHour(now).toLocaleString());
 
 <!-- endtab -->
 <!-- tab 答案 -->
-```javascript date-countdown.js
+```js date-countdown.js
 function getCountdownToNewYear() {
   const now = new Date();
   const year = now.getFullYear();
@@ -2277,7 +2277,7 @@ getCountdownToNewYear();
 
 ## 常見錯誤類型
 
-```javascript common-errors.js
+```js common-errors.js
 // 語法錯誤（Syntax Error）
 // console.log("Hello World"  // 缺少右括號
 
@@ -2302,7 +2302,7 @@ getCountdownToNewYear();
 
 這種結構讓我們可以針對錯誤進行友善提示、記錄錯誤資訊，甚至避免整個程式崩潰。
 
-```javascript try-catch.js
+```js try-catch.js
 function divide(a, b) {
     try {
         if (b === 0) {
@@ -2331,7 +2331,7 @@ console.log(divide(10, 0));  // null，並顯示錯誤訊息
 
 ## 除錯技巧
 
-```javascript debugging-tips.js
+```js debugging-tips.js
 // 1. 使用 console.log 追蹤程式執行
 function calculateSum(numbers) {
     console.log('開始計算總和，輸入：', numbers);
@@ -2373,7 +2373,7 @@ debugLog('這是除錯訊息');
 
 ## 輸入驗證
 
-```javascript input-validation.js
+```js input-validation.js
 function validateEmail(email) {
     if (typeof email !== 'string') {
         throw new TypeError('電子郵件必須是字串');
