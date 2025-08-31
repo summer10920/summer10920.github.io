@@ -9,7 +9,7 @@ tag:
   - 前端框架
   - 原子化 CSS
 date: 2025-08-21 14:26:44
-hidden: true
+hidden: false
 ---
 
 ![](/assets/images/banner/tailwind.png)
@@ -506,7 +506,10 @@ export default {
 ## 實用工具
 TailwindCSS 是一個以功能類優先（Utility-First）的 CSS 框架，透過大量預定義的 class name 來套用 CSS 樣式。在深入了解各個功能類別之前，我們先來認識一些重要的組合概念。每個 class 代表一個明確的 CSS 屬性效果，多個 class 可以自由組合出複雜的樣式。這種原子化的設計確保了樣式的可重用性，同時也支援響應式設計、狀態變化等進階用法。
 
+{% note primary %}
+**小提示**
 為了幫助已熟悉 CSS 的讀者快速理解，接下來的範例會同時展示 Tailwind class 與對應生成的 CSS 程式碼。這種對照方式可以讓您更容易理解每個功能類別的實際效果，並掌握如何運用它們來建構現代化的網頁介面。
+{% endnote %}
 
 ### 懸停和焦點狀態的樣式
 ```html
@@ -797,6 +800,856 @@ export function VacationCard({ img, imgAlt, eyebrow, title, pricing, url }) {
 ```
 
 ## 懸停、聚焦和其他狀態
+TailwindCSS 幾乎涵蓋了所有常見的狀態樣式需求。您可以在 class 名稱前加上「變體（variant）」前綴，來針對特定互動狀態、結構位置或父層條件，條件式地套用樣式。這些變體前綴讓您能夠精確控制樣式在不同情境下的表現，無需額外撰寫自訂 CSS。
+
+### 偽類 Pseudo-classes
+
+#### 互動狀態 Interactive states
+| Variant 變體     | 情境寫法                                    | 說明                                   |
+| ---------------- | ------------------------------------------- | -------------------------------------- |
+| `hover:`         | button.bg-sky-500.hover:bg-sky-700          | 滑鼠懸停時背景色從淺藍變深藍           |
+| `focus:`         | input.border-gray-300.focus:border-blue-500 | 元素獲得焦點時邊框顏色變藍             |
+| `focus-within:`  | div.focus-within:ring-2 > input             | 當任一子元素獲得焦點時，父容器套用樣式 |
+| `focus-visible:` | button.focus-visible:outline-none           | 使用鍵盤聚焦元素時，設定元素的樣式     |
+| `active:`        | button.bg-gray-200.active:bg-gray-400       | 按下時背景色變深                       |
+| `visited:`       | a.visited:text-purple-600                   | 已造訪的連結套用                       |
+| `target:`        | div.target:bg-yellow-100                    | 被錨點定位（:target）時套用樣式        |
+| `empty:`         | div.empty:hidden                            | 元素內容為空時                         |
+| `inert:`         | div.inert:pointer-events-none               | 元素處於非互動狀態時                   |
+
+#### 結構選擇器 Structural selectors
+
+| Variant 變體          | 情境寫法                        | 說明                                                |
+| --------------------- | ------------------------------- | --------------------------------------------------- |
+| `first:`              | li.first:mt-0.mt-4              | 只有第一個元素沒有上邊距                            |
+| `last:`               | li.mb-4.last:mb-0               | 只有最後一個元素沒有下邊距                          |
+| `only:`               | ul > li.py-4.only:py-0          | 當此元素是其父元素的唯一子元素時                    |
+| `odd:`                | tr.odd:bg-gray-100              | 奇數列背景色變淡灰                                  |
+| `even:`               | tr.even:bg-gray-50              | 偶數列背景色變更淡                                  |
+| `first-of-type:`      | p.first-of-type:mt-0            | 同類型中，第一個元素時                              |
+| `last-of-type:`       | p.last-of-type:mb-0             | 同類型中，最後一個元素時                            |
+| `only-of-type:`       | span.only-of-type:mx-auto       | 同類型中，唯一元素時                                |
+| `nth-*:`              | li.nth-[3]:bg-yellow-100        | 第 3 個元素時套用樣式（支援任意數字）               |
+| `nth-*:`              | li.nth-[2n+1_of_li]:bg-pink-100 | 針對 li 的奇數（2n+1）項套用樣式，支援 CSS Nth 公式 |
+| `nth-last-*:`         | li.nth-last-[2]:text-red-500    | 倒數第 2 個元素時套用樣式                           |
+| `nth-of-type-*:`      | p.nth-of-type-4:underline       | 第 4 個同類型元素時加底線（支援任意數字）           |
+| `nth-last-of-type-*:` | p.nth-last-of-type-6:underline  | 倒數第 6 個同類型元素時加底線                       |
+
+#### 表單狀態 Form states
+
+| Variant 變體         | 情境寫法                                         | 說明                          |
+| -------------------- | ------------------------------------------------ | ----------------------------- |
+| `disabled:`          | button.bg-blue-500.disabled:bg-gray-300          | 禁用時背景色變灰              |
+| `enabled:`           | button.enabled:cursor-pointer                    | 元素啟用時                    |
+| `checked:`           | input[type="checkbox"].checked:bg-blue-500       | 核取方塊或單選按鈕被選取時    |
+| `indeterminate:`     | input[type="checkbox"].indeterminate:bg-gray-400 | 核取方塊處於不確定狀態時      |
+| `default:`           | option.default:ring-2                            | 預設選項時                    |
+| `optional:`          | input.optional:border-gray-300                   | 可選欄位時                    |
+| `required:`          | input.required:border-red-500                    | 必填欄位時邊框變紅            |
+| `valid:`             | input.valid:border-green-500                     | 表單驗證通過時                |
+| `invalid:`           | input.invalid:border-red-500                     | 表單驗證失敗時                |
+| `user-valid:`        | input.user-valid:border-green-500                | 使用者互動後驗證通過時        |
+| `user-invalid:`      | input.user-invalid:border-red-500                | 使用者互動後驗證失敗時        |
+| `in-range:`          | input[type="number"].in-range:border-green-500   | 數值在有效範圍內時            |
+| `out-of-range:`      | input[type="number"].out-of-range:border-red-500 | 數值超出有效範圍時            |
+| `placeholder-shown:` | input.placeholder-shown:text-gray-400            | 顯示佔位符時                  |
+| `read-only:`         | input.read-only:bg-gray-100                      | 唯讀欄位時                    |
+| `details-content:`   | details.details-content:bg-gray-50 > summary     | 設定 details 元素的的內容樣式 |
+| `autofill:`          | input.autofill:bg-yellow-100                     | 瀏覽器自動填充時              |
+
+#### 群組與兄弟選擇器 Group and sibling selectors
+| Variant 變體   | 情境寫法                                                 | 說明                                                            |
+| -------------- | -------------------------------------------------------- | --------------------------------------------------------------- |
+| `*:`           | ul.*:data-user:size-12 > h1 + img[data-user]             | 該父元素下的直接子元素中持有 data-user 屬性的元素設定 size 尺寸 |
+| `**:`          | ul.**:data-user:size-12 > a > img[data-user]             | 該父元素下的任何持有 data-user 屬性的後代元素設定 size 尺寸     |
+| `has-[...]:`   | div.has-[.error]:border-red-500 > .error                 | 包含特定子元素時                                                |
+| `group-[...]:` | div.group > span.group-hover:text-blue-500               | 父層 group 懸停時子元素文字變藍                                 |
+| `peer-[...]:`  | input[type="checkbox"] + label.peer-checked:bg-green-500 | 兄弟元素（如 checkbox）被選取時變色                             |
+| `not-[...]:`   | li.not-[:last-child]:mb-2                                | 非最後一個元素時有下邊距                                        |
+| `in-[...]:`    | div.in-focus:opacity-100                                 | 當任何父元素獲得焦點時，子元素變為不透明                        |
+
+{% note info %}
+**小技巧：萬用 [...] 變體語法**
+
+`[...]` 寫法可插入任何變體（variant）或 CSS 偽類（pseudo-class），讓你能夠自訂條件。例如：
+
+- `has-checked:`：只要父元素裡有被選取（checked）的後代元素，父元素就會套用樣式
+- `has-[:focus]`：只要父元素裡有獲得焦點的後代元素，父元素就會套用樣式
+- `has-[.error]`：只要父元素裡有 class 為 `.error` 的後代元素，父元素就會套用樣式
+
+這種萬用語法讓 TailwindCSS 的條件式樣式更加彈性，能夠精確對應各種互動或結構狀態。
+{% endnote %}
+
+##### Group 以父項狀態為條件
+在 TailwindCSS 中，若要根據父元素的互動狀態（如滑鼠懸停、聚焦等）來改變子元素的樣式，可以利用「群組類別」與 `group-*` 變體達成。做法如下：
+
+1. **在父元素加上 `group` 類別**  
+2. **在目標子元素加上 `group-hover:`、`group-focus:` 等變體前綴的樣式**
+
+例如，當滑鼠懸停在父容器時，讓子元素的文字顏色變藍：
+
+```html
+<!-- 父元素加上 group 類別 -->
+<div class="group p-4 border rounded-lg hover:bg-gray-50">
+  <!-- 子元素使用 group-hover: 變體 -->
+  <h3 class="text-lg font-semibold group-hover:text-blue-600">標題</h3>
+  <p class="text-gray-600 group-hover:text-gray-800">描述文字</p>
+  <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded group-hover:bg-blue-600">
+    按鈕
+  </button>
+</div>
+```
+
+根據父元素是否帶有 `.has-error` 類別，動態改變子元素的樣式。父層出現錯誤狀態時，自動套用錯誤樣式到子元素，提升互動體驗與可讀性。
+
+```html
+<!-- 有錯誤狀態（加上 has-error 類別，錯誤提示自動變紅底） -->
+<!-- <div class="group p-4 border rounded-lg"> -->
+<div class="group has-error p-4 border rounded-lg">
+  <label class="text-sm text-gray-700">電子郵件</label>
+  <input class="mt-1 w-full p-2 border rounded" type="email" placeholder="請輸入電子郵件">
+  <span class="text-red-600 group-[.has-error]:bg-red-50 group-[.has-error]:p-2 group-[.has-error]:rounded">
+    請輸入有效的電子郵件地址
+  </span>
+</div>
+```
+
+**巢狀群組範例：使用命名群組**
+當有多層巢狀的群組時，可以使用 `group/{name}` 語法來指定特定的父群組：群組觸發條件說明：只要父元素帶有 `group/{name}` 類別（如 `group/card`），子元素就可以使用 `group-hover/{name}:`、`group-focus/{name}:` 等變體，根據父元素的互動狀態（如 hover、focus、active 等）來改變自身樣式。
+
+觸發條件舉例：
+- 滑鼠懸停在 `.group/card` 父層時，所有帶有 `group-hover/card:` 前綴的子元素樣式會被啟用。
+- 若有多層巢狀群組，子元素可同時響應多個群組的狀態（如同時有 `group-hover/card:` 和 `group-hover/button:`）。
+- 只會響應最近的對應群組名稱，避免不同群組間的干擾。
+
+常見互動狀態：
+- `group-hover/{name}:`：父群組 hover 時觸發
+- `group-focus/{name}:`：父群組 focus 時觸發
+- `group-active/{name}:`：父群組 active 時觸發
+- 也可自訂條件（如 `group-[.has-error]:`）
+
+```html
+<!-- 外層群組：group/card -->
+<div class="group/card p-6 bg-white border rounded-lg hover:shadow-lg">
+  <!-- 當父層 group/card 被 hover 時，h3 文字會變藍色 -->
+  <h3 class="text-lg font-semibold group-hover/card:text-blue-600">卡片標題</h3>
+  <!-- 內層群組：group/button -->
+  <div class="group/button mt-4 p-3 bg-gray-50 rounded">
+    <!-- 當父層 group/button 被 hover 時，p 文字會由灰色變深灰色 -->
+    <p class="text-gray-600 group-hover/button:text-gray-800">按鈕區域</p>
+    <!-- 同時響應兩個群組的狀態 -->
+    <button class="btn group-hover/card:bg-blue-600 group-hover/button:scale-105 group-hover/button:shadow-md">點擊按鈕</button>
+    <!-- 只響應內層 group/button 群組 -->
+    <span class="block text-sm text-gray-500 group-hover/button:text-blue-500">按鈕提示文字</span>
+  </div>
+  <!-- 只響應外層 group/card 群組 -->
+  <div class="mt-4 text-sm text-gray-400 group-hover/card:text-gray-600">卡片底部資訊</div>
+</div>
+```
+
+**進階控制：使用 `&` 字元精確定位群組選擇器**
+為了更精確地控制群組選擇器的位置，您可以使用 `&` 字元來標記 `.group` 在最終選擇器中的相對位置。這讓您能夠建立更複雜的選擇器關係，例如選擇群組的兄弟元素或父元素。
+
+```html
+<!-- 範例 1：列表項目中的特殊樣式 -->
+<ul>
+  <li class="group p-3 border-b">
+    <span class="text-gray-600">一般項目</span>
+    <span class="hidden group-[:nth-of-type(3)_&]:block text-blue-600 font-bold">
+      推薦項目
+    </span>
+  </li>
+  <li class="group p-3 border-b">
+    <span class="text-gray-600">一般項目</span>
+    <span class="hidden group-[:nth-of-type(3)_&]:block text-blue-600 font-bold">推薦項目</span>
+  </li>
+  <!-- 只有第 3 個 li 才會顯示這個特殊標籤 -->
+  <li class="group p-3 border-b">
+    <span class="text-gray-600">一般項目</span>
+    <span class="hidden group-[:nth-of-type(3)_&]:block text-blue-600 font-bold">推薦項目</span>
+  </li>
+</ul>
+
+<!-- 範例 2：卡片網格中的複合條件 -->
+<div class="grid grid-cols-3 gap-4">
+  <!-- 當卡片被 hover 且同時具有 active 類別時的特殊效果 -->
+  <div class="group p-4 border rounded-lg">
+    <h3 class="text-lg font-semibold">卡片標題</h3>
+      <!-- 只有當此卡片同時被 hover 且具有 active 類別時，才會有黃色背景 -->
+    <div class="group-[&:hover.active]:bg-yellow-100 group-[&:hover.active]:p-2 group-[&:hover.active]:rounded">特殊內容區域</div>
+  </div>
+</div>
+
+<!-- 範例 3：導航選單中的第一個項目 -->
+<nav class="flex space-x-4">
+  <a href="#" class="group px-4 py-2 text-gray-600 hover:text-blue-600">
+    首頁
+    <!-- 子元素使用 group-[&:first-child] 來響應父群組的位置 -->
+    <span class="block mt-1 h-0.5 bg-transparent group-[&:first-child]:bg-blue-500"></span>
+  </a>
+  <a href="#" class="group px-4 py-2 text-gray-600 hover:text-blue-600">
+    關於
+    <span class="block mt-1 h-0.5 bg-transparent group-[&:first-child]:bg-blue-500"></span>
+  </a>
+  <a href="#" class="group px-4 py-2 text-gray-600 hover:text-blue-600">
+    聯絡
+    <span class="block mt-1 h-0.5 bg-transparent group-[&:first-child]:bg-blue-500"></span>
+  </a>
+</nav>
+```
+
+##### Peer 以同層狀態為條件
+
+在 TailwindCSS 中，若要根據同層兄弟元素的狀態來改變目標元素的樣式，可以使用「同儕類別」與 `peer-*` 變體達成。做法如下：
+
+1. **在兄弟元素加上 `peer` 類別**
+2. **在目標元素加上 `peer-*` 變體前綴的樣式**
+
+{% note warning %}
+**重要注意事項：**
+`peer` 標記只能用在目標元素的「前一個」兄弟元素上，這是因為 CSS 的後續兄弟選擇器（subsequent-sibling combinator）運作方式。
+{% endnote %}
+
+```html
+<!-- 基礎 peer 變體範例 -->
+<div class="space-y-4">
+  <!-- 兄弟元素：使用 peer 標記 -->
+  <input type="email" class="peer w-full p-2 border rounded" placeholder="請輸入電子郵件">
+  
+  <!-- 目標元素：使用 peer-* 變體響應兄弟元素狀態 -->
+  <p class="text-sm text-gray-500 peer-invalid:text-red-600 peer-valid:text-green-600">
+    請輸入有效的電子郵件地址
+  </p>
+</div>
+
+<!-- 複合狀態範例 -->
+<div class="space-y-4">
+  <input type="checkbox" class="peer" id="agree">
+  <label for="agree" class="flex items-center space-x-2 peer-checked:text-blue-600 peer-checked:font-semibold">
+    <span class="w-4 h-4 border rounded"></span>
+    <span>我同意服務條款</span>
+  </label>
+</div>
+```
+
+**區分同儕：使用命名 peer**
+
+當使用多個 peer 時，可以透過 `peer/{name}` 語法來區分不同的同儕元素：
+
+```html
+<!-- 多個 peer 的複雜表單 -->
+<fieldset class="space-y-2">
+  <legend class="text-lg font-semibold">發布狀態</legend>
+  
+  <!-- 第一個 radio 選項 -->
+  <input id="draft" class="peer/draft" type="radio" name="status" checked />
+  <label for="draft" class="peer-checked/draft:text-sky-500">草稿</label>
+  
+  <!-- 第二個 radio 選項 -->
+  <input id="published" class="peer/published" type="radio" name="status" />
+  <label for="published" class="peer-checked/published:text-sky-500">已發布</label>
+  
+  <!-- 對應的說明文字 -->
+  <div class="hidden peer-checked/draft:block text-sm text-gray-600">
+    草稿只有管理員可以看到。
+  </div>
+  <div class="hidden peer-checked/published:block text-sm text-gray-600">
+    您的文章將在網站上公開顯示。
+  </div>
+</fieldset>
+```
+
+**任意對等：使用自訂選擇器**
+
+可以透過 `peer-[...]` 語法建立一次性的 peer 變體：
+
+```html
+<!-- 自訂 peer 選擇器 -->
+<div class="space-y-4">
+  <input type="text" class="peer w-full p-2 border rounded" placeholder="使用者名稱">
+  
+  <!-- 使用自訂的 peer 條件 -->
+  <div class="p-2 bg-gray-100 peer-[&:focus]:bg-blue-50 peer-[&:not(:placeholder-shown)]:bg-green-50">
+    狀態指示器
+  </div>
+</div> 
+```
+
+**進階控制：使用 `&` 字元精確定位 peer 選擇器**
+
+為了更精確地控制 peer 選擇器的位置，您可以使用 `&` 字元來標記 `.peer` 在最終選擇器中的相對位置：
+
+```html
+<!-- 使用 & 字元精確控制 peer 選擇器 -->
+<div class="space-y-4">
+  <!-- 當 peer 是第一個子元素時的特殊樣式 -->
+  <input type="text" class="peer w-full p-2 border rounded" placeholder="輸入文字">
+  <div class="p-2 bg-gray-100 peer-[&:first-child]:bg-blue-50 peer-[&:first-child]:border-blue-200">
+    特殊內容區域
+  </div>
+  
+  <!-- 當 peer 同時具有多個狀態時 -->
+  <input type="email" class="peer w-full p-2 border rounded" placeholder="電子郵件">
+  <div class="p-2 bg-gray-100 peer-[&:focus.valid]:bg-green-50 peer-[&:focus.invalid]:bg-red-50">
+    複合狀態指示器
+  </div>
+</div>
+```
+
+### 偽元素 Pseudo-elements
+
+| Variant 變體    | 情境寫法                                                  | 說明               |
+| --------------- | --------------------------------------------------------- | ------------------ |
+| `before:`       | div.before:content-[''].before:block                      | 在元素前插入內容   |
+| `after:`        | div.after:content-[''].after:absolute                     | 在元素後插入內容   |
+| `first-letter:` | p.first-letter:text-2xl                                   | 第一個字母的樣式   |
+| `first-line:`   | p.first-line:font-bold                                    | 第一行的樣式       |
+| `marker:`       | li.marker:text-blue-500                                   | 列表標記的樣式     |
+| `selection:`    | p.selection:bg-yellow-200                                 | 文字選取時的樣式   |
+| `file:`         | input[type="file"]::file-selector-button.file:bg-blue-500 | 檔案上傳按鈕的樣式 |
+| `backdrop:`     | dialog.backdrop:blur-sm                                   | 背景模糊效果       |
+| `placeholder:`  | input.placeholder:text-gray-400                           | 輸入框佔位符的樣式 |
+
+#### before 與 after
+
+在 TailwindCSS 中，可以使用 `before:` 和 `after:` 變體來設定元素的 `::before` 和 `::after` 偽元素。這些變體讓您能夠輕鬆地為元素添加裝飾性內容或樣式。
+
+**基本用法：**
+- `before:` 變體：設定 `::before` 偽元素的樣式
+- `after:` 變體：設定 `::after` 偽元素的樣式
+- 通常需要配合 `before:content-['']` 或 `after:content-['']` 來顯示內容
+
+```html
+<!-- 基本 before 與 after 範例 -->
+<div class="relative p-4 border rounded-lg">
+  <!-- 使用 before 添加左側裝飾 -->
+  <div class="before:content-[''] before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-blue-500">
+    左側有藍色裝飾條的內容
+  </div>
+  
+  <!-- 使用 after 添加右側圖示 -->
+  <div class="after:content-['→'] after:ml-2 after:text-blue-500 after:font-bold">
+    右側有箭頭圖示的內容
+  </div>
+</div>
+
+<!-- 複雜的 before/after 應用 -->
+<div class="space-y-4">
+  <!-- 必填欄位標記 -->
+  <label class="relative inline-block">
+    使用者名稱
+    <span class="after:content-['*'] after:text-red-500 after:ml-1">必填</span>
+  </label>
+  
+  <!-- 狀態指示器 -->
+  <div class="relative p-3 bg-gray-100 rounded">
+    <span class="before:content-[''] before:inline-block before:w-2 before:h-2 before:bg-green-500 before:rounded-full before:mr-2">
+      線上狀態
+    </span>
+  </div>
+</div>
+```
+
+### 媒體查詢 Media and feature queries
+
+#### 響應式斷點 Responsive breakpoints
+根據瀏覽器視埠 viewport 寬度自動調整版面與樣式，確保網站在各種裝置上都能有良好體驗。
+
+| Variant 變體 | 情境寫法                | 說明                     |
+| ------------ | ----------------------- | ------------------------ |
+| `sm:`        | div.sm:grid-cols-2      | 螢幕 640px (40rem) 以上  |
+| `md:`        | div.md:grid-cols-3      | 螢幕 768px (48rem) 以上  |
+| `lg:`        | div.lg:grid-cols-4      | 螢幕 1024px (64rem) 以上 |
+| `xl:`        | div.xl:grid-cols-5      | 螢幕 1280px (80rem) 以上 |
+| `2xl:`       | div.2xl:grid-cols-6     | 螢幕 1536px (96rem) 以上 |
+| `min-[...]:` | div.min-[800px]:text-lg | 自訂最小寬度斷點以上     |
+| `max-sm:`    | div.max-sm:block        | 螢幕 640px (40rem) 未滿  |
+| `max-md:`    | div.max-md:hidden       | 螢幕 768px (48rem) 未滿  |
+| `max-lg:`    | div.max-lg:flex-col     | 螢幕 1024px (64rem) 未滿 |
+| `max-xl:`    | div.max-xl:text-sm      | 螢幕 1280px (80rem) 未滿 |
+| `max-2xl:`   | div.max-2xl:p-4         | 螢幕 1536px (96rem) 未滿 |
+| `max-[...]:` | div.max-[600px]:text-xs | 自訂最大寬度斷點未滿     |
+
+#### 容器查詢 Container Query
+根據父層容器的寬度來調整子元素的樣式，而不是僅依賴整個視窗的寬度。這對於元件化設計特別實用，能讓元件在不同區塊自適應排版。
+需要指定父層為 `container`，並根據容器寬度切換子元素的字體大小
+
+```html
+<div class="@container">
+  <div class="flex flex-col @md:flex-row">...</div>
+</div>
+```
+
+| Variant 變體  | 情境寫法                 | 說明                  |
+| ------------- | ------------------------ | --------------------- |
+| `@3xs:`       | div.@3xs:text-sm         | 容器寬度 16rem 以上   |
+| `@2xs:`       | div.@2xs:text-base       | 容器寬度 18rem 以上   |
+| `@xs:`        | div.@xs:text-lg          | 容器寬度 20rem 以上   |
+| `@sm:`        | div.@sm:grid-cols-2      | 容器寬度 24rem 以上   |
+| `@md:`        | div.@md:grid-cols-3      | 容器寬度 28rem 以上   |
+| `@lg:`        | div.@lg:grid-cols-4      | 容器寬度 32rem 以上   |
+| `@xl:`        | div.@xl:grid-cols-5      | 容器寬度 36rem 以上   |
+| `@2xl:`       | div.@2xl:grid-cols-6     | 容器寬度 42rem 以上   |
+| `@3xl:`       | div.@3xl:grid-cols-7     | 容器寬度 48rem 以上   |
+| `@4xl:`       | div.@4xl:grid-cols-8     | 容器寬度 56rem 以上   |
+| `@5xl:`       | div.@5xl:grid-cols-9     | 容器寬度 64rem 以上   |
+| `@6xl:`       | div.@6xl:grid-cols-10    | 容器寬度 72rem 以上   |
+| `@7xl:`       | div.@7xl:grid-cols-11    | 容器寬度 80rem 以上   |
+| `@min-[...]:` | div.@min-[400px]:text-xl | 自訂容器最小寬度 以上 |
+| `@max-3xs:`   | div.@max-3xs:text-xs     | 容器寬度 16rem 未滿   |
+| `@max-2xs:`   | div.@max-2xs:text-sm     | 容器寬度 18rem 未滿   |
+| `@max-xs:`    | div.@max-xs:text-base    | 容器寬度 20rem 未滿   |
+| `@max-sm:`    | div.@max-sm:block        | 容器寬度 24rem 未滿   |
+| `@max-md:`    | div.@max-md:hidden       | 容器寬度 28rem 未滿   |
+| `@max-lg:`    | div.@max-lg:flex-col     | 容器寬度 32rem 未滿   |
+| `@max-xl:`    | div.@max-xl:text-sm      | 容器寬度 36rem 未滿   |
+| `@max-2xl:`   | div.@max-2xl:p-4         | 容器寬度 42rem 未滿   |
+| `@max-3xl:`   | div.@max-3xl:text-xs     | 容器寬度 48rem 未滿   |
+| `@max-4xl:`   | div.@max-4xl:hidden      | 容器寬度 56rem 未滿   |
+| `@max-5xl:`   | div.@max-5xl:block       | 容器寬度 64rem 未滿   |
+| `@max-6xl:`   | div.@max-6xl:flex        | 容器寬度 72rem 未滿   |
+| `@max-7xl:`   | div.@max-7xl:grid        | 容器寬度 80rem 未滿   |
+| `@max-[...]:` | div.@max-[500px]:text-sm | 自訂容器最大寬度未滿  |
+
+#### 功能查詢
+| Variant 變體          | 情境寫法                               | 說明                 |
+| --------------------- | -------------------------------------- | -------------------- |
+| `dark:`               | div.dark:bg-gray-800                   | 深色模式（系統偏好） |
+| `motion-safe:`        | div.motion-safe:animate-pulse          | 使用者偏好動畫時     |
+| `motion-reduce:`      | div.motion-reduce:animate-none         | 使用者偏好減少動畫時 |
+| `contrast-more:`      | div.contrast-more:border-2             | 使用者偏好高對比度時 |
+| `contrast-less:`      | div.contrast-less:opacity-75           | 使用者偏好低對比度時 |
+| `forced-colors:`      | div.forced-colors:border               | 強制色彩模式啟用時   |
+| `inverted-colors:`    | div.inverted-colors:invert             | 色彩反轉模式啟用時   |
+| `pointer-fine:`       | button.pointer-fine:hover:scale-110    | 精確指標裝置（滑鼠） |
+| `pointer-coarse:`     | button.pointer-coarse:p-4              | 粗糙指標裝置（觸控） |
+| `pointer-none:`       | div.pointer-none:hidden                | 無指標裝置           |
+| `any-pointer-fine:`   | button.any-pointer-fine:cursor-pointer | 任何精確指標裝置     |
+| `any-pointer-coarse:` | button.any-pointer-coarse:min-h-12     | 任何粗糙指標裝置     |
+| `any-pointer-none:`   | div.any-pointer-none:block             | 無任何指標裝置       |
+| `portrait:`           | div.portrait:flex-col                  | 直向螢幕方向         |
+| `landscape:`          | div.landscape:flex-row                 | 橫向螢幕方向         |
+| `noscript:`           | noscript.noscript:block                | JavaScript 停用時    |
+| `print:`              | div.print:hidden                       | 列印時隱藏           |
+| `supports-[...]:`     | div.supports-[display:grid]:grid       | 支援特定 CSS 功能時  |
+
+##### dark mode
+
+TailwindCSS v4.1 提供靈活的深色模式支援，讓您能夠根據使用者的系統偏好或手動切換來提供不同的視覺體驗。
+
+**預設行為（自動偵測系統偏好）：**
+- 預設情況下，TailwindCSS v4.1 使用 `prefers-color-scheme` 媒體查詢
+- 當使用者的系統設定為深色模式時，網站會自動套用深色樣式
+- 無需任何額外設定，完全由瀏覽器自動處理
+
+**自訂變體方式（手動控制）：**
+當您想要手動控制深色模式時，可以在 CSS 中定義自訂變體。TailwindCSS v4.1 支援兩種方式：
+
+**方式一：使用 class 屬性**
+```css
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+**方式二：使用 data-theme 屬性**
+```css
+@import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+```
+
+**HTML 結構對應：**
+
+```html
+<!-- 方式一：使用 class="dark" -->
+<html class="dark">
+  <body>
+    <div class="bg-white dark:bg-gray-800 text-black dark:text-white">
+      深色模式內容
+    </div>
+  </body>
+</html>
+
+<!-- 方式二：使用 data-theme="dark" -->
+<html data-theme="dark">
+  <body>
+    <div class="bg-white dark:bg-gray-800 text-black dark:text-white">
+      深色模式內容
+    </div>
+  </body>
+</html>
+```
+
+**JavaScript 控制範例：**
+
+```js
+// 深色模式管理函數
+function initDarkMode(useDataTheme = false) {
+  const element = document.documentElement;
+  
+  // 設定 HTML 主題屬性（只負責 HTML 操作）
+  function setTheme(theme) {
+    useDataTheme
+      ? element.setAttribute('data-theme', theme === 'dark' ? 'dark' : '')
+      : element.classList.toggle('dark', theme === 'dark');
+  }
+  
+  // 獲取當前主題
+  function getCurrentTheme() {
+    return useDataTheme
+      ? (element.getAttribute('data-theme') || 'light')
+      : (element.classList.contains('dark') ? 'dark' : 'light');
+  }
+  
+  // 切換主題
+  function toggleTheme() {
+    const newTheme = getCurrentTheme() === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('darkMode', newTheme);
+  }
+  
+  // 初始化：先檢查 localStorage，不存在則檢查系統設定
+  const savedTheme = localStorage.getItem('darkMode');
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  setTheme(savedTheme || systemTheme);
+  
+  // 監聽系統偏好變化（只有在沒有手動設定時）
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('darkMode')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+  
+  // 綁定切換按鈕事件
+  document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+  
+  // 返回切換函數供外部使用
+  return toggleTheme;
+}
+
+// 使用範例
+// 使用 class 方式
+const toggleDarkMode = initDarkMode(false);
+// 使用 data-theme 方式
+// const toggleDarkMode = initDarkMode(true);
+
+// 也可以手動觸發切換
+// toggleDarkMode();
+```
+
+### 屬性選擇 Attribute selectors
+屬性選擇器變體讓你可以根據 HTML 元素的屬性狀態來套用樣式。這些屬性通常由 JavaScript 動態設定，用來表示元素的當前狀態。
+
+**為什麼需要屬性選擇器？**
+在現代網頁開發中，JavaScript 會根據使用者互動或程式邏輯動態改變元素的屬性。例如：
+- 當使用者點擊按鈕時，JavaScript 會設定 `aria-pressed="true"`
+- 當表單驗證失敗時，JavaScript 會設定 `aria-invalid="true"`
+- 當內容載入中時，JavaScript 會設定 `aria-busy="true"`
+
+**TailwindCSS 的解決方案：**
+使用 `aria-*:` 變體前綴，你可以直接根據這些屬性狀態來套用樣式，無需額外撰寫 CSS 或 JavaScript 來處理樣式變化。
+
+**實際應用場景：**
+- **表單驗證**：當 `aria-invalid="true"` 時自動顯示紅色邊框
+- **載入狀態**：當 `aria-busy="true"` 時顯示載入動畫
+- **互動回饋**：當 `aria-pressed="true"` 時改變按鈕外觀
+- **無障礙支援**：根據 ARIA 屬性提供視覺回饋
+
+以下整理常見的屬性選擇器變體用法，幫助你在無需額外 JavaScript 的情況下，實現互動式 UI 效果。
+
+
+| Variant 變體     | 情境寫法                                                        | 說明                                     |
+| ---------------- | --------------------------------------------------------------- | ---------------------------------------- |
+| `aria-busy:`     | div[aria-busy="true"].aria-busy:animate-pulse                   | 元素正在載入或處理中時（如顯示載入動畫） |
+| `aria-checked:`  | input[aria-checked="true"].aria-checked:bg-blue-500             | 核取方塊或單選按鈕被選取時               |
+| `aria-disabled:` | button[aria-disabled="true"].aria-disabled:opacity-50           | 按鈕被禁用時（降低透明度）               |
+| `aria-expanded:` | button[aria-expanded="true"].aria-expanded:rotate-180           | 下拉選單或摺疊內容展開時（旋轉箭頭）     |
+| `aria-hidden:`   | div[aria-hidden="true"].aria-hidden:hidden                      | 元素對螢幕閱讀器隱藏時（完全隱藏）       |
+| `aria-pressed:`  | button[aria-pressed="true"].aria-pressed:bg-green-500           | 切換按鈕被按下時（改變背景色）           |
+| `aria-readonly:` | input[aria-readonly="true"].aria-readonly:bg-gray-100           | 輸入欄位為唯讀時（改變背景色）           |
+| `aria-required:` | input[aria-required="true"].aria-required:border-red-500        | 必填欄位時（紅色邊框提示）               |
+| `aria-selected:` | option[aria-selected="true"].aria-selected:bg-blue-100          | 選項被選取時（改變背景色）               |
+| `aria-[...]:`    | input[aria-invalid="true"].aria-[invalid="true"]:border-red-500 | 自訂 ARIA 屬性選擇器                     |
+| `data-[...]:`    | div[data-state="open"].data-[state="open"]:block                | 自訂 data 屬性選擇器                     |
+| `rtl:`           | div[dir="rtl"].rtl:mr-4                                         | 從右到左文字方向（如阿拉伯文）           |
+| `ltr:`           | div[dir="ltr"].ltr:ml-4                                         | 從左到右文字方向（如英文）               |
+| `open:`          | details[open].open:block                                        | 摺疊內容展開時                           |
+| `starting:`      | dialog.starting:opacity-0                                       | 對話框開始顯示時（淡入效果）             |
+
+## 自訂 Customization
+
+TailwindCSS v4.1 提供了全新的自訂方式，使用 CSS 變數和 `@theme` 指令來定義主題。這種方式更符合現代 CSS 標準，也更容易與設計系統整合。
+
+### 主題變數 Theme variables
+
+使用 @theme 指令可以定義專案專屬的 CSS 變數，這些變數會自動對應到 Tailwind 的公用程式類別。例如，當你新增主題變數（如 `--color-mint-500`），就能直接在 HTML 中使用 `bg-mint-500`、`text-mint-500` 或 `fill-mint-500` 等語法，無需額外設定，讓自訂顏色與 Tailwind 原生色彩一樣方便靈活。
+
+```css
+@import "tailwindcss";
+@theme {
+  --color-loki-500: oklch(0.72 0.11 178);
+}
+```
+```html
+<div class="bg-loki-500"></div>
+<div style="background-color: var(--color-loki-500)"></div>
+```
+
+在 Tailwind 專案中，若你希望某個 CSS 變數「直接對應到 Tailwind 的公用程式類別」（如 `bg-自訂色`、`text-自訂色`），請使用 `@theme` 來定義主題變數。這樣 Tailwind 會自動產生對應的 utility class，方便你在 HTML 直接套用。
+
+如果你只是單純想定義一般 CSS 變數（不需要對應到 utility class），則建議用 `:root` 來宣告。這類變數不會被 Tailwind 轉換成公用類別，適合用於純 CSS 計算、動畫或其他自訂用途。
+
+{% note info %}
+**小技巧：主題變數與一般變數的選擇**
+- `@theme`：用於設計系統 token，會自動產生 Tailwind utility class。
+- `:root`：用於純 CSS 變數，不會產生 utility class。
+{% endnote %}
+
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  --font-loki-Poppins: Poppins, sans-serif;
+  /* use to <h1 class="font-poppins">...</h1>*/
+
+  --font-family-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, monospace;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  --border-radius-sm: 0.125rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+}
+```
+
+### 顏色系統 Colors
+
+**基本顏色定義：**
+```css
+@theme {
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-gray-950: #030712;
+}
+```
+
+**語義化顏色：**
+```css
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-active: #1d4ed8;
+  
+  --color-surface: #ffffff;
+  --color-surface-hover: #f9fafb;
+  --color-surface-active: #f3f4f6;
+  
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+}
+```
+
+**使用自訂顏色：**
+```html
+<div class="bg-primary text-surface">
+  <button class="bg-primary-hover hover:bg-primary-active">
+    按鈕
+  </button>
+</div>
+```
+
+### 間距系統 Spacing
+
+**自訂間距變數：**
+```css
+@theme {
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-0.5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1.5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2.5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3.5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-28: 7rem;
+  --spacing-32: 8rem;
+  --spacing-36: 9rem;
+  --spacing-40: 10rem;
+  --spacing-44: 11rem;
+  --spacing-48: 12rem;
+  --spacing-52: 13rem;
+  --spacing-56: 14rem;
+  --spacing-60: 15rem;
+  --spacing-64: 16rem;
+  --spacing-72: 18rem;
+  --spacing-80: 20rem;
+  --spacing-96: 24rem;
+}
+```
+
+### 字體系統 Typography
+
+**字體家族：**
+```css
+@theme {
+  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-family-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+```
+
+**字體大小：**
+```css
+@theme {
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  --font-size-6xl: 3.75rem;
+  --font-size-7xl: 4.5rem;
+  --font-size-8xl: 6rem;
+  --font-size-9xl: 8rem;
+}
+```
+
+**字體粗細：**
+```css
+@theme {
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+}
+```
+
+### 自訂樣式 Custom styles
+
+**使用 `@layer` 指令：**
+```css
+@import "tailwindcss";
+
+@layer components {
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-3) var(--spacing-6);
+    border-radius: var(--border-radius-md);
+    font-weight: var(--font-weight-medium);
+    
+    &:hover {
+      background-color: var(--color-primary-hover);
+    }
+    
+    &:active {
+      background-color: var(--color-primary-active);
+    }
+  }
+  
+  .card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-6);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  }
+}
+```
+
+**使用自訂元件：**
+```html
+<button class="btn-primary">
+  主要按鈕
+</button>
+
+<div class="card">
+  <h3 class="text-lg font-semibold">卡片標題</h3>
+  <p class="text-gray-600">卡片內容</p>
+</div>
+```
+
+### 響應式設計 Responsive design
+
+**自訂斷點：**
+```css
+@theme {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+```
+
+**使用自訂斷點：**
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+  <!-- 響應式網格 -->
+</div>
+```
+
+### 動畫與過渡 Animations
+
+**自訂動畫：**
+```css
+@theme {
+  --animation-spin: spin 1s linear infinite;
+  --animation-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animation-bounce: bounce 1s infinite;
+}
+```
+
+**使用自訂動畫：**
+```html
+<div class="animate-spin">載入中...</div>
+<div class="animate-pulse">脈衝效果</div>
+```
+
 
 # 公式表
 
