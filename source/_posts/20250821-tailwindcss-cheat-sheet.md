@@ -2096,13 +2096,21 @@ function Button({ color, children }) {
 ```
 
 ### 明確註冊來源
-Tailwind 會掃描專案中的每個檔案以尋找類別名稱，但下列情況除外：
+在 TailwindCSS v4.1 中，類別名稱的來源偵測已經全面改為「來源註冊」機制，不再依賴 `tailwind.config.js` 的 `content` 欄位。  
+Tailwind 會自動掃描專案目錄下所有純文字檔案（如 `.html`、`.js`、`.jsx`、`.ts`、`.tsx`、`.vue` 等），並自動排除下列類型的檔案：
 
-- gitignore 中提到的檔案
-- node_modules 目錄下的檔案
-- 二進制的 file，例如圖片影像或 zip 等文件
-- IDE 套件的鎖定檔案
-- 檔案以 `_` 結尾
+- `node_modules` 目錄下的所有檔案
+- `.gitignore` 中排除的檔案
+- 二進位檔案（如圖片、音訊、影片、壓縮檔等）
+- 常見 IDE 產生的鎖定檔案（如 `.lock`、`.DS_Store` 等）
+- 以底線（`_`）開頭或結尾的檔案（預設不掃描）
+
+如果你需要更精細地控制來源，可以使用 `@source` 指令手動註冊或排除特定目錄與檔案。這讓 Tailwind 能夠更精確地產生所需的 CSS，並避免不必要的掃描與檔案膨脹。
+
+{% note info %}
+**v4.1 新觀念：**  
+Tailwind v4.1 採用自動來源偵測與 `@source` 明確註冊，無需再手動維護 `content` 欄位，專案結構更彈性，掃描更聰明。
+{% endnote %}
 
 反之，如果你需要特別排除上列某個條件，例如第三方套件會使用到的 tailwindcss，可以使用 `@source` 明確註冊相對於樣式表的來源路徑：
 
