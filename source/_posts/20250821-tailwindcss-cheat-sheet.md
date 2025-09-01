@@ -1282,7 +1282,7 @@ TailwindCSS v4.1 提供靈活的深色模式支援，讓您能夠根據使用者
 **JavaScript 控制範例：**
 
 ```js
-// 深色模式管理函數
+// 深色模式管理函式
 function initDarkMode(useDataTheme = false) {
   const element = document.documentElement;
   
@@ -1322,7 +1322,7 @@ function initDarkMode(useDataTheme = false) {
   // 綁定切換按鈕事件
   document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
   
-  // 返回切換函數供外部使用
+  // 返回切換函式供外部使用
   return toggleTheme;
 }
 
@@ -1356,7 +1356,6 @@ const toggleDarkMode = initDarkMode(false);
 
 以下整理常見的屬性選擇器變體用法，幫助你在無需額外 JavaScript 的情況下，實現互動式 UI 效果。
 
-
 | Variant 變體     | 情境寫法                                                        | 說明                                     |
 | ---------------- | --------------------------------------------------------------- | ---------------------------------------- |
 | `aria-busy:`     | div[aria-busy="true"].aria-busy:animate-pulse                   | 元素正在載入或處理中時（如顯示載入動畫） |
@@ -1375,18 +1374,77 @@ const toggleDarkMode = initDarkMode(false);
 | `open:`          | details[open].open:block                                        | 摺疊內容展開時                           |
 | `starting:`      | dialog.starting:opacity-0                                       | 對話框開始顯示時（淡入效果）             |
 
+## 顏色系統 Colors
+TailwindCSS 提供豐富的顏色工具類別，讓您能夠輕鬆設定各種元素的顏色。預設佈景主題已經定義了一些常用的調色板。每個顏色都有 11 種 steps 色差。數字越大越深色，數字越小越浅色。整個調色板適用於所有與顏色相關的實用程序。如果有需要透明度，可以追加`/opacity`為後綴。
+
+![](/assets/images/2025-09-01-11-09-39.png)
+
+| Utility          | 情境寫法                                  | 說明                           |
+| ---------------- | ----------------------------------------- | ------------------------------ |
+| `bg-*`           | `.bg-{color}-{steps}/{opacity}`           | 設定元素的背景顏色             |
+| `text-*`         | `.text-{color}-{steps}/{opacity}`         | 設定元素的文字顏色             |
+| `decoration-*`   | `.decoration-{color}-{steps}/{opacity}`   | 設定元素的文字裝飾顏色         |
+| `border-*`       | `.border-{color}-{steps}/{opacity}`       | 設定元素的邊框顏色             |
+| `outline-*`      | `.outline-{color}-{steps}/{opacity}`      | 設定元素的外框顏色             |
+| `shadow-*`       | `.shadow-{color}-{steps}/{opacity}`       | 設定方塊陰影的顏色             |
+| `inset-shadow-*` | `.inset-shadow-{color}-{steps}/{opacity}` | 設定內嵌方塊陰影的顏色         |
+| `ring-*`         | `.ring-{color}-{steps}/{opacity}`         | 設定環形陰影的顏色             |
+| `inset-ring-*`   | `.inset-ring-{color}-{steps}/{opacity}`   | 設定內嵌環形陰影的顏色         |
+| `accent-*`       | `.accent-{color}-{steps}/{opacity}`       | 設定表單控制項的強調色         |
+| `caret-*`        | `.caret-{color}-{steps}/{opacity}`        | 設定表單控制項中的插入符號顏色 |
+| `fill-*`         | `.fill-{color}-{steps}/{opacity}`         | 設定 SVG 元素的填滿顏色        |
+| `stroke-*`       | `.stroke-{color}-{steps}/{opacity}`       | 設定 SVG 元素的筆畫顏色        |
+
+{% note info %}
+**透明度參數說明：**
+透明度參數可以是 `0 ~ 100`（5 的倍數）或任意值/CSS 變數：
+
+```html
+<!-- 無透明度（預設完全不透明） -->
+<div class="bg-blue-500">完全不透明的藍色背景</div>
+<!-- 使用數字透明度（50% 透明度） -->
+<div class="bg-blue-500/75">半透明的藍色背景</div>
+<!-- 使用任意百分比值 -->
+<div class="bg-pink-500/[71.37%]">71.37% 透明度的粉色背景</div>
+<!-- 使用 CSS 變數 -->
+<div class="bg-cyan-400/(--my-alpha-value)">使用 CSS 變數的青色背景</div>
+```
+{% endnote %}
+
 ## 自訂 Customization
 
 TailwindCSS v4.1 提供了全新的自訂方式，使用 CSS 變數和 `@theme` 指令來定義主題。這種方式更符合現代 CSS 標準，也更容易與設計系統整合。
 
 ### 主題變數 Theme variables
+使用 @theme 指令可以定義專案專屬的 CSS 變數，這些變數會自動對應到 Tailwind 的 utility 類別 class。
 
-使用 @theme 指令可以定義專案專屬的 CSS 變數，這些變數會自動對應到 Tailwind 的公用程式類別。例如，當你新增主題變數（如 `--color-mint-500`），就能直接在 HTML 中使用 `bg-mint-500`、`text-mint-500` 或 `fill-mint-500` 等語法，無需額外設定，讓自訂顏色與 Tailwind 原生色彩一樣方便靈活。
+| theme 命名空間   | 情境寫法                                                | CSS 屬性                              | 可用 Variant 變體                |
+| ---------------- | ------------------------------------------------------- | ------------------------------------- | -------------------------------- |
+| --color-*        | `--color-loki-500: #3b82f6;`                            | background-color, color, border-color | `.bg-loki-500`、`.text-loki-500` |
+| --font-*         | `--font-loki: "Loki Font", sans-serif;`                 | font-family                           | `.font-loki`                     |
+| --text-*         | `--text-loki: 4rem;`                                    | font-size                             | `.text-loki`                     |
+| --font-weight-*  | `--font-weight-loki: 900;`                              | font-weight                           | `.font-loki`                     |
+| --tracking-*     | `--tracking-loki: 0.1em;`                               | letter-spacing                        | `.tracking-loki`                 |
+| --leading-*      | `--leading-loki: 1.75;`                                 | line-height                           | `.leading-loki`                  |
+| --breakpoint-*   | `--breakpoint-loki: 480px;`                             | @media (min-width)                    | `loki:`                          |
+| --container-*    | `--container-loki: 800px;`                              | @container                            | `@loki:`                         |
+| --spacing-*      | `--spacing-loki: 8rem;`                                 | padding, margin, width, height        | `.p-loki`、`.m-loki`             |
+| --radius-*       | `--radius-loki: 1rem;`                                  | border-radius                         | `.rounded-loki`                  |
+| --shadow-*       | `--shadow-loki: 0 10px 25px rgba(0,0,0,0.2);`           | box-shadow                            | `.shadow-loki`                   |
+| --inset-shadow-* | `--inset-shadow-loki: inset 0 2px 4px rgba(0,0,0,0.1);` | box-shadow                            | `.inset-shadow-loki`             |
+| --drop-shadow-*  | `--drop-shadow-loki: 0 4px 8px rgba(59,130,246,0.3);`   | filter: drop-shadow()                 | `.drop-shadow-loki`              |
+| --blur-*         | `--blur-loki: 20px;`                                    | filter: blur()                        | `.blur-loki`                     |
+| --perspective-*  | `--perspective-loki: 1000px;`                           | perspective                           | `.perspective-loki`              |
+| --aspect-*       | `--aspect-loki: 21/9;`                                  | aspect-ratio                          | `.aspect-loki`                   |
+| --ease-*         | `--ease-loki: cubic-bezier(0.68, -0.55, 0.265, 1.55);`  | transition-timing-function            | `.ease-loki`                     |
+| --animate-*      | `--animate-loki: fadeIn 0.5s ease-out;`                 | animation                             | `.animate-loki`                  |
+
+例如，當你新增主題變數（如 `--color-loki-500`），就能直接在 HTML 中使用 `bg-loki-500`、`text-loki-500` 或 `fill-loki-500` 等語法，無需額外設定，讓自訂顏色與 Tailwind 原生色彩一樣方便靈活。
 
 ```css
 @import "tailwindcss";
 @theme {
-  --color-loki-500: oklch(0.72 0.11 178);
+  --color-loki-500: #3b82f6;
 }
 ```
 ```html
@@ -1394,9 +1452,9 @@ TailwindCSS v4.1 提供了全新的自訂方式，使用 CSS 變數和 `@theme` 
 <div style="background-color: var(--color-loki-500)"></div>
 ```
 
-在 Tailwind 專案中，若你希望某個 CSS 變數「直接對應到 Tailwind 的公用程式類別」（如 `bg-自訂色`、`text-自訂色`），請使用 `@theme` 來定義主題變數。這樣 Tailwind 會自動產生對應的 utility class，方便你在 HTML 直接套用。
+在 Tailwind 專案中，若你希望某個 CSS 變數「直接對應到 Tailwind 的公用程式類別」（如 `bg-自訂色`、`text-自訂色`），請使用 `@theme` 來定義主題變數。這樣 Tailwind 會自動產生對應的 utility 類別 class，方便你在 HTML 直接套用。
 
-如果你只是單純想定義一般 CSS 變數（不需要對應到 utility class），則建議用 `:root` 來宣告。這類變數不會被 Tailwind 轉換成公用類別，適合用於純 CSS 計算、動畫或其他自訂用途。
+如果你只是單純想定義一般 CSS 變數（不需要對應到 utility），則建議用原生 css 的 `:root` 來宣告。這類變數不會被 Tailwind 轉換成 utility 類別，適合用於純 CSS 計算、動畫或其他自訂用途。
 
 {% note info %}
 **小技巧：主題變數與一般變數的選擇**
@@ -1404,251 +1462,835 @@ TailwindCSS v4.1 提供了全新的自訂方式，使用 CSS 變數和 `@theme` 
 - `:root`：用於純 CSS 變數，不會產生 utility class。
 {% endnote %}
 
+#### 覆蓋預設布景主題
+TailwindCSS 初始載入會提供預設的佈景主題的變數組合，它存在於一開始匯入的 `@import "tailwindcss";` 中，這些變數可能會與您的專案接著所定義的自訂主題變數組合產生撞名並覆蓋。
+
+```css node_modules/tailwindcss/theme.css
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-red-50: oklch(0.971 0.013 17.38);
+  --color-red-100: oklch(0.936 0.032 17.717);
+  --color-red-200: oklch(0.885 0.062 18.334);
+  /* ... */
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  /* ... */
+}
+```
+
+因此，當你在專案中接著定義自己的 `@theme{...}` 時與預設佈景主題的變數進行合併。如果你定義與預設佈景主題相同名稱的變數會覆蓋掉預設值。這種覆蓋機制讓你能夠客製化主題。也能清除預設主題的變數。
 
 ```css
 @import "tailwindcss";
-
 @theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #64748b;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  /* 全部初始化，不要使用預設布景主題 */
+  --*: initial;  
 
-  --font-loki-Poppins: Poppins, sans-serif;
-  /* use to <h1 class="font-poppins">...</h1>*/
+  /* color 全部初始化，不要使用預設布景主題 */
+  --color-*: initial;
+  --color-white: #fff;
+  --color-purple: #3f3cbb;
+  --color-midnight: #121063;
+  --color-tahiti: #3ab7bf;
+  --color-bermuda: #78dcca;
 
-  --font-family-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-family-mono: ui-monospace, SFMono-Regular, monospace;
-  
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  
-  --border-radius-sm: 0.125rem;
-  --border-radius-md: 0.375rem;
-  --border-radius-lg: 0.5rem;
-  --border-radius-xl: 0.75rem;
+  /* 衝突覆蓋 */
+  --color-red: #ef4444;        /* 與內建 red-500 衝突 */
+  --spacing-4: 2rem;           /* 覆蓋內建 spacing-4 */
+  --font-sans: "Arial";        /* 覆蓋內建 font-sans */
 }
 ```
 
-### 顏色系統 Colors
+#### 定義動畫關鍵影格
+在 `@theme` 中定義 --animate-* 主題變數可以建立自訂的動畫關鍵影格。這些動畫效果會自動產生對應的 utility class，讓你能在 HTML 中直接使用。以下是一個範例：
 
-**基本顏色定義：**
 ```css
+import "tailwindcss";
 @theme {
-  --color-gray-50: #f9fafb;
-  --color-gray-100: #f3f4f6;
-  --color-gray-200: #e5e7eb;
-  --color-gray-300: #d1d5db;
-  --color-gray-400: #9ca3af;
-  --color-gray-500: #6b7280;
-  --color-gray-600: #4b5563;
-  --color-gray-700: #374151;
-  --color-gray-800: #1f2937;
-  --color-gray-900: #111827;
-  --color-gray-950: #030712;
+  --animate-fade-in-scale: fade-in-scale 0.3s ease-out;
+  @keyframes fade-in-scale {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 ```
 
-**語義化顏色：**
+> 如果希望該 keyframe 也能在 CSS 中使用，請在 `@theme` 外部當作普通 css 定義。
+
+#### theme 參數 inline
+`@theme inline` 是 TailwindCSS v4.1 的新功能，允許您在不建立額外 CSS 檔案的情況下，直接在現有的 CSS 檔案中定義主題變數。這種方式特別適合需要快速調整或覆蓋特定主題變數的場景。
+
 ```css
-@theme {
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-primary-active: #1d4ed8;
-  
-  --color-surface: #ffffff;
-  --color-surface-hover: #f9fafb;
-  --color-surface-active: #f3f4f6;
-  
-  --color-text: #111827;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
+@import "tailwindcss";
+@theme inline {
+  --font-sans: var(--font-inter);
 }
 ```
 
-**使用自訂顏色：**
+**實際應用場景：**
+
+1. **覆蓋預設字體**：
+```css
+@import "tailwindcss";
+@theme inline {
+  /* 將預設的 sans 字體改為 Inter 字體 */
+  --font-sans: var(--font-inter);
+}
+```
+
+2. **快速調整顏色**：
+```css
+@import "tailwindcss";
+@theme inline {
+  /* 覆蓋預設的藍色為品牌色 */
+  --color-blue-500: #1e40af;
+  --color-blue-600: #1d4ed8;
+}
+```
+
+3. **調整間距系統**：
+```css
+@import "tailwindcss";
+@theme inline {
+  /* 增加更大的間距選項 */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+}
+```
+
+| 特性         | `@theme`           | `@theme inline`        |
+| ------------ | ------------------ | ---------------------- |
+| **檔案位置** | 通常獨立的主題檔案 | 在現有 CSS 檔案中      |
+| **使用時機** | 專案級別的主題定義 | 快速覆蓋或調整         |
+| **覆蓋範圍** | 全域生效           | 僅在該檔案中生效       |
+| **維護性**   | 集中管理，易於維護 | 分散在各檔案中         |
+| **適用場景** | 主要主題設定       | 特定頁面或元件的客製化 |
+
+{% note info %}
+**使用建議：**
+- 使用 `@theme` 定義主要的設計系統變數
+- 使用 `@theme inline` 進行快速調整或覆蓋
+- 避免在 `@theme inline` 中定義大量變數，保持檔案簡潔
+- 考慮使用註解說明為什麼需要覆蓋特定變數
+{% endnote %}
+
+#### theme 參數 static
+`@theme static` 是 TailwindCSS v4.1 中用來定義靜態 utility classes 的指令。與動態的 theme 變數不同，靜態類別不會被 tree-shaking 機制移除，即使它們在專案中沒有被使用到，也會被保留在最終的 CSS 檔案中。
+
+```css
+@import "tailwindcss";
+@theme static {
+  --color-primary: var(--color-red-500);
+  --color-secondary: var(--color-blue-500);
+}
+```
+
+**與其他 theme 指令的比較：**
+
+| 指令類型        | 用途                     | Tree-shaking | 適用場景     |
+| --------------- | ------------------------ | ------------ | ------------ |
+| `@theme`        | 定義動態主題變數         | ✅ 會被移除   | 設計系統變數 |
+| `@theme inline` | 快速覆蓋主題變數         | ✅ 會被移除   | 特定檔案覆蓋 |
+| `@theme static` | 定義靜態 utility classes | ❌ 不會被移除 | 動態類別保護 |
+
+{% note warning %}
+**使用注意事項：**
+- 謹慎使用 `@theme static`，過度使用會增加 CSS 檔案大小
+- 優先使用 `@theme` 定義動態變數，只在必要時使用 `@theme static`
+- 定期檢查 `@theme static` 中的類別是否仍然需要
+{% endnote %}
+
+#### 主體變數本質是 CSS 變數
+`@theme` 本身是用 css 文件來定義的，因此可以透過 `@import` 的方式來引入。方便在不同子專案目錄下使用同樣的主題定義。
+
+```css ./packages/brand/theme.css
+@theme {
+  --*: initial;
+  --spacing: 4px;
+  --font-body: Inter, sans-serif;
+  --color-lagoon: oklch(0.72 0.11 221.19);
+  --color-coral: oklch(0.74 0.17 40.24);
+  --color-driftwood: oklch(0.79 0.06 74.59);
+  --color-tide: oklch(0.49 0.08 205.88);
+  --color-dusk: oklch(0.82 0.15 72.09);
+}
+```
+
+```css ./packages/admin/app.css
+@import "tailwindcss";
+@import "../brand/theme.css";
+```
+
+最後當進行編譯時，會將 `@theme` 的內容將轉換為原生 css 變數。
+
+```css
+:root {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-red-50: oklch(0.971 0.013 17.38);
+  --color-red-100: oklch(0.936 0.032 17.717);
+  --color-red-200: oklch(0.885 0.062 18.334);
+  /* ... */
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  /* ... */
+}
+```
+
+在任意值中使用主題變數可能很有用，特別是與`calc()`函式結合使用。
+
 ```html
-<div class="bg-primary text-surface">
-  <button class="bg-primary-hover hover:bg-primary-active">
-    按鈕
-  </button>
+<div class="relative rounded-xl">
+  <div class="absolute inset-px rounded-[calc(var(--radius-xl)-1px)]">...</div>
+  <!-- ... -->
 </div>
 ```
 
-### 間距系統 Spacing
+或者需要透過 javascript 來控制主題變數的值或取得。
 
-**自訂間距變數：**
+```jsx
+<motion.div animate={{ backgroundColor: "var(--color-blue-500)" }} />
+let shadow = getComputedStyle(document.documentElement).getPropertyValue("--shadow-xl");
+```
+
+### 自訂樣式
+您可以在 TailwindCSS 公式表中定義自訂樣式，以滿足特定的需求。包含稍早在範例中的`@theme` 指令，你可以在`@theme` 自訂想要的變體類別。
+
 ```css
 @theme {
-  --spacing-0: 0;
-  --spacing-px: 1px;
-  --spacing-0.5: 0.125rem;
-  --spacing-1: 0.25rem;
-  --spacing-1.5: 0.375rem;
-  --spacing-2: 0.5rem;
-  --spacing-2.5: 0.625rem;
-  --spacing-3: 0.75rem;
-  --spacing-3.5: 0.875rem;
-  --spacing-4: 1rem;
-  --spacing-5: 1.25rem;
-  --spacing-6: 1.5rem;
-  --spacing-7: 1.75rem;
-  --spacing-8: 2rem;
-  --spacing-9: 2.25rem;
-  --spacing-10: 2.5rem;
-  --spacing-11: 2.75rem;
-  --spacing-12: 3rem;
-  --spacing-14: 3.5rem;
-  --spacing-16: 4rem;
-  --spacing-20: 5rem;
-  --spacing-24: 6rem;
-  --spacing-28: 7rem;
-  --spacing-32: 8rem;
-  --spacing-36: 9rem;
-  --spacing-40: 10rem;
-  --spacing-44: 11rem;
-  --spacing-48: 12rem;
-  --spacing-52: 13rem;
-  --spacing-56: 14rem;
-  --spacing-60: 15rem;
-  --spacing-64: 16rem;
-  --spacing-72: 18rem;
-  --spacing-80: 20rem;
-  --spacing-96: 24rem;
+  --font-display: "Satoshi", "sans-serif";
+  --breakpoint-3xl: 120rem;
+  --color-avocado-100: oklch(0.99 0 0);
+  --color-avocado-200: oklch(0.98 0.04 113.22);
+  --color-avocado-300: oklch(0.94 0.11 115.03);
+  --color-avocado-400: oklch(0.92 0.19 114.08);
+  --color-avocado-500: oklch(0.84 0.18 117.33);
+  --color-avocado-600: oklch(0.53 0.12 118.34);
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+  /* ... */
 }
 ```
 
-### 字體系統 Typography
+#### 自訂任意值
+或者在現有的變體上，透過中誇號方式，使用任意自訂值作為自訂效果。
 
-**字體家族：**
+```html
+<div class="top-[117px]">...</div>
+<div class="top-[117px] lg:top-[344px]">...</div>
+<div class="bg-[#bada55] text-[22px] before:content-['Festivus']">...</div>
+```
+
+也可以使用 css 變數來帶入成為自訂樣式（使用小誇號）。
+
+```html
+<div class="fill-(--my-brand-color)">...</div>
+<!-- 此範例等價以下寫法，就是前面提到的自訂值，作為 css 變數套用 -->
+<div class="fill-[var(--my-brand-color))]">...</div>
+```
+
+如果你需要暫時的覆蓋 theme 的主題變數，可以 class 直接寫入一個中誇號。他就像 `@theme inline` 的覆蓋預設布景主題變數。
+
+```html
+<!-- 覆蓋原本主題變數 -->
+<div class="[mask-type:luminance]">...</div>
+
+<!-- 覆蓋原本主題變數，以及特定狀態下的主題變數 -->
+<div class="[mask-type:luminance] hover:[mask-type:alpha]">...</div>
+
+<!-- 覆蓋原本主題變數的參數，搭配 breakpoint -->
+<div class="[--scroll-offset:56px] lg:[--scroll-offset:44px]">...</div>
+```
+
+任意變體（Arbitrary Variants）是一種進階的選擇器修改方式，讓你能在 HTML 中直接使用自訂的 CSS 選擇器。它的概念類似於一般的變體（如 hover:、md: 等），但提供更大的彈性，可以直接在 HTML 中使用中括號語法來定義複雜的選擇器規則。以下範例展示如何使用任意變體，在大螢幕（lg）時，讓列表中的前三個項目在滑鼠懸停時出現底線：
+
+```html
+<ul role="list">
+  <li class="lg:[&:nth-child(-n+3)]:hover:underline">{item}</li>
+</ul>
+```
+
+注意的是，如果任意值的原本屬性是需要空格的地方，在中括號語法中，需要使用底線`_`讓 tailwind 自動轉換。但也不是所有的自斷都會轉換，由 tailwind 判定。極少入會發生誤判，可用反斜線轉義底線，Tailwind 不會將其轉換為空格。
+
+```html
+<div class="grid grid-cols-[1fr_500px_2fr]">...</div>
+<div class="bg-[url('/what_a_rush.png')]">...</div>
+<div class="before:content-['hello\_world']">...</div>
+```
+
+如果你使用 react，預設行為會對反斜線從渲染的 HTML 中剝離，請額外使用 `String.raw()`，這樣反斜杠就不會被視為 JavaScript 轉義字元。
+
+```jsx
+<div className={String.raw`before:content-['hello\_world']`}>...</div>
+```
+
+在主題變數可以看到 `text-*` 作為 font-size 的定義，但 `text-{color}` 也是共用該命名空間。因此 Tailwind 會自動判定任意值作為色碼還是單位給誰使用。只有當使用 css 變數時會無法自動判定。因此你需要提示 type 告知 tailwind。
+
+```html
+<!-- Will generate a font-size utility -->
+<div class="text-[22px]">...</div>
+<!-- Will generate a color utility -->
+<div class="text-[#bada55]">...</div>
+
+<!-- failure -->
+<div class="text-(--my-var)">...</div>
+
+<!-- Will generate a font-size utility -->
+<div class="text-(length:--my-var)">...</div>
+<!-- Will generate a color utility -->
+<div class="text-(color:--my-var)">...</div>
+```
+
+#### 基底樣式 base styles
+大範圍的預設值效果，可以根據 css 的繼承特性，將一些 css 設定於 root 元素上。
+
+```html
+<html lang="en" class="bg-gray-100 font-serif text-gray-900">
+  <!-- ... -->
+</html>
+```
+
+然而如果需要特定的 html 元素有自己的預設基本樣式，可以透過 `@layer base` 定義。
+
 ```css
-@theme {
-  --font-family-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+@layer base {
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  h2 {
+    font-size: var(--text-xl);
+  }
 }
 ```
 
-**字體大小：**
-```css
-@theme {
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
-  --font-size-6xl: 3.75rem;
-  --font-size-7xl: 4.5rem;
-  --font-size-8xl: 6rem;
-  --font-size-9xl: 8rem;
-}
-```
+#### 版型元件 Layer component
+`@layer components` 是 TailwindCSS 中用來定義可重複使用的元件樣式的指令。這種方式特別適合處理無法直接控制的 HTML 內容，如來自 CMS、API 或 Markdown 轉譯的內容。
 
-**字體粗細：**
-```css
-@theme {
-  --font-weight-thin: 100;
-  --font-weight-extralight: 200;
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  --font-weight-black: 900;
-}
-```
-
-### 自訂樣式 Custom styles
-
-**使用 `@layer` 指令：**
+**基本語法：**
 ```css
 @import "tailwindcss";
-
 @layer components {
-  .btn-primary {
-    background-color: var(--color-primary);
-    color: white;
-    padding: var(--spacing-3) var(--spacing-6);
-    border-radius: var(--border-radius-md);
-    font-weight: var(--font-weight-medium);
-    
+  .your-component-name {
+    p {
+      font-size: var(--text-base);
+      color: var(--color-gray-700);
+    }
+    h1 {
+      font-size: var(--text-2xl--line-height);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-950);
+    }
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-950);
+    }
+  }
+}
+```
+
+**使用主題變數的優勢：**
+- **設計一致性**：直接使用 Tailwind 的主題變數，確保視覺統一
+- **維護性**：當主題變數更新時，元件樣式自動同步
+- **可讀性**：語義化的變數名稱，讓程式碼更易理解
+- **靈活性**：支援響應式設計和狀態變化
+
+{% note info %}
+**元件設計建議：**
+- 優先使用主題變數，確保設計一致性
+- 保持元件的可組合性，避免過度耦合
+- 使用語義化的類別名稱
+- 考慮響應式設計和可訪問性
+- 定期重構，移除未使用的樣式
+{% endnote %}
+
+{% note warning %}
+**注意事項：**
+- `@layer components` 中的樣式不會被 tree-shaking 移除
+- 避免在元件中定義過多具體的數值，優先使用主題變數
+- 考慮使用 CSS 自訂屬性來支援動態主題切換
+- 定期檢查元件的使用情況，避免樣式膨脹
+{% endnote %}
+
+#### 組合通用工具 apply
+使用 `@apply` 指令將任何現有的通用工具類別內嵌到您自己的自訂 CSS class 中：
+
+```css
+.select2-dropdown {
+  @apply rounded-b-lg shadow-md;
+}
+.select2-search {
+  @apply rounded border border-gray-300;
+}
+.select2-results__group {
+  @apply text-lg font-bold text-gray-900;
+}
+```
+
+當您需要編寫自訂 CSS（例如覆蓋第三方庫中的樣式）但仍想使用您的設計令牌並使用您習慣在 HTML 中使用的相同語法時，這非常有用。
+
+
+
+
+
+#### 引用變體 variant
+`@variant` 指令是讓您可以在自訂 CSS 中使用 TailwindCSS 的變體系統。這個功能特別適合需要複雜互動狀態或主題切換的元件，讓您能夠在保持 TailwindCSS 一致性的同時，實現更靈活的樣式控制。
+
+**主要優點：**
+- **語法簡潔**：透過 `@variant` 帶入 tailwind 的變體，省去手動寫原本相同邏輯的設計
+- **自動編譯**：TailwindCSS 會自動將 `@variant` 轉換為標準的 CSS 媒體查詢
+- **變體組合**：支援巢狀變體，可以組合多個狀態條件
+- **一致性**：與 TailwindCSS 的變體系統保持一致，便於維護
+
+```css
+.my-element {
+  background: white;
+  @variant dark {
+    @variant hover {
+      background: black;
+    }
+  }
+}
+```
+
+**編譯後的輸出：**
+```css
+.my-element {
+  background: white;
+  @media (prefers-color-scheme: dark) {
     &:hover {
-      background-color: var(--color-primary-hover);
+      @media (hover: hover) {
+        background: black;
+      }
     }
-    
-    &:active {
-      background-color: var(--color-primary-active);
-    }
-  }
-  
-  .card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-gray-200);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-6);
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 }
 ```
 
-**使用自訂元件：**
-```html
-<button class="btn-primary">
-  主要按鈕
-</button>
+**變體組合說明：**
+- `@variant dark`：深色模式，編譯為 `@media (prefers-color-scheme: dark)`
+- `@variant hover`：滑鼠懸停狀態，編譯為 `@media (hover: hover)`
+- 巢狀變體會自動組合，形成複合條件
+- 支援所有 TailwindCSS 內建的變體，如 `focus`、`active`、`sm:`、`md:` 等
 
-<div class="card">
-  <h3 class="text-lg font-semibold">卡片標題</h3>
-  <p class="text-gray-600">卡片內容</p>
+#### 自訂 utility
+除了使用 Tailwind 內建的工具類別外，你也可以透過 `@utility` 指令來建立自訂的通用工具類別。這在以下情況特別有用：
+
+- 需要使用 Tailwind 未內建的 CSS 功能
+- 想要建立專案特定的通用類別
+- 需要將常用的 CSS 組合打包成單一類別
+
+```css
+@utility content-auto {
+  content-visibility: auto;
+}
+```
+
+如此一來，你可以在 html 上使用自己的 utility 類別，並搭配 tailwind 的變體。
+
+```html
+<div class="content-auto">...</div>
+<div class="hover:content-auto">...</div>
+```
+
+也能產生複雜的通用工具，例如，需要巢狀的 selector 定義：
+```css
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+```
+
+##### `--value()` 函式
+在自訂 utility 時，我們可以使用`--value()`函式來根據不同規則為聲明，最終返回一個值。如果是以指定文字的字串常值，可以用`""`包覆選項，以下這將匹配 `tab-inherit`、`tab-initial` 和 `tab-unset`。
+
+```css
+@utility tab-* {
+  tab-size: --value("inherit", "initial", "unset");
+}
+```
+
+`--value()`函式要根據哪種規則為聲明，可以混和或單一規則，以下例子為混和三種型式。如果是無法解析出的規則會自動忽略。
+
+- 任意隨意輸入，可以用`[integer]`為參數，以下這將匹配 `tab-[2]`、`tab-[76]`。
+- 另一種 `--value()` 是直接 integer 裸值，由 class 名決定參數為多少。可以匹配 `tab-1`、`tab-99`。
+- 這透過 `--value()` 變數來控制具備 function 用途的通用工具。藉由參數對應，轉換為主題變數，這將匹配 `tab-2`、`tab-4` 和 `tab-github` 等應用。
+
+```css
+@theme {
+  --tab-size-2: 2;
+  --tab-size-4: 4;
+  --tab-size-github: 8;
+}
+
+@utility tab-* {
+  tab-size: --value([integer]);
+  tab-size: --value(integer);
+  tab-size: --value(--tab-size-*);
+}
+```
+
+也可以根據自己的需求，透過 calc 做複雜的運算，例如將整數轉換為百分比。
+
+```css
+@utility opacity-* {
+  opacity: --value([percentage]);
+  opacity: calc(--value(integer) * 1%);
+  opacity: --value(--opacity-*);
+}
+```
+
+`--value()`函式由於可以接受多個參數，因此剛出現的代碼可以簡化成下面這樣的簡潔寫法，他會依序從左往右尋找合適的規則：
+
+```css
+@theme {
+  --tab-size-github: 8;
+}
+@utility tab-* {
+  tab-size: --value(--tab-size-*, integer, [integer]);
+}
+@utility opacity-* {
+  opacity: calc(--value(integer) * 1%);
+  opacity: --value(--opacity-*, [percentage]);
+}
+```
+
+負值也是可以的，但是需要另外宣告一組 utility 成為 `-` 前綴。
+
+```css
+@utility inset-* {
+  inset: --spacing(--value(integer));
+  inset: --value([percentage], [length]);
+}
+@utility -inset-* {
+  inset: --spacing(--value(integer) * -1);
+  inset: calc(--value([percentage], [length]) * -1);
+}
+```
+
+##### `--modifier()` 修飾符
+該函式的工作原理與 `--value()` 函式完全相同，但對修飾符（如果存在）進行操作。修飾符是指在 utility 類別名稱後面的額外參數，通常用斜線 `/` 分隔。
+
+例如在 `text-lg/relaxed` 中：
+- `text-lg` 是主要的 utility 類別
+- `relaxed` 是修飾符
+
+```css
+@utility text-* {
+  font-size: --value(--text-*, [length]);
+  line-height: --modifier(--leading-*, [length], [*]);
+}
+```
+
+##### `ratio` 分數
+`ratio` 型別用於處理長寬比例的數值，通常以分數形式表示（如 16/9、4/3 等）。這個型別主要用於 `aspect-ratio` 相關的 utility 類別中。
+
+**支援的格式：**
+- 預設關鍵字：`aspect-square`（1/1）
+- 分數形式：`aspect-3/4`、`aspect-16/9` 
+- 任意值：`aspect-[7/9]`
+
+**使用範例：**
+
+```css
+@utility aspect-* {
+  aspect-ratio: --value(--aspect-ratio-*, ratio, [ratio]);
+}
+```
+
+#### 自訂變體 custom-variant
+除了使用 Tailwind 隨附的變體之外，您還可以使用 `@custom-variant` 指令新增自己的自訂變體：
+
+```css
+@custom-variant theme-midnight {
+  &:where([data-theme="midnight"] *) {
+    @slot;
+  }
+}
+```
+
+> `@custom-variant` 為樣式層級指令。`@slot` 代表「在此插入目標類別的宣告內容」；`&:where(...)` 用於建立低權重選擇器以避免特異性衝突。
+
+在 HTML 中，我們能使用該變體；效果為：當元素具有 `data-theme="midnight"` 屬性時，套用被此變體修飾的樣式。
+
+```html
+<html data-theme="midnight">
+  <button class="theme-midnight:bg-black"></button>
+</html>
+```
+
+如果該變體沒有太多巢狀規則，可以簡化為一行：
+```css
+@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
+```
+
+當需要控制多個條件或包含互動狀態時，維持多行寫法可讀性更佳；簡化成一行較適合單一條件的情境。
+
+```css
+@custom-variant any-hover {
+  @media (any-hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+```
+
+以上變體可與其他 Tailwind 變體鏈接使用，例如：`theme-midnight:hover:bg-zinc-900`，以組合情境與互動狀態。
+
+---
+
+## 偵測來源的 class
+Tailwind 的工作原理是掃描您的專案中的實用程式類，然後根據您實際使用的類別產生所有必要的 CSS。這可確保您的 CSS 盡可能小，並且也使任意值等功能成為可能。Tailwind 會將所有原始檔案視為純文字，並且不會嘗試以任何方式實際解析您的檔案為程式碼。相反，它只是根據 Tailwind 在類別名稱中期望的字元來尋找檔案中可能成為類別的任何標記：
+
+以下為 React 在 JSX 內如何正常使用 Tailwind 並且偵測成功。只要您在程式碼中始終使用完整的類別名稱，Tailwind 每次都會完美地產生您的所有 CSS。
+
+```jsx
+export function Button({ color, children }) {
+  const colors = {
+    black: "bg-black text-white",
+    blue: "bg-blue-500 text-white",
+    white: "bg-white text-black",
+  };
+  return (
+    <button className={`${colors[color]} rounded-full px-2 py-1.5 font-sans text-sm/6 font-medium shadow`}>
+      {children}
+    </button>
+  );
+}
+```
+
+然而你需要注意的是，根據 Tailwind 的掃描機制，以下範例不會被偵測到，因為在 utility 類別名稱中段插入變數，無法形成可靜態分析的完整類別標記。
+```jsx
+// 錯誤寫法（在類別名稱中段插值）
+<div className={`text-${error ? 'red' : 'green'}-600`}></div>
+
+// 正確寫法（選擇完整的 utility token）
+<div className={error ? 'text-red-600' : 'text-green-600'}></div>
+
+// 錯誤寫法
+function Button({ color, children }) {
+  return <button className={`bg-${color}-600 hover:bg-${color}-500 ...`}>{children}</button>;
+}
+
+// 正確寫法
+function Button({ color, children }) {
+  const colorVariants = {
+    blue: "bg-blue-600 hover:bg-blue-500",
+    red: "bg-red-600 hover:bg-red-500",
+  };
+  return <button className={`${colorVariants[color]} ...`}>{children}</button>;
+}
+```
+
+### 明確註冊來源
+Tailwind 會掃描專案中的每個檔案以尋找類別名稱，但下列情況除外：
+
+- gitignore 中提到的檔案
+- node_modules 目錄下的檔案
+- 二進制的 file，例如圖片影像或 zip 等文件
+- IDE 套件的鎖定檔案
+- 檔案以 `_` 結尾
+
+反之，如果你需要特別排除上列某個條件，例如第三方套件會使用到的 tailwindcss，可以使用 `@source` 明確註冊相對於樣式表的來源路徑：
+
+```css
+@import "tailwindcss";
+@source "../node_modules/@acmecorp/ui-lib";
+```
+
+預設情況下 Tailwind 會掃描專案中的所有檔案，但如果您需要掃描特定目錄，可以使用 `@source` 明確註冊來源路徑。
+
+```css
+@import "tailwindcss" source("../src");
+```
+
+> 通常這發生在 monorepo 專案的規劃，因為專案根目錄不能代表子專案目錄所使用。
+
+當您的專案中有大型目錄，而您知道這些目錄不使用 Tailwind 類別時，例如舊版元件或第三方程式庫，可以用`@source not`排除，這非常有用。
+
+```css
+@import "tailwindcss";
+@source not "../src/components/legacy";
+```
+
+或者你想改用手動的方式去註冊所有來源，先使用`source(none)`完全停用自動來源偵測，然後使用`@source`來明確註冊來源路徑。
+
+```css
+@import "tailwindcss" source(none);
+@source "../admin";
+@source "../shared";
+```
+
+若你需要確保產生出來的 css 要包含特定的類別名稱，可以透過`@source inline()`來明確要求生成而不用掃描。
+
+```css
+@import "tailwindcss";
+@source inline("underline");
+```
+
+最終生成的 css 就一定會包含而不會被 tree shaking 排除。
+
+```css
+.underline {
+  text-decoration-line: underline;
+}
+```
+
+使用`@source inline()`來產生具有變體的類別。例如，若要產生具有暫留和焦點變體的底線類別，請將 `{hover:,focus:,}`新增至來源輸入：
+
+```css
+@import "tailwindcss";
+@source inline("{hover:,focus:,}underline");
+```
+
+最終生成的 css 就一定會包含而不會被 tree shaking 排除。
+
+```css
+.underline {
+  text-decoration-line: underline;
+}
+@media (hover: hover) {
+  .hover\:underline:hover {
+    text-decoration-line: underline;
+  }
+}
+@media (focus: focus) {
+  .focus\:underline:focus {
+    text-decoration-line: underline;
+  }
+}
+```
+
+同上，除了包覆變體作為來源，也可以包覆多個類別命名作為範圍值：
+
+```css
+@import "tailwindcss";
+@source inline("{hover:,}bg-red-{50,{200..800..100},950}");
+```
+
+這會產生 200 到 800 的紅色背景顏色，增量為 100，以及第一個 50 和最後一個 950。它還為每個類別添加了`hover:`變體。
+
+```css
+.bg-red-50 {
+  background-color: var(--color-red-50);
+}
+.bg-red-200 {
+  background-color: var(--color-red-200);
+}
+.bg-red-300 {
+  background-color: var(--color-red-300);
+}
+.bg-red-400 {
+  background-color: var(--color-red-400);
+}
+.bg-red-500 {
+  background-color: var(--color-red-500);
+}
+.bg-red-600 {
+  background-color: var(--color-red-600);
+}
+.bg-red-700 {
+  background-color: var(--color-red-700);
+}
+.bg-red-800 {
+  background-color: var(--color-red-800);
+}
+.bg-red-950 {
+  background-color: var(--color-red-950);
+}
+@media (hover: hover) {
+  .hover\:bg-red-50:hover {
+    background-color: var(--color-red-50);
+  }
+  .hover\:bg-red-200:hover {
+    background-color: var(--color-red-200);
+  }
+  /* ... */
+  .hover\:bg-red-950:hover {
+    background-color: var(--color-red-950);
+  }
+}
+```
+
+若你需要確保不要產生出來的 css 要包含特定的類別名稱，可以透過`@source not inline()`來明確要求生成而不用掃描。
+
+```css
+@import "tailwindcss";
+@source not inline("{hover:,focus:,}bg-red-{50,{100..900..100},950}");
+```
+
+這會明確排除紅色背景通用工具，及其 hover 與 focus 變體，從產生 css 檔案內所排除。
+
+---
+
+## 內建函式
+
+Tailwind 提供以下建置時間函式，讓處理色彩和間距比例更輕鬆。
+
+### `--alpha()` 透明度函式
+使用 `--alpha()` 函式調整顏色的不透明度：
+
+**輸入 CSS：**
+```css
+.my-element {
+  color: --alpha(var(--color-lime-300) / 50%);
+}
+```
+
+**編譯後 CSS：**
+```css
+.my-element {
+  color: color-mix(in oklab, var(--color-lime-300) 50%, transparent);
+}
+```
+
+### `--spacing()` 間距函式
+
+使用 `--spacing()` 函式根據您的主題產生間距值：
+
+**輸入 CSS：**
+```css
+.my-element {
+  margin: --spacing(4);
+}
+```
+
+**編譯後 CSS：**
+```css
+.my-element {
+  margin: calc(var(--spacing) * 4);
+}
+```
+
+這在任意值中也很有用，特別是與 `calc()` 結合使用時：
+
+**HTML：**
+```html
+<div class="py-[calc(--spacing(4)-1px)]">
+  <!-- ... -->
 </div>
 ```
 
-### 響應式設計 Responsive design
+{% note info %}
+**小技巧**：這些函式在自訂 CSS 中特別有用，可以確保與 Tailwind 的設計系統保持一致，同時提供更多彈性來處理複雜的計算需求。
+{% endnote %}
 
-**自訂斷點：**
-```css
-@theme {
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1536px;
-}
-```
 
-**使用自訂斷點：**
-```html
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-  <!-- 響應式網格 -->
-</div>
-```
 
-### 動畫與過渡 Animations
-
-**自訂動畫：**
-```css
-@theme {
-  --animation-spin: spin 1s linear infinite;
-  --animation-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
-  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --animation-bounce: bounce 1s infinite;
-}
-```
-
-**使用自訂動畫：**
-```html
-<div class="animate-spin">載入中...</div>
-<div class="animate-pulse">脈衝效果</div>
-```
+---
 
 
 # 公式表
@@ -1923,9 +2565,9 @@ TailwindCSS v4.1 提供了全新的自訂方式，使用 CSS 變數和 `@theme` 
 
 控制過渡效果的持續時間。
 
-### 過渡時間函數（Transition Timing Function）
+### 過渡時間函式（Transition Timing Function）
 
-控制過渡效果的時間函數。
+控制過渡效果的時間函式。
 
 ### 過渡延遲（Transition Delay）
 
