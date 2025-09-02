@@ -1840,10 +1840,6 @@ let shadow = getComputedStyle(document.documentElement).getPropertyValue("--shad
 
 當您需要編寫自訂 CSS（例如覆蓋第三方庫中的樣式）但仍想使用您的設計令牌並使用您習慣在 HTML 中使用的相同語法時，這非常有用。
 
-
-
-
-
 #### 引用變體 variant
 `@variant` 指令是讓您可以在自訂 CSS 中使用 TailwindCSS 的變體系統。這個功能特別適合需要複雜互動狀態或主題切換的元件，讓您能夠在保持 TailwindCSS 一致性的同時，實現更靈活的樣式控制。
 
@@ -2263,7 +2259,6 @@ Tailwind 提供`--alpha()`透明度函式與`--spacing()`間距函式，讓處�
 }
 ```
 
-
 使用 `--spacing()` 函式根據您的主題產生間距值：
 
 **輸入 CSS：**
@@ -2293,462 +2288,1295 @@ Tailwind 提供`--alpha()`透明度函式與`--spacing()`間距函式，讓處�
 **小技巧**：這些函式在自訂 CSS 中特別有用，可以確保與 Tailwind 的設計系統保持一致，同時提供更多彈性來處理複雜的計算需求。
 {% endnote %}
 
-
-
 ---
 
+## 預先載入 Preflight
+Preflight 是 Tailwind CSS 的基礎樣式 layer base 重置系統，它基於 [modern-normalize](https://github.com/sindresorhus/modern-normalize) 建立，為所有瀏覽器提供一致的基礎樣式起點。
+
+### 主要功能
+Preflight 會自動套用以下基礎樣式：
+
+```css
+/* 從所有元素中移除所有預設邊距 */
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  margin: 0;
+  padding: 0;
+}
+
+/* 能透過新增邊框 class 來輕鬆新增邊框 */
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  box-sizing: border-box;
+  border: 0 solid;
+}
+
+/* 所有標題元素都完全沒有樣式，並且具有與普通文字相同的字體大小和粗細 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* 依預設有序和無序列表會取消樣式 */
+ol,
+ul,
+menu {
+  list-style: none;
+}
+
+/* 圖像和其他替換的元素預設為 block */
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  vertical-align: middle;
+}
+
+/* 影像和視訊預設為等比例縮小 */
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
 
-# 公式表
-
-以下提供完整的 TailwindCSS 公式表，按照功能分類整理，方便您快速查找和使用。
-
-## 佈局（Layout）
-
-佈局相關的類別用於控制元素的顯示方式、定位和排列。
-
-### 顯示（Display）
-
-控制元素的顯示類型。
-
-### 定位（Positioning）
-
-控制元素在文件流中的定位方式。
-
-### 浮動（Float）
-
-控制元素的浮動行為。
-
-### 清除浮動（Clear）
-
-控制元素與浮動元素的關係。
-
-### 物件擬合（Object Fit）
-
-控制替換元素（如圖片）如何擬合其容器。
-
-### 物件位置（Object Position）
-
-控制替換元素在其容器中的位置。
-
-### 溢出（Overflow）
-
-控制元素內容超出容器時的處理方式。
-
-### 可見性（Visibility）
-
-控制元素的可見性。
-
-### Z 索引（Z-Index）
-
-控制元素的堆疊順序。
-
-## 間距（Spacing）
-
-間距類別用於控制元素的內邊距和外邊距。
-
-### 邊距（Margin）
-
-控制元素的外邊距。
-
-### 內邊距（Padding）
-
-控制元素的內邊距。
-
-### 空間（Space Between）
-
-控制子元素之間的間距。
-
-## 尺寸（Sizing）
-
-尺寸類別用於控制元素的寬度和高度。
-
-### 寬度（Width）
-
-控制元素的寬度。
-
-### 最小寬度（Min Width）
-
-控制元素的最小寬度。
-
-### 最大寬度（Max Width）
-
-控制元素的最大寬度。
-
-### 高度（Height）
-
-控制元素的高度。
-
-### 最小高度（Min Height）
-
-控制元素的最小高度。
-
-### 最大高度（Max Height）
-
-控制元素的最大高度。
-
-## 排版（Typography）
-
-排版類別用於控制文字的外觀和排列。
-
-### 字體系列（Font Family）
-
-控制文字的字體。
-
-### 字體大小（Font Size）
-
-控制文字的大小。
-
-### 字體粗細（Font Weight）
-
-控制文字的粗細程度。
-
-### 字體樣式（Font Style）
-
-控制文字的樣式（如斜體）。
-
-### 文字顏色（Text Color）
-
-控制文字的顏色。
-
-### 文字對齊（Text Align）
-
-控制文字的對齊方式。
-
-### 文字裝飾（Text Decoration）
-
-控制文字的裝飾效果。
-
-### 文字轉換（Text Transform）
-
-控制文字的大小寫轉換。
-
-### 行高（Line Height）
-
-控制文字的行高。
-
-### 字母間距（Letter Spacing）
-
-控制字母之間的間距。
-
-### 文字溢出（Text Overflow）
-
-控制文字超出容器時的處理方式。
-
-### 垂直對齊（Vertical Align）
-
-控制行內元素的垂直對齊。
-
-### 空白處理（Whitespace）
-
-控制空白字元的處理方式。
-
-### 文字換行（Word Break）
-
-控制文字的換行行為。
-
-## 背景（Backgrounds）
-
-背景類別用於控制元素的背景外觀。
-
-### 背景附件（Background Attachment）
-
-控制背景圖片的滾動行為。
-
-### 背景裁剪（Background Clip）
-
-控制背景的裁剪區域。
-
-### 背景顏色（Background Color）
-
-控制背景的顏色。
-
-### 背景原點（Background Origin）
-
-控制背景的原點位置。
-
-### 背景位置（Background Position）
-
-控制背景圖片的位置。
-
-### 背景重複（Background Repeat）
-
-控制背景圖片的重複方式。
-
-### 背景大小（Background Size）
-
-控制背景圖片的大小。
-
-### 背景漸層（Background Gradient）
-
-建立背景漸層效果。
-
-## 邊框（Borders）
-
-邊框類別用於控制元素的邊框外觀。
-
-### 邊框圓角（Border Radius）
-
-控制邊框的圓角。
-
-### 邊框樣式（Border Style）
-
-控制邊框的樣式。
-
-### 邊框寬度（Border Width）
-
-控制邊框的寬度。
-
-### 邊框顏色（Border Color）
-
-控制邊框的顏色。
-
-### 邊框分離（Border Collapse）
-
-控制表格邊框的分離方式。
-
-### 邊框間距（Border Spacing）
-
-控制表格邊框的間距。
-
-### 分離邊框（Divide Width）
-
-控制分隔線的寬度。
-
-### 分離顏色（Divide Color）
-
-控制分隔線的顏色。
-
-### 分離樣式（Divide Style）
-
-控制分隔線的樣式。
-
-### 環形邊框（Ring Width）
-
-控制焦點環的寬度。
-
-### 環形顏色（Ring Color）
-
-控制焦點環的顏色。
-
-### 環形偏移（Ring Offset Width）
-
-控制焦點環的偏移量。
-
-### 環形偏移顏色（Ring Offset Color）
-
-控制焦點環偏移的顏色。
-
-## 效果（Effects）
-
-效果類別用於添加視覺效果。
-
-### 陰影（Box Shadow）
-
-控制元素的陰影效果。
-
-### 不透明度（Opacity）
-
-控制元素的透明度。
-
-### 混合模式（Mix Blend Mode）
-
-控制元素的混合模式。
-
-### 背景混合模式（Background Blend Mode）
-
-控制背景的混合模式。
-
-## 過渡（Transitions）
-
-過渡類別用於控制動畫效果。
-
-### 過渡屬性（Transition Property）
-
-控制過渡效果的屬性。
-
-### 過渡持續時間（Transition Duration）
-
-控制過渡效果的持續時間。
-
-### 過渡時間函式（Transition Timing Function）
-
-控制過渡效果的時間函式。
-
-### 過渡延遲（Transition Delay）
-
-控制過渡效果的延遲時間。
-
-### 動畫（Animation）
-
-控制動畫效果。
-
-## 變形（Transforms）
-
-變形類別用於控制元素的變形效果。
-
-### 縮放（Scale）
-
-控制元素的縮放。
-
-### 旋轉（Rotate）
-
-控制元素的旋轉。
-
-### 平移（Translate）
-
-控制元素的平移。
-
-### 傾斜（Skew）
-
-控制元素的傾斜。
-
-### 變形原點（Transform Origin）
-
-控制變形的原點。
-
-## 互動（Interactivity）
-
-互動類別用於控制使用者的互動效果。
-
-### 游標（Cursor）
-
-控制滑鼠游標的樣式。
-
-### 使用者選擇（User Select）
-
-控制使用者選擇文字的行為。
-
-### 調整大小（Resize）
-
-控制元素的可調整大小性。
-
-### 滾動行為（Scroll Behavior）
-
-控制滾動的行為。
-
-### 滾動邊距（Scroll Margin）
-
-控制滾動的邊距。
-
-### 滾動填充（Scroll Padding）
-
-控制滾動的填充。
-
-### 觸摸操作（Touch Action）
-
-控制觸摸操作的行為。
-
-### 滾動捕捉（Scroll Snap）
-
-控制滾動捕捉的行為。
-
-## SVG
-
-SVG 類別用於控制 SVG 元素的外觀。
-
-### 填充（Fill）
-
-控制 SVG 的填充顏色。
-
-### 描邊（Stroke）
-
-控制 SVG 的描邊。
-
-### 描邊寬度（Stroke Width）
-
-控制 SVG 描邊的寬度。
-
-### 描邊線帽（Stroke Line Cap）
-
-控制 SVG 描邊的線帽樣式。
-
-### 描邊連接（Stroke Line Join）
-
-控制 SVG 描邊的連接樣式。
-
-## 可訪問性（Accessibility）
-
-可訪問性類別用於改善網頁的可訪問性。
-
-### 螢幕閱讀器（Screen Readers）
-
-控制螢幕閱讀器的行為。
-
-### 減少動畫（Reduce Motion）
-
-控制動畫的減少。
-
-### 高對比度（High Contrast）
-
-控制高對比度模式。
-### 首選顏色方案（Preferred Color Scheme）
-
-控制首選的顏色方案。
-
-## 響應式設計（Responsive Design）
-
-TailwindCSS 提供內建的響應式斷點系統，讓您能夠為不同螢幕尺寸設計不同的樣式。
-
-### 斷點系統
-
-TailwindCSS 使用以下預設斷點：
-
-- `sm`：640px 及以上
-- `md`：768px 及以上
-- `lg`：1024px 及以上
-- `xl`：1280px 及以上
-- `2xl`：1536px 及以上
-
-### 使用方式
-
-在類別名稱前加上斷點前綴即可：
-
-```html
-<div class="w-full md:w-1/2 lg:w-1/3">
-  <!-- 在小螢幕上佔滿寬度，中等螢幕佔一半，大螢幕佔三分之一 -->
-</div>
 ```
 
-## 深色模式（Dark Mode）
+### 自訂 Preflight
+如果您想在 Preflight 之上新增自己的基本樣式，請使用`@layer base{}`，如先前提到的 [基底樣式](#基底樣式-base-styles) 做法，定義預設基本樣式。
 
-TailwindCSS 支援深色模式，讓您能夠為深色主題提供不同的樣式。
-
-### 啟用深色模式
-
-在 `tailwind.config.js` 中配置：
-
-```js
-module.exports = {
-  darkMode: 'class', // 或 'media'
-  // ... 其他配置
+```css
+@layer base {
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  h2 {
+    font-size: var(--text-xl);
+  }
+  h3 {
+    font-size: var(--text-lg);
+  }
+  a {
+    color: var(--color-blue-600);
+    text-decoration-line: underline;
+  }
 }
 ```
 
-### 使用方式
+{% note info %}
+**小技巧**：Preflight 確保您的專案在所有瀏覽器中都有一致的基礎樣式，建議除非有特殊需求，否則不要停用它。如果遇到第三方元件樣式衝突，可以考慮使用 `@layer` 來管理樣式優先級。
+{% endnote %}
 
-使用 `dark:` 前綴來指定深色模式的樣式：
+### 取消 Preflight
+
+預設會隨著`@import "tailwindcss"`載入，如果您不想使用 Preflight，可以在 Tailwind 配置檔中禁用該行：
+
+```css
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+/* @import "tailwindcss/preflight.css" layer(base); */
+@import "tailwindcss/utilities.css" layer(utilities);
+```
+
+# css 公式表
+以下提供完整的 TailwindCSS 公式表，按照功能分類整理，方便您快速查找和使用。
+
+## Layout
+佈局相關的類別用於控制元素的顯示方式、定位和排列。
+
+### aspect-ratio
+用於控制元素的寬高比例，特別適合用於圖片和影片等媒體內容。當應用於圖片時，建議搭配 `object-cover` 或 `object-contain` 來避免圖片變形。
+
+| 類別名稱           | CSS 屬性                                   | 說明         |
+| ------------------ | ------------------------------------------ | ------------ |
+| `aspect-auto`      | `aspect-ratio: auto;`                      | 保持原始比例 |
+| `aspect-square`    | `aspect-ratio: 1 / 1;`                     | 1:1          |
+| `aspect-video`     | `aspect-ratio: var(--aspect-ratio-video);` | 16:9         |
+| `aspect-{ratio}`   | `aspect-ratio: {ratio};`                   | 自訂比例     |
+| `aspect-[<value>]` | `aspect-ratio: <value>;`                   | 任意值比例   |
 
 ```html
-<div class="bg-white dark:bg-gray-800 text-black dark:text-white">
-  <!-- 淺色模式白色背景黑色文字，深色模式深灰背景白色文字 -->
+<!-- aspect-{ratio} -->
+<img class="aspect-3/2 object-cover" src="/img/villas.jpg" />
+
+<!-- aspect-[<value>] -->
+<img class="aspect-[calc(4*3+1)/3]" src="/img/villas.jpg" />
+
+<!-- 等價 aspect-[var(<custom-property>)] -->
+<img class="aspect-(--my-aspect-ratio)" src="/img/villas.jpg" />  
+
+<!-- aspect-video -->
+<iframe class="aspect-video" src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
+
+<!-- rwd -->
+<iframe class="aspect-video md:aspect-square" src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
+```
+
+#### 自訂
+```css
+@theme {
+  --aspect-loki: 4 / 3; 
+}
+```
+```html
+<img class="aspect-loki" src="/img/villas.jpg" />
+```
+
+{% note info %}
+**小技巧：**
+- 圖片搭配 `object-cover` 可確保填滿容器且不變形
+- 影片建議使用 `aspect-video` 維持標準 16:9 比例
+- 可使用 `aspect-[ratio]` 設定自訂比例，如 `aspect-[4/3]`、`aspect-[21/9]`
+- 支援 CSS 變數：`aspect-[var(--custom-ratio)]`
+{% endnote %}
+
+### columns
+用於控制多欄佈局的欄數，特別適合用於文字內容、圖片畫廊或卡片列表的排版。當應用於文字時，建議搭配適當的 `gap` 來控制欄位間距。
+
+CSS 屬性值有兩種設定方式：
+- 當設定為數字（如 `columns-3`）時，會根據指定的數字來分割成等寬的欄位
+- 當設定為寬度值（如 `columns-md`）時，會根據指定的寬度自動計算可容納的欄數
+
+| 類別名稱                      | CSS 屬性                           | 說明                |
+| ----------------------------- | ---------------------------------- | ------------------- |
+| `columns-<number>`            | `columns: <number>;`               | 數字欄數            |
+| `columns-auto`                | `columns: auto;`                   | 自動欄數            |
+| `columns-3xs`                 | `columns: var(--container-3xs);`   | 寬度 16rem (256px)  |
+| `columns-2xs`                 | `columns: var(--container-2xs);`   | 寬度 18rem (288px)  |
+| `columns-xs`                  | `columns: var(--container-xs);`    | 寬度 20rem (320px)  |
+| `columns-sm`                  | `columns: var(--container-sm);`    | 寬度 24rem (384px)  |
+| `columns-md`                  | `columns: var(--container-md);`    | 寬度 28rem (448px)  |
+| `columns-lg`                  | `columns: var(--container-lg);`    | 寬度 32rem (512px)  |
+| `columns-xl`                  | `columns: var(--container-xl);`    | 寬度 36rem (576px)  |
+| `columns-2xl`                 | `columns: var(--container-2xl);`   | 寬度 42rem (672px)  |
+| `columns-3xl`                 | `columns: var(--container-3xl);`   | 寬度 48rem (768px)  |
+| `columns-4xl`                 | `columns: var(--container-4xl);`   | 寬度 56rem (896px)  |
+| `columns-5xl`                 | `columns: var(--container-5xl);`   | 寬度 64rem (1024px) |
+| `columns-6xl`                 | `columns: var(--container-6xl);`   | 寬度 72rem (1152px) |
+| `columns-7xl`                 | `columns: var(--container-7xl);`   | 寬度 80rem (1280px) |
+| `columns-(<custom-property>)` | `columns: var(<custom-property>);` | 自訂屬性欄數        |
+| `columns-[<value>]`           | `columns: <value>;`                | 任意值欄數          |
+
+```html
+<!-- columns-<number> -->
+<div class="columns-2 gap-4">
+  <p>第一欄內容。..</p>
+  <p>第二欄內容。..</p>
+</div>
+
+<!-- rwd -->
+<div class="columns-1 md:columns-2 lg:columns-3 gap-6">
+  <div class="break-inside-avoid">卡片 1</div>
+  <div class="break-inside-avoid">卡片 2</div>
+  <div class="break-inside-avoid">卡片 3</div>
+</div>
+
+<!-- 固定寬度欄位 -->
+<div class="columns-md gap-8">
+  <img class="w-full" src="/img/photo1.jpg" />
+  <img class="w-full" src="/img/photo2.jpg" />
+</div>
+
+<!-- 自訂欄數 -->
+<div class="columns-[5] gap-2">
+  <span>1</span>
+  <span>2</span>
+  <span>3</span>
+  <span>4</span>
+  <span>5</span>
+</div>
+```
+
+#### 自訂
+```css
+@theme {
+  --columns-custom: 4;
+}
+```
+```html
+<div class="columns-custom gap-4">
+  <div>自訂欄位 1</div>
+  <div>自訂欄位 2</div>
+  <div>自訂欄位 3</div>
+  <div>自訂欄位 4</div>
 </div>
 ```
 
 {% note info %}
-**小技巧：響應式設計**
-使用 TailwindCSS 的響應式前綴可以輕鬆建立適配各種裝置的設計，建議採用「行動優先」的設計理念。
+**小技巧：**
+- 使用 `break-inside-avoid` 防止內容在欄位間斷開
+- 搭配 `gap-{size}` 控制欄位間距，提升可讀性
+- 響應式設計建議：`columns-1 md:columns-2 lg:columns-3`
+- 固定寬度欄位適合圖片畫廊，數字欄位適合文字內容
+- 支援 CSS 變數：`columns-[var(--custom-columns)]`
 {% endnote %}
 
-# 總結
+### break-after, break-before
+`break-after` 和 `break-before` 用於控制元素在分頁、分欄或分區時的斷行行為，特別適合用於列印樣式、多欄佈局和分頁媒體。這些屬性可以防止內容在不適當的位置斷開，或強制在特定位置斷行。
 
-TailwindCSS 是一個強大的現代化 CSS 框架，通過功能類優先的設計理念，讓開發者能夠快速構建一致且美觀的使用者介面。掌握 TailwindCSS 不僅能提升開發效率，還能確保設計的一致性和可維護性。
+| 類別名稱                           | CSS 屬性                             | 說明               |
+| ---------------------------------- | ------------------------------------ | ------------------ |
+| `break-{before\|after}-auto`       | `break-{before\|after}: auto;`       | 自動斷行（預設值） |
+| `break-{before\|after}-avoid`      | `break-{before\|after}: avoid;`      | 避免斷行           |
+| `break-{before\|after}-all`        | `break-{before\|after}: all;`        | 強制斷行           |
+| `break-{before\|after}-avoid-page` | `break-{before\|after}: avoid-page;` | 避免分頁斷行       |
+| `break-{before\|after}-page`       | `break-{before\|after}: page;`       | 強制分頁斷行       |
+| `break-{before\|after}-left`       | `break-{before\|after}: left;`       | 強制左頁斷行       |
+| `break-{before\|after}-right`      | `break-{before\|after}: right;`      | 強制右頁斷行       |
+| `break-{before\|after}-column`     | `break-{before\|after}: column;`     | 強制分欄斷行       |
 
-{% note success %}
-**學習建議：**
-1. 先熟悉常用的工具類別
-2. 練習響應式設計
-3. 學習自定義配置
-4. 建立自己的元件庫
+```html
+<!-- 避免標題斷行 -->
+<h2 class="break-after-avoid">章節標題</h2>
+<p>章節內容。..</p>
+
+<!-- 強制分頁 -->
+<div class="break-before-page">
+  <h1>新章節</h1>
+  <p>新章節內容。..</p>
+</div>
+
+<!-- 多欄佈局中的斷行控制 -->
+<div class="columns-2 gap-4">
+  <div class="break-inside-avoid">
+    <h3 class="break-after-avoid">子標題</h3>
+    <p>內容不會與標題分開。..</p>
+  </div>
+  <div class="break-inside-avoid">
+    <h3 class="break-after-avoid">另一個子標題</h3>
+    <p>另一個內容。..</p>
+  </div>
+</div>
+
+<!-- 列印樣式 -->
+<div class="print:break-before-page">
+  <h2>列印時強制分頁</h2>
+  <p>這個內容會在列印時強制分頁。..</p>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- 使用 `break-after-avoid` 防止標題與內容分離
+- 搭配 `break-inside-avoid` 在多欄佈局中保持內容完整性
+- 列印樣式建議：`print:break-before-page` 強制重要內容分頁
+- 多欄佈局中，標題建議使用 `break-after-avoid` 避免孤行
+- 支援響應式設計：`md:break-after-column lg:break-after-page`
 {% endnote %}
 
-希望這份 TailwindCSS 公式表能夠幫助您更好地掌握這個強大的 CSS 框架！
+### break-inside
+用於控制元素內部的斷行行為，特別適合用於多欄佈局、列印樣式和分頁媒體。這個屬性可以防止內容在元素內部被不當分割，確保內容的完整性和可讀性。
+
+| 類別名稱                    | CSS 屬性                      | 說明               |
+| --------------------------- | ----------------------------- | ------------------ |
+| `break-inside-auto`         | `break-inside: auto;`         | 自動斷行（預設值） |
+| `break-inside-avoid`        | `break-inside: avoid;`        | 避免內部斷行       |
+| `break-inside-avoid-page`   | `break-inside: avoid-page;`   | 避免分頁內部斷行   |
+| `break-inside-avoid-column` | `break-inside: avoid-column;` | 避免分欄內部斷行   |
+
+```html
+<!-- 避免卡片內容斷行 -->
+<div class="columns-2 gap-4">
+  <div class="break-inside-avoid bg-white p-4 rounded shadow">
+    <h3 class="font-bold mb-2">卡片標題</h3>
+    <p>這個卡片的內容不會在欄位間斷開。..</p>
+    <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">按鈕</button>
+  </div>
+  <div class="break-inside-avoid bg-white p-4 rounded shadow">
+    <h3 class="font-bold mb-2">另一個卡片</h3>
+    <p>另一個卡片的內容也不會斷開。..</p>
+    <img class="w-full mt-2" src="/img/photo.jpg" alt="照片" />
+  </div>
+</div>
+
+<!-- 避免圖片和說明文字分離 -->
+<div class="columns-3 gap-6">
+  <div class="break-inside-avoid">
+    <img class="w-full mb-2" src="/img/photo1.jpg" alt="照片 1" />
+    <p class="text-sm text-gray-600">照片 1 的說明文字</p>
+  </div>
+  <div class="break-inside-avoid">
+    <img class="w-full mb-2" src="/img/photo2.jpg" alt="照片 2" />
+    <p class="text-sm text-gray-600">照片 2 的說明文字</p>
+  </div>
+  <div class="break-inside-avoid">
+    <img class="w-full mb-2" src="/img/photo3.jpg" alt="照片 3" />
+    <p class="text-sm text-gray-600">照片 3 的說明文字</p>
+  </div>
+</div>
+
+<!-- 響應式斷行控制 -->
+<div class="columns-1 md:columns-2 lg:columns-3 gap-4">
+  <article class="break-inside-avoid">
+    <h2 class="text-xl font-bold mb-3">文章標題</h2>
+    <p class="mb-2">文章摘要。..</p>
+    <p class="text-sm text-gray-500">作者：John Doe</p>
+  </article>
+  <article class="break-inside-avoid">
+    <h2 class="text-xl font-bold mb-3">另一篇文章</h2>
+    <p class="mb-2">另一篇文章摘要。..</p>
+    <p class="text-sm text-gray-500">作者：Jane Smith</p>
+  </article>
+</div>
+
+<!-- 列印樣式中的斷行控制 -->
+<div class="print:break-inside-avoid">
+  <h3 class="font-bold">列印章節</h3>
+  <p>這個章節的內容在列印時不會被分割。..</p>
+  <ul class="list-disc ml-4">
+    <li>重要項目 1</li>
+    <li>重要項目 2</li>
+    <li>重要項目 3</li>
+  </ul>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- 在多欄佈局中，使用 `break-inside-avoid` 防止卡片內容被分割
+- 圖片和說明文字建議包在同一個 `break-inside-avoid` 容器中
+- 響應式設計中，可以搭配 `columns-{n}` 和 `break-inside-avoid` 優化不同螢幕尺寸的排版
+- 列印樣式建議：`print:break-inside-avoid` 確保重要內容不被分頁切割
+- 與 `break-after-avoid` 和 `break-before-avoid` 搭配使用，可以完全控制斷行行為
+{% endnote %}
+
+### box-decoration-break
+用於控制元素在分欄、分頁或行內換行時，其裝飾性樣式（如背景、邊框、陰影等）的顯示行為。這個屬性適合用於需要保持視覺一致性的設計場景。
+
+| 類別名稱                     | CSS 屬性                       | 說明                       |
+| ---------------------------- | ------------------------------ | -------------------------- |
+| `box-decoration-break-slice` | `box-decoration-break: slice;` | 在斷行處切割樣式（預設值） |
+| `box-decoration-break-clone` | `box-decoration-break: clone;` | 在每個片段複製完整樣式     |
+
+```html
+<span class="box-decoration-slice bg-linear-to-r from-indigo-600 to-pink-500 px-2 text-white ...">
+  Hello<br />World
+</span>
+<span class="box-decoration-clone bg-linear-to-r from-indigo-600 to-pink-500 px-2 text-white ...">
+  Hello<br />World
+</span>
+
+<!-- 響應式設計中的樣式控制 -->
+<div class="box-decoration-clone md:box-decoration-slice ...">
+  <!-- ... -->
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- 在多欄佈局中，使用 `box-decoration-break-clone` 保持樣式的視覺完整性
+- 搭配 `break-inside-avoid` 可以更好地控制內容和樣式的斷行行為
+- 響應式設計中，`box-decoration-break-clone` 確保在不同螢幕尺寸下樣式保持一致
+- 列印樣式建議：`print:box-decoration-break-clone` 確保列印時樣式不被切割
+- 適用於需要保持視覺一致性的設計元素，如高亮段落、引用區塊等
+{% endnote %}
+
+### box-sizing
+用於控制元素的盒模型計算方式，決定元素的寬度和高度是否包含內邊距和邊框。這個屬性對於精確控制元素尺寸和佈局非常重要。
+
+| 類別名稱      | CSS 屬性                   | 說明                       |
+| ------------- | -------------------------- | -------------------------- |
+| `box-border`  | `box-sizing: border-box;`  | 包含邊框和內邊距（預設值） |
+| `box-content` | `box-sizing: content-box;` | 不包含邊框和內邊距         |
+
+```html
+<!-- 預設的 border-box 行為 -->
+<div class="w-64 h-32 bg-blue-200 border-4 border-blue-600 p-4">
+  <p class="text-blue-800">這個 div 的實際尺寸是 256x128px，包含邊框和內邊距</p>
+</div>
+
+<!-- content-box 行為 -->
+<div class="w-64 h-32 bg-green-200 border-4 border-green-600 p-4 box-content">
+  <p class="text-green-800">這個 div 的實際尺寸是 288x160px，不包含邊框和內邊距</p>
+</div>
+
+<!-- 響應式盒模型控制 -->
+<div class="w-full md:w-80 lg:w-96 bg-gray-100 border-2 border-gray-300 p-6 box-border">
+  <h3 class="text-lg font-semibold mb-2">響應式卡片</h3>
+  <p class="text-gray-700">在不同螢幕尺寸下保持一致的內邊距和邊框</p>
+</div>
+
+<!-- 表單元素的盒模型控制 -->
+<div class="space-y-4">
+  <input type="text" class="w-64 px-4 py-2 border-2 border-gray-300 rounded box-border" placeholder="border-box 輸入框" />
+  <input type="text" class="w-64 px-4 py-2 border-2 border-gray-300 rounded box-content" placeholder="content-box 輸入框" />
+</div>
+
+<!-- 自訂尺寸的盒模型控制 -->
+<div class="w-[300px] h-[200px] bg-purple-200 border-4 border-purple-600 p-8 box-border">
+  <p class="text-purple-800 text-center">自訂尺寸：300x200px，包含邊框和內邊距</p>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `box-border` 是 Tailwind 的預設值，讓佈局計算更直觀
+- 使用 `box-content` 時要注意實際元素尺寸會比設定的寬高更大
+- 響應式設計中，`box-border` 確保在不同螢幕尺寸下保持一致的視覺效果
+- 表單元素建議使用 `box-border` 避免尺寸計算問題
+- 自訂尺寸搭配 `box-border` 可以精確控制元素的最終尺寸
+{% endnote %}
+
+### display
+用於控制元素的顯示類型，決定元素在頁面中的佈局行為。這個屬性是最基礎的 CSS 屬性之一，影響元素的盒模型、定位和流動方式。
+
+| 類別名稱             | CSS 屬性                       | 說明                           |
+| -------------------- | ------------------------------ | ------------------------------ |
+| `inline`             | `display: inline;`             | 行內元素                       |
+| `block`              | `display: block;`              | 區塊級元素                     |
+| `inline-block`       | `display: inline-block;`       | 行內區塊元素                   |
+| `flow-root`          | `display: flow-root;`          | 建立新的區塊格式化上下文       |
+| `flex`               | `display: flex;`               | 彈性佈局容器                   |
+| `inline-flex`        | `display: inline-flex;`        | 行內彈性佈局容器               |
+| `grid`               | `display: grid;`               | 網格佈局容器                   |
+| `inline-grid`        | `display: inline-grid;`        | 行內網格佈局容器               |
+| `contents`           | `display: contents;`           | 內容容器（隱藏包裝元素）       |
+| `table`              | `display: table;`              | 表格元素                       |
+| `inline-table`       | `display: inline-table;`       | 行內表格元素                   |
+| `table-caption`      | `display: table-caption;`      | 表格標題                       |
+| `table-cell`         | `display: table-cell;`         | 表格儲存格                     |
+| `table-column`       | `display: table-column;`       | 表格欄位                       |
+| `table-column-group` | `display: table-column-group;` | 表格欄位群組                   |
+| `table-footer-group` | `display: table-footer-group;` | 表格頁腳群組                   |
+| `table-header-group` | `display: table-header-group;` | 表格標題群組                   |
+| `table-row-group`    | `display: table-row-group;`    | 表格行群組                     |
+| `table-row`          | `display: table-row;`          | 表格行                         |
+| `list-item`          | `display: list-item;`          | 列表項目                       |
+| `hidden`             | `display: none;`               | 隱藏元素                       |
+| `sr-only`            | **註 1**                       | 螢幕閱讀器專用（隱藏視覺元素） |
+| `not-sr-only`        | **註 2**                       | 取消螢幕閱讀器隱藏             |
+
+```css
+/* 註 1 */
+.sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 註 2 */
+.not-sr-only{
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+```
+
+{% note info %}
+**小技巧：**
+- `block` 元素會佔滿整行，`inline` 元素會並排顯示
+- `flex` 和 `grid` 是現代佈局的主要方式，功能強大且靈活
+- 響應式設計中，可以根據螢幕尺寸改變元素的顯示類型
+- `hidden` 完全隱藏元素，`contents` 隱藏包裝元素但保留子元素
+- 表格佈局適合需要對齊的內容，但現代佈局建議使用 `flex` 或 `grid`
+- `flow-root` 用於建立新的區塊格式化上下文，解決浮動問題
+- `sr-only` 和 `not-sr-only` 用於無障礙設計，控制螢幕閱讀器的可見性
+- 表格相關的 display 值適合複雜的表格結構，如 `table-header-group`、`table-footer-group`
+{% endnote %}
+
+### float
+用於控制元素的浮動行為，讓元素脫離正常文檔流並向左或向右浮動。這個屬性常用於文字環繞圖片或創建多欄佈局，但在現代 CSS 中建議使用 `flex` 或 `grid` 佈局。
+
+| 類別名稱      | CSS 屬性               | 說明                 |
+| ------------- | ---------------------- | -------------------- |
+| `float-right` | `float: right;`        | 向右浮動             |
+| `float-left`  | `float: left;`         | 向左浮動             |
+| `float-start` | `float: inline-start;` | 依據書寫方向起始浮動 |
+| `float-end`   | `float: inline-end;`   | 依據書寫方向結尾浮動 |
+| `float-none`  | `float: none;`         | 不浮動（預設值）     |
+
+{% note info %}
+**小技巧：**
+- 浮動元素會脫離正常文檔流，可能影響後續元素的佈局
+- 使用 `clear-both` 清除浮動，避免佈局問題
+- 響應式設計中，可以根據螢幕尺寸控制浮動行為
+- 現代佈局建議使用 `flex` 或 `grid` 替代浮動佈局
+- 浮動主要用於文字環繞圖片，而不是創建複雜的佈局結構
+{% endnote %}
+
+### clear
+`clear` 用於控制元素是否允許浮動元素出現在其左側、右側或兩側。這個屬性通常與 `float` 配合使用，用於清除浮動造成的佈局問題。
+
+| 類別名稱      | CSS 屬性               | 說明                 |
+| ------------- | ---------------------- | -------------------- |
+| `clear-left`  | `clear: left;`         | 清除左側浮動         |
+| `clear-right` | `clear: right;`        | 清除右側浮動         |
+| `clear-both`  | `clear: both;`         | 清除兩側浮動         |
+| `clear-start` | `clear: inline-start;` | 依據書寫方向起始清除 |
+| `clear-end`   | `clear: inline-end;`   | 依據書寫方向結尾清除 |
+| `clear-none`  | `clear: none;`         | 不清除浮動（預設值） |
+
+{% note info %}
+**小技巧：**
+- `clear-both` 是最常用的清除浮動方式，確保元素不受任何浮動影響
+- 清除浮動後，元素會從新的一行開始顯示
+- 響應式設計中，可以根據螢幕尺寸選擇不同的清除策略
+- 現代佈局建議使用 `flex` 或 `grid` 替代浮動佈局，避免清除浮動的複雜性
+- 清除浮動主要用於修復傳統浮動佈局的問題，而不是創建新的佈局
+{% endnote %}
+
+### isolation
+用於創建新的堆疊上下文，控制元素的層級關係和 z-index 行為。這個屬性特別適用於模態框、下拉選單、工具提示等需要控制層級的元素。
+
+| 類別名稱         | CSS 屬性              | 說明                       |
+| ---------------- | --------------------- | -------------------------- |
+| `isolate`        | `isolation: isolate;` | 創建新的堆疊上下文         |
+| `isolation-auto` | `isolation: auto;`    | 不創建堆疊上下文（預設值） |
+
+```html
+<!-- 基本堆疊上下文控制 -->
+<div class="relative bg-gray-100 p-8">
+  <div class="absolute top-0 left-0 w-32 h-32 bg-blue-200 z-10">藍色方塊 (z-10)</div>
+  <div class="absolute top-4 left-4 w-32 h-32 bg-green-200 z-20">綠色方塊 (z-20)</div>
+  
+  <!-- 創建新的堆疊上下文 -->
+  <div class="absolute top-8 left-8 w-32 h-32 bg-red-200 z-30 isolate">
+    <div class="absolute top-0 left-0 w-16 h-16 bg-yellow-200 z-40">黃色方塊 (z-40)</div>
+  </div>
+</div>
+
+<!-- 模態框層級控制 -->
+<div class="relative bg-gray-100 p-8">
+  <div class="bg-white border rounded-lg p-4 shadow-lg">
+    <h3 class="font-bold mb-2">主要內容</h3>
+    <p>這是頁面的主要內容區域</p>
+  </div>
+  
+  <!-- 模態框使用 isolate 創建新的堆疊上下文 -->
+  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center isolate">
+    <div class="bg-white rounded-lg p-6 shadow-xl max-w-md mx-4">
+      <h3 class="text-lg font-bold mb-4">模態框</h3>
+      <p class="mb-4">這個模態框使用 isolate 確保正確的層級顯示</p>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- 下拉選單層級控制 -->
+<div class="relative bg-gray-100 p-8">
+  <div class="inline-block">
+    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      下拉選單 ▼
+    </button>
+    
+    <!-- 下拉選單使用 isolate 確保在按鈕上方顯示 -->
+    <div class="absolute top-full left-0 mt-1 bg-white border rounded-lg shadow-lg isolate">
+      <div class="py-2">
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100">選項 1</a>
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100">選項 2</a>
+        <a href="#" class="block px-4 py-2 hover:bg-gray-100">選項 3</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 工具提示層級控制 -->
+<div class="relative bg-gray-100 p-8">
+  <div class="inline-block">
+    <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 relative group">
+      懸停顯示工具提示
+      
+      <!-- 工具提示使用 isolate 確保正確顯示 -->
+      <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-sm px-3 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity isolate">
+        這是工具提示內容
+        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- 響應式層級控制 -->
+<div class="relative bg-gray-100 p-8">
+  <div class="bg-white border rounded-lg p-4 shadow-lg">
+    <h3 class="font-bold mb-2">響應式內容</h3>
+    <p>在不同螢幕尺寸下，層級控制可能有所不同</p>
+  </div>
+  
+  <!-- 響應式模態框 -->
+  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center isolate md:bg-opacity-75">
+    <div class="bg-white rounded-lg p-4 md:p-6 shadow-xl max-w-sm md:max-w-md mx-4">
+      <h3 class="text-lg font-bold mb-4">響應式模態框</h3>
+      <p class="mb-4">在小螢幕上背景透明度較低，大螢幕上較高</p>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">關閉</button>
+    </div>
+  </div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `isolate` 創建新的堆疊上下文，讓子元素的 z-index 相對於父元素計算
+- 模態框、下拉選單、工具提示等常用 `isolate` 確保正確的層級顯示
+- 響應式設計中，可以根據螢幕尺寸調整層級控制策略
+- `isolate` 與 `position: relative/absolute/fixed` 配合使用效果最佳
+- 避免過度使用 `isolate`，過多的堆疊上下文可能增加複雜性
+{% endnote %}
+
+### object-fit
+用於控制替換元素（如 `<img>`、`<video>`）的內容如何適應其容器。這個屬性特別適合用於圖片畫廊、卡片設計和響應式圖片佈局。
+
+| 類別名稱            | CSS 屬性                  | 說明                           |
+| ------------------- | ------------------------- | ------------------------------ |
+| `object-contain`    | `object-fit: contain;`    | 保持比例，完整顯示內容         |
+| `object-cover`      | `object-fit: cover;`      | 保持比例，填滿容器（可能裁剪） |
+| `object-fill`       | `object-fit: fill;`       | 拉伸填滿容器（可能變形）       |
+| `object-none`       | `object-fit: none;`       | 保持原始尺寸，不縮放           |
+| `object-scale-down` | `object-fit: scale-down;` | 類似 contain，但不會放大       |
+
+{% note info %}
+**小技巧：**
+- `object-cover` 最常用於卡片設計，確保圖片填滿容器且不變形
+- `object-contain` 適合需要完整顯示內容的場景，如產品圖片
+- 響應式設計中，可以根據螢幕尺寸切換不同的 object-fit 值
+- 搭配 `aspect-ratio` 可以創建更精確的圖片容器
+- 影片內容也適用於 object-fit，特別適合創建影片預覽縮圖
+{% endnote %}
+
+### object-position
+用於控制替換元素（如 `<img>`、`<video>`）在容器中的位置。這個屬性特別適合用於圖片畫廊、卡片設計和響應式圖片佈局。
+
+| 類別名稱                     | CSS 屬性                                   | 說明         |
+| ---------------------------- | ------------------------------------------ | ------------ |
+| `object-top-left`            | `object-position: top left;`               | 左上對齊     |
+| `object-top`                 | `object-position: top;`                    | 頂部對齊     |
+| `object-top-right`           | `object-position: top right;`              | 右上對齊     |
+| `object-left`                | `object-position: left;`                   | 左側對齊     |
+| `object-center`              | `object-position: center;`                 | 置中對齊     |
+| `object-right`               | `object-position: right;`                  | 右側對齊     |
+| `object-bottom-left`         | `object-position: bottom left;`            | 左下對齊     |
+| `object-bottom`              | `object-position: bottom;`                 | 底部對齊     |
+| `object-bottom-right`        | `object-position: bottom right;`           | 右下對齊     |
+| `object-(<custom-property>)` | `object-position: var(<custom-property>);` | 自訂位置值   |
+| `object-[<value>]`           | `object-position: <value>;`                | 任意值位置值 |
+
+```html
+<!-- object-(<custom-property>) -->
+<img class="object-(--my-object) ..." src="/img/mountains.jpg" />
+<!-- 等價 object-[var(<custom-property>)] -->
+
+<!-- object-[<value>] -->
+<img class="object-[25%_75%] ..." src="/img/mountains.jpg" />
+```
+
+{% note info %}
+**小技巧：**
+- `object-cover` 最常用於卡片設計，確保圖片填滿容器且不變形
+- `object-contain` 適合需要完整顯示內容的場景，如產品圖片
+- 響應式設計中，可以根據螢幕尺寸切換不同的 object-fit 值
+- 搭配 `aspect-ratio` 可以創建更精確的圖片容器
+- 影片內容也適用於 object-fit，特別適合創建影片預覽縮圖
+{% endnote %}
+
+### overflow
+用於控制元素的溢出行為，決定當內容超出元素尺寸時的顯示方式。這個屬性對於精確控制元素尺寸和佈局非常重要。
+
+控制元素的溢出行為：
+
+| 類別名稱             | CSS 屬性               | 說明                   |
+| -------------------- | ---------------------- | ---------------------- |
+| `overflow-auto`      | `overflow: auto;`      | 根據內容自動調整滾動條 |
+| `overflow-hidden`    | `overflow: hidden;`    | 隱藏溢出部分           |
+| `overflow-clip`      | `overflow: clip;`      | 裁剪溢出部分           |
+| `overflow-visible`   | `overflow: visible;`   | 顯示所有溢出部分       |
+| `overflow-scroll`    | `overflow: scroll;`    | 添加滾動條             |
+| `overflow-x-auto`    | `overflow-x: auto;`    | 水平方向自動調整       |
+| `overflow-y-auto`    | `overflow-y: auto;`    | 垂直方向自動調整       |
+| `overflow-x-hidden`  | `overflow-x: hidden;`  | 隱藏水平溢出           |
+| `overflow-y-hidden`  | `overflow-y: hidden;`  | 隱藏垂直溢出           |
+| `overflow-x-clip`    | `overflow-x: clip;`    | 裁剪水平溢出           |
+| `overflow-y-clip`    | `overflow-y: clip;`    | 裁剪垂直溢出           |
+| `overflow-x-visible` | `overflow-x: visible;` | 顯示水平溢出           |
+| `overflow-y-visible` | `overflow-y: visible;` | 顯示垂直溢出           |
+| `overflow-x-scroll`  | `overflow-x: scroll;`  | 添加水平滾動條         |
+| `overflow-y-scroll`  | `overflow-y: scroll;`  | 添加垂直滾動條         |
+
+{% note info %}
+**小技巧：**
+- `overflow-hidden` 是最常用的隱藏溢出方式，確保元素不受任何溢出影響
+- `overflow-visible` 顯示所有溢出部分，但可能破壞佈局
+- `overflow-clip` 裁剪溢出部分，但可能會導致內容被截斷
+- `overflow-scroll` 添加滾動條，但可能會增加不必要的滾動條
+- `overflow-auto` 根據內容自動調整高度，是最常用的解決方案
+- 響應式設計中，可以根據螢幕尺寸選擇不同的 overflow 值
+{% endnote %}
+
+### overscroll-behavior 
+用於控制當使用者滾動超出元素範圍時的行為。這個屬性特別適用於創建平滑的滾動效果，尤其是在移動設備上。
+
+控制滾動超出元素範圍時的行為：
+
+| 類別名稱               | CSS 屬性                          | 說明                 |
+| ---------------------- | --------------------------------- | -------------------- |
+| `overscroll-auto`      | `overscroll-behavior: auto;`      | 允許預設的滾動行為   |
+| `overscroll-contain`   | `overscroll-behavior: contain;`   | 限制滾動行為在元素內 |
+| `overscroll-none`      | `overscroll-behavior: none;`      | 禁止所有滾動行為     |
+| `overscroll-x-auto`    | `overscroll-behavior-x: auto;`    | 允許水平方向預設滾動 |
+| `overscroll-x-contain` | `overscroll-behavior-x: contain;` | 限制水平方向滾動     |
+| `overscroll-x-none`    | `overscroll-behavior-x: none;`    | 禁止水平方向滾動     |
+| `overscroll-y-auto`    | `overscroll-behavior-y: auto;`    | 允許垂直方向預設滾動 |
+| `overscroll-y-contain` | `overscroll-behavior-y: contain;` | 限制垂直方向滾動     |
+| `overscroll-y-none`    | `overscroll-behavior-y: none;`    | 禁止垂直方向滾動     |
+
+### position
+用於控制元素的定位方式，決定元素在文檔流中的位置和行為。這個屬性對於創建複雜佈局、模態框、工具提示等非常重要。
+
+| 類別名稱   | CSS 屬性              | 說明               |
+| ---------- | --------------------- | ------------------ |
+| `static`   | `position: static;`   | 靜態定位（預設值） |
+| `relative` | `position: relative;` | 相對定位           |
+| `absolute` | `position: absolute;` | 絕對定位           |
+| `fixed`    | `position: fixed;`    | 固定定位           |
+| `sticky`   | `position: sticky;`   | 黏性定位           |
+
+{% note info %}
+**小技巧：**
+- `relative` 常用於創建定位上下文，讓子元素的 `absolute` 定位相對於它
+- `absolute` 會脫離文檔流，需要父元素有 `relative` 定位
+- `fixed` 相對於視窗定位，適合導航欄、側邊欄等固定元素
+- `sticky` 結合了 `relative` 和 `fixed` 的特性，適合側邊欄和導航
+- 響應式設計中，可以根據螢幕尺寸改變定位方式
+{% endnote %}
+
+### top / right / bottom / left
+用於控制定位元素的具體位置，通常與 position 配合使用。這些屬性對於精確控制元素位置非常重要。
+
+| 類別名稱                      | CSS 屬性                                                | 說明                          |
+| ----------------------------- | ------------------------------------------------------- | ----------------------------- |
+| `inset-<number>`              | `inset: calc(var(--spacing) * <number>);`               | 設定所有邊距                  |
+| `-inset-<number>`             | `inset: calc(var(--spacing) * -<number>);`              | 設定負數所有邊距              |
+| `inset-<fraction>`            | `inset: calc(<fraction> * 100%);`                       | 設定百分比所有邊距            |
+| `-inset-<fraction>`           | `inset: calc(<fraction> * -100%);`                      | 設定負數百分比邊距            |
+| `inset-px`                    | `inset: 1px;`                                           | 設定 1px 所有邊距             |
+| `-inset-px`                   | `inset: -1px;`                                          | 設定 -1px 所有邊距            |
+| `inset-full`                  | `inset: 100%;`                                          | 設定 100% 所有邊距            |
+| `-inset-full`                 | `inset: -100%;`                                         | 設定 -100% 所有邊距           |
+| `inset-auto`                  | `inset: auto;`                                          | 自動所有邊距                  |
+| `inset-(<custom-property>)`   | `inset: var(<custom-property>);`                        | 使用自訂 CSS 變數設定邊距     |
+| `inset-[<value>]`             | `inset: <value>;`                                       | 使用任意值設定邊距            |
+|                               |                                                         |                               |
+| `inset-x-<number>`            | `inset-inline: calc(var(--spacing) * <number>);`        | 設定水平邊距                  |
+| `-inset-x-<number>`           | `inset-inline: calc(var(--spacing) * -<number>);`       | 設定負數水平邊距              |
+| `inset-x-<fraction>`          | `inset-inline: calc(<fraction> * 100%);`                | 設定百分比水平邊距            |
+| `-inset-x-<fraction>`         | `inset-inline: calc(<fraction> * -100%);`               | 設定負數百分比水平邊距        |
+| `inset-x-px`                  | `inset-inline: 1px;`                                    | 設定 1px 水平邊距             |
+| `-inset-x-px`                 | `inset-inline: -1px;`                                   | 設定 -1px 水平邊距            |
+| `inset-x-full`                | `inset-inline: 100%;`                                   | 設定 100% 水平邊距            |
+| `-inset-x-full`               | `inset-inline: -100%;`                                  | 設定 -100% 水平邊距           |
+| `inset-x-auto`                | `inset-inline: auto;`                                   | 自動水平邊距                  |
+| `inset-x-(<custom-property>)` | `inset-inline: var(<custom-property>);`                 | 使用自訂 CSS 變數設定水平邊距 |
+| `inset-x-[<value>]`           | `inset-inline: <value>;`                                | 使用任意值設定水平邊距        |
+|                               |                                                         |                               |
+| `inset-y-<number>`            | `inset-block: calc(var(--spacing) * <number>);`         | 設定垂直邊距                  |
+| `-inset-y-<number>`           | `inset-block: calc(var(--spacing) * -<number>);`        | 設定負數垂直邊距              |
+| `inset-y-<fraction>`          | `inset-block: calc(<fraction> * 100%);`                 | 設定百分比垂直邊距            |
+| `-inset-y-<fraction>`         | `inset-block: calc(<fraction> * -100%);`                | 設定負數百分比垂直邊距        |
+| `inset-y-px`                  | `inset-block: 1px;`                                     | 設定 1px 垂直邊距             |
+| `-inset-y-px`                 | `inset-block: -1px;`                                    | 設定 -1px 垂直邊距            |
+| `inset-y-full`                | `inset-block: 100%;`                                    | 設定 100% 垂直邊距            |
+| `-inset-y-full`               | `inset-block: -100%;`                                   | 設定 -100% 垂直邊距           |
+| `inset-y-auto`                | `inset-block: auto;`                                    | 自動垂直邊距                  |
+| `inset-y-(<custom-property>)` | `inset-block: var(<custom-property>);`                  | 使用自訂 CSS 變數設定垂直邊距 |
+| `inset-y-[<value>]`           | `inset-block: <value>;`                                 | 使用任意值設定垂直邊距        |
+|                               |                                                         |                               |
+| `start-<number>`              | `inset-inline-start: calc(var(--spacing) * <number>);`  | 設定起始邊距                  |
+| `-start-<number>`             | `inset-inline-start: calc(var(--spacing) * -<number>);` | 設定負數起始邊距              |
+| `start-<fraction>`            | `inset-inline-start: calc(<fraction> * 100%);`          | 設定百分比起始邊距            |
+| `-start-<fraction>`           | `inset-inline-start: calc(<fraction> * -100%);`         | 設定負數百分比起始邊距        |
+| `start-px`                    | `inset-inline-start: 1px;`                              | 設定 1px 起始邊距             |
+| `-start-px`                   | `inset-inline-start: -1px;`                             | 設定 -1px 起始邊距            |
+| `start-full`                  | `inset-inline-start: 100%;`                             | 設定 100% 起始邊距            |
+| `-start-full`                 | `inset-inline-start: -100%;`                            | 設定 -100% 起始邊距           |
+| `start-auto`                  | `inset-inline-start: auto;`                             | 自動起始邊距                  |
+| `start-(<custom-property>)`   | `inset-inline-start: var(<custom-property>);`           | 使用自訂 CSS 變數設定起始邊距 |
+| `start-[<value>]`             | `inset-inline-start: <value>;`                          | 使用任意值設定起始邊距        |
+|                               |                                                         |                               |
+| `end-<number>`                | `inset-inline-end: calc(var(--spacing) * <number>);`    | 設定結束邊距                  |
+| `-end-<number>`               | `inset-inline-end: calc(var(--spacing) * -<number>);`   | 設定負數結束邊距              |
+| `end-<fraction>`              | `inset-inline-end: calc(<fraction> * 100%);`            | 設定百分比結束邊距            |
+| `-end-<fraction>`             | `inset-inline-end: calc(<fraction> * -100%);`           | 設定負數百分比結束邊距        |
+| `end-px`                      | `inset-inline-end: 1px;`                                | 設定 1px 結束邊距             |
+| `-end-px`                     | `inset-inline-end: -1px;`                               | 設定 -1px 結束邊距            |
+| `end-full`                    | `inset-inline-end: 100%;`                               | 設定 100% 結束邊距            |
+| `-end-full`                   | `inset-inline-end: -100%;`                              | 設定 -100% 結束邊距           |
+| `end-auto`                    | `inset-inline-end: auto;`                               | 自動結束邊距                  |
+| `end-(<custom-property>)`     | `inset-inline-end: var(<custom-property>);`             | 使用自訂 CSS 變數設定結束邊距 |
+| `end-[<value>]`               | `inset-inline-end: <value>;`                            | 使用任意值設定結束邊距        |
+|                               |                                                         |                               |
+| `top-<number>`                | `top: calc(var(--spacing) * <number>);`                 | 設定頂部邊距                  |
+| `-top-<number>`               | `top: calc(var(--spacing) * -<number>);`                | 設定負數頂部邊距              |
+| `top-<fraction>`              | `top: calc(<fraction> * 100%);`                         | 設定百分比頂部邊距            |
+| `-top-<fraction>`             | `top: calc(<fraction> * -100%);`                        | 設定負數百分比頂部邊距        |
+| `top-px`                      | `top: 1px;`                                             | 設定 1px 頂部邊距             |
+| `-top-px`                     | `top: -1px;`                                            | 設定 -1px 頂部邊距            |
+| `top-full`                    | `top: 100%;`                                            | 設定 100% 頂部邊距            |
+| `-top-full`                   | `top: -100%;`                                           | 設定 -100% 頂部邊距           |
+| `top-auto`                    | `top: auto;`                                            | 自動頂部邊距                  |
+| `top-(<custom-property>)`     | `top: var(<custom-property>);`                          | 使用自訂 CSS 變數設定頂部邊距 |
+| `top-[<value>]`               | `top: <value>;`                                         | 使用任意值設定頂部邊距        |
+|                               |                                                         |                               |
+| `right-<number>`              | `right: calc(var(--spacing) * <number>);`               | 設定右側邊距                  |
+| `-right-<number>`             | `right: calc(var(--spacing) * -<number>);`              | 設定負數右側邊距              |
+| `right-<fraction>`            | `right: calc(<fraction> * 100%);`                       | 設定百分比右側邊距            |
+| `-right-<fraction>`           | `right: calc(<fraction> * -100%);`                      | 設定負數百分比右側邊距        |
+| `right-px`                    | `right: 1px;`                                           | 設定 1px 右側邊距             |
+| `-right-px`                   | `right: -1px;`                                          | 設定 -1px 右側邊距            |
+| `right-full`                  | `right: 100%;`                                          | 設定 100% 右側邊距            |
+| `-right-full`                 | `right: -100%;`                                         | 設定 -100% 右側邊距           |
+| `right-auto`                  | `right: auto;`                                          | 自動右側邊距                  |
+| `right-(<custom-property>)`   | `right: var(<custom-property>);`                        | 使用自訂 CSS 變數設定右側邊距 |
+| `right-[<value>]`             | `right: <value>;`                                       | 使用任意值設定右側邊距        |
+|                               |                                                         |                               |
+| `bottom-<number>`             | `bottom: calc(var(--spacing) * <number>);`              | 設定底部邊距                  |
+| `-bottom-<number>`            | `bottom: calc(var(--spacing) * -<number>);`             | 設定負數底部邊距              |
+| `bottom-<fraction>`           | `bottom: calc(<fraction> * 100%);`                      | 設定百分比底部邊距            |
+| `-bottom-<fraction>`          | `bottom: calc(<fraction> * -100%);`                     | 設定負數百分比底部邊距        |
+| `bottom-px`                   | `bottom: 1px;`                                          | 設定 1px 底部邊距             |
+| `-bottom-px`                  | `bottom: -1px;`                                         | 設定 -1px 底部邊距            |
+| `bottom-full`                 | `bottom: 100%;`                                         | 設定 100% 底部邊距            |
+| `-bottom-full`                | `bottom: -100%;`                                        | 設定 -100% 底部邊距           |
+| `bottom-auto`                 | `bottom: auto;`                                         | 自動底部邊距                  |
+| `bottom-(<custom-property>)`  | `bottom: var(<custom-property>);`                       | 使用自訂 CSS 變數設定底部邊距 |
+| `bottom-[<value>]`            | `bottom: <value>;`                                      | 使用任意值設定底部邊距        |
+|                               |                                                         |                               |
+| `left-<number>`               | `left: calc(var(--spacing) * <number>);`                | 設定左側邊距                  |
+| `-left-<number>`              | `left: calc(var(--spacing) * -<number>);`               | 設定負數左側邊距              |
+| `left-<fraction>`             | `left: calc(<fraction> * 100%);`                        | 設定百分比左側邊距            |
+| `-left-<fraction>`            | `left: calc(<fraction> * -100%);`                       | 設定負數百分比左側邊距        |
+| `left-px`                     | `left: 1px;`                                            | 設定 1px 左側邊距             |
+| `-left-px`                    | `left: -1px;`                                           | 設定 -1px 左側邊距            |
+| `left-full`                   | `left: 100%;`                                           | 設定 100% 左側邊距            |
+| `-left-full`                  | `left: -100%;`                                          | 設定 -100% 左側邊距           |
+| `left-auto`                   | `left: auto;`                                           | 自動左側邊距                  |
+| `left-(<custom-property>)`    | `left: var(<custom-property>);`                         | 使用自訂 CSS 變數設定左側邊距 |
+| `left-[<value>]`              | `left: <value>;`                                        | 使用任意值設定左側邊距        |
+|                               |                                                         |                               |
+
+```html
+<!-- inset-[<value>] -->
+<div class="inset-[3px] ...">...</div>
+
+<!-- inset-(<custom-property>) -->
+<div class="inset-(--my-position) ...">...</div>
+
+<!-- inset-<fraction> -->
+<div class="inset-1/2 ...">...</div>
+```
+
+{% note info %}
+**小技巧：**
+- `inset-0` 是 `top: 0; right: 0; bottom: 0; left: 0;` 的簡寫，常用於覆蓋整個容器
+- `inset-x-0` 和 `inset-y-0` 分別控制水平和垂直方向的填滿
+- 使用 `top-1/2` 和 `transform -translate-y-1/2` 可以實現垂直置中
+- 響應式設計中，可以根據螢幕尺寸調整元素位置
+- 這些屬性需要配合 `position` 屬性使用才能生效
+{% endnote %}
+
+### 自訂
+`*-<number>` 這些工具類別都是由 `--spacing` 主題變數驅動的，您可以在自己的主題中自訂這個變數：
+
+```css
+@theme {
+  --spacing: 8px;
+}
+```
+
+如此一來，級距單位會是以 8px 為標準，這樣 `top-1` 就會等於 `top: 8px`，`top-2` 就會等於 `top: 16px`，適合需要更大間距的佈局。
+
+{% note info %}
+**小技巧：**
+- 預設的 `--spacing` 值通常是 `0.25rem`（4px）
+- 您可以根據設計需求調整 `--spacing` 的值
+- 較小的值（如 `1px`）適合精確定位，較大的值適合一般佈局
+- 這個變數會影響所有使用數字的位置工具類別
+- 在設計系統中，建議選擇一個基礎間距值，然後所有間距都是這個值的倍數
+{% endnote %}
+
+### visibility
+用於控制元素的可見性，決定元素是否在頁面中顯示。與 `display: none` 不同，`visibility: hidden` 的元素仍會佔用空間，只是不可見。
+
+| 類別名稱    | CSS 屬性                | 說明                         |
+| ----------- | ----------------------- | ---------------------------- |
+| `visible`   | `visibility: visible;`  | 可見（預設值）               |
+| `invisible` | `visibility: hidden;`   | 不可見但佔用空間             |
+| `collapse`  | `visibility: collapse;` | 摺疊（僅適用表格 tr 不可見） |
+
+{% note info %}
+**小技巧：**
+- `invisible` 元素仍會佔用空間，適合需要保持佈局的場景
+- `hidden` 元素完全不佔用空間，適合完全移除元素
+- `collapse` 僅適用於表格行、列和行群組，會摺疊但保持表格結構
+- 響應式設計中，可以根據螢幕尺寸控制元素的可見性
+- 配合 `group` 和 `group-hover:` 可以創建互動式可見性效果
+{% endnote %}
+
+### z-index
+用於控制元素的堆疊順序，決定元素在 z 軸（垂直於螢幕）上的層級關係。這個屬性對於創建模態框、下拉選單、工具提示等需要控制層級的元素非常重要。
+
+控制元素的堆疊順序：
+
+| 類別名稱                | CSS 屬性                           | 說明                  |
+| ----------------------- | ---------------------------------- | --------------------- |
+| `z-<number>`            | `z-index: <number>;`               | 設定指定的層級數值    |
+| `z-auto`                | `z-index: auto;`                   | 自動層級              |
+| `z-[<value>]`           | `z-index: <value>;`                | 自訂層級值            |
+| `z-(<custom-property>)` | `z-index: var(<custom-property>);` | 使用 CSS 變數設定層級 |
+
+```html
+<!-- z-[<value>] -->
+<div class="z-[calc(var(--index)+1)] ...">...</div>
+
+<!-- z-(<custom-property>) -->
+<div class="z-(--my-z) ...">...</div>
+```
+
+{% note info %}
+**小技巧：**
+- `z-index` 只在定位元素（`position: relative/absolute/fixed/sticky`）上生效
+- 使用 `isolate` 可以創建新的堆疊上下文，讓子元素的 z-index 相對於父元素計算
+- 建議使用 10 的倍數來設定 z-index，便於管理和調整
+- 模態框通常使用 z-50，下拉選單使用 z-20，工具提示使用 z-30
+- 響應式設計中，可以根據螢幕尺寸調整元素的層級
+{% endnote %}
+
+## Flex & Grid
+Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的佈局能力。Flex 適合一維佈局（單行或單列），而 Grid 則適合二維佈局（行列組合）。以下將詳細介紹這兩種佈局系統的相關類別。
+
+### flex-basis
+用於設定 flex 項目的初始主軸尺寸，決定 flex 項目在分配剩餘空間之前的基準尺寸。此屬性常與 `flex-grow`、`flex-shrink` 一起協作，實作彈性且可預測的版面。
+
+| 類別名稱                    | CSS 屬性                                       | 說明                                              |
+| --------------------------- | ---------------------------------------------- | ------------------------------------------------- |
+| `basis-<number>`            | `flex-basis: calc(var(--spacing) * <number>);` | 使用間距變數計算基準尺寸                          |
+| `basis-<fraction>`          | `flex-basis: calc(<fraction> * 100%);`         | 使用分數計算基準尺寸的百分比                      |
+| `basis-full`                | `flex-basis: 100%;`                            | 基準尺寸為容器的全寬                              |
+| `basis-auto`                | `flex-basis: auto;`                            | 自動根據內容或寬高設定基準尺寸（預設值）          |
+| `basis-3xs`                 | `flex-basis: var(--container-3xs);`            | 基準尺寸為 16rem (256px)                          |
+| `basis-2xs`                 | `flex-basis: var(--container-2xs);`            | 基準尺寸為 18rem (288px)                          |
+| `basis-xs`                  | `flex-basis: var(--container-xs);`             | 基準尺寸為 20rem (320px)                          |
+| `basis-sm`                  | `flex-basis: var(--container-sm);`             | 基準尺寸為 24rem (384px)                          |
+| `basis-md`                  | `flex-basis: var(--container-md);`             | 基準尺寸為 28rem (448px)                          |
+| `basis-lg`                  | `flex-basis: var(--container-lg);`             | 基準尺寸為 32rem (512px)                          |
+| `basis-xl`                  | `flex-basis: var(--container-xl);`             | 基準尺寸為 36rem (576px)                          |
+| `basis-2xl`                 | `flex-basis: var(--container-2xl);`            | 基準尺寸為 42rem (672px)                          |
+| `basis-3xl`                 | `flex-basis: var(--container-3xl);`            | 基準尺寸為 48rem (768px)                          |
+| `basis-4xl`                 | `flex-basis: var(--container-4xl);`            | 基準尺寸為 56rem (896px)                          |
+| `basis-5xl`                 | `flex-basis: var(--container-5xl);`            | 基準尺寸為 64rem (1024px)                         |
+| `basis-6xl`                 | `flex-basis: var(--container-6xl);`            | 基準尺寸為 72rem (1152px)                         |
+| `basis-7xl`                 | `flex-basis: var(--container-7xl);`            | 基準尺寸為 80rem (1280px)                         |
+| `basis-(<custom-property>)` | `flex-basis: var(<custom-property>);`          | 使用 CSS 自訂屬性（變數）設定基準尺寸             |
+| `basis-[<value>]`           | `flex-basis: <value>;`                         | 自訂基準尺寸，可使用任何有效的 CSS 長度值或計算式 |
+
+```html
+<div class="flex flex-row">
+  <!-- basis-<fraction> -->
+  <div class="basis-1/3">01</div>
+
+  <!-- basis-[<value>] -->
+  <div class="basis-[30vw]">02</div>
+
+  <!-- basis-(<custom-property>) -->
+  <div class="basis-(--my-basis)">03</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- **間距尺度對齊**：`basis-{spacing}` 與 Tailwind 的 spacing 尺度一致，便於與 `p-*`、`m-*`、`w-*` 等公用類別協同。
+- **配合成長/收縮**：`basis-0` 常與 `grow`/`shrink` 一起使用，讓剩餘空間由 `grow` 分配。
+- **分數網格**：`basis-1/2`、`1/3`、`2/3`、`1/4`… 能快速建立等分區塊。
+- **動態佈局**：善用任意值與 CSS 變數（`basis-[...]`、`basis-(--*)`）表達計算式與情境化尺寸。
+{% endnote %}
+
+#### 自訂
+使用 `--container-*` 主題變數來自訂固定寬度的 `basis-*` 通用工具
+
+```css
+@theme {
+  --container-4xs: 14rem; 
+}
+```
+
+新增一個更小的容器尺寸後，即可直接以 `basis-4xs` 在標記中使用。
+
+```html
+<div class="basis-4xs">
+  <!-- ... -->
+</div>
+```
+
+此外，`basis-<number>` 系列是由 `--spacing` 主題變數驅動；可依專案需求調整間距尺度（例如將單位改為 1px 級距）：
+
+```css
+@theme {
+  --spacing: 8px; 
+}
+```
+
+這樣一來，`basis-2` 會等於 `flex-basis: 16px;`，便於與專案既有的尺寸系統對齊。
+
+### flex-direction
+用於設定 flex 容器的主軸方向，決定 flex 項目的排列方式。這個屬性對於創建水平、垂直或反向佈局非常重要。
+
+| 類別名稱           | CSS 屬性                          | 說明               |
+| ------------------ | --------------------------------- | ------------------ |
+| `flex-row`         | `flex-direction: row;`            | 水平排列（預設值） |
+| `flex-row-reverse` | `flex-direction: row-reverse;`    | 水平反向排列       |
+| `flex-col`         | `flex-direction: column;`         | 垂直排列           |
+| `flex-col-reverse` | `flex-direction: column-reverse;` | 垂直反向排列       |
+
+{% note info %}
+**小技巧：**
+- `flex-row` 適合水平佈局，如導航選單、工具列
+- `flex-col` 適合垂直佈局，如側邊欄、卡片列表
+- 響應式設計中，可以根據螢幕尺寸切換排列方向
+- `flex-row-reverse` 和 `flex-col-reverse` 適合創建反向佈局
+- 搭配 `justify-content` 和 `align-items` 可以精確控制對齊方式
+{% endnote %}
+
+### flex-wrap
+用於控制 flex 項目是否換行，當容器空間不足時決定項目的排列行為。這個屬性對於創建響應式佈局和避免項目溢出非常重要。
+
+| 類別名稱            | CSS 屬性                   | 說明             |
+| ------------------- | -------------------------- | ---------------- |
+| `flex-wrap`         | `flex-wrap: wrap;`         | 允許換行         |
+| `flex-nowrap`       | `flex-wrap: nowrap;`       | 不換行（預設值） |
+| `flex-wrap-reverse` | `flex-wrap: wrap-reverse;` | 反向換行         |
+
+{% note info %}
+**小技巧：**
+- `flex-wrap` 適合響應式佈局，讓項目在小螢幕上自動換行
+- `flex-nowrap` 適合需要保持項目在一行的場景
+- 響應式設計中，可以根據螢幕尺寸切換換行行為
+- 搭配 `gap` 可以控制換行後的項目間距
+- `flex-wrap-reverse` 適合創建反向的換行佈局
+{% endnote %}
+
+### flex
+用於設定 flex 項目的伸縮行為，這是 `flex-grow`、`flex-shrink` 和 `flex-basis` 的簡寫屬性。這個屬性對於快速設定 flex 項目的伸縮特性非常有用。
+
+
+| 類別名稱                   | CSS 屬性                         | 說明               |
+| -------------------------- | -------------------------------- | ------------------ |
+| `flex-<number>`            | `flex: <number>;`                | 設定固定數值       |
+| `flex-<fraction>`          | `flex: calc(<fraction> * 100%);` | 設定百分比         |
+| `flex-auto`                | `flex: auto;`                    | 自動伸縮           |
+| `flex-initial`             | `flex: 0 auto;`                  | 初始伸縮（預設值） |
+| `flex-none`                | `flex: none;`                    | 不伸縮             |
+| `flex-(<custom-property>)` | `flex: var(<custom-property>);`  | 使用 CSS 變數      |
+| `flex-[<value>]`           | `flex: <value>;`                 | 任意值             |
+
+{% note info %}
+**CSS `flex` 簡寫如何解讀？**
+- 一個「無單位數字」：視為 `flex-grow`。`flex: 2` 等價 `flex: 2 1 0%`。
+- 一個「長度/百分比/關鍵字」：視為 `flex-basis`。例如 `flex: 200px`、`flex: 30%`、`flex: auto` 皆等價「簡寫展開」為 `flex: 1 1 <basis>`。
+- 兩個值：
+  - `<number> <number>` → `flex-grow`、`flex-shrink`，`flex-basis` 預設 `0%`。例：`flex: 2 0` → `2 0 0%`。
+  - `<number> <length|percentage>` → `flex-grow`、`flex-basis`，`flex-shrink` 預設 `1`。例：`flex: 1 200px` → `1 1 200px`。
+- 三個值：`<number> <number> <length|percentage|auto>` → 依序對應 grow/shrink/basis。
+{% endnote %}
+
+
+```html
+<div class="flex flex-row">
+  <!-- basis-<number> -->
+  <!-- flex: 2 1 0% -->
+  <div class="flex-2">01</div>
+
+  <!-- flex-[<value>] -->
+  <!-- flex: 3 1 auto -->
+  <div class="flex-[3_1_auto]">02</div>
+
+  <!-- flex-(<custom-property>) -->
+  <div class="flex-(--my-flex)">03</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `flex-1` 最常用於創建等分佈局
+- `flex-auto` 適合需要根據內容自動調整的項目
+- `flex-none` 適合固定尺寸的項目，如圖示、按鈕
+- 響應式設計中，可以根據螢幕尺寸調整 flex 值
+- 使用任意值可以創建更精確的空間分配比例
+{% endnote %}
+
+### flex-grow
+用於控制 flex 項目在主軸上的伸長比例，決定項目如何分配容器中的剩餘空間。這個屬性對於創建靈活的佈局非常重要。
+
+| 類別名稱                   | CSS 屬性                             | 說明          |
+| -------------------------- | ------------------------------------ | ------------- |
+| `grow`                     | `flex-grow: 1;`                      | 伸長          |
+| `grow-<number>`            | `flex-grow: <number>;`               | 設定伸長倍數  |
+| `grow-[<value>]`           | `flex-grow: <value>;`                | 任意伸長值    |
+| `grow-(<custom-property>)` | `flex-grow: var(<custom-property>);` | 使用 CSS 變數 |
+
+```html
+<div class="flex flex-row">
+  <!-- grow-<number> -->
+  <!-- flex-grow: 2 -->
+  <div class="grow-2">01</div>
+
+  <!-- grow-[<value>] -->
+  <!-- flex-grow: 25vw -->
+  <div class="grow-[25vw]">02</div>
+
+  <!-- grow-(<custom-property>) -->
+  <div class="grow-(--my-grow)">03</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `grow-0` 適合固定尺寸的項目，如導航選單、側邊欄
+- `grow` 適合需要填滿剩餘空間的項目，如主要內容區域
+- 響應式設計中，可以根據螢幕尺寸調整伸長行為
+- 搭配 `flex-shrink` 可以創建更精確的伸縮控制
+- 使用任意值可以創建更靈活的空間分配比例
+{% endnote %}
+
+### flex-shrink
+用於控制 flex 項目在主軸上的收縮比例，決定項目在空間不足時如何收縮。這個屬性對於防止項目溢出和創建響應式佈局非常重要。
+
+| 類別名稱                     | CSS 屬性                               | 說明               |
+| ---------------------------- | -------------------------------------- | ------------------ |
+| `shrink`                     | `flex-shrink: 1;`                      | 允許收縮（預設值） |
+| `shrink-<number>`            | `flex-shrink: <number>;`               | 設定收縮倍數       |
+| `shrink-[<value>]`           | `flex-shrink: <value>;`                | 自訂收縮值         |
+| `shrink-(<custom-property>)` | `flex-shrink: var(<custom-property>);` | 使用 CSS 變數      |
+
+```html
+<div class="flex flex-row">
+  <!-- shrink-<number> -->
+  <!-- flex-shrink: 2 -->
+  <div class="shrink-2">01</div>
+
+  <!-- shrink-[<value>] -->
+  <!-- flex-shrink: calc(100vw-var(--sidebar)) -->
+  <div class="shrink-[calc(100vw-var(--sidebar))]">02</div>
+
+  <!-- shrink-(<custom-property>) -->
+  <div class="shrink-(--my-shrink)">03</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `shrink-0` 適合需要保持最小尺寸的項目，如導航選單、側邊欄
+- `shrink` 適合可以收縮的項目，如文字內容、按鈕
+- 響應式設計中，可以根據螢幕尺寸調整收縮行為
+- 搭配 `flex-grow` 可以創建更精確的伸縮控制
+- 使用任意值可以創建更靈活的收縮比例
+{% endnote %}
+
+### order
+用於控制 flex 項目在容器中的顯示順序，可以改變項目的視覺排列而不影響 HTML 結構。這個屬性對於創建響應式佈局和調整項目順序非常有用。
+
+| 類別名稱                    | CSS 屬性                         | 說明              |
+| --------------------------- | -------------------------------- | ----------------- |
+| `order-<number>`            | `order: <number>;`               | 設定正數順序值    |
+| `-order-<number>`           | `order: -<number>;`              | 設定負數順序值    |
+| `order-first`               | `order: -9999;`                  | 設定為最前面      |
+| `order-last`                | `order: 9999;`                   | 設定為最後面      |
+| `order-none`                | `order: 0;`                      | 設定為預設順序    |
+| `order-(<custom-property>)` | `order: var(<custom-property>);` | 使用 CSS 變數設定 |
+| `order-[<value>]`           | `order: <value>;`                | 使用自訂值設定    |
+
+```html
+<div class="flex flex-row">
+  <!-- order-<number> -->
+  <!-- flex-order: 2 -->
+  <div class="order-2">01</div>
+
+  <!-- order-[<value>] -->
+  <!-- flex-order: min(var(--total-items),10) -->
+  <div class="order-[min(var(--total-items),10)]">02</div>
+
+  <!-- order-(<custom-property>) -->
+  <div class="order-(--my-shrink)">03</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `order-first` 和 `order-last` 適合需要調整項目順序的場景
+- 響應式設計中，可以根據螢幕尺寸調整項目順序
+- 使用任意值可以創建更精確的順序控制
+- 注意：order 只影響視覺順序，不影響 HTML 結構和可訪問性
+- 搭配 `flex-direction` 可以創建更複雜的排列效果
+{% endnote %}
+
+### grid-template-columns
+用於定義 CSS Grid 容器的列結構，設定每列的寬度和數量。這個屬性對於創建複雜的網格佈局非常重要。
+
+| 類別名稱                        | CSS 屬性                                                   | 說明          |
+| ------------------------------- | ---------------------------------------------------------- | ------------- |
+| `grid-cols-<number>`            | `grid-template-columns: repeat(<number>, minmax(0, 1fr));` | 設定網格列數  |
+| `grid-cols-none`                | `grid-template-columns: none;`                             | 無列定義      |
+| `grid-cols-subgrid`             | `grid-template-columns: subgrid;`                          | 子網格列定義  |
+| `grid-cols-[<value>]`           | `grid-template-columns: <value>;`                          | 任意值        |
+| `grid-cols-(<custom-property>)` | `grid-template-columns: var(<custom-property>);`           | 使用 CSS 變數 |
+
+```html
+<!-- 基本 grid-template-columns 使用 -->
+<div class="grid grid-cols-3 gap-4 bg-gray-100 p-4 mb-4">
+  <div class="bg-blue-200 p-4">列 1</div>
+  <div class="bg-green-200 p-4">列 2</div>
+  <div class="bg-red-200 p-4">列 3</div>
+</div>
+
+<div class="grid grid-cols-4 gap-4 bg-gray-100 p-4 mb-4">
+  <div class="bg-blue-200 p-4">列 1</div>
+  <div class="bg-green-200 p-4">列 2</div>
+  <div class="bg-red-200 p-4">列 3</div>
+  <div class="bg-yellow-200 p-4">列 4</div>
+</div>
+
+<!-- 使用任意值 -->
+<div class="grid grid-cols-[200px_1fr_300px] gap-4 bg-gray-100 p-4 mb-4">
+  <div class="bg-blue-200 p-4">固定 200px</div>
+  <div class="bg-green-200 p-4">彈性寬度</div>
+  <div class="bg-red-200 p-4">固定 300px</div>
+</div>
+
+<!-- 響應式 grid-template-columns -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-100 p-4">
+  <div class="bg-blue-200 p-4">響應式列 1</div>
+  <div class="bg-green-200 p-4">響應式列 2</div>
+  <div class="bg-red-200 p-4">響應式列 3</div>
+</div>
+```
+
+{% note info %}
+**小技巧：**
+- `grid-cols-12` 是最常用的網格系統，適合創建複雜的佈局
+- 響應式設計中，可以根據螢幕尺寸調整列數
+- 使用任意值可以創建更精確的列寬度控制
+- 搭配 `grid-column` 可以讓項目跨越多列
+- 使用 CSS 變數可以創建動態的網格結構
