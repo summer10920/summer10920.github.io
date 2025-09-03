@@ -1812,7 +1812,6 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 | `w-(<custom-property>)` | `width: var(<custom-property>);`          | 使用 CSS 變數                     |
 | `w-[<value>]`           | `width: <value>;`                         | 任意自訂值                        |
 
-
 ```html
 <div class="w-full md:w-[720px] lg:w-(--content-width)">...</div>
 <div class="w-1/2 md:w-full">...</div>
@@ -1843,7 +1842,6 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 | `size-fit`                 | `width: fit-content; height: fit-content;`                                         | 寬高皆自適應內容        |
 | `size-(<custom-property>)` | `width: var(<custom-property>); height: var(<custom-property>);`                   | 寬高皆使用 CSS 變數     |
 | `size-[<value>]`           | `width: <value>; height: <value>;`                                                 | 寬高皆任意自訂值        |
-
 
 ## min-width
 限制元素最小寬度，避免內容擠壓變形。
@@ -1881,7 +1879,6 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 | `min-w-fit`                 | `min-width: fit-content;`                     | 自適應內容                      |
 | `min-w-(<custom-property>)` | `min-width: var(<custom-property>);`          | CSS 變數                        |
 | `min-w-[<value>]`           | `min-width: <value>;`                         | 任意值                          |
-
 
 ## max-width
 限制元素最大寬度，常用於排版容器、段落內容寬。
@@ -1924,17 +1921,14 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 | `max-w-(<custom-property>)`   | `max-width: var(<custom-property>);`             | CSS 變數                             |
 | `max-w-[<value>]`             | `max-width: <value>;`                            | 任意值                               |
 
-
 ```html
 <div class="max-w-[220px]"></div>
 <div class="max-w-(--my-max-width)"></div>
 ```
 
-
 {% note info %}
 **小技巧：** 以 `mx-auto + max-w-*` 形成常見的置中版心；可搭配 `px-*` 提供內邊距。
 {% endnote %}
-
 
 ### 使用 container
 `container` 是 Tailwind CSS 中用來建立響應式版心（container）的工具類別。當你在元素上加上 `container` 類別時，該元素會自動根據螢幕寬度設定最大寬度，並預設為寬度 100%。這讓內容能在不同裝置上自動置中且保持適當的閱讀寬度。
@@ -2019,7 +2013,6 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 <div class="h-24 min-h-0 md:min-h-full"></div>
 ```
 
-
 ## max-height
 限制元素最大高度，常用於側邊欄、清單區塊與對話框內文滾動。
 
@@ -2055,6 +2048,7 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 {% endnote %}
 
 # Typography
+字體排版（Typography）相關的類別用於控制文字的外觀、結構與可讀性。這些工具涵蓋字體家族、字級、行高、字重、字距、對齊等，讓你能夠快速打造具有一致性與美感的排版效果。以下將依功能分類，詳細說明常用的 TailwindCSS 字體排版類別與用法。
 
 ## font-family
 用於設定字體家族，支援主題變數、任意值與邏輯回退。
@@ -2067,288 +2061,1268 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 | `font-(<custom-property>)` | `font-family: var(<custom-property>);` | CSS 變數 |
 | `font-[<value>]`           | `font-family: <value>;`                | 任意值   |
 
+{% note info %}
+**TailwindCSS 字體預設變數說明**
+- `--font-sans` 預設對應：
+`ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'`
+- `--font-serif` 預設對應：
+`ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif`
+- `--font-mono` 預設對應：
+`ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace`
+
+這些變數可於 `@theme` 進行全域覆蓋，確保全站字體一致性，並支援各平台字體 fallback。
+{% endnote %}
+
 ```html
 <h1 class="font-sans">Sans</h1>
-<h1 class="font-(--font-brand)">Brand</h1>
+<p class="font-[Open_Sans]"></p>
+<p class="font-(family-name:--my-font)"></p>
+```
+
+### 自訂
+自訂方法說明：
+- Google Fonts 整合：`@import` 必須放在 `@import "tailwindcss"` 之前
+- 主題變數：`--font-display` 定義後可直接使用 `font-display` 類別
+- 字體特性：`--font-display--font-feature-settings` 啟用 OpenType 特性
+- 字體變化：`--font-display--font-variation-settings` 控制光學尺寸
+- 本地字體：`@font-face` 載入專案內的字體檔案
+
+```css
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Oswald", sans-serif;
+  --font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11"; 
+  --font-display--font-variation-settings: "opsz" 32; 
+  --font-roboto: "Roboto", sans-serif; 
+}
+
+@font-face {
+  font-family: Oswald;
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("/fonts/Oswald.woff2") format("woff2");
+}
+```
+```html
+<div class="font-display">使用 Oswald 字體</div>
+<div class="font-roboto">使用 Google Roboto 字體</div>
 ```
 
 {% note info %}
-以 `@theme` 覆蓋 `--font-sans` 可全站更換字體。
+**字體特性與變化設定說明：**
+font-feature-settings（OpenType 字體特性）可啟用字體內建的進階排版功能，例如連字（"cv02"）、數字樣式（"cv03"）、分數顯示（"cv04"）與序數顯示（"cv11"）等。設定方式如：
+
+`--font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11"`，即可同時啟用多種特性。
+
+font-variation-settings 則用於控制可變字體的參數，包括字重（"wght"）、字寬（"wdth"）、光學尺寸（"opsz"）等。例如設定 `"opsz" 32` 可根據螢幕尺寸自動調整光學尺寸，`"wght" 400` 控制字重，`"wdth" 100` 則調整字寬。使用方式如：
+
+`--font-display--font-variation-settings: "opsz" 32`。
+
+以下為實際應用範例：
+```css
+@theme {
+  --font-display: "Inter", sans-serif;
+  --font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  --font-display--font-variation-settings: "opsz" 32, "wght" 400;
+}
+```
+
+這樣設定後，`font-display` 類別會自動啟用連字、數字樣式等進階功能，並根據螢幕尺寸自動調整字體的光學特性。
 {% endnote %}
 
 ## font-size
 設定字體大小，支援 line-height 修飾符與任意值。
 
-| 類別名稱             | CSS 屬性                               | 說明            |
-| -------------------- | -------------------------------------- | --------------- |
-| `text-xs`…`text-9xl` | `font-size: var(--text-<token>);`      | 主題刻度        |
-| `text-[<value>]`     | `font-size: <value>;`                  | 任意值          |
-| `text-(length:--*)`  | `font-size: var(--*);`                 | 指定型別為長度  |
-| `text-*/<leading>`   | `line-height: var(--leading-<token>);` | 以 `/` 設定行高 |
+| 類別名稱                          | CSS 屬性與對應值                                                                | 說明                                           |
+| --------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `text-xs`                         | `font-size: var(--text-xs);`<br>`line-height: var(--text-xs--line-height);`     | 字級 0.75rem（12px）、行高 calc(1 / 0.75)      |
+| `text-sm`                         | `font-size: var(--text-sm);`<br>`line-height: var(--text-sm--line-height);`     | 字級 0.875rem（14px）、行高 calc(1.25 / 0.875) |
+| `text-base`                       | `font-size: var(--text-base);`<br>`line-height: var(--text-base--line-height);` | 字級 1rem（16px）、行高 calc(1.5 / 1)          |
+| `text-lg`                         | `font-size: var(--text-lg);`<br>`line-height: var(--text-lg--line-height);`     | 字級 1.125rem（18px）、行高 calc(1.75 / 1.125) |
+| `text-xl`                         | `font-size: var(--text-xl);`<br>`line-height: var(--text-xl--line-height);`     | 字級 1.25rem（20px）、行高 calc(1.75 / 1.25)   |
+| `text-2xl`                        | `font-size: var(--text-2xl);`<br>`line-height: var(--text-2xl--line-height);`   | 字級 1.5rem（24px）、行高 calc(2 / 1.5)        |
+| `text-3xl`                        | `font-size: var(--text-3xl);`<br>`line-height: var(--text-3xl--line-height);`   | 字級 1.875rem（30px）、行高 calc(2.25 / 1.875) |
+| `text-4xl`                        | `font-size: var(--text-4xl);`<br>`line-height: var(--text-4xl--line-height);`   | 字級 2.25rem（36px）、行高 calc(2.5 / 2.25)    |
+| `text-5xl`                        | `font-size: var(--text-5xl);`<br>`line-height: var(--text-5xl--line-height);`   | 字級 3rem（48px）、行高 1                      |
+| `text-6xl`                        | `font-size: var(--text-6xl);`<br>`line-height: var(--text-6xl--line-height);`   | 字級 3.75rem（60px）、行高 1                   |
+| `text-7xl`                        | `font-size: var(--text-7xl);`<br>`line-height: var(--text-7xl--line-height);`   | 字級 4.5rem（72px）、行高 1                    |
+| `text-8xl`                        | `font-size: var(--text-8xl);`<br>`line-height: var(--text-8xl--line-height);`   | 字級 6rem（96px）、行高 1                      |
+| `text-9xl`                        | `font-size: var(--text-9xl);`<br>`line-height: var(--text-9xl--line-height);`   | 字級 8rem（128px）、行高 1                     |
+| `text-(length:<custom-property>)` | `font-size: var(<custom-property>);`                                            | 使用自訂 CSS 變數長度                          |
+| `text-[<value>]`                  | `font-size: <value>;`                                                           | 任意值                                         |
 
 ```html
-<h1 class="text-2xl/relaxed">Title</h1>
-<p class="text-[15px]/[1.7]">Body</p>
+<p class="text-[14px]"></p>
+<p class="text-(length:--my-text-size)"></p>
+```
+
+### 更改行高
+使用 text-*時 line-height 修飾符來更改行高，例如 `text-lg/relaxed` 或 `text-2xl/loose`。
+
+```html
+<p class="text-sm/6">So I started to walk into the water...</p>
+<p class="text-sm/7">So I started to walk into the water...</p>
+<p class="text-sm/8">So I started to walk into the water...</p>
+```
+
+### 自訂
+```css
+@theme {
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 1.5rem; 
+  --text-tiny--letter-spacing: 0.125rem; 
+  --text-tiny--font-weight: 500; 
+}
+```
+```html
+<!-- 
+  font-size: 0.625rem;        (10px)
+  line-height: 1.5rem;        (24px)
+  letter-spacing: 0.125rem;   (2px)
+  font-weight: 500;           (medium)
+-->
+<div class="text-tiny">自訂字體大小</div>
 ```
 
 ## font-smoothing
 控制次像素平滑渲染（WebKit 與 macOS 專用語義）。
 
-| 類別名稱               | CSS 屬性                                                                      |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| `antialiased`          | `-webkit-font-smoothing: antialiased;`、`-moz-osx-font-smoothing: grayscale;` |
-| `subpixel-antialiased` | `-webkit-font-smoothing: auto;`、`-moz-osx-font-smoothing: auto;`             |
-
-```html
-<p class="antialiased">Text</p>
-```
+| 類別名稱               | CSS 屬性                                                                        | 說明                                   |
+| ---------------------- | ------------------------------------------------------------------------------- | -------------------------------------- |
+| `antialiased`          | `-webkit-font-smoothing: antialiased;`<br>`-moz-osx-font-smoothing: grayscale;` | 文字抗鋸齒，提升字體平滑度（預設建議） |
+| `subpixel-antialiased` | `-webkit-font-smoothing: auto;`<br>`-moz-osx-font-smoothing: auto;`             | 使用次像素抗鋸齒，適合部分螢幕顯示     |
 
 ## font-style
-| 類別名稱     | CSS 屬性              |
-| ------------ | --------------------- |
-| `italic`     | `font-style: italic;` |
-| `not-italic` | `font-style: normal;` |
+font-style 主要用於設定文字是否傾斜。這個屬性常見於強調重點、引用或設計排版時，能讓文字呈現不同的視覺效果。
 
-```html
-<em class="italic">Emphasis</em>
-```
+| 類別名稱     | CSS 屬性              | 說明             |
+| ------------ | --------------------- | ---------------- |
+| `italic`     | `font-style: italic;` | 斜體             |
+| `not-italic` | `font-style: normal;` | 取消斜體（正常） |
 
 ## font-weight
-| 類別名稱                   | CSS 屬性                               |
-| -------------------------- | -------------------------------------- |
-| `font-thin`…`font-black`   | `font-weight: <100..900>;`             |
-| `font-[<value>]`           | `font-weight: <value>;`                |
-| `font-(<custom-property>)` | `font-weight: var(<custom-property>);` |
+font-weight（字重）用於設定文字的粗細程度，常見於標題、重點字詞或設計排版時，能有效提升層次感與可讀性。
+
+| 類別名稱                   | CSS 屬性                               | 說明          |
+| -------------------------- | -------------------------------------- | ------------- |
+| `font-thin`                | `font-weight: 100;`                    | 字重 100      |
+| `font-extralight`          | `font-weight: 200;`                    | 字重 200      |
+| `font-light`               | `font-weight: 300;`                    | 字重 300      |
+| `font-normal`              | `font-weight: 400;`                    | 字重 400      |
+| `font-medium`              | `font-weight: 500;`                    | 字重 500      |
+| `font-semibold`            | `font-weight: 600;`                    | 字重 600      |
+| `font-bold`                | `font-weight: 700;`                    | 字重 700      |
+| `font-extrabold`           | `font-weight: 800;`                    | 字重 800      |
+| `font-black`               | `font-weight: 900;`                    | 字重 900      |
+| `font-(<custom-property>)` | `font-weight: var(<custom-property>);` | 自訂 CSS 變數 |
+| `font-[<value>]`           | `font-weight: <value>;`                | 任意數值      |
 
 ```html
-<strong class="font-semibold">Bold</strong>
+<p class="font-[1000]"></p>
+<p class="font-(--my-font-weight)"></p>
+```
+
+### 自訂
+```css
+@theme {
+  --font-weight-extrablack: 1000; 
+}
+```
+```html
+<div class="font-extrablack"></div>
 ```
 
 ## font-stretch
-| 類別名稱                 | CSS 屬性                 | 說明     |
-| ------------------------ | ------------------------ | -------- |
-| `font-stretch-normal`    | `font-stretch: 100%;`    | 正常寬度 |
-| `font-stretch-condensed` | `font-stretch: 75%;`     | 縮窄     |
-| `font-stretch-expanded`  | `font-stretch: 125%;`    | 擴張     |
-| `font-stretch-[<value>]` | `font-stretch: <value>;` | 任意值   |
+font-stretch（字體寬度）用於調整字體的橫向拉伸程度，讓文字呈現更窄或更寬的視覺效果。這在設計標題、LOGO 或需要特殊排版時非常實用，能有效增強版面變化與層次感。
+
+| 類別名稱                           | CSS 屬性                                | 說明               |
+| ---------------------------------- | --------------------------------------- | ------------------ |
+| `font-stretch-ultra-condensed`     | `font-stretch: ultra-condensed;`        | 超極度縮窄（50%）  |
+| `font-stretch-extra-condensed`     | `font-stretch: extra-condensed;`        | 極度縮窄（62.5%）  |
+| `font-stretch-condensed`           | `font-stretch: condensed;`              | 縮窄（75%）        |
+| `font-stretch-semi-condensed`      | `font-stretch: semi-condensed;`         | 略縮窄（87.5%）    |
+| `font-stretch-normal`              | `font-stretch: normal;`                 | 正常寬度（100%）   |
+| `font-stretch-semi-expanded`       | `font-stretch: semi-expanded;`          | 略擴張（112.5%）   |
+| `font-stretch-expanded`            | `font-stretch: expanded;`               | 擴張（125%）       |
+| `font-stretch-extra-expanded`      | `font-stretch: extra-expanded;`         | 極度擴張（150%）   |
+| `font-stretch-ultra-expanded`      | `font-stretch: ultra-expanded;`         | 超極度擴張（200%） |
+| `font-stretch-<percentage>`        | `font-stretch: <percentage>;`           | 指定百分比         |
+| `font-stretch-(<custom-property>)` | `font-stretch: var(<custom-property>);` | 自訂 CSS 變數      |
+| `font-stretch-[<value>]`           | `font-stretch: <value>;`                | 任意值             |
 
 ```html
-<h2 class="font-stretch-expanded">Title</h2>
+<p class="font-stretch-extra-condensed"></p>
+<p class="font-stretch-50%"></p>
+<p class="font-stretch-[66.66%]"></p>
+<p class="font-stretch-(--my-font-width)"></p>
 ```
 
 ## font-variant-numeric
-| 類別名稱            | CSS 屬性                                   | 說明     |
-| ------------------- | ------------------------------------------ | -------- |
-| `normal-nums`       | `font-variant-numeric: normal;`            | 預設     |
-| `ordinal`           | `font-variant-numeric: ordinal;`           | 序數     |
-| `slashed-zero`      | `font-variant-numeric: slashed-zero;`      | 斜線 0   |
-| `lining-nums`       | `font-variant-numeric: lining-nums;`       | 對齊數字 |
-| `oldstyle-nums`     | `font-variant-numeric: oldstyle-nums;`     | 懷舊數字 |
-| `proportional-nums` | `font-variant-numeric: proportional-nums;` | 比例數字 |
-| `tabular-nums`      | `font-variant-numeric: tabular-nums;`      | 等寬數字 |
+font-variant-numeric（數字字型變體）用於控制數字在字體中的顯示方式，例如序數、斜線零、等寬或比例數字等。這對於設計發票、表格、時間顯示等需要精確數字排版的場景特別有幫助，能提升數字的可讀性與美觀度。
 
-```html
-<span class="tabular-nums">12:34</span>
+| 類別名稱             | CSS 屬性                                    | 說明                     |
+| -------------------- | ------------------------------------------- | ------------------------ |
+| `normal-nums`        | `font-variant-numeric: normal;`             | 預設數字樣式             |
+| `ordinal`            | `font-variant-numeric: ordinal;`            | 序數（如 1st, 2nd）      |
+| `slashed-zero`       | `font-variant-numeric: slashed-zero;`       | 斜線 0（區分 O 與 0）    |
+| `lining-nums`        | `font-variant-numeric: lining-nums;`        | 對齊數字（數字高度一致） |
+| `oldstyle-nums`      | `font-variant-numeric: oldstyle-nums;`      | 懷舊數字（上下起伏）     |
+| `proportional-nums`  | `font-variant-numeric: proportional-nums;`  | 比例數字（寬度不一）     |
+| `tabular-nums`       | `font-variant-numeric: tabular-nums;`       | 等寬數字（方便對齊）     |
+| `diagonal-fractions` | `font-variant-numeric: diagonal-fractions;` | 斜線分數（如 1⁄2）       |
+| `stacked-fractions`  | `font-variant-numeric: stacked-fractions;`  | 堆疊分數（如 ½）         |
+
+### 組合特性
+`font-variant-numeric` 相關的 Tailwind CSS 類別可以**組合使用**，例如同時套用 `ordinal`、`slashed-zero`、`tabular-nums` 等，Tailwind 會自動合併這些 CSS 特性，對應到 CSS 變數 `var(--tw-ordinal, )`、`var(--tw-slashed-zero, )`、`var(--tw-numeric-figure, )`、`var(--tw-numeric-spacing, )`、`var(--tw-numeric-fraction, )`。這讓你能夠靈活控制數字的顯示方式，滿足各種排版需求。
+
+```css
+/* tailwind CSS 效果 */
+.tabular-nums {
+    --tw-numeric-spacing: tabular-nums;
+    font-variant-numeric:
+      var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction);
+}
 ```
 
+```html
+<!-- 發票表格：使用等寬數字和斜線零，確保對齊 -->
+<dl class="space-y-2">
+  <dt class="font-medium">小計</dt>
+  <dd class="text-right slashed-zero tabular-nums">$100.00</dd>
+  <dt class="font-medium">稅金</dt>
+  <dd class="text-right slashed-zero tabular-nums">$14.50</dd>
+  <dt class="font-bold">總計</dt>
+  <dd class="text-right slashed-zero tabular-nums">$114.50</dd>
+</dl>
+```
+
+{% note info %}
+**組合使用技巧：**
+- **財務表格**：`slashed-zero tabular-nums` 確保數字對齊和零的識別
+- **序數分數**：`ordinal stacked-fractions` 提升專業排版效果
+- **時間顯示**：`tabular-nums` 讓數字垂直對齊，提升可讀性
+- **響應式設計**：可搭配 `sm:`、`md:` 等斷點調整數字樣式
+{% endnote %}
+
 ## letter-spacing
-| 類別名稱                             | CSS 屬性                                   |
-| ------------------------------------ | ------------------------------------------ |
-| `tracking-tighter`…`tracking-widest` | `letter-spacing: var(--tracking-<token>);` |
-| `tracking-[<value>]`                 | `letter-spacing: <value>;`                 |
+用來快速調整文字字母之間的間距。這對於標題、LOGO 或需要特殊排版的情境特別實用。你可以選擇預設的間距等級，也能自訂任意值，靈活滿足設計需求。
+
+| 類別名稱                | CSS 屬性                                   | 說明                  |
+| ----------------------- | ------------------------------------------ | --------------------- |
+| `tracking-tighter`      | `letter-spacing: var(--tracking-tighter);` | 字距 -0.05em          |
+| `tracking-tight`        | `letter-spacing: var(--tracking-tight);`   | 字距 -0.025em         |
+| `tracking-normal`       | `letter-spacing: var(--tracking-normal);`  | 字距 0em              |
+| `tracking-wide`         | `letter-spacing: var(--tracking-wide);`    | 字距 0.025em          |
+| `tracking-wider`        | `letter-spacing: var(--tracking-wider);`   | 字距 0.05em           |
+| `tracking-widest`       | `letter-spacing: var(--tracking-widest);`  | 字距 0.1em            |
+| `tracking-(<property>)` | `letter-spacing: var(<property>);`         | 自訂 CSS 變數控制字距 |
+| `tracking-[<value>]`    | `letter-spacing: <value>;`                 | 任意自訂字距          |
 
 ```html
-<h3 class="tracking-wide">Heading</h3>
+<p class="tracking-[.25em]"></p>
+<p class="tracking-(--my-tracking)"></p>
+```
+
+### 自訂
+```css
+@theme {
+  --tracking-tightest: -0.075em; 
+}
+```
+```html
+<p class="tracking-tightest"></p>
 ```
 
 ## line-clamp
 以多行截斷顯示省略號。
 
-| 類別名稱          | CSS 屬性（概念）                                    |
-| ----------------- | --------------------------------------------------- |
-| `line-clamp-<n>`  | `display: -webkit-box; -webkit-line-clamp: <n>;` 等 |
-| `line-clamp-none` | 取消截斷                                            |
+| 類別名稱                         | CSS 屬性                                                                                                                    | 說明                      |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `line-clamp-<number>`            | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <數字>;`          | 多行截斷，顯示省略號      |
+| `line-clamp-none`                | `overflow: visible;`<br>`display: block;`<br>`-webkit-box-orient: horizontal;`<br>`-webkit-line-clamp: unset;`              | 取消截斷，顯示完整內容    |
+| `line-clamp-(<custom-property>)` | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: var(<自訂變數>);` | 使用 CSS 變數自訂截斷行數 |
+| `line-clamp-[<value>]`           | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <值>;`            | 任意自訂行數截斷          |
 
 ```html
-<p class="line-clamp-3">長內容…</p>
+<p class="line-clamp-[calc(var(--characters)/100)]"></p>
+<p class="line-clamp-(--my-line-count)"></p>
 ```
 
 ## line-height
-| 類別名稱                       | CSS 屬性                           |
-| ------------------------------ | ---------------------------------- |
-| `leading-none`…`leading-loose` | `line-height: var(--leading-<t>);` |
-| `leading-[<value>]`            | `line-height: <value>;`            |
+用來設定行高（line-height），影響多行文字的垂直間距。Tailwind CSS 提供多種預設行高等級，也支援自訂任意數值，讓排版更靈活，常用於段落、標題或特殊排版需求。
+
+| 類別名稱                          | CSS 屬性                                                                | 說明                            |
+| --------------------------------- | ----------------------------------------------------------------------- | ------------------------------- |
+| `text-<size>/<number>`            | `font-size: <size>;`<br>`line-height: calc(var(--spacing) * <number>);` | 設定字體大小與行高（倍數）      |
+| `text-<size>/(<custom-property>)` | `font-size: <size>;`<br>`line-height: var(<custom-property>);`          | 設定字體大小與自訂 CSS 變數行高 |
+| `text-<size>/[<value>]`           | `font-size: <size>;`<br>`line-height: <value>;`                         | 設定字體大小與任意行高          |
+| `leading-none`                    | `line-height: 1;`                                                       | 無行距                          |
+| `leading-<number>`                | `line-height: calc(var(--spacing) * <number>);`                         | 以 spacing 變數倍數設定行高     |
+| `leading-(<custom-property>)`     | `line-height: var(<custom-property>);`                                  | 使用 CSS 變數自訂行高           |
+| `leading-[<value>]`               | `line-height: <value>;`                                                 | 任意自訂行高                    |
 
 ```html
-<p class="leading-relaxed">Paragraph</p>
+<p class="text-base/6"></p>
+<p class="text-sm leading-6"></p>
+<p class="text-2xl leading-none"></p>
+<p class="leading-[1.5]"></p>
+<p class="leading-(--my-line-height)"></p>
 ```
 
 ## list-style-image
-| 類別名稱                | CSS 屬性                      |
-| ----------------------- | ----------------------------- |
-| `list-image-none`       | `list-style-image: none;`     |
-| `list-image-[url(...)]` | `list-style-image: url(...);` |
+list-style-image 用來設定清單項目的圖示圖片，可自訂圖片 URL 或移除預設圖示。常用於美化清單外觀，讓列表更具視覺特色。
+
+| 類別名稱                         | CSS 屬性                                    | 說明                     |
+| -------------------------------- | ------------------------------------------- | ------------------------ |
+| `list-image-[<value>]`           | `list-style-image: <value>;`                | 使用任意圖片作為清單圖示 |
+| `list-image-(<custom-property>)` | `list-style-image: var(<custom-property>);` | 使用 CSS 變數自訂圖示    |
+| `list-image-none`                | `list-style-image: none;`                   | 移除清單圖示             |
 
 ```html
-<ul class="list-image-[url('/dot.svg')]"><li>Item</li></ul>
+<ul class="list-image-[url(/img/checkmark.png)]">
+  <!-- -->
+</ul>
+
+<ul class="list-image-(--my-list-image)">
+  <!-- -->
+</ul>
+
 ```
 
 ## list-style-position
-| 類別名稱       | CSS 屬性                        |
-| -------------- | ------------------------------- |
-| `list-inside`  | `list-style-position: inside;`  |
-| `list-outside` | `list-style-position: outside;` |
+list-style-position 用來設定清單項目符號（如圓點、數字）的位置，可以選擇在內容區塊內部（inside）或外部（outside）。這對於調整清單縮排與排版細節非常實用，尤其在設計自訂清單樣式時常用。
+
+| 類別名稱       | CSS 屬性                        | 說明                       |
+| -------------- | ------------------------------- | -------------------------- |
+| `list-inside`  | `list-style-position: inside;`  | 清單符號顯示在內容區塊內部 |
+| `list-outside` | `list-style-position: outside;` | 清單符號顯示在內容區塊外部 |
 
 ## list-style-type
-| 類別名稱         | CSS 屬性                    |
-| ---------------- | --------------------------- |
-| `list-none`      | `list-style-type: none;`    |
-| `list-disc`      | `list-style-type: disc;`    |
-| `list-decimal`   | `list-style-type: decimal;` |
-| `list-[<value>]` | `list-style-type: <value>;` |
+list-style-type 用來設定清單項目的符號樣式，例如圓點（disc）、數字（decimal）或自訂符號。這個屬性常用於調整有序（ol）或無序（ul）清單的外觀，讓列表更符合設計需求。
 
-## text-align
-| 類別名稱       | CSS 屬性               |
-| -------------- | ---------------------- |
-| `text-left`    | `text-align: left;`    |
-| `text-center`  | `text-align: center;`  |
-| `text-right`   | `text-align: right;`   |
-| `text-justify` | `text-align: justify;` |
-| `text-start`   | `text-align: start;`   |
-| `text-end`     | `text-align: end;`     |
-
-## color
-對應文字顏色（支援透明度後綴）。
-
-| 類別名稱           | CSS 屬性                   |
-| ------------------ | -------------------------- |
-| `text-{color}-{n}` | `color: var(--color-*-*);` |
-| `text-[<value>]`   | `color: <value>;`          |
-| `text-(color:--*)` | `color: var(--*);`         |
+| 類別名稱                   | CSS 屬性                                   | 說明                                  |
+| -------------------------- | ------------------------------------------ | ------------------------------------- |
+| `list-none`                | `list-style-type: none;`                   | 移除清單符號                          |
+| `list-disc`                | `list-style-type: disc;`                   | 使用實心圓點作為清單符號              |
+| `list-decimal`             | `list-style-type: decimal;`                | 使用數字作為清單符號                  |
+| `list-(<custom-property>)` | `list-style-type: var(<custom-property>);` | 使用 CSS 變數自訂清單符號樣式         |
+| `list-[<value>]`           | `list-style-type: <value>;`                | 任意自訂清單符號（如 square、circle） |
 
 ```html
-<p class="text-slate-600 dark:text-slate-300">Text</p>
+<ul class="list-disc">
+  <!-- -->
+</ul>
+<ol class="list-decimal">
+  <!-- -->
+</ol>
+<ul class="list-none">
+  <!-- -->
+</ul>
+<ol class="list-[upper-roman]">
+  <!-- -->
+</ol>
+<ol class="list-(--my-marker)">
+  <!-- -->
+</ol>
+```
+
+## text-align
+text-align 用來設定文字的水平對齊方式，常見於段落、標題或表格欄位。Tailwind CSS 提供多種對齊類別，方便快速調整文字排版，支援左對齊、置中、右對齊、兩端對齊，以及根據書寫方向的 start/end 對齊。
+
+| 類別名稱       | CSS 屬性               | 說明                               |
+| -------------- | ---------------------- | ---------------------------------- |
+| `text-left`    | `text-align: left;`    | 文字靠左對齊                       |
+| `text-center`  | `text-align: center;`  | 文字置中對齊                       |
+| `text-right`   | `text-align: right;`   | 文字靠右對齊                       |
+| `text-justify` | `text-align: justify;` | 文字兩端對齊，行寬自動分配         |
+| `text-start`   | `text-align: start;`   | 依據書寫方向起始端對齊（LTR 為左） |
+| `text-end`     | `text-align: end;`     | 依據書寫方向結束端對齊（LTR 為右） |
+
+## color
+對應文字顏色（支援透明度後綴`/50`百分比值）。
+
+| 類別名稱                   | CSS 屬性                                | 說明                                         |
+| -------------------------- | --------------------------------------- | -------------------------------------------- |
+| `text-inherit`             | `color: inherit;`                       | 繼承父元素文字顏色                           |
+| `text-current`             | `color: currentColor;`                  | 使用當前元素的 currentColor                  |
+| `text-transparent`         | `color: transparent;`                   | 文字顏色透明                                 |
+| `text-black`               | `color: var(--color-black);`            | 黑色文字（#000）                             |
+| `text-white`               | `color: var(--color-white);`            | 白色文字（#fff）                             |
+| `text-{COLOR_NAME}-50`     | `color: var(--color-{COLOR_NAME}-50);`  | 指定色 step 50                               |
+| `text-{COLOR_NAME}-100`    | `color: var(--color-{COLOR_NAME}-100);` | 指定色 step 100                              |
+| `text-{COLOR_NAME}-200`    | `color: var(--color-{COLOR_NAME}-200);` | 指定色 step 200                              |
+| `text-{COLOR_NAME}-300`    | `color: var(--color-{COLOR_NAME}-300);` | 指定色 step 300                              |
+| `text-{COLOR_NAME}-400`    | `color: var(--color-{COLOR_NAME}-400);` | 指定色 step 400                              |
+| `text-{COLOR_NAME}-500`    | `color: var(--color-{COLOR_NAME}-500);` | 指定色 step 500                              |
+| `text-{COLOR_NAME}-600`    | `color: var(--color-{COLOR_NAME}-600);` | 指定色 step 600                              |
+| `text-{COLOR_NAME}-700`    | `color: var(--color-{COLOR_NAME}-700);` | 指定色 step 700                              |
+| `text-{COLOR_NAME}-800`    | `color: var(--color-{COLOR_NAME}-800);` | 指定色 step 800                              |
+| `text-{COLOR_NAME}-900`    | `color: var(--color-{COLOR_NAME}-900);` | 指定色 step 900                              |
+| `text-{COLOR_NAME}-950`    | `color: var(--color-{COLOR_NAME}-950);` | 指定色 step 950                              |
+| `text-(<custom-property>)` | `color: var(<custom-property>);`        | 使用 CSS 變數自訂文字顏色                    |
+| `text-[<value>]`           | `color: <value>;`                       | 任意自訂文字顏色（如 #123456、rgba(...) 等） |
+
+{% note info %}
+**COLOR_NAME 說明：**
+COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+
+舉例：`text-blue-500`、`text-rose-200`、`text-slate-900` 等。
+{% endnote %}
+
+```html
+<p class="text-blue-600 dark:text-sky-400"></p>
+<p class="text-blue-600/50 dark:text-sky-400/50"></p>
+<p class="text-[#50d71e]"></p>
+<p class="text-(--my-color)"></p>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<p class="text-regal-blue"></p>
 ```
 
 ## text-decoration-line
-| 類別名稱       | CSS 屬性                              |
-| -------------- | ------------------------------------- |
-| `underline`    | `text-decoration-line: underline;`    |
-| `overline`     | `text-decoration-line: overline;`     |
-| `line-through` | `text-decoration-line: line-through;` |
-| `no-underline` | `text-decoration-line: none;`         |
+用於設定文字的裝飾線類型，例如底線、上劃線或刪除線。這些類別可讓你快速為文字加上不同的裝飾效果，常用於強調、標示或修飾文字內容。
+
+| 類別名稱       | CSS 屬性                              | 說明               |
+| -------------- | ------------------------------------- | ------------------ |
+| `underline`    | `text-decoration-line: underline;`    | 加上底線           |
+| `overline`     | `text-decoration-line: overline;`     | 加上上劃線         |
+| `line-through` | `text-decoration-line: line-through;` | 加上刪除線         |
+| `no-underline` | `text-decoration-line: none;`         | 移除所有文字裝飾線 |
 
 ## text-decoration-color
-| 類別名稱                 | CSS 屬性                                   |
-| ------------------------ | ------------------------------------------ |
-| `decoration-{color}-{n}` | `text-decoration-color: var(--color-*-*);` |
-| `decoration-[<value>]`   | `text-decoration-color: <value>;`          |
+用於設定文字裝飾線的顏色。你可以搭配 Tailwind 的顏色類別（如 `decoration-blue-500`、`decoration-rose-400` 等）來快速變更底線、上劃線或刪除線的顏色，讓裝飾線與主文字顏色區分。
 
-## text-decoration-style
-| 類別名稱            | CSS 屬性                         |
-| ------------------- | -------------------------------- |
-| `decoration-solid`  | `text-decoration-style: solid;`  |
-| `decoration-double` | `text-decoration-style: double;` |
-| `decoration-dotted` | `text-decoration-style: dotted;` |
-| `decoration-dashed` | `text-decoration-style: dashed;` |
-| `decoration-wavy`   | `text-decoration-style: wavy;`   |
+| 類別名稱                      | CSS 屬性                                                | 說明                        |
+| ----------------------------- | ------------------------------------------------------- | --------------------------- |
+| `decoration-inherit`          | `text-decoration-color: inherit;`                       | 繼承父元素的文字裝飾線顏色  |
+| `decoration-current`          | `text-decoration-color: currentColor;`                  | 使用當前元素的文字顏色      |
+| `decoration-transparent`      | `text-decoration-color: transparent;`                   | 裝飾線顏色透明              |
+| `decoration-black`            | `text-decoration-color: var(--color-black);`            | 黑色裝飾線（#000）          |
+| `decoration-white`            | `text-decoration-color: var(--color-white);`            | 白色裝飾線（#fff）          |
+| `decoration-{COLOR_NAME}-50`  | `text-decoration-color: var(--color-{COLOR_NAME}-50);`  | 指定顏色 step 50 的裝飾線   |
+| `decoration-{COLOR_NAME}-100` | `text-decoration-color: var(--color-{COLOR_NAME}-100);` | 指定顏色 step 100 的裝飾線  |
+| `decoration-{COLOR_NAME}-200` | `text-decoration-color: var(--color-{COLOR_NAME}-200);` | 指定顏色 step 200 的裝飾線  |
+| `decoration-{COLOR_NAME}-300` | `text-decoration-color: var(--color-{COLOR_NAME}-300);` | 指定顏色 step 300 的裝飾線  |
+| `decoration-{COLOR_NAME}-400` | `text-decoration-color: var(--color-{COLOR_NAME}-400);` | 指定顏色 step 400 的裝飾線  |
+| `decoration-{COLOR_NAME}-500` | `text-decoration-color: var(--color-{COLOR_NAME}-500);` | 指定顏色 step 500 的裝飾線  |
+| `decoration-{COLOR_NAME}-600` | `text-decoration-color: var(--color-{COLOR_NAME}-600);` | 指定顏色 step 600 的裝飾線  |
+| `decoration-{COLOR_NAME}-700` | `text-decoration-color: var(--color-{COLOR_NAME}-700);` | 指定顏色 step 700 的裝飾線  |
+| `decoration-{COLOR_NAME}-800` | `text-decoration-color: var(--color-{COLOR_NAME}-800);` | 指定顏色 step 800 的裝飾線  |
+| `decoration-{COLOR_NAME}-900` | `text-decoration-color: var(--color-{COLOR_NAME}-900);` | 指定顏色 step 900 的裝飾線  |
+| `decoration-{COLOR_NAME}-950` | `text-decoration-color: var(--color-{COLOR_NAME}-950);` | 指定顏色 step 950 的裝飾線  |
+| `decoration-(--自訂變數）`    | `text-decoration-color: var(--自訂變數）;`              | 使用 CSS 變數自訂裝飾線顏色 |
+| `decoration-[<value>]`        | `text-decoration-color: <value>;`                       | 任意自訂裝飾線顏色          |
 
-## text-decoration-thickness
-| 類別名稱               | CSS 屬性                                |
-| ---------------------- | --------------------------------------- |
-| `decoration-from-font` | `text-decoration-thickness: from-font;` |
-| `decoration-auto`      | `text-decoration-thickness: auto;`      |
-| `decoration-[<value>]` | `text-decoration-thickness: <value>;`   |
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
 
-## text-underline-offset
-| 類別名稱                     | CSS 屬性                          |
-| ---------------------------- | --------------------------------- |
-| `underline-offset-auto`      | `text-underline-offset: auto;`    |
-| `underline-offset-[<value>]` | `text-underline-offset: <value>;` |
+可以使用透明度（如 `decoration-blue-500/50`）或自訂顏色（如 `decoration-[#ff00ff]`）來調整裝飾線顏色。
 
 ```html
-<a class="underline decoration-2 decoration-sky-500 underline-offset-4">Link</a>
+<a class="underline decoration-indigo-500/30"></a>
+<p class="underline hover:decoration-pink-500"></p>
+<p class="decoration-[#50d71e]"></p>
+<p class="decoration-(--my-color)"></p>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<p class="decoration-regal-blue"></p>
+```
+
+## text-decoration-style
+用於設定底線、上劃線等裝飾線的線條樣式，讓你可以快速切換不同的線條效果，常見於連結、強調文字等場景。
+
+| 類別名稱            | CSS 屬性                         | 說明         |
+| ------------------- | -------------------------------- | ------------ |
+| `decoration-solid`  | `text-decoration-style: solid;`  | 實線（預設） |
+| `decoration-double` | `text-decoration-style: double;` | 雙線         |
+| `decoration-dotted` | `text-decoration-style: dotted;` | 點狀虛線     |
+| `decoration-dashed` | `text-decoration-style: dashed;` | 虛線         |
+| `decoration-wavy`   | `text-decoration-style: wavy;`   | 波浪線       |
+
+## text-decoration-thickness
+用於調整底線、上劃線等裝飾線的線條粗細，讓裝飾線更符合設計需求，常見於連結、標題強調等情境。
+
+| 類別名稱                                | CSS 屬性                                             | 說明                          |
+| --------------------------------------- | ---------------------------------------------------- | ----------------------------- |
+| `decoration-<number>`                   | `text-decoration-thickness: <number>px;`             | 指定像素粗細（如 1、2、4、8） |
+| `decoration-from-font`                  | `text-decoration-thickness: from-font;`              | 依據字型自動決定              |
+| `decoration-auto`                       | `text-decoration-thickness: auto;`                   | 自動（預設）                  |
+| `decoration-(length:<custom-property>)` | `text-decoration-thickness: var(<custom-property>);` | 使用 CSS 變數自訂粗細         |
+| `decoration-[<value>]`                  | `text-decoration-thickness: <value>;`                | 任意自訂粗細（如 3px、0.5em） |
+
+```html
+<p class="decoration-[0.25rem]"></p>
+<p class="decoration-(length:--my-decoration-thickness)"></p>
+```
+
+## text-underline-offset
+用於調整底線（underline）與文字之間的垂直間距，讓底線不會太貼近或太遠於文字本身，常見於設計細節微調。
+
+| 類別名稱                               | CSS 屬性                                         | 說明                                  |
+| -------------------------------------- | ------------------------------------------------ | ------------------------------------- |
+| `underline-offset-<number>`            | `text-underline-offset: <number>px;`             | 指定正向像素間距（如 1、2、4、8）     |
+| `-underline-offset-<number>`           | `text-underline-offset: calc(<number>px * -1);`  | 指定負向像素間距（如 -1、-2、-4、-8） |
+| `underline-offset-auto`                | `text-underline-offset: auto;`                   | 自動（預設）                          |
+| `underline-offset-(<custom-property>)` | `text-underline-offset: var(<custom-property>);` | 使用 CSS 變數自訂間距                 |
+| `underline-offset-[<value>]`           | `text-underline-offset: <value>;`                | 任意自訂間距（如 0.2em、3px、4%）     |
+
+```html
+<p class="underline-offset-[3px]"></p>
+<p class="underline-offset-(--my-underline-offset)"></p>
 ```
 
 ## text-transform
-| 類別名稱      | CSS 屬性                      |
-| ------------- | ----------------------------- |
-| `uppercase`   | `text-transform: uppercase;`  |
-| `lowercase`   | `text-transform: lowercase;`  |
-| `capitalize`  | `text-transform: capitalize;` |
-| `normal-case` | `text-transform: none;`       |
+用於設定文字的大小寫轉換，常見於標題、按鈕、標籤等需要統一字母格式的場景。
+
+| 類別名稱      | CSS 屬性                      | 說明                   |
+| ------------- | ----------------------------- | ---------------------- |
+| `uppercase`   | `text-transform: uppercase;`  | 全部轉為大寫           |
+| `lowercase`   | `text-transform: lowercase;`  | 全部轉為小寫           |
+| `capitalize`  | `text-transform: capitalize;` | 每個單字首字母大寫     |
+| `normal-case` | `text-transform: none;`       | 保持原始大小寫（預設） |
 
 ## text-overflow
-| 類別名稱        | CSS 屬性                                                          |
-| --------------- | ----------------------------------------------------------------- |
-| `truncate`      | `overflow: hidden; text-overflow: ellipsis; white-space: nowrap;` |
-| `text-ellipsis` | `text-overflow: ellipsis;`                                        |
-| `text-clip`     | `text-overflow: clip;`                                            |
+用於控制當文字內容超出容器寬度時的顯示方式，常見於單行文字截斷、顯示省略號 (...) 等情境，提升版面整齊度與可讀性。
+
+| 類別名稱        | CSS 屬性                                                                    | 說明                         |
+| --------------- | --------------------------------------------------------------------------- | ---------------------------- |
+| `truncate`      | `overflow: hidden;`<br>`text-overflow: ellipsis;`<br>`white-space: nowrap;` | 單行截斷並顯示省略號（...）  |
+| `text-ellipsis` | `text-overflow: ellipsis;`                                                  | 超出時顯示省略號（...）      |
+| `text-clip`     | `text-overflow: clip;`                                                      | 超出時直接裁切，不顯示省略號 |
 
 ## text-wrap
-| 類別名稱       | CSS 屬性              |
-| -------------- | --------------------- |
-| `text-wrap`    | `text-wrap: wrap;`    |
-| `text-nowrap`  | `text-wrap: nowrap;`  |
-| `text-balance` | `text-wrap: balance;` |
-| `text-pretty`  | `text-wrap: pretty;`  |
+用於控制文字自動換行、斷詞或保持單行顯示，常見於響應式排版、標籤、按鈕等需要靈活處理長文字的場景。
+
+| 類別名稱       | CSS 屬性              | 說明                               |
+| -------------- | --------------------- | ---------------------------------- |
+| `text-wrap`    | `text-wrap: wrap;`    | 允許自動換行（預設）               |
+| `text-nowrap`  | `text-wrap: nowrap;`  | 不允許換行，單行顯示               |
+| `text-balance` | `text-wrap: balance;` | 平衡多行文字寬度（需瀏覽器支援）   |
+| `text-pretty`  | `text-wrap: pretty;`  | 更自然的斷詞與換行（需瀏覽器支援） |
 
 ## text-indent
-| 類別名稱           | CSS 屬性                                 |
-| ------------------ | ---------------------------------------- |
-| `indent-<number>`  | `text-indent: calc(var(--spacing)*<n>);` |
-| `indent-[<value>]` | `text-indent: <value>;`                  |
+用於設定段落或文字的首行縮排，常見於文章、報告、閱讀型內容，提升排版美觀與可讀性。
 
-## vertical-align
-| 類別名稱            | CSS 屬性                       |
-| ------------------- | ------------------------------ |
-| `align-baseline`    | `vertical-align: baseline;`    |
-| `align-top`         | `vertical-align: top;`         |
-| `align-middle`      | `vertical-align: middle;`      |
-| `align-bottom`      | `vertical-align: bottom;`      |
-| `align-text-top`    | `vertical-align: text-top;`    |
-| `align-text-bottom` | `vertical-align: text-bottom;` |
-
-## white-space
-| 類別名稱              | CSS 屬性                 |
-| --------------------- | ------------------------ |
-| `whitespace-normal`   | `white-space: normal;`   |
-| `whitespace-nowrap`   | `white-space: nowrap;`   |
-| `whitespace-pre`      | `white-space: pre;`      |
-| `whitespace-pre-line` | `white-space: pre-line;` |
-| `whitespace-pre-wrap` | `white-space: pre-wrap;` |
-
-## word-break
-| 類別名稱       | CSS 屬性                                     |
-| -------------- | -------------------------------------------- |
-| `break-normal` | `word-break: normal; overflow-wrap: normal;` |
-| `break-words`  | `overflow-wrap: anywhere;`                   |
-| `break-all`    | `word-break: break-all;`                     |
-
-## overflow-wrap
-| 類別名稱        | CSS 屬性                     |
-| --------------- | ---------------------------- |
-| `ow-normal`     | `overflow-wrap: normal;`     |
-| `ow-anywhere`   | `overflow-wrap: anywhere;`   |
-| `ow-break-word` | `overflow-wrap: break-word;` |
-
-## hyphens
-| 類別名稱         | CSS 屬性           |
-| ---------------- | ------------------ |
-| `hyphens-none`   | `hyphens: none;`   |
-| `hyphens-manual` | `hyphens: manual;` |
-| `hyphens-auto`   | `hyphens: auto;`   |
-
-## content
-設定偽元素內容（需搭配 `before:`、`after:`）。
-
-| 類別名稱            | CSS 屬性            |
-| ------------------- | ------------------- |
-| `content-['...']`   | `content: '...';`   |
-| `content-[<value>]` | `content: <value>;` |
+| 類別名稱                     | CSS 屬性                                         | 說明                                                  |
+| ---------------------------- | ------------------------------------------------ | ----------------------------------------------------- |
+| `indent-<number>`            | `text-indent: calc(var(--spacing) * <number>);`  | 依 Tailwind 間距單位指定正向縮排（如 1、2、4、8）     |
+| `-indent-<number>`           | `text-indent: calc(var(--spacing) * -<number>);` | 依 Tailwind 間距單位指定負向縮排（如 -1、-2、-4、-8） |
+| `indent-px`                  | `text-indent: 1px;`                              | 縮排 1px（極小單位，常用於微調）                      |
+| `-indent-px`                 | `text-indent: -1px;`                             | 負縮排 1px                                            |
+| `indent-(<custom-property>)` | `text-indent: var(<custom-property>);`           | 使用 CSS 變數自訂縮排                                 |
+| `indent-[<value>]`           | `text-indent: <value>;`                          | 任意自訂縮排（如 2em、1.5rem、10%、8px 等）           |
 
 ```html
-<button class="relative before:content-['NEW'] before:absolute before:-top-2 before:-right-2 before:text-xs before:bg-pink-500 before:text-white before:px-1.5 before:rounded">Buy</button>
+<p class="-indent-8"></p>
+<p class="indent-[50%]"></p>
+<p class="indent-(--my-indentation)"></p>
 ```
 
-</rewritten_file>
+## vertical-align
+用於設定行內元素（如圖片、icon、文字等）在行內的垂直對齊方式，常見於調整圖文混排、表格內容對齊等場景。
+
+| 類別名稱                    | CSS 屬性                                  | 說明                                     |
+| --------------------------- | ----------------------------------------- | ---------------------------------------- |
+| `align-baseline`            | `vertical-align: baseline;`               | 與父元素基線對齊（預設）                 |
+| `align-top`                 | `vertical-align: top;`                    | 與行框頂部對齊                           |
+| `align-middle`              | `vertical-align: middle;`                 | 與父元素中線對齊                         |
+| `align-bottom`              | `vertical-align: bottom;`                 | 與行框底部對齊                           |
+| `align-text-top`            | `vertical-align: text-top;`               | 與父元素文字頂部對齊                     |
+| `align-text-bottom`         | `vertical-align: text-bottom;`            | 與父元素文字底部對齊                     |
+| `align-sub`                 | `vertical-align: sub;`                    | 下標對齊（如化學式、數學式下標）         |
+| `align-super`               | `vertical-align: super;`                  | 上標對齊（如次方、數學式上標）           |
+| `align-(<custom-property>)` | `vertical-align: var(<custom-property>);` | 使用 CSS 變數自訂對齊值（如 --my-align） |
+| `align-[<value>]`           | `vertical-align: <value>;`                | 任意自訂對齊值（如 10px、2em、50% 等）   |
+
+```html
+<span class="align-[4px]"></span>
+<span class="align-(--my-alignment)"></span>
+```
+
+## white-space
+用於控制空白字元（如空格、換行、Tab）在元素中的顯示方式。常見於程式碼區塊、標籤、文章內容等需要特殊排版的場景，可決定文字是否自動換行、保留空白、強制單行等。
+
+| 類別名稱                  | CSS 屬性                     | 說明                                     |
+| ------------------------- | ---------------------------- | ---------------------------------------- |
+| `whitespace-normal`       | `white-space: normal;`       | 預設，空白會合併，遇到邊界自動換行       |
+| `whitespace-nowrap`       | `white-space: nowrap;`       | 不換行，所有內容強制顯示在同一行         |
+| `whitespace-pre`          | `white-space: pre;`          | 保留所有空白與換行，不自動換行           |
+| `whitespace-pre-line`     | `white-space: pre-line;`     | 合併空白，但保留換行符號                 |
+| `whitespace-pre-wrap`     | `white-space: pre-wrap;`     | 保留空白與換行，必要時自動換行           |
+| `whitespace-break-spaces` | `white-space: break-spaces;` | 保留所有空白，遇到邊界自動換行，支援斷詞 |
+
+## word-break
+用於控制單字在遇到邊界時的斷行方式，常見於處理長網址、英文單字、程式碼片段等，避免內容超出容器導致版面跑版。
+
+| 類別名稱       | CSS 屬性                 | 說明                           |
+| -------------- | ------------------------ | ------------------------------ |
+| `break-normal` | `word-break: normal;`    | 預設行為，僅在必要時斷行       |
+| `break-all`    | `word-break: break-all;` | 允許於任意字元斷行，適合長字串 |
+| `break-keep`   | `word-break: keep-all;`  | 保持整體單字，不於單字內斷行   |
+
+## overflow-wrap
+用於控制單字在超出容器邊界時是否自動換行，避免內容溢出導致排版錯亂。常見於處理長網址、英文單字、程式碼片段等情境，與 `word-break` 類別搭配使用可提升排版彈性。
+
+| 類別名稱          | CSS 屬性                     | 說明                       |
+| ----------------- | ---------------------------- | -------------------------- |
+| `wrap-break-word` | `overflow-wrap: break-word;` | 單字過長時強制換行         |
+| `wrap-anywhere`   | `overflow-wrap: anywhere;`   | 任何地方都可換行（較少用） |
+| `wrap-normal`     | `overflow-wrap: normal;`     | 預設行為，僅在必要時換行   |
+
+## hyphens
+用於控制自動斷字（hyphenation），讓瀏覽器在適當位置自動插入連字號，提升多語言長單字或文章排版的可讀性。常見於新聞、部落格、技術文件等需要美觀排版的場景。
+
+| 類別名稱         | CSS 屬性           | 說明                       |
+| ---------------- | ------------------ | -------------------------- |
+| `hyphens-none`   | `hyphens: none;`   | 不自動斷字（預設）         |
+| `hyphens-manual` | `hyphens: manual;` | 只在有手動斷字提示時才斷字 |
+| `hyphens-auto`   | `hyphens: auto;`   | 自動根據語言規則進行斷字   |
+
+## content
+用於插入自訂內容（content），常見於 `::before`、`::after` 偽元素，讓你能在元素前後動態產生文字、符號或圖示。這些類別主要用於搭配 `before:`、`after:` 前綴，實現裝飾性或輔助性標記。
+
+| 類別名稱                      | CSS 屬性                           | 說明                                  |
+| ----------------------------- | ---------------------------------- | ------------------------------------- |
+| `content-[<value>]`           | `content: <value>;`                | 插入自訂內容（需加引號）              |
+| `content-(<custom-property>)` | `content: var(<custom-property>);` | 使用 CSS 變數自訂內容（需搭配偽元素） |
+| `content-none`                | `content: none;`                   | 不產生任何內容（預設）                |
+
+> value 底線會轉為文字，若需要底線則跳脫字元
+
+```html
+<p before="Hello World" class="before:content-[attr(before)]"></p>
+<p class="before:content-['Hello_World']">Hello World</p>
+<p class="before:content-['Hello\_World']">Hello_World</p>
+<p class="content-(--my-content)"></p>
+```
+
+# Background
+背景相關類別用於設定元素的背景屬性，包括顏色、圖片、位置、重複方式、尺寸等。這些類別讓你能快速調整背景效果，常見於版面設計、區塊強調、按鈕樣式等情境。
+
+## background-attachment
+用於設定背景圖片的滾動行為，決定背景是否隨網頁內容一同滾動，常見於製作視差滾動（parallax）、固定背景等設計。
+
+| 類別名稱    | CSS 屬性                         | 說明                   |
+| ----------- | -------------------------------- | ---------------------- |
+| `bg-fixed`  | `background-attachment: fixed;`  | 背景固定不隨內容滾動   |
+| `bg-local`  | `background-attachment: local;`  | 背景隨元素內容滾動     |
+| `bg-scroll` | `background-attachment: scroll;` | 背景隨網頁滾動（預設） |
+
+## background-clip
+用於設定背景繪製的裁切範圍，決定背景顏色或背景圖片的顯示區域。常見於需要只顯示在文字、內邊距或整個區塊時使用，能搭配圓角、邊框等設計達到不同視覺效果。
+
+| 類別名稱          | CSS 屬性                        | 說明                               |
+| ----------------- | ------------------------------- | ---------------------------------- |
+| `bg-clip-border`  | `background-clip: border-box;`  | 背景延伸至邊框（預設）             |
+| `bg-clip-padding` | `background-clip: padding-box;` | 背景延伸至內邊距                   |
+| `bg-clip-content` | `background-clip: content-box;` | 背景僅延伸至內容區域               |
+| `bg-clip-text`    | `background-clip: text;`        | 背景僅顯示於文字（需搭配文字透明） |
+
+{% note info %}
+**小技巧：`bg-clip-text` 需搭配 `text-transparent` 使用，才能讓背景顯示於文字形狀內。**
+
+```html
+<p class="bg-linear-to-r from-pink-500 to-violet-500 bg-clip-text text-5xl font-extrabold text-transparent">
+  Hello world
+</p>
+```
+{% endnote %}
+
+## background-color
+背景顏色相關類別用於快速設定元素的背景顏色，支援 Tailwind 預設色階、透明度、CSS 變數與自訂顏色。常用於區塊、按鈕、卡片等元件的視覺強調。
+
+| 類別名稱                 | CSS 屬性                                           | 說明                                       |
+| ------------------------ | -------------------------------------------------- | ------------------------------------------ |
+| `bg-inherit`             | `background-color: inherit;`                       | 繼承父元素背景色                           |
+| `bg-current`             | `background-color: currentColor;`                  | 使用當前文字顏色作為背景色                 |
+| `bg-transparent`         | `background-color: transparent;`                   | 背景透明                                   |
+| `bg-black`               | `background-color: var(--color-black);`            | 黑色背景（#000）                           |
+| `bg-white`               | `background-color: var(--color-white);`            | 白色背景（#fff）                           |
+| `bg-{COLOR_NAME}-50`     | `background-color: var(--color-{COLOR_NAME}-50);`  | 指定色 step 50                             |
+| `bg-{COLOR_NAME}-100`    | `background-color: var(--color-{COLOR_NAME}-100);` | 指定色 step 100                            |
+| `bg-{COLOR_NAME}-200`    | `background-color: var(--color-{COLOR_NAME}-200);` | 指定色 step 200                            |
+| `bg-{COLOR_NAME}-300`    | `background-color: var(--color-{COLOR_NAME}-300);` | 指定色 step 300                            |
+| `bg-{COLOR_NAME}-400`    | `background-color: var(--color-{COLOR_NAME}-400);` | 指定色 step 400                            |
+| `bg-{COLOR_NAME}-500`    | `background-color: var(--color-{COLOR_NAME}-500);` | 指定色 step 500                            |
+| `bg-{COLOR_NAME}-600`    | `background-color: var(--color-{COLOR_NAME}-600);` | 指定色 step 600                            |
+| `bg-{COLOR_NAME}-700`    | `background-color: var(--color-{COLOR_NAME}-700);` | 指定色 step 700                            |
+| `bg-{COLOR_NAME}-800`    | `background-color: var(--color-{COLOR_NAME}-800);` | 指定色 step 800                            |
+| `bg-{COLOR_NAME}-900`    | `background-color: var(--color-{COLOR_NAME}-900);` | 指定色 step 900                            |
+| `bg-{COLOR_NAME}-950`    | `background-color: var(--color-{COLOR_NAME}-950);` | 指定色 step 950                            |
+| `bg-(<custom-property>)` | `background-color: var(<custom-property>);`        | 使用 CSS 變數自訂背景色                    |
+| `bg-[<value>]`           | `background-color: <value>;`                       | 任意自訂背景色（如 #123456、rgba(...) 等） |
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+
+可在顏色類別後加上 `/50`（0~100）調整透明度，例如 `bg-blue-500/50` 代表 50% 透明度。
+
+```html
+<button class="bg-sky-500/100"></button>
+<div class="bg-[#50d71e]"></div>
+<div class="bg-(--my-color)"></div>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<div class="bg-regal-blue"></div>
+```
+
+## background-image
+用於設定元素的背景圖片。Tailwind CSS 提供多種背景圖片類別，包含預設的 `none`、`gradient` 漸層、以及自訂圖片路徑。這些類別可快速為區塊、按鈕等元素加上背景圖案或漸層效果。
+
+| 類別名稱                        | CSS 屬性                                                                               | 說明                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `bg-[<value>]`                  | `background-image: <value>;`                                                           | 任意自訂背景圖片或漸層（如 url、gradient）       |
+| `bg-(image:<custom-property>)`  | `background-image: var(<custom-property>);`                                            | 使用 CSS 變數自訂背景圖片                        |
+| `bg-none`                       | `background-image: none;`                                                              | 無背景圖片                                       |
+| `bg-linear-to-t`                | `background-image: linear-gradient(to top, var(--tw-gradient-stops));`                 | 線性漸層由下往上                                 |
+| `bg-linear-to-tr`               | `background-image: linear-gradient(to top right, var(--tw-gradient-stops));`           | 線性漸層由左下到右上                             |
+| `bg-linear-to-r`                | `background-image: linear-gradient(to right, var(--tw-gradient-stops));`               | 線性漸層由左往右                                 |
+| `bg-linear-to-br`               | `background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));`        | 線性漸層由左上到右下                             |
+| `bg-linear-to-b`                | `background-image: linear-gradient(to bottom, var(--tw-gradient-stops));`              | 線性漸層由上往下                                 |
+| `bg-linear-to-bl`               | `background-image: linear-gradient(to bottom left, var(--tw-gradient-stops));`         | 線性漸層由右上到左下                             |
+| `bg-linear-to-l`                | `background-image: linear-gradient(to left, var(--tw-gradient-stops));`                | 線性漸層由右往左                                 |
+| `bg-linear-to-tl`               | `background-image: linear-gradient(to top left, var(--tw-gradient-stops));`            | 線性漸層由右下到左上                             |
+| `bg-linear-<angle>`             | `background-image: linear-gradient(<angle> in oklab, var(--tw-gradient-stops));`       | 以指定角度（oklab）線性漸層                      |
+| `-bg-linear-<angle>`            | `background-image: linear-gradient(-<angle> in oklab, var(--tw-gradient-stops));`      | 以負角度（oklab）線性漸層                        |
+| `bg-linear-(<custom-property>)` | `background-image: linear-gradient(var(--tw-gradient-stops, var(<custom-property>)));` | 使用 CSS 變數自訂線性漸層                        |
+| `bg-linear-[<value>]`           | `background-image: linear-gradient(var(--tw-gradient-stops, <value>));`                | 任意自訂線性漸層                                 |
+| `bg-radial`                     | `background-image: radial-gradient(in oklab, var(--tw-gradient-stops));`               | 輻射漸層（oklab）                                |
+| `bg-radial-(<custom-property>)` | `background-image: radial-gradient(var(--tw-gradient-stops, var(<custom-property>)));` | 使用 CSS 變數自訂輻射漸層                        |
+| `bg-radial-[<value>]`           | `background-image: radial-gradient(var(--tw-gradient-stops, <value>));`                | 任意自訂輻射漸層                                 |
+| `bg-conic-<angle>`              | `background-image: conic-gradient(from <angle> in oklab, var(--tw-gradient-stops));`   | 指定角度的圓錐漸層（oklab）                      |
+| `-bg-conic-<angle>`             | `background-image: conic-gradient(from -<angle> in oklab, var(--tw-gradient-stops));`  | 負角度圓錐漸層（oklab）                          |
+| `bg-conic-(<custom-property>)`  | `background-image: var(<custom-property>);`                                            | 使用 CSS 變數自訂圓錐漸層                        |
+| `bg-conic-[<value>]`            | `background-image: <value>;`                                                           | 任意自訂圓錐漸層                                 |
+| `from-<color>`                  | `--tw-gradient-from: <color>;`                                                         | 設定漸層起始顏色                                 |
+| `from-<percentage>`             | `--tw-gradient-from-position: <percentage>;`                                           | 設定漸層起始顏色的位置（百分比）                 |
+| `from-(<custom-property>)`      | `--tw-gradient-from: var(<custom-property>);`                                          | 使用 CSS 變數自訂漸層起始顏色                    |
+| `from-[<value>]`                | `--tw-gradient-from: <value>;`                                                         | 任意自訂漸層起始顏色（如 #123456、rgba(...) 等） |
+| `via-<color>`                   | `--tw-gradient-via: <color>;`                                                          | 設定漸層中間顏色                                 |
+| `via-<percentage>`              | `--tw-gradient-via-position: <percentage>;`                                            | 設定漸層中間顏色的位置（百分比）                 |
+| `via-(<custom-property>)`       | `--tw-gradient-via: var(<custom-property>);`                                           | 使用 CSS 變數自訂漸層中間顏色                    |
+| `via-[<value>]`                 | `--tw-gradient-via: <value>;`                                                          | 任意自訂漸層中間顏色（如 #123456、rgba(...) 等） |
+| `to-<color>`                    | `--tw-gradient-to: <color>;`                                                           | 設定漸層結束顏色                                 |
+| `to-<percentage>`               | `--tw-gradient-to-position: <percentage>;`                                             | 設定漸層結束顏色的位置（百分比）                 |
+| `to-(<custom-property>)`        | `--tw-gradient-to: var(<custom-property>);`                                            | 使用 CSS 變數自訂漸層結束顏色                    |
+| `to-[<value>]`                  | `--tw-gradient-to: <value>;`                                                           | 任意自訂漸層結束顏色（如 #123456、rgba(...) 等） |
+
+使用技巧
+- 可直接使用 `bg-[url('路徑')]` 來設定任意圖片為背景，例如 `bg-[url('/assets/bg.png')]`。
+- from, to 屬於 CSS 關鍵變數，用來控制漸層色位置以及指定色，tailwindcss 會自動判斷哪種屬性用途。
+- var 也是 CSS 關鍵變數，用來控制漸層的顏色中間參數，搭配 from -> via -> to 為三色漸層。
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]"></div>
+<div class="h-14 bg-linear-to-r from-cyan-500 to-blue-500"></div>
+<div class="size-18 rounded-full bg-radial from-pink-400 from-40% to-fuchsia-700"></div>
+<div class="size-18 rounded-full bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-900 to-90%"></div>
+<div class="size-18 rounded-full bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%"></div>
+<div class="size-24 rounded-full bg-conic from-blue-600 to-sky-400 to-50%"></div>
+<div class="size-24 rounded-full bg-conic-180 from-indigo-600 via-indigo-50 to-indigo-600"></div>
+<div class="size-24 rounded-full bg-conic/decreasing from-violet-700 via-lime-300 to-violet-700"></div>
+<div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
+<div class="bg-linear-[25deg,red_5%,yellow_60%,lime_90%,teal]"></div>
+<div class="bg-linear-(--my-gradient)"></div>
+```
+
+### 變更插值模式（Interpolation Mode）
+插值模式（interpolation mode）主要用於控制漸層（gradient）顏色在不同顏色之間的過渡方式。預設情況下，Tailwind 使用 oklab 色彩空間進行插值，可指定哪種色彩空間進行插值，讓漸層顏色過渡更自然、視覺效果更佳。
+
+```html
+<div class="bg-linear-to-r/srgb from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/hsl from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/oklab from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/oklch from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/longer from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/shorter from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/increasing from-indigo-500 to-teal-400"></div>
+<div class="bg-linear-to-r/decreasing from-indigo-500 to-teal-400"></div>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<div class="from-regal-blue"></div>
+```
+
+## background-origin
+背景原點（background-origin）用於設定背景圖片的定位起點，決定背景圖是從邊框（border）、內距（padding）還是內容區塊（content）開始繪製。Tailwind CSS 提供以下對應類別：
+
+| 類別名稱            | CSS 屬性值                        | 說明                           |
+| ------------------- | --------------------------------- | ------------------------------ |
+| `bg-origin-border`  | `background-origin: border-box;`  | 以邊框為背景圖定位起點         |
+| `bg-origin-padding` | `background-origin: padding-box;` | 以內距為背景圖定位起點（預設） |
+| `bg-origin-content` | `background-origin: content-box;` | 以內容區塊為背景圖定位起點     |
+
+## background-position
+背景位置（background-position）用於設定背景圖片在元素中的顯示位置。Tailwind CSS 提供多種常用位置的類別，讓你能快速對齊背景圖，常見於橫幅、卡片、裝飾性區塊等設計。
+
+| 類別名稱                          | CSS 屬性值                                     | 說明                  |
+| --------------------------------- | ---------------------------------------------- | --------------------- |
+| `bg-top-left`                     | `background-position: top left;`               | 對齊左上角            |
+| `bg-top`                          | `background-position: top;`                    | 對齊頂部              |
+| `bg-top-right`                    | `background-position: top right;`              | 對齊右上角            |
+| `bg-left`                         | `background-position: left;`                   | 對齊左側              |
+| `bg-center`                       | `background-position: center;`                 | 置中（預設）          |
+| `bg-right`                        | `background-position: right;`                  | 對齊右側              |
+| `bg-bottom-left`                  | `background-position: bottom left;`            | 對齊左下角            |
+| `bg-bottom`                       | `background-position: bottom;`                 | 對齊底部              |
+| `bg-bottom-right`                 | `background-position: bottom right;`           | 對齊右下角            |
+| `bg-position-(<custom-property>)` | `background-position: var(<custom-property>);` | 使用自訂 CSS 變數位置 |
+| `bg-position-[<value>]`           | `background-position: <value>;`                | 任意自訂位置          |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)] bg-bottom-left"></div>
+<div class="bg-position-[center_top_1rem]"></div>
+<div class="bg-position-(--my-bg-position)"></div>
+```
+
+## background-repeat
+背景重複（background-repeat）用於設定背景圖片是否及如何重複顯示。Tailwind CSS 提供多種重複方式，常見於圖案背景、裝飾性設計等。
+
+| 類別名稱          | CSS 屬性值                      | 說明                     |
+| ----------------- | ------------------------------- | ------------------------ |
+| `bg-repeat`       | `background-repeat: repeat;`    | 水平與垂直皆重複（預設） |
+| `bg-repeat-x`     | `background-repeat: repeat-x;`  | 僅水平重複               |
+| `bg-repeat-y`     | `background-repeat: repeat-y;`  | 僅垂直重複               |
+| `bg-repeat-space` | `background-repeat: space;`     | 圖片間隔平均分配         |
+| `bg-repeat-round` | `background-repeat: round;`     | 圖片自動縮放填滿並重複   |
+| `bg-no-repeat`    | `background-repeat: no-repeat;` | 不重複                   |
+
+## background-size
+背景尺寸（background-size）用於設定背景圖片的縮放方式，決定圖片如何填滿元素。Tailwind CSS 提供常用尺寸類別，方便快速調整背景圖的顯示效果，常見於橫幅、卡片、裝飾區塊等設計。
+
+| 類別名稱                      | CSS 屬性值                                 | 說明                   |
+| ----------------------------- | ------------------------------------------ | ---------------------- |
+| `bg-auto`                     | `background-size: auto;`                   | 保持原始尺寸（預設）   |
+| `bg-cover`                    | `background-size: cover;`                  | 覆蓋整個區塊，可能裁切 |
+| `bg-contain`                  | `background-size: contain;`                | 完整顯示，可能留白     |
+| `bg-size-(<custom-property>)` | `background-size: var(<custom-property>);` | 使用自訂 CSS 變數尺寸  |
+| `bg-size-[<value>]`           | `background-size: <value>;`                | 任意自訂尺寸           |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)] bg-cover bg-center"></div>
+<div class="bg-size-[auto_100px]"></div>
+<div class="bg-size-(--my-image-size)"></div>
+```
+
+# Border
+邊框（Border）相關類別用於設定元素的邊框寬度、顏色、圓角、樣式等。這些類別讓你能快速打造卡片、按鈕、區塊等元件的外觀，常見於版面分隔、強調重點、提升視覺層次等情境。
+
+## border-radius
+圓角（border-radius）相關類別用於設定元素的圓角大小，讓方形區塊、按鈕、卡片等元件呈現圓潤或全圓的視覺效果。常見於現代 UI 設計，能有效提升介面親和力與美觀度。
+
+{% note info %}
+一般情況（大部分專案）用 border-top-left-radius；多語系 / RTL 支援用 border-start-start-radius。
+
+- <kbd>border-top-left-radius</kbd>：標準 CSS，設定左上角圓角。
+- <kbd>border-start-start-radius</kbd>：邏輯屬性，會根據語言方向自動對應左上或右上角（LTR=左上，RTL=右上）。
+{% endnote %}
+
+
+| 類別名稱                      | CSS 屬性值                               | 說明                  |
+| ----------------------------- | ---------------------------------------- | --------------------- |
+| `rounded-none`                | `border-radius: 0;`                      | 無圓角                |
+| `rounded-xs`                  | `border-radius: var(--radius-xs);`       | 圓角0.125rem (2px)    |
+| `rounded-sm`                  | `border-radius: var(--radius-sm);`       | 圓角0.25rem (4px)     |
+| `rounded-md`                  | `border-radius: var(--radius-md);`       | 圓角0.375rem (6px)    |
+| `rounded-lg`                  | `border-radius: var(--radius-lg);`       | 圓角0.5rem (8px)      |
+| `rounded-xl`                  | `border-radius: var(--radius-xl);`       | 圓角0.75rem (12px)    |
+| `rounded-2xl`                 | `border-radius: var(--radius-2xl);`      | 圓角1rem (16px)       |
+| `rounded-3xl`                 | `border-radius: var(--radius-3xl);`      | 圓角1.5rem (24px)     |
+| `rounded-4xl`                 | `border-radius: var(--radius-4xl);`      | 圓角2rem (32px)       |
+| `rounded-full`                | `border-radius: calc(infinity * 1px);`   | 全圓角（圓形/膠囊）   |
+| `rounded-(<custom-property>)` | `border-radius: var(<custom-property>);` | 使用自訂 CSS 變數圓角 |
+| `rounded-[<value>]`           | `border-radius: <value>;`                | 任意自訂圓角          |
+
+| 類別名稱                         | CSS 屬性值                                                                                                     | 說明                          |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `rounded-t-xs`                   | `border-top-left-radius: var(--radius-xs);`<br/>`border-top-right-radius: var(--radius-xs);`                   | 上側圓角 0.125rem (2px)       |
+| `rounded-t-sm`                   | `border-top-left-radius: var(--radius-sm);`<br/>`border-top-right-radius: var(--radius-sm);`                   | 上側圓角 0.25rem (4px)        |
+| `rounded-t-md`                   | `border-top-left-radius: var(--radius-md);`<br/>`border-top-right-radius: var(--radius-md);`                   | 上側圓角 0.375rem (6px)       |
+| `rounded-t-lg`                   | `border-top-left-radius: var(--radius-lg);`<br/>`border-top-right-radius: var(--radius-lg);`                   | 上側圓角 0.5rem (8px)         |
+| `rounded-t-xl`                   | `border-top-left-radius: var(--radius-xl);`<br/>`border-top-right-radius: var(--radius-xl);`                   | 上側圓角 0.75rem (12px)       |
+| `rounded-t-2xl`                  | `border-top-left-radius: var(--radius-2xl);`<br/>`border-top-right-radius: var(--radius-2xl);`                 | 上側圓角 1rem (16px)          |
+| `rounded-t-3xl`                  | `border-top-left-radius: var(--radius-3xl);`<br/>`border-top-right-radius: var(--radius-3xl);`                 | 上側圓角 1.5rem (24px)        |
+| `rounded-t-4xl`                  | `border-top-left-radius: var(--radius-4xl);`<br/>`border-top-right-radius: var(--radius-4xl);`                 | 上側圓角 2rem (32px)          |
+| `rounded-t-none`                 | `border-top-left-radius: 0;`<br/>`border-top-right-radius: 0;`                                                 | 上側無圓角                    |
+| `rounded-t-full`                 | `border-top-left-radius: calc(infinity * 1px);`<br/>`border-top-right-radius: calc(infinity * 1px);`           | 上側全圓角（圓形/膠囊）       |
+| `rounded-t-(<custom-property>)`  | `border-top-left-radius: var(<custom-property>);`<br/>`border-top-right-radius: var(<custom-property>);`       | 使用自訂 CSS 變數設定上側圓角 |
+| `rounded-t-[<value>]`            | `border-top-left-radius: <value>;`<br/>`border-top-right-radius: <value>;`                                     | 上側任意自訂圓角              |
+| `rounded-r-xs`                   | `border-top-right-radius: var(--radius-xs);`<br/>`border-bottom-right-radius: var(--radius-xs);`               | 右側圓角 0.125rem (2px)       |
+| `rounded-r-sm`                   | `border-top-right-radius: var(--radius-sm);`<br/>`border-bottom-right-radius: var(--radius-sm);`               | 右側圓角 0.25rem (4px)        |
+| `rounded-r-md`                   | `border-top-right-radius: var(--radius-md);`<br/>`border-bottom-right-radius: var(--radius-md);`               | 右側圓角 0.375rem (6px)       |
+| `rounded-r-lg`                   | `border-top-right-radius: var(--radius-lg);`<br/>`border-bottom-right-radius: var(--radius-lg);`               | 右側圓角 0.5rem (8px)         |
+| `rounded-r-xl`                   | `border-top-right-radius: var(--radius-xl);`<br/>`border-bottom-right-radius: var(--radius-xl);`               | 右側圓角 0.75rem (12px)       |
+| `rounded-r-2xl`                  | `border-top-right-radius: var(--radius-2xl);`<br/>`border-bottom-right-radius: var(--radius-2xl);`             | 右側圓角 1rem (16px)          |
+| `rounded-r-3xl`                  | `border-top-right-radius: var(--radius-3xl);`<br/>`border-bottom-right-radius: var(--radius-3xl);`             | 右側圓角 1.5rem (24px)        |
+| `rounded-r-4xl`                  | `border-top-right-radius: var(--radius-4xl);`<br/>`border-bottom-right-radius: var(--radius-4xl);`             | 右側圓角 2rem (32px)          |
+| `rounded-r-none`                 | `border-top-right-radius: 0;`<br/>`border-bottom-right-radius: 0;`                                             | 右側無圓角                    |
+| `rounded-r-full`                 | `border-top-right-radius: calc(infinity * 1px);`<br/>`border-bottom-right-radius: calc(infinity * 1px);`       | 右側全圓角（圓形/膠囊）       |
+| `rounded-r-(<custom-property>)`  | `border-top-right-radius: var(<custom-property>);`<br/>`border-bottom-right-radius: var(<custom-property>);`   | 使用自訂 CSS 變數設定右側圓角 |
+| `rounded-r-[<value>]`            | `border-top-right-radius: <value>;`<br/>`border-bottom-right-radius: <value>;`                                 | 右側任意自訂圓角              |
+| `rounded-b-xs`                   | `border-bottom-right-radius: var(--radius-xs);`<br/>`border-bottom-left-radius: var(--radius-xs);`             | 下側圓角 0.125rem (2px)       |
+| `rounded-b-sm`                   | `border-bottom-right-radius: var(--radius-sm);`<br/>`border-bottom-left-radius: var(--radius-sm);`             | 下側圓角 0.25rem (4px)        |
+| `rounded-b-md`                   | `border-bottom-right-radius: var(--radius-md);`<br/>`border-bottom-left-radius: var(--radius-md);`             | 下側圓角 0.375rem (6px)       |
+| `rounded-b-lg`                   | `border-bottom-right-radius: var(--radius-lg);`<br/>`border-bottom-left-radius: var(--radius-lg);`             | 下側圓角 0.5rem (8px)         |
+| `rounded-b-xl`                   | `border-bottom-right-radius: var(--radius-xl);`<br/>`border-bottom-left-radius: var(--radius-xl);`             | 下側圓角 0.75rem (12px)       |
+| `rounded-b-2xl`                  | `border-bottom-right-radius: var(--radius-2xl);`<br/>`border-bottom-left-radius: var(--radius-2xl);`           | 下側圓角 1rem (16px)          |
+| `rounded-b-3xl`                  | `border-bottom-right-radius: var(--radius-3xl);`<br/>`border-bottom-left-radius: var(--radius-3xl);`           | 下側圓角 1.5rem (24px)        |
+| `rounded-b-4xl`                  | `border-bottom-right-radius: var(--radius-4xl);`<br/>`border-bottom-left-radius: var(--radius-4xl);`           | 下側圓角 2rem (32px)          |
+| `rounded-b-none`                 | `border-bottom-right-radius: 0;`<br/>`border-bottom-left-radius: 0;`                                           | 下側無圓角                    |
+| `rounded-b-full`                 | `border-bottom-right-radius: calc(infinity * 1px);`<br/>`border-bottom-left-radius: calc(infinity * 1px);`     | 下側全圓角（圓形/膠囊）       |
+| `rounded-b-(<custom-property>)`  | `border-bottom-right-radius: var(<custom-property>);`<br/>`border-bottom-left-radius: var(<custom-property>);` | 使用自訂 CSS 變數設定下側圓角 |
+| `rounded-b-[<value>]`            | `border-bottom-right-radius: <value>;`<br/>`border-bottom-left-radius: <value>;`                               | 下側任意自訂圓角              |
+| `rounded-l-xs`                   | `border-top-left-radius: var(--radius-xs);`<br/>`border-bottom-left-radius: var(--radius-xs);`                 | 左側圓角 0.125rem (2px)       |
+| `rounded-l-sm`                   | `border-top-left-radius: var(--radius-sm);`<br/>`border-bottom-left-radius: var(--radius-sm);`                 | 左側圓角 0.25rem (4px)        |
+| `rounded-l-md`                   | `border-top-left-radius: var(--radius-md);`<br/>`border-bottom-left-radius: var(--radius-md);`                 | 左側圓角 0.375rem (6px)       |
+| `rounded-l-lg`                   | `border-top-left-radius: var(--radius-lg);`<br/>`border-bottom-left-radius: var(--radius-lg);`                 | 左側圓角 0.5rem (8px)         |
+| `rounded-l-xl`                   | `border-top-left-radius: var(--radius-xl);`<br/>`border-bottom-left-radius: var(--radius-xl);`                 | 左側圓角 0.75rem (12px)       |
+| `rounded-l-2xl`                  | `border-top-left-radius: var(--radius-2xl);`<br/>`border-bottom-left-radius: var(--radius-2xl);`               | 左側圓角 1rem (16px)          |
+| `rounded-l-3xl`                  | `border-top-left-radius: var(--radius-3xl);`<br/>`border-bottom-left-radius: var(--radius-3xl);`               | 左側圓角 1.5rem (24px)        |
+| `rounded-l-4xl`                  | `border-top-left-radius: var(--radius-4xl);`<br/>`border-bottom-left-radius: var(--radius-4xl);`               | 左側圓角 2rem (32px)          |
+| `rounded-l-none`                 | `border-top-left-radius: 0;`<br/>`border-bottom-left-radius: 0;`                                               | 左側無圓角                    |
+| `rounded-l-full`                 | `border-top-left-radius: calc(infinity * 1px);`<br/>`border-bottom-left-radius: calc(infinity * 1px);`         | 左側全圓角（圓形/膠囊）       |
+| `rounded-l-(<custom-property>)`  | `border-top-left-radius: var(<custom-property>);`<br/>`border-bottom-left-radius: var(<custom-property>);`     | 使用自訂 CSS 變數設定左側圓角 |
+| `rounded-l-[<value>]`            | `border-top-left-radius: <value>;`<br/>`border-bottom-left-radius: <value>;`                                   | 左側任意自訂圓角              |
+| `rounded-tl-xs`                  | `border-top-left-radius: var(--radius-xs);`                                                                    | 左上圓角 0.125rem (2px)       |
+| `rounded-tl-sm`                  | `border-top-left-radius: var(--radius-sm);`                                                                    | 左上圓角 0.25rem (4px)        |
+| `rounded-tl-md`                  | `border-top-left-radius: var(--radius-md);`                                                                    | 左上圓角 0.375rem (6px)       |
+| `rounded-tl-lg`                  | `border-top-left-radius: var(--radius-lg);`                                                                    | 左上圓角 0.5rem (8px)         |
+| `rounded-tl-xl`                  | `border-top-left-radius: var(--radius-xl);`                                                                    | 左上圓角 0.75rem (12px)       |
+| `rounded-tl-2xl`                 | `border-top-left-radius: var(--radius-2xl);`                                                                   | 左上圓角 1rem (16px)          |
+| `rounded-tl-3xl`                 | `border-top-left-radius: var(--radius-3xl);`                                                                   | 左上圓角 1.5rem (24px)        |
+| `rounded-tl-4xl`                 | `border-top-left-radius: var(--radius-4xl);`                                                                   | 左上圓角 2rem (32px)          |
+| `rounded-tl-none`                | `border-top-left-radius: 0;`                                                                                   | 左上無圓角                    |
+| `rounded-tl-full`                | `border-top-left-radius: calc(infinity * 1px);`                                                                | 左上全圓角（圓形/膠囊）       |
+| `rounded-tl-(<custom-property>)` | `border-top-left-radius: var(<custom-property>);`                                                              | 使用自訂 CSS 變數設定左上圓角 |
+| `rounded-tl-[<value>]`           | `border-top-left-radius: <value>;`                                                                             | 左上任意自訂圓角              |
+| `rounded-tr-xs`                  | `border-top-right-radius: var(--radius-xs);`                                                                   | 右上圓角 0.125rem (2px)       |
+| `rounded-tr-sm`                  | `border-top-right-radius: var(--radius-sm);`                                                                   | 右上圓角 0.25rem (4px)        |
+| `rounded-tr-md`                  | `border-top-right-radius: var(--radius-md);`                                                                   | 右上圓角 0.375rem (6px)       |
+| `rounded-tr-lg`                  | `border-top-right-radius: var(--radius-lg);`                                                                   | 右上圓角 0.5rem (8px)         |
+| `rounded-tr-xl`                  | `border-top-right-radius: var(--radius-xl);`                                                                   | 右上圓角 0.75rem (12px)       |
+| `rounded-tr-2xl`                 | `border-top-right-radius: var(--radius-2xl);`                                                                  | 右上圓角 1rem (16px)          |
+| `rounded-tr-3xl`                 | `border-top-right-radius: var(--radius-3xl);`                                                                  | 右上圓角 1.5rem (24px)        |
+| `rounded-tr-4xl`                 | `border-top-right-radius: var(--radius-4xl);`                                                                  | 右上圓角 2rem (32px)          |
+| `rounded-tr-none`                | `border-top-right-radius: 0;`                                                                                  | 右上無圓角                    |
+| `rounded-tr-full`                | `border-top-right-radius: calc(infinity * 1px);`                                                               | 右上全圓角（圓形/膠囊）       |
+| `rounded-tr-(<custom-property>)` | `border-top-right-radius: var(<custom-property>);`                                                             | 使用自訂 CSS 變數設定右上圓角 |
+| `rounded-tr-[<value>]`           | `border-top-right-radius: <value>;`                                                                            | 右上任意自訂圓角              |
+| `rounded-br-xs`                  | `border-bottom-right-radius: var(--radius-xs);`                                                                | 右下圓角 0.125rem (2px)       |
+| `rounded-br-sm`                  | `border-bottom-right-radius: var(--radius-sm);`                                                                | 右下圓角 0.25rem (4px)        |
+| `rounded-br-md`                  | `border-bottom-right-radius: var(--radius-md);`                                                                | 右下圓角 0.375rem (6px)       |
+| `rounded-br-lg`                  | `border-bottom-right-radius: var(--radius-lg);`                                                                | 右下圓角 0.5rem (8px)         |
+| `rounded-br-xl`                  | `border-bottom-right-radius: var(--radius-xl);`                                                                | 右下圓角 0.75rem (12px)       |
+| `rounded-br-2xl`                 | `border-bottom-right-radius: var(--radius-2xl);`                                                               | 右下圓角 1rem (16px)          |
+| `rounded-br-3xl`                 | `border-bottom-right-radius: var(--radius-3xl);`                                                               | 右下圓角 1.5rem (24px)        |
+| `rounded-br-4xl`                 | `border-bottom-right-radius: var(--radius-4xl);`                                                               | 右下圓角 2rem (32px)          |
+| `rounded-br-none`                | `border-bottom-right-radius: 0;`                                                                               | 右下無圓角                    |
+| `rounded-br-full`                | `border-bottom-right-radius: calc(infinity * 1px);`                                                            | 右下全圓角（圓形/膠囊）       |
+| `rounded-br-(<custom-property>)` | `border-bottom-right-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定右下圓角 |
+| `rounded-br-[<value>]`           | `border-bottom-right-radius: <value>;`                                                                         | 右下任意自訂圓角              |
+| `rounded-bl-xs`                  | `border-bottom-left-radius: var(--radius-xs);`                                                                 | 左下圓角 0.125rem (2px)       |
+| `rounded-bl-sm`                  | `border-bottom-left-radius: var(--radius-sm);`                                                                 | 左下圓角 0.25rem (4px)        |
+| `rounded-bl-md`                  | `border-bottom-left-radius: var(--radius-md);`                                                                 | 左下圓角 0.375rem (6px)       |
+| `rounded-bl-lg`                  | `border-bottom-left-radius: var(--radius-lg);`                                                                 | 左下圓角 0.5rem (8px)         |
+| `rounded-bl-xl`                  | `border-bottom-left-radius: var(--radius-xl);`                                                                 | 左下圓角 0.75rem (12px)       |
+| `rounded-bl-2xl`                 | `border-bottom-left-radius: var(--radius-2xl);`                                                                | 左下圓角 1rem (16px)          |
+| `rounded-bl-3xl`                 | `border-bottom-left-radius: var(--radius-3xl);`                                                                | 左下圓角 1.5rem (24px)        |
+| `rounded-bl-4xl`                 | `border-bottom-left-radius: var(--radius-4xl);`                                                                | 左下圓角 2rem (32px)          |
+| `rounded-bl-none`                | `border-bottom-left-radius: 0;`                                                                                | 左下無圓角                    |
+| `rounded-bl-full`                | `border-bottom-left-radius: calc(infinity * 1px);`                                                             | 左下全圓角（圓形/膠囊）       |
+| `rounded-bl-(<custom-property>)` | `border-bottom-left-radius: var(<custom-property>);`                                                           | 使用自訂 CSS 變數設定左下圓角 |
+| `rounded-bl-[<value>]`           | `border-bottom-left-radius: <value>;`                                                                          | 左下任意自訂圓角              |
+
+
+| 類別名稱                         | CSS 屬性值                                                                                                  | 說明                              |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `rounded-s-xs`                   | `border-start-start-radius: var(--radius-xs);`<br/>`border-end-start-radius: var(--radius-xs);`             | 起始側圓角 0.125rem (2px)         |
+| `rounded-s-sm`                   | `border-start-start-radius: var(--radius-sm);`<br/>`border-end-start-radius: var(--radius-sm);`             | 起始側圓角 0.25rem (4px)          |
+| `rounded-s-md`                   | `border-start-start-radius: var(--radius-md);`<br/>`border-end-start-radius: var(--radius-md);`             | 起始側圓角 0.375rem (6px)         |
+| `rounded-s-lg`                   | `border-start-start-radius: var(--radius-lg);`<br/>`border-end-start-radius: var(--radius-lg);`             | 起始側圓角 0.5rem (8px)           |
+| `rounded-s-xl`                   | `border-start-start-radius: var(--radius-xl);`<br/>`border-end-start-radius: var(--radius-xl);`             | 起始側圓角 0.75rem (12px)         |
+| `rounded-s-2xl`                  | `border-start-start-radius: var(--radius-2xl);`<br/>`border-end-start-radius: var(--radius-2xl);`           | 起始側圓角 1rem (16px)            |
+| `rounded-s-3xl`                  | `border-start-start-radius: var(--radius-3xl);`<br/>`border-end-start-radius: var(--radius-3xl);`           | 起始側圓角 1.5rem (24px)          |
+| `rounded-s-4xl`                  | `border-start-start-radius: var(--radius-4xl);`<br/>`border-end-start-radius: var(--radius-4xl);`           | 起始側圓角 2rem (32px)            |
+| `rounded-s-none`                 | `border-start-start-radius: 0;`<br/>`border-end-start-radius: 0;`                                           | 起始側無圓角                      |
+| `rounded-s-full`                 | `border-start-start-radius: calc(infinity * 1px);`<br/>`border-end-start-radius: calc(infinity * 1px);`     | 起始側全圓角（圓形/膠囊）         |
+| `rounded-s-(<custom-property>)`  | `border-start-start-radius: var(<custom-property>);`<br/>`border-end-start-radius: var(<custom-property>);` | 使用自訂 CSS 變數設定起始側圓角   |
+| `rounded-s-[<value>]`            | `border-start-start-radius: <value>;`<br/>`border-end-start-radius: <value>;`                               | 起始側任意自訂圓角                |
+| `rounded-e-xs`                   | `border-start-end-radius: var(--radius-xs);`<br/>`border-end-end-radius: var(--radius-xs);`                 | 結束側圓角 0.125rem (2px)         |
+| `rounded-e-sm`                   | `border-start-end-radius: var(--radius-sm);`<br/>`border-end-end-radius: var(--radius-sm);`                 | 結束側圓角 0.25rem (4px)          |
+| `rounded-e-md`                   | `border-start-end-radius: var(--radius-md);`<br/>`border-end-end-radius: var(--radius-md);`                 | 結束側圓角 0.375rem (6px)         |
+| `rounded-e-lg`                   | `border-start-end-radius: var(--radius-lg);`<br/>`border-end-end-radius: var(--radius-lg);`                 | 結束側圓角 0.5rem (8px)           |
+| `rounded-e-xl`                   | `border-start-end-radius: var(--radius-xl);`<br/>`border-end-end-radius: var(--radius-xl);`                 | 結束側圓角 0.75rem (12px)         |
+| `rounded-e-2xl`                  | `border-start-end-radius: var(--radius-2xl);`<br/>`border-end-end-radius: var(--radius-2xl);`               | 結束側圓角 1rem (16px)            |
+| `rounded-e-3xl`                  | `border-start-end-radius: var(--radius-3xl);`<br/>`border-end-end-radius: var(--radius-3xl);`               | 結束側圓角 1.5rem (24px)          |
+| `rounded-e-4xl`                  | `border-start-end-radius: var(--radius-4xl);`<br/>`border-end-end-radius: var(--radius-4xl);`               | 結束側圓角 2rem (32px)            |
+| `rounded-e-none`                 | `border-start-end-radius: 0;`<br/>`border-end-end-radius: 0;`                                               | 結束側無圓角                      |
+| `rounded-e-full`                 | `border-start-end-radius: calc(infinity * 1px);`<br/>`border-end-end-radius: calc(infinity * 1px);`         | 結束側全圓角（圓形/膠囊）         |
+| `rounded-e-(<custom-property>)`  | `border-start-end-radius: var(<custom-property>);`<br/>`border-end-end-radius: var(<custom-property>);`     | 使用自訂 CSS 變數設定結束側圓角   |
+| `rounded-e-[<value>]`            | `border-start-end-radius: <value>;`<br/>`border-end-end-radius: <value>;`                                   | 結束側任意自訂圓角                |
+| `rounded-ss-xs`                  | `border-start-start-radius: var(--radius-xs);`                                                              | 起始起始圓角 0.125rem (2px)       |
+| `rounded-ss-sm`                  | `border-start-start-radius: var(--radius-sm);`                                                              | 起始起始圓角 0.25rem (4px)        |
+| `rounded-ss-md`                  | `border-start-start-radius: var(--radius-md);`                                                              | 起始起始圓角 0.375rem (6px)       |
+| `rounded-ss-lg`                  | `border-start-start-radius: var(--radius-lg);`                                                              | 起始起始圓角 0.5rem (8px)         |
+| `rounded-ss-xl`                  | `border-start-start-radius: var(--radius-xl);`                                                              | 起始起始圓角 0.75rem (12px)       |
+| `rounded-ss-2xl`                 | `border-start-start-radius: var(--radius-2xl);`                                                             | 起始起始圓角 1rem (16px)          |
+| `rounded-ss-3xl`                 | `border-start-start-radius: var(--radius-3xl);`                                                             | 起始起始圓角 1.5rem (24px)        |
+| `rounded-ss-4xl`                 | `border-start-start-radius: var(--radius-4xl);`                                                             | 起始起始圓角 2rem (32px)          |
+| `rounded-ss-none`                | `border-start-start-radius: 0;`                                                                             | 起始起始無圓角                    |
+| `rounded-ss-full`                | `border-start-start-radius: calc(infinity * 1px);`                                                          | 起始起始全圓角（圓形/膠囊）       |
+| `rounded-ss-(<custom-property>)` | `border-start-start-radius: var(<custom-property>);`                                                        | 使用自訂 CSS 變數設定起始起始圓角 |
+| `rounded-ss-[<value>]`           | `border-start-start-radius: <value>;`                                                                       | 起始起始任意自訂圓角              |
+| `rounded-se-xs`                  | `border-start-end-radius: var(--radius-xs);`                                                                | 起始結束圓角 0.125rem (2px)       |
+| `rounded-se-sm`                  | `border-start-end-radius: var(--radius-sm);`                                                                | 起始結束圓角 0.25rem (4px)        |
+| `rounded-se-md`                  | `border-start-end-radius: var(--radius-md);`                                                                | 起始結束圓角 0.375rem (6px)       |
+| `rounded-se-lg`                  | `border-start-end-radius: var(--radius-lg);`                                                                | 起始結束圓角 0.5rem (8px)         |
+| `rounded-se-xl`                  | `border-start-end-radius: var(--radius-xl);`                                                                | 起始結束圓角 0.75rem (12px)       |
+| `rounded-se-2xl`                 | `border-start-end-radius: var(--radius-2xl);`                                                               | 起始結束圓角 1rem (16px)          |
+| `rounded-se-3xl`                 | `border-start-end-radius: var(--radius-3xl);`                                                               | 起始結束圓角 1.5rem (24px)        |
+| `rounded-se-4xl`                 | `border-start-end-radius: var(--radius-4xl);`                                                               | 起始結束圓角 2rem (32px)          |
+| `rounded-se-none`                | `border-start-end-radius: 0;`                                                                               | 起始結束無圓角                    |
+| `rounded-se-full`                | `border-start-end-radius: calc(infinity * 1px);`                                                            | 起始結束全圓角（圓形/膠囊）       |
+| `rounded-se-(<custom-property>)` | `border-start-end-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定起始結束圓角 |
+| `rounded-se-[<value>]`           | `border-start-end-radius: <value>;`                                                                         | 起始結束任意自訂圓角              |
+| `rounded-ee-xs`                  | `border-end-end-radius: var(--radius-xs);`                                                                  | 結束結束圓角 0.125rem (2px)       |
+| `rounded-ee-sm`                  | `border-end-end-radius: var(--radius-sm);`                                                                  | 結束結束圓角 0.25rem (4px)        |
+| `rounded-ee-md`                  | `border-end-end-radius: var(--radius-md);`                                                                  | 結束結束圓角 0.375rem (6px)       |
+| `rounded-ee-lg`                  | `border-end-end-radius: var(--radius-lg);`                                                                  | 結束結束圓角 0.5rem (8px)         |
+| `rounded-ee-xl`                  | `border-end-end-radius: var(--radius-xl);`                                                                  | 結束結束圓角 0.75rem (12px)       |
+| `rounded-ee-2xl`                 | `border-end-end-radius: var(--radius-2xl);`                                                                 | 結束結束圓角 1rem (16px)          |
+| `rounded-ee-3xl`                 | `border-end-end-radius: var(--radius-3xl);`                                                                 | 結束結束圓角 1.5rem (24px)        |
+| `rounded-ee-4xl`                 | `border-end-end-radius: var(--radius-4xl);`                                                                 | 結束結束圓角 2rem (32px)          |
+| `rounded-ee-none`                | `border-end-end-radius: 0;`                                                                                 | 結束結束無圓角                    |
+| `rounded-ee-full`                | `border-end-end-radius: calc(infinity * 1px);`                                                              | 結束結束全圓角（圓形/膠囊）       |
+| `rounded-ee-(<custom-property>)` | `border-end-end-radius: var(<custom-property>);`                                                            | 使用自訂 CSS 變數設定結束結束圓角 |
+| `rounded-ee-[<value>]`           | `border-end-end-radius: <value>;`                                                                           | 結束結束任意自訂圓角              |
+| `rounded-es-xs`                  | `border-end-start-radius: var(--radius-xs);`                                                                | 結束起始圓角 0.125rem (2px)       |
+| `rounded-es-sm`                  | `border-end-start-radius: var(--radius-sm);`                                                                | 結束起始圓角 0.25rem (4px)        |
+| `rounded-es-md`                  | `border-end-start-radius: var(--radius-md);`                                                                | 結束起始圓角 0.375rem (6px)       |
+| `rounded-es-lg`                  | `border-end-start-radius: var(--radius-lg);`                                                                | 結束起始圓角 0.5rem (8px)         |
+| `rounded-es-xl`                  | `border-end-start-radius: var(--radius-xl);`                                                                | 結束起始圓角 0.75rem (12px)       |
+| `rounded-es-2xl`                 | `border-end-start-radius: var(--radius-2xl);`                                                               | 結束起始圓角 1rem (16px)          |
+| `rounded-es-3xl`                 | `border-end-start-radius: var(--radius-3xl);`                                                               | 結束起始圓角 1.5rem (24px)        |
+| `rounded-es-4xl`                 | `border-end-start-radius: var(--radius-4xl);`                                                               | 結束起始圓角 2rem (32px)          |
+| `rounded-es-none`                | `border-end-start-radius: 0;`                                                                               | 結束起始無圓角                    |
+| `rounded-es-full`                | `border-end-start-radius: calc(infinity * 1px);`                                                            | 結束起始全圓角（圓形/膠囊）       |
+| `rounded-es-(<custom-property>)` | `border-end-start-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定結束起始圓角 |
+| `rounded-es-[<value>]`           | `border-end-start-radius: <value>;`                                                                         | 結束起始任意自訂圓角              |
+
+```html
+<div class="rounded-[2vw]"></div>
+<div class="rounded-(--my-radius)"></div>
+```
+
+### 自訂
+```css
+@theme {
+  --radius-5xl: 3rem; 
+}
+```
+```html
+<div class="rounded-5xl"></div>
+```
+
+## border-width
+Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定元素的邊框粗細。常見用法如下：
+
+| 類別名稱                              | 對應 CSS 屬性                                        | 說明                                   |
+| ------------------------------------- | ---------------------------------------------------- | -------------------------------------- |
+| `border`                              | `border-width: 1px;`                                 | 設定所有邊框寬度為 1px（預設值）       |
+| `border-<number>`                     | `border-width: <number>px;`                          | 設定所有邊框寬度為指定像素值           |
+| `border-(length:<custom-property>)`   | `border-width: var(<custom-property>);`              | 使用自訂 CSS 變數設定所有邊框寬度      |
+| `border-[<value>]`                    | `border-width: <value>;`                             | 所有邊框寬度自訂任意值                 |
+| `border-x`                            | `border-inline-width: 1px;`                          | 設定左右（inline）邊框寬度為 1px       |
+| `border-x-<number>`                   | `border-inline-width: <number>px;`                   | 設定左右（inline）邊框寬度為指定像素值 |
+| `border-x-(length:<custom-property>)` | `border-inline-width: var(<custom-property>);`       | 使用自訂 CSS 變數設定左右邊框寬度      |
+| `border-x-[<value>]`                  | `border-inline-width: <value>;`                      | 左右邊框寬度自訂任意值                 |
+| `border-y`                            | `border-block-width: 1px;`                           | 設定上下（block）邊框寬度為 1px        |
+| `border-y-<number>`                   | `border-block-width: <number>px;`                    | 設定上下（block）邊框寬度為指定像素值  |
+| `border-y-(length:<custom-property>)` | `border-block-width: var(<custom-property>);`        | 使用自訂 CSS 變數設定上下邊框寬度      |
+| `border-y-[<value>]`                  | `border-block-width: <value>;`                       | 上下邊框寬度自訂任意值                 |
+| `border-s`                            | `border-inline-start-width: 1px;`                    | 設定起始（左/右依語系）邊框寬度為 1px  |
+| `border-s-<number>`                   | `border-inline-start-width: <number>px;`             | 設定起始邊框寬度為指定像素值           |
+| `border-s-(length:<custom-property>)` | `border-inline-start-width: var(<custom-property>);` | 使用自訂 CSS 變數設定起始邊框寬度      |
+| `border-s-[<value>]`                  | `border-inline-start-width: <value>;`                | 起始邊框寬度自訂任意值                 |
+| `border-e`                            | `border-inline-end-width: 1px;`                      | 設定結束（右/左依語系）邊框寬度為 1px  |
+| `border-e-<number>`                   | `border-inline-end-width: <number>px;`               | 設定結束邊框寬度為指定像素值           |
+| `border-e-(length:<custom-property>)` | `border-inline-end-width: var(<custom-property>);`   | 使用自訂 CSS 變數設定結束邊框寬度      |
+| `border-e-[<value>]`                  | `border-inline-end-width: <value>;`                  | 結束邊框寬度自訂任意值                 |
+| `border-t`                            | `border-top-width: 1px;`                             | 設定上邊框寬度為 1px                   |
+| `border-t-<number>`                   | `border-top-width: <number>px;`                      | 設定上邊框寬度為指定像素值             |
+| `border-t-(length:<custom-property>)` | `border-top-width: var(<custom-property>);`          | 使用自訂 CSS 變數設定上邊框寬度        |
+| `border-t-[<value>]`                  | `border-top-width: <value>;`                         | 上邊框寬度自訂任意值                   |
+| `border-r`                            | `border-right-width: 1px;`                           | 設定右邊框寬度為 1px                   |
+| `border-r-<number>`                   | `border-right-width: <number>px;`                    | 設定右邊框寬度為指定像素值             |
+| `border-r-(length:<custom-property>)` | `border-right-width: var(<custom-property>);`        | 使用自訂 CSS 變數設定右邊框寬度        |
+| `border-r-[<value>]`                  | `border-right-width: <value>;`                       | 右邊框寬度自訂任意值                   |
+| `border-b`                            | `border-bottom-width: 1px;`                          | 設定下邊框寬度為 1px                   |
+| `border-b-<number>`                   | `border-bottom-width: <number>px;`                   | 設定下邊框寬度為指定像素值             |
+| `border-b-(length:<custom-property>)` | `border-bottom-width: var(<custom-property>);`       | 使用自訂 CSS 變數設定下邊框寬度        |
+| `border-b-[<value>]`                  | `border-bottom-width: <value>;`                      | 下邊框寬度自訂任意值                   |
+| `border-l`                            | `border-left-width: 1px;`                            | 設定左邊框寬度為 1px                   |
+| `border-l-<number>`                   | `border-left-width: <number>px;`                     | 設定左邊框寬度為指定像素值             |
+| `border-l-(length:<custom-property>)` | `border-left-width: var(<custom-property>);`         | 使用自訂 CSS 變數設定左邊框寬度        |
+| `border-l-[<value>]`                  | `border-left-width: <value>;`                        | 左邊框寬度自訂任意值                   |
+
+```html
+<div class="border-[2vw] ...">
+  <!-- ... -->
+</div>
+<div class="border-(length:--my-border-width) ...">
+  <!-- ... -->
+</div>
+```
+
+
+### divide-width（分隔線寬度）
+
+Tailwind CSS 的 `divide-x` 與 `divide-y` 工具類別可快速為父元素的子元素之間添加分隔線，常用於水平或垂直排列的列表。這些類別會自動將分隔線應用於所有非最後一個子元素，並可自訂分隔線寬度。可作用於 `flex` 和 `grid` 元素。
+
+| 類別名稱                              | 對應 CSS 屬性說明                                                                                            | 說明                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| `divide-x`                            | `& > :not(:last-child) { border-inline-start-width: 0px; border-inline-end-width: 1px; }`                    | 水平分隔線，寬度 1px          |
+| `divide-x-<number>`                   | `& > :not(:last-child) { border-inline-start-width: 0px; border-inline-end-width: <number>px; }`             | 水平分隔線，自訂寬度（像素）  |
+| `divide-x-(length:<custom-property>)` | `& > :not(:last-child) { border-inline-start-width: 0px; border-inline-end-width: var(<custom-property>); }` | 水平分隔線，自訂 CSS 變數寬度 |
+| `divide-x-[<value>]`                  | `& > :not(:last-child) { border-inline-start-width: 0px; border-inline-end-width: <value>; }`                | 水平分隔線，自訂任意寬度      |
+| `divide-y`                            | `& > :not(:last-child) { border-top-width: 0px; border-bottom-width: 1px; }`                                 | 垂直分隔線，寬度 1px          |
+| `divide-y-<number>`                   | `& > :not(:last-child) { border-top-width: 0px; border-bottom-width: <number>px; }`                          | 垂直分隔線，自訂寬度（像素）  |
+| `divide-y-(length:<custom-property>)` | `& > :not(:last-child) { border-top-width: 0px; border-bottom-width: var(<custom-property>); }`              | 垂直分隔線，自訂 CSS 變數寬度 |
+| `divide-y-[<value>]`                  | `& > :not(:last-child) { border-top-width: 0px; border-bottom-width: <value>; }`                             | 垂直分隔線，自訂任意寬度      |
+| `divide-x-reverse`                    | `--tw-divide-x-reverse: 1;`                                                                                  | 水平分隔線方向反轉            |
+| `divide-y-reverse`                    | `--tw-divide-y-reverse: 1;`                                                                                  | 垂直分隔線方向反轉            |
+
+```html
+<div class="grid grid-cols-3 divide-x-4">
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+</div>
+<div class="flex flex-col-reverse divide-y-4 divide-y-reverse divide-gray-200">
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+</div>
+```
+
+
+#### 範例：水平分隔線
+
+
+
+
+## border-color
+## border-style
+## outline-width
+## outline-color
+## outline-style
+## outline-offset
