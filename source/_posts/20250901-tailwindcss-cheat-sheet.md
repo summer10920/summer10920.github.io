@@ -74,25 +74,32 @@ CSS 屬性值有兩種設定方式：
 - 當設定為數字（如 `columns-3`）時，會根據指定的數字來分割成等寬的欄位
 - 當設定為寬度值（如 `columns-md`）時，會根據指定的寬度自動計算可容納的欄數
 
-| 類別名稱                      | CSS 屬性                           | 說明                |
-| ----------------------------- | ---------------------------------- | ------------------- |
-| `columns-<number>`            | `columns: <number>;`               | 數字欄數            |
-| `columns-auto`                | `columns: auto;`                   | 自動欄數            |
-| `columns-3xs`                 | `columns: var(--container-3xs);`   | 寬度 16rem (256px)  |
-| `columns-2xs`                 | `columns: var(--container-2xs);`   | 寬度 18rem (288px)  |
-| `columns-xs`                  | `columns: var(--container-xs);`    | 寬度 20rem (320px)  |
-| `columns-sm`                  | `columns: var(--container-sm);`    | 寬度 24rem (384px)  |
-| `columns-md`                  | `columns: var(--container-md);`    | 寬度 28rem (448px)  |
-| `columns-lg`                  | `columns: var(--container-lg);`    | 寬度 32rem (512px)  |
-| `columns-xl`                  | `columns: var(--container-xl);`    | 寬度 36rem (576px)  |
-| `columns-2xl`                 | `columns: var(--container-2xl);`   | 寬度 42rem (672px)  |
-| `columns-3xl`                 | `columns: var(--container-3xl);`   | 寬度 48rem (768px)  |
-| `columns-4xl`                 | `columns: var(--container-4xl);`   | 寬度 56rem (896px)  |
-| `columns-5xl`                 | `columns: var(--container-5xl);`   | 寬度 64rem (1024px) |
-| `columns-6xl`                 | `columns: var(--container-6xl);`   | 寬度 72rem (1152px) |
-| `columns-7xl`                 | `columns: var(--container-7xl);`   | 寬度 80rem (1280px) |
-| `columns-(<custom-property>)` | `columns: var(<custom-property>);` | 自訂屬性欄數        |
-| `columns-[<value>]`           | `columns: <value>;`                | 任意值欄數          |
+| 類別名稱                      | CSS 屬性                            | 說明                                           |
+| ----------------------------- | ----------------------------------- | ---------------------------------------------- |
+| `columns-<number>`            | `columns: <number>;`                | 數字欄數                                       |
+| `columns-auto`                | `columns: auto;`                    | 自動欄數                                       |
+| `columns-<size>`              | `columns: var(--container-<size>);` | 指定寬度欄位，從 16rem(256px) 到 80rem(1280px) |
+| `columns-(<custom-property>)` | `columns: var(<custom-property>);`  | 自訂屬性欄數                                   |
+| `columns-[<value>]`           | `columns: <value>;`                 | 任意值欄數                                     |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --container-3xs: 16rem;     /* 256px */
+  --container-2xs: 18rem;     /* 288px */
+  --container-xs: 20rem;`     /* 320px */
+  --container-sm: 24rem;`     /* 384px */
+  --container-md: 28rem;`     /* 448px */
+  --container-lg: 32rem;`     /* 512px */
+  --container-xl: 36rem;`     /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;     /* 768px */
+  --container-4xl: 56rem;     /* 896px */
+  --container-5xl: 64rem;     /* 1024px */
+  --container-6xl: 72rem;     /* 1152px */
+  --container-7xl: 80rem;     /* 1280px */
+}
+```
 
 ```html
 <!-- columns-<number> -->
@@ -142,7 +149,7 @@ CSS 屬性值有兩種設定方式：
 {% note info %}
 **小技巧：**
 - 使用 `break-inside-avoid` 防止內容在欄位間斷開
-- 搭配 `gap-{size}` 控制欄位間距，提升可讀性
+- 搭配 `gap-<number>` 控制欄位間距，提升可讀性
 - 響應式設計建議：`columns-1 md:columns-2 lg:columns-3`
 - 固定寬度欄位適合圖片畫廊，數字欄位適合文字內容
 - 支援 CSS 變數：`columns-[var(--custom-columns)]`
@@ -153,14 +160,14 @@ CSS 屬性值有兩種設定方式：
 
 | 類別名稱                           | CSS 屬性                             | 說明               |
 | ---------------------------------- | ------------------------------------ | ------------------ |
-| `break-{before\|after}-auto`       | `break-{before\|after}: auto;`       | 自動斷行（預設值） |
-| `break-{before\|after}-avoid`      | `break-{before\|after}: avoid;`      | 避免斷行           |
-| `break-{before\|after}-all`        | `break-{before\|after}: all;`        | 強制斷行           |
-| `break-{before\|after}-avoid-page` | `break-{before\|after}: avoid-page;` | 避免分頁斷行       |
-| `break-{before\|after}-page`       | `break-{before\|after}: page;`       | 強制分頁斷行       |
-| `break-{before\|after}-left`       | `break-{before\|after}: left;`       | 強制左頁斷行       |
-| `break-{before\|after}-right`      | `break-{before\|after}: right;`      | 強制右頁斷行       |
-| `break-{before\|after}-column`     | `break-{before\|after}: column;`     | 強制分欄斷行       |
+| `break-<before\|after>-auto`       | `break-<before\|after>: auto;`       | 自動斷行（預設值） |
+| `break-<before\|after>-avoid`      | `break-<before\|after>: avoid;`      | 避免斷行           |
+| `break-<before\|after>-all`        | `break-<before\|after>: all;`        | 強制斷行           |
+| `break-<before\|after>-avoid-page` | `break-<before\|after>: avoid-page;` | 避免分頁斷行       |
+| `break-<before\|after>-page`       | `break-<before\|after>: page;`       | 強制分頁斷行       |
+| `break-<before\|after>-left`       | `break-<before\|after>: left;`       | 強制左頁斷行       |
+| `break-<before\|after>-right`      | `break-<before\|after>: right;`      | 強制右頁斷行       |
+| `break-<before\|after>-column`     | `break-<before\|after>: column;`     | 強制分欄斷行       |
 
 ```html
 <!-- 避免標題斷行 -->
@@ -896,21 +903,28 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 | `basis-<fraction>`          | `flex-basis: calc(<fraction> * 100%);`         | 使用分數計算基準尺寸的百分比                      |
 | `basis-full`                | `flex-basis: 100%;`                            | 基準尺寸為容器的全寬                              |
 | `basis-auto`                | `flex-basis: auto;`                            | 自動根據內容或寬高設定基準尺寸（預設值）          |
-| `basis-3xs`                 | `flex-basis: var(--container-3xs);`            | 基準尺寸為 16rem (256px)                          |
-| `basis-2xs`                 | `flex-basis: var(--container-2xs);`            | 基準尺寸為 18rem (288px)                          |
-| `basis-xs`                  | `flex-basis: var(--container-xs);`             | 基準尺寸為 20rem (320px)                          |
-| `basis-sm`                  | `flex-basis: var(--container-sm);`             | 基準尺寸為 24rem (384px)                          |
-| `basis-md`                  | `flex-basis: var(--container-md);`             | 基準尺寸為 28rem (448px)                          |
-| `basis-lg`                  | `flex-basis: var(--container-lg);`             | 基準尺寸為 32rem (512px)                          |
-| `basis-xl`                  | `flex-basis: var(--container-xl);`             | 基準尺寸為 36rem (576px)                          |
-| `basis-2xl`                 | `flex-basis: var(--container-2xl);`            | 基準尺寸為 42rem (672px)                          |
-| `basis-3xl`                 | `flex-basis: var(--container-3xl);`            | 基準尺寸為 48rem (768px)                          |
-| `basis-4xl`                 | `flex-basis: var(--container-4xl);`            | 基準尺寸為 56rem (896px)                          |
-| `basis-5xl`                 | `flex-basis: var(--container-5xl);`            | 基準尺寸為 64rem (1024px)                         |
-| `basis-6xl`                 | `flex-basis: var(--container-6xl);`            | 基準尺寸為 72rem (1152px)                         |
-| `basis-7xl`                 | `flex-basis: var(--container-7xl);`            | 基準尺寸為 80rem (1280px)                         |
+| `basis-<size>`              | `flex-basis: var(--container-<size>);`         | 基準尺寸為 16rem(256px) ~ 80rem(1280px)           |
 | `basis-(<custom-property>)` | `flex-basis: var(<custom-property>);`          | 使用 CSS 自訂屬性（變數）設定基準尺寸             |
 | `basis-[<value>]`           | `flex-basis: <value>;`                         | 自訂基準尺寸，可使用任何有效的 CSS 長度值或計算式 |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --container-3xs: 16rem;     /* 256px */
+  --container-2xs: 18rem;     /* 288px */
+  --container-xs: 20rem;`     /* 320px */
+  --container-sm: 24rem;`     /* 384px */
+  --container-md: 28rem;`     /* 448px */
+  --container-lg: 32rem;`     /* 512px */
+  --container-xl: 36rem;`     /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;     /* 768px */
+  --container-4xl: 56rem;     /* 896px */
+  --container-5xl: 64rem;     /* 1024px */
+  --container-6xl: 72rem;     /* 1152px */
+  --container-7xl: 80rem;     /* 1280px */
+}
+```
 
 ```html
 <div class="flex flex-row">
@@ -1779,38 +1793,45 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 ## width
 設定元素寬度。包含 spacing 級距、百分比、視口、內容基礎與任意值；並支援 CSS 變數。
 
-| 類別名稱                | CSS 屬性                                  | 說明                              |
-| ----------------------- | ----------------------------------------- | --------------------------------- |
-| `w-<number>`            | `width: calc(var(--spacing) * <number>);` | 以 spacing 級距寬度               |
-| `w-<fraction>`          | `width: calc(<fraction> * 100%);`         | 以分數百分比寬度（如 1/2、1/3）   |
-| `w-3xs`                 | `width: var(--container-3xs);`            | 超極小容器寬度（16rem，256px）    |
-| `w-2xs`                 | `width: var(--container-2xs);`            | 更小容器寬度（18rem，288px）      |
-| `w-xs`                  | `width: var(--container-xs);`             | 小容器寬度（20rem，320px）        |
-| `w-sm`                  | `width: var(--container-sm);`             | 小型容器寬度（24rem，384px）      |
-| `w-md`                  | `width: var(--container-md);`             | 中型容器寬度（28rem，448px）      |
-| `w-lg`                  | `width: var(--container-lg);`             | 大型容器寬度（32rem，512px）      |
-| `w-xl`                  | `width: var(--container-xl);`             | 特大容器寬度（36rem，576px）      |
-| `w-2xl`                 | `width: var(--container-2xl);`            | 2 倍特大容器寬度（42rem，672px）  |
-| `w-3xl`                 | `width: var(--container-3xl);`            | 3 倍特大容器寬度（48rem，768px）  |
-| `w-4xl`                 | `width: var(--container-4xl);`            | 4 倍特大容器寬度（56rem，896px）  |
-| `w-5xl`                 | `width: var(--container-5xl);`            | 5 倍特大容器寬度（64rem，1024px） |
-| `w-6xl`                 | `width: var(--container-6xl);`            | 6 倍特大容器寬度（72rem，1152px） |
-| `w-7xl`                 | `width: var(--container-7xl);`            | 7 倍特大容器寬度（80rem，1280px） |
-| `w-auto`                | `width: auto;`                            | 內容決定寬度                      |
-| `w-px`                  | `width: 1px;`                             | 1px 寬度                          |
-| `w-full`                | `width: 100%;`                            | 充滿容器                          |
-| `w-screen`              | `width: 100vw;`                           | 100% 視口寬                       |
-| `w-dvw`                 | `width: 100dvw;`                          | 動態視口寬（行動裝置）            |
-| `w-dvh`                 | `width: 100dvh;`                          | 動態視口高（行動裝置）            |
-| `w-lvw`                 | `width: 100lvw;`                          | 大視口寬（Large Viewport Width）  |
-| `w-lvh`                 | `width: 100lvh;`                          | 大視口高（Large Viewport Height） |
-| `w-svw`                 | `width: 100svw;`                          | 小視口寬（Small Viewport Width）  |
-| `w-svh`                 | `width: 100svh;`                          | 小視口高（Small Viewport Height） |
-| `w-min`                 | `width: min-content;`                     | 以最小內容寬度                    |
-| `w-max`                 | `width: max-content;`                     | 以最大內容寬度                    |
-| `w-fit`                 | `width: fit-content;`                     | 自適應內容寬度                    |
-| `w-(<custom-property>)` | `width: var(<custom-property>);`          | 使用 CSS 變數                     |
-| `w-[<value>]`           | `width: <value>;`                         | 任意自訂值                        |
+| 類別名稱                | CSS 屬性                                  | 說明                                           |
+| ----------------------- | ----------------------------------------- | ---------------------------------------------- |
+| `w-<number>`            | `width: calc(var(--spacing) * <number>);` | 以 spacing 級距寬度                            |
+| `w-<fraction>`          | `width: calc(<fraction> * 100%);`         | 以分數百分比寬度（如 1/2、1/3）                |
+| `w-<size>`              | `width: var(--container-<size>);`         | 指定寬度容器，從 16rem(256px) 到 80rem(1280px) |
+| `w-auto`                | `width: auto;`                            | 內容決定寬度                                   |
+| `w-px`                  | `width: 1px;`                             | 1px 寬度                                       |
+| `w-full`                | `width: 100%;`                            | 充滿容器                                       |
+| `w-screen`              | `width: 100vw;`                           | 100% 視口寬                                    |
+| `w-dvw`                 | `width: 100dvw;`                          | 動態視口寬（行動裝置）                         |
+| `w-dvh`                 | `width: 100dvh;`                          | 動態視口高（行動裝置）                         |
+| `w-lvw`                 | `width: 100lvw;`                          | 大視口寬（Large Viewport Width）               |
+| `w-lvh`                 | `width: 100lvh;`                          | 大視口高（Large Viewport Height）              |
+| `w-svw`                 | `width: 100svw;`                          | 小視口寬（Small Viewport Width）               |
+| `w-svh`                 | `width: 100svh;`                          | 小視口高（Small Viewport Height）              |
+| `w-min`                 | `width: min-content;`                     | 以最小內容寬度                                 |
+| `w-max`                 | `width: max-content;`                     | 以最大內容寬度                                 |
+| `w-fit`                 | `width: fit-content;`                     | 自適應內容寬度                                 |
+| `w-(<custom-property>)` | `width: var(<custom-property>);`          | 使用 CSS 變數                                  |
+| `w-[<value>]`           | `width: <value>;`                         | 任意自訂值                                     |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --container-3xs: 16rem;     /* 256px */
+  --container-2xs: 18rem;     /* 288px */
+  --container-xs: 20rem;`     /* 320px */
+  --container-sm: 24rem;`     /* 384px */
+  --container-md: 28rem;`     /* 448px */
+  --container-lg: 32rem;`     /* 512px */
+  --container-xl: 36rem;`     /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;     /* 768px */
+  --container-4xl: 56rem;     /* 896px */
+  --container-5xl: 64rem;     /* 1024px */
+  --container-6xl: 72rem;     /* 1152px */
+  --container-7xl: 80rem;     /* 1280px */
+}
+```
 
 ```html
 <div class="w-full md:w-[720px] lg:w-(--content-width)">...</div>
@@ -1846,80 +1867,90 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 ## min-width
 限制元素最小寬度，避免內容擠壓變形。
 
-| 類別名稱                    | CSS 屬性                                      | 說明                            |
-| --------------------------- | --------------------------------------------- | ------------------------------- |
-| `min-w-<number>`            | `min-width: calc(var(--spacing) * <number>);` | spacing 級距                    |
-| `min-w-<fraction>`          | `min-width: calc(<fraction> * 100%);`         | 分數百分比                      |
-| `min-w-3xs`                 | `min-width: var(--container-3xs);`            | 超小容器寬（16rem，256px）      |
-| `min-w-2xs`                 | `min-width: var(--container-2xs);`            | 更小容器寬（18rem，288px）      |
-| `min-w-xs`                  | `min-width: var(--container-xs);`             | 極小容器寬（20rem，320px）      |
-| `min-w-sm`                  | `min-width: var(--container-sm);`             | 小容器寬（24rem，384px）        |
-| `min-w-md`                  | `min-width: var(--container-md);`             | 中容器寬（28rem，448px）        |
-| `min-w-lg`                  | `min-width: var(--container-lg);`             | 大容器寬（32rem，512px）        |
-| `min-w-xl`                  | `min-width: var(--container-xl);`             | 特大容器寬（36rem，576px）      |
-| `min-w-2xl`                 | `min-width: var(--container-2xl);`            | 2 倍特大容器寬（42rem，672px）  |
-| `min-w-3xl`                 | `min-width: var(--container-3xl);`            | 3 倍特大容器寬（48rem，768px）  |
-| `min-w-4xl`                 | `min-width: var(--container-4xl);`            | 4 倍特大容器寬（56rem，896px）  |
-| `min-w-5xl`                 | `min-width: var(--container-5xl);`            | 5 倍特大容器寬（64rem，1024px） |
-| `min-w-6xl`                 | `min-width: var(--container-6xl);`            | 6 倍特大容器寬（72rem，1152px） |
-| `min-w-7xl`                 | `min-width: var(--container-7xl);`            | 7 倍特大容器寬（80rem，1280px） |
-| `min-w-auto`                | `min-width: auto;`                            | 自動寬度                        |
-| `min-w-px`                  | `min-width: 1px;`                             | 1px                             |
-| `min-w-0`                   | `min-width: 0;`                               | 允許壓縮                        |
-| `min-w-full`                | `min-width: 100%;`                            | 至少容器寬                      |
-| `min-w-screen`              | `min-width: 100vw;`                           | 至少視口寬                      |
-| `min-w-dvw`                 | `min-width: 100dvw;`                          | 動態視口寬（行動裝置）          |
-| `min-w-dvh`                 | `min-width: 100dvh;`                          | 動態視口高（行動裝置）          |
-| `min-w-lvw`                 | `min-width: 100lvw;`                          | 大視口寬                        |
-| `min-w-lvh`                 | `min-width: 100lvh;`                          | 大視口高                        |
-| `min-w-svw`                 | `min-width: 100svw;`                          | 小視口寬                        |
-| `min-w-svh`                 | `min-width: 100svh;`                          | 小視口高                        |
-| `min-w-min`                 | `min-width: min-content;`                     | 最小內容                        |
-| `min-w-max`                 | `min-width: max-content;`                     | 最大內容                        |
-| `min-w-fit`                 | `min-width: fit-content;`                     | 自適應內容                      |
-| `min-w-(<custom-property>)` | `min-width: var(<custom-property>);`          | CSS 變數                        |
-| `min-w-[<value>]`           | `min-width: <value>;`                         | 任意值                          |
+| 類別名稱                    | CSS 屬性                                      | 說明                                      |
+| --------------------------- | --------------------------------------------- | ----------------------------------------- |
+| `min-w-<number>`            | `min-width: calc(var(--spacing) * <number>);` | 以 spacing 級距設定最小寬度               |
+| `min-w-<fraction>`          | `min-width: calc(<fraction> * 100%);`         | 以分數百分比設定最小寬度                  |
+| `min-w-<size>`              | `min-width: var(--container-<size>);`         | 以預設容器寬度設定最小寬度（16rem~80rem） |
+| `min-w-auto`                | `min-width: auto;`                            | 由瀏覽器自動決定最小寬度                  |
+| `min-w-px`                  | `min-width: 1px;`                             | 最小寬度為 1px                            |
+| `min-w-0`                   | `min-width: 0;`                               | 允許內容壓縮至 0 寬度                     |
+| `min-w-full`                | `min-width: 100%;`                            | 最小寬度為父容器寬度                      |
+| `min-w-screen`              | `min-width: 100vw;`                           | 最小寬度為視口寬度                        |
+| `min-w-dvw`                 | `min-width: 100dvw;`                          | 最小寬度為動態視口寬（行動裝置適用）      |
+| `min-w-dvh`                 | `min-width: 100dvh;`                          | 最小寬度為動態視口高（較少用於寬度）      |
+| `min-w-lvw`                 | `min-width: 100lvw;`                          | 最小寬度為大視口寬                        |
+| `min-w-lvh`                 | `min-width: 100lvh;`                          | 最小寬度為大視口高（較少用於寬度）        |
+| `min-w-svw`                 | `min-width: 100svw;`                          | 最小寬度為小視口寬                        |
+| `min-w-svh`                 | `min-width: 100svh;`                          | 最小寬度為小視口高（較少用於寬度）        |
+| `min-w-min`                 | `min-width: min-content;`                     | 最小寬度為內容最小尺寸                    |
+| `min-w-max`                 | `min-width: max-content;`                     | 最小寬度為內容最大尺寸                    |
+| `min-w-fit`                 | `min-width: fit-content;`                     | 最小寬度自適應內容                        |
+| `min-w-(<custom-property>)` | `min-width: var(<custom-property>);`          | 以自訂 CSS 變數設定最小寬度               |
+| `min-w-[<value>]`           | `min-width: <value>;`                         | 以任意自訂值設定最小寬度                  |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --container-3xs: 16rem;     /* 256px */
+  --container-2xs: 18rem;     /* 288px */
+  --container-xs: 20rem;`     /* 320px */
+  --container-sm: 24rem;`     /* 384px */
+  --container-md: 28rem;`     /* 448px */
+  --container-lg: 32rem;`     /* 512px */
+  --container-xl: 36rem;`     /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;     /* 768px */
+  --container-4xl: 56rem;     /* 896px */
+  --container-5xl: 64rem;     /* 1024px */
+  --container-6xl: 72rem;     /* 1152px */
+  --container-7xl: 80rem;     /* 1280px */
+}
+```
 
 ## max-width
 限制元素最大寬度，常用於排版容器、段落內容寬。
 
-| 類別名稱                      | CSS 屬性                                         | 說明                                 |
-| ----------------------------- | ------------------------------------------------ | ------------------------------------ |
-| 類別名稱                      | CSS 屬性                                         | 說明                                 |
-| ----------------------------- | ------------------------------------------------ | ------------------------------------ |
-| `max-w-<number>`              | `max-width: calc(var(--spacing) * <number>);`    | spacing 級距                         |
-| `max-w-<fraction>`            | `max-width: calc(<fraction> * 100%);`            | 分數百分比                           |
-| `max-w-3xs`                   | `max-width: var(--container-3xs);`               | 超小容器寬（16rem，256px）           |
-| `max-w-2xs`                   | `max-width: var(--container-2xs);`               | 更小容器寬（18rem，288px）           |
-| `max-w-xs`                    | `max-width: var(--container-xs);`                | 極小容器寬（20rem，320px）           |
-| `max-w-sm`                    | `max-width: var(--container-sm);`                | 小容器寬（24rem，384px）             |
-| `max-w-md`                    | `max-width: var(--container-md);`                | 中容器寬（28rem，448px）             |
-| `max-w-lg`                    | `max-width: var(--container-lg);`                | 大容器寬（32rem，512px）             |
-| `max-w-xl`                    | `max-width: var(--container-xl);`                | 特大容器寬（36rem，576px）           |
-| `max-w-2xl`                   | `max-width: var(--container-2xl);`               | 2 倍特大容器寬（42rem，672px）       |
-| `max-w-3xl`                   | `max-width: var(--container-3xl);`               | 3 倍特大容器寬（48rem，768px）       |
-| `max-w-4xl`                   | `max-width: var(--container-4xl);`               | 4 倍特大容器寬（56rem，896px）       |
-| `max-w-5xl`                   | `max-width: var(--container-5xl);`               | 5 倍特大容器寬（64rem，1024px）      |
-| `max-w-6xl`                   | `max-width: var(--container-6xl);`               | 6 倍特大容器寬（72rem，1152px）      |
-| `max-w-7xl`                   | `max-width: var(--container-7xl);`               | 7 倍特大容器寬（80rem，1280px）      |
-| `max-w-none`                  | `max-width: none;`                               | 不限制                               |
-| `max-w-px`                    | `max-width: 1px;`                                | 1px                                  |
-| `max-w-full`                  | `max-width: 100%;`                               | 不超出容器                           |
-| `max-w-dvw`                   | `max-width: 100dvw;`                             | 動態視口寬（行動裝置）               |
-| `max-w-dvh`                   | `max-width: 100dvh;`                             | 動態視口高（行動裝置）               |
-| `max-w-lvw`                   | `max-width: 100lvw;`                             | 大視口寬                             |
-| `max-w-lvh`                   | `max-width: 100lvh;`                             | 大視口高                             |
-| `max-w-svw`                   | `max-width: 100svw;`                             | 小視口寬                             |
-| `max-w-svh`                   | `max-width: 100svh;`                             | 小視口高                             |
-| `max-w-screen`                | `max-width: 100vw;`                              | 不超出視口寬                         |
-| `max-w-min`                   | `max-width: min-content;`                        | 最小內容寬度                         |
-| `max-w-max`                   | `max-width: max-content;`                        | 最大內容寬度                         |
-| `max-w-fit`                   | `max-width: fit-content;`                        | 自適應內容寬度                       |
-| `max-w-prose`                 | `max-width: var(--container-prose);`             | 文章最佳閱讀寬                       |
-| `max-w-<container>`           | `max-width: var(--container-<name>);`            | 依主題容器尺寸（如 `md`、`lg`）      |
-| `container`                   | 根據螢幕寬度設定最大寬度，並預設為寬度 100%      | 響應式容器寬度                       |
-| `max-w-(<custom-property>)`   | `max-width: var(<custom-property>);`             | CSS 變數                             |
-| `max-w-[<value>]`             | `max-width: <value>;`                            | 任意值                               |
+| 類別名稱                    | CSS 屬性                                                                                                                                                                                                                                                                      | 說明                                                        |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `max-w-<number>`            | `max-width: calc(var(--spacing) * <number>);`                                                                                                                                                                                                                                 | 以 spacing 級距設定最大寬度                                 |
+| `max-w-<fraction>`          | `max-width: calc(<fraction> * 100%);`                                                                                                                                                                                                                                         | 以分數百分比設定最大寬度（如 1/2、1/3 等）                  |
+| `max-w-<size>`              | `max-width: var(--container-<size>);`                                                                                                                                                                                                                                         | 以預設容器寬度設定最大寬度（16rem~80rem）                   |
+| `max-w-none`                | `max-width: none;`                                                                                                                                                                                                                                                            | 不限制最大寬度                                              |
+| `max-w-px`                  | `max-width: 1px;`                                                                                                                                                                                                                                                             | 最大寬度為 1px                                              |
+| `max-w-full`                | `max-width: 100%;`                                                                                                                                                                                                                                                            | 最大寬度為父容器寬度                                        |
+| `max-w-dvw`                 | `max-width: 100dvw;`                                                                                                                                                                                                                                                          | 最大寬度為動態視口寬（支援行動裝置瀏覽器 UI 變化）          |
+| `max-w-dvh`                 | `max-width: 100dvh;`                                                                                                                                                                                                                                                          | 最大寬度為動態視口高（較少用於寬度，通常用於高度）          |
+| `max-w-lvw`                 | `max-width: 100lvw;`                                                                                                                                                                                                                                                          | 最大寬度為大視口寬（large viewport width）                  |
+| `max-w-lvh`                 | `max-width: 100lvh;`                                                                                                                                                                                                                                                          | 最大寬度為大視口高（large viewport height，較少用於寬度）   |
+| `max-w-svw`                 | `max-width: 100svw;`                                                                                                                                                                                                                                                          | 最大寬度為小視口寬（small viewport width）                  |
+| `max-w-svh`                 | `max-width: 100svh;`                                                                                                                                                                                                                                                          | 最大寬度為小視口高（small viewport height，較少用於寬度）   |
+| `max-w-screen`              | `max-width: 100vw;`                                                                                                                                                                                                                                                           | 最大寬度為視口寬度                                          |
+| `max-w-min`                 | `max-width: min-content;`                                                                                                                                                                                                                                                     | 最大寬度為內容最小尺寸（依內容自動縮小）                    |
+| `max-w-max`                 | `max-width: max-content;`                                                                                                                                                                                                                                                     | 最大寬度為內容最大尺寸（依內容自動放大）                    |
+| `max-w-fit`                 | `max-width: fit-content;`                                                                                                                                                                                                                                                     | 最大寬度自適應內容                                          |
+| `container`                 | `width: 100%;`<br>`@media (width >= 40rem) { max-width: 40rem; }`<br>`@media (width >= 48rem) { max-width: 48rem; }`<br>`@media (width >= 64rem) { max-width: 64rem; }`<br>`@media (width >= 80rem) { max-width: 80rem; }`<br>`@media (width >= 96rem) { max-width: 96rem; }` | 響應式容器，根據螢幕斷點自動調整最大寬度，並預設為寬度 100% |
+| `max-w-(<custom-property>)` | `max-width: var(<custom-property>);`                                                                                                                                                                                                                                          | 以自訂 CSS 變數設定最大寬度                                 |
+| `max-w-[<value>]`           | `max-width: <value>;`                                                                                                                                                                                                                                                         | 以任意自訂值設定最大寬度                                    |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --container-3xs: 16rem;     /* 256px */
+  --container-2xs: 18rem;     /* 288px */
+  --container-xs: 20rem;`     /* 320px */
+  --container-sm: 24rem;`     /* 384px */
+  --container-md: 28rem;`     /* 448px */
+  --container-lg: 32rem;`     /* 512px */
+  --container-xl: 36rem;`     /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;     /* 768px */
+  --container-4xl: 56rem;     /* 896px */
+  --container-5xl: 64rem;     /* 1024px */
+  --container-6xl: 72rem;     /* 1152px */
+  --container-7xl: 80rem;     /* 1280px */
+}
+```
 
 ```html
 <div class="max-w-[220px]"></div>
@@ -1929,29 +1960,6 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
 {% note info %}
 **小技巧：** 以 `mx-auto + max-w-*` 形成常見的置中版心；可搭配 `px-*` 提供內邊距。
 {% endnote %}
-
-### 使用 container
-`container` 是 Tailwind CSS 中用來建立響應式版心（container）的工具類別。當你在元素上加上 `container` 類別時，該元素會自動根據螢幕寬度設定最大寬度，並預設為寬度 100%。這讓內容能在不同裝置上自動置中且保持適當的閱讀寬度。
-
-**主要特點：**
-- 會根據預設斷點（如 `sm`、`md`、`lg`、`xl`、`2xl`）自動調整最大寬度。
-- 通常搭配 `mx-auto` 讓容器水平置中。
-- 可與 `px-*` 內邊距類別搭配，讓內容不緊貼邊緣。
-- 支援自訂斷點與寬度，能依專案需求調整。
-
-```css
-.container{
-  width: 100%;
-  @media (width >= 40rem) { max-width: 40rem; }
-  @media (width >= 48rem) { max-width: 48rem; }
-  @media (width >= 64rem) { max-width: 64rem; }
-  @media (width >= 80rem) { max-width: 80rem; }
-  @media (width >= 96rem) { max-width: 96rem; }
-}
-```
-```html
-<div class="container"></div>
-```
 
 ## height
 設定元素高度。含 spacing 級距、百分比、視口與內容基礎類別。
@@ -2136,23 +2144,43 @@ font-variation-settings 則用於控制可變字體的參數，包括字重（"w
 ## font-size
 設定字體大小，支援 line-height 修飾符與任意值。
 
-| 類別名稱                          | CSS 屬性與對應值                                                                | 說明                                           |
-| --------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `text-xs`                         | `font-size: var(--text-xs);`<br>`line-height: var(--text-xs--line-height);`     | 字級 0.75rem（12px）、行高 calc(1 / 0.75)      |
-| `text-sm`                         | `font-size: var(--text-sm);`<br>`line-height: var(--text-sm--line-height);`     | 字級 0.875rem（14px）、行高 calc(1.25 / 0.875) |
-| `text-base`                       | `font-size: var(--text-base);`<br>`line-height: var(--text-base--line-height);` | 字級 1rem（16px）、行高 calc(1.5 / 1)          |
-| `text-lg`                         | `font-size: var(--text-lg);`<br>`line-height: var(--text-lg--line-height);`     | 字級 1.125rem（18px）、行高 calc(1.75 / 1.125) |
-| `text-xl`                         | `font-size: var(--text-xl);`<br>`line-height: var(--text-xl--line-height);`     | 字級 1.25rem（20px）、行高 calc(1.75 / 1.25)   |
-| `text-2xl`                        | `font-size: var(--text-2xl);`<br>`line-height: var(--text-2xl--line-height);`   | 字級 1.5rem（24px）、行高 calc(2 / 1.5)        |
-| `text-3xl`                        | `font-size: var(--text-3xl);`<br>`line-height: var(--text-3xl--line-height);`   | 字級 1.875rem（30px）、行高 calc(2.25 / 1.875) |
-| `text-4xl`                        | `font-size: var(--text-4xl);`<br>`line-height: var(--text-4xl--line-height);`   | 字級 2.25rem（36px）、行高 calc(2.5 / 2.25)    |
-| `text-5xl`                        | `font-size: var(--text-5xl);`<br>`line-height: var(--text-5xl--line-height);`   | 字級 3rem（48px）、行高 1                      |
-| `text-6xl`                        | `font-size: var(--text-6xl);`<br>`line-height: var(--text-6xl--line-height);`   | 字級 3.75rem（60px）、行高 1                   |
-| `text-7xl`                        | `font-size: var(--text-7xl);`<br>`line-height: var(--text-7xl--line-height);`   | 字級 4.5rem（72px）、行高 1                    |
-| `text-8xl`                        | `font-size: var(--text-8xl);`<br>`line-height: var(--text-8xl--line-height);`   | 字級 6rem（96px）、行高 1                      |
-| `text-9xl`                        | `font-size: var(--text-9xl);`<br>`line-height: var(--text-9xl--line-height);`   | 字級 8rem（128px）、行高 1                     |
-| `text-(length:<custom-property>)` | `font-size: var(<custom-property>);`                                            | 使用自訂 CSS 變數長度                          |
-| `text-[<value>]`                  | `font-size: <value>;`                                                           | 任意值                                         |
+| 類別名稱                          | CSS 屬性與對應值                                                                    | 說明                  |
+| --------------------------------- | ----------------------------------------------------------------------------------- | --------------------- |
+| `text-<size>`                     | `font-size: var(--text-<size>);`<br>`line-height: var(--text-<size>--line-height);` | 設定字體大小          |
+| `text-(length:<custom-property>)` | `font-size: var(<custom-property>);`                                                | 使用自訂 CSS 變數長度 |
+| `text-[<value>]`                  | `font-size: <value>;`                                                               | 任意值                |
+
+```css
+:root {
+  /* 定義 Tailwind CSS 字級與行高的 CSS 變數 */
+  --text-xs: .75rem;
+  --text-xs--line-height: calc(1 / .75);
+  --text-sm: .875rem;
+  --text-sm--line-height: calc(1.25 / .875);
+  --text-base: 1rem;
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 1.125rem;
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem;
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: calc(2.25 / 1.875);
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: calc(2.5 / 2.25);
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1;
+  --text-8xl: 6rem;
+  --text-8xl--line-height: 1;
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1;
+}
+```
 
 ```html
 <p class="text-[14px]"></p>
@@ -2339,12 +2367,12 @@ font-variant-numeric（數字字型變體）用於控制數字在字體中的顯
 ## line-clamp
 以多行截斷顯示省略號。
 
-| 類別名稱                         | CSS 屬性                                                                                                                    | 說明                      |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| `line-clamp-<number>`            | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <數字>;`          | 多行截斷，顯示省略號      |
-| `line-clamp-none`                | `overflow: visible;`<br>`display: block;`<br>`-webkit-box-orient: horizontal;`<br>`-webkit-line-clamp: unset;`              | 取消截斷，顯示完整內容    |
-| `line-clamp-(<custom-property>)` | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: var(<自訂變數>);` | 使用 CSS 變數自訂截斷行數 |
-| `line-clamp-[<value>]`           | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <值>;`            | 任意自訂行數截斷          |
+| 類別名稱                         | CSS 屬性                                                                                                                           | 說明                      |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `line-clamp-<number>`            | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <number>;`               | 多行截斷，顯示省略號      |
+| `line-clamp-none`                | `overflow: visible;`<br>`display: block;`<br>`-webkit-box-orient: horizontal;`<br>`-webkit-line-clamp: unset;`                     | 取消截斷，顯示完整內容    |
+| `line-clamp-(<custom-property>)` | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: var(<custom-property>);` | 使用 CSS 變數自訂截斷行數 |
+| `line-clamp-[<value>]`           | `overflow: hidden;`<br>`display: -webkit-box;`<br>`-webkit-box-orient: vertical;`<br>`-webkit-line-clamp: <value>;`                | 任意自訂行數截斷          |
 
 ```html
 <p class="line-clamp-[calc(var(--characters)/100)]"></p>
@@ -2363,6 +2391,27 @@ font-variant-numeric（數字字型變體）用於控制數字在字體中的顯
 | `leading-<number>`                | `line-height: calc(var(--spacing) * <number>);`                         | 以 spacing 變數倍數設定行高     |
 | `leading-(<custom-property>)`     | `line-height: var(<custom-property>);`                                  | 使用 CSS 變數自訂行高           |
 | `leading-[<value>]`               | `line-height: <value>;`                                                 | 任意自訂行高                    |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --spacing: .25rem;
+
+  --text-xs: .75rem;
+  --text-sm: .875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  --text-9xl: 8rem;
+}
+```
 
 ```html
 <p class="text-base/6"></p>
@@ -2444,30 +2493,21 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 ## color
 對應文字顏色（支援透明度後綴`/50`百分比值）。
 
-| 類別名稱                   | CSS 屬性                                | 說明                                         |
-| -------------------------- | --------------------------------------- | -------------------------------------------- |
-| `text-inherit`             | `color: inherit;`                       | 繼承父元素文字顏色                           |
-| `text-current`             | `color: currentColor;`                  | 使用當前元素的 currentColor                  |
-| `text-transparent`         | `color: transparent;`                   | 文字顏色透明                                 |
-| `text-black`               | `color: var(--color-black);`            | 黑色文字（#000）                             |
-| `text-white`               | `color: var(--color-white);`            | 白色文字（#fff）                             |
-| `text-{COLOR_NAME}-50`     | `color: var(--color-{COLOR_NAME}-50);`  | 指定色 step 50                               |
-| `text-{COLOR_NAME}-100`    | `color: var(--color-{COLOR_NAME}-100);` | 指定色 step 100                              |
-| `text-{COLOR_NAME}-200`    | `color: var(--color-{COLOR_NAME}-200);` | 指定色 step 200                              |
-| `text-{COLOR_NAME}-300`    | `color: var(--color-{COLOR_NAME}-300);` | 指定色 step 300                              |
-| `text-{COLOR_NAME}-400`    | `color: var(--color-{COLOR_NAME}-400);` | 指定色 step 400                              |
-| `text-{COLOR_NAME}-500`    | `color: var(--color-{COLOR_NAME}-500);` | 指定色 step 500                              |
-| `text-{COLOR_NAME}-600`    | `color: var(--color-{COLOR_NAME}-600);` | 指定色 step 600                              |
-| `text-{COLOR_NAME}-700`    | `color: var(--color-{COLOR_NAME}-700);` | 指定色 step 700                              |
-| `text-{COLOR_NAME}-800`    | `color: var(--color-{COLOR_NAME}-800);` | 指定色 step 800                              |
-| `text-{COLOR_NAME}-900`    | `color: var(--color-{COLOR_NAME}-900);` | 指定色 step 900                              |
-| `text-{COLOR_NAME}-950`    | `color: var(--color-{COLOR_NAME}-950);` | 指定色 step 950                              |
-| `text-(<custom-property>)` | `color: var(<custom-property>);`        | 使用 CSS 變數自訂文字顏色                    |
-| `text-[<value>]`           | `color: <value>;`                       | 任意自訂文字顏色（如 #123456、rgba(...) 等） |
+| 類別名稱                   | CSS 屬性                              | 說明                        |
+| -------------------------- | ------------------------------------- | --------------------------- |
+| `text-inherit`             | `color: inherit;`                     | 繼承父元素文字顏色          |
+| `text-current`             | `color: currentColor;`                | 使用當前元素的 currentColor |
+| `text-transparent`         | `color: transparent;`                 | 文字顏色透明                |
+| `text-black`               | `color: var(--color-black);`          | 黑色文字（#000）            |
+| `text-white`               | `color: var(--color-white);`          | 白色文字（#fff）            |
+| `text-<color>-<step>`      | `color: var(--color-<color>-<step>);` | 指定色 step                 |
+| `text-(<custom-property>)` | `color: var(<custom-property>);`      | 使用 CSS 變數自訂文字顏色   |
+| `text-[<value>]`           | `color: <value>;`                     | 任意自訂文字顏色            |
 
 {% note info %}
-**COLOR_NAME 說明：**
-COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
 
 ```css
 :root {
@@ -2496,8 +2536,6 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
   --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
 }
 ```
-
-舉例：`text-blue-500`、`text-rose-200`、`text-slate-900` 等。
 {% endnote %}
 
 ```html
@@ -2530,26 +2568,20 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
 ## text-decoration-color
 用於設定文字裝飾線的顏色。你可以搭配 Tailwind 的顏色類別（如 `decoration-blue-500`、`decoration-rose-400` 等）來快速變更底線、上劃線或刪除線的顏色，讓裝飾線與主文字顏色區分。
 
-| 類別名稱                      | CSS 屬性                                                | 說明                        |
-| ----------------------------- | ------------------------------------------------------- | --------------------------- |
-| `decoration-inherit`          | `text-decoration-color: inherit;`                       | 繼承父元素的文字裝飾線顏色  |
-| `decoration-current`          | `text-decoration-color: currentColor;`                  | 使用當前元素的文字顏色      |
-| `decoration-transparent`      | `text-decoration-color: transparent;`                   | 裝飾線顏色透明              |
-| `decoration-black`            | `text-decoration-color: var(--color-black);`            | 黑色裝飾線（#000）          |
-| `decoration-white`            | `text-decoration-color: var(--color-white);`            | 白色裝飾線（#fff）          |
-| `decoration-{COLOR_NAME}-50`  | `text-decoration-color: var(--color-{COLOR_NAME}-50);`  | 指定顏色 step 50 的裝飾線   |
-| `decoration-{COLOR_NAME}-100` | `text-decoration-color: var(--color-{COLOR_NAME}-100);` | 指定顏色 step 100 的裝飾線  |
-| `decoration-{COLOR_NAME}-200` | `text-decoration-color: var(--color-{COLOR_NAME}-200);` | 指定顏色 step 200 的裝飾線  |
-| `decoration-{COLOR_NAME}-300` | `text-decoration-color: var(--color-{COLOR_NAME}-300);` | 指定顏色 step 300 的裝飾線  |
-| `decoration-{COLOR_NAME}-400` | `text-decoration-color: var(--color-{COLOR_NAME}-400);` | 指定顏色 step 400 的裝飾線  |
-| `decoration-{COLOR_NAME}-500` | `text-decoration-color: var(--color-{COLOR_NAME}-500);` | 指定顏色 step 500 的裝飾線  |
-| `decoration-{COLOR_NAME}-600` | `text-decoration-color: var(--color-{COLOR_NAME}-600);` | 指定顏色 step 600 的裝飾線  |
-| `decoration-{COLOR_NAME}-700` | `text-decoration-color: var(--color-{COLOR_NAME}-700);` | 指定顏色 step 700 的裝飾線  |
-| `decoration-{COLOR_NAME}-800` | `text-decoration-color: var(--color-{COLOR_NAME}-800);` | 指定顏色 step 800 的裝飾線  |
-| `decoration-{COLOR_NAME}-900` | `text-decoration-color: var(--color-{COLOR_NAME}-900);` | 指定顏色 step 900 的裝飾線  |
-| `decoration-{COLOR_NAME}-950` | `text-decoration-color: var(--color-{COLOR_NAME}-950);` | 指定顏色 step 950 的裝飾線  |
-| `decoration-(--自訂變數）`    | `text-decoration-color: var(--自訂變數）;`              | 使用 CSS 變數自訂裝飾線顏色 |
-| `decoration-[<value>]`        | `text-decoration-color: <value>;`                       | 任意自訂裝飾線顏色          |
+| 類別名稱                    | CSS 屬性                                              | 說明                         |
+| --------------------------- | ----------------------------------------------------- | ---------------------------- |
+| `decoration-inherit`        | `text-decoration-color: inherit;`                     | 繼承父元素的文字裝飾線顏色   |
+| `decoration-current`        | `text-decoration-color: currentColor;`                | 使用當前元素的文字顏色       |
+| `decoration-transparent`    | `text-decoration-color: transparent;`                 | 裝飾線顏色透明               |
+| `decoration-black`          | `text-decoration-color: var(--color-black);`          | 黑色裝飾線（#000）           |
+| `decoration-white`          | `text-decoration-color: var(--color-white);`          | 白色裝飾線（#fff）           |
+| `decoration-<color>-<step>` | `text-decoration-color: var(--color-<color>-<step>);` | 指定顏色 <step> 階段的裝飾線 |
+| `decoration-(--自訂變數）`  | `text-decoration-color: var(--自訂變數）;`            | 使用 CSS 變數自訂裝飾線顏色  |
+| `decoration-[<value>]`      | `text-decoration-color: <value>;`                     | 任意自訂裝飾線顏色           |
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
 
 ```css
 :root {
@@ -2578,6 +2610,7 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
   --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
 }
 ```
+{% endnote %}
 
 可以使用透明度（如 `decoration-blue-500/50`）或自訂顏色（如 `decoration-[#ff00ff]`）來調整裝飾線顏色。
 
@@ -2801,26 +2834,21 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
 ## background-color
 背景顏色相關類別用於快速設定元素的背景顏色，支援 Tailwind 預設色階、透明度、CSS 變數與自訂顏色。常用於區塊、按鈕、卡片等元件的視覺強調。
 
-| 類別名稱                 | CSS 屬性                                           | 說明                                       |
-| ------------------------ | -------------------------------------------------- | ------------------------------------------ |
-| `bg-inherit`             | `background-color: inherit;`                       | 繼承父元素背景色                           |
-| `bg-current`             | `background-color: currentColor;`                  | 使用當前文字顏色作為背景色                 |
-| `bg-transparent`         | `background-color: transparent;`                   | 背景透明                                   |
-| `bg-black`               | `background-color: var(--color-black);`            | 黑色背景（#000）                           |
-| `bg-white`               | `background-color: var(--color-white);`            | 白色背景（#fff）                           |
-| `bg-{COLOR_NAME}-50`     | `background-color: var(--color-{COLOR_NAME}-50);`  | 指定色 step 50                             |
-| `bg-{COLOR_NAME}-100`    | `background-color: var(--color-{COLOR_NAME}-100);` | 指定色 step 100                            |
-| `bg-{COLOR_NAME}-200`    | `background-color: var(--color-{COLOR_NAME}-200);` | 指定色 step 200                            |
-| `bg-{COLOR_NAME}-300`    | `background-color: var(--color-{COLOR_NAME}-300);` | 指定色 step 300                            |
-| `bg-{COLOR_NAME}-400`    | `background-color: var(--color-{COLOR_NAME}-400);` | 指定色 step 400                            |
-| `bg-{COLOR_NAME}-500`    | `background-color: var(--color-{COLOR_NAME}-500);` | 指定色 step 500                            |
-| `bg-{COLOR_NAME}-600`    | `background-color: var(--color-{COLOR_NAME}-600);` | 指定色 step 600                            |
-| `bg-{COLOR_NAME}-700`    | `background-color: var(--color-{COLOR_NAME}-700);` | 指定色 step 700                            |
-| `bg-{COLOR_NAME}-800`    | `background-color: var(--color-{COLOR_NAME}-800);` | 指定色 step 800                            |
-| `bg-{COLOR_NAME}-900`    | `background-color: var(--color-{COLOR_NAME}-900);` | 指定色 step 900                            |
-| `bg-{COLOR_NAME}-950`    | `background-color: var(--color-{COLOR_NAME}-950);` | 指定色 step 950                            |
-| `bg-(<custom-property>)` | `background-color: var(<custom-property>);`        | 使用 CSS 變數自訂背景色                    |
-| `bg-[<value>]`           | `background-color: <value>;`                       | 任意自訂背景色（如 #123456、rgba(...) 等） |
+| 類別名稱                 | CSS 屬性                                         | 說明                       |
+| ------------------------ | ------------------------------------------------ | -------------------------- |
+| `bg-inherit`             | `background-color: inherit;`                     | 繼承父元素背景色           |
+| `bg-current`             | `background-color: currentColor;`                | 使用當前文字顏色作為背景色 |
+| `bg-transparent`         | `background-color: transparent;`                 | 背景透明                   |
+| `bg-black`               | `background-color: var(--color-black);`          | 黑色背景（#000）           |
+| `bg-white`               | `background-color: var(--color-white);`          | 白色背景（#fff）           |
+| `bg-<color>-<step>`      | `background-color: var(--color-<color>-<step>);` | 指定色 step                |
+| `bg-(<custom-property>)` | `background-color: var(<custom-property>);`      | 使用 CSS 變數自訂背景色    |
+| `bg-[<value>]`           | `background-color: <value>;`                     | 任意自訂背景色（           |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
 
 ```css
 :root {
@@ -2849,6 +2877,7 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
   --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
 }
 ```
+{% endnote %}
 
 可在顏色類別後加上 `/50`（0~100）調整透明度，例如 `bg-blue-500/50` 代表 50% 透明度。
 
@@ -3026,192 +3055,99 @@ COLOR_NAME 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色�
 - <kbd>border-start-start-radius</kbd>：邏輯屬性，會根據語言方向自動對應左上或右上角（LTR=左上，RTL=右上）。
 {% endnote %}
 
-
 | 類別名稱                      | CSS 屬性值                               | 說明                  |
 | ----------------------------- | ---------------------------------------- | --------------------- |
 | `rounded-none`                | `border-radius: 0;`                      | 無圓角                |
-| `rounded-xs`                  | `border-radius: var(--radius-xs);`       | 圓角0.125rem (2px)    |
-| `rounded-sm`                  | `border-radius: var(--radius-sm);`       | 圓角0.25rem (4px)     |
-| `rounded-md`                  | `border-radius: var(--radius-md);`       | 圓角0.375rem (6px)    |
-| `rounded-lg`                  | `border-radius: var(--radius-lg);`       | 圓角0.5rem (8px)      |
-| `rounded-xl`                  | `border-radius: var(--radius-xl);`       | 圓角0.75rem (12px)    |
-| `rounded-2xl`                 | `border-radius: var(--radius-2xl);`      | 圓角1rem (16px)       |
-| `rounded-3xl`                 | `border-radius: var(--radius-3xl);`      | 圓角1.5rem (24px)     |
-| `rounded-4xl`                 | `border-radius: var(--radius-4xl);`      | 圓角2rem (32px)       |
+| `rounded-<size>`              | `border-radius: var(--radius-<size>);`   | 圓角 <size>           |
 | `rounded-full`                | `border-radius: calc(infinity * 1px);`   | 全圓角（圓形/膠囊）   |
 | `rounded-(<custom-property>)` | `border-radius: var(<custom-property>);` | 使用自訂 CSS 變數圓角 |
 | `rounded-[<value>]`           | `border-radius: <value>;`                | 任意自訂圓角          |
 
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --radius-xs: .125rem;    /* 2px */
+  --radius-sm: .25rem;     /* 4px */
+  --radius-md: .375rem;    /* 6px */
+  --radius-lg: .5rem;      /* 8px */
+  --radius-xl: .75rem;     /* 12px */
+  --radius-2xl: 1rem;      /* 16px */
+  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-4xl: 2rem;      /* 32px */
+}
+```
+
 | 類別名稱                         | CSS 屬性值                                                                                                     | 說明                          |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `rounded-t-xs`                   | `border-top-left-radius: var(--radius-xs);`<br/>`border-top-right-radius: var(--radius-xs);`                   | 上側圓角 0.125rem (2px)       |
-| `rounded-t-sm`                   | `border-top-left-radius: var(--radius-sm);`<br/>`border-top-right-radius: var(--radius-sm);`                   | 上側圓角 0.25rem (4px)        |
-| `rounded-t-md`                   | `border-top-left-radius: var(--radius-md);`<br/>`border-top-right-radius: var(--radius-md);`                   | 上側圓角 0.375rem (6px)       |
-| `rounded-t-lg`                   | `border-top-left-radius: var(--radius-lg);`<br/>`border-top-right-radius: var(--radius-lg);`                   | 上側圓角 0.5rem (8px)         |
-| `rounded-t-xl`                   | `border-top-left-radius: var(--radius-xl);`<br/>`border-top-right-radius: var(--radius-xl);`                   | 上側圓角 0.75rem (12px)       |
-| `rounded-t-2xl`                  | `border-top-left-radius: var(--radius-2xl);`<br/>`border-top-right-radius: var(--radius-2xl);`                 | 上側圓角 1rem (16px)          |
-| `rounded-t-3xl`                  | `border-top-left-radius: var(--radius-3xl);`<br/>`border-top-right-radius: var(--radius-3xl);`                 | 上側圓角 1.5rem (24px)        |
-| `rounded-t-4xl`                  | `border-top-left-radius: var(--radius-4xl);`<br/>`border-top-right-radius: var(--radius-4xl);`                 | 上側圓角 2rem (32px)          |
+| `rounded-t-<size>`               | `border-top-left-radius: var(--radius-<size>);`<br/>`border-top-right-radius: var(--radius-<size>);`           | 上側圓角 <size>               |
 | `rounded-t-none`                 | `border-top-left-radius: 0;`<br/>`border-top-right-radius: 0;`                                                 | 上側無圓角                    |
 | `rounded-t-full`                 | `border-top-left-radius: calc(infinity * 1px);`<br/>`border-top-right-radius: calc(infinity * 1px);`           | 上側全圓角（圓形/膠囊）       |
 | `rounded-t-(<custom-property>)`  | `border-top-left-radius: var(<custom-property>);`<br/>`border-top-right-radius: var(<custom-property>);`       | 使用自訂 CSS 變數設定上側圓角 |
 | `rounded-t-[<value>]`            | `border-top-left-radius: <value>;`<br/>`border-top-right-radius: <value>;`                                     | 上側任意自訂圓角              |
-| `rounded-r-xs`                   | `border-top-right-radius: var(--radius-xs);`<br/>`border-bottom-right-radius: var(--radius-xs);`               | 右側圓角 0.125rem (2px)       |
-| `rounded-r-sm`                   | `border-top-right-radius: var(--radius-sm);`<br/>`border-bottom-right-radius: var(--radius-sm);`               | 右側圓角 0.25rem (4px)        |
-| `rounded-r-md`                   | `border-top-right-radius: var(--radius-md);`<br/>`border-bottom-right-radius: var(--radius-md);`               | 右側圓角 0.375rem (6px)       |
-| `rounded-r-lg`                   | `border-top-right-radius: var(--radius-lg);`<br/>`border-bottom-right-radius: var(--radius-lg);`               | 右側圓角 0.5rem (8px)         |
-| `rounded-r-xl`                   | `border-top-right-radius: var(--radius-xl);`<br/>`border-bottom-right-radius: var(--radius-xl);`               | 右側圓角 0.75rem (12px)       |
-| `rounded-r-2xl`                  | `border-top-right-radius: var(--radius-2xl);`<br/>`border-bottom-right-radius: var(--radius-2xl);`             | 右側圓角 1rem (16px)          |
-| `rounded-r-3xl`                  | `border-top-right-radius: var(--radius-3xl);`<br/>`border-bottom-right-radius: var(--radius-3xl);`             | 右側圓角 1.5rem (24px)        |
-| `rounded-r-4xl`                  | `border-top-right-radius: var(--radius-4xl);`<br/>`border-bottom-right-radius: var(--radius-4xl);`             | 右側圓角 2rem (32px)          |
+| `rounded-r-<size>`               | `border-top-right-radius: var(--radius-<size>);`<br/>`border-bottom-right-radius: var(--radius-<size>);`       | 右側圓角 <size>               |
 | `rounded-r-none`                 | `border-top-right-radius: 0;`<br/>`border-bottom-right-radius: 0;`                                             | 右側無圓角                    |
 | `rounded-r-full`                 | `border-top-right-radius: calc(infinity * 1px);`<br/>`border-bottom-right-radius: calc(infinity * 1px);`       | 右側全圓角（圓形/膠囊）       |
 | `rounded-r-(<custom-property>)`  | `border-top-right-radius: var(<custom-property>);`<br/>`border-bottom-right-radius: var(<custom-property>);`   | 使用自訂 CSS 變數設定右側圓角 |
 | `rounded-r-[<value>]`            | `border-top-right-radius: <value>;`<br/>`border-bottom-right-radius: <value>;`                                 | 右側任意自訂圓角              |
-| `rounded-b-xs`                   | `border-bottom-right-radius: var(--radius-xs);`<br/>`border-bottom-left-radius: var(--radius-xs);`             | 下側圓角 0.125rem (2px)       |
-| `rounded-b-sm`                   | `border-bottom-right-radius: var(--radius-sm);`<br/>`border-bottom-left-radius: var(--radius-sm);`             | 下側圓角 0.25rem (4px)        |
-| `rounded-b-md`                   | `border-bottom-right-radius: var(--radius-md);`<br/>`border-bottom-left-radius: var(--radius-md);`             | 下側圓角 0.375rem (6px)       |
-| `rounded-b-lg`                   | `border-bottom-right-radius: var(--radius-lg);`<br/>`border-bottom-left-radius: var(--radius-lg);`             | 下側圓角 0.5rem (8px)         |
-| `rounded-b-xl`                   | `border-bottom-right-radius: var(--radius-xl);`<br/>`border-bottom-left-radius: var(--radius-xl);`             | 下側圓角 0.75rem (12px)       |
-| `rounded-b-2xl`                  | `border-bottom-right-radius: var(--radius-2xl);`<br/>`border-bottom-left-radius: var(--radius-2xl);`           | 下側圓角 1rem (16px)          |
-| `rounded-b-3xl`                  | `border-bottom-right-radius: var(--radius-3xl);`<br/>`border-bottom-left-radius: var(--radius-3xl);`           | 下側圓角 1.5rem (24px)        |
-| `rounded-b-4xl`                  | `border-bottom-right-radius: var(--radius-4xl);`<br/>`border-bottom-left-radius: var(--radius-4xl);`           | 下側圓角 2rem (32px)          |
+| `rounded-b-<size>`               | `border-bottom-right-radius: var(--radius-<size>);`<br/>`border-bottom-left-radius: var(--radius-<size>);`     | 下側圓角 <size>               |
 | `rounded-b-none`                 | `border-bottom-right-radius: 0;`<br/>`border-bottom-left-radius: 0;`                                           | 下側無圓角                    |
 | `rounded-b-full`                 | `border-bottom-right-radius: calc(infinity * 1px);`<br/>`border-bottom-left-radius: calc(infinity * 1px);`     | 下側全圓角（圓形/膠囊）       |
 | `rounded-b-(<custom-property>)`  | `border-bottom-right-radius: var(<custom-property>);`<br/>`border-bottom-left-radius: var(<custom-property>);` | 使用自訂 CSS 變數設定下側圓角 |
 | `rounded-b-[<value>]`            | `border-bottom-right-radius: <value>;`<br/>`border-bottom-left-radius: <value>;`                               | 下側任意自訂圓角              |
-| `rounded-l-xs`                   | `border-top-left-radius: var(--radius-xs);`<br/>`border-bottom-left-radius: var(--radius-xs);`                 | 左側圓角 0.125rem (2px)       |
-| `rounded-l-sm`                   | `border-top-left-radius: var(--radius-sm);`<br/>`border-bottom-left-radius: var(--radius-sm);`                 | 左側圓角 0.25rem (4px)        |
-| `rounded-l-md`                   | `border-top-left-radius: var(--radius-md);`<br/>`border-bottom-left-radius: var(--radius-md);`                 | 左側圓角 0.375rem (6px)       |
-| `rounded-l-lg`                   | `border-top-left-radius: var(--radius-lg);`<br/>`border-bottom-left-radius: var(--radius-lg);`                 | 左側圓角 0.5rem (8px)         |
-| `rounded-l-xl`                   | `border-top-left-radius: var(--radius-xl);`<br/>`border-bottom-left-radius: var(--radius-xl);`                 | 左側圓角 0.75rem (12px)       |
-| `rounded-l-2xl`                  | `border-top-left-radius: var(--radius-2xl);`<br/>`border-bottom-left-radius: var(--radius-2xl);`               | 左側圓角 1rem (16px)          |
-| `rounded-l-3xl`                  | `border-top-left-radius: var(--radius-3xl);`<br/>`border-bottom-left-radius: var(--radius-3xl);`               | 左側圓角 1.5rem (24px)        |
-| `rounded-l-4xl`                  | `border-top-left-radius: var(--radius-4xl);`<br/>`border-bottom-left-radius: var(--radius-4xl);`               | 左側圓角 2rem (32px)          |
+| `rounded-l-<size>`               | `border-top-left-radius: var(--radius-<size>);`<br/>`border-bottom-left-radius: var(--radius-<size>);`         | 左側圓角 <size>               |
 | `rounded-l-none`                 | `border-top-left-radius: 0;`<br/>`border-bottom-left-radius: 0;`                                               | 左側無圓角                    |
 | `rounded-l-full`                 | `border-top-left-radius: calc(infinity * 1px);`<br/>`border-bottom-left-radius: calc(infinity * 1px);`         | 左側全圓角（圓形/膠囊）       |
 | `rounded-l-(<custom-property>)`  | `border-top-left-radius: var(<custom-property>);`<br/>`border-bottom-left-radius: var(<custom-property>);`     | 使用自訂 CSS 變數設定左側圓角 |
 | `rounded-l-[<value>]`            | `border-top-left-radius: <value>;`<br/>`border-bottom-left-radius: <value>;`                                   | 左側任意自訂圓角              |
-| `rounded-tl-xs`                  | `border-top-left-radius: var(--radius-xs);`                                                                    | 左上圓角 0.125rem (2px)       |
-| `rounded-tl-sm`                  | `border-top-left-radius: var(--radius-sm);`                                                                    | 左上圓角 0.25rem (4px)        |
-| `rounded-tl-md`                  | `border-top-left-radius: var(--radius-md);`                                                                    | 左上圓角 0.375rem (6px)       |
-| `rounded-tl-lg`                  | `border-top-left-radius: var(--radius-lg);`                                                                    | 左上圓角 0.5rem (8px)         |
-| `rounded-tl-xl`                  | `border-top-left-radius: var(--radius-xl);`                                                                    | 左上圓角 0.75rem (12px)       |
-| `rounded-tl-2xl`                 | `border-top-left-radius: var(--radius-2xl);`                                                                   | 左上圓角 1rem (16px)          |
-| `rounded-tl-3xl`                 | `border-top-left-radius: var(--radius-3xl);`                                                                   | 左上圓角 1.5rem (24px)        |
-| `rounded-tl-4xl`                 | `border-top-left-radius: var(--radius-4xl);`                                                                   | 左上圓角 2rem (32px)          |
+| `rounded-tl-<size>`              | `border-top-left-radius: var(--radius-<size>);`                                                                | 左上圓角 <size>               |
 | `rounded-tl-none`                | `border-top-left-radius: 0;`                                                                                   | 左上無圓角                    |
 | `rounded-tl-full`                | `border-top-left-radius: calc(infinity * 1px);`                                                                | 左上全圓角（圓形/膠囊）       |
 | `rounded-tl-(<custom-property>)` | `border-top-left-radius: var(<custom-property>);`                                                              | 使用自訂 CSS 變數設定左上圓角 |
 | `rounded-tl-[<value>]`           | `border-top-left-radius: <value>;`                                                                             | 左上任意自訂圓角              |
-| `rounded-tr-xs`                  | `border-top-right-radius: var(--radius-xs);`                                                                   | 右上圓角 0.125rem (2px)       |
-| `rounded-tr-sm`                  | `border-top-right-radius: var(--radius-sm);`                                                                   | 右上圓角 0.25rem (4px)        |
-| `rounded-tr-md`                  | `border-top-right-radius: var(--radius-md);`                                                                   | 右上圓角 0.375rem (6px)       |
-| `rounded-tr-lg`                  | `border-top-right-radius: var(--radius-lg);`                                                                   | 右上圓角 0.5rem (8px)         |
-| `rounded-tr-xl`                  | `border-top-right-radius: var(--radius-xl);`                                                                   | 右上圓角 0.75rem (12px)       |
-| `rounded-tr-2xl`                 | `border-top-right-radius: var(--radius-2xl);`                                                                  | 右上圓角 1rem (16px)          |
-| `rounded-tr-3xl`                 | `border-top-right-radius: var(--radius-3xl);`                                                                  | 右上圓角 1.5rem (24px)        |
-| `rounded-tr-4xl`                 | `border-top-right-radius: var(--radius-4xl);`                                                                  | 右上圓角 2rem (32px)          |
+| `rounded-tr-<size>`              | `border-top-right-radius: var(--radius-<size>);`                                                               | 右上圓角 <size>               |
 | `rounded-tr-none`                | `border-top-right-radius: 0;`                                                                                  | 右上無圓角                    |
 | `rounded-tr-full`                | `border-top-right-radius: calc(infinity * 1px);`                                                               | 右上全圓角（圓形/膠囊）       |
 | `rounded-tr-(<custom-property>)` | `border-top-right-radius: var(<custom-property>);`                                                             | 使用自訂 CSS 變數設定右上圓角 |
 | `rounded-tr-[<value>]`           | `border-top-right-radius: <value>;`                                                                            | 右上任意自訂圓角              |
-| `rounded-br-xs`                  | `border-bottom-right-radius: var(--radius-xs);`                                                                | 右下圓角 0.125rem (2px)       |
-| `rounded-br-sm`                  | `border-bottom-right-radius: var(--radius-sm);`                                                                | 右下圓角 0.25rem (4px)        |
-| `rounded-br-md`                  | `border-bottom-right-radius: var(--radius-md);`                                                                | 右下圓角 0.375rem (6px)       |
-| `rounded-br-lg`                  | `border-bottom-right-radius: var(--radius-lg);`                                                                | 右下圓角 0.5rem (8px)         |
-| `rounded-br-xl`                  | `border-bottom-right-radius: var(--radius-xl);`                                                                | 右下圓角 0.75rem (12px)       |
-| `rounded-br-2xl`                 | `border-bottom-right-radius: var(--radius-2xl);`                                                               | 右下圓角 1rem (16px)          |
-| `rounded-br-3xl`                 | `border-bottom-right-radius: var(--radius-3xl);`                                                               | 右下圓角 1.5rem (24px)        |
-| `rounded-br-4xl`                 | `border-bottom-right-radius: var(--radius-4xl);`                                                               | 右下圓角 2rem (32px)          |
+| `rounded-br-<size>`              | `border-bottom-right-radius: var(--radius-<size>);`                                                            | 右下圓角 <size>               |
 | `rounded-br-none`                | `border-bottom-right-radius: 0;`                                                                               | 右下無圓角                    |
 | `rounded-br-full`                | `border-bottom-right-radius: calc(infinity * 1px);`                                                            | 右下全圓角（圓形/膠囊）       |
 | `rounded-br-(<custom-property>)` | `border-bottom-right-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定右下圓角 |
 | `rounded-br-[<value>]`           | `border-bottom-right-radius: <value>;`                                                                         | 右下任意自訂圓角              |
-| `rounded-bl-xs`                  | `border-bottom-left-radius: var(--radius-xs);`                                                                 | 左下圓角 0.125rem (2px)       |
-| `rounded-bl-sm`                  | `border-bottom-left-radius: var(--radius-sm);`                                                                 | 左下圓角 0.25rem (4px)        |
-| `rounded-bl-md`                  | `border-bottom-left-radius: var(--radius-md);`                                                                 | 左下圓角 0.375rem (6px)       |
-| `rounded-bl-lg`                  | `border-bottom-left-radius: var(--radius-lg);`                                                                 | 左下圓角 0.5rem (8px)         |
-| `rounded-bl-xl`                  | `border-bottom-left-radius: var(--radius-xl);`                                                                 | 左下圓角 0.75rem (12px)       |
-| `rounded-bl-2xl`                 | `border-bottom-left-radius: var(--radius-2xl);`                                                                | 左下圓角 1rem (16px)          |
-| `rounded-bl-3xl`                 | `border-bottom-left-radius: var(--radius-3xl);`                                                                | 左下圓角 1.5rem (24px)        |
-| `rounded-bl-4xl`                 | `border-bottom-left-radius: var(--radius-4xl);`                                                                | 左下圓角 2rem (32px)          |
+| `rounded-bl-<size>`              | `border-bottom-left-radius: var(--radius-<size>);`                                                             | 左下圓角 <size>               |
 | `rounded-bl-none`                | `border-bottom-left-radius: 0;`                                                                                | 左下無圓角                    |
 | `rounded-bl-full`                | `border-bottom-left-radius: calc(infinity * 1px);`                                                             | 左下全圓角（圓形/膠囊）       |
 | `rounded-bl-(<custom-property>)` | `border-bottom-left-radius: var(<custom-property>);`                                                           | 使用自訂 CSS 變數設定左下圓角 |
 | `rounded-bl-[<value>]`           | `border-bottom-left-radius: <value>;`                                                                          | 左下任意自訂圓角              |
 
-
 | 類別名稱                         | CSS 屬性值                                                                                                  | 說明                              |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `rounded-s-xs`                   | `border-start-start-radius: var(--radius-xs);`<br/>`border-end-start-radius: var(--radius-xs);`             | 起始側圓角 0.125rem (2px)         |
-| `rounded-s-sm`                   | `border-start-start-radius: var(--radius-sm);`<br/>`border-end-start-radius: var(--radius-sm);`             | 起始側圓角 0.25rem (4px)          |
-| `rounded-s-md`                   | `border-start-start-radius: var(--radius-md);`<br/>`border-end-start-radius: var(--radius-md);`             | 起始側圓角 0.375rem (6px)         |
-| `rounded-s-lg`                   | `border-start-start-radius: var(--radius-lg);`<br/>`border-end-start-radius: var(--radius-lg);`             | 起始側圓角 0.5rem (8px)           |
-| `rounded-s-xl`                   | `border-start-start-radius: var(--radius-xl);`<br/>`border-end-start-radius: var(--radius-xl);`             | 起始側圓角 0.75rem (12px)         |
-| `rounded-s-2xl`                  | `border-start-start-radius: var(--radius-2xl);`<br/>`border-end-start-radius: var(--radius-2xl);`           | 起始側圓角 1rem (16px)            |
-| `rounded-s-3xl`                  | `border-start-start-radius: var(--radius-3xl);`<br/>`border-end-start-radius: var(--radius-3xl);`           | 起始側圓角 1.5rem (24px)          |
-| `rounded-s-4xl`                  | `border-start-start-radius: var(--radius-4xl);`<br/>`border-end-start-radius: var(--radius-4xl);`           | 起始側圓角 2rem (32px)            |
+| `rounded-s-<size>`               | `border-start-start-radius: var(--radius-<size>);`<br/>`border-end-start-radius: var(--radius-<size>);`     | 起始側圓角 <size>                 |
 | `rounded-s-none`                 | `border-start-start-radius: 0;`<br/>`border-end-start-radius: 0;`                                           | 起始側無圓角                      |
 | `rounded-s-full`                 | `border-start-start-radius: calc(infinity * 1px);`<br/>`border-end-start-radius: calc(infinity * 1px);`     | 起始側全圓角（圓形/膠囊）         |
 | `rounded-s-(<custom-property>)`  | `border-start-start-radius: var(<custom-property>);`<br/>`border-end-start-radius: var(<custom-property>);` | 使用自訂 CSS 變數設定起始側圓角   |
 | `rounded-s-[<value>]`            | `border-start-start-radius: <value>;`<br/>`border-end-start-radius: <value>;`                               | 起始側任意自訂圓角                |
-| `rounded-e-xs`                   | `border-start-end-radius: var(--radius-xs);`<br/>`border-end-end-radius: var(--radius-xs);`                 | 結束側圓角 0.125rem (2px)         |
-| `rounded-e-sm`                   | `border-start-end-radius: var(--radius-sm);`<br/>`border-end-end-radius: var(--radius-sm);`                 | 結束側圓角 0.25rem (4px)          |
-| `rounded-e-md`                   | `border-start-end-radius: var(--radius-md);`<br/>`border-end-end-radius: var(--radius-md);`                 | 結束側圓角 0.375rem (6px)         |
-| `rounded-e-lg`                   | `border-start-end-radius: var(--radius-lg);`<br/>`border-end-end-radius: var(--radius-lg);`                 | 結束側圓角 0.5rem (8px)           |
-| `rounded-e-xl`                   | `border-start-end-radius: var(--radius-xl);`<br/>`border-end-end-radius: var(--radius-xl);`                 | 結束側圓角 0.75rem (12px)         |
-| `rounded-e-2xl`                  | `border-start-end-radius: var(--radius-2xl);`<br/>`border-end-end-radius: var(--radius-2xl);`               | 結束側圓角 1rem (16px)            |
-| `rounded-e-3xl`                  | `border-start-end-radius: var(--radius-3xl);`<br/>`border-end-end-radius: var(--radius-3xl);`               | 結束側圓角 1.5rem (24px)          |
-| `rounded-e-4xl`                  | `border-start-end-radius: var(--radius-4xl);`<br/>`border-end-end-radius: var(--radius-4xl);`               | 結束側圓角 2rem (32px)            |
+| `rounded-e-<size>`               | `border-start-end-radius: var(--radius-<size>);`<br/>`border-end-end-radius: var(--radius-<size>);`         | 結束側圓角 <size>                 |
 | `rounded-e-none`                 | `border-start-end-radius: 0;`<br/>`border-end-end-radius: 0;`                                               | 結束側無圓角                      |
 | `rounded-e-full`                 | `border-start-end-radius: calc(infinity * 1px);`<br/>`border-end-end-radius: calc(infinity * 1px);`         | 結束側全圓角（圓形/膠囊）         |
 | `rounded-e-(<custom-property>)`  | `border-start-end-radius: var(<custom-property>);`<br/>`border-end-end-radius: var(<custom-property>);`     | 使用自訂 CSS 變數設定結束側圓角   |
 | `rounded-e-[<value>]`            | `border-start-end-radius: <value>;`<br/>`border-end-end-radius: <value>;`                                   | 結束側任意自訂圓角                |
-| `rounded-ss-xs`                  | `border-start-start-radius: var(--radius-xs);`                                                              | 起始起始圓角 0.125rem (2px)       |
-| `rounded-ss-sm`                  | `border-start-start-radius: var(--radius-sm);`                                                              | 起始起始圓角 0.25rem (4px)        |
-| `rounded-ss-md`                  | `border-start-start-radius: var(--radius-md);`                                                              | 起始起始圓角 0.375rem (6px)       |
-| `rounded-ss-lg`                  | `border-start-start-radius: var(--radius-lg);`                                                              | 起始起始圓角 0.5rem (8px)         |
-| `rounded-ss-xl`                  | `border-start-start-radius: var(--radius-xl);`                                                              | 起始起始圓角 0.75rem (12px)       |
-| `rounded-ss-2xl`                 | `border-start-start-radius: var(--radius-2xl);`                                                             | 起始起始圓角 1rem (16px)          |
-| `rounded-ss-3xl`                 | `border-start-start-radius: var(--radius-3xl);`                                                             | 起始起始圓角 1.5rem (24px)        |
-| `rounded-ss-4xl`                 | `border-start-start-radius: var(--radius-4xl);`                                                             | 起始起始圓角 2rem (32px)          |
+| `rounded-ss-<size>`              | `border-start-start-radius: var(--radius-<size>);`                                                          | 起始起始圓角 <size>               |
 | `rounded-ss-none`                | `border-start-start-radius: 0;`                                                                             | 起始起始無圓角                    |
 | `rounded-ss-full`                | `border-start-start-radius: calc(infinity * 1px);`                                                          | 起始起始全圓角（圓形/膠囊）       |
 | `rounded-ss-(<custom-property>)` | `border-start-start-radius: var(<custom-property>);`                                                        | 使用自訂 CSS 變數設定起始起始圓角 |
 | `rounded-ss-[<value>]`           | `border-start-start-radius: <value>;`                                                                       | 起始起始任意自訂圓角              |
-| `rounded-se-xs`                  | `border-start-end-radius: var(--radius-xs);`                                                                | 起始結束圓角 0.125rem (2px)       |
-| `rounded-se-sm`                  | `border-start-end-radius: var(--radius-sm);`                                                                | 起始結束圓角 0.25rem (4px)        |
-| `rounded-se-md`                  | `border-start-end-radius: var(--radius-md);`                                                                | 起始結束圓角 0.375rem (6px)       |
-| `rounded-se-lg`                  | `border-start-end-radius: var(--radius-lg);`                                                                | 起始結束圓角 0.5rem (8px)         |
-| `rounded-se-xl`                  | `border-start-end-radius: var(--radius-xl);`                                                                | 起始結束圓角 0.75rem (12px)       |
-| `rounded-se-2xl`                 | `border-start-end-radius: var(--radius-2xl);`                                                               | 起始結束圓角 1rem (16px)          |
-| `rounded-se-3xl`                 | `border-start-end-radius: var(--radius-3xl);`                                                               | 起始結束圓角 1.5rem (24px)        |
-| `rounded-se-4xl`                 | `border-start-end-radius: var(--radius-4xl);`                                                               | 起始結束圓角 2rem (32px)          |
+| `rounded-se-<size>`              | `border-start-end-radius: var(--radius-<size>);`                                                            | 起始結束圓角 <size>               |
 | `rounded-se-none`                | `border-start-end-radius: 0;`                                                                               | 起始結束無圓角                    |
 | `rounded-se-full`                | `border-start-end-radius: calc(infinity * 1px);`                                                            | 起始結束全圓角（圓形/膠囊）       |
 | `rounded-se-(<custom-property>)` | `border-start-end-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定起始結束圓角 |
 | `rounded-se-[<value>]`           | `border-start-end-radius: <value>;`                                                                         | 起始結束任意自訂圓角              |
-| `rounded-ee-xs`                  | `border-end-end-radius: var(--radius-xs);`                                                                  | 結束結束圓角 0.125rem (2px)       |
-| `rounded-ee-sm`                  | `border-end-end-radius: var(--radius-sm);`                                                                  | 結束結束圓角 0.25rem (4px)        |
-| `rounded-ee-md`                  | `border-end-end-radius: var(--radius-md);`                                                                  | 結束結束圓角 0.375rem (6px)       |
-| `rounded-ee-lg`                  | `border-end-end-radius: var(--radius-lg);`                                                                  | 結束結束圓角 0.5rem (8px)         |
-| `rounded-ee-xl`                  | `border-end-end-radius: var(--radius-xl);`                                                                  | 結束結束圓角 0.75rem (12px)       |
-| `rounded-ee-2xl`                 | `border-end-end-radius: var(--radius-2xl);`                                                                 | 結束結束圓角 1rem (16px)          |
-| `rounded-ee-3xl`                 | `border-end-end-radius: var(--radius-3xl);`                                                                 | 結束結束圓角 1.5rem (24px)        |
-| `rounded-ee-4xl`                 | `border-end-end-radius: var(--radius-4xl);`                                                                 | 結束結束圓角 2rem (32px)          |
+| `rounded-ee-<size>`              | `border-end-end-radius: var(--radius-<size>);`                                                              | 結束結束圓角 <size>               |
 | `rounded-ee-none`                | `border-end-end-radius: 0;`                                                                                 | 結束結束無圓角                    |
 | `rounded-ee-full`                | `border-end-end-radius: calc(infinity * 1px);`                                                              | 結束結束全圓角（圓形/膠囊）       |
 | `rounded-ee-(<custom-property>)` | `border-end-end-radius: var(<custom-property>);`                                                            | 使用自訂 CSS 變數設定結束結束圓角 |
 | `rounded-ee-[<value>]`           | `border-end-end-radius: <value>;`                                                                           | 結束結束任意自訂圓角              |
-| `rounded-es-xs`                  | `border-end-start-radius: var(--radius-xs);`                                                                | 結束起始圓角 0.125rem (2px)       |
-| `rounded-es-sm`                  | `border-end-start-radius: var(--radius-sm);`                                                                | 結束起始圓角 0.25rem (4px)        |
-| `rounded-es-md`                  | `border-end-start-radius: var(--radius-md);`                                                                | 結束起始圓角 0.375rem (6px)       |
-| `rounded-es-lg`                  | `border-end-start-radius: var(--radius-lg);`                                                                | 結束起始圓角 0.5rem (8px)         |
-| `rounded-es-xl`                  | `border-end-start-radius: var(--radius-xl);`                                                                | 結束起始圓角 0.75rem (12px)       |
-| `rounded-es-2xl`                 | `border-end-start-radius: var(--radius-2xl);`                                                               | 結束起始圓角 1rem (16px)          |
-| `rounded-es-3xl`                 | `border-end-start-radius: var(--radius-3xl);`                                                               | 結束起始圓角 1.5rem (24px)        |
-| `rounded-es-4xl`                 | `border-end-start-radius: var(--radius-4xl);`                                                               | 結束起始圓角 2rem (32px)          |
+| `rounded-es-<size>`              | `border-end-start-radius: var(--radius-<size>);`                                                            | 結束起始圓角 <size>               |
 | `rounded-es-none`                | `border-end-start-radius: 0;`                                                                               | 結束起始無圓角                    |
 | `rounded-es-full`                | `border-end-start-radius: calc(infinity * 1px);`                                                            | 結束起始全圓角（圓形/膠囊）       |
 | `rounded-es-(<custom-property>)` | `border-end-start-radius: var(<custom-property>);`                                                          | 使用自訂 CSS 變數設定結束起始圓角 |
@@ -3275,18 +3211,16 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `border-l-[<value>]`                  | `border-left-width: <value>;`                        | 左邊框寬度自訂任意值                   |
 
 ```html
-<div class="border-[2vw] ...">
-  <!-- ... -->
+<div class="border-[2vw]">
+  <!-- -->
 </div>
-<div class="border-(length:--my-border-width) ...">
-  <!-- ... -->
+<div class="border-(length:--my-border-width)">
+  <!-- -->
 </div>
 ```
 
-
-### divide-width（分隔線寬度）
-
-Tailwind CSS 的 `divide-x` 與 `divide-y` 工具類別可快速為父元素的子元素之間添加分隔線，常用於水平或垂直排列的列表。這些類別會自動將分隔線應用於所有非最後一個子元素，並可自訂分隔線寬度。可作用於 `flex` 和 `grid` 元素。
+### divide-width
+`divide-x` 與 `divide-y` 工具類別可快速為父元素的子元素之間添加分隔線，常用於水平或垂直排列的列表。這些類別會自動將分隔線應用於所有非最後一個子元素，並可自訂分隔線寬度。可作用於 `flex` 和 `grid` 元素。
 
 | 類別名稱                              | 對應 CSS 屬性說明                                                                                            | 說明                          |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------- |
@@ -3314,15 +3248,1334 @@ Tailwind CSS 的 `divide-x` 與 `divide-y` 工具類別可快速為父元素的�
 </div>
 ```
 
-
-#### 範例：水平分隔線
-
-
-
-
 ## border-color
+設定邊框顏色，支援預設色板、透明、當前色與自訂任意值。常用於區塊、按鈕、表單等元件的邊框設計，能快速統一風格或強調重點。
+
+| 類別名稱                     | CSS 屬性                                                                                                | 說明                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `border-inherit`             | `border-color: inherit;`                                                                                | 繼承父元素邊框顏色                                  |
+| `border-current`             | `border-color: currentColor;`                                                                           | 使用當前元素文字顏色作為邊框色                      |
+| `border-transparent`         | `border-color: transparent;`                                                                            | 邊框顏色透明                                        |
+| `border-black`               | `border-color: var(--color-black);`                                                                     | 黑色邊框（#000）                                    |
+| `border-white`               | `border-color: var(--color-white);`                                                                     | 白色邊框（#fff）                                    |
+| `border-<color>-<step>`      | `border-color: var(--color-<color>-<step>);`                                                            | 指定色彩 <step> 階段的邊框色                        |
+| `border-(<custom-property>)` | `border-color: var(<custom-property>);`                                                                 | 使用 CSS 變數自訂邊框顏色                           |
+| `border-[<value>]`           | `border-color: <value>;`                                                                                | 任意自訂邊框顏色（如 #123456、rgba(..               |
+| `border-x-<color>-<step>`    | `border-left-color: var(--color-<color>-<step>);`<br>`border-right-color: var(--color-<color>-<step>);` | 設定左右邊框顏色                                    |
+| `border-y-<color>-<step>`    | `border-top-color: var(--color-<color>-<step>);`<br>`border-bottom-color: var(--color-<color>-<step>);` | 設定上下邊框顏色                                    |
+| `border-s-<color>-<step>`    | `border-inline-start-color: var(--color-<color>-<step>);`                                               | 設定起始（Start）邊框顏色（支援 RTL）               |
+| `border-e-<color>-<step>`    | `border-inline-end-color: var(--color-<color>-<step>);`                                                 | 設定結束（End）邊框顏色（支援 RTL）                 |
+| `border-t-<color>-<step>`    | `border-top-color: var(--color-<color>-<step>);`                                                        | 設定上邊框顏色                                      |
+| `border-r-<color>-<step>`    | `border-right-color: var(--color-<color>-<step>);`                                                      | 設定右邊框顏色                                      |
+| `border-b-<color>-<step>`    | `border-bottom-color: var(--color-<color>-<step>);`                                                     | 設定下邊框顏色                                      |
+| `border-l-<color>-<step>`    | `border-left-color: var(--color-<color>-<step>);`                                                       | 設定左邊框顏色                                      |
+| `border-(<custom-property>)` | `border-color: var(<custom-property>);`                                                                 | 使用 CSS 變數自訂邊框顏色                           |
+| `border-[<value>]`           | `border-color: <value>;`                                                                                | 任意自訂邊框顏色（如 #123456、rgba(...)、oklch 等） |
+| `border-x-[<value>]`         | `border-left-color: <value>;`<br>`border-right-color: <value>;`                                         | 左右邊框自訂顏色                                    |
+| `border-y-[<value>]`         | `border-top-color: <value>;`<br>`border-bottom-color: <value>;`                                         | 上下邊框自訂顏色                                    |
+| `border-s-[<value>]`         | `border-inline-start-color: <value>;`                                                                   | 起始邊框自訂顏色                                    |
+| `border-e-[<value>]`         | `border-inline-end-color: <value>;`                                                                     | 結束邊框自訂顏色                                    |
+| `border-t-[<value>]`         | `border-top-color: <value>;`                                                                            | 上邊框自訂顏色                                      |
+| `border-r-[<value>]`         | `border-right-color: <value>;`                                                                          | 右邊框自訂顏色                                      |
+| `border-b-[<value>]`         | `border-bottom-color: <value>;`                                                                         | 下邊框自訂顏色                                      |
+| `border-l-[<value>]`         | `border-left-color: <value>;`                                                                           | 左邊框自訂顏色                                      |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<div class="border-[#243c5a]"></div>
+<div class="border-(--my-border)"></div>
+<input class="border-2 border-gray-700 focus:border-pink-600" />
+```
+
+### divide-color
+`divide-color` 工具類別用於設定分隔線（`divide-x`、`divide-y`）的顏色，讓多個子元素之間的分隔線能快速套用 Tailwind CSS 預設色彩、透明度、CSS 變數或自訂顏色。這對於設計有色彩區隔的列表、卡片等元件非常實用。
+
+| 類別名稱                     | 對應 CSS 屬性說明                            | 說明                                        |
+| ---------------------------- | -------------------------------------------- | ------------------------------------------- |
+| `divide-inherit`             | `border-color: inherit;`                     | 繼承父元素分隔線顏色                        |
+| `divide-current`             | `border-color: currentColor;`                | 使用當前元素文字顏色作為分隔線顏色          |
+| `divide-transparent`         | `border-color: transparent;`                 | 分隔線顏色透明                              |
+| `divide-black`               | `border-color: var(--color-black);`          | 黑色分隔線                                  |
+| `divide-white`               | `border-color: var(--color-white);`          | 白色分隔線                                  |
+| `divide-<color>-<step>`      | `border-color: var(--color-<color>-<step>);` | 指定色彩與色階（如 `divide-blue-500`）      |
+| `divide-(<custom-property>)` | `border-color: var(<custom-property>);`      | 使用 CSS 變數自訂分隔線顏色                 |
+| `divide-[<value>]`           | `border-color: <value>;`                     | 任意自訂分隔線顏色（如 #123456、rgba(...)） |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+可以在 `divide-<color>-<step>` 類別後加上透明度修飾（例如 `divide-blue-500/50`），或直接使用自訂顏色（如 `divide-[#ff00ff]`）來調整分隔線顏色。這些語法會對應到 `border-color` 屬性，讓分隔線顏色與透明度能靈活控制。
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<div class="border-regal-blue"></div>
+```
+
 ## border-style
+`border-style` 用來設定邊框的線條樣式，例如實線、虛線、點線等。你可以直接使用內建的類別來快速切換不同的邊框樣式，無需手動撰寫 CSS。
+
+| 類別名稱        | 對應 CSS 屬性/選擇器                              | 說明         |
+| --------------- | ------------------------------------------------- | ------------ |
+| `border-solid`  | `border-style: solid;`                            | 實線邊框     |
+| `border-dashed` | `border-style: dashed;`                           | 虛線邊框     |
+| `border-dotted` | `border-style: dotted;`                           | 點線邊框     |
+| `border-double` | `border-style: double;`                           | 雙線邊框     |
+| `border-hidden` | `border-style: hidden;`                           | 隱藏邊框     |
+| `border-none`   | `border-style: none;`                             | 無邊框       |
+| `divide-solid`  | `& > :not(:last-child) { border-style: solid; }`  | 分隔線為實線 |
+| `divide-dashed` | `& > :not(:last-child) { border-style: dashed; }` | 分隔線為虛線 |
+| `divide-dotted` | `& > :not(:last-child) { border-style: dotted; }` | 分隔線為點線 |
+| `divide-double` | `& > :not(:last-child) { border-style: double; }` | 分隔線為雙線 |
+| `divide-hidden` | `& > :not(:last-child) { border-style: hidden; }` | 分隔線隱藏   |
+| `divide-none`   | `& > :not(:last-child) { border-style: none; }`   | 分隔線無邊框 |
+
+```html
+<div class="grid grid-cols-3 divide-x-3 divide-dashed divide-indigo-500">
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+</div>
+```
+
 ## outline-width
+`outline-width` 用來設定外框（outline）的線條粗細。Tailwind CSS 提供多種 outline 粗細的工具類別，讓你可以快速調整元素的外框寬度，常用於聚焦（focus）狀態的視覺強調。
+
+| 類別名稱                             | 對應 CSS 屬性                            | 說明                           |
+| ------------------------------------ | ---------------------------------------- | ------------------------------ |
+| `outline`                            | `outline-width: 1px;`                    | 預設 1px 外框寬度              |
+| `outline-<number>`                   | `outline-width: <number>px;`             | 指定 px 單位的外框寬度         |
+| `outline-(length:<custom-property>)` | `outline-width: var(<custom-property>);` | 使用自訂 CSS 變數長度          |
+| `outline-[<value>]`                  | `outline-width: <value>;`                | 任意自訂長度（如 3px、0.5rem） |
+
+```html
+<div class="outline-[2vw]"></div>
+<div class="outline-(length:--my-outline-width)"></div>
+```
+
 ## outline-color
+`outline-color` 用來設定元素外框（outline）的顏色。Tailwind CSS 提供多種 outline 顏色類別，讓你能快速為聚焦狀態或互動元件加上明顯的外框色彩。
+
+| 類別名稱                      | 對應 CSS 屬性                                   | 說明                          |
+| ----------------------------- | ----------------------------------------------- | ----------------------------- |
+| `outline-inherit`             | `outline-color: inherit;`                       | 繼承父元素的外框顏色          |
+| `outline-current`             | `outline-color: currentColor;`                  | 使用目前文字顏色作為外框顏色  |
+| `outline-transparent`         | `outline-color: transparent;`                   | 外框顏色為透明                |
+| `outline-black`               | `outline-color: var(--color-black); /* #000 */` | 黑色外框                      |
+| `outline-white`               | `outline-color: var(--color-white); /* #fff */` | 白色外框                      |
+| `outline-<color>-<step>`      | `outline-color: var(--color-<color>-<step>);`   | 指定色 step                   |
+| `outline-(<custom-property>)` | `outline-color: var(<custom-property>);`        | 使用自訂 CSS 變數作為外框顏色 |
+| `outline-[<value>]`           | `outline-color: <value>;`                       | 任意自訂外框顏色              |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<div class="outline-[#243c5a]"></div>
+<div class="outline-(--my-color)"></div>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<div class="outline-regal-blue"></div>
+```
+
 ## outline-style
+用來設定外框（outline）的線條樣式，例如實線、虛線、點線等。Tailwind CSS 提供了多種 outline 樣式的實用類別，讓你可以快速切換不同的外框效果。
+
+| 類別名稱         | 對應 CSS 屬性                                               | 說明                                 |
+| ---------------- | ----------------------------------------------------------- | ------------------------------------ |
+| `outline-solid`  | `outline-style: solid;`                                     | 設定外框為實線                       |
+| `outline-dashed` | `outline-style: dashed;`                                    | 設定外框為虛線                       |
+| `outline-dotted` | `outline-style: dotted;`                                    | 設定外框為點線                       |
+| `outline-double` | `outline-style: double;`                                    | 設定外框為雙線                       |
+| `outline-none`   | `outline-style: none;`                                      | 移除外框樣式                         |
+| `outline-hidden` | `outline: 2px solid transparent;`<br>`outline-offset: 2px;` | 隱藏外框但保留空間（常用於可存取性） |
+
 ## outline-offset
+用來設定外框（outline）與元素之間的間距。Tailwind CSS 提供 `outline-offset-{value}` 類別，讓你可以快速調整外框偏移距離，提升視覺層次感。
+
+| 類別名稱                             | 對應 CSS 屬性                             | 說明                                     |
+| ------------------------------------ | ----------------------------------------- | ---------------------------------------- |
+| `outline-offset-<number>`            | `outline-offset: <number>px;`             | 正向偏移 `<number>` 像素                 |
+| `-outline-offset-<number>`           | `outline-offset: calc(<number>px * -1);`  | 負向偏移 `<number>` 像素                 |
+| `outline-offset-(<custom-property>)` | `outline-offset: var(<custom-property>);` | 使用自訂 CSS 變數作為偏移值              |
+| `outline-offset-[<value>]`           | `outline-offset: <value>;`                | 任意自訂偏移值（如 `12px`、`1.5rem` 等） |
+
+```html
+<div class="outline-offset-[2vw]"></div>
+<div class="outline-offset-(--my-outline-offset)"></div>
+```
+
+# Effects
+本章節介紹 Tailwind CSS 中各種「特效」相關的實用類別，包含陰影、透明度、混合模式與遮罩等，讓你能快速為網頁元素增添視覺層次與創意效果。
+
+## box-shadow
+用來為元素添加陰影效果，提升立體感與層次感。
+
+| 類別名稱                           | 對應 CSS 屬性                                                 | 說明                                       |
+| ---------------------------------- | ------------------------------------------------------------- | ------------------------------------------ |
+| `shadow-<size>`                    | `box-shadow: var(--shadow-<size>);`                           | 各種陰影尺寸                               |
+| `shadow-none`                      | `box-shadow: 0 0 #0000;`                                      | 移除陰影                                   |
+| `shadow-(<custom-property>)`       | `box-shadow: var(<custom-property>);`                         | 使用自訂 CSS 變數陰影                      |
+| `shadow-(color:<custom-property>)` | `--tw-shadow-color: var(<custom-property>);`                  | 使用自訂 CSS 變數陰影顏色                  |
+| `shadow-[<value>]`                 | `box-shadow: <value>;`                                        | 任意自訂陰影值                             |
+| `shadow-inherit`                   | `--tw-shadow-color: inherit;`                                 | 陰影顏色繼承                               |
+| `shadow-current`                   | `--tw-shadow-color: currentColor;`                            | 陰影顏色繼承自當前文字顏色                 |
+| `shadow-transparent`               | `--tw-shadow-color: transparent;`                             | 陰影顏色透明                               |
+| `shadow-black`                     | `--tw-shadow-color: var(--color-black);`                      | 陰影顏色黑色 #000                          |
+| `shadow-white`                     | `--tw-shadow-color: var(--color-white);`                      | 陰影顏色白色 #fff                          |
+| `shadow-<color>-<step>`            | `--tw-shadow-color: var(--color-<color>-<step>);`             | 設定陰影顏色                               |
+| `inset-shadow-<size>`              | `box-shadow: var(--inset-shadow-<size>);`                     | 內陰影尺寸                                 |
+| `inset-shadow-none`                | `box-shadow: inset 0 0 #0000;`                                | 移除內陰影                                 |
+| `inset-shadow-(<custom-property>)` | `box-shadow: var(<custom-property>);`                         | 使用自訂 CSS 變數內陰影                    |
+| `inset-shadow-[<value>]`           | `box-shadow: <value>;`                                        | 任意自訂內陰影值                           |
+| `inset-shadow-inherit`             | `--tw-inset-shadow-color: inherit;`                           | 內陰影顏色繼承                             |
+| `inset-shadow-current`             | `--tw-inset-shadow-color: currentColor;`                      | 內陰影顏色繼承自當前文字顏色               |
+| `inset-shadow-transparent`         | `--tw-inset-shadow-color: transparent;`                       | 內陰影顏色透明                             |
+| `inset-shadow-black`               | `--tw-inset-shadow-color: var(--color-black);`                | 內陰影顏色黑色 #000                        |
+| `inset-shadow-white`               | `--tw-inset-shadow-color: var(--color-white);`                | 內陰影顏色白色 #fff                        |
+| `inset-shadow-<color>-<step>`      | `--tw-inset-shadow-color: var(--color-<color>-<step>);`       | 設定內陰影顏色                             |
+| `ring`                             | `--tw-ring-shadow: 0 0 0 1px;`                                | 設定 1px 外圈陰影（預設）                  |
+| `ring-<number>`                    | `--tw-ring-shadow: 0 0 0 <number>px;`                         | 設定 `<number>` px 外圈陰影                |
+| `ring-(<custom-property>)`         | `--tw-ring-shadow: 0 0 0 var(<custom-property>);`             | 使用自訂 CSS 變數作為外圈陰影寬度          |
+| `ring-[<value>]`                   | `--tw-ring-shadow: 0 0 0 <value>;`                            | 任意自訂外圈陰影寬度（如 `2vw`、`0.5rem`） |
+| `ring-inherit`                     | `--tw-ring-color: inherit;`                                   | 外圈顏色繼承父層                           |
+| `ring-current`                     | `--tw-ring-color: currentColor;`                              | 外圈顏色繼承當前文字顏色                   |
+| `ring-transparent`                 | `--tw-ring-color: transparent;`                               | 外圈顏色透明                               |
+| `ring-black`                       | `--tw-ring-color: var(--color-black);`                        | 外圈顏色黑色 #000                          |
+| `ring-white`                       | `--tw-ring-color: var(--color-white);`                        | 外圈顏色白色 #fff                          |
+| `ring-<color>-<step>`              | `--tw-ring-color: var(--color-<color>-<step>);`               | 設定外圈顏色                               |
+| `inset-ring`                       | `--tw-inset-ring-shadow: inset 0 0 0 1px;`                    | 設定 1px 內圈陰影（預設）                  |
+| `inset-ring-<number>`              | `--tw-inset-ring-shadow: inset 0 0 0 <number>px;`             | 設定 `<number>` px 內圈陰影                |
+| `inset-ring-(<custom-property>)`   | `--tw-inset-ring-shadow: inset 0 0 0 var(<custom-property>);` | 使用自訂 CSS 變數作為內圈陰影寬度          |
+| `inset-ring-[<value>]`             | `--tw-inset-ring-shadow: inset 0 0 0 <value>;`                | 任意自訂內圈陰影寬度（如 `2vw`、`0.5rem`） |
+| `inset-ring-inherit`               | `--tw-inset-ring-color: inherit;`                             | 內圈顏色繼承父層                           |
+| `inset-ring-current`               | `--tw-inset-ring-color: currentColor;`                        | 內圈顏色繼承當前文字顏色                   |
+| `inset-ring-transparent`           | `--tw-inset-ring-color: transparent;`                         | 內圈顏色透明                               |
+| `inset-ring-black`                 | `--tw-inset-ring-color: var(--color-black);`                  | 內圈顏色黑色 #000                          |
+| `inset-ring-white`                 | `--tw-inset-ring-color: var(--color-white);`                  | 內圈顏色白色 #fff                          |
+| `inset-ring-<color>-<step>`        | `--tw-inset-ring-color: var(--color-<color>-<step>);`         | 設定內圈顏色為指定色                       |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --shadow-2xs: 0 1px #0000000d;
+  --shadow-xs: 0 1px 2px 0 #0000000d;
+  --shadow-sm: 0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a;
+  --shadow-md: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;
+  --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+  --shadow-xl: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
+  --shadow-2xl: 0 25px 50px -12px #00000040;
+
+  --inset-shadow-2xs: inset 0 1px #0000000d;
+  --inset-shadow-xs: inset 0 1px 1px #0000000d;
+  --inset-shadow-sm: inset 0 2px 4px #0000000d;
+}
+```
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<!-- 變更不透明度 -->
+<div class="shadow-xl ..."></div>
+<div class="shadow-xl/30 ..."></div>
+
+<!-- 陰影顏色 -->
+<button class="bg-cyan-500 shadow-lg shadow-cyan-500/50 ...">Subscribe</button>
+<button class="bg-indigo-500 shadow-lg shadow-indigo-500/50 ...">Subscribe</button>
+
+<!-- 內陰影與內陰影色 -->
+<div class="inset-shadow-2xs ..."></div>
+<div class="inset-shadow-xs ..."></div>
+<div class="inset-shadow-sm inset-shadow-indigo-500 ..."></div>
+<div class="inset-shadow-sm inset-shadow-indigo-500/50 ..."></div>
+
+<!-- 實心框圈與顏色 -->
+<button class="ring ...">Subscribe</button>
+<button class="ring-4 ...">Subscribe</button>
+<button class="ring-2 ring-blue-500 ...">Subscribe</button>
+<button class="ring-2 ring-blue-500/50 ...">Subscribe</button>
+
+<!-- 內實心框圈與顏色 -->
+<button class="inset-ring ...">Subscribe</button>
+<button class="inset-ring-4 ...">Subscribe</button>
+<button class="inset-ring-2 inset-ring-blue-500 ...">Subscribe</button>
+<button class="inset-ring-2 inset-ring-blue-500/50 ...">Subscribe</button>
+
+<!-- 任意值 -->
+<div class="shadow-[0_35px_35px_rgba(0,0,0,0.25)] ..."></div>
+<div class="shadow-(--my-shadow) ..."></div>
+```
+
+### 自訂
+```css
+@theme {
+  --shadow-3xl: 0 35px 35px rgba(0, 0, 0, 0.25);
+  --inset-shadow-md: inset 0 2px 3px rgba(0, 0, 0, 0.25); 
+
+  --color-regal-blue: #243c5a;
+}
+```
+```html
+<div class="shadow-3xl"></div>
+<div class="inset-shadow-md"></div>
+<div class="shadow-regal-blue"></div>
+```
+
+## text-shadow
+用來為文字添加陰影效果，增強可讀性或裝飾性。
+
+| 類別名稱                                | 對應 CSS 屬性                                          | 說明                     |
+| --------------------------------------- | ------------------------------------------------------ | ------------------------ |
+| `text-shadow-<size>`                    | `text-shadow: var(--text-shadow-<size>);`              | 指定文字陰影尺寸         |
+| `text-shadow-none`                      | `text-shadow: none;`                                   | 移除文字陰影             |
+| `text-shadow-(<custom-property>)`       | `text-shadow: var(<custom-property>);`                 | 使用自訂變數陰影         |
+| `text-shadow-(color:<custom-property>)` | `--tw-shadow-color: var(<custom-property>);`           | 使用自訂變數作為陰影顏色 |
+| `text-shadow-[<value>]`                 | `text-shadow: <value>;`                                | 任意值文字陰影           |
+| `text-shadow-inherit`                   | `--tw-shadow-color: inherit;`                          | 繼承父層陰影顏色         |
+| `text-shadow-current`                   | `--tw-shadow-color: currentColor;`                     | 使用當前文字顏色作為陰影 |
+| `text-shadow-transparent`               | `--tw-shadow-color: transparent;`                      | 透明陰影                 |
+| `text-shadow-black`                     | `--tw-text-shadow-color: var(--color-black);`          | 黑色文字陰影 #000        |
+| `text-shadow-white`                     | `--tw-text-shadow-color: var(--color-white);`          | 白色文字陰影 #fff        |
+| `text-shadow-<color>-<step>`            | `--tw-text-shadow-color: var(--color-<color>-<step>);` | 指定色的文字陰影         |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --text-shadow-2xs: 0px 1px 0px #00000026;
+  --text-shadow-xs: 0px 1px 1px #0003;
+  --text-shadow-sm: 0px 1px 0px #00000013, 0px 1px 1px #00000013, 0px 2px 2px #00000013;
+  --text-shadow-md: 0px 1px 1px #0000001a, 0px 1px 2px #0000001a, 0px 2px 4px #0000001a;
+  --text-shadow-lg: 0px 1px 2px #0000001a, 0px 3px 2px #0000001a, 0px 4px 8px #0000001a;
+}
+```
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<!-- 基本範例 -->
+<p class="text-shadow-2xs ...">The quick brown fox...</p>
+<p class="text-shadow-sm ...">The quick brown fox...</p>
+<p class="text-shadow-lg ...">The quick brown fox...</p>
+
+<!-- 不透明度 -->
+<p class="text-shadow-lg/20 ...">The quick brown fox...</p>
+
+<!-- 陰影顏色 -->
+<button class="text-sky-950 text-shadow-2xs text-shadow-sky-300 ...">Book a demo</button>
+
+<!-- 任意值 -->
+<p class="text-shadow-[0_35px_35px_rgb(0_0_0_/_0.25)] ..."></p>
+<p class="text-shadow-(--my-text-shadow) ..."></p>
+```
+
+### 自訂
+```css
+@theme {
+  --text-shadow-xl: 0 35px 35px rgb(0, 0, 0 / 0.25); 
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<p class="text-shadow-xl"></p>
+<p class="text-shadow-regal-blue"></p>
+```
+
+## opacity
+用來調整元素的透明度，常用於 hover 效果或淡出動畫。
+
+| 類別名稱                        | 對應 CSS 屬性                       | 說明                           |
+| ------------------------------- | ----------------------------------- | ------------------------------ |
+| 類別名稱                        | 對應 CSS 屬性                       | 說明                           |
+| ------------------------------- | ----------------------------------- | --------------------------     |
+| `opacity-<number>`              | `opacity: <number>%`                | 以百分比 `<number>` 指定透明度 |
+| `opacity-(<custom-property>)`   | `opacity: var(<custom-property>);`  | 使用自訂 CSS 變數              |
+| `opacity-[<value>]`             | `opacity: <value>;`                 | 任意自訂透明度                 |
+
+```html
+<button class="opacity-[.67] ..."></button>
+<button class="opacity-(--my-opacity) ..."></button>
+```
+
+## mix-blend-mode
+設定元素與背景的混合模式，創造特殊的合成效果。
+
+| 類別名稱                    | 對應 CSS 屬性                      | 說明           |
+| --------------------------- | ---------------------------------- | -------------- |
+| 類別名稱                    | 對應 CSS 屬性                      | 說明           |
+| --------------------------- | ---------------------------------- | -------------- |
+| `mix-blend-normal`          | `mix-blend-mode: normal;`          | 一般混合       |
+| `mix-blend-multiply`        | `mix-blend-mode: multiply;`        | 乘法混合       |
+| `mix-blend-screen`          | `mix-blend-mode: screen;`          | 螢幕混合       |
+| `mix-blend-overlay`         | `mix-blend-mode: overlay;`         | 疊加混合       |
+| `mix-blend-darken`          | `mix-blend-mode: darken;`          | 變暗混合       |
+| `mix-blend-lighten`         | `mix-blend-mode: lighten;`         | 變亮混合       |
+| `mix-blend-color-dodge`     | `mix-blend-mode: color-dodge;`     | 顏色增亮混合   |
+| `mix-blend-color-burn`      | `mix-blend-mode: color-burn;`      | 顏色加深混合   |
+| `mix-blend-hard-light`      | `mix-blend-mode: hard-light;`      | 強光混合       |
+| `mix-blend-soft-light`      | `mix-blend-mode: soft-light;`      | 柔光混合       |
+| `mix-blend-difference`      | `mix-blend-mode: difference;`      | 差異混合       |
+| `mix-blend-exclusion`       | `mix-blend-mode: exclusion;`       | 排除混合       |
+| `mix-blend-hue`             | `mix-blend-mode: hue;`             | 色相混合       |
+| `mix-blend-saturation`      | `mix-blend-mode: saturation;`      | 飽和度混合     |
+| `mix-blend-color`           | `mix-blend-mode: color;`           | 顏色混合       |
+| `mix-blend-luminosity`      | `mix-blend-mode: luminosity;`      | 亮度混合       |
+| `mix-blend-plus-darker`     | `mix-blend-mode: plus-darker;`     | 更暗混合       |
+| `mix-blend-plus-lighter`    | `mix-blend-mode: plus-lighter;`    | 更亮混合       |
+
+```html
+<div class="flex justify-center -space-x-14">
+  <div class="bg-blue-500 mix-blend-multiply ..."></div>
+  <div class="bg-pink-500 mix-blend-multiply ..."></div>
+</div>
+```
+
+## background-blend-mode
+設定多重背景圖層的混合模式，常用於圖片與漸層疊加。
+
+| 類別名稱               | 對應 CSS 屬性                         | 說明         |
+| ---------------------- | ------------------------------------- | ------------ |
+| `bg-blend-normal`      | `background-blend-mode: normal;`      | 一般混合     |
+| `bg-blend-multiply`    | `background-blend-mode: multiply;`    | 乘法混合     |
+| `bg-blend-screen`      | `background-blend-mode: screen;`      | 螢幕混合     |
+| `bg-blend-overlay`     | `background-blend-mode: overlay;`     | 疊加混合     |
+| `bg-blend-darken`      | `background-blend-mode: darken;`      | 變暗混合     |
+| `bg-blend-lighten`     | `background-blend-mode: lighten;`     | 變亮混合     |
+| `bg-blend-color-dodge` | `background-blend-mode: color-dodge;` | 顏色增亮混合 |
+| `bg-blend-color-burn`  | `background-blend-mode: color-burn;`  | 顏色加深混合 |
+| `bg-blend-hard-light`  | `background-blend-mode: hard-light;`  | 強光混合     |
+| `bg-blend-soft-light`  | `background-blend-mode: soft-light;`  | 柔光混合     |
+| `bg-blend-difference`  | `background-blend-mode: difference;`  | 差異混合     |
+| `bg-blend-exclusion`   | `background-blend-mode: exclusion;`   | 排除混合     |
+| `bg-blend-hue`         | `background-blend-mode: hue;`         | 色相混合     |
+| `bg-blend-saturation`  | `background-blend-mode: saturation;`  | 飽和度混合   |
+| `bg-blend-color`       | `background-blend-mode: color;`       | 顏色混合     |
+| `bg-blend-luminosity`  | `background-blend-mode: luminosity;`  | 亮度混合     |
+
+```html
+<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-multiply ..."></div>
+<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-overlay ..."></div>
+```
+
+## mask-clip
+設定遮罩的裁切範圍，控制遮罩的顯示區域。
+
+| 類別名稱            | 對應 CSS 屬性             | 說明           |
+| ------------------- | ------------------------- | -------------- |
+| `mask-clip-border`  | `mask-clip: border-box;`  | 以邊框裁切     |
+| `mask-clip-padding` | `mask-clip: padding-box;` | 以內邊距裁切   |
+| `mask-clip-content` | `mask-clip: content-box;` | 以內容裁切     |
+| `mask-clip-fill`    | `mask-clip: fill-box;`    | 以填滿區域裁切 |
+| `mask-clip-stroke`  | `mask-clip: stroke-box;`  | 以描邊區域裁切 |
+| `mask-clip-view`    | `mask-clip: view-box;`    | 以視圖區域裁切 |
+| `mask-no-clip`      | `mask-clip: no-clip;`     | 不進行裁切     |
+
+```html
+<div class="mask-clip-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-clip-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-clip-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+```
+
+## mask-composite
+設定多重遮罩的合成方式，決定遮罩如何疊加。
+
+| 類別名稱         | 對應 CSS 屬性                | 說明     |
+| ---------------- | ---------------------------- | -------- |
+| `mask-add`       | `mask-composite: add;`       | 疊加遮罩 |
+| `mask-subtract`  | `mask-composite: subtract;`  | 減去遮罩 |
+| `mask-intersect` | `mask-composite: intersect;` | 交集遮罩 |
+| `mask-exclude`   | `mask-composite: exclude;`   | 排除遮罩 |
+
+```html
+<div class="mask-add mask-[url(/img/circle.png),url(/img/circle.png)] mask-[position:30%_50%,70%_50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-subtract mask-[url(/img/circle.png),url(/img/circle.png)] mask-[position:30%_50%,70%_50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-intersect mask-[url(/img/circle.png),url(/img/circle.png)] mask-[position:30%_50%,70%_50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-exclude mask-[url(/img/circle.png),url(/img/circle.png)] mask-[position:30%_50%,70%_50%] bg-[url(/img/mountains.jpg)]"></div>
+```
+
+## mask-image
+設定遮罩所使用的圖片來源。
+
+> <kbd>t</kbd>:top, <kbd>r</kbd>:right, <kbd>b</kbd>:bottom, <kbd>l</kbd>:left, <kbd>y</kbd>:top-bottom, <kbd>x</kbd>:right-left
+
+### img, linear
+| 類別名稱                                     | 對應 CSS 屬性                                                                                                                                                                                                                                                                                                               | 說明                                             |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `mask-[<value>]`                             | `mask-image: <value>;`                                                                                                                                                                                                                                                                                                      | 自訂遮罩（可用 url、gradient 等）                |
+| `mask-(<custom-property>)`                   | `mask-image: var(<custom-property>);`                                                                                                                                                                                                                                                                                       | 使用 CSS 變數作為遮罩                            |
+| `mask-none`                                  | `mask-image: none;`                                                                                                                                                                                                                                                                                                         | 不使用遮罩                                       |
+| `mask-linear-<number>`                       | `mask-image: linear-gradient(<number>deg, black var(--tw-mask-linear-from), transparent var(--tw-mask-linear-to));`                                                                                                                                                                                                         | 線性漸層遮罩（正角度）                           |
+| `-mask-linear-<number>`                      | `mask-image: linear-gradient(calc(<number>deg * -1), black var(--tw-mask-linear-from), transparent var(--tw-mask-linear-to));`                                                                                                                                                                                              | 線性漸層遮罩（反向角度）                         |
+| `mask-linear-from-<number>`                  | `mask-image: linear-gradient(var(--tw-mask-linear-position), black calc(var(--spacing * <number>)), transparent var(--tw-mask-linear-to));`                                                                                                                                                                                 | 起始點為指定數值（以 spacing 單位）              |
+| `mask-linear-from-<percentage>`              | `mask-image: linear-gradient(var(--tw-mask-linear-position), black <percentage>, transparent var(--tw-mask-linear-to));`                                                                                                                                                                                                    | 起始點為百分比                                   |
+| `mask-linear-from-<color>`                   | `mask-image: linear-gradient(var(--tw-mask-linear-position), <color> var(--tw-mask-linear-from), transparent var(--tw-mask-linear-to));`                                                                                                                                                                                    | 起始點為指定顏色                                 |
+| `mask-linear-from-(<custom-property>)`       | `mask-image: linear-gradient(var(--tw-mask-linear-position), black <custom-property>, transparent var(--tw-mask-linear-to));`                                                                                                                                                                                               | 起始點為自訂 CSS 變數                            |
+| `mask-linear-from-[<value>]`                 | `mask-image: linear-gradient(var(--tw-mask-linear-position), black <value>, transparent var(--tw-mask-linear-to));`                                                                                                                                                                                                         | 起始點為自訂值                                   |
+| `mask-linear-to-<number>`                    | `mask-image: linear-gradient(var(--tw-mask-linear-position), black var(--tw-mask-linear-from), transparent calc(var(--spacing * <number>)));`                                                                                                                                                                               | 結束點為指定數值（以 spacing 單位）              |
+| `mask-linear-to-<percentage>`                | `mask-image: linear-gradient(var(--tw-mask-linear-position), black var(--tw-mask-linear-from), transparent <percentage>);`                                                                                                                                                                                                  | 結束點為百分比                                   |
+| `mask-linear-to-<color>`                     | `mask-image: linear-gradient(var(--tw-mask-linear-position), black var(--tw-mask-linear-from), <color> var(--tw-mask-linear-to));`                                                                                                                                                                                          | 結束點為指定顏色                                 |
+| `mask-linear-to-(<custom-property>)`         | `mask-image: linear-gradient(var(--tw-mask-linear-position), black var(--tw-mask-linear-from), transparent var(<custom-property>));`                                                                                                                                                                                        | 結束點為自訂 CSS 變數                            |
+| `mask-linear-to-[<value>]`                   | `mask-image: linear-gradient(var(--tw-mask-linear-position), black var(--tw-mask-linear-from), transparent <value>);`                                                                                                                                                                                                       | 結束點為自訂值                                   |
+| `mask-<t\|r\|b\|l>-from-<number>`            | `mask-image: linear-gradient(to <arrow>, black calc(var(--spacing * <number>)), transparent var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                    | 從上方起始點為指定數值（以 spacing 單位）        |
+| `mask-<t\|r\|b\|l>-from-<percentage>`        | `mask-image: linear-gradient(to <arrow>, black <percentage>, transparent var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                                       | 從<arrow>方向起始點為百分比                      |
+| `mask-<t\|r\|b\|l>-from-<color>`             | `mask-image: linear-gradient(to <arrow>, <color> var(--tw-mask-<arrow>-from), transparent var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                      | 從<arrow>方向起始點為指定顏色                    |
+| `mask-<t\|r\|b\|l>-from-(<custom-property>)` | `mask-image: linear-gradient(to <arrow>, black var(<custom-property>), transparent var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                             | 從<arrow>方向起始點為自訂 CSS 變數               |
+| `mask-<t\|r\|b\|l>-from-[<value>]`           | `mask-image: linear-gradient(to <arrow>, black <value>, transparent var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                                            | 從<arrow>方向起始點為自訂值                      |
+| `mask-<t\|r\|b\|l>-to-<number>`              | `mask-image: linear-gradient(to <arrow>, black var(--tw-mask-<arrow>-from), transparent calc(var(--spacing * <number>)));`                                                                                                                                                                                                  | 從<arrow>方向結束點為指定數值（以 spacing 單位） |
+| `mask-<t\|r\|b\|l>-to-<percentage>`          | `mask-image: linear-gradient(to <arrow>, black var(--tw-mask-<arrow>-from), transparent <percentage>);`                                                                                                                                                                                                                     | 從<arrow>方向結束點為百分比                      |
+| `mask-<t\|r\|b\|l>-to-<color>`               | `mask-image: linear-gradient(to <arrow>, black var(--tw-mask-<arrow>-from), <color> var(--tw-mask-<arrow>-to));`                                                                                                                                                                                                            | 從<arrow>方向結束點為指定顏色                    |
+| `mask-<t\|r\|b\|l>-to-(<custom-property>)`   | `mask-image: linear-gradient(to <arrow>, black var(--tw-mask-<arrow>-from), transparent var(<custom-property>));`                                                                                                                                                                                                           | 從<arrow>方向結束點為自訂 CSS 變數               |
+| `mask-<t\|r\|b\|l>-to-[<value>]`             | `mask-image: linear-gradient(to <arrow>, black var(--tw-mask-<arrow>-from), transparent <value>);`                                                                                                                                                                                                                          | 從<arrow>方向結束點為自訂值                      |
+| `mask-<y\|x>-from-<number>`                  | `mask-image: linear-gradient(to <y=top\|x=right>, black calc(var(--spacing * <number>)), transparent var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, black calc(var(--spacing * <number>)), transparent var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;`                 | 垂直方向起始點為指定數值（以 spacing 單位）      |
+| `mask-<y\|x>-from-<percentage>`              | `mask-image: linear-gradient(to <y=top\|x=right>, black <percentage>, transparent var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, black <percentage>, transparent var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;`                                                       | 垂直方向起始點為百分比                           |
+| `mask-<y\|x>-from-<color>`                   | `mask-image: linear-gradient(to <y=top\|x=right>, <color> var(--tw-mask-<y=top\|x=right>-from), transparent var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, <color> var(--tw-mask-<y=bottom\|x=left>-from), transparent var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;` | 垂直方向起始點為指定顏色                         |
+| `mask-<y\|x>-from-(<custom-property>)`       | `mask-image: linear-gradient(to <y=top\|x=right>, black var(<custom-property>), transparent var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, black var(<custom-property>), transparent var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;`                                   | 垂直方向起始點為自訂 CSS 變數                    |
+| `mask-<y\|x>-from-[<value>]`                 | `mask-image: linear-gradient(to <y=top\|x=right>, black <value>, transparent var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, black <value>, transparent var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;`                                                                 | 垂直方向起始點為自訂值                           |
+| `mask-<y\|x>-to-<number>`                    | `mask-image: linear-gradient(to <y=top\|x=right>, black var(--tw-mask-<y=top\|x=right>-from), transparent calc(var(--spacing * <number>)), linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=bottom\|x=left>-from), transparent calc(var(--spacing * <number>));`<br>`mask-composite: intersect;`               | 垂直方向結束點為指定數值（以 spacing 單位）      |
+| `mask-<y\|x>-to-<percentage>`                | `mask-image: linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=top\|x=right>-from), transparent <percentage>), linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=bottom\|x=left>-from), transparent <percentage>);`<br>`mask-composite: intersect;`                                                 | 垂直方向結束點為百分比                           |
+| `mask-<y\|x>-to-<color>`                     | `mask-image: linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=top\|x=right>-from), <color> var(--tw-mask-<y=top\|x=right>-to)), linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=bottom\|x=left>-from), <color> var(--tw-mask-<y=bottom\|x=left>-to));`<br>`mask-composite: intersect;`           | 垂直方向結束點為指定顏色                         |
+| `mask-<y\|x>-to-(<custom-property>)`         | `mask-image: linear-gradient(to <y=top\|x=right>, black var(--tw-mask-<y=top\|x=right>-from), transparent var(<custom-property>)),linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=bottom\|x=left>-from), transparent var(<custom-property>));`<br>`mask-composite: intersect;`                                | 垂直方向結束點為自訂 CSS 變數                    |
+| `mask-<y\|x>-to-[<value>]`                   | `mask-image: linear-gradient(to <y=top\|x=right>, black var(--tw-mask-<y=top\|x=right>-from), transparent <value>),linear-gradient(to <y=bottom\|x=left>, black var(--tw-mask-<y=bottom\|x=left>-from), transparent <value>);`<br>`mask-composite: intersect;`                                                              | 垂直方向結束點為自訂值                           |
+
+```html
+<!-- image 遮罩 -->
+<div class="mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<!-- linear-gradient 遮罩 -->
+<div class="mask-t-from-50% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-r-from-30% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-l-from-50% mask-l-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-b-from-20% mask-b-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-x-from-70% mask-x-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-y-from-70% mask-y-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
+<!-- linear-gradient & deg 遮罩 -->
+<div class="mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="-mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
+```
+
+### radial
+
+| 類別名稱                               | 對應 CSS 屬性                                                                                                                                                                                           | 說明                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `mask-radial-[<value>]`                | `mask-image: radial-gradient(<value>);`                                                                                                                                                                 | 自訂徑向漸層遮罩                            |
+| `mask-radial-[<size>]`                 | `--tw-mask-radial-size: <size>;`                                                                                                                                                                        | 設定徑向漸層遮罩尺寸（單一值）              |
+| `mask-radial-[<size>_<size>]`          | `--tw-mask-radial-size: <size> <size>;`                                                                                                                                                                 | 設定徑向漸層遮罩尺寸（寬高）                |
+| `mask-radial-from-<number>`            | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black calc(var(--spacing * <number>)), transparent var(--tw-mask-radial-to));`   | 徑向漸層起始點為指定數值（以 spacing 單位） |
+| `mask-radial-from-<percentage>`        | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black <percentage>, transparent var(--tw-mask-radial-to));`                      | 徑向漸層起始點為百分比                      |
+| `mask-radial-from-<color>`             | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), <color> var(--tw-mask-radial-from), transparent var(--tw-mask-radial-to));`      | 徑向漸層起始點為指定顏色                    |
+| `mask-radial-from-(<custom-property>)` | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(<custom-property>), transparent var(--tw-mask-radial-to));`            | 徑向漸層起始點為自訂 CSS 變數               |
+| `mask-radial-from-[<value>]`           | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black <value>, transparent var(--tw-mask-radial-to));`                           | 徑向漸層起始點為自訂值                      |
+| `mask-radial-to-<number>`              | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(--tw-mask-radial-from), transparent calc(var(--spacing * <number>)));` | 徑向漸層結束點為指定數值（以 spacing 單位） |
+| `mask-radial-to-<percentage>`          | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(--tw-mask-radial-from), transparent <percentage>);`                    | 徑向漸層結束點為百分比                      |
+| `mask-radial-to-<color>`               | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(--tw-mask-radial-from), <color> var(--tw-mask-radial-to));`            | 徑向漸層結束點為指定顏色                    |
+| `mask-radial-to-(<custom-property>)`   | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(--tw-mask-radial-from), transparent var(<custom-property>));`          | 徑向漸層結束點為自訂 CSS 變數               |
+| `mask-radial-to-[<value>]`             | `mask-image: radial-gradient(var(--tw-mask-radial-shape) var(--tw-mask-radial-size) at var(--tw-mask-radial-position), black var(--tw-mask-radial-from), transparent <value>);`                         | 徑向漸層結束點為自訂值                      |
+| `mask-circle`                          | `--tw-mask-radial-shape: circle;`                                                                                                                                                                       | 徑向遮罩形狀為圓形                          |
+| `mask-ellipse`                         | `--tw-mask-radial-shape: ellipse;`                                                                                                                                                                      | 徑向遮罩形狀為橢圓                          |
+| `mask-radial-closest-corner`           | `--tw-mask-radial-size: closest-corner;`                                                                                                                                                                | 徑向遮罩尺寸為最近角落                      |
+| `mask-radial-closest-side`             | `--tw-mask-radial-size: closest-side;`                                                                                                                                                                  | 徑向遮罩尺寸為最近邊緣                      |
+| `mask-radial-farthest-corner`          | `--tw-mask-radial-size: farthest-corner;`                                                                                                                                                               | 徑向遮罩尺寸為最遠角落                      |
+| `mask-radial-farthest-side`            | `--tw-mask-radial-size: farthest-side;`                                                                                                                                                                 | 徑向遮罩尺寸為最遠邊緣                      |
+| `mask-radial-at-top-left`              | `--tw-mask-radial-position: top left;`                                                                                                                                                                  | 徑向遮罩定位於左上角                        |
+| `mask-radial-at-top`                   | `--tw-mask-radial-position: top;`                                                                                                                                                                       | 徑向遮罩定位於上方                          |
+| `mask-radial-at-top-right`             | `--tw-mask-radial-position: top right;`                                                                                                                                                                 | 徑向遮罩定位於右上角                        |
+| `mask-radial-at-left`                  | `--tw-mask-radial-position: left;`                                                                                                                                                                      | 徑向遮罩定位於左側                          |
+| `mask-radial-at-center`                | `--tw-mask-radial-position: center;`                                                                                                                                                                    | 徑向遮罩定位於中央                          |
+| `mask-radial-at-right`                 | `--tw-mask-radial-position: right;`                                                                                                                                                                     | 徑向遮罩定位於右側                          |
+| `mask-radial-at-bottom-left`           | `--tw-mask-radial-position: bottom left;`                                                                                                                                                               | 徑向遮罩定位於左下角                        |
+| `mask-radial-at-bottom`                | `--tw-mask-radial-position: bottom;`                                                                                                                                                                    | 徑向遮罩定位於下方                          |
+| `mask-radial-at-bottom-right`          | `--tw-mask-radial-position: bottom right;`                                                                                                                                                              | 徑向遮罩定位於右下角                        |
+| `mask-conic-<number>`                  | `mask-image: conic-gradient(from <number>deg, black var(--tw-mask-conic-from), transparent var(--tw-mask-conic-to));`                                                                                   | 錐形遮罩，起始角度為指定度數                |
+| `-mask-conic-<number>`                 | `mask-image: conic-gradient(from calc(<number>deg * -1), black var(--tw-mask-conic-from), transparent var(--tw-mask-conic-to));`                                                                        | 錐形遮罩，起始角度為負值                    |
+| `mask-conic-from-<number>`             | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black calc(var(--spacing * <number>)), transparent var(--tw-mask-conic-to));`                                                           | 錐形遮罩起始點為指定數值（以 spacing 單位） |
+| `mask-conic-from-<percentage>`         | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black <percentage>, transparent var(--tw-mask-conic-to));`                                                                              | 錐形遮罩起始點為百分比                      |
+| `mask-conic-from-<color>`              | `mask-image: conic-gradient(from var(--tw-mask-conic-position), <color> var(--tw-mask-conic-from), transparent var(--tw-mask-conic-to));`                                                               | 錐形遮罩起始點為指定顏色                    |
+| `mask-conic-from-(<custom-property>)`  | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(<custom-property>), transparent var(--tw-mask-conic-to));`                                                                    | 錐形遮罩起始點為自訂 CSS 變數               |
+| `mask-conic-from-[<value>]`            | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black <value>, transparent var(--tw-mask-conic-to));`                                                                                   | 錐形遮罩起始點為自訂值                      |
+| `mask-conic-to-<number>`               | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(--tw-mask-conic-from), transparent calc(var(--spacing * <number>)));`                                                         | 錐形遮罩結束點為指定數值（以 spacing 單位） |
+| `mask-conic-to-<percentage>`           | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(--tw-mask-conic-from), transparent <percentage>);`                                                                            | 錐形遮罩結束點為百分比                      |
+| `mask-conic-to-<color>`                | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(--tw-mask-conic-from), <color> var(--tw-mask-conic-to));`                                                                     | 錐形遮罩結束點為指定顏色                    |
+| `mask-conic-to-(<custom-property>)`    | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(--tw-mask-conic-from), transparent var(<custom-property>));`                                                                  | 錐形遮罩結束點為自訂 CSS 變數               |
+| `mask-conic-to-[<value>]`              | `mask-image: conic-gradient(from var(--tw-mask-conic-position), black var(--tw-mask-conic-from), transparent <value>);`                                                                                 | 錐形遮罩結束點為自訂值                      |
+
+```html
+<!-- 放射狀遮罩 -->
+<img class="mask-radial-[100%_100%] mask-radial-from-75% mask-radial-at-left ..." src="/img/keyboard.png" />
+<!-- 放射狀遮罩位置 -->
+<div class="mask-radial-at-top-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-top mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-top-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-center mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-bottom-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-bottom mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-bottom-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<!-- 放射狀遮罩大小 -->
+<div class="mask-radial-closest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-closest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-farthest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-farthest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
+<!-- 圓錐遮罩 -->
+<div class="grid grid-cols-1 grid-rows-1">
+  <div class="border-4 border-gray-100 dark:border-gray-700 ..."></div>
+  <div class="border-4 border-amber-500 mask-conic-from-75% mask-conic-to-75% dark:border-amber-400 ..."></div>
+</div>
+```
+
+### mix, custom
+```html
+<!-- 組合遮罩 -->
+<div class="mask-b-from-50% mask-radial-[50%_90%] mask-radial-from-80% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-r-from-80% mask-b-from-80% mask-radial-from-70% mask-radial-to-85% bg-[url(/img/mountains.jpg)] ..."></div>
+<!-- 任意值 -->
+<div class="mask-linear-[70deg,transparent_10%,black,transparent_80%] ..."></div>
+<div class="mask-linear-(--my-mask) ..."></div>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<div class="mask-radial-from-regal-blue"></div>
+```
+
+## mask-mode
+設定遮罩的繪製模式（alpha 或 luminance）。
+
+| 類別名稱         | 對應 CSS 屬性              | 說明         |
+| ---------------- | -------------------------- | ------------ |
+| `mask-alpha`     | `mask-mode: alpha;`        | 透明度遮罩   |
+| `mask-luminance` | `mask-mode: luminance;`    | 亮度遮罩     |
+| `mask-match`     | `mask-mode: match-source;` | 跟隨來源遮罩 |
+
+```html
+<div class="mask-alpha mask-r-from-black mask-r-from-50% mask-r-to-transparent bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-luminance mask-r-from-white mask-r-from-50% mask-r-to-black bg-[url(/img/mountains.jpg)] ..."></div>
+```
+
+## mask-origin
+設定遮罩定位的參考點。
+
+| 類別名稱              | 對應 CSS 屬性               | 說明                |
+| --------------------- | --------------------------- | ------------------- |
+| `mask-origin-border`  | `mask-origin: border-box;`  | 以邊框為基準        |
+| `mask-origin-padding` | `mask-origin: padding-box;` | 以內距為基準        |
+| `mask-origin-content` | `mask-origin: content-box;` | 以內容為基準        |
+| `mask-origin-fill`    | `mask-origin: fill-box;`    | 以 SVG 填滿區為基準 |
+| `mask-origin-stroke`  | `mask-origin: stroke-box;`  | 以 SVG 描邊區為基準 |
+| `mask-origin-view`    | `mask-origin: view-box;`    | 以 SVG 檢視區為基準 |
+
+```html
+<div class="mask-origin-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-origin-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-origin-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+```
+
+## mask-position
+設定遮罩圖片的顯示位置。
+
+| 類別名稱                            | 對應 CSS 屬性                            | 說明              |
+| ----------------------------------- | ---------------------------------------- | ----------------- |
+| `mask-top-left`                     | `mask-position: top left;`               | 左上角顯示        |
+| `mask-top`                          | `mask-position: top;`                    | 置頂顯示          |
+| `mask-top-right`                    | `mask-position: top right;`              | 右上角顯示        |
+| `mask-left`                         | `mask-position: left;`                   | 靠左顯示          |
+| `mask-center`                       | `mask-position: center;`                 | 置中顯示          |
+| `mask-right`                        | `mask-position: right;`                  | 靠右顯示          |
+| `mask-bottom-left`                  | `mask-position: bottom left;`            | 左下角顯示        |
+| `mask-bottom`                       | `mask-position: bottom;`                 | 置底顯示          |
+| `mask-bottom-right`                 | `mask-position: bottom right;`           | 右下角顯示        |
+| `mask-position-(<custom-property>)` | `mask-position: var(<custom-property>);` | 使用自訂 CSS 變數 |
+| `mask-position-[<value>]`           | `mask-position: <value>;`                | 任意自訂值        |
+
+```html
+<div class="mask-top-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-top mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-top-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-center mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-bottom-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-bottom mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-bottom-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+
+<div class="mask-position-[center_top_1rem] ..."></div>
+<div class="mask-position-(--my-mask-position) ..."></div>
+```
+
+## mask-repeat
+設定遮罩圖片是否重複平鋪。
+
+| 類別名稱            | 對應 CSS 屬性             | 說明           |
+| ------------------- | ------------------------- | -------------- |
+| `mask-repeat`       | `mask-repeat: repeat;`    | 重複平鋪       |
+| `mask-no-repeat`    | `mask-repeat: no-repeat;` | 不重複         |
+| `mask-repeat-x`     | `mask-repeat: repeat-x;`  | 僅水平重複     |
+| `mask-repeat-y`     | `mask-repeat: repeat-y;`  | 僅垂直重複     |
+| `mask-repeat-space` | `mask-repeat: space;`     | 以間隔方式平鋪 |
+| `mask-repeat-round` | `mask-repeat: round;`     | 以圓整方式平鋪 |
+
+## mask-size
+設定遮罩圖片的縮放大小。
+
+| 類別名稱                        | 對應 CSS 屬性                        | 說明              |
+| ------------------------------- | ------------------------------------ | ----------------- |
+| `mask-auto`                     | `mask-size: auto;`                   | 自動大小          |
+| `mask-cover`                    | `mask-size: cover;`                  | 填滿容器          |
+| `mask-contain`                  | `mask-size: contain;`                | 等比例縮放至容器  |
+| `mask-size-(<custom-property>)` | `mask-size: var(<custom-property>);` | 使用自訂 CSS 變數 |
+| `mask-size-[<value>]`           | `mask-size: <value>;`                | 任意自訂值        |
+
+```html
+<div class="mask-cover mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+
+<div class="mask-size-[auto_100px] ..."></div>
+<div class="mask-size-(--my-mask-size) ..."></div>
+```
+
+## mask-type
+設定遮罩類型（`alpha` 透明度遮罩或 `luminance` 亮度遮罩），主要用於指定 SVG 遮罩的解譯方式，影響遮罩如何作用於元素的顯示。
+
+| 類別名稱              | 對應 CSS 屬性           | 說明       |
+| --------------------- | ----------------------- | ---------- |
+| `mask-type-alpha`     | `mask-type: alpha;`     | 透明度遮罩 |
+| `mask-type-luminance` | `mask-type: luminance;` | 亮度遮罩   |
+
+```html
+<svg>
+  <mask id="blob1" class="mask-type-alpha fill-gray-700/70">
+    <path d="..."></path>
+  </mask>
+  <image href="/img/mountains.jpg" height="100%" width="100%" mask="url(#blob1)" />
+</svg>
+<svg>
+  <mask id="blob2" class="mask-type-luminance fill-gray-700/70">
+    <path d="..."></path>
+  </mask>
+  <image href="/img/mountains.jpg" height="100%" width="100%" mask="url(#blob2)" />
+</svg>
+```
+
+# Filters
+使用 CSS 濾鏡（filter）可以為元素添加模糊、亮度、對比等視覺效果，讓圖片或區塊呈現不同的風格。Tailwind CSS 提供多種 filter 與 backdrop-filter 工具類別，方便快速套用。
+
+## filter
+`filter` 主要用於直接對元素本身進行濾鏡處理。
+
+| 類別名稱                     | 對應 CSS 屬性                     | 說明              |
+| ---------------------------- | --------------------------------- | ----------------- |
+| `filter-none`                | `filter: none;`                   | 移除所有濾鏡效果  |
+| `filter-(<custom-property>)` | `filter: var(<custom-property>);` | 使用自訂 CSS 變數 |
+| `filter-[<value>]`           | `filter: <value>;`                | 任意自訂值        |
+
+```html
+<img class="filter-[url('filters.svg#filter-id')] ..." src="/img/mountains.jpg" />
+<img class="filter-(--my-filter) ..." src="/img/mountains.jpg" />
+```
+
+### blur
+模糊效果，讓元素變得模糊。
+
+| 類別名稱                   | 對應 CSS 屬性                           | 說明                |
+| -------------------------- | --------------------------------------- | ------------------- |
+| `blur-<size>`              | `filter: blur(var(--blur-<size>));`     | 模糊單位            |
+| `blur-none`                | `filter: ;`                             | 無模糊效果          |
+| `blur-(<custom-property>)` | `filter: blur(var(<custom-property>));` | 自訂 CSS 變數模糊值 |
+| `blur-[<value>]`           | `filter: blur(<value>);`                | 任意自訂模糊值      |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+}
+```
+
+```html
+<img class="blur-sm" src="/img/mountains.jpg" />
+<img class="blur-2xl" src="/img/mountains.jpg" />
+
+<img class="blur-[2px] ..." src="/img/mountains.jpg" />
+<img class="blur-(--my-blur) ..." src="/img/mountains.jpg" />
+```
+
+### brightness
+調整亮度，讓元素變亮或變暗。
+
+| 類別名稱                         | 對應 CSS 屬性                                 | 說明                          |
+| -------------------------------- | --------------------------------------------- | ----------------------------- |
+| `brightness-<number>`            | `filter: brightness(<number>%);`              | 亮度百分比（如 50、100、150） |
+| `brightness-(<custom-property>)` | `filter: brightness(var(<custom-property>));` | 使用自訂 CSS 變數亮度         |
+| `brightness-[<value>]`           | `filter: brightness(<value>);`                | 任意自訂亮度值                |
+
+```html
+<img class="brightness-125 ..." src="/img/mountains.jpg" />
+<img class="brightness-[1.75] ..." src="/img/mountains.jpg" />
+<img class="brightness-(--my-brightness) ..." src="/img/mountains.jpg" />
+```
+
+### contrast
+調整對比度，讓元素顏色更鮮明或更灰。
+
+| 類別名稱                       | 對應 CSS 屬性                               | 說明                            |
+| ------------------------------ | ------------------------------------------- | ------------------------------- |
+| `contrast-<number>`            | `filter: contrast(<number>%);`              | 對比度百分比（如 50、100、150） |
+| `contrast-(<custom-property>)` | `filter: contrast(var(<custom-property>));` | 使用自訂 CSS 變數對比度         |
+| `contrast-[<value>]`           | `filter: contrast(<value>);`                | 任意自訂對比度值                |
+
+```html
+<img class="contrast-125 ..." src="/img/mountains.jpg" />
+<img class="contrast-[.25] ..." src="/img/mountains.jpg" />
+<img class="contrast-(--my-contrast) ..." src="/img/mountains.jpg" />
+```
+
+### drop-shadow
+添加陰影效果，讓元素有立體感。
+
+| 類別名稱                                | 對應 CSS 屬性                                          | 說明                       |
+| --------------------------------------- | ------------------------------------------------------ | -------------------------- |
+| `drop-shadow-<size>`                    | `filter: drop-shadow(var(--drop-shadow-<size>));`      | 陰影尺寸單位               |
+| `drop-shadow-none`                      | `filter: drop-shadow(0 0 #0000);`                      | 無陰影                     |
+| `drop-shadow-(<custom-property>)`       | `filter: drop-shadow(var(<custom-property>));`         | 使用自訂 CSS 變數陰影      |
+| `drop-shadow-(color:<custom-property>)` | `--tw-drop-shadow-color: var(<custom-property>);`      | 自訂陰影顏色（CSS 變數）   |
+| `drop-shadow-[<value>]`                 | `filter: drop-shadow(<value>);`                        | 任意自訂陰影值             |
+| `drop-shadow-inherit`                   | `--tw-drop-shadow-color: inherit;`                     | 繼承父層陰影顏色           |
+| `drop-shadow-current`                   | `--tw-drop-shadow-color: currentColor;`                | 使用當前文字顏色作為陰影色 |
+| `drop-shadow-transparent`               | `--tw-drop-shadow-color: transparent;`                 | 透明陰影                   |
+| `drop-shadow-black`                     | `--tw-drop-shadow-color: var(--color-black);`          | 黑色陰影（#000）           |
+| `drop-shadow-white`                     | `--tw-drop-shadow-color: var(--color-white);`          | 白色陰影（#fff）           |
+| `drop-shadow-<color>-<step>`            | `--tw-drop-shadow-color: var(--color-<color>-<step>);` | 陰影指定色 step            |
+
+```css
+:r {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+}
+```
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<!-- 基本範例 -->
+<svg class="drop-shadow-lg ..."></svg>
+<!-- 不透明度 -->
+<svg class="fill-white drop-shadow-xl/25 ...">...</svg>
+<!-- 陰影顏色 -->
+<svg class="fill-indigo-500 drop-shadow-lg drop-shadow-indigo-500/50 ...">...</svg>
+<!-- 任意值 -->
+<svg class="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)] ..."></svg>
+<svg class="drop-shadow-(--my-drop-shadow) ..."></svg>
+```
+
+#### 自訂
+```css
+@theme {
+  --drop-shadow-3xl: 0 35px 35px rgba(0, 0, 0, 0.25); 
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<svg class="drop-shadow-3xl"></svg>
+<svg class="drop-shadow-regal-blue"></svg>
+```
+
+### grayscale
+將元素轉為灰階。
+
+| 類別名稱                        | 對應 CSS 屬性                                | 說明                    |
+| ------------------------------- | -------------------------------------------- | ----------------------- |
+| `grayscale`                     | `filter: grayscale(100%);`                   | 完全灰階                |
+| `grayscale-<number>`            | `filter: grayscale(<number>%);`              | 指定百分比灰階（如 50） |
+| `grayscale-(<custom-property>)` | `filter: grayscale(var(<custom-property>));` | 使用 CSS 變數自訂灰階值 |
+| `grayscale-[<value>]`           | `filter: grayscale(<value>);`                | 任意自訂灰階值          |
+
+```html
+<img class="grayscale-25 ..." src="/img/mountains.jpg" />
+
+<img class="grayscale-[0.5] ..." src="/img/mountains.jpg" />
+<img class="grayscale-(--my-grayscale) ..." src="/img/mountains.jpg" />
+```
+
+### hue-rotate
+調整色相，改變顏色輪的位置。
+
+| 類別名稱                         | 對應 CSS 屬性                                 | 說明                           |
+| -------------------------------- | --------------------------------------------- | ------------------------------ |
+| `hue-rotate-<number>`            | `filter: hue-rotate(<number>deg);`            | 順時針旋轉指定角度（度數）色相 |
+| `-hue-rotate-<number>`           | `filter: hue-rotate(calc(<number>deg * -1));` | 逆時針旋轉指定角度（度數）色相 |
+| `hue-rotate-(<custom-property>)` | `filter: hue-rotate(var(<custom-property>));` | 使用 CSS 變數自訂色相旋轉值    |
+| `hue-rotate-[<value>]`           | `filter: hue-rotate(<value>);`                | 任意自訂色相旋轉值             |
+
+```html
+<img class="hue-rotate-180" src="/img/mountains.jpg" />
+<img class="-hue-rotate-45" src="/img/mountains.jpg" />
+<img class="hue-rotate-[3.142rad] ..." src="/img/mountains.jpg" />
+<img class="hue-rotate-(--my-hue-rotate) ..." src="/img/mountains.jpg" />
+```
+
+### invert
+反轉顏色，產生底片效果。
+
+| 類別名稱                     | 對應 CSS 屬性                             | 說明                     |
+| ---------------------------- | ----------------------------------------- | ------------------------ |
+| `invert`                     | `filter: invert(100%);`                   | 完全反轉顏色（底片效果） |
+| `invert-<number>`            | `filter: invert(<number>%);`              | 指定百分比反轉（如 50）  |
+| `invert-(<custom-property>)` | `filter: invert(var(<custom-property>));` | 使用 CSS 變數自訂反轉值  |
+| `invert-[<value>]`           | `filter: invert(<value>);`                | 任意自訂反轉值           |
+
+```html
+<img class="invert-0" src="/img/mountains.jpg" />
+<img class="invert-20" src="/img/mountains.jpg" />
+<img class="invert-[.25] ..." src="/img/mountains.jpg" />
+<img class="invert-(--my-inversion) ..." src="/img/mountains.jpg" />
+```
+
+### saturate
+調整飽和度，讓顏色更鮮豔或更灰。
+
+| 類別名稱                       | 對應 CSS 屬性                               | 說明                       |
+| ------------------------------ | ------------------------------------------- | -------------------------- |
+| `saturate-<number>`            | `filter: saturate(<number>%);`              | 指定百分比飽和度（如 150） |
+| `saturate-(<custom-property>)` | `filter: saturate(var(<custom-property>));` | 使用 CSS 變數自訂飽和度值  |
+| `saturate-[<value>]`           | `filter: saturate(<value>);`                | 任意自訂飽和度值           |
+
+```html
+<img class="saturate-100 ..." src="/img/mountains.jpg" />
+<img class="saturate-[.25] ..." src="/img/mountains.jpg" />
+<img class="saturate-(--my-saturation) ..." src="/img/mountains.jpg" />
+```
+
+### sepia
+懷舊棕色濾鏡，讓元素呈現復古色調。
+
+| 類別名稱                    | 對應 CSS 屬性                            | 說明                        |
+| --------------------------- | ---------------------------------------- | --------------------------- |
+| `sepia`                     | `filter: sepia(100%);`                   | 完全懷舊棕色效果            |
+| `sepia-<number>`            | `filter: sepia(<number>%);`              | 指定百分比懷舊棕色（如 50） |
+| `sepia-(<custom-property>)` | `filter: sepia(var(<custom-property>));` | 使用 CSS 變數自訂懷舊棕色值 |
+| `sepia-[<value>]`           | `filter: sepia(<value>);`                | 任意自訂懷舊棕色值          |
+
+```html
+<img class="sepia-50" src="/img/mountains.jpg" />
+<img class="sepia" src="/img/mountains.jpg" />
+<img class="sepia-[.25] ..." src="/img/mountains.jpg" />
+<img class="sepia-(--my-sepia) ..." src="/img/mountains.jpg" />
+```
+
+## backdrop-filter
+`backdrop-filter` 用於對元素背後的內容進行濾鏡處理，常見於玻璃擬態（Glassmorphism）設計。
+
+| 類別名稱                              | 對應 CSS 屬性                              | 說明                            |
+| ------------------------------------- | ------------------------------------------ | ------------------------------- |
+| `backdrop-filter-none`                | `backdrop-filter: none;`                   | 移除所有 backdrop 濾鏡效果      |
+| `backdrop-filter-(<custom-property>)` | `backdrop-filter: var(<custom-property>);` | 使用 CSS 變數自訂 backdrop 濾鏡 |
+| `backdrop-filter-[<value>]`           | `backdrop-filter: <value>;`                | 任意自訂 backdrop 濾鏡值        |
+
+```html
+<div class="backdrop-filter-[url('filters.svg#filter-id')] ..."></div>
+<div class="backdrop-filter-(--my-backdrop-filter) ..."></div>
+```
+
+### blur
+背景模糊，常用於玻璃效果。
+
+| 類別名稱                            | 對應 CSS 屬性                                    | 說明                    |
+| ----------------------------------- | ------------------------------------------------ | ----------------------- |
+| `backdrop-blur-<size>`              | `backdrop-filter: blur(var(--blur-<size>));`     | 模糊尺寸單位            |
+| `backdrop-blur-none`                | `backdrop-filter: ;`                             | 無模糊效果              |
+| `backdrop-blur-(<custom-property>)` | `backdrop-filter: blur(var(<custom-property>));` | 使用 CSS 變數自訂模糊值 |
+| `backdrop-blur-[<value>]`           | `backdrop-filter: blur(<value>);`                | 任意自訂模糊值          |
+
+```css
+:root {
+  /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+}
+```
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-blur-sm ..."></div>
+  <div class="backdrop-blur-[2px] ..."></div>
+  <div class="backdrop-blur-(--my-backdrop-blur) ..."></div>
+</div>
+```
+
+#### 自訂
+```css
+@theme {
+  --blur-2xs: 2px; 
+}
+```
+```html
+<div class="backdrop-blur-2xs"></div>
+```
+
+### brightness
+背景亮度調整。
+
+| 類別名稱                                  | 對應 CSS 屬性                                          | 說明                          |
+| ----------------------------------------- | ------------------------------------------------------ | ----------------------------- |
+| `backdrop-brightness-<number>`            | `backdrop-filter: brightness(<number>%);`              | 亮度百分比（如 50、100、150） |
+| `backdrop-brightness-(<custom-property>)` | `backdrop-filter: brightness(var(<custom-property>));` | 使用自訂 CSS 變數亮度         |
+| `backdrop-brightness-[<value>]`           | `backdrop-filter: brightness(<value>);`                | 任意自訂亮度值                |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-brightness-150 ..."></div>
+  <div class="backdrop-brightness-[1.75] ..."></div>
+  <div class="backdrop-brightness-(--my-backdrop-brightness) ..."></div>
+</div>
+```
+
+### contrast
+背景對比度調整。
+
+| 類別名稱                                | 對應 CSS 屬性                                        | 說明                            |
+| --------------------------------------- | ---------------------------------------------------- | ------------------------------- |
+| `backdrop-contrast-<number>`            | `backdrop-filter: contrast(<number>%);`              | 對比度百分比（如 50、100、200） |
+| `backdrop-contrast-(<custom-property>)` | `backdrop-filter: contrast(var(<custom-property>));` | 使用自訂 CSS 變數對比度         |
+| `backdrop-contrast-[<value>]`           | `backdrop-filter: contrast(<value>);`                | 任意自訂對比度值                |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-contrast-200 ..."></div>
+  <div class="backdrop-contrast-[.25] ..."></div>
+  <div class="backdrop-contrast-(--my-backdrop-contrast) ..."></div>
+</div>
+```
+
+### grayscale
+背景灰階處理。
+
+| 類別名稱                                 | 對應 CSS 屬性                                         | 說明                        |
+| ---------------------------------------- | ----------------------------------------------------- | --------------------------- |
+| `backdrop-grayscale`                     | `backdrop-filter: grayscale(100%);`                   | 全部灰階處理                |
+| `backdrop-grayscale-<number>`            | `backdrop-filter: grayscale(<number>%);`              | 灰階百分比（如 0、50、100） |
+| `backdrop-grayscale-(<custom-property>)` | `backdrop-filter: grayscale(var(<custom-property>));` | 使用自訂 CSS 變數灰階       |
+| `backdrop-grayscale-[<value>]`           | `backdrop-filter: grayscale(<value>);`                | 任意自訂灰階值              |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-grayscale-50 ..."></div>
+  <div class="backdrop-grayscale-[0.5] ..."></div>
+  <div class="backdrop-grayscale-(--my-backdrop-grayscale) ..."></div>
+</div>
+```
+
+### hue-rotate
+背景色相旋轉。
+
+| 類別名稱                                  | 對應 CSS 屬性                                          | 說明                                   |
+| ----------------------------------------- | ------------------------------------------------------ | -------------------------------------- |
+| `backdrop-hue-rotate-<number>`            | `backdrop-filter: hue-rotate(<number>deg);`            | 色相旋轉角度（正值，單位 deg）         |
+| `-backdrop-hue-rotate-<number>`           | `backdrop-filter: hue-rotate(calc(<number>deg * -1));` | 色相反向旋轉角度（負值，單位 deg）     |
+| `backdrop-hue-rotate-(<custom-property>)` | `backdrop-filter: hue-rotate(var(<custom-property>));` | 使用自訂 CSS 變數色相旋轉              |
+| `backdrop-hue-rotate-[<value>]`           | `backdrop-filter: hue-rotate(<value>);`                | 任意自訂色相旋轉值（可含單位 deg/rad） |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-hue-rotate-180 ..."></div>
+  <div class="bg-white/30 -backdrop-hue-rotate-45 ..."></div>
+  <div class="backdrop-hue-rotate-[3.142rad] ..."></div>
+  <div class="backdrop-hue-rotate-(--my-backdrop-hue-rotation) ..."></div>
+</div>
+```
+
+### invert
+背景顏色反轉。
+
+| 類別名稱                              | 對應 CSS 屬性                                      | 說明                        |
+| ------------------------------------- | -------------------------------------------------- | --------------------------- |
+| `backdrop-invert`                     | `backdrop-filter: invert(100%);`                   | 全部顏色反轉                |
+| `backdrop-invert-<number>`            | `backdrop-filter: invert(<number>%);`              | 反轉百分比（如 0、50、100） |
+| `backdrop-invert-(<custom-property>)` | `backdrop-filter: invert(var(<custom-property>));` | 使用自訂 CSS 變數反轉       |
+| `backdrop-invert-[<value>]`           | `backdrop-filter: invert(<value>);`                | 任意自訂反轉值              |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-invert-65 ..."></div>
+  <div class="backdrop-invert-[.25] ..."></div>
+  <div class="backdrop-invert-(--my-backdrop-inversion) ..."></div>
+</div>
+```
+
+### opacity
+背景透明度調整。
+
+| 類別名稱               | 對應 CSS 屬性                     | 說明       |
+| ---------------------- | --------------------------------- | ---------- |
+| `backdrop-opacity-<number>`            | `backdrop-filter: opacity(<number>%);`              | 透明度百分比（如 0、50、100）         |
+| `backdrop-opacity-(<custom-property>)` | `backdrop-filter: opacity(var(<custom-property>));` | 使用自訂 CSS 變數透明度              |
+| `backdrop-opacity-[<value>]`           | `backdrop-filter: opacity(<value>);`                | 任意自訂透明度值（可含單位如 0.5）   |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-invert backdrop-opacity-60 ..."></div>
+  <div class="backdrop-opacity-[.15] ..."></div>
+  <div class="backdrop-opacity-(--my-backdrop-filter-opacity) ..."></div>
+</div>
+```
+
+### saturate
+背景飽和度調整。
+
+| 類別名稱                | 對應 CSS 屬性                     | 說明        |
+| ----------------------- | --------------------------------- | ----------- |
+| `backdrop-saturate-<number>`            | `backdrop-filter: saturate(<number>%);`              | 飽和度百分比（如 0、50、100）         |
+| `backdrop-saturate-(<custom-property>)` | `backdrop-filter: saturate(var(<custom-property>));` | 使用自訂 CSS 變數飽和度              |
+| `backdrop-saturate-[<value>]`           | `backdrop-filter: saturate(<value>);`                | 任意自訂飽和度值（可含單位如 1.5）   |
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-saturate-125 ..."></div>
+  <div class="backdrop-saturate-[.25] ..."></div>
+  <div class="backdrop-saturate-(--my-backdrop-saturation) ..."></div>
+</div>
+```
+
+### sepia
+背景棕色化處理。
+
+| 類別名稱             | 對應 CSS 屬性                | 說明       |
+| -------------------- | ---------------------------- | ---------- |
+| `backdrop-sepia`                        | `backdrop-filter: sepia(100%);`                     | 100% 棕色化處理                |
+| `backdrop-sepia-<number>`               | `backdrop-filter: sepia(<number>%);`                | 棕色化百分比（如 0、50、100）   |
+| `backdrop-sepia-(<custom-property>)`    | `backdrop-filter: sepia(var(<custom-property>));`   | 使用自訂 CSS 變數棕色化         |
+| `backdrop-sepia-[<value>]`              | `backdrop-filter: sepia(<value>);`                  | 任意自訂棕色化值（可含單位如 0.5）|
+
+
+```html
+<div class="bg-[url(/img/mountains.jpg)]">
+  <div class="bg-white/30 backdrop-sepia-50 ..."></div>
+  <div class="backdrop-sepia-[.25] ..."></div>
+  <div class="backdrop-sepia-(--my-backdrop-sepia) ..."></div>
+</div>
+```
+
+# Tables
+## border-collapse
+## border-spacing
+## table-layout
+## caption-side
