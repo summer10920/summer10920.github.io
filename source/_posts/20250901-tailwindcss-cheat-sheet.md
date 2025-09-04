@@ -706,7 +706,6 @@ CSS 屬性值有兩種設定方式：
 | `inset-auto`                  | `inset: auto;`                                          | 自動所有邊距                  |
 | `inset-(<custom-property>)`   | `inset: var(<custom-property>);`                        | 使用自訂 CSS 變數設定邊距     |
 | `inset-[<value>]`             | `inset: <value>;`                                       | 使用任意值設定邊距            |
-|                               |                                                         |                               |
 | `inset-x-<number>`            | `inset-inline: calc(var(--spacing) * <number>);`        | 設定水平邊距                  |
 | `-inset-x-<number>`           | `inset-inline: calc(var(--spacing) * -<number>);`       | 設定負數水平邊距              |
 | `inset-x-<fraction>`          | `inset-inline: calc(<fraction> * 100%);`                | 設定百分比水平邊距            |
@@ -718,7 +717,6 @@ CSS 屬性值有兩種設定方式：
 | `inset-x-auto`                | `inset-inline: auto;`                                   | 自動水平邊距                  |
 | `inset-x-(<custom-property>)` | `inset-inline: var(<custom-property>);`                 | 使用自訂 CSS 變數設定水平邊距 |
 | `inset-x-[<value>]`           | `inset-inline: <value>;`                                | 使用任意值設定水平邊距        |
-|                               |                                                         |                               |
 | `inset-y-<number>`            | `inset-block: calc(var(--spacing) * <number>);`         | 設定垂直邊距                  |
 | `-inset-y-<number>`           | `inset-block: calc(var(--spacing) * -<number>);`        | 設定負數垂直邊距              |
 | `inset-y-<fraction>`          | `inset-block: calc(<fraction> * 100%);`                 | 設定百分比垂直邊距            |
@@ -730,7 +728,6 @@ CSS 屬性值有兩種設定方式：
 | `inset-y-auto`                | `inset-block: auto;`                                    | 自動垂直邊距                  |
 | `inset-y-(<custom-property>)` | `inset-block: var(<custom-property>);`                  | 使用自訂 CSS 變數設定垂直邊距 |
 | `inset-y-[<value>]`           | `inset-block: <value>;`                                 | 使用任意值設定垂直邊距        |
-|                               |                                                         |                               |
 | `start-<number>`              | `inset-inline-start: calc(var(--spacing) * <number>);`  | 設定起始邊距                  |
 | `-start-<number>`             | `inset-inline-start: calc(var(--spacing) * -<number>);` | 設定負數起始邊距              |
 | `start-<fraction>`            | `inset-inline-start: calc(<fraction> * 100%);`          | 設定百分比起始邊距            |
@@ -742,7 +739,6 @@ CSS 屬性值有兩種設定方式：
 | `start-auto`                  | `inset-inline-start: auto;`                             | 自動起始邊距                  |
 | `start-(<custom-property>)`   | `inset-inline-start: var(<custom-property>);`           | 使用自訂 CSS 變數設定起始邊距 |
 | `start-[<value>]`             | `inset-inline-start: <value>;`                          | 使用任意值設定起始邊距        |
-|                               |                                                         |                               |
 | `end-<number>`                | `inset-inline-end: calc(var(--spacing) * <number>);`    | 設定結束邊距                  |
 | `-end-<number>`               | `inset-inline-end: calc(var(--spacing) * -<number>);`   | 設定負數結束邊距              |
 | `end-<fraction>`              | `inset-inline-end: calc(<fraction> * 100%);`            | 設定百分比結束邊距            |
@@ -754,7 +750,6 @@ CSS 屬性值有兩種設定方式：
 | `end-auto`                    | `inset-inline-end: auto;`                               | 自動結束邊距                  |
 | `end-(<custom-property>)`     | `inset-inline-end: var(<custom-property>);`             | 使用自訂 CSS 變數設定結束邊距 |
 | `end-[<value>]`               | `inset-inline-end: <value>;`                            | 使用任意值設定結束邊距        |
-|                               |                                                         |                               |
 | `top-<number>`                | `top: calc(var(--spacing) * <number>);`                 | 設定頂部邊距                  |
 | `-top-<number>`               | `top: calc(var(--spacing) * -<number>);`                | 設定負數頂部邊距              |
 | `top-<fraction>`              | `top: calc(<fraction> * 100%);`                         | 設定百分比頂部邊距            |
@@ -766,7 +761,6 @@ CSS 屬性值有兩種設定方式：
 | `top-auto`                    | `top: auto;`                                            | 自動頂部邊距                  |
 | `top-(<custom-property>)`     | `top: var(<custom-property>);`                          | 使用自訂 CSS 變數設定頂部邊距 |
 | `top-[<value>]`               | `top: <value>;`                                         | 使用任意值設定頂部邊距        |
-|                               |                                                         |                               |
 | `right-<number>`              | `right: calc(var(--spacing) * <number>);`               | 設定右側邊距                  |
 | `-right-<number>`             | `right: calc(var(--spacing) * -<number>);`              | 設定負數右側邊距              |
 | `right-<fraction>`            | `right: calc(<fraction> * 100%);`                       | 設定百分比右側邊距            |
@@ -778,7 +772,6 @@ CSS 屬性值有兩種設定方式：
 | `right-auto`                  | `right: auto;`                                          | 自動右側邊距                  |
 | `right-(<custom-property>)`   | `right: var(<custom-property>);`                        | 使用自訂 CSS 變數設定右側邊距 |
 | `right-[<value>]`             | `right: <value>;`                                       | 使用任意值設定右側邊距        |
-|                               |                                                         |                               |
 | `bottom-<number>`             | `bottom: calc(var(--spacing) * <number>);`              | 設定底部邊距                  |
 | `-bottom-<number>`            | `bottom: calc(var(--spacing) * -<number>);`             | 設定負數底部邊距              |
 | `bottom-<fraction>`           | `bottom: calc(<fraction> * 100%);`                      | 設定百分比底部邊距            |
@@ -790,7 +783,6 @@ CSS 屬性值有兩種設定方式：
 | `bottom-auto`                 | `bottom: auto;`                                         | 自動底部邊距                  |
 | `bottom-(<custom-property>)`  | `bottom: var(<custom-property>);`                       | 使用自訂 CSS 變數設定底部邊距 |
 | `bottom-[<value>]`            | `bottom: <value>;`                                      | 使用任意值設定底部邊距        |
-|                               |                                                         |                               |
 | `left-<number>`               | `left: calc(var(--spacing) * <number>);`                | 設定左側邊距                  |
 | `-left-<number>`              | `left: calc(var(--spacing) * -<number>);`               | 設定負數左側邊距              |
 | `left-<fraction>`             | `left: calc(<fraction> * 100%);`                        | 設定百分比左側邊距            |
@@ -802,7 +794,6 @@ CSS 屬性值有兩種設定方式：
 | `left-auto`                   | `left: auto;`                                           | 自動左側邊距                  |
 | `left-(<custom-property>)`    | `left: var(<custom-property>);`                         | 使用自訂 CSS 變數設定左側邊距 |
 | `left-[<value>]`              | `left: <value>;`                                        | 使用任意值設定左側邊距        |
-|                               |                                                         |                               |
 
 ```html
 <!-- inset-[<value>] -->
@@ -3614,34 +3605,34 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <!-- 變更不透明度 -->
-<div class="shadow-xl ..."></div>
-<div class="shadow-xl/30 ..."></div>
+<div class="shadow-xl"></div>
+<div class="shadow-xl/30"></div>
 
 <!-- 陰影顏色 -->
-<button class="bg-cyan-500 shadow-lg shadow-cyan-500/50 ...">Subscribe</button>
-<button class="bg-indigo-500 shadow-lg shadow-indigo-500/50 ...">Subscribe</button>
+<button class="bg-cyan-500 shadow-lg shadow-cyan-500/50">Subscribe</button>
+<button class="bg-indigo-500 shadow-lg shadow-indigo-500/50">Subscribe</button>
 
 <!-- 內陰影與內陰影色 -->
-<div class="inset-shadow-2xs ..."></div>
-<div class="inset-shadow-xs ..."></div>
-<div class="inset-shadow-sm inset-shadow-indigo-500 ..."></div>
-<div class="inset-shadow-sm inset-shadow-indigo-500/50 ..."></div>
+<div class="inset-shadow-2xs"></div>
+<div class="inset-shadow-xs"></div>
+<div class="inset-shadow-sm inset-shadow-indigo-500"></div>
+<div class="inset-shadow-sm inset-shadow-indigo-500/50"></div>
 
 <!-- 實心框圈與顏色 -->
-<button class="ring ...">Subscribe</button>
-<button class="ring-4 ...">Subscribe</button>
-<button class="ring-2 ring-blue-500 ...">Subscribe</button>
-<button class="ring-2 ring-blue-500/50 ...">Subscribe</button>
+<button class="ring">Subscribe</button>
+<button class="ring-4">Subscribe</button>
+<button class="ring-2 ring-blue-500">Subscribe</button>
+<button class="ring-2 ring-blue-500/50">Subscribe</button>
 
 <!-- 內實心框圈與顏色 -->
-<button class="inset-ring ...">Subscribe</button>
-<button class="inset-ring-4 ...">Subscribe</button>
-<button class="inset-ring-2 inset-ring-blue-500 ...">Subscribe</button>
-<button class="inset-ring-2 inset-ring-blue-500/50 ...">Subscribe</button>
+<button class="inset-ring">Subscribe</button>
+<button class="inset-ring-4">Subscribe</button>
+<button class="inset-ring-2 inset-ring-blue-500">Subscribe</button>
+<button class="inset-ring-2 inset-ring-blue-500/50">Subscribe</button>
 
 <!-- 任意值 -->
-<div class="shadow-[0_35px_35px_rgba(0,0,0,0.25)] ..."></div>
-<div class="shadow-(--my-shadow) ..."></div>
+<div class="shadow-[0_35px_35px_rgba(0,0,0,0.25)]"></div>
+<div class="shadow-(--my-shadow)"></div>
 ```
 
 ### 自訂
@@ -3723,19 +3714,19 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <!-- 基本範例 -->
-<p class="text-shadow-2xs ...">The quick brown fox...</p>
-<p class="text-shadow-sm ...">The quick brown fox...</p>
-<p class="text-shadow-lg ...">The quick brown fox...</p>
+<p class="text-shadow-2xs">The quick brown fox...</p>
+<p class="text-shadow-sm">The quick brown fox...</p>
+<p class="text-shadow-lg">The quick brown fox...</p>
 
 <!-- 不透明度 -->
-<p class="text-shadow-lg/20 ...">The quick brown fox...</p>
+<p class="text-shadow-lg/20">The quick brown fox...</p>
 
 <!-- 陰影顏色 -->
-<button class="text-sky-950 text-shadow-2xs text-shadow-sky-300 ...">Book a demo</button>
+<button class="text-sky-950 text-shadow-2xs text-shadow-sky-300">Book a demo</button>
 
 <!-- 任意值 -->
-<p class="text-shadow-[0_35px_35px_rgb(0_0_0_/_0.25)] ..."></p>
-<p class="text-shadow-(--my-text-shadow) ..."></p>
+<p class="text-shadow-[0_35px_35px_rgb(0_0_0_/_0.25)]"></p>
+<p class="text-shadow-(--my-text-shadow)"></p>
 ```
 
 ### 自訂
@@ -3762,8 +3753,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `opacity-[<value>]`             | `opacity: <value>;`                 | 任意自訂透明度                 |
 
 ```html
-<button class="opacity-[.67] ..."></button>
-<button class="opacity-(--my-opacity) ..."></button>
+<button class="opacity-[.67]"></button>
+<button class="opacity-(--my-opacity)"></button>
 ```
 
 ## mix-blend-mode
@@ -3794,8 +3785,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="flex justify-center -space-x-14">
-  <div class="bg-blue-500 mix-blend-multiply ..."></div>
-  <div class="bg-pink-500 mix-blend-multiply ..."></div>
+  <div class="bg-blue-500 mix-blend-multiply"></div>
+  <div class="bg-pink-500 mix-blend-multiply"></div>
 </div>
 ```
 
@@ -3822,8 +3813,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `bg-blend-luminosity`  | `background-blend-mode: luminosity;`  | 亮度混合     |
 
 ```html
-<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-multiply ..."></div>
-<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-overlay ..."></div>
+<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-multiply"></div>
+<div class="bg-blue-500 bg-[url(/img/mountains.jpg)] bg-blend-overlay"></div>
 ```
 
 ## mask-clip
@@ -3840,9 +3831,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `mask-no-clip`      | `mask-clip: no-clip;`     | 不進行裁切     |
 
 ```html
-<div class="mask-clip-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-clip-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-clip-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-clip-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-clip-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-clip-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
 ```
 
 ## mask-composite
@@ -3908,17 +3899,17 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <!-- image 遮罩 -->
-<div class="mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)]"></div>
 <!-- linear-gradient 遮罩 -->
-<div class="mask-t-from-50% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-r-from-30% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-l-from-50% mask-l-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-b-from-20% mask-b-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-x-from-70% mask-x-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-y-from-70% mask-y-to-90% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-t-from-50% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-r-from-30% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-l-from-50% mask-l-to-90% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-b-from-20% mask-b-to-80% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-x-from-70% mask-x-to-90% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-y-from-70% mask-y-to-90% bg-[url(/img/mountains.jpg)]"></div>
 <!-- linear-gradient & deg 遮罩 -->
-<div class="mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="-mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)]"></div>
+<div class="-mask-linear-50 mask-linear-from-60% mask-linear-to-80% bg-[url(/img/mountains.jpg)]"></div>
 ```
 
 ### radial
@@ -3968,37 +3959,37 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <!-- 放射狀遮罩 -->
-<img class="mask-radial-[100%_100%] mask-radial-from-75% mask-radial-at-left ..." src="/img/keyboard.png" />
+<img class="mask-radial-[100%_100%] mask-radial-from-75% mask-radial-at-left" src="/img/keyboard.png" />
 <!-- 放射狀遮罩位置 -->
-<div class="mask-radial-at-top-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-top mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-top-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-center mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-bottom-left mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-bottom mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-at-bottom-right mask-radial-from-100% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-at-top-left mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-top mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-top-right mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-left mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-center mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-right mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-bottom-left mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-bottom mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-at-bottom-right mask-radial-from-100% bg-[url(/img/mountains.jpg)]"></div>
 <!-- 放射狀遮罩大小 -->
-<div class="mask-radial-closest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-closest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-farthest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-radial-farthest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-radial-closest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-closest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-farthest-side mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-radial-farthest-corner mask-radial-from-100% mask-radial-at-[30%_30%] bg-[url(/img/mountains.jpg)]"></div>
 <!-- 圓錐遮罩 -->
 <div class="grid grid-cols-1 grid-rows-1">
-  <div class="border-4 border-gray-100 dark:border-gray-700 ..."></div>
-  <div class="border-4 border-amber-500 mask-conic-from-75% mask-conic-to-75% dark:border-amber-400 ..."></div>
+  <div class="border-4 border-gray-100 dark:border-gray-700"></div>
+  <div class="border-4 border-amber-500 mask-conic-from-75% mask-conic-to-75% dark:border-amber-400"></div>
 </div>
 ```
 
 ### mix, custom
 ```html
 <!-- 組合遮罩 -->
-<div class="mask-b-from-50% mask-radial-[50%_90%] mask-radial-from-80% bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-r-from-80% mask-b-from-80% mask-radial-from-70% mask-radial-to-85% bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-b-from-50% mask-radial-[50%_90%] mask-radial-from-80% bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-r-from-80% mask-b-from-80% mask-radial-from-70% mask-radial-to-85% bg-[url(/img/mountains.jpg)]"></div>
 <!-- 任意值 -->
-<div class="mask-linear-[70deg,transparent_10%,black,transparent_80%] ..."></div>
-<div class="mask-linear-(--my-mask) ..."></div>
+<div class="mask-linear-[70deg,transparent_10%,black,transparent_80%]"></div>
+<div class="mask-linear-(--my-mask)"></div>
 ```
 
 ### 自訂
@@ -4021,8 +4012,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `mask-match`     | `mask-mode: match-source;` | 跟隨來源遮罩 |
 
 ```html
-<div class="mask-alpha mask-r-from-black mask-r-from-50% mask-r-to-transparent bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-luminance mask-r-from-white mask-r-from-50% mask-r-to-black bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-alpha mask-r-from-black mask-r-from-50% mask-r-to-transparent bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-luminance mask-r-from-white mask-r-from-50% mask-r-to-black bg-[url(/img/mountains.jpg)]"></div>
 ```
 
 ## mask-origin
@@ -4038,9 +4029,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `mask-origin-view`    | `mask-origin: view-box;`    | 以 SVG 檢視區為基準 |
 
 ```html
-<div class="mask-origin-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-origin-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-origin-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-origin-border border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-origin-padding border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-origin-content border-3 p-1.5 mask-[url(/img/circle.png)] bg-[url(/img/mountains.jpg)]"></div>
 ```
 
 ## mask-position
@@ -4061,18 +4052,18 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `mask-position-[<value>]`           | `mask-position: <value>;`                | 任意自訂值        |
 
 ```html
-<div class="mask-top-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-top mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-top-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-center mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-bottom-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-bottom mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
-<div class="mask-bottom-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-top-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-top mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-top-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-center mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-bottom-left mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-bottom mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
+<div class="mask-bottom-right mask-[url(/img/circle.png)] mask-size-[50%] bg-[url(/img/mountains.jpg)]"></div>
 
-<div class="mask-position-[center_top_1rem] ..."></div>
-<div class="mask-position-(--my-mask-position) ..."></div>
+<div class="mask-position-[center_top_1rem]"></div>
+<div class="mask-position-(--my-mask-position)"></div>
 ```
 
 ## mask-repeat
@@ -4099,10 +4090,10 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `mask-size-[<value>]`           | `mask-size: <value>;`                | 任意自訂值        |
 
 ```html
-<div class="mask-cover mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)] ..."></div>
+<div class="mask-cover mask-[url(/img/scribble.png)] bg-[url(/img/mountains.jpg)]"></div>
 
-<div class="mask-size-[auto_100px] ..."></div>
-<div class="mask-size-(--my-mask-size) ..."></div>
+<div class="mask-size-[auto_100px]"></div>
+<div class="mask-size-(--my-mask-size)"></div>
 ```
 
 ## mask-type
@@ -4141,8 +4132,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `filter-[<value>]`           | `filter: <value>;`                | 任意自訂值        |
 
 ```html
-<img class="filter-[url('filters.svg#filter-id')] ..." src="/img/mountains.jpg" />
-<img class="filter-(--my-filter) ..." src="/img/mountains.jpg" />
+<img class="filter-[url('filters.svg#filter-id')]" src="/img/mountains.jpg" />
+<img class="filter-(--my-filter)" src="/img/mountains.jpg" />
 ```
 
 ### blur
@@ -4172,8 +4163,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 <img class="blur-sm" src="/img/mountains.jpg" />
 <img class="blur-2xl" src="/img/mountains.jpg" />
 
-<img class="blur-[2px] ..." src="/img/mountains.jpg" />
-<img class="blur-(--my-blur) ..." src="/img/mountains.jpg" />
+<img class="blur-[2px]" src="/img/mountains.jpg" />
+<img class="blur-(--my-blur)" src="/img/mountains.jpg" />
 ```
 
 ### brightness
@@ -4186,9 +4177,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `brightness-[<value>]`           | `filter: brightness(<value>);`                | 任意自訂亮度值                |
 
 ```html
-<img class="brightness-125 ..." src="/img/mountains.jpg" />
-<img class="brightness-[1.75] ..." src="/img/mountains.jpg" />
-<img class="brightness-(--my-brightness) ..." src="/img/mountains.jpg" />
+<img class="brightness-125" src="/img/mountains.jpg" />
+<img class="brightness-[1.75]" src="/img/mountains.jpg" />
+<img class="brightness-(--my-brightness)" src="/img/mountains.jpg" />
 ```
 
 ### contrast
@@ -4201,9 +4192,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `contrast-[<value>]`           | `filter: contrast(<value>);`                | 任意自訂對比度值                |
 
 ```html
-<img class="contrast-125 ..." src="/img/mountains.jpg" />
-<img class="contrast-[.25] ..." src="/img/mountains.jpg" />
-<img class="contrast-(--my-contrast) ..." src="/img/mountains.jpg" />
+<img class="contrast-125" src="/img/mountains.jpg" />
+<img class="contrast-[.25]" src="/img/mountains.jpg" />
+<img class="contrast-(--my-contrast)" src="/img/mountains.jpg" />
 ```
 
 ### drop-shadow
@@ -4272,14 +4263,14 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <!-- 基本範例 -->
-<svg class="drop-shadow-lg ..."></svg>
+<svg class="drop-shadow-lg"></svg>
 <!-- 不透明度 -->
-<svg class="fill-white drop-shadow-xl/25 ...">...</svg>
+<svg class="fill-white drop-shadow-xl/25">...</svg>
 <!-- 陰影顏色 -->
-<svg class="fill-indigo-500 drop-shadow-lg drop-shadow-indigo-500/50 ...">...</svg>
+<svg class="fill-indigo-500 drop-shadow-lg drop-shadow-indigo-500/50">...</svg>
 <!-- 任意值 -->
-<svg class="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)] ..."></svg>
-<svg class="drop-shadow-(--my-drop-shadow) ..."></svg>
+<svg class="drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)]"></svg>
+<svg class="drop-shadow-(--my-drop-shadow)"></svg>
 ```
 
 #### 自訂
@@ -4305,10 +4296,10 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `grayscale-[<value>]`           | `filter: grayscale(<value>);`                | 任意自訂灰階值          |
 
 ```html
-<img class="grayscale-25 ..." src="/img/mountains.jpg" />
+<img class="grayscale-25" src="/img/mountains.jpg" />
 
-<img class="grayscale-[0.5] ..." src="/img/mountains.jpg" />
-<img class="grayscale-(--my-grayscale) ..." src="/img/mountains.jpg" />
+<img class="grayscale-[0.5]" src="/img/mountains.jpg" />
+<img class="grayscale-(--my-grayscale)" src="/img/mountains.jpg" />
 ```
 
 ### hue-rotate
@@ -4324,8 +4315,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 ```html
 <img class="hue-rotate-180" src="/img/mountains.jpg" />
 <img class="-hue-rotate-45" src="/img/mountains.jpg" />
-<img class="hue-rotate-[3.142rad] ..." src="/img/mountains.jpg" />
-<img class="hue-rotate-(--my-hue-rotate) ..." src="/img/mountains.jpg" />
+<img class="hue-rotate-[3.142rad]" src="/img/mountains.jpg" />
+<img class="hue-rotate-(--my-hue-rotate)" src="/img/mountains.jpg" />
 ```
 
 ### invert
@@ -4341,8 +4332,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 ```html
 <img class="invert-0" src="/img/mountains.jpg" />
 <img class="invert-20" src="/img/mountains.jpg" />
-<img class="invert-[.25] ..." src="/img/mountains.jpg" />
-<img class="invert-(--my-inversion) ..." src="/img/mountains.jpg" />
+<img class="invert-[.25]" src="/img/mountains.jpg" />
+<img class="invert-(--my-inversion)" src="/img/mountains.jpg" />
 ```
 
 ### saturate
@@ -4355,9 +4346,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `saturate-[<value>]`           | `filter: saturate(<value>);`                | 任意自訂飽和度值           |
 
 ```html
-<img class="saturate-100 ..." src="/img/mountains.jpg" />
-<img class="saturate-[.25] ..." src="/img/mountains.jpg" />
-<img class="saturate-(--my-saturation) ..." src="/img/mountains.jpg" />
+<img class="saturate-100" src="/img/mountains.jpg" />
+<img class="saturate-[.25]" src="/img/mountains.jpg" />
+<img class="saturate-(--my-saturation)" src="/img/mountains.jpg" />
 ```
 
 ### sepia
@@ -4373,8 +4364,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 ```html
 <img class="sepia-50" src="/img/mountains.jpg" />
 <img class="sepia" src="/img/mountains.jpg" />
-<img class="sepia-[.25] ..." src="/img/mountains.jpg" />
-<img class="sepia-(--my-sepia) ..." src="/img/mountains.jpg" />
+<img class="sepia-[.25]" src="/img/mountains.jpg" />
+<img class="sepia-(--my-sepia)" src="/img/mountains.jpg" />
 ```
 
 ## backdrop-filter
@@ -4387,8 +4378,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `backdrop-filter-[<value>]`           | `backdrop-filter: <value>;`                | 任意自訂 backdrop 濾鏡值        |
 
 ```html
-<div class="backdrop-filter-[url('filters.svg#filter-id')] ..."></div>
-<div class="backdrop-filter-(--my-backdrop-filter) ..."></div>
+<div class="backdrop-filter-[url('filters.svg#filter-id')]"></div>
+<div class="backdrop-filter-(--my-backdrop-filter)"></div>
 ```
 
 ### blur
@@ -4416,9 +4407,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-blur-sm ..."></div>
-  <div class="backdrop-blur-[2px] ..."></div>
-  <div class="backdrop-blur-(--my-backdrop-blur) ..."></div>
+  <div class="bg-white/30 backdrop-blur-sm"></div>
+  <div class="backdrop-blur-[2px]"></div>
+  <div class="backdrop-blur-(--my-backdrop-blur)"></div>
 </div>
 ```
 
@@ -4443,9 +4434,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-brightness-150 ..."></div>
-  <div class="backdrop-brightness-[1.75] ..."></div>
-  <div class="backdrop-brightness-(--my-backdrop-brightness) ..."></div>
+  <div class="bg-white/30 backdrop-brightness-150"></div>
+  <div class="backdrop-brightness-[1.75]"></div>
+  <div class="backdrop-brightness-(--my-backdrop-brightness)"></div>
 </div>
 ```
 
@@ -4460,9 +4451,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-contrast-200 ..."></div>
-  <div class="backdrop-contrast-[.25] ..."></div>
-  <div class="backdrop-contrast-(--my-backdrop-contrast) ..."></div>
+  <div class="bg-white/30 backdrop-contrast-200"></div>
+  <div class="backdrop-contrast-[.25]"></div>
+  <div class="backdrop-contrast-(--my-backdrop-contrast)"></div>
 </div>
 ```
 
@@ -4478,9 +4469,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-grayscale-50 ..."></div>
-  <div class="backdrop-grayscale-[0.5] ..."></div>
-  <div class="backdrop-grayscale-(--my-backdrop-grayscale) ..."></div>
+  <div class="bg-white/30 backdrop-grayscale-50"></div>
+  <div class="backdrop-grayscale-[0.5]"></div>
+  <div class="backdrop-grayscale-(--my-backdrop-grayscale)"></div>
 </div>
 ```
 
@@ -4496,10 +4487,10 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-hue-rotate-180 ..."></div>
-  <div class="bg-white/30 -backdrop-hue-rotate-45 ..."></div>
-  <div class="backdrop-hue-rotate-[3.142rad] ..."></div>
-  <div class="backdrop-hue-rotate-(--my-backdrop-hue-rotation) ..."></div>
+  <div class="bg-white/30 backdrop-hue-rotate-180"></div>
+  <div class="bg-white/30 -backdrop-hue-rotate-45"></div>
+  <div class="backdrop-hue-rotate-[3.142rad]"></div>
+  <div class="backdrop-hue-rotate-(--my-backdrop-hue-rotation)"></div>
 </div>
 ```
 
@@ -4515,67 +4506,1246 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-invert-65 ..."></div>
-  <div class="backdrop-invert-[.25] ..."></div>
-  <div class="backdrop-invert-(--my-backdrop-inversion) ..."></div>
+  <div class="bg-white/30 backdrop-invert-65"></div>
+  <div class="backdrop-invert-[.25]"></div>
+  <div class="backdrop-invert-(--my-backdrop-inversion)"></div>
 </div>
 ```
 
 ### opacity
 背景透明度調整。
 
-| 類別名稱               | 對應 CSS 屬性                     | 說明       |
-| ---------------------- | --------------------------------- | ---------- |
-| `backdrop-opacity-<number>`            | `backdrop-filter: opacity(<number>%);`              | 透明度百分比（如 0、50、100）         |
-| `backdrop-opacity-(<custom-property>)` | `backdrop-filter: opacity(var(<custom-property>));` | 使用自訂 CSS 變數透明度              |
-| `backdrop-opacity-[<value>]`           | `backdrop-filter: opacity(<value>);`                | 任意自訂透明度值（可含單位如 0.5）   |
+| 類別名稱                               | 對應 CSS 屬性                                       | 說明                               |
+| -------------------------------------- | --------------------------------------------------- | ---------------------------------- |
+| `backdrop-opacity-<number>`            | `backdrop-filter: opacity(<number>%);`              | 透明度百分比（如 0、50、100）      |
+| `backdrop-opacity-(<custom-property>)` | `backdrop-filter: opacity(var(<custom-property>));` | 使用自訂 CSS 變數透明度            |
+| `backdrop-opacity-[<value>]`           | `backdrop-filter: opacity(<value>);`                | 任意自訂透明度值（可含單位如 0.5） |
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-invert backdrop-opacity-60 ..."></div>
-  <div class="backdrop-opacity-[.15] ..."></div>
-  <div class="backdrop-opacity-(--my-backdrop-filter-opacity) ..."></div>
+  <div class="bg-white/30 backdrop-invert backdrop-opacity-60"></div>
+  <div class="backdrop-opacity-[.15]"></div>
+  <div class="backdrop-opacity-(--my-backdrop-filter-opacity)"></div>
 </div>
 ```
 
 ### saturate
 背景飽和度調整。
 
-| 類別名稱                | 對應 CSS 屬性                     | 說明        |
-| ----------------------- | --------------------------------- | ----------- |
-| `backdrop-saturate-<number>`            | `backdrop-filter: saturate(<number>%);`              | 飽和度百分比（如 0、50、100）         |
-| `backdrop-saturate-(<custom-property>)` | `backdrop-filter: saturate(var(<custom-property>));` | 使用自訂 CSS 變數飽和度              |
-| `backdrop-saturate-[<value>]`           | `backdrop-filter: saturate(<value>);`                | 任意自訂飽和度值（可含單位如 1.5）   |
+| 類別名稱                                | 對應 CSS 屬性                                        | 說明                               |
+| --------------------------------------- | ---------------------------------------------------- | ---------------------------------- |
+| `backdrop-saturate-<number>`            | `backdrop-filter: saturate(<number>%);`              | 飽和度百分比（如 0、50、100）      |
+| `backdrop-saturate-(<custom-property>)` | `backdrop-filter: saturate(var(<custom-property>));` | 使用自訂 CSS 變數飽和度            |
+| `backdrop-saturate-[<value>]`           | `backdrop-filter: saturate(<value>);`                | 任意自訂飽和度值（可含單位如 1.5） |
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-saturate-125 ..."></div>
-  <div class="backdrop-saturate-[.25] ..."></div>
-  <div class="backdrop-saturate-(--my-backdrop-saturation) ..."></div>
+  <div class="bg-white/30 backdrop-saturate-125"></div>
+  <div class="backdrop-saturate-[.25]"></div>
+  <div class="backdrop-saturate-(--my-backdrop-saturation)"></div>
 </div>
 ```
 
 ### sepia
 背景棕色化處理。
 
-| 類別名稱             | 對應 CSS 屬性                | 說明       |
-| -------------------- | ---------------------------- | ---------- |
-| `backdrop-sepia`                        | `backdrop-filter: sepia(100%);`                     | 100% 棕色化處理                |
-| `backdrop-sepia-<number>`               | `backdrop-filter: sepia(<number>%);`                | 棕色化百分比（如 0、50、100）   |
-| `backdrop-sepia-(<custom-property>)`    | `backdrop-filter: sepia(var(<custom-property>));`   | 使用自訂 CSS 變數棕色化         |
-| `backdrop-sepia-[<value>]`              | `backdrop-filter: sepia(<value>);`                  | 任意自訂棕色化值（可含單位如 0.5）|
-
+| 類別名稱                             | 對應 CSS 屬性                                     | 說明                               |
+| ------------------------------------ | ------------------------------------------------- | ---------------------------------- |
+| `backdrop-sepia`                     | `backdrop-filter: sepia(100%);`                   | 100% 棕色化處理                    |
+| `backdrop-sepia-<number>`            | `backdrop-filter: sepia(<number>%);`              | 棕色化百分比（如 0、50、100）      |
+| `backdrop-sepia-(<custom-property>)` | `backdrop-filter: sepia(var(<custom-property>));` | 使用自訂 CSS 變數棕色化            |
+| `backdrop-sepia-[<value>]`           | `backdrop-filter: sepia(<value>);`                | 任意自訂棕色化值（可含單位如 0.5） |
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]">
-  <div class="bg-white/30 backdrop-sepia-50 ..."></div>
-  <div class="backdrop-sepia-[.25] ..."></div>
-  <div class="backdrop-sepia-(--my-backdrop-sepia) ..."></div>
+  <div class="bg-white/30 backdrop-sepia-50"></div>
+  <div class="backdrop-sepia-[.25]"></div>
+  <div class="backdrop-sepia-(--my-backdrop-sepia)"></div>
 </div>
 ```
 
 # Tables
+表格（Tables）相關類別用於快速調整 HTML 表格的外觀與排版，包含邊框合併、間距、版面配置與標題位置等。這些工具能讓你輕鬆打造響應式、易讀的表格，常見於資料展示、報表、清單等情境。
+
 ## border-collapse
+表格邊框合併（border-collapse）用於設定表格儲存格的邊框是否合併。常見於需要精簡表格線條或自訂分隔線的設計。
+
+| 類別名稱          | CSS 屬性值                   | 說明                 |
+| ----------------- | ---------------------------- | -------------------- |
+| `border-collapse` | `border-collapse: collapse;` | 合併相鄰邊框（預設） |
+| `border-separate` | `border-collapse: separate;` | 分開顯示儲存格邊框   |
+
 ## border-spacing
+表格邊框間距（border-spacing）用於設定儲存格之間的間距，僅在 `border-separate` 狀態下有效。適合需要明顯分隔儲存格的表格設計。
+
+| 類別名稱                               | CSS 屬性值                                                                    | 說明                           |
+| -------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------ |
+| `border-spacing-<number>`              | `border-spacing: calc(var(--spacing) * <number>);`                            | 設定水平與垂直間距（數值倍數） |
+| `border-spacing-(<custom-property>)`   | `border-spacing: var(<custom-property>);`                                     | 使用自訂 CSS 變數設定間距      |
+| `border-spacing-[<value>]`             | `border-spacing: <value>;`                                                    | 任意自訂間距值（可含單位）     |
+| `border-spacing-x-<number>`            | `border-spacing: calc(var(--spacing) * <number>) var(--tw-border-spacing-y);` | 僅設定水平間距（數值倍數）     |
+| `border-spacing-x-(<custom-property>)` | `border-spacing: var(<custom-property>) var(--tw-border-spacing-y);`          | 僅設定自訂 CSS 變數的水平間距  |
+| `border-spacing-x-[<value>]`           | `border-spacing: <value> var(--tw-border-spacing-y);`                         | 僅設定任意自訂的水平間距       |
+| `border-spacing-y-<number>`            | `border-spacing: var(--tw-border-spacing-x) calc(var(--spacing) * <number>);` | 僅設定垂直間距（數值倍數）     |
+| `border-spacing-y-(<custom-property>)` | `border-spacing: var(--tw-border-spacing-x) var(<custom-property>);`          | 僅設定自訂 CSS 變數的垂直間距  |
+| `border-spacing-y-[<value>]`           | `border-spacing: var(--tw-border-spacing-x) <value>;`                         | 僅設定任意自訂的垂直間距       |
+
+```html
+<table class="border-spacing-[7px]"></table>
+<table class="border-spacing-(--my-border-spacing)"></table>
+```
+
 ## table-layout
+表格版面配置（table-layout）用於控制表格欄寬的計算方式。適合需要固定欄寬或自動調整內容的表格。
+
+| 類別名稱      | CSS 屬性值             | 說明                   |
+| ------------- | ---------------------- | ---------------------- |
+| `table-auto`  | `table-layout: auto;`  | 根據內容自動調整欄寬   |
+| `table-fixed` | `table-layout: fixed;` | 固定欄寬，提升表格效能 |
+
 ## caption-side
+表格標題位置（caption-side）用於設定 `<caption>` 元素在表格中的顯示方位。常見於需要在表格上方或下方顯示標題的情境，提升資料可讀性。
+
+| 類別名稱         | CSS 屬性值              | 說明           |
+| ---------------- | ----------------------- | -------------- |
+| `caption-top`    | `caption-side: top;`    | 標題顯示在上方 |
+| `caption-bottom` | `caption-side: bottom;` | 標題顯示在下方 |
+
+# Transitions & Animation
+過渡（Transitions）與動畫（Animation）相關類別可讓你輕鬆為元素添加動態效果，提升互動性與視覺吸引力。這些工具常用於滑鼠懸停、點擊、載入等情境，讓網頁更具現代感。
+
+## transition-property
+設定要套用過渡效果的 CSS 屬性。常見於只想針對特定屬性（如顏色、尺寸）產生動畫時使用。
+
+| 類別名稱                         | 核心 CSS 屬性                                                                                    | 說明                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| `transition`                     | `transition-property: color, background-color, border-color, opacity, box-shadow, transform...;` | 常用過渡，涵蓋大多數動畫屬性         |
+| `transition-all`                 | `transition-property: all;`                                                                      | 所有屬性皆套用過渡                   |
+| `transition-colors`              | `transition-property: color, background-color, border-color...;`                                 | 針對顏色相關屬性過渡                 |
+| `transition-opacity`             | `transition-property: opacity;`                                                                  | 僅針對透明度過渡                     |
+| `transition-shadow`              | `transition-property: box-shadow;`                                                               | 僅針對陰影過渡                       |
+| `transition-transform`           | `transition-property: transform, translate, scale, rotate;`                                      | 僅針對變形（含位移、縮放、旋轉）過渡 |
+| `transition-none`                | `transition-property: none;`                                                                     | 不套用任何過渡                       |
+| `transition-(<custom-property>)` | `transition-property: var(<custom-property>);`                                                   | 使用自訂 CSS 變數作為過渡屬性        |
+| `transition-[<value>]`           | `transition-property: <value>;`                                                                  | 任意自訂過渡屬性                     |
+
+```css
+/* 完整 css 屬性一覽 */
+:root {
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-duration: 150ms;
+}
+
+.transition {
+  transition-property: color, background-color, border-color, outline-color,
+    text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via,
+    --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate,
+    filter, -webkit-backdrop-filter, backdrop-filter, display, visibility,
+    content-visibility, overlay, pointer-events;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-all {
+  transition-property: all;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-colors {
+  transition-property: color, background-color, border-color, outline-color,
+    text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via,
+    --tw-gradient-to;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-shadow {
+  transition-property: box-shadow;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-transform {
+  transition-property: transform, translate, scale, rotate;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-none {
+  transition-property: none;
+}
+.transition-(<custom-property>) {
+  transition-property: var(<custom-property>);
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+.transition-[<value>] {
+  transition-property: <value>;
+  transition-timing-function: var(--default-transition-timing-function);
+  transition-duration: var(--default-transition-duration);
+}
+```
+
+```html
+<button class="transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"></button>
+<button class="transition-[height]"></button>
+<button class="transition-(--my-properties)"></button>
+```
+
+{% note warning %}
+**效能注意事項**
+- `transition-all` 會監聽所有 CSS 屬性變化，可能影響效能
+- 建議優先使用特定屬性過渡（如 `transition-colors`、`transition-transform`）
+- 大量元素使用過渡時，考慮使用 `will-change` 屬性優化
+{% endnote %}
+
+## transition-behavior
+控制過渡效果是否能在「偏好減少動態」的系統設定下自動停用。適合提升無障礙體驗。
+
+| 類別名稱              | CSS 屬性值                             | 說明                                                                     |
+| --------------------- | -------------------------------------- | ------------------------------------------------------------------------ |
+| `transition-normal`   | `transition-behavior: normal;`         | 預設過渡行為，所有過渡皆可執行（不強制啟用離散型過渡）                   |
+| `transition-discrete` | `transition-behavior: allow-discrete;` | 允許瀏覽器針對部分屬性（如顏色）以「離散」方式過渡，提升效能與無障礙體驗 |
+
+## transition-duration
+設定過渡效果持續時間。常用於調整動畫快慢，單位為毫秒（ms）。
+
+| 類別名稱                       | CSS 屬性值                                     | 說明                                    |
+| ------------------------------ | ---------------------------------------------- | --------------------------------------- |
+| `duration-<number>`            | `transition-duration: <number>ms;`             | 持續 <number> 毫秒（如 `duration-150`） |
+| `duration-initial`             | `transition-duration: initial;`                | 使用瀏覽器預設持續時間                  |
+| `duration-(<custom-property>)` | `transition-duration: var(<custom-property>);` | 使用自訂 CSS 變數作為持續時間           |
+| `duration-[<value>]`           | `transition-duration: <value>;`                | 自訂持續時間（需含單位，如 ms、s）      |
+
+```html
+<!-- opacity 過渡 1 秒，transform 過渡 15 秒 -->
+<button class="duration-[1s,15s] transition-[opacity,transform]"></button>
+<button class="duration-(--my-duration)"></button>
+```
+
+{% note info %}
+**補充說明**
+- `duration-[1s,15s]`可用於同時設定多個過渡屬性的持續時間（例如 `transition-duration: 1s, 15s;`）。
+- 這種語法主要用於當你有多個過渡屬性時（如 `transition-property: opacity, transform;`），可分別指定不同的持續時間。
+- 但請注意，瀏覽器會依照 `transition-property` 屬性的順序對應每個時間值，若屬性數量與時間數量不符，最後一個時間值會套用到剩餘屬性。
+{% endnote %}
+
+## transition-timing-function
+設定過渡效果的速度曲線（timing function），決定動畫的加速與減速方式。
+
+| 類別名稱                   | CSS 屬性值                                            | 說明                                              |
+| -------------------------- | ----------------------------------------------------- | ------------------------------------------------- |
+| `ease-linear`              | `transition-timing-function: linear;`                 | 線性速度，均勻變化                                |
+| `ease-in`                  | `transition-timing-function: var(--ease-in);`         | 由慢到快，預設 `cubic-bezier(0.4, 0, 1, 1)`       |
+| `ease-out`                 | `transition-timing-function: var(--ease-out);`        | 由快到慢，預設 `cubic-bezier(0, 0, 0.2, 1)`       |
+| `ease-in-out`              | `transition-timing-function: var(--ease-in-out);` `   | 先慢後快再慢，預設 `cubic-bezier(0.4, 0, 0.2, 1)` |
+| `ease-initial`             | `transition-timing-function: initial;`                | 使用瀏覽器預設速度曲線                            |
+| `ease-(<custom-property>)` | `transition-timing-function: var(<custom-property>);` | 使用自訂 CSS 變數作為速度曲線                     |
+| `ease-[<value>]`           | `transition-timing-function: <value>;`                | 自訂速度曲線（如 cubic-bezier(...)）              |
+
+```html
+<button class="ease-[cubic-bezier(0.95,0.05,0.795,0.035)]"></button>
+<button class="ease-(--my-ease)"></button>
+```
+
+### 自訂
+```css
+@theme {
+  --ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035); 
+}
+```
+```html
+<button class="ease-in-expo"></button>
+```
+
+## transition-delay
+設定過渡效果延遲啟動的時間。適合多段動畫或需延遲觸發時使用。
+
+| 類別名稱                    | CSS 屬性值                                  | 說明                                           |
+| --------------------------- | ------------------------------------------- | ---------------------------------------------- |
+| `delay-<number>`            | `transition-delay: <number>ms;`             | 延遲指定毫秒數後開始過渡效果（如 `delay-500`） |
+| `delay-(<custom-property>)` | `transition-delay: var(<custom-property>);` | 使用自訂 CSS 變數作為延遲時間                  |
+| `delay-[<value>]`           | `transition-delay: <value>;`                | 自訂延遲時間（需含單位，如 ms、s）             |
+
+```html
+<button class="delay-[1s,250ms]"></button>
+<button class="delay-(--my-delay)"></button>
+```
+
+## animation
+動畫（animation）類別用於快速套用預設或自訂動畫效果，讓元素產生移動、淡入淡出、旋轉等動態變化。
+
+| 類別名稱                      | 核心 CSS 屬性值                      | 說明                     |
+| ----------------------------- | ------------------------------------ | ------------------------ |
+| `animate-spin`                | `animation: var(--animate-spin);`    | 預設旋轉動畫（無限循環） |
+| `animate-ping`                | `animation: var(--animate-ping);`    | 擴散漣漪動畫（無限循環） |
+| `animate-pulse`               | `animation: var(--animate-pulse);`   | 呼吸閃爍動畫（無限循環） |
+| `animate-bounce`              | `animation: var(--animate-bounce);`  | 彈跳動畫（無限循環）     |
+| `animate-none`                | `animation: none;`                   | 取消動畫效果             |
+| `animate-(<custom-property>)` | `animation: var(<custom-property>);` | 使用自訂 CSS 變數動畫    |
+| `animate-[<value>]`           | `animation: <value>;`                | 任意自訂動畫屬性         |
+
+```css
+/* 完整 css 屬性一覽 */
+:root {
+  --animate-spin: spin 1s linear infinite;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce: bounce 1s infinite;
+}
+
+.animate-spin {
+  animation: var(--animate-spin);
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-ping {
+  animation: var(--animate-ping);
+}
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.animate-pulse {
+  animation: var(--animate-pulse);
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+.animate-bounce {
+  animation: var(--animate-bounce);
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-none {
+  animation: none;
+}
+
+.animate-(<custom-property>) {
+  animation: var(<custom-property>);
+}
+
+.animate-[<value>] {
+  animation: <value>;
+}
+```
+
+```html
+<div class="animate-[wiggle_1s_ease-in-out_infinite] ..."></div>
+<div class="animate-(--my-animation) ..."></div>
+```
+
+### 自訂
+```css
+@theme {
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+}
+```
+```html
+<div class="animate-wiggle"></div>
+```
+
+# Transforms
+元素變形（Transforms）相關類別可讓你快速對元素進行旋轉、縮放、傾斜、平移等 2D/3D 變形操作，常用於動畫、互動效果與視覺強調。這些工具能讓網頁介面更具動態感與現代感。
+
+## backface-visibility
+控制 3D 旋轉時元素背面是否可見。常用於翻牌動畫、3D 效果等場景。
+
+| 功能名稱           | 常用類別範例                    | 說明                               |
+| ------------------ | ------------------------------- | ---------------------------------- |
+| `backface-hidden`  | `backface-visibility: hidden;`  | 背面隱藏，常用於 3D 翻牌動畫等效果 |
+| `backface-visible` | `backface-visibility: visible;` | 背面可見，預設值                   |
+
+## perspective
+設定 3D 透視距離，讓 3D 變形更具立體感。數值越小，透視效果越明顯。 
+
+| 功能名稱                          | 常用類別範例                                | 說明                                                     |
+| --------------------------------- | ------------------------------------------- | -------------------------------------------------------- |
+| `perspective-dramatic`            | `perspective: var(--perspective-dramatic);` | 戲劇性強烈的 3D 透視，數值約 100px（近距離，立體感最強） |
+| `perspective-near`                | `perspective: var(--perspective-near);`     | 近距離 3D 透視，數值約 300px（立體感明顯）               |
+| `perspective-normal`              | `perspective: var(--perspective-normal);`   | 一般 3D 透視，數值約 500px（常用預設值）                 |
+| `perspective-midrange`            | `perspective: var(--perspective-midrange);` | 中距離 3D 透視，數值約 800px（立體感適中）               |
+| `perspective-distant`             | `perspective: var(--perspective-distant);`  | 遠距離 3D 透視，數值約 1200px（立體感較弱）              |
+| `perspective-none`                | `perspective: none;`                        | 取消 3D 透視效果                                         |
+| `perspective-(<custom-property>)` | `perspective: var(<custom-property>);`      | 使用自訂 CSS 變數設定 3D 透視                            |
+| `perspective-[<value>]`           | `perspective: <value>;`                     | 任意自訂 3D 透視距離（可含單位，如 400px、2rem 等）      |
+
+```html
+<div class="perspective-[750px] ..."></div>
+<div class="perspective-(--my-perspective) ..."></div>
+```
+
+### 自訂
+```css
+@theme {
+  --perspective-remote: 1800px; 
+}
+```
+```html
+<div class="perspective-remote"></div>
+```
+
+## perspective-origin
+設定 3D 透視的原點位置，影響 3D 變形的視角。 
+
+| 功能名稱                                 | 常用類別範例                                  | 說明                                  |
+| ---------------------------------------- | --------------------------------------------- | ------------------------------------- |
+| `perspective-origin-center`              | `perspective-origin: center;`                 | 以中心為 3D 透視原點（預設值）        |
+| `perspective-origin-top`                 | `perspective-origin: top;`                    | 以上方為 3D 透視原點                  |
+| `perspective-origin-top-right`           | `perspective-origin: top right;`              | 以右上角為 3D 透視原點                |
+| `perspective-origin-right`               | `perspective-origin: right;`                  | 以右側為 3D 透視原點                  |
+| `perspective-origin-bottom-right`        | `perspective-origin: bottom right;`           | 以右下角為 3D 透視原點                |
+| `perspective-origin-bottom`              | `perspective-origin: bottom;`                 | 以下方為 3D 透視原點                  |
+| `perspective-origin-bottom-left`         | `perspective-origin: bottom left;`            | 以左下角為 3D 透視原點                |
+| `perspective-origin-left`                | `perspective-origin: left;`                   | 以左側為 3D 透視原點                  |
+| `perspective-origin-top-left`            | `perspective-origin: top left;`               | 以左上角為 3D 透視原點                |
+| `perspective-origin-(<custom-property>)` | `perspective-origin: var(<custom-property>);` | 使用自訂 CSS 變數作為 3D 透視原點     |
+| `perspective-origin-[<value>]`           | `perspective-origin: <value>;`                | 任意自訂 3D 透視原點（如 30% 70% 等） |
+
+```html
+<div class="perspective-origin-[200%_150%] ..."></div>
+<div class="perspective-origin-(--my-perspective-origin) ..."></div>
+```
+
+## rotate
+讓元素依指定角度旋轉，常用於圖示、按鈕等互動效果。 
+
+| 功能名稱                       | 常用類別範例                                                                        | 說明                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------- | -------------------------------------- |
+| `rotate-none`                  | `rotate: none;`                                                                     | 取消旋轉效果（無旋轉）                 |
+| `rotate-<number>`              | `rotate: <number>deg;`                                                              | 順時針旋轉指定角度（單位為度）         |
+| `-rotate-<number>`             | `rotate: calc(<number>deg * -1);`                                                   | 逆時針旋轉指定角度（單位為度）         |
+| `rotate-(<custom-property>)`   | `rotate: var(<custom-property>);`                                                   | 使用自訂 CSS 變數設定旋轉              |
+| `rotate-[<value>]`             | `rotate: <value>;`                                                                  | 任意自訂旋轉值（可含單位，如 1.5turn） |
+| `rotate-x-<number>`            | `transform: rotateX(<number>deg) var(--tw-rotate-y);`                               | X 軸旋轉指定角度（單位為度）           |
+| `-rotate-x-<number>`           | `transform: rotateX(-<number>deg) var(--tw-rotate-y);`                              | X 軸逆向旋轉指定角度                   |
+| `rotate-x-(<custom-property>)` | `transform: rotateX(var(<custom-property>)) var(--tw-rotate-y);`                    | X 軸自訂 CSS 變數旋轉                  |
+| `rotate-x-[<value>]`           | `transform: rotateX(<value>) var(--tw-rotate-y);`                                   | X 軸任意自訂旋轉值                     |
+| `rotate-y-<number>`            | `transform: var(--tw-rotate-x) rotateY(<number>deg);`                               | Y 軸旋轉指定角度（單位為度）           |
+| `-rotate-y-<number>`           | `transform: var(--tw-rotate-x) rotateY(-<number>deg);`                              | Y 軸逆向旋轉指定角度                   |
+| `rotate-y-(<custom-property>)` | `transform: var(--tw-rotate-x) rotateY(var(<custom-property>));`                    | Y 軸自訂 CSS 變數旋轉                  |
+| `rotate-y-[<value>]`           | `transform: var(--tw-rotate-x) rotateY(<value>);`                                   | Y 軸任意自訂旋轉值                     |
+| `rotate-z-<number>`            | `transform: var(--tw-rotate-x) var(--tw-rotate-y) rotateZ(<number>deg);`            | Z 軸旋轉指定角度（單位為度）           |
+| `-rotate-z-<number>`           | `transform: var(--tw-rotate-x) var(--tw-rotate-y) rotateZ(-<number>deg);`           | Z 軸逆向旋轉指定角度                   |
+| `rotate-z-(<custom-property>)` | `transform: var(--tw-rotate-x) var(--tw-rotate-y) rotateZ(var(<custom-property>));` | Z 軸自訂 CSS 變數旋轉                  |
+| `rotate-z-[<value>]`           | `transform: var(--tw-rotate-x) var(--tw-rotate-y) rotateZ(<value>);`                | Z 軸任意自訂旋轉值                     |
+
+```html
+<img class="rotate-90 ..." src="/img/mountains.jpg" />
+<img class="rotate-x-15 -rotate-y-30 ..." src="/img/mountains.jpg" />
+<img class="rotate-[3.142rad] ..." src="/img/mountains.jpg" />
+<img class="rotate-(--my-rotation) ..." src="/img/mountains.jpg" />
+```
+
+## scale
+縮放元素大小，可單獨設定 X、Y 軸或同時縮放。 
+
+| 功能名稱                      | 常用類別範例                                                         | 說明                                      |
+| ----------------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| `scale-none`                  | `scale: none;`                                                       | 取消縮放效果（無縮放）                    |
+| `scale-<number>`              | `scale: <number>% <number>% ;`                                       | 同時縮放 X、Y 軸（百分比，常用 100、150） |
+| `-scale-<number>`             | `scale: calc(<number>% * -1) calc(<number>% * -1);`                  | X、Y 軸反向縮放（百分比，負值）           |
+| `scale-(<custom-property>)`   | `scale: var(<custom-property>) var(<custom-property>);`              | 使用自訂 CSS 變數同時縮放 X、Y 軸         |
+| `scale-[<value>]`             | `scale: <value>;`                                                    | 任意自訂縮放值（可含單位，如 1.2、0.5）   |
+| `scale-x-<number>`            | `scale: <number>% var(--tw-scale-y);`                                | 僅縮放 X 軸（百分比）                     |
+| `-scale-x-<number>`           | `scale: calc(<number>% * -1) var(--tw-scale-y);`                     | X 軸反向縮放（百分比，負值）              |
+| `scale-x-(<custom-property>)` | `scale: var(<custom-property>) var(--tw-scale-y);`                   | X 軸自訂 CSS 變數縮放                     |
+| `scale-x-[<value>]`           | `scale: <value> var(--tw-scale-y);`                                  | X 軸任意自訂縮放值                        |
+| `scale-y-<number>`            | `scale: var(--tw-scale-x) <number>% ;`                               | 僅縮放 Y 軸（百分比）                     |
+| `-scale-y-<number>`           | `scale: var(--tw-scale-x) calc(<number>% * -1);`                     | Y 軸反向縮放（百分比，負值）              |
+| `scale-y-(<custom-property>)` | `scale: var(--tw-scale-x) var(<custom-property>);`                   | Y 軸自訂 CSS 變數縮放                     |
+| `scale-y-[<value>]`           | `scale: var(--tw-scale-x) <value>;`                                  | Y 軸任意自訂縮放值                        |
+| `scale-z-<number>`            | `scale: var(--tw-scale-x) var(--tw-scale-y) <number>% ;`             | 僅縮放 Z 軸（百分比，3D 縮放）            |
+| `-scale-z-<number>`           | `scale: var(--tw-scale-x) var(--tw-scale-y) calc(<number>% * -1);`   | Z 軸反向縮放（百分比，負值）              |
+| `scale-z-(<custom-property>)` | `scale: var(--tw-scale-x) var(--tw-scale-y) var(<custom-property>);` | Z 軸自訂 CSS 變數縮放                     |
+| `scale-z-[<value>]`           | `scale: var(--tw-scale-x) var(--tw-scale-y) <value>;`                | Z 軸任意自訂縮放值                        |
+| `scale-3d`                    | `scale: var(--tw-scale-x) var(--tw-scale-y) var(--tw-scale-z);`      | 同時縮放 X、Y、Z 三軸（3D 縮放）          |
+
+```html
+<img class="scale-100 ..." src="/img/mountains.jpg" />
+<img class="-scale-y-125 ..." src="/img/mountains.jpg" />
+<img class="scale-[1.7] ..." src="/img/mountains.jpg" />
+<img class="scale-(--my-scale) ..." src="/img/mountains.jpg" />
+```
+
+## skew
+讓元素傾斜，製造動態或斜切視覺效果。 
+
+| 功能名稱                     | 常用類別範例                                                              | 說明                                  |
+| ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------- |
+| `skew-<number>`              | `transform: skewX(<number>deg) skewY(<number>deg);`                       | X、Y 軸同時傾斜指定角度（單位為度）   |
+| `-skew-<number>`             | `transform: skewX(-<number>deg) skewY(-<number>deg);`                     | X、Y 軸同時反向傾斜指定角度           |
+| `skew-(<custom-property>)`   | `transform: skewX(var(<custom-property>)) skewY(var(<custom-property>));` | X、Y 軸同時使用自訂 CSS 變數傾斜      |
+| `skew-[<value>]`             | `transform: skewX(<value>) skewY(<value>);`                               | X、Y 軸同時任意自訂傾斜值（可含單位） |
+| `skew-x-<number>`            | `transform: skewX(<number>deg);`                                          | 僅傾斜 X 軸指定角度（單位為度）       |
+| `-skew-x-<number>`           | `transform: skewX(-<number>deg);`                                         | 僅反向傾斜 X 軸指定角度               |
+| `skew-x-(<custom-property>)` | `transform: skewX(var(<custom-property>));`                               | 僅 X 軸使用自訂 CSS 變數傾斜          |
+| `skew-x-[<value>]`           | `transform: skewX(<value>);`                                              | 僅 X 軸任意自訂傾斜值（可含單位）     |
+| `skew-y-<number>`            | `transform: skewY(<number>deg);`                                          | 僅傾斜 Y 軸指定角度（單位為度）       |
+| `-skew-y-<number>`           | `transform: skewY(-<number>deg);`                                         | 僅反向傾斜 Y 軸指定角度               |
+| `skew-y-(<custom-property>)` | `transform: skewY(var(<custom-property>));`                               | 僅 Y 軸使用自訂 CSS 變數傾斜          |
+| `skew-y-[<value>]`           | `transform: skewY(<value>);`                                              | 僅 Y 軸任意自訂傾斜值（可含單位）     |
+
+```html
+<img class="skew-6 ..." src="/img/mountains.jpg" />
+<img class="skew-[3.142rad] ..." src="/img/mountains.jpg" />
+<img class="skew-(--my-skew) ..." src="/img/mountains.jpg" />
+```
+
+## transform
+啟用 CSS 變形功能，Tailwind 預設自動啟用，通常不需手動設定。 
+
+| 功能名稱                        | 常用類別範例                                                                                                           | 說明                               |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `transform-(<custom-property>)` | `transform: var(<custom-property>);`                                                                                   | 使用自訂 CSS 變數進行變形          |
+| `transform-[<value>]`           | `transform: <value>;`                                                                                                  | 任意自訂變形值（可含多種變形語法） |
+| `transform-none`                | `transform: none;`                                                                                                     | 取消所有變形效果                   |
+| `transform-gpu`                 | `transform: translateZ(0) var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);` | 啟用 GPU 加速的變形（提升效能）    |
+| `transform-cpu`                 | `transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);`               | 僅使用 CPU 處理變形（預設行為）    |
+
+```html
+<div class="scale-150 transform-gpu"></div>
+<div class="transform-[matrix(1,2,3,4,5,6)] ..."></div>
+<div class="transform-(--my-transform) ..."></div>
+```
+
+## transform-origin
+設定變形時的基準點，影響旋轉、縮放等效果的中心。 
+
+| 功能名稱                     | 常用類別範例                                | 說明                                    |
+| ---------------------------- | ------------------------------------------- | --------------------------------------- |
+| `origin-center`              | `transform-origin: center;`                 | 以元素中心為基準點（預設值）            |
+| `origin-top`                 | `transform-origin: top;`                    | 以元素頂部為基準點                      |
+| `origin-top-right`           | `transform-origin: top right;`              | 以元素右上角為基準點                    |
+| `origin-right`               | `transform-origin: right;`                  | 以元素右側為基準點                      |
+| `origin-bottom-right`        | `transform-origin: bottom right;`           | 以元素右下角為基準點                    |
+| `origin-bottom`              | `transform-origin: bottom;`                 | 以元素底部為基準點                      |
+| `origin-bottom-left`         | `transform-origin: bottom left;`            | 以元素左下角為基準點                    |
+| `origin-left`                | `transform-origin: left;`                   | 以元素左側為基準點                      |
+| `origin-top-left`            | `transform-origin: top left;`               | 以元素左上角為基準點                    |
+| `origin-(<custom-property>)` | `transform-origin: var(<custom-property>);` | 使用自訂 CSS 變數作為基準點             |
+| `origin-[<value>]`           | `transform-origin: <value>;`                | 任意自訂基準點（如 25% 75%、10px 20px） |
+
+```html
+<img class="origin-top-left rotate-12 ..." src="/img/mountains.jpg" />
+<img class="origin-[33%_75%] ..." src="/img/mountains.jpg" />
+<img class="origin-(--my-transform-origin) ..." src="/img/mountains.jpg" />
+```
+
+## transform-style
+控制子元素在 3D 空間中的呈現方式，常用於 3D 堆疊或翻轉。 
+
+| 功能名稱         | 常用類別範例                    | 說明                                             |
+| ---------------- | ------------------------------- | ------------------------------------------------ |
+| `transform-3d`   | `transform-style: preserve-3d;` | 讓子元素保留 3D 變形效果（常用於 3D 堆疊、翻轉） |
+| `transform-flat` | `transform-style: flat;`        | 子元素不保留 3D 變形（預設行為）                 |
+
+```html
+<div class="size-20 transform-3d ...">
+  <div class="translate-z-12 rotate-x-0 bg-sky-300/75 ...">1</div>
+  <div class="-translate-z-12 rotate-y-18 bg-sky-300/75 ...">2</div>
+  <div class="translate-x-12 rotate-y-90 bg-sky-300/75 ...">3</div>
+  <div class="-translate-x-12 -rotate-y-90 bg-sky-300/75 ...">4</div>
+  <div class="-translate-y-12 rotate-x-90 bg-sky-300/75 ...">5</div>
+  <div class="translate-y-12 -rotate-x-90 bg-sky-300/75 ...">6</div>
+</div>
+```
+
+## translate
+讓元素沿 X、Y、Z 軸進行平移（translate），可用於動畫、滑動、視覺強調等效果。Tailwind CSS 提供多種 translate 類別，支援數值、百分比、像素、自訂變數與自訂值，並可分別針對 X、Y、Z 軸單獨設定。
+
+| 類別名稱                          | CSS 屬性值                                                                                 | 說明                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| `translate-<number>`              | `translate: calc(var(--spacing) * <number>) calc(var(--spacing) * <number>);`              | 沿 X、Y 軸平移指定倍數的間距                  |
+| `-translate-<number>`             | `translate: calc(var(--spacing) * -<number>) calc(var(--spacing) * -<number>);`            | 沿 X、Y 軸反向平移指定倍數的間距              |
+| `translate-<fraction>`            | `translate: calc(<fraction> * 100%) calc(<fraction> * 100%);`                              | 沿 X、Y 軸平移指定百分比（如 1/2、1/3）       |
+| `-translate-<fraction>`           | `translate: calc(<fraction> * -100%) calc(<fraction> * -100%);`                            | 沿 X、Y 軸反向平移指定百分比                  |
+| `translate-full`                  | `translate: 100% 100%;`                                                                    | 沿 X、Y 軸各平移 100%                         |
+| `-translate-full`                 | `translate: -100% -100%;`                                                                  | 沿 X、Y 軸各反向平移 100%                     |
+| `translate-px`                    | `translate: 1px 1px;`                                                                      | 沿 X、Y 軸各平移 1px                          |
+| `-translate-px`                   | `translate: -1px -1px;`                                                                    | 沿 X、Y 軸各反向平移 1px                      |
+| `translate-(<custom-property>)`   | `translate: var(<custom-property>) var(<custom-property>);`                                | 沿 X、Y 軸分別使用自訂 CSS 變數平移           |
+| `translate-[<value>]`             | `translate: <value> <value>;`                                                              | 沿 X、Y 軸分別自訂任意平移值                  |
+| `translate-x-<number>`            | `translate: calc(var(--spacing) * <number>) var(--tw-translate-y);`                        | 沿 X 軸平移指定倍數，Y 軸維持原值             |
+| `-translate-x-<number>`           | `translate: calc(var(--spacing) * -<number>) var(--tw-translate-y);`                       | 沿 X 軸反向平移指定倍數，Y 軸維持原值         |
+| `translate-x-<fraction>`          | `translate: calc(<fraction> * 100%) var(--tw-translate-y);`                                | 沿 X 軸平移指定百分比，Y 軸維持原值           |
+| `-translate-x-<fraction>`         | `translate: calc(<fraction> * -100%) var(--tw-translate-y);`                               | 沿 X 軸反向平移指定百分比，Y 軸維持原值       |
+| `translate-x-full`                | `translate: 100% var(--tw-translate-y);`                                                   | 沿 X 軸平移 100%，Y 軸維持原值                |
+| `-translate-x-full`               | `translate: -100% var(--tw-translate-y);`                                                  | 沿 X 軸反向平移 100%，Y 軸維持原值            |
+| `translate-x-px`                  | `translate: 1px var(--tw-translate-y);`                                                    | 沿 X 軸平移 1px，Y 軸維持原值                 |
+| `-translate-x-px`                 | `translate: -1px var(--tw-translate-y);`                                                   | 沿 X 軸反向平移 1px，Y 軸維持原值             |
+| `translate-x-(<custom-property>)` | `translate: var(<custom-property>) var(--tw-translate-y);`                                 | 沿 X 軸使用自訂 CSS 變數平移，Y 軸維持原值    |
+| `translate-x-[<value>]`           | `translate: <value> var(--tw-translate-y);`                                                | 沿 X 軸自訂任意平移值，Y 軸維持原值           |
+| `translate-y-<number>`            | `translate: var(--tw-translate-x) calc(var(--spacing) * <number>);`                        | 沿 Y 軸平移指定倍數，X 軸維持原值             |
+| `-translate-y-<number>`           | `translate: var(--tw-translate-x) calc(var(--spacing) * -<number>);`                       | 沿 Y 軸反向平移指定倍數，X 軸維持原值         |
+| `translate-y-<fraction>`          | `translate: var(--tw-translate-x) calc(<fraction> * 100%);`                                | 沿 Y 軸平移指定百分比，X 軸維持原值           |
+| `-translate-y-<fraction>`         | `translate: var(--tw-translate-x) calc(<fraction> * -100%);`                               | 沿 Y 軸反向平移指定百分比，X 軸維持原值       |
+| `translate-y-full`                | `translate: var(--tw-translate-x) 100%;`                                                   | 沿 Y 軸平移 100%，X 軸維持原值                |
+| `-translate-y-full`               | `translate: var(--tw-translate-x) -100%;`                                                  | 沿 Y 軸反向平移 100%，X 軸維持原值            |
+| `translate-y-px`                  | `translate: var(--tw-translate-x) 1px;`                                                    | 沿 Y 軸平移 1px，X 軸維持原值                 |
+| `-translate-y-px`                 | `translate: var(--tw-translate-x) -1px;`                                                   | 沿 Y 軸反向平移 1px，X 軸維持原值             |
+| `translate-y-(<custom-property>)` | `translate: var(--tw-translate-x) var(<custom-property>);`                                 | 沿 Y 軸使用自訂 CSS 變數平移，X 軸維持原值    |
+| `translate-y-[<value>]`           | `translate: var(--tw-translate-x) <value>;`                                                | 沿 Y 軸自訂任意平移值，X 軸維持原值           |
+| `translate-z-<number>`            | `translate: var(--tw-translate-x) var(--tw-translate-y) calc(var(--spacing) * <number>);`  | 沿 Z 軸平移指定倍數，X、Y 軸維持原值          |
+| `-translate-z-<number>`           | `translate: var(--tw-translate-x) var(--tw-translate-y) calc(var(--spacing) * -<number>);` | 沿 Z 軸反向平移指定倍數，X、Y 軸維持原值      |
+| `translate-z-px`                  | `translate: var(--tw-translate-x) var(--tw-translate-y) 1px;`                              | 沿 Z 軸平移 1px，X、Y 軸維持原值              |
+| `-translate-z-px`                 | `translate: var(--tw-translate-x) var(--tw-translate-y) -1px;`                             | 沿 Z 軸反向平移 1px，X、Y 軸維持原值          |
+| `translate-z-(<custom-property>)` | `translate: var(--tw-translate-x) var(--tw-translate-y) var(<custom-property>);`           | 沿 Z 軸使用自訂 CSS 變數平移，X、Y 軸維持原值 |
+| `translate-z-[<value>]`           | `translate: var(--tw-translate-x) var(--tw-translate-y) <value>;`                          | 沿 Z 軸自訂任意平移值，X、Y 軸維持原值        |
+| `translate-none`                  | `translate: none;`                                                                         | 不進行任何平移                                |
+
+```html
+<img class="translate-2 ..." src="/img/mountains.jpg" />
+<img class="translate-1/6 ..." src="/img/mountains.jpg" />
+<img class="translate-x-1/2 ..." src="/img/mountains.jpg" />
+<img class="translate-z-2 rotate-x-50 rotate-z-45 ..." src="/img/mountains.jpg" />
+<img class="translate-[3.142rad] ..." src="/img/mountains.jpg" />
+<img class="translate-(--my-translate) ..." src="/img/mountains.jpg" />
+```
+
+# Interactivity
+互動性（Interactivity）相關的 Tailwind CSS 工具類別，讓你能快速控制元素的互動行為、游標樣式、選取狀態、捲動體驗等。這些屬性常用於提升使用者體驗，讓網頁元件更直覺、易用。
+
+## accent-color
+設定表單元件（如核取方塊、單選框、篩選器等）的主色，讓表單更符合品牌色彩或設計需求。
+
+| 類別名稱                     | CSS 屬性值                                   | 說明                                 |
+| ---------------------------- | -------------------------------------------- | ------------------------------------ |
+| `accent-inherit`             | `accent-color: inherit;`                     | 繼承父層的主色（accent color）       |
+| `accent-current`             | `accent-color: currentColor;`                | 使用當前文字顏色作為主色             |
+| `accent-transparent`         | `accent-color: transparent;`                 | 主色透明，通常用於隱藏 accent 效果   |
+| `accent-black`               | `accent-color: var(--color-black);`          | 主色設為黑色 #000                    |
+| `accent-white`               | `accent-color: var(--color-white);`          | 主色設為白色 #fff                    |
+| `accent-<color>-<step>`      | `accent-color: var(--color-<color>-<step>);` | 主色設為指定色                       |
+| `accent-(<custom-property>)` | `accent-color: var(<custom-property>);`      | 使用自訂 CSS 變數作為主色            |
+| `accent-[<value>]`           | `accent-color: <value>;`                     | 任意自訂主色（可用色碼、CSS 變數等） |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<input class="accent-pink-500" type="checkbox" checked />
+<input class="accent-[#50d71e] ..." type="checkbox" />
+<input class="accent-(--my-accent-color) ..." type="checkbox" />
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<input class="accent-regal-blue" type="checkbox" />
+```
+
+## appearance
+控制元素是否使用瀏覽器的預設樣式。常用於自訂表單元件外觀時，移除原生樣式。
+
+| 類別名稱          | CSS 屬性值          | 說明                                   |
+| ----------------- | ------------------- | -------------------------------------- |
+| `appearance-none` | `appearance: none;` | 移除瀏覽器預設樣式，常用於自訂表單元件 |
+| `appearance-auto` | `appearance: auto;` | 使用瀏覽器預設樣式（預設值）           |
+
+```html
+<select class="col-start-1 row-start-1 appearance-none bg-gray-50 dark:bg-gray-800 ...">
+  <option>Yes</option>
+</select>
+```
+
+## caret-color
+設定輸入框內「插入點」的顏色（即 caret-color），可提升表單的可讀性與美觀。  
+
+| 類別名稱                  | CSS 屬性值                                  | 說明                                       |
+| ------------------------- | ------------------------------------------- | ------------------------------------------ |
+| `caret-inherit`           | `caret-color: inherit;`                     | 繼承父元素的插入點顏色（預設繼承）         |
+| `caret-current`           | `caret-color: currentColor;`                | 使用當前文字顏色作為插入點顏色             |
+| `caret-transparent`       | `caret-color: transparent;`                 | 插入點透明                                 |
+| `caret-black`             | `caret-color: var(--color-black);`          | 黑色插入點 #000                            |
+| `caret-white`             | `caret-color: var(--color-white);`          | 白色插入點 #fff                            |
+| `caret-<color>-<step>`    | `caret-color: var(--color-<color>-<step>);` | 指定色系插入點                             |
+| `caret-<custom-property>` | `caret-color: var(<custom-property>);`      | 使用自訂 CSS 變數作為插入點顏色            |
+| `caret-[<value>]`         | `caret-color: <value>;`                     | 任意自訂插入點顏色（如 `caret-[#50d71e]`） |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<textarea class="caret-pink-500 ..."></textarea>
+<textarea class="caret-[#50d71e] ..."></textarea>
+<textarea class="caret-(--my-caret-color) ..."></textarea>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<textarea class="caret-regal-blue"></textarea>
+```
+
+## color-scheme
+指定元素支援的主題色彩模式（如 light、dark），讓瀏覽器根據使用者或系統偏好自動調整顯示效果。這有助於提升整體 UI 的一致性與可讀性。
+
+| 類別名稱            | CSS 屬性值                  | 說明                                     |
+| ------------------- | --------------------------- | ---------------------------------------- |
+| `scheme-normal`     | `color-scheme: normal;`     | 預設主題，依瀏覽器或系統設定自動切換     |
+| `scheme-dark`       | `color-scheme: dark;`       | 僅啟用深色模式                           |
+| `scheme-light`      | `color-scheme: light;`      | 僅啟用淺色模式                           |
+| `scheme-light-dark` | `color-scheme: light dark;` | 同時支援淺色與深色主題（最常見的預設值） |
+| `scheme-only-dark`  | `color-scheme: only dark;`  | 僅允許深色主題，忽略其他主題             |
+| `scheme-only-light` | `color-scheme: only light;` | 僅允許淺色主題，忽略其他主題             |
+
+```html
+<div class="scheme-light ...">
+  <input type="date" />
+</div>
+<div class="scheme-dark ...">
+  <input type="date" />
+</div>
+<div class="scheme-light-dark ...">
+  <input type="date" />
+</div>
+
+<html class="scheme-light dark:scheme-dark ..."></html>
+```
+
+## cursor
+設定滑鼠游標的樣式，常用於按鈕、連結、拖曳等互動元件。
+
+| 類別名稱                     | CSS 屬性值                        | 說明                                       |
+| ---------------------------- | --------------------------------- | ------------------------------------------ |
+| `cursor-auto`                | `cursor: auto;`                   | 使用瀏覽器預設游標樣式                     |
+| `cursor-default`             | `cursor: default;`                | 預設箭頭游標                               |
+| `cursor-pointer`             | `cursor: pointer;`                | 指向手型游標，常用於按鈕、連結             |
+| `cursor-wait`                | `cursor: wait;`                   | 等待狀態游標（沙漏或轉圈）                 |
+| `cursor-text`                | `cursor: text;`                   | 文字輸入游標（I 型）                       |
+| `cursor-move`                | `cursor: move;`                   | 移動游標（十字箭頭）                       |
+| `cursor-help`                | `cursor: help;`                   | 說明游標（問號）                           |
+| `cursor-not-allowed`         | `cursor: not-allowed;`            | 禁止操作游標（圓圈斜線）                   |
+| `cursor-none`                | `cursor: none;`                   | 隱藏游標                                   |
+| `cursor-context-menu`        | `cursor: context-menu;`           | 右鍵選單游標                               |
+| `cursor-progress`            | `cursor: progress;`               | 處理中游標（箭頭+沙漏）                    |
+| `cursor-cell`                | `cursor: cell;`                   | 表格選取游標                               |
+| `cursor-crosshair`           | `cursor: crosshair;`              | 十字準星游標                               |
+| `cursor-vertical-text`       | `cursor: vertical-text;`          | 垂直文字游標                               |
+| `cursor-alias`               | `cursor: alias;`                  | 快捷方式游標（小箭頭）                     |
+| `cursor-copy`                | `cursor: copy;`                   | 複製游標（加號）                           |
+| `cursor-no-drop`             | `cursor: no-drop;`                | 禁止拖放游標                               |
+| `cursor-grab`                | `cursor: grab;`                   | 可抓取游標                                 |
+| `cursor-grabbing`            | `cursor: grabbing;`               | 抓取中游標                                 |
+| `cursor-all-scroll`          | `cursor: all-scroll;`             | 任意方向捲動游標                           |
+| `cursor-col-resize`          | `cursor: col-resize;`             | 欄寬調整游標                               |
+| `cursor-row-resize`          | `cursor: row-resize;`             | 列高調整游標                               |
+| `cursor-n-resize`            | `cursor: n-resize;`               | 向上調整游標                               |
+| `cursor-e-resize`            | `cursor: e-resize;`               | 向右調整游標                               |
+| `cursor-s-resize`            | `cursor: s-resize;`               | 向下調整游標                               |
+| `cursor-w-resize`            | `cursor: w-resize;`               | 向左調整游標                               |
+| `cursor-ne-resize`           | `cursor: ne-resize;`              | 右上調整游標                               |
+| `cursor-nw-resize`           | `cursor: nw-resize;`              | 左上調整游標                               |
+| `cursor-se-resize`           | `cursor: se-resize;`              | 右下調整游標                               |
+| `cursor-sw-resize`           | `cursor: sw-resize;`              | 左下調整游標                               |
+| `cursor-ew-resize`           | `cursor: ew-resize;`              | 左右調整游標                               |
+| `cursor-ns-resize`           | `cursor: ns-resize;`              | 上下調整游標                               |
+| `cursor-nesw-resize`         | `cursor: nesw-resize;`            | 右上左下調整游標                           |
+| `cursor-nwse-resize`         | `cursor: nwse-resize;`            | 左上右下調整游標                           |
+| `cursor-zoom-in`             | `cursor: zoom-in;`                | 放大鏡游標                                 |
+| `cursor-zoom-out`            | `cursor: zoom-out;`               | 縮小鏡游標                                 |
+| `cursor-(<custom-property>)` | `cursor: var(<custom-property>);` | 使用自訂 CSS 變數設定游標樣式              |
+| `cursor-[<value>]`           | `cursor: <value>;`                | 任意自訂游標值（可用自訂圖片、系統游標等） |
+
+```html
+<button class="cursor-[url(hand.cur),_pointer] ..."></button>
+<button class="cursor-(--my-cursor) ..."></button>
+```
+
+## field-sizing
+控制表單欄位（如 input、textarea）的尺寸行為，讓欄位更符合設計需求。
+
+| 類別名稱               | CSS 屬性值               | 說明                                                          |
+| ---------------------- | ------------------------ | ------------------------------------------------------------- |
+| `field-sizing-fixed`   | `field-sizing: fixed;`   | 欄位寬度固定，依據欄位屬性（如 size、cols）決定，不隨內容變化 |
+| `field-sizing-content` | `field-sizing: content;` | 欄位寬度自動依內容調整，適合動態長度輸入欄位                  |
+
+```html
+<textarea class="field-sizing-content ..." rows="2">
+  Latex Salesman, Vanderlay Industries
+</textarea>
+<textarea class="field-sizing-fixed w-80 ..." rows="2">
+  Latex Salesman, Vanderlay Industries
+</textarea>
+```
+
+## pointer-events
+控制元素是否能接收滑鼠事件。可用於禁用按鈕、遮罩層等情境。
+
+| 類別名稱              | CSS 屬性值              | 說明                         |
+| --------------------- | ----------------------- | ---------------------------- |
+| `pointer-events-auto` | `pointer-events: auto;` | 元素可接收滑鼠事件（預設值） |
+| `pointer-events-none` | `pointer-events: none;` | 元素不會接收任何滑鼠事件     |
+
+## resize
+設定元素（如 textarea）是否可被使用者調整大小。
+
+| 類別名稱      | CSS 屬性值            | 說明                             |
+| ------------- | --------------------- | -------------------------------- |
+| `resize-none` | `resize: none;`       | 禁止調整大小（無法拖曳改變尺寸） |
+| `resize`      | `resize: both;`       | 可同時水平與垂直調整大小         |
+| `resize-y`    | `resize: vertical;`   | 僅可垂直方向調整大小             |
+| `resize-x`    | `resize: horizontal;` | 僅可水平方向調整大小             |
+
+```html
+<textarea class="resize-none rounded-md"></textarea>
+```
+
+## scroll-behavior
+控制捲動時的動畫行為（如平滑捲動），提升使用者體驗。
+
+| 類別名稱        | CSS 屬性值                 | 說明                             |
+| --------------- | -------------------------- | -------------------------------- |
+| `scroll-auto`   | `scroll-behavior: auto;`   | 捲動時立即移動（無動畫，預設值） |
+| `scroll-smooth` | `scroll-behavior: smooth;` | 捲動時平滑過渡動畫               |
+
+```html
+<html class="scroll-smooth md:scroll-auto"></html>
+```
+
+## scroll-margin
+設定捲動定位（如錨點連結）時的外距，避免內容被遮擋。
+
+| 類別名稱                        | CSS 屬性值                                                      | 說明                                                            |
+| ------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| `scroll-m-<number>`             | `scroll-margin: calc(var(--spacing) * <number>);`               | 捲動定位時的外距，依 spacing 倍數設置                           |
+| `-scroll-m-<number>`            | `scroll-margin: calc(var(--spacing) * -<number>);`              | 捲動定位時的外距，負值（反向）                                  |
+| `scroll-m-(<custom-property>)`  | `scroll-margin: var(<custom-property>);`                        | 捲動定位時的外距，使用自訂 CSS 變數                             |
+| `scroll-m-[<value>]`            | `scroll-margin: <value>;`                                       | 捲動定位時的外距，任意自訂值                                    |
+| `scroll-mx-<number>`            | `scroll-margin-inline: calc(var(--spacing) * <number>);`        | 捲動定位時的左右外距，依 spacing 倍數設置                       |
+| `-scroll-mx-<number>`           | `scroll-margin-inline: calc(var(--spacing) * -<number>);`       | 捲動定位時的左右外距，負值（反向）                              |
+| `scroll-mx-(<custom-property>)` | `scroll-margin-inline: var(<custom-property>);`                 | 捲動定位時的左右外距，使用自訂 CSS 變數                         |
+| `scroll-mx-[<value>]`           | `scroll-margin-inline: <value>;`                                | 捲動定位時的左右外距，任意自訂值                                |
+| `scroll-my-<number>`            | `scroll-margin-block: calc(var(--spacing) * <number>);`         | 捲動定位時的上下外距，依 spacing 倍數設置                       |
+| `-scroll-my-<number>`           | `scroll-margin-block: calc(var(--spacing) * -<number>);`        | 捲動定位時的上下外距，負值（反向）                              |
+| `scroll-my-(<custom-property>)` | `scroll-margin-block: var(<custom-property>);`                  | 捲動定位時的上下外距，使用自訂 CSS 變數                         |
+| `scroll-my-[<value>]`           | `scroll-margin-block: <value>;`                                 | 捲動定位時的上下外距，任意自訂值                                |
+| `scroll-ms-<number>`            | `scroll-margin-inline-start: calc(var(--spacing) * <number>);`  | 捲動定位時的起始側外距（LTR: 左，RTL: 右），依 spacing 倍數設置 |
+| `-scroll-ms-<number>`           | `scroll-margin-inline-start: calc(var(--spacing) * -<number>);` | 捲動定位時的起始側外距，負值（反向）                            |
+| `scroll-ms-(<custom-property>)` | `scroll-margin-inline-start: var(<custom-property>);`           | 捲動定位時的起始側外距，使用自訂 CSS 變數                       |
+| `scroll-ms-[<value>]`           | `scroll-margin-inline-start: <value>;`                          | 捲動定位時的起始側外距，任意自訂值                              |
+| `scroll-me-<number>`            | `scroll-margin-inline-end: calc(var(--spacing) * <number>);`    | 捲動定位時的結束側外距（LTR: 右，RTL: 左），依 spacing 倍數設置 |
+| `-scroll-me-<number>`           | `scroll-margin-inline-end: calc(var(--spacing) * -<number>);`   | 捲動定位時的結束側外距，負值（反向）                            |
+| `scroll-me-(<custom-property>)` | `scroll-margin-inline-end: var(<custom-property>);`             | 捲動定位時的結束側外距，使用自訂 CSS 變數                       |
+| `scroll-me-[<value>]`           | `scroll-margin-inline-end: <value>;`                            | 捲動定位時的結束側外距，任意自訂值                              |
+| `scroll-mt-<number>`            | `scroll-margin-top: calc(var(--spacing) * <number>);`           | 捲動定位時的上方外距，依 spacing 倍數設置                       |
+| `-scroll-mt-<number>`           | `scroll-margin-top: calc(var(--spacing) * -<number>);`          | 捲動定位時的上方外距，負值（反向）                              |
+| `scroll-mt-(<custom-property>)` | `scroll-margin-top: var(<custom-property>);`                    | 捲動定位時的上方外距，使用自訂 CSS 變數                         |
+| `scroll-mt-[<value>]`           | `scroll-margin-top: <value>;`                                   | 捲動定位時的上方外距，任意自訂值                                |
+| `scroll-mr-<number>`            | `scroll-margin-right: calc(var(--spacing) * <number>);`         | 捲動定位時的右方外距，依 spacing 倍數設置                       |
+| `-scroll-mr-<number>`           | `scroll-margin-right: calc(var(--spacing) * -<number>);`        | 捲動定位時的右方外距，負值（反向）                              |
+| `scroll-mr-(<custom-property>)` | `scroll-margin-right: var(<custom-property>);`                  | 捲動定位時的右方外距，使用自訂 CSS 變數                         |
+| `scroll-mr-[<value>]`           | `scroll-margin-right: <value>;`                                 | 捲動定位時的右方外距，任意自訂值                                |
+| `scroll-mb-<number>`            | `scroll-margin-bottom: calc(var(--spacing) * <number>);`        | 捲動定位時的下方外距，依 spacing 倍數設置                       |
+| `-scroll-mb-<number>`           | `scroll-margin-bottom: calc(var(--spacing) * -<number>);`       | 捲動定位時的下方外距，負值（反向）                              |
+| `scroll-mb-(<custom-property>)` | `scroll-margin-bottom: var(<custom-property>);`                 | 捲動定位時的下方外距，使用自訂 CSS 變數                         |
+| `scroll-mb-[<value>]`           | `scroll-margin-bottom: <value>;`                                | 捲動定位時的下方外距，任意自訂值                                |
+| `scroll-ml-<number>`            | `scroll-margin-left: calc(var(--spacing) * <number>);`          | 捲動定位時的左方外距，依 spacing 倍數設置                       |
+| `-scroll-ml-<number>`           | `scroll-margin-left: calc(var(--spacing) * -<number>);`         | 捲動定位時的左方外距，負值（反向）                              |
+| `scroll-ml-(<custom-property>)` | `scroll-margin-left: var(<custom-property>);`                   | 捲動定位時的左方外距，使用自訂 CSS 變數                         |
+| `scroll-ml-[<value>]`           | `scroll-margin-left: <value>;`                                  | 捲動定位時的左方外距，任意自訂值                                |
+
+```html
+<div class="snap-start -scroll-ml-6 ...">
+  <!-- ... -->
+</div>
+<div class="scroll-ml-[24rem] ...">
+  <!-- ... -->
+</div>
+<div class="scroll-ml-(--my-scroll-margin) ...">
+  <!-- ... -->
+</div>
+```
+
+## scroll-padding
+設定捲動定位時的內距，確保內容顯示完整。
+
+| 類別名稱                        | CSS 屬性值                                                       | 說明                                                            |
+| ------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| `scroll-p-<number>`             | `scroll-padding: calc(var(--spacing) * <number>);`               | 捲動定位時的內距，依 spacing 倍數設置                           |
+| `-scroll-p-<number>`            | `scroll-padding: calc(var(--spacing) * -<number>);`              | 捲動定位時的內距，負值（反向）                                  |
+| `scroll-p-(<custom-property>)`  | `scroll-padding: var(<custom-property>);`                        | 捲動定位時的內距，使用自訂 CSS 變數                             |
+| `scroll-p-[<value>]`            | `scroll-padding: <value>;`                                       | 捲動定位時的內距，任意自訂值                                    |
+| `scroll-px-<number>`            | `scroll-padding-inline: calc(var(--spacing) * <number>);`        | 捲動定位時的左右內距，依 spacing 倍數設置                       |
+| `-scroll-px-<number>`           | `scroll-padding-inline: calc(var(--spacing) * -<number>);`       | 捲動定位時的左右內距，負值（反向）                              |
+| `scroll-px-(<custom-property>)` | `scroll-padding-inline: var(<custom-property>);`                 | 捲動定位時的左右內距，使用自訂 CSS 變數                         |
+| `scroll-px-[<value>]`           | `scroll-padding-inline: <value>;`                                | 捲動定位時的左右內距，任意自訂值                                |
+| `scroll-py-<number>`            | `scroll-padding-block: calc(var(--spacing) * <number>);`         | 捲動定位時的上下內距，依 spacing 倍數設置                       |
+| `-scroll-py-<number>`           | `scroll-padding-block: calc(var(--spacing) * -<number>);`        | 捲動定位時的上下內距，負值（反向）                              |
+| `scroll-py-(<custom-property>)` | `scroll-padding-block: var(<custom-property>);`                  | 捲動定位時的上下內距，使用自訂 CSS 變數                         |
+| `scroll-py-[<value>]`           | `scroll-padding-block: <value>;`                                 | 捲動定位時的上下內距，任意自訂值                                |
+| `scroll-ps-<number>`            | `scroll-padding-inline-start: calc(var(--spacing) * <number>);`  | 捲動定位時的起始側內距（LTR: 左，RTL: 右），依 spacing 倍數設置 |
+| `-scroll-ps-<number>`           | `scroll-padding-inline-start: calc(var(--spacing) * -<number>);` | 捲動定位時的起始側內距，負值（反向）                            |
+| `scroll-ps-(<custom-property>)` | `scroll-padding-inline-start: var(<custom-property>);`           | 捲動定位時的起始側內距，使用自訂 CSS 變數                       |
+| `scroll-ps-[<value>]`           | `scroll-padding-inline-start: <value>;`                          | 捲動定位時的起始側內距，任意自訂值                              |
+| `scroll-pe-<number>`            | `scroll-padding-inline-end: calc(var(--spacing) * <number>);`    | 捲動定位時的結束側內距（LTR: 右，RTL: 左），依 spacing 倍數設置 |
+| `-scroll-pe-<number>`           | `scroll-padding-inline-end: calc(var(--spacing) * -<number>);`   | 捲動定位時的結束側內距，負值（反向）                            |
+| `scroll-pe-(<custom-property>)` | `scroll-padding-inline-end: var(<custom-property>);`             | 捲動定位時的結束側內距，使用自訂 CSS 變數                       |
+| `scroll-pe-[<value>]`           | `scroll-padding-inline-end: <value>;`                            | 捲動定位時的結束側內距，任意自訂值                              |
+| `scroll-pt-<number>`            | `scroll-padding-top: calc(var(--spacing) * <number>);`           | 捲動定位時的上方內距，依 spacing 倍數設置                       |
+| `-scroll-pt-<number>`           | `scroll-padding-top: calc(var(--spacing) * -<number>);`          | 捲動定位時的上方內距，負值（反向）                              |
+| `scroll-pt-(<custom-property>)` | `scroll-padding-top: var(<custom-property>);`                    | 捲動定位時的上方內距，使用自訂 CSS 變數                         |
+| `scroll-pt-[<value>]`           | `scroll-padding-top: <value>;`                                   | 捲動定位時的上方內距，任意自訂值                                |
+| `scroll-pr-<number>`            | `scroll-padding-right: calc(var(--spacing) * <number>);`         | 捲動定位時的右方內距，依 spacing 倍數設置                       |
+| `-scroll-pr-<number>`           | `scroll-padding-right: calc(var(--spacing) * -<number>);`        | 捲動定位時的右方內距，負值（反向）                              |
+| `scroll-pr-(<custom-property>)` | `scroll-padding-right: var(<custom-property>);`                  | 捲動定位時的右方內距，使用自訂 CSS 變數                         |
+| `scroll-pr-[<value>]`           | `scroll-padding-right: <value>;`                                 | 捲動定位時的右方內距，任意自訂值                                |
+| `scroll-pb-<number>`            | `scroll-padding-bottom: calc(var(--spacing) * <number>);`        | 捲動定位時的下方內距，依 spacing 倍數設置                       |
+| `-scroll-pb-<number>`           | `scroll-padding-bottom: calc(var(--spacing) * -<number>);`       | 捲動定位時的下方內距，負值（反向）                              |
+| `scroll-pb-(<custom-property>)` | `scroll-padding-bottom: var(<custom-property>);`                 | 捲動定位時的下方內距，使用自訂 CSS 變數                         |
+| `scroll-pb-[<value>]`           | `scroll-padding-bottom: <value>;`                                | 捲動定位時的下方內距，任意自訂值                                |
+| `scroll-pl-<number>`            | `scroll-padding-left: calc(var(--spacing) * <number>);`          | 捲動定位時的左方內距，依 spacing 倍數設置                       |
+| `-scroll-pl-<number>`           | `scroll-padding-left: calc(var(--spacing) * -<number>);`         | 捲動定位時的左方內距，負值（反向）                              |
+| `scroll-pl-(<custom-property>)` | `scroll-padding-left: var(<custom-property>);`                   | 捲動定位時的左方內距，使用自訂 CSS 變數                         |
+| `scroll-pl-[<value>]`           | `scroll-padding-left: <value>;`                                  | 捲動定位時的左方內距，任意自訂值                                |
+
+```html
+<div class="scroll-pl-[24rem] ...">
+  <!-- ... -->
+</div>
+<div class="scroll-pl-(--my-scroll-padding) ...">
+  <!-- ... -->
+</div>
+```
+
+## scroll-snap-align
+設定捲動吸附時的對齊方式，常用於橫向捲動區塊。
+
+| 類別名稱          | CSS 屬性值                   | 說明                               |
+| ----------------- | ---------------------------- | ---------------------------------- |
+| `snap-start`      | `scroll-snap-align: start;`  | 捲動吸附時對齊區塊起始端（左或上） |
+| `snap-end`        | `scroll-snap-align: end;`    | 捲動吸附時對齊區塊結束端（右或下） |
+| `snap-center`     | `scroll-snap-align: center;` | 捲動吸附時對齊區塊中央             |
+| `snap-align-none` | `scroll-snap-align: none;`   | 不啟用捲動吸附對齊                 |
+
+## scroll-snap-stop
+控制捲動吸附時是否強制停止，提升捲動體驗。
+
+| 類別名稱      | CSS 屬性值                  | 說明                                             |
+| ------------- | --------------------------- | ------------------------------------------------ |
+| `snap-normal` | `scroll-snap-stop: normal;` | 捲動吸附時採用預設停止行為（可連續滑動多個區塊） |
+| `snap-always` | `scroll-snap-stop: always;` | 捲動吸附時強制每次只停在一個區塊                 |
+
+## scroll-snap-type
+設定捲動吸附的行為類型（如強制、非強制），常用於圖片輪播、橫向清單。
+
+| 類別名稱         | CSS 屬性值                                                 | 說明                                            |
+| ---------------- | ---------------------------------------------------------- | ----------------------------------------------- |
+| `snap-none`      | `scroll-snap-type: none;`                                  | 不啟用捲動吸附行為（完全關閉 snap）             |
+| `snap-x`         | `scroll-snap-type: x var(--tw-scroll-snap-strictness);`    | 僅在 X 軸啟用捲動吸附，嚴格度由 strictness 控制 |
+| `snap-y`         | `scroll-snap-type: y var(--tw-scroll-snap-strictness);`    | 僅在 Y 軸啟用捲動吸附，嚴格度由 strictness 控制 |
+| `snap-both`      | `scroll-snap-type: both var(--tw-scroll-snap-strictness);` | X、Y 軸皆啟用捲動吸附，嚴格度由 strictness 控制 |
+| `snap-mandatory` | `--tw-scroll-snap-strictness: mandatory;`                  | 捲動吸附嚴格模式，必須吸附到最近區塊            |
+| `snap-proximity` | `--tw-scroll-snap-strictness: proximity;`                  | 捲動吸附接近模式，靠近時才吸附                  |
+
+## touch-action
+控制觸控裝置上的預設手勢行為，避免與自訂手勢衝突。
+
+| 類別名稱             | CSS 屬性值                    | 說明                                       |
+| -------------------- | ----------------------------- | ------------------------------------------ |
+| `touch-auto`         | `touch-action: auto;`         | 啟用瀏覽器預設觸控行為（可捲動、縮放等）   |
+| `touch-none`         | `touch-action: none;`         | 禁用所有觸控行為（無法捲動、縮放等）       |
+| `touch-pan-x`        | `touch-action: pan-x;`        | 僅允許水平方向捲動手勢                     |
+| `touch-pan-left`     | `touch-action: pan-left;`     | 僅允許向左捲動手勢                         |
+| `touch-pan-right`    | `touch-action: pan-right;`    | 僅允許向右捲動手勢                         |
+| `touch-pan-y`        | `touch-action: pan-y;`        | 僅允許垂直方向捲動手勢                     |
+| `touch-pan-up`       | `touch-action: pan-up;`       | 僅允許向上捲動手勢                         |
+| `touch-pan-down`     | `touch-action: pan-down;`     | 僅允許向下捲動手勢                         |
+| `touch-pinch-zoom`   | `touch-action: pinch-zoom;`   | 僅允許雙指縮放手勢                         |
+| `touch-manipulation` | `touch-action: manipulation;` | 僅允許捲動與縮放（禁用雙擊縮放等其他手勢） |
+
+## user-select
+控制文字是否可被選取，常用於按鈕、標籤等不希望被複製的元素。
+
+| 類別名稱      | CSS 屬性值           | 說明                                     |
+| ------------- | -------------------- | ---------------------------------------- |
+| `select-none` | `user-select: none;` | 禁止使用者選取文字（常用於按鈕、標籤等） |
+| `select-text` | `user-select: text;` | 允許使用者選取文字（預設行為）           |
+| `select-all`  | `user-select: all;`  | 點擊時自動全選內容                       |
+| `select-auto` | `user-select: auto;` | 根據瀏覽器預設決定是否可選取             |
+
+## will-change
+提示瀏覽器即將改變哪些屬性，讓瀏覽器提前優化渲染效能，常用於動畫或過渡效果。
+
+| 類別名稱                        | CSS 屬性值                             | 說明                                      |
+| ------------------------------- | -------------------------------------- | ----------------------------------------- |
+| `will-change-auto`              | `will-change: auto;`                   | 使用瀏覽器預設，不主動提示優化            |
+| `will-change-scroll`            | `will-change: scroll-position;`        | 提示瀏覽器即將改變捲動位置，優化滾動效能  |
+| `will-change-contents`          | `will-change: contents;`               | 提示瀏覽器即將改變內容（如文字、圖片等）  |
+| `will-change-transform`         | `will-change: transform;`              | 提示瀏覽器即將改變 transform，常用於動畫  |
+| `will-change-<custom-property>` | `will-change: var(<custom-property>);` | 使用自訂 CSS 變數作為 will-change 屬性    |
+| `will-change-[<value>]`         | `will-change: <value>;`                | 任意自訂 will-change 屬性值（可多個屬性） |
+
+```html
+<div class="will-change-[top,left] ...">
+  <!-- ... -->
+</div>
+<div class="will-change-(--my-properties) ...">
+  <!-- ... -->
+</div>
+```
+
+# SVG
+SVG（Scalable Vector Graphics，可縮放向量圖形）是一種用於網頁的向量圖格式，常用於圖示、圖表、插圖等。Tailwind CSS 提供多種工具類別，讓你能快速調整 SVG 的顏色、線條寬度等屬性，提升設計彈性。
+
+## fill
+設定 SVG 物件的填充顏色，常用於改變圖示主體顏色。
+
+| 類別名稱                   | CSS 屬性值                           | 說明                         |
+| -------------------------- | ------------------------------------ | ---------------------------- |
+| `fill-none`                | `fill: none;`                        | 無填色                       |
+| `fill-inherit`             | `fill: inherit;`                     | 繼承父層填色                 |
+| `fill-current`             | `fill: currentColor;`                | 使用當前文字顏色作為填色     |
+| `fill-black`               | `fill: var(--color-black);`          | 填充黑色                     |
+| `fill-white`               | `fill: var(--color-white);`          | 填充白色                     |
+| `fill-<color>-<step>`      | `fill: var(--color-<color>-<step>);` | 填充指定顏色                 |
+| `fill-(<custom-property>)` | `fill: var(<custom-property>);`      | 使用自訂 CSS 變數作為填色    |
+| `fill-[<value>]`           | `fill: <value>;`                     | 任意自訂填色（色碼、變數等） |
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+```html
+<svg class="fill-[#243c5a] ..."></svg>
+<svg class="fill-(--my-fill-color) ..."></svg>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<svg class="fill-regal-blue"></svg>
+```
+
+## stroke
+設定 SVG 線條（外框）的顏色，常用於圖示輪廓。
+
+| 類別名稱                     | CSS 屬性值                        | 說明                           |
+| ---------------------------- | --------------------------------- | ------------------------------ |
+| `stroke-none`                | `stroke: none;`                   | 無外框                         |
+| `stroke-inherit`             | `stroke: inherit;`                | 繼承父層外框色                 |
+| `stroke-current`             | `stroke: currentColor;`           | 使用當前文字顏色作為外框色     |
+| `stroke-black`               | `stroke: var(--color-black);`     | 外框設為黑色                   |
+| `stroke-white`               | `stroke: var(--color-white);`     | 外框設為白色                   |
+| `stroke-<color>`             | `stroke: var(--color-<color>);`   | 外框設為指定顏色               |
+| `stroke-(<custom-property>)` | `stroke: var(<custom-property>);` | 使用自訂 CSS 變數作為外框色    |
+| `stroke-[<value>]`           | `stroke: <value>;`                | 任意自訂外框色（色碼、變數等） |
+
+
+{% note info %}
+**color & step**
+- `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/customizing-colors#default-color-palette) 取得完整色彩名稱與對應色階。
+- `<step>` 代表顏色的階段數值，用來細分同一色系的深淺。Tailwind CSS 預設的色階數值有：50、100、200、300、400、500、600、700、800、900、950。數字越小顏色越淺，數字越大顏色越深。例如 `border-blue-500` 表示藍色第 500 階段。
+
+```css
+:root {
+  /* Tailwind CSS 主要色彩 400 階段，使用 OKLCH 色彩空間表示法 */
+  --color-red-400: oklch(70.4% 0.191 22.216);         /* 紅 red */
+  --color-orange-400: oklch(75% 0.183 55.934);        /* 橘 orange */
+  --color-amber-400: oklch(82.8% 0.189 84.429);       /* 琥珀 amber */
+  --color-yellow-400: oklch(85.2% 0.199 91.936);      /* 黃 yellow */
+  --color-lime-400: oklch(84.1% 0.238 128.85);        /* 萊姆綠 lime */
+  --color-green-400: oklch(79.2% 0.209 151.711);      /* 綠 green */
+  --color-emerald-400: oklch(76.5% 0.177 163.223);    /* 祖母綠 emerald */
+  --color-teal-400: oklch(77.7% 0.152 181.912);       /* 藍綠 teal */
+  --color-cyan-400: oklch(78.9% 0.154 211.53);        /* 青 cyan */
+  --color-sky-400: oklch(74.6% 0.16 232.661);         /* 天空藍 sky */
+  --color-blue-400: oklch(70.7% 0.165 254.624);       /* 藍 blue */
+  --color-indigo-400: oklch(67.3% 0.182 276.935);     /* 靛藍 indigo */
+  --color-violet-400: oklch(70.2% 0.183 293.541);     /* 紫羅蘭 violet */
+  --color-purple-400: oklch(71.4% 0.203 305.504);     /* 紫 purple */
+  --color-fuchsia-400: oklch(74% 0.238 322.16);       /* 紫紅 fuchsia */
+  --color-pink-400: oklch(71.8% 0.202 349.761);       /* 粉紅 pink */
+  --color-rose-400: oklch(71.2% 0.194 13.428);        /* 玫瑰 rose */
+  --color-slate-400: oklch(70.4% 0.04 256.788);       /* 石板灰 slate */
+  --color-gray-400: oklch(70.7% 0.022 261.325);       /* 灰 gray */
+  --color-zinc-400: oklch(70.5% 0.015 286.067);       /* 鋅灰 zinc */
+  --color-neutral-400: oklch(70.8% 0 0);              /* 中性 neutral */
+  --color-stone-400: oklch(70.9% 0.01 56.259);        /* 石 stone */
+}
+```
+{% endnote %}
+
+
+```html
+<svg class="stroke-[#243c5a] ..."></svg>
+<svg class="stroke-(--my-stroke-color) ..."></svg>
+```
+
+### 自訂
+```css
+@theme {
+  --color-regal-blue: #243c5a; 
+}
+```
+```html
+<svg class="stroke-regal-blue"></svg>
+```
+
+
+## stroke-width
+設定 SVG 線條（外框）的寬度，調整圖示輪廓粗細。
+
+| 類別名稱                            | CSS 屬性值                              | 說明                             |
+| ----------------------------------- | --------------------------------------- | -------------------------------- |
+| `stroke-{number}`                   | `stroke-width: {number};`               | 線條寬度為指定數值（如 0、1、2） |
+| `stroke-(length:{custom-property})` | `stroke-width: var({custom-property});` | 使用自訂 CSS 變數作為寬度        |
+| `stroke-[{value}]`                  | `stroke-width: {value};`                | 任意自訂寬度（如 3px、0.25rem）  |
+
+```html
+<div class="stroke-[1.5] ..."></div>
+<div class="stroke-(length:--my-stroke-width) ..."></div>
+```
+
+
+{% note info %}
+**小技巧：SVG 顏色與寬度快速調整**
+- `fill-current` 與 `stroke-current` 可讓 SVG 圖示自動繼承父層文字顏色，方便主題色切換。
+- 你也可以搭配 Tailwind CSS 的色彩工具類別（如 `text-blue-500`）一起使用，讓 SVG 圖示顏色與文字一致。
+{% endnote %}
+
+# 無障礙設計（Accessibility）
+提供讓網站內容更容易被所有使用者（包含身心障礙者）存取的工具類別，協助提升網頁可用性與包容性。
+
+## forced-color-adjust
+控制元素在強制色彩模式（如 Windows 高對比模式）下，是否允許瀏覽器自動調整其顏色。可用於確保自訂樣式在高對比模式下的顯示效果，提升無障礙體驗。
+
+| 類別名稱                   | CSS 屬性值                   | 說明                           |
+| -------------------------- | ---------------------------- | ------------------------------ |
+| `forced-color-adjust-auto` | `forced-color-adjust: auto;` | 允許瀏覽器自動調整顏色（預設） |
+| `forced-color-adjust-none` | `forced-color-adjust: none;` | 禁止瀏覽器自動調整顏色         |
+
