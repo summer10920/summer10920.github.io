@@ -177,8 +177,8 @@ links_settings:
   layout: inline
 
 links:
-  DemoSite - 網頁設計乙術科: http://demob17300.lokiwebs.com/
-  舊址(停更) - 札記 Blog: http://blog.lokiwebs.com/
+  # DemoSite - 網頁設計乙術科: http://demob17300.lokiwebs.com/
+  # 舊址(停更) - 札記 Blog: http://blog.lokiwebs.com/
   #Title: https://example.com
 
 # Table of Contents in the Sidebar
@@ -361,8 +361,10 @@ codeblock:
   # Code Highlight theme
   # All available themes: https://theme-next.js.org/highlight/
   theme:
-    light: monokai-sublime
-    dark: monokai-sublime
+    light: atom-one-dark-reasonable
+    dark: atom-one-dark-reasonable
+    # light: monokai-sublime
+    # dark: monokai-sublime
   prism:
     light: prism
     dark: prism-dark

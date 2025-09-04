@@ -2,6 +2,7 @@
   --main-color: #e91061;
   --text-color: #333;
   --main-bg-color: #f1f1f1;
+  --main-light-color: #d85f8c;
 
   --link-color: var(--text-color);
   --link-color-hover: var(--main-color);

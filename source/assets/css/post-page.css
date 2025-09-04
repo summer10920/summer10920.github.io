@@ -58,9 +58,59 @@
       margin: 0 10px;
     }
 
-    tbody tr:nth-of-type(even),
-    thead tr {
-      background: var(--body-bg-color);
+    div.table-container:not(figure .table-container) {
+      margin-bottom: 3rem;
+      box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+      border-radius: 0.5rem;
+      overflow: auto;
+      scrollbar-color: var(--main-color) transparent;
+      scrollbar-width: thin;
+
+      table {
+        font-size: 1rem;
+        margin: 0;
+
+        thead tr {
+          background: var(--text-color);
+          color: var(--body-bg-color);
+
+          th {
+            border-top-color: var(--text-color);
+
+            &:first-child {
+              border-left-color: var(--text-color);
+            }
+            &:last-child {
+              border-right-color: var(--text-color);
+            }
+          }
+        }
+
+        tbody tr {
+          &:nth-of-type(even) {
+            background: var(--body-bg-color);
+          }
+          &:hover {
+            background: #eee;
+          }
+        }
+
+        th,
+        td {
+          padding: 4px 8px;
+          line-height: 1.5rem;
+          min-width: 200px;
+        }
+        code {
+          margin: 0;
+          padding: 2px 4px;
+          font-weight: bold;
+          color: white;
+          background: var(--main-light-color);
+          text-wrap-mode: nowrap;
+          font-style: italic;
+        }
+      }
     }
 
     blockquote {

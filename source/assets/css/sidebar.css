@@ -3,6 +3,10 @@
   background: var(--main-color);
   opacity: 0.5;
   transition: 1s opacity;
+
+  &:hover .toggle-line {
+    background-color: #fff;
+  }
 }
 
 .github-corner svg {
@@ -29,6 +33,10 @@
 
     .nav-item.active {
       padding-bottom: 10px;
+
+      a{
+        font-weight: bold;
+      }
     }
   }
 
