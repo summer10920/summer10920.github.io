@@ -1,5 +1,5 @@
 ---
-title: '[基礎課程] TailwindCSS v4.1 - 公式表'
+title: '[實用工具] TailwindCSS v4.1 - 公式表'
 categories:
   - Misc Notes
   - Web Frontend

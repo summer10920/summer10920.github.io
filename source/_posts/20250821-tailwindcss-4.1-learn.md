@@ -1,5 +1,5 @@
 ---
-title: '[基礎課程] TailwindCSS v4.1 - 安裝與介紹'
+title: '[獨自升級] TailwindCSS v4.1 - 安裝與介紹'
 categories:
   - Misc Notes
   - Web Frontend
