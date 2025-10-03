@@ -37,7 +37,7 @@
     }
 
     ol,
-    ul {
+    ul:not(.nav-tabs) {
       margin-bottom: 3rem;
     }
 
@@ -220,7 +220,7 @@
       }
 
       > ul {
-        padding-left: 1.2rem;
+        padding-left: 1.5rem;
         li > *:last-child {
           margin-bottom: 1rem;
         }

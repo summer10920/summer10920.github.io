@@ -979,7 +979,7 @@ h4 {
 ```
 
 ### 函式 Functions
-函式也可以當作一個值，需透過`meta.get-function()`轉換為一個值。若需要對這個函式之值提供參數則需要透過`meta.call($fn, $arg)`才能執行函式與結果。這在函數的進階操作上很有用。
+函式也可以當作一個值，需透過`meta.get-function()`轉換為一個值。若需要對這個函式之值提供參數則需要透過`meta.call($fn, $arg)`才能執行函式與結果。這在函式的進階操作上很有用。
 
 ```scss
 @use "sass:list";
@@ -3393,13 +3393,13 @@ $widths: 50px, 30px, 100px;
 | `math.log($number, $base: null)` | 對數                                  |
 | `math.pow($base, $exponent)`     | 幂值                                  |
 | `math.sqrt($number)`             | 平方根                                |
-| `math.cos($number)`              | 三角函數 cos 值                       |
-| `math.sin($number)`              | 三角函數 sin 值                       |
-| `math.tan($number)`              | 三角函數 tan 值                       |
-| `math.acos($number)`             | 三角函數 acos 值                      |
-| `math.asin($number)`             | 三角函數 asin 值                      |
-| `math.atan($number)`             | 三角函數 atan 值                      |
-| `math.atan2($number)`            | 三角函數 atan2 值                     |
+| `math.cos($number)`              | 三角函式 cos 值                       |
+| `math.sin($number)`              | 三角函式 sin 值                       |
+| `math.tan($number)`              | 三角函式 tan 值                       |
+| `math.acos($number)`             | 三角函式 acos 值                      |
+| `math.asin($number)`             | 三角函式 asin 值                      |
+| `math.atan($number)`             | 三角函式 atan 值                      |
+| `math.atan2($number)`            | 三角函式 atan2 值                     |
 
 ### sass:meta
 做為 meta 元件的高深函式提供使用。

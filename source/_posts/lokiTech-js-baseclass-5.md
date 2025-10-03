@@ -78,7 +78,7 @@ console.log('非同步結束（先印出）');
 {% endnote %}
 
 ```js callback-hell.js
-// 模擬 API 函數：每個都需要約 2 秒等待時間，並可能發生錯誤
+// 模擬 API 函式：每個都需要約 2 秒等待時間，並可能發生錯誤
 // -----------------------------------------------------------------------
 function getUserAPI(id, callback, onError) {
   console.warn(`level 1: 開始取得使用者 ${id} 的資料。..`);
@@ -175,7 +175,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 3. 總共需要約 6 秒才能完成整個流程
 4. 程式碼向右縮排越來越深，難以閱讀
 
-**測試錯誤處理**：將任一函數中的 `if (false)` 改為 `if (true)`，就能看到錯誤處理的執行流程。
+**測試錯誤處理**：將任一函式中的 `if (false)` 改為 `if (true)`，就能看到錯誤處理的執行流程。
 {% endnote %}
 
 這種寫法的問題：
@@ -434,7 +434,7 @@ Promise.resolve(1)
 現在我們將前面的巢狀地獄範例改寫成 Promise 版本，你會看到程式碼變得更加清晰易讀：
 
 ```js promise-solution.js
-// 將原本的 API 函數改寫為 Promise 版本
+// 將原本的 API 函式改寫為 Promise 版本
 // -----------------------------------------------------------------------
 function getUserPromise(id) {
   return new Promise((resolve, reject) => {
@@ -535,7 +535,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 4. **程式碼攤平**：不再有深層巢狀，易於閱讀
 5. **錯誤處理集中**：所有錯誤都在 `.catch()` 中統一處理
 
-**測試錯誤處理**：將任一函數中的 `if (false)` 改為 `if (true)`，就能看到集中錯誤處理的效果。
+**測試錯誤處理**：將任一函式中的 `if (false)` 改為 `if (true)`，就能看到集中錯誤處理的效果。
 {% endnote %}
 
 {% note info %}
@@ -566,7 +566,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 `Promise.all()` 會等待所有 Promise 都成功完成，如果任何一個失敗，整個 Promise.all 就會失敗。
 
 ```js promise-all.js
-// 建立測試用的 Promise 函數
+// 建立測試用的 Promise 函式
 function createTask(name, delay, shouldFail = false) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -787,7 +787,7 @@ asyncFunction().then(console.log); // "Hello"
 在學習 JavaScript 的非同步處理時，`Promise` 和 `async/await` 是兩種常見的寫法。雖然它們本質上都基於 Promise，但語法和錯誤處理方式有所不同。本節將透過範例，對比這兩種寫法的差異，幫助你理解何時該選用哪一種方式。
 
 ```js comparison.js
-// 基礎工具函數
+// 基礎工具函式
 // ---------------------------------------------------------
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -865,7 +865,7 @@ asyncVersion();
 {% endnote %}
 
 ```js async-vs-promise-all.js
-// 基礎工具函數
+// 基礎工具函式
 // ---------------------------------------------------------
 function wait(ms, label) {
   return new Promise((resolve) => {
@@ -1081,7 +1081,7 @@ console.log('自訂日期格式：', customDateJson);
 - **字串必須用雙引號**：`"hello"` ✅，`'hello'` ❌
 - **不支援註解**：JSON 格式不允許註解
 - **不支援尾隨逗號**：最後一個屬性後不能有逗號
-- **不支援函數**：JSON 只能包含資料，不能包含函數
+- **不支援函式**：JSON 只能包含資料，不能包含函式
 - **日期會轉為字串**：Date 物件會被轉為 ISO 字串格式
 {% endnote %}
 
@@ -1261,7 +1261,7 @@ fetchMultipleUsers();
 
 {% note info %}
 **最佳實踐**
-- **統一錯誤處理**：建立通用的 JSON 解析函數
+- **統一錯誤處理**：建立通用的 JSON 解析函式
 - **類型檢查**：確認解析後的資料結構符合預期
 - **預設值**：為可能為空的欄位提供預設值
 - **驗證資料**：檢查必要欄位是否存在
@@ -1809,7 +1809,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 function createAPIClient(version = 'v1') {
   const baseURL = 'https://api.example.com';
   
-  // 建立請求函數
+  // 建立請求函式
   async function request(endpoint, options = {}) {
     const url = `${baseURL}/${endpoint}`;
     const headers = {
@@ -1868,7 +1868,7 @@ function createRequestTracker() {
     return `req-${timestamp}-${requestCount}-${random}`;
   }
   
-  // 追蹤請求函數
+  // 追蹤請求函式
   async function trackedRequest(url, options = {}) {
     const requestId = generateRequestId();
     
@@ -1986,7 +1986,7 @@ function createAnalyticsTracker() {
   const userAgent = navigator.userAgent;
   const screenResolution = `${screen.width}x${screen.height}`;
   
-  // 追蹤事件函數
+  // 追蹤事件函式
   async function trackEvent(eventName, eventData = {}) {
     const headers = {
       'X-Session-ID': sessionId,
@@ -2362,7 +2362,7 @@ function startSearch(keyword) {
   });
 }
 
-// 模擬 UI 更新函數
+// 模擬 UI 更新函式
 function updateSearchResults(data) {
   console.log('更新搜尋結果到 UI');
 }
@@ -2901,7 +2901,7 @@ DELETE /cart/items/:itemId   // 從購物車移除指定商品
 ```js restful-api-client.js
 // 建立 RESTful API 工具
 function createUserAPI(baseURL = 'https://jsonplaceholder.typicode.com') {
-  // 統一的錯誤處理函數
+  // 統一的錯誤處理函式
   //---------------------------------------------------
   function handleResponse(response) {
     if (!response.ok) {
@@ -3180,7 +3180,7 @@ deleteCookie('theme');  // 刪除主題設定
 ### Cookie 的進階用法
 
 ```js cookie-advanced.js
-// 進階 Cookie 設定函數
+// 進階 Cookie 設定函式
 function setCookie(name, value, options = {}) {
   const {
     days = 7,
@@ -3783,7 +3783,7 @@ async function getUserProfile() {
 // 儲存錯誤處理模式
 // ----------------------------------------------------------------
 
-// 1. 安全的儲存函數
+// 1. 安全的儲存函式
 function safeSetItem(key, value) {
   try {
     const serializedValue = typeof value === 'string' ? value : JSON.stringify(value);
@@ -3811,7 +3811,7 @@ function safeSetItem(key, value) {
   }
 }
 
-// 2. 安全的讀取函數
+// 2. 安全的讀取函式
 function safeGetItem(key, defaultValue = null) {
   try {
     const value = localStorage.getItem(key);
@@ -3898,7 +3898,7 @@ checkStorageSpace();
 4. **自動清理**：當空間不足時自動清理舊資料
 
 **實際應用建議**
-- 總是使用安全的儲存函數
+- 總是使用安全的儲存函式
 - 定期檢查儲存空間
 - 實作資料清理機制
 - 提供適當的錯誤訊息給使用者

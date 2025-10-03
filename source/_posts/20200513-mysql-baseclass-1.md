@@ -164,7 +164,7 @@ SELECT * from ch6_crud where student LIKE "阿%"
 ```
 
 ## 時間格式  "Y-M-D HH:MM:SS"
-資料庫的時間格式是固定的，如果網頁的顯示有所不同，則由資料撈出來可以用 SQL 函數轉化。
+資料庫的時間格式是固定的，如果網頁的顯示有所不同，則由資料撈出來可以用 SQL 函式轉化。
 
 練習：
 1. 新增資料表 ch6_weather，內容如下。
@@ -202,7 +202,7 @@ SELECT * FROM ch6_crud ORDER BY chi DESC
 ```sql
 SELECT * FROM ch6_crud ORDER BY chi DESC, mat DESC
 ```
-額外說明：GROUP 能自動跳過重複的內容，通常還會搭配 SUM() 之類的函數，目的是讓列表被整理過。譬如用法（非本篇範例）
+額外說明：GROUP 能自動跳過重複的內容，通常還會搭配 SUM() 之類的函式，目的是讓列表被整理過。譬如用法（非本篇範例）
 ```sql
 SELECT Store, SUM(Sales) FROM Info GROUP BY Store;
 ```

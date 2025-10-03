@@ -48,7 +48,7 @@ NgRx 本身是參考 React 框架的 Redux 而延伸來的。是一種額外的 
 
 其他的實作邏輯都被包裝到 Reducer 和 Effects 裡面去了，因此在 Component 內的程式就會簡短到不可思議，單純看 Component 時，我們只需要知道它要拿什麼資料來顯示，以及他會做什麼事情就好，背後的細節完全不用管，因此在看 Component 程式時就會很容易快速地上手！只有在維護程式或改 bug 時在往後面的邏輯去追就好。
 
-舉例來說如果你需要進行新增資料，你會透過 Actins 來進行 Dispatch 操作決定，透過監聽的方式去要求 Effects 去進行 http 請求（依賴 service) 進行資料上傳並獲得結果，再產生新 Action 後試圖開始更改 State， 回到 Reducer 並 在不修改 State 情況下準備作業前往 Store，Reducer 本身是一個 JS 函數，他能幫助我們獲得當前 state ，最後元件利用 Selector 來獲得新資料。
+舉例來說如果你需要進行新增資料，你會透過 Actins 來進行 Dispatch 操作決定，透過監聽的方式去要求 Effects 去進行 http 請求（依賴 service) 進行資料上傳並獲得結果，再產生新 Action 後試圖開始更改 State， 回到 Reducer 並 在不修改 State 情況下準備作業前往 Store，Reducer 本身是一個 JS 函式，他能幫助我們獲得當前 state ，最後元件利用 Selector 來獲得新資料。
 
 ## 安裝與素材前置準備
 NgRx 是在 Angular 應用程式中使用 RxJS 的「全域狀態」「管理工具」，因此你需要透過 npm 來安裝 NgRx，輸入指令：

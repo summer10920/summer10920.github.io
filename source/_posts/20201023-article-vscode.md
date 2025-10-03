@@ -944,7 +944,7 @@ CSS 也有代碼轉換公式表，主要是將你的 CSS 屬性與值進行簡�
 - [Bracket Pair Colorizer](https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer)
 幫你的{}大括弧上色，會自動對應不同顏色，幫助你輕鬆看準程式區段範圍。
 - [Comment Translate](https://marketplace.visualstudio.com/items?itemName=intellsmi.comment-translate)
-滑鼠停留在變數、函數或註解能自動 Google 翻譯（可繁體），易用於原作者之註解說明。
+滑鼠停留在變數、函式或註解能自動 Google 翻譯（可繁體），易用於原作者之註解說明。
 - [filesize](https://marketplace.visualstudio.com/items?itemName=mkxml.vscode-filesize)
 增加資訊於左下角對於檔案空間為多少的輕資訊。
 - [Highlight Matching Tag](https://marketplace.visualstudio.com/items?itemName=vincaslt.highlight-matching-tag)

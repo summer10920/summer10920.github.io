@@ -67,7 +67,7 @@ var li=$('li.list');
 li.addClass('color');
 ```
 
-jQuery 開頭都是 `$()` 函數進行元件套用，事實上同等於 `jQuery()` 寫法，如果當你使用一些 JavaScript 外掛也剛好有 `$()` 會衝突時，你可以改寫完整語法 `jQuery()`。接下來是大量瘋狂的語法解釋與說明
+jQuery 開頭都是 `$()` 函式進行元件套用，事實上同等於 `jQuery()` 寫法，如果當你使用一些 JavaScript 外掛也剛好有 `$()` 會衝突時，你可以改寫完整語法 `jQuery()`。接下來是大量瘋狂的語法解釋與說明
 
 ## selector 選取
 

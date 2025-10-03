@@ -2413,7 +2413,7 @@ CSS Grid 提供了多種單位來定義軌道尺寸，每種都有其特定的�
     grid-template-rows: 80px 120px;
   }
 
-  /* minmax 函數 */
+  /* minmax 函式 */
   .minmax-size {
     grid-template-columns: minmax(100px, 200px) minmax(150px, 1fr) minmax(80px, 120px);
     grid-template-rows: minmax(60px, auto) minmax(80px, 120px);
@@ -2470,7 +2470,7 @@ CSS Grid 提供了多種單位來定義軌道尺寸，每種都有其特定的�
   <div class="units-item">項目 6</div>
 </div>
 
-<h4>minmax 函數：minmax(100px, 200px) minmax(150px, 1fr) minmax(80px, 120px)</h4>
+<h4>minmax 函式：minmax(100px, 200px) minmax(150px, 1fr) minmax(80px, 120px)</h4>
 <div class="units-demo minmax-size">
   <div class="units-item">最小 100px<br>最大 200px</div>
   <div class="units-item">最小 150px<br>彈性最大</div>
@@ -2499,12 +2499,12 @@ CSS Grid 提供了多種單位來定義軌道尺寸，每種都有其特定的�
 - **auto**：根據內容自動調整，類似於傳統的塊級元素行為
 {% endnote %}
 
-#### repeat() 函數用法
+#### repeat() 函式用法
 
-`repeat()` 函數是 CSS Grid 的強大工具，可以快速重複指定的軌道定義，大幅簡化程式碼：
+`repeat()` 函式是 CSS Grid 的強大工具，可以快速重複指定的軌道定義，大幅簡化程式碼：
 
 {% note info %}
-**repeat() 函數語法**
+**repeat() 函式語法**
 ```css
 repeat（重複次數，軌道定義）
 ```
@@ -2621,7 +2621,7 @@ repeat（重複次數，軌道定義）
 ```
 
 {% note success %}
-**repeat() 函數的優勢**
+**repeat() 函式的優勢**
 1. **程式碼簡潔**：避免重複寫相同的值
 2. **維護性高**：修改重複次數只需改一個數字
 3. **響應式友好**：auto-fit 和 auto-fill 實現自動適應
@@ -2630,7 +2630,7 @@ repeat（重複次數，軌道定義）
 
 #### auto-fit 與 auto-fill 詳細對比
 
-這兩個關鍵字在 `repeat()` 函數中的行為差異是 CSS Grid 的重要概念，理解它們的差異對於創建響應式布局至關重要：
+這兩個關鍵字在 `repeat()` 函式中的行為差異是 CSS Grid 的重要概念，理解它們的差異對於創建響應式布局至關重要：
 
 {% note info %}
 **核心差異說明**
@@ -3293,7 +3293,7 @@ repeat（重複次數，軌道定義）
 **簡寫屬性的使用建議**
 1. **簡單布局**：使用基本簡寫 `grid-template: 行 / 列`
 2. **複雜區域**：使用區域簡寫，程式碼更清晰
-3. **重複模式**：結合 `repeat()` 函數使用
+3. **重複模式**：結合 `repeat()` 函式使用
 4. **維護性**：簡寫屬性讓程式碼更緊湊，但要注意可讀性
 {% endnote %}
 

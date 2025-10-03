@@ -772,7 +772,7 @@ JavaScript 程式碼不包含 HTML 標籤，可以直接顯示：
 
 ```html
 <!-- JavaScript 程式碼範例 -->
-<p>使用 <code>console.log()</code> 函數來輸出訊息。</p>
+<p>使用 <code>console.log()</code> 函式來輸出訊息。</p>
 
 <pre><code>function greet(name) {
     console.log("Hello, " + name + "!");
@@ -2922,7 +2922,7 @@ VALUES ('測試用戶', 'test@example.com', '0912-345-678', 'inquiry', '這是�
 #### 表單處理的最佳實踐
 1. **前端驗證**：提供即時的使用者體驗
 2. **後端驗證**：確保資料安全性，永遠不要只依賴前端驗證
-3. **資料清理**：防止 XSS 攻擊，使用 `htmlspecialchars()` 等函數
+3. **資料清理**：防止 XSS 攻擊，使用 `htmlspecialchars()` 等函式
 4. **SQL 防護**：使用 prepared statements 防止 SQL 注入
 5. **錯誤處理**：提供友善的錯誤訊息，記錄詳細的錯誤日誌
 6. **檔案上傳安全**：限制檔案類型和大小，使用安全的儲存路徑

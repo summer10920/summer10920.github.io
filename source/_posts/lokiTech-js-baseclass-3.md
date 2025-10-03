@@ -87,7 +87,7 @@ DOM 是文件物件模型，它將 HTML 文件結構化為一個樹狀結構，�
 瀏覽器物件模型（BOM）提供了豐富的操作介面，讓我們能夠控制瀏覽器的各種行為和功能。以下我們將介紹一些最常用且實用的 BOM 操作方法，這些方法可以幫助我們更好地掌握瀏覽器的互動能力。
 
 ## window 物件
-`window` 是 BOM 的根物件，代表整個瀏覽器視窗。在瀏覽器環境中，全域變數和函數都屬於 `window` 物件。
+`window` 是 BOM 的根物件，代表整個瀏覽器視窗。在瀏覽器環境中，全域變數和函式都屬於 `window` 物件。
 
 ```js
 // 以下兩種寫法效果相同
@@ -1148,7 +1148,7 @@ button.addEventListener("click", function() {
 let button = document.getElementById("myButton");
 let removeBtn = document.getElementById("removeBtn");
 
-// 定義事件處理器函數（必須是具名函數）
+// 定義事件處理器函式（必須是具名函式）
 function handleClick() {
     alert("按鈕被點擊了！");
 }
@@ -1166,8 +1166,8 @@ removeBtn.addEventListener("click", function() {
 
 {% note info %}
 **removeEventListener 重要注意事項：**
-- 只能移除具名函數的處理器，匿名函數無法移除
-- 必須提供相同的函數參考和事件類型
+- 只能移除具名函式的處理器，匿名函式無法移除
+- 必須提供相同的函式參考和事件類型
 - 常用於清理資源、防止記憶體洩漏
 - 在組件卸載或頁面切換時特別重要
 {% endnote %}
@@ -1285,7 +1285,7 @@ function handleLink(event) {
 **HTML 屬性方式特點：**
 - 必須手動傳遞 `event` 參數
 - 語法：`onclick="handleClick(event)"`
-- 事件物件會自動傳入，但需要在函數參數中接收
+- 事件物件會自動傳入，但需要在函式參數中接收
 {% endnote %}
 
 ##### JavaScript 綁定方法
@@ -1326,7 +1326,7 @@ input.onkeydown = function(event) {
 
 {% note info %}
 **JavaScript 綁定方式特點：**
-- 事件物件自動傳入函數參數
+- 事件物件自動傳入函式參數
 - 語法：`element.onclick = function(event) { ... }`
 - 不需要手動傳遞 event 參數
 {% endnote %}
@@ -1376,7 +1376,7 @@ button.addEventListener("click", function(event) {
 
 {% note success %}
 **addEventListener 方式特點：**
-- 事件物件自動傳入函數參數
+- 事件物件自動傳入函式參數
 - 語法：`element.addEventListener("event", function(event) { ... })`
 - 可以綁定多個事件處理器
 - 支援事件委派
@@ -1565,7 +1565,7 @@ document.addEventListener('keydown', function (event) {
 - `event.currentTarget`：當前處理事件的元素（在事件委派中很有用）
 - `event.preventDefault()`：阻止元素的預設行為
 - `event.stopPropagation()`：阻止事件繼續冒泡
-- 事件物件在事件處理函數中自動傳入，無需手動傳遞
+- 事件物件在事件處理函式中自動傳入，無需手動傳遞
 {% endnote %}
 
 {% note warning %}

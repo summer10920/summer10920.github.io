@@ -1399,7 +1399,7 @@ export default TodoList;
 - TodoContext 元件 也可以試圖對 provider 操作 add, checked, delete 的方法。也就是資料的寫入。
 - provider 會返回一個 provider 的 JSX 元件，
 - 根據從主元件搬移過來的資料影響，可以 create 兩個 context 做讀取與寫入兩組。
-- createContext 需要放在外面，成為模組作用域，而不是放在函數的作用域內。這是因為函數會重新渲染，導致 createContext 的實例被重新創建，從而導致 Context 的值不斷變化，影響應用程序的穩定性。
+- createContext 需要放在外面，成為模組作用域，而不是放在函式的作用域內。這是因為函式會重新渲染，導致 createContext 的實例被重新創建，從而導致 Context 的值不斷變化，影響應用程序的穩定性。
 - 返回上層元件，將剛建立的 TodoContext 元件包覆到 JSX 內，使得整組元件都能利用該 TodoProvider。
 
 ```jsx src\pages\lesson02\todoList\context\todoContext.jsx

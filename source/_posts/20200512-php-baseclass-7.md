@@ -175,7 +175,7 @@ echo "<br>感謝您的註冊";
 
 {% note info %}
 **小技巧**：
-- PHP 的轉址函數 → `header("location:#url");`
+- PHP 的轉址函式 → `header("location:#url");`
 - JavaSript 的轉址方式 → `document.location.href="#url";`
 
 額外的思考兩者的觸發時間為何，差別在於取得 HTML 文件之前後差異。

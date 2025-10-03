@@ -37,7 +37,7 @@ echo $_FILES["mypic"]["size"]."<br/>";//檔案 byte, max 2mb，除非要改 php 
 echo $_FILES["mypic"]["type"]."<br/>";//檔案類型
 ```
 
-接著試著透過 PHP 進行檔案複製，利用　`copy(form,to)`　函數，from 填寫暫存路徑，to 填寫你的網站空間。這裡需要確認號你的檔案名，你可以沿用舊的黨名。
+接著試著透過 PHP 進行檔案複製，利用　`copy(form,to)`　函式，from 填寫暫存路徑，to 填寫你的網站空間。這裡需要確認號你的檔案名，你可以沿用舊的黨名。
 
 **將檔案儲存到伺服器位置的方式為**
 ```php
@@ -51,7 +51,7 @@ $newname=date("YmdHis")."_".$_FILES["mypic"]["name"];
 copy($_FILES["mypic"]["tmp_name"],"upload/".$newname); // copy(from,to)
 ```
 
-**如果要刪除檔案可以用 unlink（路徑對象）函數**
+**如果要刪除檔案可以用 unlink（路徑對象）函式**
 ```php
 unlink("upload/".$newname);
 ```

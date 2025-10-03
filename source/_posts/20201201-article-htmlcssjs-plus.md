@@ -332,7 +332,7 @@ function roomB() {
 roomA(1, 2); //Arguments(2) [1, 2, callee: ƒ, Symbol(Symbol.iterator): ƒ]
 roomB(3, 4); //Arguments(2) [3, 4, callee: ƒ, Symbol(Symbol.iterator): ƒ]
 ```
-- 自訂函式傳遞變數的選擇，也可以是一個函數型變數
+- 自訂函式傳遞變數的選擇，也可以是一個函式型變數
 ```js
 let msg = "hello world",
   print = (e) => {

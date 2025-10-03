@@ -26,7 +26,7 @@ $dblink = new PDO("mysql:host=127.0.0.1;dbname=php_study;charset=utf8", "root", 
 ```
 
 1. 使用 PDO 必須先新宣告成一個變數（名稱自訂），需完整提供 SQL 資訊，包含 =="SQL 類型類型：host=位置；dbname=資料庫名稱；charset=編碼","帳號","密碼"==
-2. 之後每次要透過 PDO 進行 SQL 操作，你都能用$dblink 來進行執行 PDO 函數。
+2. 之後每次要透過 PDO 進行 SQL 操作，你都能用$dblink 來進行執行 PDO 函式。
 
 ## 執行指令 query()
 PDO 因為是物件導向，你要利用`->`做一個導向執行。下列為透過 PHP 去執行新增資料表的動作。
@@ -46,11 +46,11 @@ $sqlcode = "
 $result = $dblink->query($sqlcode);
 ```
 1. 我們先將 SQL 語法當作字串放到變數
-2. 再來執行 PDO 物件並導向到裡面的 query() 函數。讓 PDO 進行 SQL 連接並且執行 query()。
+2. 再來執行 PDO 物件並導向到裡面的 query() 函式。讓 PDO 進行 SQL 連接並且執行 query()。
 3. 每次 PDO 連線結束後會 return 資料給我們，我們可以用個變數（名稱自訂）存起來。
 
 ## 檢查錯誤訊息 errorInfo()
-如果你的 PDO 異常發生問題，PDO 會自動儲存錯誤訊息。你需要透過沒有如期的得到你要的結果，你需要 errorInfo() 函數。下列為檢查錯誤的示範
+如果你的 PDO 異常發生問題，PDO 會自動儲存錯誤訊息。你需要透過沒有如期的得到你要的結果，你需要 errorInfo() 函式。下列為檢查錯誤的示範
 
 ```php
 $result = $dblink->query($sqlcode);
