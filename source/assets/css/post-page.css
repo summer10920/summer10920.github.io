@@ -77,7 +77,8 @@
           color: var(--body-bg-color);
 
           th {
-            border-color: var(--text-color);
+            /* border-color: var(--text-color); */
+            border: none;
 
             &:first-child {
               border-top-left-radius: var(--border-radius);
@@ -220,6 +221,7 @@
       }
 
       > ul {
+        margin-bottom: 1.5rem;
         padding-left: 1.5rem;
         li > *:last-child {
           margin-bottom: 1rem;

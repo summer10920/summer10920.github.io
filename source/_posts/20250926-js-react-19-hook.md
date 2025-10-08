@@ -9,7 +9,7 @@ tag:
   - React 19
   - 前端開發
 date: 2025-09-26 13:16:22
-hidden: true
+hidden: false
 ---
 
 ![](assets/images/banner/react.png)
@@ -2114,226 +2114,423 @@ function TimerComponent() {
 
 ## useCallback
 
-`useCallback` 是一個用來「記憶化函式」的 Hook，它可以讓函式在多次渲染之間保持相同的參考（reference）。這樣做的主要目的是**避免子元件不必要的重新渲染**，特別是當你將函式作為 props 傳遞給子元件時。
-
-**核心概念：**
-- 在 JavaScript 中，每次創建函式時都會產生一個新的函式物件
-- 當父元件重新渲染時，所有定義在元件內的函式都會被重新創建
-- 如果將這些「新的」函式傳給子元件，子元件會認為 props 改變了，導致不必要的重新渲染
-- `useCallback` 可以讓函式在依賴項不變的情況下，保持相同的參考
-
-{% note info %}
-**useCallback 的使用時機：**
-- 將函式傳遞給使用 `React.memo` 優化的子元件
-- 函式作為其他 Hooks（如 `useEffect`）的依賴項
-- 函式的創建成本很高（包含複雜運算）
-- 不是每個函式都需要 `useCallback`，過度使用反而會降低效能
-{% endnote %}
+`useCallback` 是一個用來「記憶化函式」的 Hook。它可以讓函式在多次渲染之間保持相同的參考（reference），避免不必要的函式重新創建，主要用於效能優化。
 
 ### 前置知識：React.memo
+在了解 `useCallback` 之前，必須先認識 `React.memo`。它是 React 提供的效能優化工具，可以避免子元件不必要的重新渲染。
 
-在理解 `useCallback` 之前，我們需要先了解 `React.memo`。`React.memo` 是一個高階元件（Higher-Order Component），用來優化函式元件的效能。
+#### React.memo 的作用
+在 React 中，父元件每次重新渲染時，預設所有子元件也會一併重新渲染，無論子元件的 props 是否有變動。`React.memo` 是一個高階元件（Higher-Order Component, HOC），能夠「記憶」子元件的 props，僅在 props 發生變化時才觸發子元件重新渲染。
 
-**React.memo 的作用：**
-- 當父元件重新渲染時，子元件通常也會跟著重新渲染
-- `React.memo` 會「淺比較」（shallow compare）子元件的 props
-- 如果 props 沒有改變，就跳過重新渲染，直接使用上次的結果
-- 這可以避免不必要的渲染，提升效能
+你只需將子元件包裹在 `React.memo` 外層，React 就會自動幫你比較 props，只有當 props 內容真的不同時，才會重新渲染該子元件，從而有效減少不必要的渲染、提升效能。
 
-```javascript React.memo 基本用法
-import React from 'react';
+```javascript React.memo 完整對比範例
+import React, { useState } from 'react';
 
-// 一般的子元件（沒有優化）
-function NormalChild({ name, age }) {
-  console.log('NormalChild 重新渲染');
-  return <div>{name} 今年 {age} 歲</div>;
-}
-
-// 使用 React.memo 優化的子元件
-const MemoizedChild = React.memo(function OptimizedChild({ name, age }) {
-  console.log('MemoizedChild 重新渲染');
-  return <div>{name} 今年 {age} 歲</div>;
-});
-
-function Parent() {
-  const [count, setCount] = React.useState(0);
-  const name = 'Loki';
-  const age = 30;
-  
+// 1. 普通元件（沒有使用 memo）
+function NormalChild() {
+  console.log('❌ NormalChild 重新渲染了');
   return (
     <div>
-      <button onClick={() => setCount(count + 1)}>
-        點擊次數：{count}
-      </button>
-      
-      {/* 每次父元件渲染，這個子元件都會重新渲染 */}
-      <NormalChild name={name} age={age} />
-      
-      {/* 因為 name 和 age 沒變，這個子元件不會重新渲染 */}
-      <MemoizedChild name={name} age={age} />
+      <h4>普通元件（無 memo）</h4>
+      <p>我沒有使用 React.memo，每次父元件渲染都會跟著渲染</p>
     </div>
   );
 }
+
+// 2. 使用 memo 但沒有 props 的元件
+const MemoChildWithoutProps = React.memo(function MemoChildNoProp() {
+  console.log('✅ MemoChildWithoutProps 重新渲染了');
+  return (
+    <div>
+      <h4>Memo 元件（無 props）</h4>
+      <p>我使用了 React.memo 且沒有 props，父元件渲染時我不會重新渲染</p>
+    </div>
+  );
+});
+
+// 3. 使用 memo 且有 props 的元件
+const MemoChildWithProps = React.memo(function MemoChildWithProp({ userName }) {
+  console.log('🔍 MemoChildWithProps 重新渲染了');
+  return (
+    <div>
+      <h4>Memo 元件（有 props）</h4>
+      <p>使用者名稱：{userName}</p>
+      <p>我使用了 React.memo，只有當 userName 改變時才會重新渲染</p>
+    </div>
+  );
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [userName, setUserName] = useState('Loki');
+  
+  return (
+    <div>
+      <h2>父元件狀態</h2>
+      <p>計數：{count}</p>
+      <p>使用者名稱：{userName}</p>
+      
+      <button onClick={() => setCount(count + 1)}>
+        增加計數（不影響 userName）
+      </button>
+      <button onClick={() => setUserName(userName === 'Loki' ? 'Thor' : 'Loki')}>
+        切換使用者名稱
+      </button>
+      
+      <hr />
+      
+      {/* 1. 普通元件：每次都會重新渲染 */}
+      <NormalChild />
+      
+      <hr />
+      
+      {/* 2. Memo 元件（無 props）：永遠不會重新渲染 */}
+      <MemoChildWithoutProps />
+      
+      <hr />
+      
+      {/* 3. Memo 元件（有 props）：只有 userName 改變時才會重新渲染 */}
+      <MemoChildWithProps userName={userName} />
+    </div>
+  );
+}
+
+export default Parent;
 ```
 
-{% note warning %}
-**React.memo 的限制：淺比較的問題**
+**測試步驟與執行結果：**
 
-`React.memo` 只會進行「淺比較」（shallow compare），也就是用 `===` 來比較 props。這在以下情況會有問題：
+**步驟 1：初次載入頁面**
+```
+❌ NormalChild 重新渲染了
+✅ MemoChildWithoutProps 重新渲染了
+🔍 MemoChildWithProps 重新渲染了
+```
+說明：所有元件都會進行初次渲染
+
+**步驟 2：點擊「增加計數」按鈕**
+```
+❌ NormalChild 重新渲染了
+```
+說明：
+- `NormalChild`：沒有使用 memo，跟著父元件一起渲染 ❌
+- `MemoChildWithoutProps`：使用 memo 且無 props，不需要重新渲染 ✅
+- `MemoChildWithProps`：使用 memo，props 沒變（`userName` 還是 'Loki'），不需要重新渲染 ✅
+
+**步驟 3：點擊「切換使用者名稱」按鈕**
+```
+❌ NormalChild 重新渲染了
+🔍 MemoChildWithProps 重新渲染了
+```
+說明：
+- `NormalChild`：沒有使用 memo，跟著父元件一起渲染 ❌
+- `MemoChildWithoutProps`：使用 memo 且無 props，不需要重新渲染 ✅
+- `MemoChildWithProps`：props 改變了（`userName` 從 'Loki' 變成 'Thor'），需要重新渲染 ⚠️
+
+**React.memo 的運作原理：**
+```javascript
+// 當父元件重新渲染時，React.memo 會進行檢查
+
+// 1. NormalChild（無 memo）
+// → 直接重新渲染，不做任何檢查
+
+// 2. MemoChildWithoutProps（memo + 無 props）
+舊的 props: {}
+新的 props: {}
+// → props 沒變，跳過重新渲染 ✅
+
+// 3. MemoChildWithProps（memo + 有 props）
+// 情況 A：點擊「增加計數」
+舊的 props: { userName: 'Loki' }
+新的 props: { userName: 'Loki' }
+'Loki' === 'Loki'  // true
+// → props 沒變，跳過重新渲染 ✅
+
+// 情況 B：點擊「切換使用者名稱」
+舊的 props: { userName: 'Loki' }
+新的 props: { userName: 'Thor' }
+'Loki' === 'Thor'  // false
+// → props 改變了，需要重新渲染 ⚠️
+```
+
+{% note success %}
+**React.memo 的優點：** 
+- 可以避免子元件不必要的重新渲染
+- 當子元件的渲染成本很高時（複雜的 UI 或大量資料處理），可以顯著提升效能
+- 會自動進行淺比較，只在 props 改變時才重新渲染
+- 對於基本類型的 props（string、number、boolean），淺比較運作良好
+{% endnote %}
+
+#### children 也是 prop
+
+在 React 中，`children` 是一個特殊的 prop，代表元件標籤之間的內容。
 
 ```javascript
+// 這兩種寫法是等價的：
+<MemoChild>Hello</MemoChild>
+<MemoChild children="Hello" />
+
+// children 會被當作 props 的一部分
+function MemoChild(props) {
+  console.log(props.children); // "Hello"
+}
+```
+
+**React.memo 也會檢查 children：**
+
+```javascript children 作為 prop 的範例
+import React, { useState } from 'react';
+
+const MemoChildWithChildren = React.memo(function MemoChild({ children }) {
+  console.log('MemoChildWithChildren 重新渲染了');
+  return <div>{children}</div>;
+});
+
 function Parent() {
-  const [count, setCount] = React.useState(0);
-  
-  // ❌ 每次渲染都會創建新的物件，淺比較會認為不同
-  const user = { name: 'Loki', age: 30 };
-  
-  // ❌ 每次渲染都會創建新的陣列，淺比較會認為不同
-  const items = [1, 2, 3];
-  
-  // ❌ 每次渲染都會創建新的函式，淺比較會認為不同
-  const handleClick = () => {
-    console.log('clicked');
-  };
+  const [count, setCount] = useState(0);
   
   return (
     <div>
       <button onClick={() => setCount(count + 1)}>計數：{count}</button>
-      {/* 即使用了 React.memo，因為 handleClick 每次都是新的函式，還是會重新渲染 */}
-      <MemoizedChild onButtonClick={handleClick} />
+      
+      {/* children 是固定的字串，不會重新渲染 */}
+      <MemoChildWithChildren>
+        固定的文字內容
+      </MemoChildWithChildren>
+      
+      {/* children 包含 count，會重新渲染 */}
+      <MemoChildWithChildren>
+        計數：{count}
+      </MemoChildWithChildren>
     </div>
   );
 }
 ```
 
-**這就是為什麼需要 `useCallback`！** 它可以讓函式在依賴項不變的情況下，保持相同的參考，讓 `React.memo` 的淺比較能正常運作。
-{% endnote %}
+**執行結果：**
+- 點擊按鈕時，第一個 `MemoChildWithChildren`（固定文字）不會重新渲染
+- 第二個 `MemoChildWithChildren`（包含 count）會重新渲染，因為 children 改變了
 
-### useCallback 基本用法
+**結論：** `children` 是 prop 的一部分，React.memo 會一併檢查它是否改變。
 
-```javascript useCallback 基本用法
-import React, { useState, useCallback } from 'react';
+#### React.memo 的限制：淺比較問題
 
-// 子元件 - 使用 React.memo 優化
-const ChildComponent = React.memo(({ onButtonClick, count }) => {
-  console.log('ChildComponent 重新渲染');
-  return (
-    <div style={{ border: '1px solid #ccc', padding: '1rem', margin: '1rem' }}>
-      <p>子元件接收到的計數：{count}</p>
-      <button onClick={onButtonClick}>點擊我</button>
-    </div>
-  );
+`React.memo` 使用「淺比較」（Shallow Comparison）來檢查 props 是否改變，也就是用 `===` 運算子來比較。這在傳遞**函式**作為 props 時會產生問題。
+
+```javascript 函式導致的重新渲染問題
+import React, { useState } from 'react';
+
+// 使用 React.memo 優化的子元件
+const Button = React.memo(({ onClick, children }) => {
+  console.log(`Button "${children}" 重新渲染了！`);
+  return <button onClick={onClick}>{children}</button>;
 });
 
-function ParentComponent() {
+function Counter() {
   const [count, setCount] = useState(0);
   const [otherState, setOtherState] = useState(0);
   
-  // 沒有 useCallback - 每次渲染都會創建新的函式
-  const handleClick1 = () => {
-    setCount(prevCount => prevCount + 1);
+  // ❌ 問題：每次元件渲染時，都會創建新的函式
+  const increment = () => {
+    setCount(count + 1);
   };
   
-  // 使用 useCallback - 只有依賴項改變時才會重新創建函式
-  const handleClick2 = useCallback(() => {
-    setCount(prevCount => prevCount + 1);
-  }, []); // 空依賴陣列，函式永遠不會改變
-  
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>父元件</h2>
-      <p>計數：{count}</p>
-      <p>其他狀態：{otherState}</p>
+    <div>
+      <h2>計數：{count}</h2>
+      <h3>其他狀態：{otherState}</h3>
       
-      <button 
-        onClick={() => setOtherState(otherState + 1)}
-        style={{ margin: '0.5rem', padding: '0.5rem 1rem' }}
-      >
+      {/* 即使用了 React.memo，increment 每次都是新的函式，Button 還是會重新渲染 */}
+      <Button onClick={increment}>增加計數</Button>
+      
+      {/* 當這個按鈕被點擊時，otherState 改變，導致 Counter 重新渲染 */}
+      <button onClick={() => setOtherState(otherState + 1)}>
         改變其他狀態
       </button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+當點擊「改變其他狀態」時，Button 仍會重新渲染。讓我們一步步分析為什麼 `Button` 會重新渲染：
+
+**第一次渲染：**
+```javascript
+// Counter 渲染時創建 increment 函式
+const increment = () => { setCount(count + 1); };  // 記憶體位置：0x001
+
+// Button 收到 onClick prop（參考 0x001）
+<Button onClick={increment}>
+```
+
+**點擊「改變其他狀態」後：**
+```javascript
+// otherState 改變，Counter 重新渲染
+// 重新創建 increment 函式（新的函式物件！）
+const increment = () => { setCount(count + 1); };  // 記憶體位置：0x002
+
+// Button 收到新的 onClick prop（參考 0x002）
+<Button onClick={increment}>
+
+// React.memo 檢查：0x001 === 0x002 ? → false
+// 結論：props 改變了，需要重新渲染 Button
+```
+
+{% note danger %}
+**核心問題：**
+- 每次 `Counter` 重新渲染時，`increment` 函式都會被重新創建
+- 雖然函式的程式碼相同，但每次都是**新的函式物件**（不同的記憶體位置）
+- `React.memo` 使用 `===` 進行淺比較：`新函式 === 舊函式` 結果是 `false`
+- 所以 `React.memo` 認為 props 改變了，導致 `Button` 重新渲染
+- **即使我們沒有點擊「增加計數」按鈕，只是改變了其他狀態，`Button` 還是會不必要地重新渲染！**
+{% endnote %}
+
+**你可能會想：「重新渲染一個按鈕有什麼關係？」**
+
+在這個簡單範例中確實影響不大，但在實際應用中：
+- 子元件可能包含複雜的 UI 結構（數百個元素）
+- 子元件可能有複雜的計算邏輯
+- 可能有很多個子元件同時重新渲染
+- 會造成頁面卡頓、效能下降
+
+**這就是為什麼需要 `useCallback`！** 它可以讓函式在依賴項不變時保持相同的參考，讓 `React.memo` 的優化能正常運作。
+
+### useCallback 語法
+
+`useCallback` 可以解決上述問題，讓函式在依賴項不變時保持相同的參考。
+
+**語法結構：**
+```javascript
+const memoizedCallback = useCallback(
+  () => {
+    // 函式內容
+  },
+  [依賴項 1, 依賴項 2, ...]
+);
+```
+
+**參數說明：**
+- **第一個參數**：要記憶化的函式
+- **第二個參數**：依賴項陣列（Dependency Array）
+  - 當依賴項改變時，會重新創建函式
+  - 當依賴項不變時，會返回上次記憶的函式（相同的參考）
+
+### 使用 useCallback
+
+讓我們用 `useCallback` 改善前面的問題：
+
+```javascript 使用 useCallback 優化
+import React, { useState, useCallback } from 'react';
+
+const Button = React.memo(({ onClick, children }) => {
+  console.log(`Button "${children}" 重新渲染了！`);
+  return <button onClick={onClick}>{children}</button>;
+});
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  const [otherState, setOtherState] = useState(0);
+  
+  // ✅ 使用 useCallback，依賴項為空陣列
+  // 函式會在元件初次渲染時創建，之後保持相同的參考
+  const increment = useCallback(() => {
+    setCount(prevCount => prevCount + 1);
+  }, []); // 空陣列表示函式永遠不會重新創建
+  
+  return (
+    <div>
+      <h2>計數：{count}</h2>
+      <h3>其他狀態：{otherState}</h3>
       
-      {/* 使用 useCallback 優化的函式 */}
-      <ChildComponent 
-        onButtonClick={handleClick2} 
-        count={count}
-      />
+      {/* 現在 increment 的參考不會改變，Button 不會重新渲染 */}
+      <Button onClick={increment}>增加計數</Button>
+      
+      <button onClick={() => setOtherState(otherState + 1)}>
+        改變其他狀態
+      </button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+**效果：**
+- 點擊「改變其他狀態」按鈕時，`Counter` 重新渲染
+- `increment` 函式保持相同的參考（因為使用了 `useCallback`）
+- `Button` 子元件不會重新渲染（`React.memo` 檢查到 `onClick` prop 沒變）
+
+{% note success %}
+**重點：** 使用 `useCallback` + `React.memo` 可以有效避免子元件不必要的重新渲染，提升應用程式效能。
+{% endnote %}
+
+### 理解依賴項陣列
+
+依賴項陣列是 `useCallback` 最重要的概念，它決定了函式何時需要重新創建。
+
+#### 案例 1：空依賴項陣列 `[]`
+空陣列表示「沒有任何依賴項」，函式只會在元件初次渲染時創建一次，之後永遠保持相同的參考。
+
+```javascript 空依賴項
+import React, { useState, useCallback } from 'react';
+
+function Example1() {
+  const [count, setCount] = useState(0);
+  
+  // ✅ 依賴項為空陣列，函式只在初次渲染時創建一次
+  const handleClick = useCallback(() => {
+    console.log('按鈕被點擊');
+    // 使用 updater function 確保拿到最新的 count
+    setCount(prevCount => prevCount + 1);
+  }, []); // 永遠不會重新創建
+  
+  return (
+    <div>
+      <p>計數：{count}</p>
+      <button onClick={handleClick}>增加</button>
     </div>
   );
 }
 ```
 
-{% note info %}
-**useCallback 使用時機：**
-- **子元件優化**：將函式傳遞給子元件，且子元件使用 `React.memo` 優化
-- **依賴項管理**：函式作為其他 Hooks 的依賴項
-- **效能考量**：創建函式的成本很高
-- **複雜邏輯**：函式包含複雜的邏輯或外部依賴
-{% endnote %}
+#### 案例 2：有依賴項的情況
+當你的函式內部會用到外部的 state 或 props（例如 `todos`、`filter`），就必須將這些變數加入依賴項陣列。這樣只有當這些依賴發生變化時，`useCallback` 才會重新產生新的函式，確保每次取得的都是最新的資料，避免出現舊值或預期外的行為。
 
-### 實際應用範例
+以下以 Todo 列表為例，說明如何正確設置依賴項。因為函式內部使用了 `todos` 和 `filter`，所以必須將它們加入依賴項陣列。當這些值改變時，函式才需要重新創建以獲取最新的值。
 
-```javascript useCallback 實際應用
-import React, { useState, useCallback, useEffect } from 'react';
+```javascript 有依賴項
+import React, { useState, useCallback } from 'react';
 
-function UserSearch() {
-  const [query, setQuery] = useState('');
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+function TodoList() {
+  const [todos, setTodos] = useState([]);
+  const [filter, setFilter] = useState('all'); // 'all', 'active', 'completed'
   
-  // 搜尋函式 - 依賴於 query
-  const searchUsers = useCallback(async () => {
-    if (!query.trim()) {
-      setUsers([]);
-      return;
+  // ✅ 依賴 filter，當 filter 改變時函式會重新創建
+  const getFilteredTodos = useCallback(() => {
+    console.log('重新創建 getFilteredTodos 函式');
+    if (filter === 'active') {
+      return todos.filter(todo => !todo.completed);
     }
-    
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/users/search?q=${query}`);
-      const result = await response.json();
-      setUsers(result);
-    } catch (error) {
-      console.error('搜尋失敗：', error);
-    } finally {
-      setLoading(false);
+    if (filter === 'completed') {
+      return todos.filter(todo => todo.completed);
     }
-  }, [query]); // 只有 query 改變時才重新創建函式
-  
-  // 使用 searchUsers 作為 effect 的依賴項
-  useEffect(() => {
-    const timeoutId = setTimeout(searchUsers, 300); // 防抖動
-    return () => clearTimeout(timeoutId);
-  }, [searchUsers]);
+    return todos;
+  }, [todos, filter]); // 當 todos 或 filter 改變時重新創建
   
   return (
-    <div style={{ padding: '2rem' }}>
-      <input
-        type="text"
-        placeholder="搜尋用戶。.."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        style={{ 
-          padding: '0.5rem', 
-          margin: '0.5rem',
-          border: '1px solid #ccc',
-          borderRadius: '4px'
-        }}
-      />
+    <div>
+      <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <option value="all">全部</option>
+        <option value="active">進行中</option>
+        <option value="completed">已完成</option>
+      </select>
       
-      {loading && <div style={{ color: '#666' }}>搜尋中。..</div>}
-      
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {users.map(user => (
-          <li 
-            key={user.id}
-            style={{ 
-              padding: '0.5rem', 
-              border: '1px solid #eee', 
-              margin: '0.5rem 0' 
-            }}
-          >
-            {user.name}
-          </li>
+      <ul>
+        {getFilteredTodos().map(todo => (
+          <li key={todo.id}>{todo.text}</li>
         ))}
       </ul>
     </div>
@@ -2341,70 +2538,179 @@ function UserSearch() {
 }
 ```
 
-{% note success %}
-**跟著做：**
-1. 觀察控制台輸出，了解 `useCallback` 如何避免不必要的函式重新創建
-2. 嘗試移除 `useCallback`，看看效能差異
-3. 修改依賴項陣列，觀察函式重新創建的時機
+#### 案例 3：依賴項錯誤的問題
+在使用 `useCallback` 時，常見的錯誤是忘記將函式內部用到的外部變數（如 state 或 props）加入依賴項陣列。這會導致函式「記憶」了舊的變數值，產生預期外的行為。
+
+```javascript 錯誤的依賴項
+import React, { useState, useCallback } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  // ❌ 錯誤：函式內使用了 count，但沒有將它加入依賴項
+  const showCount = useCallback(() => {
+    alert(`目前計數：${count}`);
+  }, []); // 缺少 count 依賴項
+  
+  // 問題：showCount 永遠只會顯示初始值 0
+  // 因為函式只創建一次，閉包捕獲的 count 永遠是 0
+  
+  return (
+    <div>
+      <p>計數：{count}</p>
+      <button onClick={() => setCount(count + 1)}>增加</button>
+      <button onClick={showCount}>顯示計數</button>
+    </div>
+  );
+}
+```
+
+正確做法是：**只要在 callback 內部用到的外部變數，都必須出現在依賴陣列中**。這樣才能確保每次相關變數變動時，callback 也會更新，避免閉包陷阱。
+
+```javascript 正確的做法
+import React, { useState, useCallback } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  // ✅ 正確：將 count 加入依賴項
+  const showCount = useCallback(() => {
+    alert(`目前計數：${count}`);
+  }, [count]); // 當 count 改變時重新創建函式
+  
+  return (
+    <div>
+      <p>計數：{count}</p>
+      <button onClick={() => setCount(count + 1)}>增加</button>
+      <button onClick={showCount}>顯示計數</button>
+    </div>
+  );
+}
+```
+
+{% note warning %}
+**重要提醒：** 
+- 函式內使用的所有外部變數（state、props、其他變數）都應該加入依賴項陣列
+- 缺少依賴項會導致閉包陷阱（Stale Closure），函式捕獲的是舊的值
+- React 開發工具會提示缺少的依賴項，務必注意這些警告
 {% endnote %}
+
+### 與 useEffect 搭配使用
+
+`useCallback` 常用於配合 `useEffect`，避免 effect 不必要的重新執行。這個範例展示了如何結合 `useCallback` 與 `useEffect` 來優化搜尋功能。
+
+- **useCallback 的作用：**
+將 `searchUsers` 這個搜尋函式記憶化，只有當 `query`（搜尋關鍵字）改變時才會重新創建。這樣可以確保 `searchUsers` 的參考在 `query` 沒變時保持不變，避免因為函式參考改變導致 `useEffect` 重複執行。
+- **useEffect 的作用：**
+當 `searchUsers`（也就是 `query`）改變時，延遲 500ms 執行搜尋（實現防抖效果，減少 API 請求次數）。如果在 500ms 內又輸入新字元，會先清除前一次的計時器，只有使用者停止輸入一段時間才會真正發送請求。
+
+當你需要在 effect 內呼叫一個 callback 函式，且這個函式依賴某些 state/props 時，建議用 `useCallback` 包裹，並將 callback 作為 effect 的依賴項。這樣可以避免每次渲染都重新創建函式，導致 effect 不斷重複執行，提升效能與可控性。
+
+```javascript useCallback 與 useEffect
+import React, { useState, useCallback, useEffect } from 'react';
+
+function SearchUser() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  
+  // ✅ 使用 useCallback 記憶搜尋函式
+  const searchUsers = useCallback(async () => {
+    if (!query) return;
+    
+    console.log(`搜尋：${query}`);
+    const response = await fetch(`/api/users?q=${query}`);
+    const data = await response.json();
+    setResults(data);
+  }, [query]); // 只有 query 改變時才重新創建
+  
+  // ✅ 使用 searchUsers 作為依賴項
+  useEffect(() => {
+    // 延遲 500ms 執行搜尋（防抖）
+    const timer = setTimeout(searchUsers, 500);
+    return () => clearTimeout(timer);
+  }, [searchUsers]); // searchUsers 改變時才重新執行
+  
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="搜尋使用者"
+      />
+      <ul>
+        {results.map(user => (
+          <li key={user.id}>{user.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+**為什麼需要 useCallback？**
+- 如果不用 `useCallback`，`searchUsers` 每次渲染都會重新創建
+- `useEffect` 的依賴項 `searchUsers` 會不斷改變
+- 導致 effect 不斷重新執行，造成效能問題
+
+### 何時該使用 useCallback？
+
+**適合使用的情況：**
+1. 將函式傳遞給使用 `React.memo` 優化的子元件
+2. 函式作為 `useEffect`、`useCallback`、`useMemo` 等 Hook 的依賴項
+3. 函式在自訂 Hook 中被返回，並可能被其他元件當作依賴項使用
+
+**不需要使用的情況：**
+1. 函式只在元件內部使用，沒有傳遞給子元件
+2. 函式不是任何 Hook 的依賴項
+3. 子元件沒有使用 `React.memo` 優化
+
+**注意：** 過度使用 `useCallback` 反而會增加記憶體開銷和複雜度，只在真正需要優化時使用。
 
 ## useMemo
 
-`useMemo` 返回一個記憶化的值，只有當依賴項改變時才會重新計算。這可以避免重複執行昂貴的計算，提升應用程式效能。
+`useMemo` 是一個用來「記憶化計算結果」的 Hook。它可以讓計算結果在多次渲染之間被重複使用，避免不必要的重複計算，主要用於效能優化。需要注意的是，`useMemo` 記憶的是「值」而非「元件」，與 `React.memo` 記憶元件渲染結果的用途不同。
 
-### 基本用法
+### 為什麼需要 useMemo？
 
-```javascript useMemo 基本用法
-import React, { useState, useMemo } from 'react';
+在 React 中，每次元件重新渲染時，所有的變數和計算都會重新執行。如果有昂貴的計算（複雜運算、大量資料處理），每次渲染都重新計算會造成效能問題。
 
-function ExpensiveComponent({ items, multiplier }) {
+```javascript 沒有使用 useMemo 的問題
+import React, { useState } from 'react';
+
+function ProductList() {
   const [filter, setFilter] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
   
-  // 昂貴的計算 - 只有當 items 或 multiplier 改變時才重新計算
-  const expensiveValue = useMemo(() => {
-    console.log('執行昂貴的計算。..');
-    return items
-      .filter(item => item.active)
-      .reduce((sum, item) => sum + item.value * multiplier, 0);
-  }, [items, multiplier]);
+  // 假設有大量商品資料
+  const products = Array.from({ length: 10000 }, (_, i) => ({
+    id: i,
+    name: `商品 ${i}`,
+    price: Math.floor(Math.random() * 1000),
+    category: i % 3 === 0 ? '電子' : i % 3 === 1 ? '服飾' : '食品'
+  }));
   
-  // 過濾後的項目 - 只有當 items 或 filter 改變時才重新計算
-  const filteredItems = useMemo(() => {
-    console.log('過濾項目。..');
-    return items.filter(item => 
-      item.name.toLowerCase().includes(filter.toLowerCase())
-    );
-  }, [items, filter]);
+  // ❌ 問題：每次元件渲染都會重新過濾和排序（即使 products、filter、sortOrder 都沒變）
+  console.log('開始計算。..');
+  const filteredProducts = products
+    .filter(p => p.name.includes(filter))
+    .sort((a, b) => sortOrder === 'asc' ? a.price - b.price : b.price - a.price);
+  console.log('計算完成！');
   
   return (
-    <div style={{ padding: '2rem' }}>
-      <h3>總計：{expensiveValue}</h3>
-      
+    <div>
       <input
-        type="text"
-        placeholder="過濾項目。.."
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        style={{ 
-          padding: '0.5rem', 
-          margin: '0.5rem',
-          border: '1px solid #ccc',
-          borderRadius: '4px'
-        }}
+        placeholder="搜尋商品"
       />
+      <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+        排序：{sortOrder === 'asc' ? '低到高' : '高到低'}
+      </button>
       
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {filteredItems.map(item => (
-          <li 
-            key={item.id}
-            style={{ 
-              padding: '0.5rem', 
-              border: '1px solid #eee', 
-              margin: '0.5rem 0' 
-            }}
-          >
-            {item.name} - {item.value}
-          </li>
+      <p>找到 {filteredProducts.length} 個商品</p>
+      <ul>
+        {filteredProducts.slice(0, 20).map(p => (
+          <li key={p.id}>{p.name} - ${p.price}</li>
         ))}
       </ul>
     </div>
@@ -2412,33 +2718,476 @@ function ExpensiveComponent({ items, multiplier }) {
 }
 ```
 
-{% note info %}
-**useMemo 使用時機：**
-- **昂貴計算**：複雜的數學運算、資料處理
-- **物件創建**：避免每次渲染都創建新物件
-- **陣列操作**：過濾、排序、轉換大量資料
-- **子元件優化**：配合 `React.memo` 使用
+**問題：** 即使只是輸入搜尋關鍵字（改變 `filter`），整個 10000 筆資料的過濾和排序運算都會重新執行，造成明顯的卡頓。
+
+{% note danger %}
+**核心問題：**
+- 每次渲染時，`filteredProducts` 的計算都會重新執行
+- 即使 `products`、`filter`、`sortOrder` 都沒變，還是會重新計算
+- 大量資料的過濾和排序非常耗時，導致輸入延遲、畫面卡頓
 {% endnote %}
 
+### useMemo 語法
+
+`useMemo` 可以解決上述問題，讓計算結果在依賴項不變時被重複使用。
+
+**語法結構：**
+```javascript
+const memoizedValue = useMemo(
+  () => {
+    // 計算邏輯
+    return 計算結果；
+  },
+  [依賴項 1, 依賴項 2, ...]
+);
+```
+
+**參數說明：**
+- **第一個參數**：計算函式，返回要記憶化的值
+- **第二個參數**：依賴項陣列（Dependency Array）
+  - 當依賴項改變時，會重新執行計算
+  - 當依賴項不變時，會返回上次記憶的結果（不重新計算）
+
+**重要：** `useMemo` 記憶的是「計算結果」（值），而 `useCallback` 記憶的是「函式」本身。
+
+### 使用 useMemo 優化
+
+讓我們用 `useMemo` 改善前面的問題：
+
+```javascript 使用 useMemo 優化
+import React, { useState, useMemo } from 'react';
+
+function ProductList() {
+  const [filter, setFilter] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+  
+  const products = Array.from({ length: 10000 }, (_, i) => ({
+    id: i,
+    name: `商品 ${i}`,
+    price: Math.floor(Math.random() * 1000),
+    category: i % 3 === 0 ? '電子' : i % 3 === 1 ? '服飾' : '食品'
+  }));
+  
+  // ✅ 使用 useMemo，只有當 products、filter、sortOrder 改變時才重新計算
+  const filteredProducts = useMemo(() => {
+    console.log('開始計算。..');
+    const result = products
+      .filter(p => p.name.includes(filter))
+      .sort((a, b) => sortOrder === 'asc' ? a.price - b.price : b.price - a.price);
+    console.log('計算完成！');
+    return result;
+  }, [products, filter, sortOrder]); // 依賴項：這三個值改變時才重新計算
+  
+  return (
+    <div>
+      <input
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="搜尋商品"
+      />
+      <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+        排序：{sortOrder === 'asc' ? '低到高' : '高到低'}
+      </button>
+      
+      <p>找到 {filteredProducts.length} 個商品</p>
+      <ul>
+        {filteredProducts.slice(0, 20).map(p => (
+          <li key={p.id}>{p.name} - ${p.price}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default ProductList;
+```
+
+**效果：**
+- 初次渲染時會執行計算
+- 之後只有當 `filter` 或 `sortOrder` 改變時才會重新計算
+- 其他原因造成的重新渲染（例如父元件更新）不會觸發計算
+- 輸入更流暢，沒有卡頓
+
+{% note success %}
+**重點：** 使用 `useMemo` 可以避免昂貴的計算在每次渲染時都重新執行，顯著提升效能。
+{% endnote %}
+
+### 理解依賴項陣列
+
+依賴項陣列決定了何時需要重新計算。
+
+#### 案例 1：空依賴項陣列 `[]`
+
+```javascript 空依賴項
+import React, { useState, useMemo } from 'react';
+
+function Example() {
+  const [count, setCount] = useState(0);
+  
+  // ✅ 依賴項為空陣列，只在初次渲染時計算一次
+  const expensiveValue = useMemo(() => {
+    console.log('執行昂貴的計算');
+    let result = 0;
+    for (let i = 0; i < 1000000000; i++) {
+      result += i;
+    }
+    return result;
+  }, []); // 永遠不會重新計算
+  
+  return (
+    <div>
+      <p>計算結果：{expensiveValue}</p>
+      <p>計數：{count}</p>
+      <button onClick={() => setCount(count + 1)}>增加計數</button>
+    </div>
+  );
+}
+```
+
+**說明：** 空陣列表示「沒有依賴項」，計算只會在元件初次渲染時執行一次，之後永遠返回同一個結果。
+
+#### 案例 2：有依賴項的情況
+
+```javascript 有依賴項
+import React, { useState, useMemo } from 'react';
+
+function ShoppingCart() {
+  const [items, setItems] = useState([
+    { id: 1, name: '商品 A', price: 100, quantity: 2 },
+    { id: 2, name: '商品 B', price: 200, quantity: 1 },
+    { id: 3, name: '商品 C', price: 150, quantity: 3 }
+  ]);
+  const [discount, setDiscount] = useState(0);
+  
+  // ✅ 依賴 items 和 discount，當這兩個值改變時才重新計算
+  const totalPrice = useMemo(() => {
+    console.log('計算總價。..');
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    return subtotal * (1 - discount / 100);
+  }, [items, discount]); // 當 items 或 discount 改變時重新計算
+  
+  return (
+    <div>
+      <h3>購物車</h3>
+      <ul>
+        {items.map(item => (
+          <li key={item.id}>
+            {item.name} - ${item.price} x {item.quantity}
+          </li>
+        ))}
+      </ul>
+      
+      <div>
+        <label>折扣（%）：</label>
+        <input
+          type="number"
+          value={discount}
+          onChange={(e) => setDiscount(Number(e.target.value))}
+        />
+      </div>
+      
+      <h2>總價：${totalPrice.toFixed(2)}</h2>
+    </div>
+  );
+}
+```
+
+**說明：** 因為計算總價需要用到 `items` 和 `discount`，所以必須將它們加入依賴項陣列。當這些值改變時，總價才需要重新計算。
+
+### useMemo vs useCallback
+這兩個 Hook 容易混淆，讓我們清楚比較：
+
+- `useMemo(() => 計算結果，[依賴項])` → 記憶計算結果
+- `useCallback（函式，[依賴項])` → 記憶函式本身
+- `useCallback(fn, deps)` 等於 `useMemo(() => fn, deps)`
+
+```javascript useMemo vs useCallback
+import React, { useMemo, useCallback } from 'react';
+
+function Example() {
+  const [count, setCount] = useState(0);
+  
+  // useMemo：記憶「計算結果」（值）
+  const expensiveValue = useMemo(() => {
+    return count * 2; // 返回計算結果
+  }, [count]);
+  
+  // useCallback：記憶「函式」本身
+  const handleClick = useCallback(() => {
+    setCount(count + 1); // 返回函式
+  }, [count]);
+  
+  // 等價寫法：
+  // const handleClick = useMemo(() => {
+  //   return () => setCount(count + 1); // 返回一個函式
+  // }, [count]);
+  
+  console.log(typeof expensiveValue); // "number" - 是值
+  console.log(typeof handleClick);     // "function" - 是函式
+}
+```
+
+### useMemo 與 React.memo 搭配使用
+
+`useMemo` 可以配合 `React.memo` 避免子元件不必要的重新渲染：
+
+```javascript useMemo 與 React.memo 搭配
+import React, { useState, useMemo } from 'react';
+
+// 使用 React.memo 優化的子元件
+const ProductList = React.memo(({ products }) => {
+  console.log('ProductList 重新渲染');
+  return (
+    <ul>
+      {products.map(p => (
+        <li key={p.id}>{p.name}</li>
+      ))}
+    </ul>
+  );
+});
+
+function Shop() {
+  const [count, setCount] = useState(0);
+  const [filter, setFilter] = useState('');
+  
+  const allProducts = [
+    { id: 1, name: '蘋果' },
+    { id: 2, name: '香蕉' },
+    { id: 3, name: '橘子' }
+  ];
+  
+  // ❌ 沒有 useMemo：每次渲染都創建新陣列，ProductList 會重新渲染
+  // const filteredProducts = allProducts.filter(p => 
+  //   p.name.includes(filter)
+  // );
+  
+  // ✅ 使用 useMemo：只有 filter 改變時才創建新陣列
+  const filteredProducts = useMemo(() => {
+    return allProducts.filter(p => p.name.includes(filter));
+  }, [filter]);
+  
+  return (
+    <div>
+      <p>計數：{count}</p>
+      <button onClick={() => setCount(count + 1)}>增加計數</button>
+      
+      <input
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+        placeholder="搜尋商品"
+      />
+      
+      {/* 因為 filteredProducts 使用 useMemo，只有 filter 改變時才會重新渲染 */}
+      <ProductList products={filteredProducts} />
+    </div>
+  );
+}
+```
+
+**說明：**
+- 點擊「增加計數」時，`count` 改變但 `filter` 沒變
+- `filteredProducts` 返回相同的陣列參考（因為 `useMemo`）
+- `ProductList` 的 props 沒變，不會重新渲染（因為 `React.memo`）
+
+### 何時該使用 useMemo？
+
+**適合使用的情況：**
+1. **昂貴的計算**：複雜的數學運算、大量資料處理、排序、過濾
+2. **避免物件/陣列重新創建**：配合 `React.memo` 使用
+3. **計算依賴項明確**：計算結果只依賴特定的值
+
+**不需要使用的情況：**
+1. **簡單計算**：`a + b`、字串拼接等低成本運算
+2. **計算很快**：執行時間小於 1ms 的運算
+3. **每次都需要最新值**：依賴項頻繁變動
+
+**注意：** 過度使用 `useMemo` 反而會增加記憶體開銷和程式碼複雜度。只在真正需要優化時使用，不要為了優化而優化。
+
 {% note warning %}
-**useMemo 注意事項：**
-- **不要過度使用**：記憶化本身也有成本
-- **只對真正昂貴的計算使用**：簡單計算不需要記憶化
-- **確保依賴陣列正確**：避免 stale closure 問題
-- **不要依賴記憶化來保證語義正確性**：記憶化是優化，不是功能
+**重要提醒：**
+- 計算函式內使用的所有外部變數（state、props）都應該加入依賴項陣列
+- 缺少依賴項會導致使用舊的值，產生 bug
+- `useMemo` 是效能優化，不應該用於保證功能正確性
+- React 可能會在某些情況下丟棄記憶的值（例如記憶體不足），所以計算函式必須是純函式
 {% endnote %}
 
 ## useDeferredValue
+`useDeferredValue` 是 React 18 引入的 Hook，可以將某個值的更新「延遲」到較不緊急的時機執行。它的主要作用是在快速輸入或頻繁更新時，優先保持 UI 的響應性，延後處理耗時的運算或渲染。
 
-`useDeferredValue` 是 React 18 引入的 Hook，讓你可以延遲更新值，優化用戶體驗。當輸入框快速變化時，可以保持輸入的響應性，同時延遲昂貴的搜尋操作。
+### 為什麼需要 useDeferredValue？
 
-### 基本用法
+在某些情況下，我們會遇到「輸入卡頓」的問題：使用者在輸入框打字時，因為每次輸入都觸發大量計算或渲染，導致輸入延遲、體驗變差。
 
-```javascript useDeferredValue 基本用法
+```javascript 沒有使用 useDeferredValue 的問題
+import React, { useState } from 'react';
+
+// 渲染大量搜尋結果的元件
+function SearchResults({ query }) {
+  // 模擬搜尋 10000 筆資料
+  const results = [];
+  for (let i = 0; i < 10000; i++) {
+    if (`項目 ${i}`.includes(query)) {
+      results.push({ id: i, name: `項目 ${i}` });
+    }
+  }
+  
+  console.log(`渲染 ${results.length} 個搜尋結果`);
+  
+  return (
+    <ul>
+      {results.slice(0, 100).map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+function SearchApp() {
+  const [query, setQuery] = useState('');
+  
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="搜尋。.."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      
+      {/* ❌ 問題：每次輸入都立即觸發 10000 筆資料的搜尋和渲染 */}
+      <SearchResults query={query} />
+    </div>
+  );
+}
+```
+
+**問題分析：**
+1. 使用者在輸入框快速打字：例如輸入 "react"
+2. 每打一個字母（r → e → a → c → t），`query` state 都會更新
+3. 每次更新都立即觸發 `SearchResults` 重新渲染
+4. 搜尋 10000 筆資料非常耗時，導致輸入框卡頓、延遲
+
+{% note danger %}
+**核心問題：**
+- 輸入框的更新（高優先級）被耗時的搜尋運算（低優先級）阻塞
+- 使用者會感受到明顯的輸入延遲，體驗很差
+- 即使使用 `useMemo` 也無法解決，因為每次輸入 `query` 確實改變了，必須重新計算
+{% endnote %}
+
+### useDeferredValue 語法
+
+`useDeferredValue` 可以解決這個問題，它會告訴 React：「這個值的更新可以延後處理，先處理更重要的事情（例如輸入框更新）」。
+
+**語法結構：**
+```javascript
+const deferredValue = useDeferredValue(value);
+```
+
+**參數說明：**
+- **參數**：要延遲更新的值（通常是 state）
+- **返回值**：延遲版本的值
+  - 初次渲染時，`deferredValue` 等於 `value`
+  - 更新時，`deferredValue` 會「延遲」更新，優先處理其他更新
+
+**運作原理：**
+```javascript
+const [query, setQuery] = useState('');
+const deferredQuery = useDeferredValue(query);
+
+// 使用者輸入 "r"
+// 1. query 立即更新為 "r"（高優先級）
+// 2. 輸入框立即顯示 "r"
+// 3. deferredQuery 延後更新為 "r"（低優先級）
+// 4. 搜尋結果使用 deferredQuery，不會阻塞輸入
+```
+
+### 使用 useDeferredValue 優化
+
+讓我們用 `useDeferredValue` 改善前面的問題：
+
+```javascript 使用 useDeferredValue 優化
 import React, { useState, useDeferredValue, useMemo } from 'react';
 
 function SearchResults({ query }) {
-  // 模擬大量搜尋結果
+  // 使用 useMemo 避免重複計算
+  const results = useMemo(() => {
+    const items = [];
+    for (let i = 0; i < 10000; i++) {
+      if (`項目 ${i}`.includes(query)) {
+        items.push({ id: i, name: `項目 ${i}` });
+      }
+    }
+    console.log(`計算完成：找到 ${items.length} 個結果`);
+    return items;
+  }, [query]);
+  
+  return (
+    <div>
+      <p>找到 {results.length} 個結果</p>
+      <ul>
+        {results.slice(0, 100).map(item => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SearchApp() {
+  const [query, setQuery] = useState('');
+  
+  // ✅ 使用 useDeferredValue 延遲查詢值的更新
+  const deferredQuery = useDeferredValue(query);
+  
+  return (
+    <div>
+      <h2>搜尋功能</h2>
+      <input
+        type="text"
+        placeholder="搜尋。.."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      
+      <div>
+        <p>當前輸入：{query}</p>
+        <p>延遲查詢：{deferredQuery}</p>
+      </div>
+      
+      {/* 使用延遲的值進行搜尋，不會阻塞輸入框 */}
+      <SearchResults query={deferredQuery} />
+    </div>
+  );
+}
+
+export default SearchApp;
+```
+
+**效果對比：**
+
+**沒有使用 useDeferredValue：**
+- 快速輸入 "123" 時
+- 每個字元都會立即觸發搜尋
+- 輸入框卡頓、延遲明顯
+
+**使用 useDeferredValue：**
+- 快速輸入 "123" 時
+- 輸入框立即響應，顯示 "1" → "12" → "123"（流暢）
+- 搜尋結果稍後更新，使用延遲的值
+- 輸入體驗流暢，沒有卡頓
+
+{% note success %}
+**重點：** `useDeferredValue` 讓 React 知道某些更新可以延後處理，優先保持 UI 的響應性，提升使用者體驗。
+{% endnote %}
+
+### 顯示載入狀態
+
+可以透過比較 `value` 和 `deferredValue` 來判斷是否正在延遲更新，顯示載入提示：
+
+```javascript 顯示載入狀態
+import React, { useState, useDeferredValue, useMemo } from 'react';
+
+function SearchResults({ query, isPending }) {
   const results = useMemo(() => {
     const items = [];
     for (let i = 0; i < 10000; i++) {
@@ -2450,283 +3199,964 @@ function SearchResults({ query }) {
   }, [query]);
   
   return (
-    <ul style={{ listStyle: 'none', padding: 0, maxHeight: '300px', overflow: 'auto' }}>
-      {results.slice(0, 100).map(item => (
-        <li 
-          key={item.id}
-          style={{ 
-            padding: '0.5rem', 
-            border: '1px solid #eee', 
-            margin: '0.5rem 0' 
-          }}
-        >
-          {item.name}
-        </li>
-      ))}
-    </ul>
+    <div style={{ opacity: isPending ? 0.5 : 1 }}>
+      {isPending && <p>搜尋中。..</p>}
+      <p>找到 {results.length} 個結果</p>
+      <ul>
+        {results.slice(0, 100).map(item => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
-function DeferredSearch() {
+function SearchApp() {
   const [query, setQuery] = useState('');
-  // 延遲更新的查詢值
   const deferredQuery = useDeferredValue(query);
   
+  // 判斷是否正在延遲更新
+  const isPending = query !== deferredQuery;
+  
   return (
-    <div style={{ padding: '2rem' }}>
+    <div>
       <input
         type="text"
         placeholder="搜尋。.."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        style={{ 
-          padding: '0.5rem', 
-          margin: '0.5rem',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          width: '300px'
-        }}
       />
       
-      <div style={{ margin: '1rem 0' }}>
-        <p><strong>當前輸入：</strong>{query}</p>
-        <p><strong>延遲查詢：</strong>{deferredQuery}</p>
-      </div>
-      
-      {/* 使用延遲的值進行搜尋，不會阻塞輸入 */}
-      <SearchResults query={deferredQuery} />
+      <SearchResults query={deferredQuery} isPending={isPending} />
     </div>
   );
 }
 ```
 
+**說明：**
+- `isPending` 為 `true` 表示延遲更新尚未完成
+- 可以降低透明度或顯示載入提示，讓使用者知道正在處理
+- 不會阻塞輸入，使用者可以繼續打字
+
+### useDeferredValue vs 防抖（Debounce）
 {% note info %}
-**useDeferredValue 使用時機：**
-- **搜尋功能**：避免每次輸入都觸發昂貴的搜尋
-- **大量資料渲染**：延遲渲染大量列表項目
-- **複雜計算**：延遲執行複雜的資料處理
-- **保持響應性**：確保用戶輸入始終保持響應
+**什麼是防抖（Debounce）？**
+
+防抖（Debounce）是一種常見的前端優化技巧，主要用來「限制某個動作的觸發頻率」。舉例來說，當使用者在搜尋框輸入文字時，每輸入一個字元就發送一次 API 請求，會造成伺服器壓力過大。防抖的做法是：**只有當使用者停止輸入一段時間後，才真正執行搜尋**。如果在這段時間內又有新的輸入，計時器會重新開始，直到使用者暫停輸入才會觸發。
+
+常見應用場景：
+- 搜尋建議（Autocomplete）
+- 表單驗證
+- 視窗大小調整（resize）事件
+
+簡單來說，防抖就是「等你不動了，我才做事」。
+{% endnote %}
+
+這兩種技術都能優化輸入體驗，但有不同的特點：
+
+```javascript 防抖（Debounce）的做法
+import React, { useState, useEffect } from 'react';
+
+function SearchWithDebounce() {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  
+  // 使用 useEffect 實現防抖
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); // 停止輸入 500ms 後才更新
+    
+    return () => clearTimeout(timer);
+  }, [query]);
+  
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <SearchResults query={debouncedQuery} />
+    </div>
+  );
+}
+```
+
+**useDeferredValue vs Debounce 比較：**
+
+| 特性           | useDeferredValue             | Debounce                        |
+| -------------- | ---------------------------- | ------------------------------- |
+| **更新時機**   | 根據 React 的調度機制決定    | 固定延遲時間（例如 500ms）      |
+| **即時反應**   | 立即開始處理，只是優先級較低 | 必須等待延遲時間結束            |
+| **可中斷性**   | 可以被更高優先級的更新中斷   | 不可中斷，計時器到了就執行      |
+| **使用複雜度** | 簡單，一行程式碼             | 需要 useEffect + setTimeout     |
+| **適用場景**   | 需要立即回應但可延遲渲染     | 需要限制執行頻率（如 API 請求） |
+
+**選擇建議：**
+- **使用 useDeferredValue**：當你想要優化渲染效能，保持輸入流暢
+- **使用 Debounce**：當你想要限制 API 請求次數，減少伺服器負擔
+
+### 實際應用範例
+這個範例展示如何結合 `useDeferredValue` 與 `useMemo` 來優化大量資料的搜尋與渲染效能。
+
+- **useDeferredValue**：
+當使用者輸入搜尋關鍵字時，`searchQuery` 會即時更新，但 `deferredSearchQuery` 會「延遲」更新。這樣可以讓 React 優先處理高優先級的互動（如輸入框的即時回饋），而將大量資料的過濾與渲染延後執行，避免畫面卡頓，提升使用者體驗。
+- **useMemo**：
+用來記憶化（cache）產品資料的產生與篩選結果。`generateProducts()` 只會執行一次，避免每次渲染都重新產生 5000 筆資料；而 `filteredProducts` 只會在 `allProducts`、`searchQuery` 或 `category` 變動時才重新計算，減少不必要的重複運算。
+
+**總結：**  
+這種寫法能確保「輸入體驗流暢」且「大量資料渲染不卡頓」，是 React 18 以後效能優化的推薦做法。
+
+```javascript 完整的搜尋範例
+import React, { useState, useDeferredValue, useMemo } from 'react';
+
+// 模擬產品資料
+const generateProducts = () => {
+  return Array.from({ length: 5000 }, (_, i) => ({
+    id: i,
+    name: `產品 ${i}`,
+    price: Math.floor(Math.random() * 1000),
+    category: ['電子', '服飾', '食品', '書籍'][i % 4]
+  }));
+};
+
+function ProductList({ searchQuery, category, isPending }) {
+  const allProducts = useMemo(() => generateProducts(), []);
+  
+  const filteredProducts = useMemo(() => {
+    console.log('開始篩選產品。..');
+    return allProducts.filter(product => {
+      const matchesSearch = product.name.includes(searchQuery);
+      const matchesCategory = category === 'all' || product.category === category;
+      return matchesSearch && matchesCategory;
+    });
+  }, [allProducts, searchQuery, category]);
+  
+  return (
+    <div style={{ opacity: isPending ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+      {isPending && <p>更新中。..</p>}
+      <p>找到 {filteredProducts.length} 個產品</p>
+      <ul>
+        {filteredProducts.slice(0, 50).map(product => (
+          <li key={product.id}>
+            {product.name} - ${product.price} ({product.category})
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ProductSearchApp() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState('all');
+  
+  // 只延遲搜尋查詢，分類切換立即更新
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+  const isPending = searchQuery !== deferredSearchQuery;
+  
+  return (
+    <div>
+      <h2>產品搜尋</h2>
+      
+      <div>
+        <input
+          type="text"
+          placeholder="搜尋產品。.."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="all">全部分類</option>
+          <option value="電子">電子</option>
+          <option value="服飾">服飾</option>
+          <option value="食品">食品</option>
+          <option value="書籍">書籍</option>
+        </select>
+      </div>
+      
+      <ProductList
+        searchQuery={deferredSearchQuery}
+        category={category}
+        isPending={isPending}
+      />
+    </div>
+  );
+}
+
+export default ProductSearchApp;
+```
+
+### 何時該使用 useDeferredValue？
+
+**適合使用的情況：**
+1. **搜尋功能**：大量資料的即時搜尋、過濾
+2. **輸入驅動的複雜運算**：圖表繪製、資料視覺化
+3. **大量列表渲染**：延遲渲染長列表，保持滾動流暢
+4. **複雜表單驗證**：延遲驗證邏輯，保持輸入流暢
+
+**不需要使用的情況：**
+1. **簡單的輸入**：沒有耗時運算或大量渲染
+2. **需要精確控制延遲時間**：使用 debounce 更合適
+3. **API 請求**：使用 debounce 限制請求頻率更好
+
+{% note info %}
+**並發模式（Concurrent Mode）下作業**
+
+在 React 18 之前，React 的渲染是「同步且不可中斷」的。一旦開始渲染，就必須完整執行完畢，無法暫停或中斷。這就像在排隊結帳時，即使後面有人很急，也必須等前面的人全部結完帳才輪到你。
+
+React 18 引入了「並發渲染（Concurrent Rendering）」機制，讓 React 可以：
+- **暫停渲染**：正在渲染複雜元件時，如果有更緊急的更新（如使用者輸入），可以暫停當前渲染
+- **優先級調度**：根據更新的重要性分配優先級，優先處理使用者互動
+- **恢復渲染**：處理完緊急更新後，繼續完成之前暫停的渲染
+
+**如何啟用並發模式？**
+
+在 React 18 中，只要使用 `createRoot` 就會自動啟用並發功能：
+
+```javascript
+// React 18 - 並發模式（推薦）
+import { createRoot } from 'react-dom/client';
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+```
+
+```javascript
+// React 17 及以前 - 傳統模式（同步渲染）
+import ReactDOM from 'react-dom';
+
+ReactDOM.render(<App />, document.getElementById('root'));
+```
+
+**`useDeferredValue` 與並發模式的關係：**
+- `useDeferredValue` 是 React 18 的新功能，需要並發渲染機制才能運作
+- 它利用並發模式的優先級調度能力，將某些更新標記為「低優先級」
+- 如果你的專案還在用 React 17 或 `ReactDOM.render`，`useDeferredValue` 將無法發揮作用
+- 升級到 React 18 並使用 `createRoot` 即可自動支援
+
+**其他重點：**
+- `useDeferredValue` 不會延遲「時間」，而是延遲「優先級」
+- React 會根據系統負載自動調整延遲程度
+- 這是一種效能優化手段，不應該用於實現業務邏輯
 {% endnote %}
 
 ## useTransition
 
-`useTransition` 讓你可以將狀態更新標記為過渡，避免阻塞緊急的更新。這對於保持用戶界面的響應性非常重要，特別是在處理大量資料時。
+`useTransition` 是 React 18 引入的 Hook，可以將某些狀態更新標記為「過渡（transition）」，讓 React 知道這些更新可以延後處理，優先執行更緊急的互動（如使用者輸入）。它與 `useDeferredValue` 類似，但提供更細緻的控制。
 
-### 基本用法
+### 為什麼需要 useTransition？
 
-```javascript useTransition 基本用法
-import React, { useState, useTransition } from 'react';
+當我們需要在使用者操作時同時更新多個狀態，而其中某些更新會觸發耗時的運算或渲染時，就會遇到「輸入卡頓」的問題。
 
-function SlowList({ query }) {
-  const items = [];
-  
-  // 模擬慢速的列表渲染
-  for (let i = 0; i < 5000; i++) {
-    if (`項目 ${i}`.includes(query)) {
-      items.push(
-        <li 
-          key={i}
-          style={{ 
-            padding: '0.5rem', 
-            border: '1px solid #eee', 
-            margin: '0.5rem 0' 
-          }}
-        >
-          項目 {i}
-        </li>
-      );
-    }
-  }
-  
-  return <ul style={{ listStyle: 'none', padding: 0 }}>{items}</ul>;
+```javascript 沒有使用 useTransition 的問題
+import React, { useState } from 'react';
+
+function SlowList({ items }) {
+  // 模擬渲染大量項目（耗時）
+  console.log('渲染列表。..');
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
 }
 
-function TransitionDemo() {
-  const [query, setQuery] = useState('');
-  const [displayQuery, setDisplayQuery] = useState('');
+function TabSwitcher() {
+  const [activeTab, setActiveTab] = useState('tab1');
+  
+  // 模擬每個 tab 有大量資料
+  const tabs = {
+    tab1: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `項目 ${i}` })),
+    tab2: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `文章 ${i}` })),
+    tab3: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `圖片 ${i}` }))
+  };
+  
+  const handleTabClick = (tab) => {
+    // ❌ 問題：切換 tab 時，立即更新 activeTab 並渲染大量資料
+    // 導致點擊按鈕到視覺回饋之間有明顯延遲
+    setActiveTab(tab);
+  };
+  
+  return (
+    <div>
+      <div>
+        <button onClick={() => handleTabClick('tab1')}>Tab 1</button>
+        <button onClick={() => handleTabClick('tab2')}>Tab 2</button>
+        <button onClick={() => handleTabClick('tab3')}>Tab 3</button>
+      </div>
+      
+      <p>當前 Tab：{activeTab}</p>
+      
+      {/* 渲染大量資料，造成卡頓 */}
+      <SlowList items={tabs[activeTab]} />
+    </div>
+  );
+}
+```
+
+**問題分析：**
+1. 使用者點擊 Tab 按鈕
+2. `setActiveTab` 觸發狀態更新
+3. 立即渲染 5000 筆新資料（非常耗時）
+4. 使用者看到按鈕卡住，沒有立即的視覺反饋
+5. 體驗很差，感覺應用程式當機了
+
+{% note danger %}
+**核心問題：**
+- 按鈕的視覺回饋（高優先級）被大量資料的渲染（低優先級）阻塞
+- 使用者點擊按鈕後沒有立即看到反應，會以為沒點到或當機
+- 雖然 `useDeferredValue` 可以延遲值的更新，但無法直接控制「狀態更新」本身的優先級
+{% endnote %}
+
+### useTransition 語法
+
+`useTransition` 可以解決這個問題，它讓我們明確告訴 React：「這個狀態更新不緊急，可以延後處理」。
+
+**語法結構：**
+```javascript
+const [isPending, startTransition] = useTransition();
+```
+
+**返回值說明：**
+- **isPending**：布林值，表示是否有過渡更新正在進行中
+  - `true`：過渡更新尚未完成
+  - `false`：沒有進行中的過渡更新
+- **startTransition**：函式，用來包裹「非緊急」的狀態更新
+  - 被包裹的更新會被標記為低優先級
+  - React 會優先處理其他緊急更新（如使用者輸入）
+
+**使用方式：**
+```javascript
+const handleClick = () => {
+  // 緊急更新：立即執行
+  setUrgentState(newValue);
+  
+  // 非緊急更新：延後執行
+  startTransition(() => {
+    setNonUrgentState(newValue);
+  });
+};
+```
+
+### 使用 useTransition 優化
+
+讓我們用 `useTransition` 改善前面的問題：
+
+```javascript 使用 useTransition 優化
+import React, { useState, useTransition } from 'react';
+
+function SlowList({ items }) {
+  console.log('渲染列表。..');
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+function TabSwitcher() {
+  const [activeTab, setActiveTab] = useState('tab1');
   const [isPending, startTransition] = useTransition();
   
-  const handleInputChange = (e) => {
-    const value = e.target.value;
-    // 立即更新輸入框的值（高優先級）
-    setQuery(value);
-    
-    // 將慢速更新標記為過渡（低優先級）
+  const tabs = {
+    tab1: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `項目 ${i}` })),
+    tab2: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `文章 ${i}` })),
+    tab3: Array.from({ length: 5000 }, (_, i) => ({ id: i, name: `圖片 ${i}` }))
+  };
+  
+  const handleTabClick = (tab) => {
+    // ✅ 使用 startTransition 包裹狀態更新
+    // React 會優先處理按鈕的視覺回饋，延後處理列表渲染
     startTransition(() => {
-      setDisplayQuery(value);
+      setActiveTab(tab);
     });
   };
   
   return (
-    <div style={{ padding: '2rem' }}>
+    <div>
+      <div>
+        <button onClick={() => handleTabClick('tab1')} disabled={isPending}>
+          Tab 1
+        </button>
+        <button onClick={() => handleTabClick('tab2')} disabled={isPending}>
+          Tab 2
+        </button>
+        <button onClick={() => handleTabClick('tab3')} disabled={isPending}>
+          Tab 3
+        </button>
+      </div>
+      
+      <div>
+        <p>當前 Tab：{activeTab}</p>
+        {isPending && <p>載入中。..</p>}
+      </div>
+      
+      <SlowList items={tabs[activeTab]} />
+    </div>
+  );
+}
+
+export default TabSwitcher;
+```
+
+**效果比較：**
+
+| 狀況         | 沒有使用 useTransition           | 使用 useTransition              |
+| ------------ | -------------------------------- | ------------------------------- |
+| 按鈕點擊反應 | 畫面卡住，無法立即互動           | 按鈕立即變成 disabled，回饋即時 |
+| 載入提示     | 無                               | 顯示「載入中。..」提示          |
+| 列表渲染     | 必須等 5000 筆資料渲染完才有反應 | 列表稍後才更新，不阻塞主要互動  |
+| 使用者體驗   | 卡頓、不流暢                     | 流暢、UI 響應性佳               |
+
+`useTransition` 可以讓你將「非即時」或「不急迫」的狀態更新標記為過渡（Transition），這樣 React 會優先處理重要的 UI 互動（例如按鈕點擊、輸入回饋），而將大量渲染等較重的工作延後執行。這種做法能有效避免畫面卡頓，讓使用者感受到更即時、流暢的操作體驗。透過 `useTransition`，我們能主動告訴 React：「這部分的狀態更新可以等一下再做」，進一步提升整體 UI 響應性。
+
+### useTransition vs useDeferredValue
+雖然 `useTransition` 和 `useDeferredValue` 都能提升 React 應用的效能與互動流暢度，但它們的設計目標與適用情境並不相同：
+
+- **useTransition**：
+適合用於「主動標記」某些狀態更新為「非緊急」的過渡（Transition），例如 Tab 切換、大量資料渲染等。你可以決定哪些更新可以延後，讓 React 先處理重要的 UI 互動，提升即時回饋。
+- **useDeferredValue**：
+適合用於「被動延遲」某個值的更新，常見於輸入框、搜尋等場景。它會自動將值的變化延後處理，讓高優先級的互動（如輸入）不被大量運算或渲染阻塞。
+
+簡單來說：  
+- 如果你想「主動控制」狀態更新的優先順序，請用 `useTransition`。  
+- 如果你想「被動延遲」某個值的更新，讓 UI 更流暢，請用 `useDeferredValue`。
+
+```javascript useTransition vs useDeferredValue 對比
+import React, { useState, useTransition, useDeferredValue } from 'react';
+
+function ComparisonDemo() {
+  // 使用 useTransition
+  const [tab1, setTab1] = useState('home');
+  const [isPending1, startTransition1] = useTransition();
+  
+  const handleTabChange1 = (newTab) => {
+    // 控制「狀態更新」的優先級
+    startTransition1(() => {
+      setTab1(newTab);
+    });
+  };
+  
+  // 使用 useDeferredValue
+  const [input, setInput] = useState('');
+  const deferredInput = useDeferredValue(input);
+  
+  return (
+    <div>
+      {/* useTransition：主動控制狀態更新 */}
+      <button onClick={() => handleTabChange1('profile')}>
+        切換到 Profile
+      </button>
+      {isPending1 && <span>切換中。..</span>}
+      
+      {/* useDeferredValue：被動接收延遲的值 */}
       <input
-        type="text"
-        placeholder="搜尋。.."
-        value={query}
-        onChange={handleInputChange}
-        style={{ 
-          padding: '0.5rem', 
-          margin: '0.5rem',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          width: '300px'
-        }}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
-      
-      {isPending && (
-        <div style={{ color: '#666', fontStyle: 'italic' }}>
-          更新中。..
-        </div>
-      )}
-      
-      <SlowList query={displayQuery} />
+      <ExpensiveComponent value={deferredInput} />
     </div>
   );
 }
 ```
 
-{% note info %}
-**useTransition 使用時機：**
-- **大量資料渲染**：避免阻塞用戶輸入
-- **複雜狀態更新**：將非緊急更新標記為過渡
-- **保持響應性**：確保用戶操作始終保持響應
-- **優化用戶體驗**：提供載入狀態指示
+**差異比較：**
+
+| 特性               | useTransition          | useDeferredValue           |
+| ------------------ | ---------------------- | -------------------------- |
+| **控制方式**       | 主動標記狀態更新為過渡 | 被動接收延遲的值           |
+| **使用時機**       | 你控制狀態更新的時機   | 狀態由外部控制（如 props） |
+| **isPending 狀態** | 有，可以顯示載入提示   | 需自行比較值判斷           |
+| **典型場景**       | 按鈕點擊、Tab 切換     | 輸入框、可控元件           |
+| **狀態數量**       | 可以更新多個狀態       | 只針對單一值               |
+
+**選擇建議：**
+- **使用 useTransition**：當你需要在事件處理器中更新狀態，且希望延後某些更新
+- **使用 useDeferredValue**：當你需要延遲使用某個值，但不直接控制該值的更新
+
+### 實際應用範例
+
+這個範例展示了如何在 React 中使用 `useTransition` 來優化「分頁切換」的體驗。當使用者點擊分頁按鈕時，`handlePageChange` 會呼叫 `startTransition`，將頁面切換的狀態更新標記為「過渡更新」（transition）。這代表 React 會優先處理高優先級的互動（例如按鈕點擊、輸入框輸入），而將大量資料的渲染（如 3000 筆分頁資料）延後執行，避免畫面卡頓。
+
+- `isPending` 會在過渡期間為 `true`，可用來顯示「載入中」提示或降低內容透明度，讓使用者知道正在切換分頁。
+- 這種寫法能確保「分頁按鈕點擊即時反應」且「大量資料渲染不卡頓」，大幅提升使用者體驗。
+
+**重點：**
+- `useTransition` 適合用在「你主動控制狀態更新」的場景，例如分頁、Tab 切換、排序等。
+- 它讓你可以把「不重要但很重的更新」延後處理，讓 UI 互動保持流暢。
+
+```javascript 完整的分頁切換範例
+import React, { useState, useTransition } from 'react';
+
+// 模擬從 API 獲取資料
+const fetchPageData = (page) => {
+  return Array.from({ length: 3000 }, (_, i) => ({
+    id: `${page}-${i}`,
+    title: `第 ${page} 頁 - 項目 ${i}`,
+    content: `這是第 ${page} 頁的內容 ${i}`
+  }));
+};
+
+function ContentList({ items, isPending }) {
+  return (
+    <div style={{ opacity: isPending ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+      <ul>
+        {items.slice(0, 50).map(item => (
+          <li key={item.id}>
+            <h4>{item.title}</h4>
+            <p>{item.content}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PaginationApp() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
+  
+  const data = fetchPageData(currentPage);
+  const totalPages = 10;
+  
+  const handlePageChange = (newPage) => {
+    // 將頁面切換標記為過渡更新
+    startTransition(() => {
+      setCurrentPage(newPage);
+    });
+  };
+  
+  return (
+    <div>
+      <h2>分頁範例</h2>
+      
+      <div>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1 || isPending}
+        >
+          上一頁
+        </button>
+        
+        <span> 第 {currentPage} / {totalPages} 頁 </span>
+        
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages || isPending}
+        >
+          下一頁
+        </button>
+        
+        {isPending && <span> （載入中。..)</span>}
+      </div>
+      
+      <ContentList items={data} isPending={isPending} />
+    </div>
+  );
+}
+
+export default PaginationApp;
+```
+
+**說明：**
+- 點擊「下一頁」時，按鈕立即響應（disabled + 顯示載入提示）
+- 頁面內容稍後更新，不會阻塞按鈕的反應
+- 使用 `isPending` 降低內容透明度，提供視覺回饋
+
+### 何時該使用 useTransition？
+
+**適合使用的情況：**
+1. **Tab 切換**：切換不同的內容面板
+2. **分頁導航**：切換到不同頁面
+3. **篩選/排序**：改變資料的顯示方式
+4. **路由切換**：導航到不同的路由（配合路由庫）
+
+**不需要使用的情況：**
+1. **簡單的狀態更新**：沒有耗時渲染的更新
+2. **必須立即反映的更新**：如表單驗證錯誤提示
+3. **API 請求**：`startTransition` 不會取消網路請求
+
+{% note warning %}
+**重要提醒：**
+- `useTransition` 是 React 18 的新功能，需要並發模式支援（使用 `createRoot`）
+- 被 `startTransition` 包裹的更新會被標記為低優先級，但不是「不執行」
+- 不要在 `startTransition` 內執行有副作用的操作（如 API 請求）
+- `isPending` 只反映過渡更新的狀態，不是非同步操作的狀態
 {% endnote %}
 
-{% note success %}
-**跟著做：**
-1. 嘗試快速輸入，觀察 `isPending` 狀態的變化
-2. 比較使用和不使用 `useTransition` 的差異
-3. 觀察輸入框的響應性是否保持流暢
-{% endnote %}
+## 效能優化 Hooks 總結
 
-{% mermaid graph TD %}
-    A["用戶輸入"] 
-    B["緊急更新<br/>（輸入框）"]
-    C["過渡更新<br/>（列表渲染）"]
-    D["UI 保持響應"]
-    
-    A --> B
-    A --> C
-    B --> D
-    
-    style B fill:#e1f5fe
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
-{% endmermaid %}
+我們已經學習了三個效能優化相關的 Hook，讓我們總結一下它們的用途：
 
-{% note success %}
-**效能優化最佳實踐：**
-- 先測量效能瓶頸，再進行優化
+| Hook                 | 優化目標           | 使用時機                  | 主要作用             |
+| -------------------- | ------------------ | ------------------------- | -------------------- |
+| **useCallback**      | 記憶化函式         | 函式作為 props 或依賴項   | 避免函式重新創建     |
+| **useMemo**          | 記憶化計算結果     | 昂貴的計算或物件/陣列創建 | 避免重複計算         |
+| **useDeferredValue** | 延遲值的更新       | 被動接收延遲的值          | 延遲非緊急的視覺更新 |
+| **useTransition**    | 標記狀態更新為過渡 | 主動控制狀態更新優先級    | 保持 UI 響應性       |
+
+**最佳實踐：**
+- 先測量效能瓶頸，再進行優化（不要過早優化）
 - `useCallback` 和 `useMemo` 搭配 `React.memo` 使用效果更佳
-- `useDeferredValue` 適合延遲非緊急的視覺更新
-- `useTransition` 適合標記耗時的狀態更新
-{% endnote %}
+- `useDeferredValue` 適合輸入驅動的場景
+- `useTransition` 適合事件驅動的場景
+- 所有優化都有成本，只在真正需要時使用
 
 # 進階 Hooks
 
-這些 Hooks 適用於複雜的狀態管理和進階的元件互動。
+進階型的 React Hooks 主要用於處理「多狀態、複雜邏輯」的情境，讓元件在面對大量資料、複雜互動時，依然能保持程式碼結構清晰、易於維護。這些 Hook 幫助我們將狀態管理、邏輯分離，並提升大型應用的可讀性與可測試性。
 
 ## useReducer
 
-`useReducer` 是 `useState` 的替代方案，適合管理複雜的狀態邏輯。
+`useReducer` 是 React 提供的狀態管理 Hook，是 `useState` 的替代方案。當狀態邏輯變得複雜時（例如多個子狀態、複雜的更新邏輯），`useReducer` 可以讓程式碼更清晰、更易於維護和測試。
+
+### 為什麼需要 useReducer？
+
+這個範例展示當我們用多個 `useState` 來管理購物車的複雜狀態時，會遇到哪些實務上的困難與限制。你可以看到每個相關的狀態（如商品清單、折扣、運費、載入狀態、錯誤訊息）都分散在不同的 state 之中，導致狀態更新邏輯分散、重複且難以維護。這正是 `useReducer` 可以幫助我們簡化與集中管理的典型場景。
+
+```javascript 使用 useState 管理複雜狀態的問題
+import React, { useState } from 'react';
+
+function ShoppingCart() {
+  const [items, setItems] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [shippingFee, setShippingFee] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // ❌ 問題 1：多個相關的狀態分散在各處
+  // ❌ 問題 2：狀態更新邏輯分散在各個事件處理器中
+  // ❌ 問題 3：複雜的狀態更新邏輯難以測試
+  
+  const addItem = (product) => {
+    setLoading(true);
+    setError(null);
+    
+    // 複雜的業務邏輯
+    const existingItem = items.find(item => item.id === product.id);
+    if (existingItem) {
+      setItems(items.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setItems([...items, { ...product, quantity: 1 }]);
+    }
+    
+    // 更新運費
+    if (items.length + 1 >= 3) {
+      setShippingFee(0); // 滿三件免運
+    } else {
+      setShippingFee(60);
+    }
+    
+    setLoading(false);
+  };
+  
+  const removeItem = (productId) => {
+    setLoading(true);
+    setItems(items.filter(item => item.id !== productId));
+    
+    // 又要更新運費
+    const newItems = items.filter(item => item.id !== productId);
+    if (newItems.length >= 3) {
+      setShippingFee(0);
+    } else {
+      setShippingFee(60);
+    }
+    
+    setLoading(false);
+  };
+  
+  const applyDiscount = (code) => {
+    setLoading(true);
+    setError(null);
+    
+    // 驗證折扣碼
+    if (code === 'SAVE10') {
+      setDiscount(10);
+    } else if (code === 'SAVE20') {
+      setDiscount(20);
+    } else {
+      setError('無效的折扣碼');
+    }
+    
+    setLoading(false);
+  };
+  
+  // ... 更多複雜的邏輯
+}
+```
+
+**問題分析：**
+1. **狀態分散**：`items`、`discount`、`shippingFee`、`loading`、`error` 等相關狀態分散在各處
+2. **邏輯重複**：運費的計算邏輯在多個函式中重複出現
+3. **難以測試**：狀態更新邏輯分散在各個事件處理器中，難以單獨測試
+4. **難以維護**：當需求變更時，要修改多個地方
+5. **容易出錯**：忘記更新某個相關狀態，導致狀態不一致
+
+{% note danger %}
+**核心問題：**
+- 使用多個 `useState` 管理相關的狀態，導致狀態分散、邏輯混亂
+- 狀態更新邏輯散落在各處，難以追蹤和維護
+- 複雜的業務邏輯難以測試和重用
+- 當狀態間有依賴關係時，容易出現不一致的情況
+{% endnote %}
+
+### useReducer 概念
+
+`useReducer` 的核心概念來自 Redux 等狀態管理庫，採用「單一資料流」的設計模式：
+
+{% mermaid graph LR %}
+State["State<br/>（狀態）"]
+Action["Action<br/>（動作）"]
+UI["UI<br/>（使用者介面）"]
+Reducer["Reducer<br/>（歸納器）"]
+
+%% 流程箭頭
+State -- 狀態傳遞 --> UI
+UI -- 派發 Action --> Action
+Action -- 觸發 --> Reducer
+Reducer -- 更新 --> State
+{% endmermaid %}
+
+**核心概念：**
+1. **State（狀態）**：應用程式的資料
+2. **Action（動作）**：描述「發生了什麼」的物件
+3. **Reducer（歸納器）**：根據 action 決定如何更新 state 的純函式
+4. **Dispatch（派發）**：觸發 action 的函式
+
+### useReducer 語法
+`useReducer` 適合管理多個彼此有關聯、邏輯較複雜的狀態，能讓狀態更新流程更集中、可預測且易於維護。
+ 
+**語法結構：**
+```javascript
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+**參數詳細說明：**
+- **reducer**：
+一個純函式，格式為 `(state, action) => newState`。每當你呼叫 `dispatch` 派發一個 action 時，React 會自動將目前的 state 和 action 傳入 reducer，並根據回傳結果更新 state。reducer 需保證不可直接修改原本的 state，必須回傳新的物件。
+```javascript Reducer 函式結構
+function reducer(state, action) {
+  switch (action.type) {
+    case 'ACTION_TYPE':
+      return newState;
+    default:
+      return state;
+  }
+}
+```
+- **initialState**：
+初始狀態物件。這是 reducer 第一次執行時的 state 值，通常用來集中管理所有相關狀態欄位。
+
+**回傳值詳細說明：**
+- **state**：
+目前最新的狀態資料。每次 reducer 回傳新狀態後，state 也會自動更新，元件會重新渲染。
+- **dispatch**：
+用來派發 action 的函式。你可以呼叫 `dispatch({ type: '動作名稱', payload: 資料 })` 來觸發 reducer 執行對應的狀態更新邏輯。
+
+### 基本用法範例
+以下這個範例將帶你一步步學會如何用 `useReducer` 來重構購物車功能，讓多個購物車相關狀態（如商品清單、折扣、運費、載入狀態等）集中管理，並用 reducer 函式統一處理所有狀態更新。步驟如下：
+
+1. **定義初始狀態**：將所有購物車需要追蹤的資料（商品陣列、折扣、運費、載入狀態、錯誤訊息等）集中在一個物件中，方便管理。
+2. **撰寫 reducer 函式**：根據不同的 action（如新增商品、移除商品、套用折扣等），在 reducer 內統一處理狀態的變化，確保每次更新都回傳新的狀態物件。
+3. **在元件中使用 useReducer**：用 `const [state, dispatch] = useReducer(reducer, initialState)` 取得目前狀態與派發 action 的函式。
+4. **設計觸發行為**：當使用者操作（如加入商品、刪除商品、輸入折扣碼等）時，呼叫 `dispatch` 派發對應的 action，reducer 會自動處理狀態更新。
+5. **渲染 UI**：根據 state 內容動態渲染購物車清單、總金額、運費、折扣等資訊。
+
+這種寫法讓複雜的狀態變動更有條理，所有邏輯集中在 reducer，元件本身更簡潔，也方便日後擴充與維護。
 
 ```javascript useReducer 基本用法
 import React, { useReducer } from 'react';
 
-// 定義初始狀態
+// 1. 定義初始狀態（所有相關狀態集中管理）
 const initialState = {
-  count: 0,
-  step: 1
-};
-
-// 定義 reducer 函式
-function counterReducer(state, action) {
-  switch (action.type) {
-    case 'increment':
-      return { ...state, count: state.count + state.step };
-    case 'decrement':
-      return { ...state, count: state.count - state.step };
-    case 'set_step':
-      return { ...state, step: action.payload };
-    case 'reset':
-      return initialState;
-    default:
-      throw new Error(`未知的 action 類型：${action.type}`);
-  }
-}
-
-function Counter() {
-  const [state, dispatch] = useReducer(counterReducer, initialState);
-  
-  return (
-    <div>
-      <h2>計數器：{state.count}</h2>
-      <p>步長：{state.step}</p>
-      
-      <div>
-        <button onClick={() => dispatch({ type: 'decrement' })}>
-          -{state.step}
-        </button>
-        <button onClick={() => dispatch({ type: 'increment' })}>
-          +{state.step}
-        </button>
-      </div>
-      
-      <div>
-        <label>
-          設定步長：
-          <input
-            type="number"
-            value={state.step}
-            onChange={(e) => dispatch({ 
-              type: 'set_step', 
-              payload: parseInt(e.target.value) || 1 
-            })}
-          />
-        </label>
-      </div>
-      
-      <button onClick={() => dispatch({ type: 'reset' })}>
-        重設
-      </button>
-    </div>
-  );
-}
-```
-
-```javascript useReducer 複雜狀態管理
-import React, { useReducer, useEffect } from 'react';
-
-// 待辦事項狀態管理
-const todoInitialState = {
-  todos: [],
-  filter: 'all', // all, active, completed
+  items: [],
+  discount: 0,
+  shippingFee: 60,
   loading: false,
   error: null
 };
 
-function todoReducer(state, action) {
+// 2. 定義 reducer 函式（集中管理所有狀態更新邏輯）
+function cartReducer(state, action) {
   switch (action.type) {
+    case 'ADD_ITEM': {
+      const existingItem = state.items.find(item => item.id === action.payload.id);
+      const newItems = existingItem
+        ? state.items.map(item =>
+            item.id === action.payload.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...state.items, { ...action.payload, quantity: 1 }];
+      
+      // 自動計算運費
+      const shippingFee = newItems.length >= 3 ? 0 : 60;
+      
+      return {
+        ...state,
+        items: newItems,
+        shippingFee,
+        loading: false
+      };
+    }
+    
+    case 'REMOVE_ITEM': {
+      const newItems = state.items.filter(item => item.id !== action.payload);
+      const shippingFee = newItems.length >= 3 ? 0 : 60;
+      
+      return {
+        ...state,
+        items: newItems,
+        shippingFee,
+        loading: false
+      };
+    }
+    
+    case 'APPLY_DISCOUNT': {
+      const discounts = {
+        'SAVE10': 10,
+        'SAVE20': 20,
+        'SAVE30': 30
+      };
+      
+      const discount = discounts[action.payload];
+      
+      if (discount) {
+        return {
+          ...state,
+          discount,
+          error: null,
+          loading: false
+        };
+      } else {
+        return {
+          ...state,
+          error: '無效的折扣碼',
+          loading: false
+        };
+      }
+    }
+    
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
+    
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    
+    case 'RESET_CART':
+      return initialState;
+    
+    default:
+      return state;
+  }
+}
+
+// 3. 在元件中使用
+function ShoppingCart() {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+  
+  const addItem = (product) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'ADD_ITEM', payload: product });
+  };
+  
+  const removeItem = (productId) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'REMOVE_ITEM', payload: productId });
+  };
+  
+  const applyDiscount = (code) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'APPLY_DISCOUNT', payload: code });
+  };
+  
+  const total = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const finalTotal = total * (1 - state.discount / 100) + state.shippingFee;
+  
+  return (
+    <div>
+      <h2>購物車</h2>
       
-    case 'SET_ERROR':
-      return { ...state, error: action.payload, loading: false };
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      {state.loading && <p>處理中。..</p>}
       
-    case 'SET_TODOS':
-      return { ...state, todos: action.payload, loading: false, error: null };
+      <ul>
+        {state.items.map(item => (
+          <li key={item.id}>
+            {item.name} x {item.quantity} - ${item.price * item.quantity}
+            <button onClick={() => removeItem(item.id)}>移除</button>
+          </li>
+        ))}
+      </ul>
       
+      <div>
+        <p>小計：${total}</p>
+        <p>折扣：{state.discount}%</p>
+        <p>運費：${state.shippingFee}</p>
+        <p>總計：${finalTotal}</p>
+      </div>
+      
+      <button onClick={() => applyDiscount('SAVE10')}>套用折扣碼</button>
+      <button onClick={() => dispatch({ type: 'RESET_CART' })}>清空購物車</button>
+    </div>
+  );
+}
+
+export default ShoppingCart;
+```
+
+**優點對比：**
+
+| 使用 useState      | 使用 useReducer        |
+| ------------------ | ---------------------- |
+| 狀態分散在多個變數 | 狀態集中管理           |
+| 更新邏輯散落各處   | 更新邏輯集中在 reducer |
+| 難以測試           | reducer 可以單獨測試   |
+| 邏輯重複           | 邏輯集中，避免重複     |
+| 容易出錯           | 狀態更新可預測         |
+
+{% note success %}
+**重點：** `useReducer` 將所有狀態和更新邏輯集中管理，讓程式碼更清晰、更易於維護和測試。
+{% endnote %}
+
+### 實際應用：待辦事項
+以下將介紹一個「待辦事項（Todo List）」的完整範例，示範如何使用 `useReducer` 來集中管理多個相關狀態（如待辦清單、篩選條件），並將所有狀態更新邏輯統一寫在 reducer 裡。這個範例可以幫助你理解：當應用程式的狀態變得複雜時，`useReducer` 如何讓程式碼更有組織、易於維護與擴充。
+
+```javascript 待辦事項應用
+import React, { useReducer, useState } from 'react';
+
+// 1. 定義初始狀態
+const initialState = {
+  todos: [],
+  filter: 'all' // 'all' | 'active' | 'completed'
+};
+
+// 2. 定義 reducer
+function todoReducer(state, action) {
+  switch (action.type) {
     case 'ADD_TODO':
       return {
         ...state,
-        todos: [...state.todos, {
-          id: Date.now(),
-          text: action.payload,
-          completed: false
-        }]
+        todos: [
+          ...state.todos,
+          {
+            id: Date.now(),
+            text: action.payload,
+            completed: false
+          }
+        ]
       };
-      
+    
     case 'TOGGLE_TODO':
       return {
         ...state,
@@ -2736,37 +4166,45 @@ function todoReducer(state, action) {
             : todo
         )
       };
-      
+    
     case 'DELETE_TODO':
       return {
         ...state,
         todos: state.todos.filter(todo => todo.id !== action.payload)
       };
-      
+    
     case 'SET_FILTER':
-      return { ...state, filter: action.payload };
-      
+      return {
+        ...state,
+        filter: action.payload
+      };
+    
     case 'CLEAR_COMPLETED':
       return {
         ...state,
         todos: state.todos.filter(todo => !todo.completed)
       };
-      
+    
     default:
       return state;
   }
 }
 
+// 3. 在元件中使用
 function TodoApp() {
-  const [state, dispatch] = useReducer(todoReducer, todoInitialState);
-  const [inputValue, setInputValue] = React.useState('');
+  const [state, dispatch] = useReducer(todoReducer, initialState);
+  const [inputValue, setInputValue] = useState('');
   
-  // 過濾後的待辦事項
+  // 計算過濾後的待辦事項
   const filteredTodos = state.todos.filter(todo => {
     if (state.filter === 'active') return !todo.completed;
     if (state.filter === 'completed') return todo.completed;
-    return true; // 'all'
+    return true;
   });
+  
+  // 計算統計數字
+  const activeCount = state.todos.filter(t => !t.completed).length;
+  const completedCount = state.todos.filter(t => t.completed).length;
   
   const handleAddTodo = (e) => {
     e.preventDefault();
@@ -2780,37 +4218,31 @@ function TodoApp() {
     <div>
       <h2>待辦事項</h2>
       
+      {/* 新增待辦 */}
       <form onSubmit={handleAddTodo}>
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="新增待辦事項。.."
+          placeholder="輸入待辦事項。.."
         />
         <button type="submit">新增</button>
       </form>
       
+      {/* 篩選按鈕 */}
       <div>
-        <button 
-          className={state.filter === 'all' ? 'active' : ''}
-          onClick={() => dispatch({ type: 'SET_FILTER', payload: 'all' })}
-        >
+        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'all' })}>
           全部 ({state.todos.length})
         </button>
-        <button 
-          className={state.filter === 'active' ? 'active' : ''}
-          onClick={() => dispatch({ type: 'SET_FILTER', payload: 'active' })}
-        >
-          待完成 ({state.todos.filter(t => !t.completed).length})
+        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'active' })}>
+          待完成 ({activeCount})
         </button>
-        <button 
-          className={state.filter === 'completed' ? 'active' : ''}
-          onClick={() => dispatch({ type: 'SET_FILTER', payload: 'completed' })}
-        >
-          已完成 ({state.todos.filter(t => t.completed).length})
+        <button onClick={() => dispatch({ type: 'SET_FILTER', payload: 'completed' })}>
+          已完成 ({completedCount})
         </button>
       </div>
       
+      {/* 待辦列表 */}
       <ul>
         {filteredTodos.map(todo => (
           <li key={todo.id}>
@@ -2819,9 +4251,7 @@ function TodoApp() {
               checked={todo.completed}
               onChange={() => dispatch({ type: 'TOGGLE_TODO', payload: todo.id })}
             />
-            <span style={{ 
-              textDecoration: todo.completed ? 'line-through' : 'none' 
-            }}>
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
               {todo.text}
             </span>
             <button onClick={() => dispatch({ type: 'DELETE_TODO', payload: todo.id })}>
@@ -2831,7 +4261,8 @@ function TodoApp() {
         ))}
       </ul>
       
-      {state.todos.some(t => t.completed) && (
+      {/* 清除已完成 */}
+      {completedCount > 0 && (
         <button onClick={() => dispatch({ type: 'CLEAR_COMPLETED' })}>
           清除已完成
         </button>
@@ -2839,127 +4270,2184 @@ function TodoApp() {
     </div>
   );
 }
+
+export default TodoApp;
 ```
 
+**說明：**
+- 所有狀態更新邏輯都集中在 `todoReducer` 中
+- 透過 `dispatch` 派發不同的 action 來更新狀態
+- reducer 可以單獨測試，不依賴元件
+- 狀態更新邏輯清晰、可預測
+
+### useReducer 的測試
+`useReducer` 的一大優勢是 reducer 函式可以進行「單元測試」（unit test），也就是可以獨立於 React 元件之外，針對 reducer 的輸入與輸出進行自動化測試，確保狀態更新邏輯正確無誤。
+
+```javascript Reducer 測試範例
+// todoReducer.test.js
+describe('todoReducer', () => {
+  test('ADD_TODO 應該新增待辦事項', () => {
+    const initialState = { todos: [], filter: 'all' };
+    const action = { type: 'ADD_TODO', payload: '買牛奶' };
+    
+    const newState = todoReducer(initialState, action);
+    
+    expect(newState.todos).toHaveLength(1);
+    expect(newState.todos[0].text).toBe('買牛奶');
+    expect(newState.todos[0].completed).toBe(false);
+  });
+  
+  test('TOGGLE_TODO 應該切換完成狀態', () => {
+    const initialState = {
+      todos: [{ id: 1, text: '買牛奶', completed: false }],
+      filter: 'all'
+    };
+    const action = { type: 'TOGGLE_TODO', payload: 1 };
+    
+    const newState = todoReducer(initialState, action);
+    
+    expect(newState.todos[0].completed).toBe(true);
+  });
+  
+  test('DELETE_TODO 應該刪除待辦事項', () => {
+    const initialState = {
+      todos: [
+        { id: 1, text: '買牛奶', completed: false },
+        { id: 2, text: '寫程式', completed: false }
+      ],
+      filter: 'all'
+    };
+    const action = { type: 'DELETE_TODO', payload: 1 };
+    
+    const newState = todoReducer(initialState, action);
+    
+    expect(newState.todos).toHaveLength(1);
+    expect(newState.todos[0].id).toBe(2);
+  });
+});
+```
+
+### useReducer vs useState 選擇指南
+在 React 專案中，`useState` 和 `useReducer` 都是常用的狀態管理 Hook，但它們適用的情境有所不同。初學者常常會疑惑：什麼時候該用 `useState`，什麼時候又該選擇 `useReducer`？本節將從實務角度，幫助你判斷兩者的適用時機，並透過對比表格與範例，讓你快速掌握選擇原則。
+
+| 適用情境     | useState                   | useReducer                         |
+| ------------ | -------------------------- | ---------------------------------- |
+| 狀態結構     | 單一值（字串、數字、布林） | 複雜物件、陣列、多個子狀態         |
+| 狀態間關聯   | 無                         | 有（多個狀態需同時考慮一致性）     |
+| 更新邏輯     | 直接設定新值，邏輯簡單     | 依賴前一狀態、條件分支多、邏輯複雜 |
+| 狀態管理     | 分散於多個 useState        | 集中於一個 reducer                 |
+| 事件處理     | 單一事件對應單一狀態       | 多個事件需操作同一組狀態           |
+| 跨元件共用   | 不建議                     | 可將 reducer 抽出共用              |
+| 可測試性     | 不易針對狀態更新單獨測試   | reducer 可獨立單元測試             |
+| 適合元件規模 | 小型、簡單元件             | 中大型、邏輯複雜元件               |
+
 {% note info %}
-**useReducer vs useState 選擇時機：**
-- 複雜狀態邏輯（多個子值或下一個狀態依賴之前的狀態）
-- 狀態更新邏輯需要在多個元件間共享
-- 需要更容易測試的狀態更新邏輯
-- 狀態更新涉及複雜的業務邏輯
+**選擇建議：**
+- 狀態簡單、邏輯單純時，優先用 `useState`
+- 狀態多、邏輯複雜、需集中管理時，建議用 `useReducer`
+- 可先用 `useState`，日後需求變複雜再重構成 `useReducer`
 {% endnote %}
 
-## useImperativeHandle
+**對比範例：**
+```javascript useState vs useReducer
+// ✅ 適合用 useState
+function SimpleCounter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
 
-`useImperativeHandle` 讓你可以自定義暴露給父元件的實例值，通常與 `forwardRef` 一起使用。
-
-```javascript useImperativeHandle 基本用法
-import React, { useRef, useImperativeHandle, forwardRef, useState } from 'react';
-
-// 自定義輸入元件
-const CustomInput = forwardRef((props, ref) => {
-  const inputRef = useRef();
-  const [value, setValue] = useState('');
+// ✅ 適合用 useReducer
+function ComplexForm() {
+  const [state, dispatch] = useReducer(formReducer, {
+    name: '',
+    email: '',
+    age: 0,
+    errors: {},
+    submitting: false
+  });
   
-  // 自定義暴露給父元件的方法
-  useImperativeHandle(ref, () => ({
-    // 自定義 focus 方法
-    focus: () => {
-      inputRef.current.focus();
-    },
-    
-    // 自定義清空方法
-    clear: () => {
-      setValue('');
-      inputRef.current.focus();
-    },
-    
-    // 自定義設定值方法
-    setValue: (newValue) => {
-      setValue(newValue);
-    },
-    
-    // 自定義獲取值方法
-    getValue: () => {
-      return value;
-    },
-    
-    // 驗證輸入
-    validate: () => {
-      const isValid = value.length >= 3;
-      if (!isValid) {
-        inputRef.current.style.borderColor = 'red';
-      } else {
-        inputRef.current.style.borderColor = '';
-      }
-      return isValid;
+  // 複雜的表單邏輯。..
+}
+```
+
+### useReducer 最佳實踐
+當你開始使用 `useReducer` 時，遵循一些最佳實踐可以讓程式碼更易讀、更易維護、更不容易出錯。以下將介紹四個重要的實務技巧，幫助你寫出更專業、更穩健的 reducer 程式碼。
+
+#### Action 類型常數化
+將 action 類型常數化，可以有效避免拼寫錯誤（typo）帶來的 bug，並且讓 IDE 能夠自動補全，提升開發效率。這種做法也能集中管理所有 action 類型，讓專案結構更清晰，日後重構或維護時也會更加方便。
+
+```javascript Action 類型常數化
+// ❌ 不好的做法：直接使用字串
+dispatch({ type: 'ADD_TODO', payload: 'New todo' });
+dispatch({ type: 'ADD_TDOO', payload: 'New todo' }); // 拼寫錯誤，不會報錯
+
+// ✅ 好的做法：定義常數
+const ActionTypes = {
+  ADD_TODO: 'ADD_TODO',
+  TOGGLE_TODO: 'TOGGLE_TODO',
+  DELETE_TODO: 'DELETE_TODO',
+  SET_FILTER: 'SET_FILTER'
+};
+
+// 使用常數
+dispatch({ type: ActionTypes.ADD_TODO, payload: 'New todo' });
+dispatch({ type: ActionTypes.ADD_TDOO, payload: 'New todo' }); // 拼寫錯誤，IDE 會提示
+
+// 在 reducer 中也使用
+function todoReducer(state, action) {
+  switch (action.type) {
+    case ActionTypes.ADD_TODO:
+      // ...
+    case ActionTypes.TOGGLE_TODO:
+      // ...
+    default:
+      return state;
+  }
+}
+```
+
+#### 使用 Action Creator
+使用 Action Creator 可以集中管理 action 的創建邏輯，確保每個 action 的結構一致，也方便在建立 action 時加入預處理邏輯。這樣不僅能提升程式碼的可讀性，也讓維護和擴充 reducer 時更加簡單可靠。
+
+```javascript Action Creator
+// ❌ 不好的做法：每次都手動創建 action 物件
+dispatch({ type: 'ADD_TODO', payload: text });
+dispatch({ type: 'ADD_TODO', paylod: text }); // 拼寫錯誤
+dispatch({ type: 'ADD_TODO', data: text }); // 欄位名稱不一致
+
+// ✅ 好的做法：使用 action creator
+const actions = {
+  addTodo: (text) => ({ 
+    type: 'ADD_TODO', 
+    payload: text 
+  }),
+  
+  toggleTodo: (id) => ({ 
+    type: 'TOGGLE_TODO', 
+    payload: id 
+  }),
+  
+  deleteTodo: (id) => ({ 
+    type: 'DELETE_TODO', 
+    payload: id 
+  }),
+  
+  // 可以添加驗證邏輯
+  setFilter: (filter) => {
+    const validFilters = ['all', 'active', 'completed'];
+    if (!validFilters.includes(filter)) {
+      console.warn(`Invalid filter: ${filter}`);
+      return { type: 'SET_FILTER', payload: 'all' };
     }
-  }));
-  
-  return (
-    <input
-      ref={inputRef}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder="至少輸入 3 個字元"
-      {...props}
-    />
-  );
-});
+    return { type: 'SET_FILTER', payload: filter };
+  }
+};
 
-// 父元件
-function ParentComponent() {
-  const customInputRef = useRef();
-  
-  const handleFocus = () => {
-    customInputRef.current.focus();
+// 使用 action creator
+dispatch(actions.addTodo('Buy milk'));
+dispatch(actions.toggleTodo(123));
+dispatch(actions.setFilter('active'));
+```
+
+**進階用法：結合 TypeScript**
+
+```typescript
+// TypeScript 版本
+type Action =
+  | { type: 'ADD_TODO'; payload: string }
+  | { type: 'TOGGLE_TODO'; payload: number }
+  | { type: 'DELETE_TODO'; payload: number };
+
+const actions = {
+  addTodo: (text: string): Action => ({ 
+    type: 'ADD_TODO', 
+    payload: text 
+  }),
+  toggleTodo: (id: number): Action => ({ 
+    type: 'TOGGLE_TODO', 
+    payload: id 
+  })
+};
+```
+
+#### Reducer 必須是純函式
+簡單來說，純函式（Pure Function）指的是「相同的輸入，永遠會產生相同的輸出，且不會產生任何副作用（不會改變外部狀態）」。在 React 中，reducer 必須保持純淨，因為 React 可能會在渲染或優化過程中多次執行 reducer。如果 reducer 不是純函式，會導致狀態不可預測，容易產生難以追蹤的 bug，也會讓測試、除錯（例如時間旅行除錯）變得困難。因此，務必確保 reducer 不會直接修改傳入的 state，也不應該有任何副作用。
+
+```javascript Reducer 保持純淨
+// ❌ 錯誤：直接修改原始 state
+function badReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      state.todos.push(action.payload); // 直接修改 state
+      return state; // 回傳同一個物件參考
+    
+    case 'SORT_TODOS':
+      state.todos.sort(); // 直接修改陣列
+      return state;
+  }
+}
+
+// ✅ 正確：總是返回新的物件
+function goodReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return {
+        ...state,
+        todos: [...state.todos, action.payload] // 創建新陣列
+      };
+    
+    case 'SORT_TODOS':
+      return {
+        ...state,
+        todos: [...state.todos].sort() // 先複製再排序
+      };
+    
+    case 'UPDATE_TODO':
+      return {
+        ...state,
+        todos: state.todos.map(todo =>
+          todo.id === action.payload.id
+            ? { ...todo, ...action.payload.updates } // 創建新物件
+            : todo
+        )
+      };
+  }
+}
+```
+
+**常見陷阱：**
+
+```javascript
+// ❌ 錯誤：忘記複製巢狀物件
+case 'UPDATE_USER_ADDRESS':
+  return {
+    ...state,
+    user: {
+      ...state.user,
+      address: action.payload // 如果 address 是物件，應該也要展開
+    }
   };
-  
-  const handleClear = () => {
-    customInputRef.current.clear();
+
+// ✅ 正確：深層複製
+case 'UPDATE_USER_ADDRESS':
+  return {
+    ...state,
+    user: {
+      ...state.user,
+      address: {
+        ...state.user.address,
+        ...action.payload
+      }
+    }
   };
+```
+
+#### 處理未知的 Action
+處理未知的 Action 可以幫助我們及早發現錯誤，避免靜默失敗，並提供清楚的錯誤訊息，讓除錯過程更加方便。
+
+```javascript 處理未知 Action
+// ❌ 不好：靜默失敗
+function badReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return { ...state, todos: [...state.todos, action.payload] };
+    default:
+      return state; // 什麼都不做，可能隱藏錯誤
+  }
+}
+
+// ✅ 好：記錄警告
+function goodReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return { ...state, todos: [...state.todos, action.payload] };
+    
+    default:
+      console.warn(`Unknown action type: ${action.type}`, action);
+      return state;
+  }
+}
+
+// ✅ 更好：開發環境拋出錯誤
+function betterReducer(state, action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return { ...state, todos: [...state.todos, action.payload] };
+    
+    default:
+      if (process.env.NODE_ENV === 'development') {
+        throw new Error(`Unknown action type: ${action.type}`);
+      }
+      console.warn(`Unknown action type: ${action.type}`);
+      return state;
+  }
+}
+```
+
+#### 完整範例：結合所有最佳實踐
+我們已經學會如何用 `useReducer` 管理複雜狀態，並介紹了 reducer 的設計原則。接下來，讓我們結合所有最佳實踐，打造一個更完整、可維護性高的 `useReducer` 範例。這個範例會示範：
+
+- 如何定義 Action 類型常數，避免字串錯誤
+- 使用 Action Creator 統一產生 action 物件
+- 在 reducer 中處理未知的 action，提升除錯體驗
+- 保持 reducer 純淨，確保每次都回傳新的狀態物件
+
+這些技巧能讓你的 React 狀態管理更安全、可預測，也更容易維護。
+
+```javascript 最佳實踐完整範例
+// 1. 定義 Action 類型常數
+const ActionTypes = {
+  ADD_TODO: 'ADD_TODO',
+  TOGGLE_TODO: 'TOGGLE_TODO',
+  DELETE_TODO: 'DELETE_TODO'
+};
+
+// 2. 定義 Action Creators
+const actions = {
+  addTodo: (text) => ({
+    type: ActionTypes.ADD_TODO,
+    payload: text.trim()
+  }),
+  toggleTodo: (id) => ({
+    type: ActionTypes.TOGGLE_TODO,
+    payload: id
+  }),
+  deleteTodo: (id) => ({
+    type: ActionTypes.DELETE_TODO,
+    payload: id
+  })
+};
+
+// 3. Reducer 保持純淨 + 4. 處理未知 Action
+function todoReducer(state, action) {
+  switch (action.type) {
+    case ActionTypes.ADD_TODO:
+      // 保持純淨：返回新物件
+      return {
+        ...state,
+        todos: [
+          ...state.todos,
+          {
+            id: Date.now(),
+            text: action.payload,
+            completed: false
+          }
+        ]
+      };
+    
+    case ActionTypes.TOGGLE_TODO:
+      return {
+        ...state,
+        todos: state.todos.map(todo =>
+          todo.id === action.payload
+            ? { ...todo, completed: !todo.completed }
+            : todo
+        )
+      };
+    
+    case ActionTypes.DELETE_TODO:
+      return {
+        ...state,
+        todos: state.todos.filter(todo => todo.id !== action.payload)
+      };
+    
+    default:
+      // 處理未知 action
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Unknown action type: ${action.type}`);
+      }
+      return state;
+  }
+}
+
+// 在元件中使用
+function TodoApp() {
+  const [state, dispatch] = useReducer(todoReducer, { todos: [] });
   
-  const handleValidate = () => {
-    const isValid = customInputRef.current.validate();
-    alert(isValid ? '驗證通過' : '請輸入至少 3 個字元');
-  };
-  
-  const handleGetValue = () => {
-    const value = customInputRef.current.getValue();
-    alert(`當前值：${value}`);
+  const handleAddTodo = (text) => {
+    dispatch(actions.addTodo(text)); // 使用 action creator
   };
   
   return (
     <div>
-      <h3>自定義輸入元件</h3>
-      <CustomInput ref={customInputRef} />
+      {/* UI */}
+    </div>
+  );
+}
+```
+
+{% note success %}
+**總結：**
+遵循這四個最佳實踐，可以讓你的 `useReducer` 程式碼：
+- ✅ 更不容易出錯（Action 類型常數化）
+- ✅ 更易於維護（Action Creator）
+- ✅ 更可預測（純函式）
+- ✅ 更易於除錯（處理未知 Action）
+{% endnote %}
+
+### useReducer 與 Redux 的關係
+
+你可能會發現 `useReducer` 的用法跟 Redux 很像，這不是巧合！事實上，`useReducer` 就是 React 官方參考 Redux 的設計理念，內建到 React 中的狀態管理方案。讓我們來釐清它們的關係。
+
+#### 什麼是 Redux？
+
+Redux 是一個獨立的狀態管理庫，在 React 生態系統中非常流行。它採用「單一資料源」和「單向資料流」的設計模式，讓大型應用的狀態管理變得可預測、易於追蹤。
+
+**Redux 的核心概念：**
+- **Store**：全域的狀態容器
+- **Action**：描述發生了什麼事的物件
+- **Reducer**：決定如何更新狀態的純函式
+- **Dispatch**：派發 action 的方法
+
+這些概念是不是跟 `useReducer` 很像？
+
+#### useReducer vs Redux 比較
+兩者的設計模式和用法看起來非常相似。事實上 `useReducer` 可以視為 React 內建的「本地狀態管理」方案，而 Redux 則是專為「全域狀態管理」設計的第三方函式庫。如果你的狀態只需要在單一元件或小範圍元件樹中共享，建議優先使用 `useReducer`。只有當狀態需要跨多個頁面或元件全域共享時，再考慮導入 Redux 等外部狀態管理工具。
+
+| 特性           | useReducer         | Redux                              |
+| -------------- | ------------------ | ---------------------------------- |
+| **來源**       | React 內建 Hook    | 第三方狀態管理庫                   |
+| **安裝**       | 不需要，React 內建 | 需要安裝 `redux` 和 `react-redux`  |
+| **作用範圍**   | 單一元件或元件樹   | 整個應用程式的全域狀態             |
+| **學習曲線**   | 較簡單，概念較少   | 較複雜，需要學習更多概念           |
+| **DevTools**   | 無專用工具         | 有 Redux DevTools（時間旅行除錯）  |
+| **中間件**     | 無                 | 支援（如 redux-thunk、redux-saga） |
+| **非同步處理** | 需自行實作         | 透過中間件處理                     |
+| **適用場景**   | 元件內的複雜狀態   | 跨元件的全域狀態                   |
+
+**使用 useReducer（元件內狀態管理）：**
+
+```javascript useReducer 範例
+import React, { useReducer } from 'react';
+
+// Reducer
+function counterReducer(state, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { count: state.count + 1 };
+    case 'DECREMENT':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+// 在元件中使用
+function Counter() {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+  
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'INCREMENT' })}>+</button>
+      <button onClick={() => dispatch({ type: 'DECREMENT' })}>-</button>
+    </div>
+  );
+}
+```
+
+**使用 Redux（全域狀態管理）：**
+
+```javascript Redux 範例
+// store.js
+import { createStore } from 'redux';
+
+// Reducer（跟 useReducer 一樣的概念）
+function counterReducer(state = { count: 0 }, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return { count: state.count + 1 };
+    case 'DECREMENT':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+// 創建全域 Store
+const store = createStore(counterReducer);
+
+export default store;
+
+// App.js
+import { Provider } from 'react-redux';
+import store from './store';
+
+function App() {
+  return (
+    <Provider store={store}>
+      <Counter />
+    </Provider>
+  );
+}
+
+// Counter.js
+import { useSelector, useDispatch } from 'react-redux';
+
+function Counter() {
+  // 從全域 store 取得狀態
+  const count = useSelector(state => state.count);
+  const dispatch = useDispatch();
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => dispatch({ type: 'INCREMENT' })}>+</button>
+      <button onClick={() => dispatch({ type: 'DECREMENT' })}>-</button>
+    </div>
+  );
+}
+```
+
+#### useReducer + Context = 簡易版 Redux
+如果需要跨元件共享狀態，可以結合 `useReducer` 和 `useContext`，實現類似 Redux 的效果：
+
+```javascript useReducer + Context
+import React, { useReducer, useContext, createContext } from 'react';
+
+// 1. 創建 Context
+const StoreContext = createContext();
+
+// 2. Reducer
+function appReducer(state, action) {
+  switch (action.type) {
+    case 'SET_USER':
+      return { ...state, user: action.payload };
+    case 'SET_THEME':
+      return { ...state, theme: action.payload };
+    default:
+      return state;
+  }
+}
+
+// 3. Provider 元件
+function AppProvider({ children }) {
+  const [state, dispatch] = useReducer(appReducer, {
+    user: null,
+    theme: 'light'
+  });
+  
+  return (
+    <StoreContext.Provider value={{ state, dispatch }}>
+      {children}
+    </StoreContext.Provider>
+  );
+}
+
+// 4. 自訂 Hook 方便使用
+function useAppStore() {
+  return useContext(StoreContext);
+}
+
+// 5. 在任何子元件中使用
+function UserProfile() {
+  const { state, dispatch } = useAppStore();
+  
+  return (
+    <div>
+      <p>User: {state.user?.name || 'Guest'}</p>
+      <p>Theme: {state.theme}</p>
+      <button onClick={() => dispatch({ 
+        type: 'SET_USER', 
+        payload: { name: 'Loki' } 
+      })}>
+        Login
+      </button>
+    </div>
+  );
+}
+
+// 6. 使用 Provider 包裹應用
+function App() {
+  return (
+    <AppProvider>
+      <UserProfile />
+    </AppProvider>
+  );
+}
+```
+
+#### 總結
+**useReducer 與 Redux 的關係：**
+
+- `useReducer` 是 React 內建的狀態管理 Hook，靈感來自 Redux
+- 兩者都使用 **Reducer 模式**（State + Action → New State）
+- Redux 是獨立的全域狀態管理庫，功能更強大但也更複雜
+- `useReducer` 適合**元件內**的複雜狀態管理
+- Redux 適合**應用程式級**的全域狀態管理
+- 可以用 `useReducer` + `useContext` 實現簡易版的 Redux
+- 學會 `useReducer` 後，學習 Redux 會更容易
+
+**建議：**
+- 先學好 `useReducer`，理解 Reducer 模式
+- 簡單應用用 `useReducer` + `useContext` 就夠了
+- 大型應用或需要進階功能時才考慮 Redux
+
+## useImperativeHandle
+`useImperativeHandle` 讓你可以自定義暴露給父元件的實例值，通常與 `forwardRef` 一起使用。
+
+在 React 中，父元件通常透過 props 與子元件溝通（資料向下傳遞），子元件透過 callback 向父元件回報（事件向上傳遞）。這種「單向資料流」的設計讓元件更容易理解和維護。然而，在某些特殊情況下，父元件需要「直接控制」子元件的內部功能（例如讓輸入框聚焦、播放影片、重置表單等），這時候就需要 `useImperativeHandle`。
+
+### 問題案例：父元件無法直接控制子元件
+
+假設我們想製作一個「可重複使用的影片播放器元件」，父元件需要能夠控制播放、暫停、跳轉等功能。如果只用 props，會遇到什麼問題？
+
+```javascript 問題範例：無法直接控制子元件
+import React, { useState, useRef } from 'react';
+
+// 子元件：影片播放器
+function VideoPlayer({ src }) {
+  const videoRef = useRef();
+  
+  // 這些方法只能在元件內部使用，父元件無法呼叫
+  const play = () => videoRef.current.play();
+  const pause = () => videoRef.current.pause();
+  const reset = () => {
+    videoRef.current.currentTime = 0;
+    videoRef.current.pause();
+  };
+  
+  return (
+    <div>
+      <video ref={videoRef} src={src} width="400" />
+      {/* 只能透過內部按鈕控制 */}
+      <button onClick={play}>播放</button>
+      <button onClick={pause}>暫停</button>
+      <button onClick={reset}>重置</button>
+    </div>
+  );
+}
+
+// 父元件
+function App() {
+  // ❌ 問題：父元件無法控制子元件的播放器
+  // 無法在父元件層級統一控制多個播放器
+  
+  return (
+    <div>
+      <h2>影片 1</h2>
+      <VideoPlayer src="video1.mp4" />
       
-      <div style={{ marginTop: '10px' }}>
-        <button onClick={handleFocus}>Focus</button>
-        <button onClick={handleClear}>清空</button>
-        <button onClick={handleValidate}>驗證</button>
-        <button onClick={handleGetValue}>獲取值</button>
+      <h2>影片 2</h2>
+      <VideoPlayer src="video2.mp4" />
+      
+      {/* 如果想在這裡放一個「全部暫停」按鈕，該怎麼做？ */}
+    </div>
+  );
+}
+```
+
+**問題分析：**
+- 子元件的控制方法（play、pause、reset）只存在於子元件內部
+- 父元件無法直接呼叫這些方法
+- 如果用 props 傳遞控制訊號，需要複雜的狀態同步邏輯
+- 當有多個子元件時，父元件難以統一控制
+
+### 前置知識 1：ref 屬性的特殊性
+在前面 `useRef` 章節，我們學過：
+- 使用 `useRef()` 創建 ref 物件
+- 將 ref 綁定到原生 DOM 元素的 `ref` 屬性：`<input ref={inputRef} />`
+- 透過 `ref.current` 存取 DOM 元素
+
+在原生 HTML 元素（如 `<input>`、`<video>` 等）上直接使用 `ref` 完全沒問題，父元件可以透過 `ref` 直接操作這些 DOM 元素。但如果你將 `ref` 指定給自訂元件（例如函式元件），React 並不會把 `ref` 當作一般 props 傳遞進去。這是因為 `ref`（和 `key` 一樣）是 React 的特殊保留屬性，**它們只會被 React 處理，不會自動出現在子元件的 props 物件中**。因此，父元件無法僅靠 props 傳遞 `ref` 來直接操作子元件內部的 DOM 或方法。如果想讓自訂元件支援 ref，必須使用 `forwardRef` 來讓函式元件能夠接收 ref，否則 ref 不會自動傳遞到子元件內部。
+
+讓我們看看會發生什麼：
+
+```javascript ref 無法像一般 props 傳遞
+import React, { useRef } from 'react';
+
+// 子元件
+function MyInput(props) {
+  console.log('props.ref:', props.ref); // undefined
+  console.log('props:', props); // { placeholder: "請輸入文字" }
+  // ❌ ref 不在 props 裡面！
+  
+  return <input type="text" placeholder={props.placeholder} />;
+}
+
+// 父元件
+function App() {
+  const inputRef = useRef(null);
+  
+  const handleFocus = () => {
+    console.log('inputRef.current:', inputRef.current); // null
+    // ❌ inputRef.current 是 null，因為 ref 沒有成功綁定
+    inputRef.current?.focus();
+  };
+  
+  return (
+    <div>
+      <MyInput ref={inputRef} placeholder="請輸入文字" />
+      <button onClick={handleFocus}>聚焦輸入框</button>
+    </div>
+  );
+}
+```
+
+**問題分析：**
+1. 父元件嘗試傳遞 `ref={inputRef}` 給 `MyInput`
+2. 但在 `MyInput` 的 props 中找不到 ref
+3. `inputRef.current` 始終是 `null`
+4. 無法存取到子元件內部的 DOM 元素
+
+React 這樣設計是有原因的：
+
+1. **避免混淆**：`ref` 是用來存取 DOM 或元件實例的，不是用來傳遞資料的
+2. **保持一致性**：無論是原生 DOM 元素還是自訂元件，`ref` 的行為應該一致
+3. **封裝性**：元件應該透過 props 和 callback 溝通，而不是直接暴露內部結構
+
+有時候，我們會遇到需要讓父元件直接操作子元件內部 DOM 元素的情境，例如讓父元件可以聚焦輸入框、控制影片播放等。這時候，單純傳遞 ref 是無法實現的。這正是 `forwardRef` 派上用場的時機！`forwardRef` 是 React 提供的特殊 API，允許函式元件「接收」來自父元件的 ref，並將其「轉發」給內部的 DOM 元素或其他子元件。這樣父元件就能安全地操作子元件內部的 DOM 結構。
+
+#### 使用場景對比
+
+讓我們用一個實際的表單驗證情境，展示三種不同的做法：
+
+**情境：製作一個登入表單，提交時驗證輸入框，若為空則聚焦到該輸入框。**
+
+```javascript 情況 1：直接使用原生 DOM 元素（可行）
+import React, { useRef } from 'react';
+
+function LoginForm() {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // ✅ 可以直接存取原生元素
+    if (!emailRef.current.value) {
+      alert('請輸入電子郵件');
+      emailRef.current.focus(); // ✅ 可以聚焦
+      return;
+    }
+    
+    if (!passwordRef.current.value) {
+      alert('請輸入密碼');
+      passwordRef.current.focus(); // ✅ 可以聚焦
+      return;
+    }
+    
+    alert('登入成功！');
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>電子郵件：</label>
+        <input 
+          ref={emailRef}  // ✅ 原生元素可以直接接收 ref
+          type="email" 
+          placeholder="請輸入電子郵件" 
+        />
+      </div>
+      
+      <div>
+        <label>密碼：</label>
+        <input 
+          ref={passwordRef}  // ✅ 原生元素可以直接接收 ref
+          type="password" 
+          placeholder="請輸入密碼" 
+        />
+      </div>
+      
+      <button type="submit">登入</button>
+    </form>
+  );
+}
+```
+
+**問題：如果我們想把輸入框封裝成可重用的元件呢？**
+
+```javascript 情況 2：封裝成元件後（無法運作）
+import React, { useRef } from 'react';
+
+// 封裝的輸入框元件
+function CustomInput(props) {
+  return (
+    <div style={{ marginBottom: '10px' }}>
+      <label>{props.label}</label>
+      <input 
+        type={props.type} 
+        placeholder={props.placeholder} 
+      />
+    </div>
+  );
+}
+
+function LoginForm() {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // ❌ emailRef.current 是 null！
+    console.log('emailRef.current:', emailRef.current); // null
+    
+    if (!emailRef.current?.value) {
+      alert('請輸入電子郵件');
+      emailRef.current?.focus(); // ❌ 無法執行
+      return;
+    }
+    
+    if (!passwordRef.current?.value) {
+      alert('請輸入密碼');
+      passwordRef.current?.focus(); // ❌ 無法執行
+      return;
+    }
+    
+    alert('登入成功！');
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <CustomInput 
+        ref={emailRef}  // ❌ ref 不會傳遞給 CustomInput
+        label="電子郵件："
+        type="email"
+        placeholder="請輸入電子郵件"
+      />
+      
+      <CustomInput 
+        ref={passwordRef}  // ❌ ref 不會傳遞給 CustomInput
+        label="密碼："
+        type="password"
+        placeholder="請輸入密碼"
+      />
+      
+      <button type="submit">登入</button>
+    </form>
+  );
+}
+
+// ❌ 結果：無法驗證和聚焦，因為 ref 沒有成功綁定
+```
+
+**解決方案：使用 forwardRef**
+
+```javascript 情況 3：使用 forwardRef（成功運作）
+import React, { useRef, forwardRef } from 'react';
+
+// 使用 forwardRef 包裝元件
+const CustomInput = forwardRef((props, ref) => {
+  return (
+    <div style={{ marginBottom: '10px' }}>
+      <label>{props.label}</label>
+      <input 
+        ref={ref}  // ✅ 將 ref 轉發到內部的 input
+        type={props.type} 
+        placeholder={props.placeholder} 
+      />
+    </div>
+  );
+});
+
+function LoginForm() {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // ✅ 現在可以存取到 input 元素了！
+    console.log('emailRef.current:', emailRef.current); // <input> 元素
+    
+    if (!emailRef.current.value) {
+      alert('請輸入電子郵件');
+      emailRef.current.focus(); // ✅ 可以聚焦
+      return;
+    }
+    
+    if (!passwordRef.current.value) {
+      alert('請輸入密碼');
+      passwordRef.current.focus(); // ✅ 可以聚焦
+      return;
+    }
+    
+    alert('登入成功！');
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <CustomInput 
+        ref={emailRef}  // ✅ 透過 forwardRef 可以接收 ref
+        label="電子郵件："
+        type="email"
+        placeholder="請輸入電子郵件"
+      />
+      
+      <CustomInput 
+        ref={passwordRef}  // ✅ 透過 forwardRef 可以接收 ref
+        label="密碼："
+        type="password"
+        placeholder="請輸入密碼"
+      />
+      
+      <button type="submit">登入</button>
+    </form>
+  );
+}
+
+// ✅ 結果：成功驗證和聚焦！
+```
+
+**三種情況總結：**
+
+| 情況       | 做法                      | 結果       | 使用時機                 |
+| ---------- | ------------------------- | ---------- | ------------------------ |
+| **情況 1** | 直接使用原生 DOM          | ✅ 可以存取 | 簡單場景，不需要封裝元件 |
+| **情況 2** | 封裝元件但不用 forwardRef | ❌ 無法存取 | 會遇到問題，ref 不會傳遞 |
+| **情況 3** | 使用 forwardRef           | ✅ 可以存取 | 製作可重用元件時必須使用 |
+
+{% note warning %}
+**重點整理：**
+- `ref` 在 React 中是保留屬性，不會傳遞到 props
+- 原生 DOM 元素可以直接接收 ref
+- 自訂函式元件無法直接接收 ref
+- 需要使用 `forwardRef` 才能讓函式元件接收 ref
+- 這是學習 `useImperativeHandle` 的必要前提
+{% endnote %}
+
+### 前置知識 2：React.forwardRef
+
+前面我們已經說明過 ref 在 React 中的特殊性：ref 並不會像一般 props 一樣自動傳遞給函式元件。這裡再次強調，若直接將 ref 傳給函式元件，ref 不會進入 props，導致父元件無法取得子元件的 DOM 參考。因此，若要讓函式元件支援 ref，必須使用 `forwardRef`。接下來我們會用實際範例說明這個現象與解決方式。
+
+```javascript 問題：ref 無法直接傳遞給函式元件
+import React, { useRef } from 'react';
+
+// 子元件（函式元件）
+function MyInput(props) {
+  // ❌ 無法接收到 ref！
+  console.log(props.ref); // undefined
+  
+  return <input type="text" />;
+}
+
+// 父元件
+function App() {
+  const inputRef = useRef();
+  
+  const handleFocus = () => {
+    inputRef.current.focus(); // ❌ 這會出錯！
+  };
+  
+  return (
+    <div>
+      <MyInput ref={inputRef} />
+      <button onClick={handleFocus}>聚焦輸入框</button>
+    </div>
+  );
+}
+```
+
+**問題分析：**
+- `ref` 在 React 中是保留字，不會傳遞到 `props` 中
+- 函式元件預設無法接收 ref
+- 父元件無法透過 ref 存取子元件內部的 DOM 元素
+
+#### forwardRef 解決方案
+
+`React.forwardRef` 讓函式元件能夠接收 ref，並將它轉發到內部的 DOM 元素或其他元件。
+
+**語法結構：**
+```javascript
+const MyComponent = React.forwardRef((props, ref) => {
+  // 第一個參數：props
+  // 第二個參數：ref（從父元件傳來的）
+  
+  return <div ref={ref}>...</div>;
+});
+```
+
+**使用 forwardRef 修正範例：**
+
+```javascript forwardRef 基本用法
+import React, { useRef, forwardRef } from 'react';
+
+// 子元件：使用 forwardRef 包裝
+const MyInput = forwardRef((props, ref) => {
+  // ✅ 現在可以接收 ref 了！
+  return <input type="text" ref={ref} placeholder={props.placeholder} />;
+});
+
+// 父元件
+function App() {
+  const inputRef = useRef();
+  
+  const handleFocus = () => {
+    inputRef.current.focus(); // ✅ 成功！
+  };
+  
+  const handleClear = () => {
+    inputRef.current.value = ''; // ✅ 可以操作 DOM
+  };
+  
+  return (
+    <div>
+      <MyInput ref={inputRef} placeholder="請輸入文字" />
+      <button onClick={handleFocus}>聚焦</button>
+      <button onClick={handleClear}>清空</button>
+    </div>
+  );
+}
+```
+
+**執行結果：**
+1. 點擊「聚焦」→ 輸入框獲得焦點
+2. 點擊「清空」→ 輸入框內容被清空
+3. 父元件可以透過 ref 直接操作子元件內部的 DOM
+
+#### forwardRef 的運作方式
+下面的範例示範如何設計一個可被父元件直接操作的 input 元件，並說明相關的實作方式。
+
+```javascript forwardRef 詳細說明
+// 1. 使用 forwardRef 包裝元件
+const CustomButton = forwardRef((props, ref) => {
+  // props: 包含所有傳入的 props（但不包含 ref）
+  // ref: 父元件傳入的 ref
+  
+  const { children, onClick } = props;
+  
+  return (
+    <button 
+      ref={ref}  // 將 ref 轉發到實際的 DOM 元素
+      onClick={onClick}
+      style={{ padding: '10px 20px', fontSize: '16px' }}
+    >
+      {children}
+    </button>
+  );
+});
+
+// 2. 設定 displayName（方便在 React DevTools 中識別）
+CustomButton.displayName = 'CustomButton';
+
+// 3. 父元件使用
+function Parent() {
+  const buttonRef = useRef();
+  
+  const handleClick = () => {
+    // 可以存取 button 的 DOM 屬性和方法
+    console.log('Button width:', buttonRef.current.offsetWidth);
+    buttonRef.current.style.background = 'blue';
+  };
+  
+  return (
+    <div>
+      <CustomButton ref={buttonRef} onClick={handleClick}>
+        點我
+      </CustomButton>
+    </div>
+  );
+}
+```
+
+{% note info %}
+**為什麼要設定 displayName？**
+
+當使用 `forwardRef` 包裝元件時，如果沒有設定 `displayName`，在 React DevTools 中會顯示為通用的 `<ForwardRef>`，這會讓除錯變得困難。
+
+**效果對比：**
+- ❌ 沒有設定：React DevTools 顯示 `<ForwardRef>`
+- ✅ 設定後：React DevTools 顯示 `<CustomButton>`
+
+當專案中有多個 forwardRef 元件時（如 `CustomInput`、`CustomButton`、`CustomModal`），設定 displayName 可以幫助你快速識別是哪個元件。
+
+**如何安裝 React DevTools：**
+
+1. **Chrome 瀏覽器：**
+   - 開啟 [Chrome Web Store](https://chrome.google.com/webstore)
+   - 搜尋 "React Developer Tools"
+   - 點擊「加到 Chrome」安裝
+
+2. **Firefox 瀏覽器：**
+   - 開啟 [Firefox Add-ons](https://addons.mozilla.org/)
+   - 搜尋 "React Developer Tools"
+   - 點擊「加到 Firefox」安裝
+
+3. **Edge 瀏覽器：**
+   - 開啟 [Edge Add-ons](https://microsoftedge.microsoft.com/addons)
+   - 搜尋 "React Developer Tools"
+   - 點擊「取得」安裝
+
+**如何使用：**
+- 安裝後，打開瀏覽器的開發者工具（按 <kbd>F12</kbd>）
+- 你會看到新增了「⚛️ Components」和「⚛️ Profiler」兩個分頁
+- 在 Components 分頁中可以看到 React 元件樹結構
+- 這時候有設定 `displayName` 的元件會顯示有意義的名稱
+{% endnote %}
+
+#### forwardRef 的限制：破壞封裝性
+
+`forwardRef` 雖然解決了 ref 傳遞的問題，但它有一個嚴重的缺點：**父元件可以直接存取整個 DOM 節點，並進行任何操作**。這會破壞元件的封裝性，讓子元件無法控制父元件能做什麼。
+
+舉例來說，我們設計了一個漂亮的輸入框元件，只想讓父元件能夠「聚焦」，但使用 `forwardRef` 後，父元件卻可以直接修改樣式、移除元素，甚至做出我們不希望的操作。
+
+```javascript forwardRef 的封裝性問題
+import React, { useRef, forwardRef } from 'react';
+
+// 子元件：一個精心設計的輸入框
+const FancyInput = forwardRef((props, ref) => {
+  return (
+    <div style={{ 
+      padding: '10px', 
+      border: '2px solid blue',
+      borderRadius: '8px'
+    }}>
+      <label>{props.label}</label>
+      <input 
+        ref={ref}  // 直接將 ref 轉發到 input
+        type="text" 
+        placeholder={props.placeholder}
+        style={{ 
+          border: 'none',
+          outline: 'none',
+          fontSize: '16px'
+        }}
+      />
+    </div>
+  );
+});
+
+// 父元件
+function App() {
+  const inputRef = useRef();
+  
+  const handleGoodPractice = () => {
+    // ✅ 我們希望父元件做的事：聚焦
+    inputRef.current.focus();
+  };
+  
+  const handleBadPractice = () => {
+    // ❌ 但父元件也可以做這些事：
+    inputRef.current.style.display = 'none';  // 隱藏元素
+    inputRef.current.style.background = 'red'; // 改變樣式，破壞設計
+    inputRef.current.value = '';               // 直接清空值
+    inputRef.current.disabled = true;          // 禁用輸入框
+    inputRef.current.remove();                 // 甚至移除元素！
+  };
+  
+  return (
+    <div>
+      <FancyInput 
+        ref={inputRef} 
+        label="使用者名稱："
+        placeholder="請輸入使用者名稱"
+      />
+      <button onClick={handleGoodPractice}>聚焦（正常使用）</button>
+      <button onClick={handleBadPractice}>破壞元件（不當使用）</button>
+    </div>
+  );
+}
+```
+
+**問題分析：**
+
+使用 `forwardRef` 後，`inputRef.current` 直接指向子元件內部的 `<input>` DOM 元素，這意味著：
+
+1. **無法限制父元件的操作**
+   - 子元件設計者想：「我只想讓父元件能聚焦」
+   - 但實際上：父元件可以做任何 DOM 操作
+
+2. **破壞設計意圖**
+   - 子元件精心設計了樣式和行為
+   - 父元件可以直接修改，破壞一致性
+
+3. **容易引發 bug**
+   - 父元件可能誤操作（如 `.remove()`）
+   - 子元件無法防禦這些不當使用
+
+4. **違反封裝原則**
+   - 好的元件設計應該隱藏內部實作細節
+   - 只暴露必要的公開 API
+   - `forwardRef` 暴露了整個 DOM，失去了控制權
+
+**理想的解決方案應該是：**
+- ✅ 子元件可以**選擇**要暴露哪些方法（如 `focus`、`clear`）
+- ✅ 父元件**只能**呼叫這些暴露的方法
+- ✅ 子元件的內部實作受到保護
+- ✅ 維持良好的封裝性
+
+{% note warning %}
+**這就是為什麼需要 `useImperativeHandle`！**
+
+- `forwardRef` 解決了「能否傳遞 ref」的問題
+- `useImperativeHandle` 解決了「暴露什麼內容」的問題
+
+結合兩者，我們可以讓子元件既能接收 ref，又能精確控制父元件可以做什麼，達到安全且靈活的元件設計。
+{% endnote %}
+
+### useImperativeHandle 概念
+
+`useImperativeHandle` 讓你可以「自訂」子元件要暴露給父元件的方法或屬性。它必須搭配 `forwardRef` 使用，讓父元件能夠透過 ref 來呼叫子元件內部的特定功能，同時保持良好的封裝性。
+
+{% mermaid graph TB %}
+Parent["父元件<br/>Parent Component<br/><br/>const video1Ref = useRef()<br/>const video2Ref = useRef()"]
+
+subgraph Zone1["forwardRef 包裝的子元件"]
+  direction LR
+  
+  subgraph Child1Zone[" "]
+    direction TB
+    Child1["VideoPlayer 1<br/>接收 ref 參數"]
+    Child1 --> UseImp1["useImperativeHandle<br/>定義暴露方法"]
+    UseImp1 --> Methods1["暴露方法：<br/>play / pause<br/>reset / getCurrentTime"]
+  end
+  
+  subgraph Child2Zone[" "]
+    direction TB
+    Child2["VideoPlayer 2<br/>接收 ref 參數"]
+    Child2 --> UseImp2["useImperativeHandle<br/>定義暴露方法"]
+    UseImp2 --> Methods2["暴露方法：<br/>play / pause<br/>reset / getCurrentTime"]
+  end
+end
+
+Parent -- "① 傳遞 ref1" --> Child1
+Parent -- "① 傳遞 ref2" --> Child2
+Methods1 -. "③ ref1.current.play()" .-> Parent
+Methods2 -. "③ ref2.current.play()" .-> Parent
+
+style Parent fill:#ffe6e6
+style Child1 fill:#e6f3ff
+style Child2 fill:#e6f3ff
+style UseImp1 fill:#fff4e6
+style UseImp2 fill:#fff4e6
+style Methods1 fill:#e6ffe6
+style Methods2 fill:#e6ffe6
+style Zone1 fill:#f5f5f5
+style Child1Zone fill:#e6f3ff
+style Child2Zone fill:#e6f3ff
+{% endmermaid %}
+
+**核心概念：**
+- **forwardRef**：讓子元件能夠接收父元件傳來的 ref
+- **useImperativeHandle**：自訂 ref 所能呼叫的方法
+- **ref.current**：父元件透過 ref.current 呼叫子元件暴露的方法
+
+### useImperativeHandle 語法
+
+`useImperativeHandle` 讓你自訂當父元件使用 ref 時，子元件要暴露哪些方法或屬性。
+
+**語法結構：**
+```javascript
+useImperativeHandle(ref, createHandle, [dependencies])
+```
+
+**參數詳細說明：**
+- **ref**：
+從 `forwardRef` 接收的 ref 物件。這是父元件傳入的 ref，我們要在這個 ref 上掛載自訂的方法。
+
+- **createHandle**：
+一個函式，回傳一個物件，定義要暴露給父元件的方法或屬性。父元件可以透過 `ref.current.METHOD_NAME()` 來呼叫。
+
+- **dependencies**（可選）：
+依賴陣列。當依賴項改變時，會重新建立暴露的方法。類似 `useCallback` 的依賴陣列。
+
+**基本結構：**
+```javascript
+import { forwardRef, useImperativeHandle, useRef } from 'react';
+
+const MyComponent = forwardRef((props, ref) => {
+  // 1. 建立內部 ref（如果需要控制 DOM）
+  const internalRef = useRef();
+  
+  // 2. 使用 useImperativeHandle 定義暴露的方法
+  useImperativeHandle(ref, () => ({
+    // 暴露給父元件的方法
+    method1: () => {
+      // 實作。..
+    },
+    method2: () => {
+      // 實作。..
+    }
+  }));
+  
+  // 3. 回傳 JSX
+  return <div ref={internalRef}>...</div>;
+});
+```
+
+### 解決方案：使用 useImperativeHandle
+
+讓我們用 `useImperativeHandle` 來解決最早一開始前面的影片播放器問題：
+
+```javascript 使用 useImperativeHandle 解決
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+
+// 子元件：使用 forwardRef 接收 ref
+const VideoPlayer = forwardRef((props, ref) => {
+  const { src } = props;
+  const videoRef = useRef();
+  
+  // 使用 useImperativeHandle 暴露方法給父元件
+  useImperativeHandle(ref, () => ({
+    // 父元件可以呼叫這些方法
+    play: () => {
+      videoRef.current.play();
+    },
+    pause: () => {
+      videoRef.current.pause();
+    },
+    reset: () => {
+      videoRef.current.currentTime = 0;
+      videoRef.current.pause();
+    },
+    getCurrentTime: () => {
+      return videoRef.current.currentTime;
+    }
+  }));
+  
+  return (
+    <div>
+      <video ref={videoRef} src={src} width="400" />
+    </div>
+  );
+});
+
+// 父元件
+function App() {
+  const video1Ref = useRef();
+  const video2Ref = useRef();
+  
+  const handlePlayAll = () => {
+    // ✅ 父元件可以直接控制所有播放器
+    video1Ref.current.play();
+    video2Ref.current.play();
+  };
+  
+  const handlePauseAll = () => {
+    video1Ref.current.pause();
+    video2Ref.current.pause();
+  };
+  
+  const handleResetAll = () => {
+    video1Ref.current.reset();
+    video2Ref.current.reset();
+  };
+  
+  const handleGetTime = () => {
+    const time1 = video1Ref.current.getCurrentTime();
+    const time2 = video2Ref.current.getCurrentTime();
+    alert(`影片 1: ${time1.toFixed(2)}秒、n 影片 2: ${time2.toFixed(2)}秒`);
+  };
+  
+  return (
+    <div>
+      {/* 統一控制區 */}
+      <div>
+        <button onClick={handlePlayAll}>全部播放</button>
+        <button onClick={handlePauseAll}>全部暫停</button>
+        <button onClick={handleResetAll}>全部重置</button>
+        <button onClick={handleGetTime}>查看播放時間</button>
+      </div>
+      
+      <h2>影片 1</h2>
+      <VideoPlayer ref={video1Ref} src="video1.mp4" />
+      
+      <h2>影片 2</h2>
+      <VideoPlayer ref={video2Ref} src="video2.mp4" />
+    </div>
+  );
+}
+```
+
+**執行結果：**
+1. 點擊「全部播放」→ 兩個影片同時播放
+2. 點擊「全部暫停」→ 兩個影片同時暫停
+3. 點擊「全部重置」→ 兩個影片回到 0 秒並暫停
+4. 點擊「查看播放時間」→ 顯示兩個影片的當前播放時間
+
+{% note success %}
+**優點：**
+- ✅ 父元件可以直接控制子元件的內部功能
+- ✅ 子元件只暴露必要的方法，保持封裝性
+- ✅ 適合製作可重複使用的元件庫
+- ✅ 避免複雜的 props 和狀態同步
+{% endnote %}
+
+### 理解依賴陣列
+
+`useImperativeHandle` 的第三個參數是依賴陣列，用來控制何時重新建立暴露的方法。
+
+```javascript 依賴陣列範例
+const Counter = forwardRef((props, ref) => {
+  const [count, setCount] = useState(0);
+  const [step, setStep] = useState(1);
+  
+  // 依賴陣列包含 count 和 step
+  useImperativeHandle(ref, () => ({
+    increment: () => {
+      setCount(count + step); // 使用當前的 count 和 step
+    },
+    getCurrentCount: () => {
+      return count;
+    }
+  }), [count, step]); // 當 count 或 step 改變時，重新建立方法
+  
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <p>Step: {step}</p>
+      <button onClick={() => setStep(step + 1)}>增加步進值</button>
+    </div>
+  );
+});
+```
+
+{% note warning %}
+**注意：**
+如果暴露的方法中使用了狀態或 props，記得將它們加入依賴陣列，否則方法會使用到過時的值（閉包陷阱）。
+{% endnote %}
+
+### 實際應用：表單控制
+
+讓我們看一個更實用的例子：製作一個可從外部控制的表單元件。
+
+```javascript 表單控制範例
+import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
+
+// 可控制的表單元件
+const UserForm = forwardRef((props, ref) => {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    age: ''
+  });
+  const [errors, setErrors] = useState({});
+  
+  // 暴露給父元件的方法
+  useImperativeHandle(ref, () => ({
+    // 驗證表單
+    validate: () => {
+      const newErrors = {};
+      
+      if (!formData.username) {
+        newErrors.username = '請輸入使用者名稱';
+      }
+      
+      if (!formData.email) {
+        newErrors.email = '請輸入電子郵件';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        newErrors.email = '電子郵件格式錯誤';
+      }
+      
+      if (!formData.age) {
+        newErrors.age = '請輸入年齡';
+      } else if (formData.age < 18) {
+        newErrors.age = '年齡必須大於 18 歲';
+      }
+      
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+    },
+    
+    // 獲取表單資料
+    getData: () => {
+      return formData;
+    },
+    
+    // 重置表單
+    reset: () => {
+      setFormData({ username: '', email: '', age: '' });
+      setErrors({});
+    },
+    
+    // 設定表單資料
+    setData: (data) => {
+      setFormData(data);
+      setErrors({});
+    },
+    
+    // 聚焦到第一個錯誤欄位
+    focusFirstError: () => {
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        document.querySelector(`[name="${firstErrorField}"]`)?.focus();
+      }
+    }
+  }), [formData, errors]);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'age' ? Number(value) : value
+    }));
+    // 清除該欄位的錯誤
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+  };
+  
+  return (
+    <div>
+      <div>
+        <label>使用者名稱：</label>
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+        />
+        {errors.username && <span style={{ color: 'red' }}>{errors.username}</span>}
+      </div>
+      
+      <div>
+        <label>電子郵件：</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        {errors.email && <span style={{ color: 'red' }}>{errors.email}</span>}
+      </div>
+      
+      <div>
+        <label>年齡：</label>
+        <input
+          type="number"
+          name="age"
+          value={formData.age}
+          onChange={handleChange}
+        />
+        {errors.age && <span style={{ color: 'red' }}>{errors.age}</span>}
+      </div>
+    </div>
+  );
+});
+
+// 父元件
+function RegistrationPage() {
+  const formRef = useRef();
+  
+  const handleSubmit = () => {
+    // 驗證表單
+    if (formRef.current.validate()) {
+      const data = formRef.current.getData();
+      console.log('提交資料：', data);
+      alert('註冊成功！');
+      formRef.current.reset();
+    } else {
+      formRef.current.focusFirstError();
+    }
+  };
+  
+  const handleReset = () => {
+    formRef.current.reset();
+  };
+  
+  const handleFillTestData = () => {
+    formRef.current.setData({
+      username: 'testuser',
+      email: 'test@example.com',
+      age: 25
+    });
+  };
+  
+  return (
+    <div>
+      <h2>使用者註冊</h2>
+      <UserForm ref={formRef} />
+      
+      <div style={{ marginTop: '20px' }}>
+        <button onClick={handleSubmit}>提交</button>
+        <button onClick={handleReset}>重置</button>
+        <button onClick={handleFillTestData}>填入測試資料</button>
       </div>
     </div>
   );
 }
 ```
 
-{% note warning %}
-**使用注意事項：**
-- 避免過度使用，大多數情況下 props 和回調函式就足夠了
-- 主要用於與第三方 DOM 函式庫整合或建立可重用的元件函式庫
-- 不應該暴露整個 DOM 節點，而是特定的功能方法
+### 何時使用 useImperativeHandle？
+
+讓我們先比較不同的父子元件溝通方式：
+
+| 方法                    | 適用場景           | 優點                 | 缺點                           |
+| ----------------------- | ------------------ | -------------------- | ------------------------------ |
+| **Props**               | 大部分情況         | 單向資料流、易於理解 | 無法讓父元件主動呼叫子元件方法 |
+| **Callback**            | 子元件通知父元件   | 符合 React 慣例      | 只能被動接收事件               |
+| **useImperativeHandle** | 需要主動控制子元件 | 父元件可直接呼叫方法 | 打破單向資料流、容易濫用       |
+| **Context**             | 跨層級共享狀態     | 避免 props drilling  | 不適合頻繁更新的狀態           |
+
+在選擇父子元件溝通方式時，建議依照以下優先順序進行：
+
+1. **優先使用 Props**  
+   - 適用於大多數情境，父元件透過 props 傳遞資料與狀態給子元件，維持單向資料流，易於理解與維護。
+
+2. **需要子元件主動通知父元件時，使用 Callback（回呼函式）**  
+   - 讓子元件在特定事件發生時，呼叫父元件傳遞下來的函式，達到事件上報的效果。
+
+3. **僅在必要時使用 useImperativeHandle**  
+   - 適用於以下特殊場景：
+     - 需要讓父元件主動控制子元件的 DOM 行為（如 focus、scroll 等）
+```javascript
+// 讓父元件控制輸入框聚焦
+useImperativeHandle(ref, () => ({
+focus: () => inputRef.current.focus(),
+select: () => inputRef.current.select()
+}));
+```
+     - 整合第三方函式庫時需暴露特定方法
+```javascript
+// 包裝 Chart.js 等函式庫
+useImperativeHandle(ref, () => ({
+  updateChart: (data) => chartInstance.update(data),
+  resetZoom: () => chartInstance.resetZoom()
+}));
+```
+     - 製作可重複使用的元件庫，需提供程式化控制介面
+```javascript
+// 製作 UI 元件庫時提供程式化控制
+useImperativeHandle(ref, () => ({
+  open: () => setIsOpen(true),
+  close: () => setIsOpen(false),
+  toggle: () => setIsOpen(prev => !prev)
+}));
+```
+   - 不適合使用 useImperativeHandle 的場景：
+     - ❌ 可以用 props 解決的情況
+     - ❌ 簡單的狀態傳遞
+     - ❌ 頻繁的資料同步
+     - ❌ 複雜的業務邏輯
+
+依照上述順序選擇，能確保元件設計既符合 React 的最佳實踐，也能兼顧彈性與封裝性。
+
+### 最佳實踐
+在學習 `useImperativeHandle` 的實作細節之前，讓我們先了解一些實務上的最佳實踐。`useImperativeHandle` 雖然能讓父元件主動呼叫子元件的方法，但如果使用不當，容易造成元件耦合度過高、維護困難。因此，建議遵循以下原則來設計你的元件介面，確保彈性與封裝性兼具。
+
+{% note info %}
+**小技巧：設計 useImperativeHandle 介面時的思考重點**
+- 只暴露必要的操作方法，避免直接暴露 DOM 節點
+- 方法名稱要語意明確，方便團隊協作與維護
+- 適當加入錯誤處理，提升元件健壯性
+- 若使用 TypeScript，記得定義好 ref 的型別
 {% endnote %}
 
+#### 不要暴露整個 DOM 節點
+
+```javascript
+// ❌ 不好：暴露整個 DOM
+useImperativeHandle(ref, () => inputRef.current);
+
+// ✅ 好：只暴露特定方法
+useImperativeHandle(ref, () => ({
+  focus: () => inputRef.current.focus(),
+  clear: () => inputRef.current.value = ''
+}));
+```
+
+#### 使用描述性的方法名稱
+
+```javascript
+// ❌ 不好：方法名不清楚
+useImperativeHandle(ref, () => ({
+  do: () => { /* ... */ },
+  fn: () => { /* ... */ }
+}));
+
+// ✅ 好：清楚的方法名稱
+useImperativeHandle(ref, () => ({
+  play: () => { /* ... */ },
+  pause: () => { /* ... */ },
+  reset: () => { /* ... */ }
+}));
+```
+
+#### 加入錯誤處理
+
+```javascript
+useImperativeHandle(ref, () => ({
+  play: () => {
+    if (!videoRef.current) {
+      console.error('Video element not ready');
+      return;
+    }
+    videoRef.current.play().catch(error => {
+      console.error('Play failed:', error);
+    });
+  }
+}));
+```
+
+#### 提供 TypeScript 型別定義
+
+```typescript
+// 定義暴露的方法型別
+interface VideoPlayerHandle {
+  play: () => void;
+  pause: () => void;
+  reset: () => void;
+  getCurrentTime: () => number;
+}
+
+const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>((props, ref) => {
+  useImperativeHandle(ref, () => ({
+    play: () => { /* ... */ },
+    pause: () => { /* ... */ },
+    reset: () => { /* ... */ },
+    getCurrentTime: () => videoRef.current.currentTime
+  }));
+  
+  return <video />;
+});
+```
+
+### 總結
+`useImperativeHandle` 必須搭配 `forwardRef` 使用，讓父元件可以呼叫子元件內部自訂的方法，例如 focus、reset 等。這種做法會打破 React 的單向資料流，因此建議僅在必要時（如控制 DOM、整合第三方函式庫、設計可重用元件 API）才使用。
+
+使用時，應只暴露必要的方法，不要直接暴露整個 DOM 節點。方法名稱要清楚，並記得處理錯誤情況。如果方法中用到 state 或 props，務必加入依賴陣列，避免閉包陷阱。大多數情況下，優先考慮用 props 與 callback 溝通，只有在無法用 props 解決時才考慮 `useImperativeHandle`。
+
+**重點整理：**
+- 必須與 `forwardRef` 搭配
+- 只暴露必要的命令式方法
+- 適合用於 DOM 操作、第三方函式庫整合、元件 API 封裝
+- 避免用於一般狀態管理
+- 優先考慮 props/callback，命令式控制為輔
+
 ## useSyncExternalStore
+在 React 應用中，我們通常用 `useState` 或 `useReducer` 來管理元件內部狀態。但有時候，我們需要訂閱「外部資料來源」，例如：
+- 瀏覽器 API（如視窗大小 `window.innerWidth`、網路狀態 `navigator.onLine`）
+- 第三方狀態管理庫（如 Redux、Zustand、MobX）
+- WebSocket 連線
+- localStorage/sessionStorage
 
-`useSyncExternalStore` 讓你可以訂閱外部資料來源，在 React 18 中引入來解決併發模式下的撕裂問題。
+在 React 18 之前，訂閱這些外部資料會遇到一個嚴重問題：**在並發模式（Concurrent Mode）下可能會出現「撕裂」（Tearing）現象**。
 
-```javascript useSyncExternalStore 基本用法
+### 問題案例：外部資料訂閱的撕裂（Tearing）問題
+
+假設我們想顯示瀏覽器視窗的寬度，並在視窗大小改變時更新顯示：
+
+```javascript 問題：用 useEffect 訂閱外部資料（舊做法）
+import React, { useState, useEffect } from 'react';
+
+// 自訂 Hook：訂閱視窗寬度
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+  
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return width;
+}
+
+// 三個元件都使用這個 Hook
+function Header() {
+  const width = useWindowWidth();
+  return <div>Header - 視窗寬度：{width}px</div>;
+}
+
+function Sidebar() {
+  const width = useWindowWidth();
+  return <div>Sidebar - 視窗寬度：{width}px</div>;
+}
+
+function Content() {
+  const width = useWindowWidth();
+  return <div>Content - 視窗寬度：{width}px</div>;
+}
+
+function App() {
+  return (
+    <>
+      <Header />
+      <Sidebar />
+      <Content />
+    </>
+  );
+}
+```
+
+**問題：為什麼會出現「撕裂」？**
+
+撕裂問題的本質在於：**每個元件在渲染時分別取得外部資料，導致同一畫面上顯示出彼此不一致的數據**。以下以並發模式為例，說明當使用者快速調整視窗大小時，會出現什麼狀況：
+
+{% mermaid timeline %}
+title 撕裂現象
+section 使用者持續調整視窗（1200px → 800px）
+0ms
+: 捕獲 window.innerWidth = 1200px
+: 渲染 Header 元件
+10ms
+: 捕獲 window.innerWidth = 1000px
+: 渲染 Sidebar 元件
+20ms 
+: 捕獲 window.innerWidth = 800px
+: 渲染 Content 元件
+section 提交到 DOM，畫面顯示
+30ms 
+: Header = 1200px（❌ 舊數據）
+: Sidebar = 1000px（❌ 中間數據）
+: Content = 800px（✓ 最新數據）
+{% endmermaid %}
+
+**撕裂現象說明：**
+- 每個元件在**不同時間點**各自捕獲視窗寬度，導致讀取到不同的值
+- 最終畫面同時出現三種不同的寬度 → 這就是「撕裂」（Tearing）！
+- 使用者看到的是「不一致」的 UI 狀態
+
+**為什麼 Header 沒有跟著更新到 1000px 或 800px？**
+在這個例子中，Header 沒有跟著更新到 1000px 或 800px，主要原因在於 React 並發模式下的渲染流程設計。當使用者快速調整視窗大小時，每個元件（如 Header、Sidebar、Content）在各自被渲染的時間點，分別讀取到當下的 `window.innerWidth`。React 為了提升效能，會優先讓畫面盡快顯示出來，因此 Header 可能在視窗寬度還是 1200px 時就已經完成渲染，接著 Sidebar 和 Content 則在後續不同的時間點分別取得 1000px 和 800px 的寬度。
+
+這種設計下，React 不會在渲染進行到一半時就插入新的狀態更新，而是將像 `setWidth(1000)` 這類的狀態變更排到下一個渲染週期。也就是說，當前的渲染流程會持續到底，不會被中斷來處理新的外部資料變化。因此，Header 只會顯示它最初渲染時取得的寬度值（1200px），而 Sidebar 和 Content 則分別顯示各自渲染時取得的寬度（1000px、800px），導致同一畫面上出現不一致的數據，也就是所謂的「撕裂」現象。
+
+總結來說，撕裂的產生是因為每個元件在不同的渲染時機各自讀取外部資料，React 又不會在渲染過程中即時同步所有元件的外部狀態，最終造成畫面短暫或持續的不一致。
+
+**撕裂現象是短暫的嗎？**
+不一定！這取決於兩個關鍵因素：
+
+1. **外部資料變化的頻率**
+   - 如果外部資料（如 `window.innerWidth`）**持續快速變化**，撕裂現象會**一直存在**
+   - 例如：使用者持續拖曳視窗調整大小時，每次渲染都可能讀到不同的值
+   - 即使渲染週期完成，下一次變化又會產生新的撕裂
+
+2. **使用 useEffect + useState 的方式**
+   - 即使外部資料穩定下來，各元件的 `useEffect` **執行時機仍然不同**
+   - React 無法保證所有元件在同一時間點「快照」相同的值
+   - 在並發模式下，渲染可能被中斷和恢復，進一步加劇不一致問題
+| 問題點             | 說明                                                            |
+| ------------------ | --------------------------------------------------------------- |
+| **各自為政**       | 每個元件都有自己的 `useState`，無法共享「快照時間點」           |
+| **讀取時機不同**   | Header、Sidebar、Content 在不同時間點呼叫 `window.innerWidth`   |
+| **React 無法追蹤** | React 不知道這些狀態來自同一個外部資料源（`window.innerWidth`） |
+| **並發模式的本質** | 渲染可以被中斷，恢復時外部資料可能已經變了                      |
+
+**結論：**
+- ❌ 在快速變化的場景下（如視窗調整、滾動事件），撕裂會持續發生
+- ❌ 即使資料穩定，也可能在某些渲染週期出現短暫撕裂
+- ✅ 使用 `useSyncExternalStore` 可以完全避免撕裂，確保所有元件讀取到一致的快照值
+
+### useSyncExternalStore 語法
+`useSyncExternalStore` 是 React 18 推出的官方 Hook，專為**安全訂閱外部資料來源**而設計，並在資料變化時自動重新渲染元件，能在並發模式下徹底解決「撕裂」（Tearing）問題。
+
+**三大核心機制：**
+
+| 機制                               | 說明                                   | 作用                                 |
+| ---------------------------------- | -------------------------------------- | ------------------------------------ |
+| **同步快照（Sync）**               | 所有元件在同一時間點讀取相同的外部資料 | 避免各元件取得不同版本的數據         |
+| **外部資料來源（External Store）** | 訂閱 React 狀態以外的資料源            | 追蹤瀏覽器 API、全域物件、第三方庫等 |
+| **訂閱通知（Subscribe）**          | 外部資料變動時自動通知 React           | 觸發所有相關元件重新渲染             |
+
+**語法結構：**
+useSyncExternalStore 需要提供指定參數來設定外部資料來源和同步快照，並返回當前外部資料的快照值。
+
+```javascript
+const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot?)
+```
+
+{% note warning %}
+**重要注意事項：**
+- React 會在每次渲染時呼叫 `subscribe` 和 `getSnapshot`，如果這些函式在元件內部定義，會導致每次渲染都建立新的函式參考，造成重複訂閱（re-subscribe）與效能浪費。
+- 建議將 `subscribe` 和 `getSnapshot` 定義在元件外部，或用 `useCallback` 包裝，確保函式參考穩定，避免不必要的重購與重新渲染。
+- 這樣可以提升效能、減少記憶體洩漏風險，並讓 UI 更加穩定。
+{% endnote %}
+
+**參數詳細說明：**
+
+- **subscribe**（必填）：
+訂閱函式，當外部資料變化時，React 會呼叫這個函式來訂閱變化。它接收一個 `callback` 參數，當資料變化時需要呼叫這個 callback 通知 React。必須回傳一個「取消訂閱」的函式。
+```javascript
+const subscribe = (callback) => {
+  // 訂閱資料變化
+  externalStore.addEventListener('change', callback);
+  
+  // 回傳取消訂閱的函式
+  return () => {
+    externalStore.removeEventListener('change', callback);
+  };
+};
+```
+{% note warning %}
+**subscribe 函式必須回傳清理函式**
+- 元件卸載時會自動呼叫清理函式
+- 忘記取消訂閱會造成記憶體洩漏
+{% endnote %}
+
+- **getSnapshot**（必填）：
+getSnapshot 是一個取得快照的函式，負責回傳目前外部資料的最新值。React 在渲染時會自動呼叫這個函式，來取得最新快照。**只要資料沒變，getSnapshot 必須回傳同一個值的參考**，這樣 React 才能正確判斷是否需要重新渲染。
+```javascript
+const getSnapshot = () => {
+  // 回傳當前的外部資料
+  return externalStore.getCurrentValue();
+};
+```
+{% note info %}
+**getSnapshot 必須回傳「穩定且一致」的值**
+- 如果外部資料沒有變化，每次呼叫都要回傳完全相同的參考（React 會用 `Object.is` 來判斷是否相同）
+- 切勿每次都回傳新的物件或陣列，否則會造成元件不必要的重新渲染
+- 建議：可利用 memoization（記憶化）或快取機制，確保回傳值的參考穩定
+{% endnote %}
+
+- **getServerSnapshot**（可選）：
+伺服器端快照函式，用於伺服器端渲染（SSR）。因為伺服器端沒有瀏覽器 API，需要提供一個預設值。
+```javascript
+const getServerSnapshot = () => {
+  // 回傳伺服器端的預設值
+  return defaultValue;
+};
+```
+{% note info %}
+**SSR 注意事項**
+- 如果使用 SSR，務必提供 `getServerSnapshot`
+- 伺服器端和客戶端的初始值應該一致，避免 hydration 錯誤
+{% endnote %}
+
+### 解決方案：使用 useSyncExternalStore
+
+讓我們用 `useSyncExternalStore` 來重寫前面的視窗寬度範例：
+
+{% tabs useSyncExternalStore 範例 %}
+<!-- tab 錯誤寫法❌ -->
+```javascript 錯誤：函式定義在 Hook 內部
 import React, { useSyncExternalStore } from 'react';
 
-// 外部 store 範例
+// ❌ 問題：每次呼叫 useWindowWidth 都會建立新的函式參考
+function useWindowWidth() {
+  const width = useSyncExternalStore(
+    // ❌ 每次渲染都建立新的 subscribe 函式
+    (callback) => {
+      window.addEventListener('resize', callback);
+      return () => window.removeEventListener('resize', callback);
+    },
+    // ❌ 每次渲染都建立新的 getSnapshot 函式
+    () => window.innerWidth,
+    // ❌ 每次渲染都建立新的 getServerSnapshot 函式
+    () => 1024
+  );
+  
+  return width;
+}
+
+// 使用自訂 Hook 的元件
+function WindowWidth() {
+  const width = useWindowWidth(); // 每次渲染都重新訂閱！
+  return <div>視窗寬度：{width}px</div>;
+}
+
+function App() {
+  return (
+    <div>
+      <WindowWidth />
+    </div>
+  );
+}
+```
+
+**問題分析：**
+- 每次 `WindowWidth` 元件渲染時，都會呼叫 `useWindowWidth()`
+- 每次呼叫都建立新的 subscribe、getSnapshot、getServerSnapshot 函式
+- React 發現函式參考變了，就會**重新訂閱**（取消舊訂閱，建立新訂閱）
+- 造成不必要的效能浪費和事件監聽器的重複註冊
+<!-- endtab -->
+
+<!-- tab 正確寫法✅（方法一：定義在外部） -->
+```javascript 正確：函式定義在元件外部
+import React, { useSyncExternalStore } from 'react';
+
+// ✅ 將函式定義在元件外部，確保參考穩定
+const subscribe = (callback) => {
+  window.addEventListener('resize', callback);
+  return () => window.removeEventListener('resize', callback);
+};
+
+const getSnapshot = () => window.innerWidth;
+
+const getServerSnapshot = () => 1024;
+
+// 自訂 Hook：訂閱視窗寬度
+function useWindowWidth() {
+  const width = useSyncExternalStore(
+    subscribe,        // ✅ 參考穩定，不會重新訂閱
+    getSnapshot,      // ✅ 參考穩定
+    getServerSnapshot // ✅ 參考穩定
+  );
+  
+  return width;
+}
+
+// 使用自訂 Hook 的元件
+function WindowWidth() {
+  const width = useWindowWidth();
+  return <div>視窗寬度：{width}px</div>;
+}
+
+function App() {
+  return (
+    <div>
+      <WindowWidth />
+    </div>
+  );
+}
+```
+
+**優點：**
+- ✅ 函式參考永遠相同，不會重新訂閱
+- ✅ 效能最佳
+- ✅ 程式碼簡潔
+<!-- endtab -->
+
+<!-- tab 正確寫法✅（方法二：使用 useCallback） -->
+```javascript 正確：使用 useCallback 包裝
+import React, { useSyncExternalStore, useCallback } from 'react';
+
+// 自訂 Hook：訂閱視窗寬度
+function useWindowWidth() {
+  // ✅ 使用 useCallback 確保函式參考穩定
+  const subscribe = useCallback((callback) => {
+    window.addEventListener('resize', callback);
+    return () => window.removeEventListener('resize', callback);
+  }, []); // 空依賴陣列，函式只建立一次
+
+  const getSnapshot = useCallback(() => window.innerWidth, []);
+  
+  const getServerSnapshot = useCallback(() => 1024, []);
+
+  const width = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
+  
+  return width;
+}
+
+// 使用自訂 Hook 的元件
+function WindowWidth() {
+  const width = useWindowWidth();
+  return <div>視窗寬度：{width}px</div>;
+}
+
+function App() {
+  return (
+    <div>
+      <WindowWidth />
+    </div>
+  );
+}
+```
+
+**適用情境：**
+- 當函式需要存取元件的 props 或 state 時
+- 無法將函式定義在元件外部時
+- 需要動態產生訂閱邏輯時
+<!-- endtab -->
+{% endtabs %}
+
+**執行結果說明：**
+
+當你調整瀏覽器視窗大小時，三個 `WindowWidth` 元件會同時顯示相同的寬度數值。由於使用了 `useSyncExternalStore`，不會出現撕裂（tearing）問題，確保 UI 始終保持一致，所有元件都能正確同步顯示最新的視窗寬度。
+
+**優點：**
+- ✅ 解決並發模式下的撕裂問題
+- ✅ 所有元件讀取到相同的值
+- ✅ 自動處理訂閱和取消訂閱
+- ✅ 支援伺服器端渲染（SSR）
+
+### 實際應用：常見的外部資料訂閱
+在實務開發中，`useSyncExternalStore` 主要用於訂閱「外部可觀察資料來源」的狀態，例如：網路連線狀態、localStorage、WebSocket、瀏覽器 API 等。這些外部來源的資料變動不受 React 控制，若直接用一般 state 可能會導致 UI 不一致或撕裂（tearing）問題。`useSyncExternalStore` 能確保 React 在並發渲染（Concurrent Rendering）下，所有訂閱該資料的元件都能取得最新且一致的狀態，特別適合「多個元件需要同步外部資料」的場景，並自動處理訂閱與取消訂閱，避免重複監聽或記憶體洩漏。
+
+以下將介紹幾個常見的外部資料訂閱應用範例，幫助你快速上手。
+
+{% note warning %}
+**注意事項**
+
+以下所有範例都沒有將 `subscribe`、`getSnapshot` 等函式放在外部或用 `useCallback` 包覆，因此**每次渲染都會產生新函式**，導致效能問題（如重複訂閱、記憶體洩漏）。實務上應將這些函式宣告在元件外部，或用 `useCallback` 包裹，確保函式參考穩定，避免不必要的副作用。
+{% endnote %}
+
+#### 1. 訂閱網路狀態
+
+```javascript 訂閱網路狀態
+import React, { useSyncExternalStore } from 'react';
+
+function useOnlineStatus() {
+  const isOnline = useSyncExternalStore(
+    // 訂閱 online/offline 事件
+    (callback) => {
+      window.addEventListener('online', callback);
+      window.addEventListener('offline', callback);
+      return () => {
+        window.removeEventListener('online', callback);
+        window.removeEventListener('offline', callback);
+      };
+    },
+    // 取得當前網路狀態
+    () => navigator.onLine,
+    // SSR 預設為線上
+    () => true
+  );
+  
+  return isOnline;
+}
+
+function NetworkStatus() {
+  const isOnline = useOnlineStatus();
+  
+  return (
+    <div style={{ 
+      padding: '10px', 
+      background: isOnline ? '#4caf50' : '#f44336',
+      color: 'white'
+    }}>
+      網路狀態：{isOnline ? '線上 🟢' : '離線 🔴'}
+    </div>
+  );
+}
+```
+
+#### 2. 訂閱 localStorage
+
+```javascript 訂閱 localStorage
+import React, { useSyncExternalStore } from 'react';
+
+function useLocalStorage(key, defaultValue) {
+  const value = useSyncExternalStore(
+    // 訂閱 storage 事件（跨 tab 同步）
+    (callback) => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    // 取得當前 localStorage 的值
+    () => {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    },
+    // SSR 時回傳預設值
+    () => defaultValue
+  );
+  
+  const setValue = (newValue) => {
+    localStorage.setItem(key, JSON.stringify(newValue));
+    // 手動觸發 storage 事件（同 tab 更新）
+    window.dispatchEvent(new Event('storage'));
+  };
+  
+  return [value, setValue];
+}
+
+function ThemeSwitcher() {
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  
+  return (
+    <div>
+      <p>當前主題：{theme}</p>
+      <button onClick={() => setTheme('light')}>淺色</button>
+      <button onClick={() => setTheme('dark')}>深色</button>
+    </div>
+  );
+}
+```
+
+#### 3. 訂閱第三方狀態管理庫
+
+```javascript 訂閱外部 Store
+import React, { useSyncExternalStore } from 'react';
+
+// 外部 store 範例（類似 Redux）
 class CounterStore {
   constructor() {
     this.count = 0;
@@ -3038,95 +6526,66 @@ function App() {
     <div>
       <Counter />
       <CounterDisplay />
+      {/* 兩個元件共享同一個 store，計數永遠同步 */}
     </div>
   );
 }
 ```
 
-```javascript useSyncExternalStore 瀏覽器 API 整合
-import React, { useSyncExternalStore } from 'react';
+**優點：**
+- ✅ 多個元件共享同一個外部狀態
+- ✅ 避免並發模式下的撕裂問題
+- ✅ 所有訂閱者同時更新
 
-// 訂閱視窗大小變化
-function useWindowSize() {
-  const windowSize = useSyncExternalStore(
-    // subscribe 函式
-    (callback) => {
-      window.addEventListener('resize', callback);
-      return () => window.removeEventListener('resize', callback);
-    },
-    // getSnapshot 函式
-    () => ({
-      width: window.innerWidth,
-      height: window.innerHeight
-    }),
-    // getServerSnapshot 函式（SSR 支持）
-    () => ({
-      width: 1024,
-      height: 768
-    })
-  );
-  
-  return windowSize;
-}
+### 何時使用 useSyncExternalStore？
+讓我們比較兩種訂閱外部資料的方式：
 
-// 訂閱網路狀態
-function useOnlineStatus() {
-  const isOnline = useSyncExternalStore(
-    (callback) => {
-      window.addEventListener('online', callback);
-      window.addEventListener('offline', callback);
-      return () => {
-        window.removeEventListener('online', callback);
-        window.removeEventListener('offline', callback);
-      };
-    },
-    () => navigator.onLine,
-    () => true // SSR 預設為線上狀態
-  );
-  
-  return isOnline;
-}
+| 特性             | useEffect + useState | useSyncExternalStore |
+| ---------------- | -------------------- | -------------------- |
+| **並發模式安全** | ❌ 可能出現撕裂       | ✅ 完全安全           |
+| **多元件同步**   | ❌ 可能不一致         | ✅ 保證一致           |
+| **SSR 支援**     | ⚠️ 需額外處理         | ✅ 內建支援           |
+| **使用複雜度**   | ✅ 較簡單             | ⚠️ 稍複雜             |
+| **適用場景**     | React 17 及以下      | React 18+ 並發模式   |
 
-// 使用範例
-function BrowserStatus() {
-  const windowSize = useWindowSize();
-  const isOnline = useOnlineStatus();
-  
-  return (
-    <div>
-      <h3>瀏覽器狀態</h3>
-      <p>視窗大小：{windowSize.width} x {windowSize.height}</p>
-      <p>網路狀態：{isOnline ? '線上' : '離線'}</p>
-    </div>
-  );
-}
-```
+**適合使用：**
+1. ✅ 訂閱瀏覽器 API（window、navigator 等）
+2. ✅ 整合第三方狀態管理庫（Redux、Zustand、Jotai 等）
+3. ✅ 訂閱 WebSocket 或其他即時資料
+4. ✅ 需要在多個元件間共享外部狀態
+5. ✅ 使用 React 18+ 並發模式
 
-{% note info %}
-**useSyncExternalStore 使用場景：**
-- 與第三方狀態管理函式庫整合（Redux, Zustand 等）
-- 訂閱瀏覽器 API（localStorage, sessionStorage 等）
-- 與 WebSocket 或其他外部資料來源整合
-- 需要在併發模式下保持資料一致性
+**不需要使用：**
+1. ❌ React 內部狀態管理（用 useState / useReducer）
+2. ❌ 父子元件溝通（用 props / callback）
+3. ❌ 跨元件狀態共享（用 Context）
+4. ❌ 伺服器資料獲取（用 React Query / SWR）
+
+### 總結
+
+`useSyncExternalStore` 是 React 18 專門為解決並發模式下外部資料訂閱問題而設計的 Hook。它透過「同步讀取快照」的機制，確保所有元件在同一時間點讀取到相同的外部資料，避免 UI 不一致的問題。
+
+**核心價值：**
+- 解決並發模式下的撕裂（Tearing）問題
+- 確保多個元件訂閱相同外部資料時的一致性
+- 提供官方的外部資料訂閱標準做法
+
+**使用要點：**
+- 必須提供 `subscribe` 函式（訂閱機制）
+- 必須提供 `getSnapshot` 函式（取得當前值）
+- SSR 時需提供 `getServerSnapshot`（預設值）
+- 適合訂閱瀏覽器 API 和第三方狀態管理庫
+
+**最佳實踐：**
+- 將訂閱邏輯封裝成自訂 Hook（如 `useWindowWidth`、`useOnlineStatus`）
+- 確保 `getSnapshot` 回傳的值在未變化時保持相同
+- 記得在 `subscribe` 中回傳取消訂閱函式
+- SSR 應用一定要提供 `getServerSnapshot`
+
+{% note warning %}
+**記住：**
+`useSyncExternalStore` 是為「外部資料源」設計的，不要用它來管理 React 內部狀態。大部分情況下，`useState`、`useReducer` 和 `useContext` 就足夠了。只有在需要訂閱 React 之外的資料時，才使用這個 Hook。
 {% endnote %}
-
-{% mermaid graph TD %}
-    A["外部 Store"] 
-    B["subscribe()"]
-    C["getSnapshot()"]
-    D["React 元件"]
-    E["自動重新渲染"]
-    
-    A --> B
-    A --> C
-    B --> D
-    C --> D
-    D --> E
-    
-    style A fill:#fff3e0
-    style D fill:#e8f5e8
-    style E fill:#e1f5fe
-{% endmermaid %}
 
 # React 19 新增 Hooks
 
@@ -3134,299 +6593,517 @@ React 19 引入了兩個全新的 Hooks，進一步提升了表單處理和樂�
 
 ## useActionState
 
-`useActionState` 是 React 19 新增的 Hook，專門用於處理表單動作和非同步狀態管理，提供更好的表單處理體驗。
+在傳統的表單處理中，我們需要手動管理各種狀態：表單提交中（loading）、錯誤訊息、成功訊息、表單資料等。這會導致：
+- 需要多個 `useState` 來管理不同狀態
+- 需要 `useEffect` 來處理非同步提交
+- 需要手動處理 loading 狀態和錯誤處理
+- 程式碼複雜且容易出錯
 
-```javascript useActionState 基本用法
-import React, { useActionState } from 'react';
+`useActionState` 是 React 19 新增的 Hook，專門用於**簡化表單處理和非同步狀態管理**，將表單提交、pending 狀態、錯誤處理整合在一起。
 
-// 模擬 API 呼叫
-async function submitForm(prevState, formData) {
-  const name = formData.get('name');
-  const email = formData.get('email');
-  
-  // 模擬網路延遲
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // 模擬驗證錯誤
-  if (!name || name.length < 2) {
-    return {
-      success: false,
-      error: '姓名至少需要 2 個字元',
-      data: { name, email }
-    };
-  }
-  
-  if (!email || !email.includes('@')) {
-    return {
-      success: false,
-      error: '請輸入有效的電子郵件',
-      data: { name, email }
-    };
-  }
-  
-  // 成功提交
-  return {
-    success: true,
-    message: '表單提交成功！',
-    data: { name, email }
-  };
-}
+### 問題案例：傳統表單處理的複雜性
+
+假設我們要建立一個聯絡表單，需要處理提交、驗證、錯誤和成功訊息：
+
+```javascript 問題：傳統做法（需要管理多個狀態）
+import React, { useState } from 'react';
 
 function ContactForm() {
-  const [state, action, isPending] = useActionState(submitForm, {
-    success: false,
-    error: null,
-    message: null,
-    data: { name: '', email: '' }
-  });
-  
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      // 步驟 1：前端驗證
+      if (!name || name.length < 2) {
+        throw new Error('姓名至少需要 2 個字元');
+      }
+      if (!email || !email.includes('@')) {
+        throw new Error('請輸入有效的電子郵件');
+      }
+
+      // 步驟 2：驗證通過後，才呼叫 API
+      // 模擬 API 呼叫
+      // 這裡只是模擬 API 呼叫，並沒有捕獲任何回傳資料
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 如果你想捕獲正常 API response，可以這樣寫：
+      /*
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, email })
+        });
+        const data = await response.json();
+        alert('後端回應：' + data.message); // 假設後端有回傳 message 欄位
+      */
+
+      // 步驟 3：API 成功回應
+      setSuccess(true);
+      setName('');
+      setEmail('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div>
       <h3>聯絡表單</h3>
-      
-      <form action={action}>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>
             姓名：
             <input
               type="text"
-              name="name"
-              defaultValue={state.data?.name || ''}
-              disabled={isPending}
-              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={isLoading}
             />
           </label>
         </div>
-        
         <div>
           <label>
             電子郵件：
             <input
               type="email"
-              name="email"
-              defaultValue={state.data?.email || ''}
-              disabled={isPending}
-              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </label>
         </div>
-        
-        <button type="submit" disabled={isPending}>
-          {isPending ? '提交中。..' : '提交'}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? '提交中。..' : '提交'}
         </button>
       </form>
-      
-      {state.error && (
-        <div style={{ color: 'red', marginTop: '10px' }}>
-          錯誤：{state.error}
-        </div>
-      )}
-      
-      {state.success && state.message && (
-        <div style={{ color: 'green', marginTop: '10px' }}>
-          {state.message}
-        </div>
-      )}
+      {error && <p style={{ color: 'red' }}>錯誤：{error}</p>}
+      {success && <p style={{ color: 'green' }}>表單提交成功！</p>}
     </div>
   );
 }
 ```
 
-```javascript useActionState 進階用法
-import React, { useActionState, useState } from 'react';
+**問題分析：**
 
-// 複雜的表單處理邏輯
-async function handleUserRegistration(prevState, formData) {
-  const userData = {
-    username: formData.get('username'),
-    email: formData.get('email'),
-    password: formData.get('password'),
-    confirmPassword: formData.get('confirmPassword'),
-    terms: formData.get('terms')
+| 問題             | 說明                                                         |
+| ---------------- | ------------------------------------------------------------ |
+| **狀態管理複雜** | 需要 5 個 `useState`：name、email、isLoading、error、success |
+| **重複的邏輯**   | 每次提交都要手動設定 loading、清除錯誤、處理 try-catch       |
+| **受控元件**     | 需要為每個欄位寫 `value` 和 `onChange`                       |
+| **程式碼冗長**   | 簡單的表單就需要 50+ 行程式碼                                |
+
+{% note danger %}
+**傳統做法的痛點：**
+- ❌ 需要手動管理多個相關狀態
+- ❌ 需要手動處理 loading 和錯誤狀態
+- ❌ 需要在 `try-catch-finally` 中管理狀態
+- ❌ 程式碼冗長且容易出錯
+{% endnote %}
+
+### useActionState 語法
+`useActionState` 將**表單動作（Action）**和**狀態管理**整合在一起，簡化表單處理流程：
+
+| 核心概念         | 說明                                       | 優勢                   |
+| ---------------- | ------------------------------------------ | ---------------------- |
+| **Action 函式**  | 處理表單提交的非同步函式                   | 集中處理邏輯，易於測試 |
+| **State 管理**   | 自動管理表單狀態（成功/錯誤/資料）         | 不需要多個 `useState`  |
+| **Pending 狀態** | 自動追蹤非同步操作進行中                   | 不需要手動管理 loading |
+| **非受控表單**   | 使用 `FormData`，不需要 `value`/`onChange` | 減少重新渲染，提升效能 |
+
+**基本語法：**
+
+```javascript
+const [state, formAction, isPending] = useActionState(action, initialState, permalink?)
+```
+
+**參數說明：**
+
+**1. action（必填）— Action 函式**
+
+處理表單提交的非同步函式，接收兩個參數：
+
+```javascript
+async function action(previousState, formData) {
+  // previousState: 上一次的狀態
+  // formData: 表單資料（FormData 物件）
+  
+  const name = formData.get('name'); // 取得表單欄位值
+  
+  // 處理邏輯。..
+  
+  // 回傳新的狀態
+  return {
+    success: true,
+    message: '提交成功！'
   };
+}
+```
+
+| 參數            | 說明                                         |
+| --------------- | -------------------------------------------- |
+| `previousState` | 上一次的狀態，可用於累積資料或錯誤處理       |
+| `formData`      | 表單資料，使用 `formData.get('欄位名')` 取值 |
+| **回傳值**      | 新的狀態物件，可以是任何形狀的物件           |
+
+**2. initialState（必填）— 初始狀態**
+
+表單的初始狀態物件：
+
+```javascript
+const initialState = {
+  success: false,
+  error: null,
+  message: null,
+  data: {}
+};
+```
+
+**3. permalink（可選）— 永久連結**
+
+用於 Server Actions，指定表單提交後的 URL（進階功能，通常不需要）。
+
+**回傳值：**
+
+```javascript
+const [state, formAction, isPending] = useActionState(action, initialState);
+```
+
+| 回傳值       | 說明                                       |
+| ------------ | ------------------------------------------ |
+| `state`      | 當前狀態，由 action 函式回傳               |
+| `formAction` | 綁定到 `<form action={formAction}>` 的函式 |
+| `isPending`  | 布林值，表示 action 是否正在執行中         |
+
+### 解決方案：使用 useActionState
+
+讓我們用 `useActionState` 重寫前面的聯絡表單，讓它成為正確的表單提交流程：
+
+- **前端驗證** → 檢查資料格式（例如：欄位不可為空、email 格式正確）
+- **呼叫 API** → 驗證通過後，才送資料到後端
+- **處理回應** → 根據 API 回應顯示成功或錯誤訊息
+
+這樣可以避免無效的 API 請求，節省網路資源和伺服器負擔。
+
+```javascript 解決方案：使用 useActionState（簡潔）
+import React, { useActionState } from 'react';
+
+// 定義 Action 函式
+async function submitForm(previousState, formData) {
+  const name = formData.get('name');
+  const email = formData.get('email');
   
-  const errors = {};
-  
-  // 客戶端驗證
-  if (!userData.username || userData.username.length < 3) {
-    errors.username = '用戶名至少需要 3 個字元';
+  // 步驟 1：前端驗證（先檢查資料格式）
+  if (!name || name.length < 2) {
+    return { success: false, error: '姓名至少需要 2 個字元' };
+  }
+  if (!email || !email.includes('@')) {
+    return { success: false, error: '請輸入有效的電子郵件' };
   }
   
-  if (!userData.email || !userData.email.includes('@')) {
-    errors.email = '請輸入有效的電子郵件';
-  }
+  // 步驟 2：驗證通過後，才呼叫後端 API
+  // 模擬 API 呼叫（例如：await fetch('/api/contact', {...})）
+  await new Promise(resolve => setTimeout(resolve, 1000));
   
-  if (!userData.password || userData.password.length < 6) {
-    errors.password = '密碼至少需要 6 個字元';
-  }
-  
-  if (userData.password !== userData.confirmPassword) {
-    errors.confirmPassword = '密碼確認不一致';
-  }
-  
-  if (!userData.terms) {
-    errors.terms = '請同意服務條款';
-  }
-  
-  if (Object.keys(errors).length > 0) {
-    return {
-      success: false,
-      errors,
-      data: userData
-    };
-  }
-  
-  try {
-    // 模擬 API 註冊
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // 模擬用戶名已存在的錯誤
-        if (userData.username === 'admin') {
-          reject(new Error('用戶名已存在'));
-        } else {
-          resolve();
-        }
-      }, 1500);
-    });
-    
-    return {
-      success: true,
-      message: '註冊成功！歡迎加入我們！',
-      data: userData
-    };
-    
-  } catch (error) {
-    return {
-      success: false,
-      errors: { submit: error.message },
-      data: userData
-    };
-  }
+  // 步驟 3：API 成功回應
+  return { success: true, message: '表單提交成功！' };
 }
 
-function UserRegistration() {
-  const [state, action, isPending] = useActionState(handleUserRegistration, {
+function ContactForm() {
+  const [state, formAction, isPending] = useActionState(submitForm, {
     success: false,
-    errors: {},
-    message: null,
-    data: {}
+    error: null,
+    message: null
   });
   
   return (
     <div>
-      <h3>用戶註冊</h3>
-      
-      <form action={action}>
+      <h3>聯絡表單</h3>
+      <form action={formAction}>
         <div>
           <label>
-            用戶名：
-            <input
-              type="text"
-              name="username"
-              defaultValue={state.data?.username || ''}
-              disabled={isPending}
-            />
-            {state.errors?.username && (
-              <div style={{ color: 'red', fontSize: '0.8em' }}>
-                {state.errors.username}
-              </div>
-            )}
+            姓名：
+            <input type="text" name="name" disabled={isPending} />
           </label>
         </div>
-        
         <div>
           <label>
             電子郵件：
-            <input
-              type="email"
-              name="email"
-              defaultValue={state.data?.email || ''}
-              disabled={isPending}
-            />
-            {state.errors?.email && (
-              <div style={{ color: 'red', fontSize: '0.8em' }}>
-                {state.errors.email}
-              </div>
-            )}
+            <input type="email" name="email" disabled={isPending} />
           </label>
         </div>
-        
-        <div>
-          <label>
-            密碼：
-            <input
-              type="password"
-              name="password"
-              disabled={isPending}
-            />
-            {state.errors?.password && (
-              <div style={{ color: 'red', fontSize: '0.8em' }}>
-                {state.errors.password}
-              </div>
-            )}
-          </label>
-        </div>
-        
-        <div>
-          <label>
-            確認密碼：
-            <input
-              type="password"
-              name="confirmPassword"
-              disabled={isPending}
-            />
-            {state.errors?.confirmPassword && (
-              <div style={{ color: 'red', fontSize: '0.8em' }}>
-                {state.errors.confirmPassword}
-              </div>
-            )}
-          </label>
-        </div>
-        
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              name="terms"
-              defaultChecked={state.data?.terms}
-              disabled={isPending}
-            />
-            我同意服務條款
-            {state.errors?.terms && (
-              <div style={{ color: 'red', fontSize: '0.8em' }}>
-                {state.errors.terms}
-              </div>
-            )}
-          </label>
-        </div>
-        
         <button type="submit" disabled={isPending}>
-          {isPending ? '註冊中。..' : '註冊'}
+          {isPending ? '提交中。..' : '提交'}
         </button>
-        
-        {state.errors?.submit && (
-          <div style={{ color: 'red', marginTop: '10px' }}>
-            {state.errors.submit}
-          </div>
-        )}
-        
-        {state.success && state.message && (
-          <div style={{ color: 'green', marginTop: '10px' }}>
-            {state.message}
-          </div>
-        )}
       </form>
+      {state.error && <p style={{ color: 'red' }}>錯誤：{state.error}</p>}
+      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
     </div>
   );
 }
 ```
 
-{% note primary %}
-**useActionState 主要特色：**
-- 自動處理 pending 狀態，不需要手動管理 loading 狀態
-- 與 Server Actions 完美整合，提供更好的表單體驗
-- 支援表單驗證錯誤的狀態管理
-- 在提交過程中自動禁用表單元素
+**對比傳統做法的改進：**
+
+| 項目             | 傳統做法                            | useActionState            |
+| ---------------- | ----------------------------------- | ------------------------- |
+| **狀態管理**     | 5 個 `useState`                     | 1 個 `useActionState`     |
+| **Loading 狀態** | 手動管理 `isLoading`                | 自動提供 `isPending`      |
+| **錯誤處理**     | 手動 `try-catch`                    | Action 函式直接回傳錯誤   |
+| **表單控制**     | 受控元件（需要 `value`/`onChange`） | 非受控（使用 `FormData`） |
+| **程式碼行數**   | ~50 行                              | ~30 行                    |
+
+{% note success %}
+**useActionState 的優勢：**
+- ✅ 不需要多個 `useState`，狀態集中管理
+- ✅ 自動處理 `isPending`，不需要手動管理 loading
+- ✅ 使用 `FormData`，不需要受控元件
+- ✅ 程式碼更簡潔、易維護
+{% endnote %}
+
+### 實際應用：常見場景
+
+#### 應用 1：多欄位驗證表單
+
+處理多個欄位的驗證錯誤：
+
+```javascript 多欄位驗證
+import React, { useActionState } from 'react';
+
+async function registerUser(previousState, formData) {
+  const username = formData.get('username');
+  const email = formData.get('email');
+  const password = formData.get('password');
+  
+  const errors = {};
+  
+  // 逐一驗證
+  if (!username || username.length < 3) {
+    errors.username = '用戶名至少需要 3 個字元';
+  }
+  if (!email || !email.includes('@')) {
+    errors.email = '請輸入有效的電子郵件';
+  }
+  if (!password || password.length < 6) {
+    errors.password = '密碼至少需要 6 個字元';
+  }
+  
+  // 如果有錯誤，回傳錯誤狀態
+  if (Object.keys(errors).length > 0) {
+    return { success: false, errors };
+  }
+  
+  // 模擬 API 呼叫
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  return { success: true, message: '註冊成功！' };
+}
+
+function RegisterForm() {
+  const [state, formAction, isPending] = useActionState(registerUser, {
+    success: false,
+    errors: {},
+    message: null
+  });
+  
+  return (
+    <form action={formAction}>
+      <div>
+        <label>
+          用戶名：
+          <input type="text" name="username" disabled={isPending} />
+        </label>
+        {state.errors?.username && (
+          <p style={{ color: 'red' }}>{state.errors.username}</p>
+        )}
+      </div>
+      <div>
+        <label>
+          電子郵件：
+          <input type="email" name="email" disabled={isPending} />
+        </label>
+        {state.errors?.email && (
+          <p style={{ color: 'red' }}>{state.errors.email}</p>
+        )}
+      </div>
+      <div>
+        <label>
+          密碼：
+          <input type="password" name="password" disabled={isPending} />
+        </label>
+        {state.errors?.password && (
+          <p style={{ color: 'red' }}>{state.errors.password}</p>
+        )}
+      </div>
+      <button type="submit" disabled={isPending}>
+        {isPending ? '註冊中。..' : '註冊'}
+      </button>
+      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
+    </form>
+  );
+}
+```
+
+#### 應用 2：搜尋表單
+
+實現即時搜尋功能：
+
+```javascript 搜尋表單
+import React, { useActionState } from 'react';
+
+async function searchAction(previousState, formData) {
+  const query = formData.get('query');
+  
+  if (!query || query.length < 2) {
+    return { results: [], error: '請輸入至少 2 個字元' };
+  }
+  
+  // 模擬 API 搜尋
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  const mockResults = [
+    { id: 1, name: `結果：${query} 1` },
+    { id: 2, name: `結果：${query} 2` },
+    { id: 3, name: `結果：${query} 3` }
+  ];
+  
+  return { results: mockResults, error: null };
+}
+
+function SearchForm() {
+  const [state, formAction, isPending] = useActionState(searchAction, {
+    results: [],
+    error: null
+  });
+  
+  return (
+    <div>
+      <form action={formAction}>
+        <input
+          type="text"
+          name="query"
+          placeholder="搜尋。.."
+          disabled={isPending}
+        />
+        <button type="submit" disabled={isPending}>
+          {isPending ? '搜尋中。..' : '搜尋'}
+        </button>
+      </form>
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      <ul>
+        {state.results.map(item => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+#### 應用 3：使用 previousState 累積資料
+
+利用 `previousState` 來保留歷史資料：
+
+```javascript 累積留言
+import React, { useActionState } from 'react';
+
+async function addComment(previousState, formData) {
+  const comment = formData.get('comment');
+  
+  if (!comment) {
+    return { ...previousState, error: '請輸入留言' };
+  }
+  
+  // 模擬 API 延遲
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // 將新留言加入歷史留言
+  return {
+    comments: [
+      ...previousState.comments,
+      { id: Date.now(), text: comment }
+    ],
+    error: null
+  };
+}
+
+function CommentForm() {
+  const [state, formAction, isPending] = useActionState(addComment, {
+    comments: [],
+    error: null
+  });
+  
+  return (
+    <div>
+      <h3>留言板</h3>
+      <form action={formAction}>
+        <textarea name="comment" disabled={isPending} />
+        <button type="submit" disabled={isPending}>
+          {isPending ? '送出中。..' : '送出留言'}
+        </button>
+      </form>
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      <ul>
+        {state.comments.map(comment => (
+          <li key={comment.id}>{comment.text}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### 總結
+
+`useActionState` 是 React 19 專為**簡化表單處理**而設計的 Hook，將 Action 函式、狀態管理、Pending 狀態整合在一起。
+
+**重點回顧：**
+
+| 項目           | 說明                                                                   |
+| -------------- | ---------------------------------------------------------------------- |
+| **核心功能**   | 處理表單提交和非同步狀態管理                                           |
+| **解決問題**   | 傳統表單需要多個 `useState` 和手動管理 loading                         |
+| **三個回傳值** | `state`（狀態）、`formAction`（綁定表單）、`isPending`（pending 狀態） |
+| **關鍵優勢**   | 使用 `FormData`，不需要受控元件，減少重新渲染                          |
+
+**最佳實踐：**
+
+1. ✅ 使用 `FormData` 取得表單資料，避免受控元件
+2. ✅ 在 Action 函式中處理驗證和錯誤
+3. ✅ 使用 `isPending` 禁用表單元素，提升 UX
+4. ✅ 利用 `previousState` 累積或保留歷史資料
+5. ✅ Action 函式可獨立測試，易於維護
+
+**適用場景：**
+
+| 適合             | 說明                         |
+| ---------------- | ---------------------------- |
+| ✅ 表單提交       | 聯絡表單、註冊表單、搜尋表單 |
+| ✅ 非同步操作     | API 呼叫、資料驗證           |
+| ✅ 狀態累積       | 留言板、待辦事項             |
+| ✅ Server Actions | Next.js 等框架的伺服器端操作 |
+
+| 不適合         | 說明                                       |
+| -------------- | ------------------------------------------ |
+| ❌ 複雜表單邏輯 | 多步驟表單、複雜的條件邏輯（建議用表單庫） |
+| ❌ 即時驗證     | 需要即時反饋的欄位（用 `onChange` 更適合） |
+| ❌ 非表單場景   | 不涉及表單提交的狀態管理（用 `useState`）  |
+
+{% note info %}
+**與傳統做法的對比：**
+`useActionState` 最大的價值在於**減少狀態管理的複雜度**和**使用非受控表單提升效能**。如果你的表單需要即時驗證或複雜的欄位互動，可能需要結合受控元件或使用專門的表單庫（如 React Hook Form、Formik）。
 {% endnote %}
 
 ## useOptimistic
