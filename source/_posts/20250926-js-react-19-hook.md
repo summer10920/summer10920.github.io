@@ -6732,8 +6732,12 @@ const [state, formAction, isPending] = useActionState(action, initialState, perm
 **參數說明：**
 
 **1. action（必填）— Action 函式**
+`action` 是一個負責處理表單提交的**非同步函式**，在每次表單送出時自動被呼叫。它會接收兩個參數：
 
-處理表單提交的非同步函式，接收兩個參數：
+- `previousState`：上一次的狀態物件，通常用於累積資料、顯示錯誤訊息或追蹤提交結果。
+- `formData`：一個 `FormData` 物件，包含本次表單所有欄位的資料。你可以透過 `formData.get('欄位名稱')` 取得對應欄位的值。
+
+這個 action 函式必須回傳一個新的狀態物件（格式不限），React 會自動將這個狀態設為最新狀態並觸發元件重新渲染。你可以在這裡集中處理 API 請求、資料驗證、錯誤處理等所有表單邏輯，完全不需要手動管理多個 useState。
 
 ```javascript
 async function action(previousState, formData) {
@@ -6760,7 +6764,14 @@ async function action(previousState, formData) {
 
 **2. initialState（必填）— 初始狀態**
 
-表單的初始狀態物件：
+`initialState`（初始狀態物件）用來設定 `useActionState` 在元件初次渲染時的預設狀態。你可以根據表單需求自訂內容，常見欄位如下：
+
+- `success`：布林值，表示表單是否成功送出。
+- `error`：字串或物件，儲存錯誤訊息（如驗證失敗、API 錯誤等）。
+- `message`：字串，顯示提示或成功訊息。
+- `data`：物件，儲存後端回傳的額外資料（可選）。
+
+每次 action 執行時，`initialState` 會作為 `previousState` 傳入 action 函式，讓你能根據前一次狀態進行資料累積、錯誤重設或狀態清空。這樣設計能讓表單狀態管理更集中、易於維護與擴充。
 
 ```javascript
 const initialState = {
@@ -6773,31 +6784,273 @@ const initialState = {
 
 **3. permalink（可選）— 永久連結**
 
-用於 Server Actions，指定表單提交後的 URL（進階功能，通常不需要）。
+`permalink` 參數主要用於 Server Actions（伺服器端動作），指定表單提交成功後要導向的 URL。這個功能在需要自訂表單送出後的導向頁面時才會用到，一般用於進階場景，例如：表單送出後自動跳轉到感謝頁、或在多步驟表單中導向下一步。大多數前端表單應用不
+需要設定此參數，預設可省略。
+
+```javascript
+const [state, formAction, isPending] = useActionState(
+  action,
+  initialState,
+  '/thank-you'  // 提交成功後導向 /thank-you 頁面
+);
+```
+
+{% tabs permalink 範例 %}
+<!-- tab 不使用 permalink（前端顯示訊息） -->
+**特點：**
+- ✅ 提交後**留在當前頁面**
+- ✅ 在頁面上顯示成功或錯誤訊息
+- ✅ 適合：訂閱電子報、搜尋、篩選等不需要跳轉的表單
+
+```javascript 一般用法：在前端顯示成功訊息
+import React, { useActionState } from 'react';
+
+async function submitNewsletter(previousState, formData) {
+  const email = formData.get('email');
+  
+  // 驗證
+  if (!email || !email.includes('@')) {
+    return { success: false, error: '請輸入有效的電子郵件' };
+  }
+  
+  // 呼叫 API
+  await fetch('/api/newsletter', {
+    method: 'POST',
+    body: JSON.stringify({ email })
+  });
+  
+  // 在前端顯示成功訊息（不跳轉頁面）
+  return { success: true, message: '訂閱成功！感謝您的支持。' };
+}
+
+function NewsletterForm() {
+  const [state, formAction, isPending] = useActionState(submitNewsletter, {
+    success: false,
+    error: null,
+    message: null
+  });
+  
+  return (
+    <form action={formAction}>
+      <input type="email" name="email" placeholder="輸入您的電子郵件" />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '訂閱中...' : '訂閱電子報'}
+      </button>
+      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+<!-- endtab -->
+
+<!-- tab 使用 permalink（跳轉到感謝頁） -->
+**特點：**
+- ✅ 提交成功後**自動跳轉**到感謝頁
+- ✅ 提供更好的使用者體驗（專屬的確認頁面）
+- ✅ 適合：聯絡表單、註冊、訂單提交等重要操作
+
+```javascript 使用 permalink：提交後跳轉頁面
+import React, { useActionState } from 'react';
+
+async function submitContactForm(previousState, formData) {
+  const name = formData.get('name');
+  const email = formData.get('email');
+  const message = formData.get('message');
+  
+  // 驗證
+  if (!name || !email || !message) {
+    return { success: false, error: '請填寫所有欄位' };
+  }
+  
+  // 呼叫 API
+  await fetch('/api/contact', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, message })
+  });
+  
+  // 回傳成功狀態後，會自動導向 permalink 指定的頁面
+  return { success: true };
+}
+
+function ContactForm() {
+  const [state, formAction, isPending] = useActionState(
+    submitContactForm,
+    { success: false, error: null },
+    '/thank-you'  // 提交成功後自動導向 /thank-you
+  );
+  
+  return (
+    <form action={formAction}>
+      <div>
+        <input type="text" name="name" placeholder="姓名" required />
+      </div>
+      <div>
+        <input type="email" name="email" placeholder="電子郵件" required />
+      </div>
+      <div>
+        <textarea name="message" placeholder="留言內容" required />
+      </div>
+      <button type="submit" disabled={isPending}>
+        {isPending ? '送出中...' : '送出'}
+      </button>
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+對應的感謝頁（`/thank-you`）：
+
+```javascript /thank-you 頁面
+function ThankYouPage() {
+  return (
+    <div>
+      <h1>感謝您的來信！</h1>
+      <p>我們已收到您的訊息，會盡快回覆。</p>
+      <a href="/">返回首頁</a>
+    </div>
+  );
+}
+```
+<!-- endtab -->
+
+<!-- tab Next.js 路由跳轉（非 permalink） -->
+**特點：**
+- ✅ 可以根據 API 回應**動態決定跳轉目標**
+- ✅ 可以在 URL 中傳遞參數
+- ✅ 需要自行處理跳轉邏輯（不是由 `permalink` 自動處理）
+- ✅ 適合：支付流程、多步驟表單、條件式導向
+
+```javascript 進階：透過 redirect() 手動控制路由跳轉
+import React, { useActionState } from 'react';
+import { redirect } from 'next/navigation'; // Next.js 範例
+
+async function submitPayment(previousState, formData) {
+  const amount = formData.get('amount');
+  const cardNumber = formData.get('cardNumber');
+  
+  try {
+    // 呼叫支付 API
+    const response = await fetch('/api/payment', {
+      method: 'POST',
+      body: JSON.stringify({ amount, cardNumber })
+    });
+    
+    const data = await response.json();
+    
+    // ⚠️ 注意：這裡是用 redirect() 手動跳轉，而不是 permalink
+    redirect(data.success 
+      ? `/payment-success?orderId=${data.orderId}` 
+      : `/payment-failed?reason=${data.reason}`);
+
+  } catch (error) {
+    return { success: false, error: '支付失敗，請稍後再試' };
+  }
+}
+
+function PaymentForm() {
+  // ⚠️ 注意：這裡沒有使用 permalink 參數
+  const [state, formAction, isPending] = useActionState(submitPayment, {
+    success: false,
+    error: null
+  });
+  
+  return (
+    <form action={formAction}>
+      <input type="number" name="amount" placeholder="金額" required />
+      <input type="text" name="cardNumber" placeholder="卡號" required />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '處理中...' : '確認付款'}
+      </button>
+      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+{% note warning %}
+**重要區別：permalink vs redirect()**
+
+| 方式                | 說明                                         | 使用時機                       |
+| ------------------- | -------------------------------------------- | ------------------------------ |
+| **permalink 參數**  | 固定的跳轉目標，由 `useActionState` 自動處理 | 提交成功後總是跳轉到同一個頁面 |
+| **redirect() 函式** | 在 action 函式中手動控制跳轉邏輯             | 需要根據結果動態決定跳轉目標   |
+
+**範例對比：**
+
+```javascript
+// 使用 permalink（固定跳轉）
+const [state, formAction] = useActionState(
+  action, 
+  initialState, 
+  '/thank-you'  // ✅ 總是跳到 /thank-you
+);
+
+// 使用 redirect()（動態跳轉）
+async function action(prev, formData) {
+  const result = await callAPI();
+  if (result.success) {
+    redirect('/success');  // ✅ 根據條件跳轉
+  } else {
+    redirect('/error');
+  }
+}
+```
+{% endnote %}
+<!-- endtab -->
+{% endtabs %}
+
+{% note info %}
+**何時使用 permalink？**
+
+| 場景       | 使用 permalink | 說明                           |
+| ---------- | -------------- | ------------------------------ |
+| 訂閱電子報 | ❌ 不需要       | 在當前頁面顯示「訂閱成功」即可 |
+| 搜尋/篩選  | ❌ 不需要       | 在當前頁面顯示結果             |
+| 聯絡表單   | ✅ 建議使用     | 跳轉到專屬的感謝頁面           |
+| 註冊/登入  | ✅ 建議使用     | 成功後跳轉到首頁或儀表板       |
+| 訂單提交   | ✅ 建議使用     | 跳轉到訂單確認頁               |
+| 支付流程   | ✅ 必須使用     | 根據結果跳轉到成功/失敗頁      |
+
+**重點：**
+- `permalink` 主要用於 **Server Actions**（Next.js、Remix 等框架）
+- 一般的前端表單（Client-Side）較少使用，通常用程式碼導向（如 `router.push()`）
+{% endnote %}
 
 **回傳值：**
+`useActionState` 的回傳值讓你能夠輕鬆管理表單的狀態與流程：
+
+- `state`：儲存 action 函式每次執行後的回傳結果，通常用來顯示成功或錯誤訊息。例如：`{ success: true }` 或 `{ error: '請輸入有效的 email' }`。
+- `formAction`：一個可直接綁定在 `<form action={formAction}>` 的函式，負責處理表單送出事件，並自動將資料傳給 action。
+- `isPending`：布林值，表示 action 是否正在執行中。可用來顯示「送出中」的 loading 狀態，避免重複送出。
 
 ```javascript
 const [state, formAction, isPending] = useActionState(action, initialState);
 ```
 
-| 回傳值       | 說明                                       |
-| ------------ | ------------------------------------------ |
-| `state`      | 當前狀態，由 action 函式回傳               |
-| `formAction` | 綁定到 `<form action={formAction}>` 的函式 |
-| `isPending`  | 布林值，表示 action 是否正在執行中         |
+{% note info %}
+**小技巧：**
+你可以根據 `state` 內容動態顯示錯誤訊息或成功提示，並用 `isPending` 控制按鈕狀態，提升使用者體驗。
+{% endnote %}
+
 
 ### 解決方案：使用 useActionState
 
-讓我們用 `useActionState` 重寫前面的聯絡表單，讓它成為正確的表單提交流程：
+讓我們用 `useActionState` 重寫前面的聯絡表單，展示**真實 API 呼叫**的完整流程：
 
-- **前端驗證** → 檢查資料格式（例如：欄位不可為空、email 格式正確）
-- **呼叫 API** → 驗證通過後，才送資料到後端
-- **處理回應** → 根據 API 回應顯示成功或錯誤訊息
+{% note info %}
+**正確的表單提交流程：**
+1. **前端驗證** → 檢查資料格式（例如：欄位不可為空、email 格式正確）
+2. **呼叫 API** → 驗證通過後，才送資料到後端
+3. **處理回應** → 根據 API 回應顯示成功或錯誤訊息
 
 這樣可以避免無效的 API 請求，節省網路資源和伺服器負擔。
+{% endnote %}
 
-```javascript 解決方案：使用 useActionState（簡潔）
+{% tabs useActionState 範例 %}
+<!-- tab 真實 API 呼叫✅ -->
+```javascript 真實 API 呼叫範例
 import React, { useActionState } from 'react';
 
 // 定義 Action 函式
@@ -6814,10 +7067,116 @@ async function submitForm(previousState, formData) {
   }
   
   // 步驟 2：驗證通過後，才呼叫後端 API
-  // 模擬 API 呼叫（例如：await fetch('/api/contact', {...})）
+  try {
+    // 真實 API 呼叫範例
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email })
+    });
+    
+    const data = await response.json();
+    
+    // 步驟 3：根據 API 回應處理結果
+    if (!response.ok) {
+      // API 回應錯誤（例如：500 伺服器錯誤）
+      return { success: false, error: data.message || 'API 呼叫失敗' };
+    }
+    
+    // API 回應成功
+    return { success: true, message: data.message || '表單提交成功！' };
+  } catch (error) {
+    // 網路錯誤（例如：無法連接到伺服器）
+    return { success: false, error: '網路錯誤，請稍後再試' };
+  }
+}
+
+function ContactForm() {
+  const [state, formAction, isPending] = useActionState(submitForm, {
+    success: false,
+    error: null,
+    message: null
+  });
+  
+  return (
+    <div>
+      <h3>聯絡表單</h3>
+      <form action={formAction}>
+        <div>
+          <label>
+            姓名：
+            <input type="text" name="name" disabled={isPending} />
+          </label>
+        </div>
+        <div>
+          <label>
+            電子郵件：
+            <input type="email" name="email" disabled={isPending} />
+          </label>
+        </div>
+        <button type="submit" disabled={isPending}>
+          {isPending ? '提交中。..' : '提交'}
+        </button>
+      </form>
+      {state.error && <p style={{ color: 'red' }}>錯誤：{state.error}</p>}
+      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
+    </div>
+  );
+}
+```
+
+**API 回應範例：**
+
+```json
+// ✅ 成功回應（200 OK）
+{
+  "success": true,
+  "message": "感謝您的聯絡！我們會盡快回覆。"
+}
+
+// ❌ 失敗回應（400 Bad Request）
+{
+  "success": false,
+  "message": "電子郵件已被使用"
+}
+
+// ❌ 伺服器錯誤（500 Internal Server Error）
+{
+  "success": false,
+  "message": "伺服器錯誤，請稍後再試"
+}
+```
+
+**完整錯誤處理：**
+- ✅ 前端驗證錯誤 → 立即顯示，不呼叫 API
+- ✅ API 回應錯誤（400、500 等）→ 顯示後端回傳的錯誤訊息
+- ✅ 網路錯誤（無法連接）→ 顯示「網路錯誤」訊息
+<!-- endtab -->
+
+<!-- tab 模擬 API（開發測試用）💡 -->
+```javascript 模擬 API 呼叫（開發/測試用）
+import React, { useActionState } from 'react';
+
+// 定義 Action 函式（模擬版本）
+async function submitForm(previousState, formData) {
+  const name = formData.get('name');
+  const email = formData.get('email');
+  
+  // 步驟 1：前端驗證
+  if (!name || name.length < 2) {
+    return { success: false, error: '姓名至少需要 2 個字元' };
+  }
+  if (!email || !email.includes('@')) {
+    return { success: false, error: '請輸入有效的電子郵件' };
+  }
+  
+  // 步驟 2：模擬 API 延遲（1 秒）
   await new Promise(resolve => setTimeout(resolve, 1000));
   
-  // 步驟 3：API 成功回應
+  // 步驟 3：模擬 API 回應
+  // 💡 在開發階段，可以用這種方式快速測試 UI 流程
   return { success: true, message: '表單提交成功！' };
 }
 
@@ -6854,6 +7213,16 @@ function ContactForm() {
   );
 }
 ```
+
+**適用時機：**
+- 💡 後端 API 還在開發中，前端可以先用模擬資料測試 UI
+- 💡 想快速驗證表單流程和狀態管理邏輯
+- 💡 單元測試時不想依賴真實 API
+
+**從模擬切換到真實 API：**
+只需要將 `await new Promise(...)` 替換成 `await fetch(...)`，其他程式碼完全不用改！
+<!-- endtab -->
+{% endtabs %}
 
 **對比傳統做法的改進：**
 
