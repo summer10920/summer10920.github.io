@@ -6729,7 +6729,7 @@ function ContactForm() {
 const [state, formAction, isPending] = useActionState(action, initialState, permalink?)
 ```
 
-**參數說明：**
+#### 參數說明：
 
 **1. action（必填）— Action 函式**
 `action` 是一個負責處理表單提交的**非同步函式**，在每次表單送出時自動被呼叫。它會接收兩個參數：
@@ -6782,35 +6782,65 @@ const initialState = {
 };
 ```
 
-**3. permalink（可選）— 永久連結**
+**3. permalink（可選）— 成功後自動跳轉**
 
-`permalink` 參數主要用於 Server Actions（伺服器端動作），指定表單提交成功後要導向的 URL。這個功能在需要自訂表單送出後的導向頁面時才會用到，一般用於進階場景，例如：表單送出後自動跳轉到感謝頁、或在多步驟表單中導向下一步。大多數前端表單應用不
-需要設定此參數，預設可省略。
+`permalink` 是一個可選參數，用來指定 action **執行成功後**要自動跳轉的頁面網址。
+
+**重要觀念：**
+- 這是**客戶端跳轉**，由 React 在前端自動執行
+- 只有當 action 成功執行完畢後才會跳轉
+- 跳轉目標是固定的，不能根據結果動態改變
+- 如果需要條件式跳轉，請在元件內用 React Router 的 `router.push()`（或 `useNavigate`）手動實現。
+
+在決定是否使用跳轉功能前，先思考：**這個表單送出後，使用者應該留在當前頁面還是跳轉到新頁面？**
+
+| 場景       | 是否跳轉 | 建議做法                      | 原因                     |
+| ---------- | -------- | ----------------------------- | ------------------------ |
+| 訂閱電子報 | ❌ 不跳轉 | 在當前頁面顯示成功訊息        | 輕量操作，不需打斷使用者 |
+| 搜尋/篩選  | ❌ 不跳轉 | 在當前頁面顯示結果            | 即時回饋，保持操作流暢度 |
+| 聯絡表單   | ✅ 跳轉   | 使用 `permalink` 跳到感謝頁   | 提供正式的確認體驗       |
+| 註冊成功   | ✅ 跳轉   | 使用 `permalink` 跳到儀表板   | 引導使用者進入主要功能   |
+| 訂單提交   | ✅ 跳轉   | 使用 `permalink` 跳到確認頁   | 顯示訂單詳情             |
+| 支付流程   | ✅ 跳轉   | 使用 `router.push()` 條件跳轉 | 需根據結果跳到不同頁面   |
 
 ```javascript
+// 範例：聯絡表單成功後自動跳轉到感謝頁
 const [state, formAction, isPending] = useActionState(
-  action,
-  initialState,
-  '/thank-you'  // 提交成功後導向 /thank-you 頁面
+  submitContactForm,  // action 函式
+  null,               // 初始狀態
+  '/thank-you'        // ← 成功後自動跳轉到此頁面
 );
 ```
 
-{% tabs permalink 範例 %}
-<!-- tab 不使用 permalink（前端顯示訊息） -->
+{% note warning %}
+**常見誤解：permalink 不是伺服器端跳轉**
+
+許多人誤以為 `permalink` 是由伺服器決定跳轉目標，但實際上：
+- 跳轉目標由**前端程式碼事先指定**（寫在 `useActionState` 的第三個參數）
+- 跳轉由**前端自動執行**（在 action 成功後）
+- 伺服器只負責處理資料，不參與跳轉決策
+
+如果你需要真正的「伺服器端跳轉」（由伺服器決定跳轉目標），請在 Server Action 中使用 Next.js 的 `redirect()` 函式。
+{% endnote %}
+
+{% tabs 表單跳轉範例，1 %}
+<!-- tab 不跳轉直接顯示訊息 -->
+**適用場景：** 訂閱電子報、快速操作、即時回饋
+
 **特點：**
 - ✅ 提交後**留在當前頁面**
-- ✅ 在頁面上顯示成功或錯誤訊息
-- ✅ 適合：訂閱電子報、搜尋、篩選等不需要跳轉的表單
+- ✅ 透過 `state` 顯示成功或錯誤訊息
+- ✅ 不打斷使用者的瀏覽流程
 
-```javascript 一般用法：在前端顯示成功訊息
-import React, { useActionState } from 'react';
+```javascript
+import { useActionState } from 'react';
 
-async function submitNewsletter(previousState, formData) {
+async function subscribeNewsletter(prevState, formData) {
   const email = formData.get('email');
   
   // 驗證
   if (!email || !email.includes('@')) {
-    return { success: false, error: '請輸入有效的電子郵件' };
+    return { error: '請輸入有效的電子郵件' };
   }
   
   // 呼叫 API
@@ -6819,48 +6849,53 @@ async function submitNewsletter(previousState, formData) {
     body: JSON.stringify({ email })
   });
   
-  // 在前端顯示成功訊息（不跳轉頁面）
+  // ✅ 回傳成功訊息，不跳轉頁面
   return { success: true, message: '訂閱成功！感謝您的支持。' };
 }
 
 function NewsletterForm() {
-  const [state, formAction, isPending] = useActionState(submitNewsletter, {
-    success: false,
-    error: null,
-    message: null
-  });
+  const [state, formAction, isPending] = useActionState(
+    subscribeNewsletter,
+    null  // ← 注意：沒有第三個 permalink 參數
+  );
   
   return (
     <form action={formAction}>
-      <input type="email" name="email" placeholder="輸入您的電子郵件" />
+      <input type="email" name="email" placeholder="輸入您的電子郵件" required />
       <button type="submit" disabled={isPending}>
-        {isPending ? '訂閱中...' : '訂閱電子報'}
+        {isPending ? '訂閱中。..' : '訂閱電子報'}
       </button>
-      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
-      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      {state?.success && <p style={{ color: 'green' }}>{state.message}</p>}
+      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
     </form>
   );
 }
 ```
 <!-- endtab -->
 
-<!-- tab 使用 permalink（跳轉到感謝頁） -->
+<!-- tab 使用 permalink：固定跳轉 -->
+**適用場景：** 聯絡表單、註冊、訂單提交
+
+**關鍵限制：** `permalink` 只能指定**一個固定的 URL**，無法根據結果動態改變。
+
 **特點：**
-- ✅ 提交成功後**自動跳轉**到感謝頁
-- ✅ 提供更好的使用者體驗（專屬的確認頁面）
-- ✅ 適合：聯絡表單、註冊、訂單提交等重要操作
+- ✅ 提交成功後**自動跳轉**到指定頁面
+- ✅ 寫法簡單，不需額外的路由 hook
+- ✅ 適合「成功後總是跳到同一頁」的場景
+- ❌ 無法條件式跳轉（例如：成功 → A 頁、失敗 → B 頁）
 
-```javascript 使用 permalink：提交後跳轉頁面
-import React, { useActionState } from 'react';
+```javascript
+import { useActionState } from 'react';
 
-async function submitContactForm(previousState, formData) {
+async function submitContactForm(prevState, formData) {
   const name = formData.get('name');
   const email = formData.get('email');
   const message = formData.get('message');
   
-  // 驗證
+  // 驗證失敗
   if (!name || !email || !message) {
-    return { success: false, error: '請填寫所有欄位' };
+    // ⚠️ 驗證失敗時「不會跳轉」，留在當前頁面
+    return { error: '請填寫所有欄位' };
   }
   
   // 呼叫 API
@@ -6869,132 +6904,152 @@ async function submitContactForm(previousState, formData) {
     body: JSON.stringify({ name, email, message })
   });
   
-  // 回傳成功狀態後，會自動導向 permalink 指定的頁面
+  // ✅ 回傳成功，前端會自動跳到 '/thank-you'
   return { success: true };
 }
 
 function ContactForm() {
   const [state, formAction, isPending] = useActionState(
     submitContactForm,
-    { success: false, error: null },
-    '/thank-you'  // 提交成功後自動導向 /thank-you
+    null,
+    '/thank-you'  // ← 固定跳轉到這個 URL（無法動態改變）
   );
   
   return (
     <form action={formAction}>
-      <div>
-        <input type="text" name="name" placeholder="姓名" required />
-      </div>
-      <div>
-        <input type="email" name="email" placeholder="電子郵件" required />
-      </div>
-      <div>
-        <textarea name="message" placeholder="留言內容" required />
-      </div>
+      <input type="text" name="name" placeholder="姓名" required />
+      <input type="email" name="email" placeholder="電子郵件" required />
+      <textarea name="message" placeholder="留言內容" required />
       <button type="submit" disabled={isPending}>
-        {isPending ? '送出中...' : '送出'}
+        {isPending ? '送出中。..' : '送出'}
       </button>
-      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
-    </form>
-  );
-}
-```
-
-對應的感謝頁（`/thank-you`）：
-
-```javascript /thank-you 頁面
-function ThankYouPage() {
-  return (
-    <div>
-      <h1>感謝您的來信！</h1>
-      <p>我們已收到您的訊息，會盡快回覆。</p>
-      <a href="/">返回首頁</a>
-    </div>
-  );
-}
-```
-<!-- endtab -->
-
-<!-- tab Next.js 路由跳轉（非 permalink） -->
-**特點：**
-- ✅ 可以根據 API 回應**動態決定跳轉目標**
-- ✅ 可以在 URL 中傳遞參數
-- ✅ 需要自行處理跳轉邏輯（不是由 `permalink` 自動處理）
-- ✅ 適合：支付流程、多步驟表單、條件式導向
-
-```javascript 進階：透過 redirect() 手動控制路由跳轉
-import React, { useActionState } from 'react';
-import { redirect } from 'next/navigation'; // Next.js 範例
-
-async function submitPayment(previousState, formData) {
-  const amount = formData.get('amount');
-  const cardNumber = formData.get('cardNumber');
-  
-  try {
-    // 呼叫支付 API
-    const response = await fetch('/api/payment', {
-      method: 'POST',
-      body: JSON.stringify({ amount, cardNumber })
-    });
-    
-    const data = await response.json();
-    
-    // ⚠️ 注意：這裡是用 redirect() 手動跳轉，而不是 permalink
-    redirect(data.success 
-      ? `/payment-success?orderId=${data.orderId}` 
-      : `/payment-failed?reason=${data.reason}`);
-
-  } catch (error) {
-    return { success: false, error: '支付失敗，請稍後再試' };
-  }
-}
-
-function PaymentForm() {
-  // ⚠️ 注意：這裡沒有使用 permalink 參數
-  const [state, formAction, isPending] = useActionState(submitPayment, {
-    success: false,
-    error: null
-  });
-  
-  return (
-    <form action={formAction}>
-      <input type="number" name="amount" placeholder="金額" required />
-      <input type="text" name="cardNumber" placeholder="卡號" required />
-      <button type="submit" disabled={isPending}>
-        {isPending ? '處理中...' : '確認付款'}
-      </button>
-      {state.error && <p style={{ color: 'red' }}>{state.error}</p>}
+      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
     </form>
   );
 }
 ```
 
 {% note warning %}
-**重要區別：permalink vs redirect()**
-
-| 方式                | 說明                                         | 使用時機                       |
-| ------------------- | -------------------------------------------- | ------------------------------ |
-| **permalink 參數**  | 固定的跳轉目標，由 `useActionState` 自動處理 | 提交成功後總是跳轉到同一個頁面 |
-| **redirect() 函式** | 在 action 函式中手動控制跳轉邏輯             | 需要根據結果動態決定跳轉目標   |
-
-**範例對比：**
+**permalink 的限制：**
 
 ```javascript
-// 使用 permalink（固定跳轉）
+// ❌ 無法這樣做：根據結果跳到不同頁面
 const [state, formAction] = useActionState(
-  action, 
-  initialState, 
-  '/thank-you'  // ✅ 總是跳到 /thank-you
+  submitForm,
+  null,
+  result.success ? '/success' : '/failed'  // ← 不支援條件判斷！
 );
 
-// 使用 redirect()（動態跳轉）
-async function action(prev, formData) {
-  const result = await callAPI();
-  if (result.success) {
-    redirect('/success');  // ✅ 根據條件跳轉
-  } else {
-    redirect('/error');
+// ❌ 也無法這樣做：在 action 內動態改變跳轉目標
+async function submitForm(prev, data) {
+  const result = await callAPI(data);
+  // permalink 在這裡無法改變，它是在 useActionState 初始化時就固定了
+  return result;
+}
+```
+
+如果需要條件式跳轉，必須使用下一個範例的方法。
+{% endnote %}
+<!-- endtab -->
+
+<!-- tab  React Router 條件式導向 -->
+**適用場景：** 支付流程、多步驟表單、需要根據結果決定跳轉目標
+
+**關鍵優勢：** 可以在 action 執行後，根據不同結果跳轉到不同頁面。
+
+**特點：**
+- ✅ 完全彈性，可以根據任何條件決定跳轉
+- ✅ 支援複雜的業務邏輯
+- ✅ 可以在跳轉前執行其他操作
+- ❌ 需要額外引入路由 hook（如 `useNavigate`）
+- ❌ 程式碼稍微複雜一些
+
+```javascript
+import { useNavigate } from 'react-router-dom';  // 使用 React Router
+import { useActionState } from 'react';
+
+function PaymentForm() {
+  const navigate = useNavigate();
+  
+  async function handlePayment(prevState, formData) {
+    const amount = formData.get('amount');
+    const cardNumber = formData.get('cardNumber');
+    
+    try {
+      // 呼叫支付 API
+      const response = await fetch('/api/payment', {
+        method: 'POST',
+        body: JSON.stringify({ amount, cardNumber })
+      });
+      
+      const data = await response.json();
+      
+      // ✅ 根據不同結果，手動決定跳轉目標
+      if (data.success) {
+        // 成功 → 跳到成功頁
+        navigate(`/payment/success?orderId=${data.orderId}`);
+      } else if (data.needsVerification) {
+        // 需要驗證 → 跳到驗證頁
+        navigate('/payment/verify');
+      } else {
+        // 失敗 → 跳到失敗頁
+        navigate('/payment/failed');
+      }
+      
+      return data;
+      
+    } catch (error) {
+      return { error: '支付失敗，請稍後再試' };
+    }
   }
+  
+  const [state, formAction, isPending] = useActionState(
+    handlePayment,
+    null  // ← 注意：沒有使用 permalink 參數
+  );
+  
+  return (
+    <form action={formAction}>
+      <input type="number" name="amount" placeholder="金額" required />
+      <input type="text" name="cardNumber" placeholder="卡號" required />
+      <button type="submit" disabled={isPending}>
+        {isPending ? '處理中。..' : '確認付款'}
+      </button>
+      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+{% note success %}
+**多步驟表單範例：**
+
+```javascript
+import { useNavigate } from 'react-router-dom';
+import { useActionState } from 'react';
+
+function MultiStepForm({ currentStep }) {
+  const navigate = useNavigate();
+  
+  async function handleSubmit(prevState, formData) {
+    // 儲存當前步驟的資料
+    await saveStepData(currentStep, formData);
+    
+    // ✅ 根據當前步驟，決定下一步
+    if (currentStep === 1) {
+      navigate('/form/step-2');
+    } else if (currentStep === 2) {
+      navigate('/form/step-3');
+    } else {
+      navigate('/form/complete');
+    }
+    
+    return { success: true };
+  }
+  
+  const [state, formAction] = useActionState(handleSubmit, null);
+  
+  return <form action={formAction}>{/* 表單欄位 */}</form>;
 }
 ```
 {% endnote %}
@@ -7002,23 +7057,23 @@ async function action(prev, formData) {
 {% endtabs %}
 
 {% note info %}
-**何時使用 permalink？**
+**三種策略對比與選擇建議：**
 
-| 場景       | 使用 permalink | 說明                           |
-| ---------- | -------------- | ------------------------------ |
-| 訂閱電子報 | ❌ 不需要       | 在當前頁面顯示「訂閱成功」即可 |
-| 搜尋/篩選  | ❌ 不需要       | 在當前頁面顯示結果             |
-| 聯絡表單   | ✅ 建議使用     | 跳轉到專屬的感謝頁面           |
-| 註冊/登入  | ✅ 建議使用     | 成功後跳轉到首頁或儀表板       |
-| 訂單提交   | ✅ 建議使用     | 跳轉到訂單確認頁               |
-| 支付流程   | ✅ 必須使用     | 根據結果跳轉到成功/失敗頁      |
+| 方式                | 跳轉目標 | 寫法複雜度 | 適用場景             |
+| ------------------- | -------- | ---------- | -------------------- |
+| **不跳轉**          | 不跳轉   | ⭐ 簡單     | 訂閱、搜尋、篩選     |
+| **permalink 參數**  | 固定單一 | ⭐⭐ 簡單    | 聯絡表單、註冊、訂單 |
+| **navigate() 手動** | 動態多個 | ⭐⭐⭐ 複雜   | 支付、多步驟表單     |
 
-**重點：**
-- `permalink` 主要用於 **Server Actions**（Next.js、Remix 等框架）
-- 一般的前端表單（Client-Side）較少使用，通常用程式碼導向（如 `router.push()`）
+**決策流程：**
+1. 先問：需要跳轉嗎？ → **不需要**：直接在頁面顯示訊息
+2. 再問：跳轉目標固定嗎？ → **固定**：使用 `permalink`
+3. 最後：需要條件跳轉？ → **需要**：使用 `navigate()` 或 `router.push()`
+
+**核心原則：能簡單就簡單，需要彈性才增加複雜度。**
 {% endnote %}
 
-**回傳值：**
+#### 回傳值：
 `useActionState` 的回傳值讓你能夠輕鬆管理表單的狀態與流程：
 
 - `state`：儲存 action 函式每次執行後的回傳結果，通常用來顯示成功或錯誤訊息。例如：`{ success: true }` 或 `{ error: '請輸入有效的 email' }`。
@@ -7034,6 +7089,327 @@ const [state, formAction, isPending] = useActionState(action, initialState);
 你可以根據 `state` 內容動態顯示錯誤訊息或成功提示，並用 `isPending` 控制按鈕狀態，提升使用者體驗。
 {% endnote %}
 
+### 理解表單跳轉：Action 成功後的頁面導向
+
+在使用 `useActionState` 處理表單時，當 action 執行成功後，你可能需要將使用者導向另一個頁面（例如：註冊成功後跳轉到儀表板）。React 提供了兩種主要方式來實現這個功能。
+
+{% note warning %}
+**重要觀念：permalink 並非「伺服器端跳轉」**
+
+很多人誤以為 `useActionState` 的第三個參數 `permalink` 是「伺服器端跳轉」，但這是**錯誤的理解**！
+
+**真相是：**
+- `permalink` 只是 React 提供的**客戶端跳轉的便利寫法**
+- 它在 action 成功執行後，**由前端自動執行跳轉**
+- 跳轉目標由**前端程式碼事先指定**，不是伺服器決定的
+
+**真正的伺服器端跳轉：**
+如果你需要真正的伺服器端跳轉（HTTP 302/303），必須在 Server Action 中使用 Next.js 的 `redirect()` 函式：
+
+```javascript
+// 真正的伺服器端跳轉
+async function serverAction(prevState, formData) {
+  'use server';
+  await processData(formData);
+  redirect('/dashboard');  // ← 這才是伺服器端跳轉
+}
+```
+
+**本節重點：**
+我們將介紹兩種**客戶端跳轉方式**：
+1. 使用 `permalink` 參數（簡化寫法）
+2. 使用 `router.push()` 手動控制（彈性寫法）
+{% endnote %}
+
+#### 跳轉方式總覽
+
+| 方式              | 跳轉時機             | 特點                       | 使用時機                 |
+| ----------------- | -------------------- | -------------------------- | ------------------------ |
+| `permalink` 參數  | action 成功後自動    | 簡單固定，適合單一跳轉目標 | 成功後總是跳到同一頁面   |
+| `router.push()`   | 手動控制             | 彈性高，可條件式跳轉       | 需要根據結果決定跳轉目標 |
+| `navigate()`      | 手動控制             | React Router 版本          | 純 React SPA 應用        |
+| `window.location` | 手動控制（強制刷新） | 完整頁面重新載入           | 需要清除所有前端狀態時   |
+
+#### 方式一：使用 permalink 參數（自動跳轉）
+
+`permalink` 是 `useActionState` 的第三個參數，讓你可以指定一個固定的跳轉目標。當 action 成功執行後，React 會自動導向該頁面。
+
+**執行流程：**
+
+{% mermaid graph LR %}
+    A["使用者"] --> B["送出表單"]
+    B --> C["執行 action"]
+    C --> D["action 返回成功"]
+    D --> E["React 自動跳轉到 permalink"]
+    E --> F["顯示新頁面"]
+{% endmermaid %}
+
+**技術特性：**
+- ✅ 寫法簡單，不需要額外的路由 hook
+- ✅ 適合「成功後總是跳到同一頁面」的場景
+- ✅ 與 Server Actions 搭配使用時體驗良好
+- ❌ 跳轉目標固定，無法根據結果動態決定
+- ❌ 只在 action 成功時跳轉，失敗時不跳轉
+
+**實際應用範例：**
+```javascript
+'use client';
+import { useActionState } from 'react';
+import { registerUser } from './actions';
+
+function RegisterForm() {
+  const [state, formAction] = useActionState(
+    registerUser,      // action 函式
+    null,              // 初始狀態
+    '/dashboard'       // ← permalink：成功後自動跳轉到儀表板
+  );
+  
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" required />
+      <input name="password" type="password" required />
+      <button type="submit">註冊</button>
+      {state?.error && <p>{state.error}</p>}
+    </form>
+  );
+}
+```
+
+```javascript actions.js
+// Server Action
+'use server';
+export async function registerUser(prevState, formData) {
+  const user = await db.createUser({
+    email: formData.get('email'),
+    password: formData.get('password')
+  });
+  
+  // 成功後，前端會自動跳轉到 /dashboard
+  return { success: true, userId: user.id };
+}
+```
+
+**適用場景：**
+
+| 場景       | 使用 permalink | 說明                       |
+| ---------- | -------------- | -------------------------- |
+| 註冊成功   | ✅ 建議使用     | 總是跳轉到儀表板           |
+| 聯絡表單   | ✅ 建議使用     | 總是跳轉到感謝頁面         |
+| 訂閱電子報 | ✅ 可以使用     | 跳轉到訂閱成功頁           |
+| 支付流程   | ❌ 不建議       | 需要根據結果跳轉到不同頁面 |
+| 多步驟表單 | ❌ 不建議       | 需要根據當前步驟決定下一步 |
+| 搜尋/篩選  | ❌ 不需要       | 在當前頁面顯示結果         |
+
+#### 方式二：手動控制跳轉（router.push / navigate）
+
+如果你需要**根據 action 的執行結果來決定跳轉目標**，就必須使用 `router.push()` 或 `navigate()` 來手動控制跳轉邏輯。
+
+**執行流程：**
+
+{% mermaid graph LR %}
+    A["使用者"] --> B["送出表單"]
+    B --> C["執行 action"]
+    C --> D["檢查 action 結果"]
+    D -->|成功| E["手動呼叫 router.push()"]
+    D -->|失敗| F["顯示錯誤訊息"]
+    E --> G["前端路由切換"]
+{% endmermaid %}
+
+**技術特性：**
+- ✅ 彈性高，可以根據不同結果跳轉到不同頁面
+- ✅ 可以在跳轉前執行額外邏輯（如記錄、動畫）
+- ✅ 支援條件式跳轉和複雜的流程控制
+- ✅ 頁面不刷新，使用者體驗更流暢
+- ❌ 需要手動撰寫跳轉邏輯
+- ❌ 需要引入額外的路由 hook
+
+**實際應用範例：**
+
+{% tabs 手動跳轉範例，1 %}
+<!-- tab NextJS 條件式跳轉（支付流程）-->
+根據支付結果跳轉到不同頁面：
+
+```javascript
+'use client';
+import { useRouter } from 'next/navigation';
+import { useActionState } from 'react';
+
+function PaymentForm() {
+  const router = useRouter();
+  
+  async function handlePayment(prevState, formData) {
+    const response = await fetch('/api/payment', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    // ✅ 根據結果跳轉到不同頁面
+    if (data.success) {
+      router.push('/payment/success');
+    } else if (data.needsVerification) {
+      router.push('/payment/verify');
+    } else {
+      router.push('/payment/failed');
+    }
+    
+    return data;
+  }
+  
+  const [state, formAction] = useActionState(handlePayment, null);
+  
+  return (
+    <form action={formAction}>
+      <input name="cardNumber" required />
+      <button type="submit">確認付款</button>
+      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+<!-- endtab -->
+
+<!-- tab NextJS 多步驟表單 -->
+根據當前步驟決定下一個頁面：
+
+```javascript
+'use client';
+import { useRouter } from 'next/navigation';
+import { useActionState } from 'react';
+
+function MultiStepForm({ currentStep }) {
+  const router = useRouter();
+  
+  async function handleSubmit(prevState, formData) {
+    const response = await fetch('/api/form', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // ✅ 根據當前步驟決定下一步
+      if (currentStep === 1) {
+        router.push('/form/step-2');
+      } else if (currentStep === 2) {
+        router.push('/form/step-3');
+      } else {
+        router.push('/form/complete');
+      }
+    }
+    
+    return data;
+  }
+  
+  const [state, formAction] = useActionState(handleSubmit, null);
+  
+  return (
+    <form action={formAction}>
+      {/* 表單欄位 */}
+      <button type="submit">下一步</button>
+    </form>
+  );
+}
+```
+<!-- endtab -->
+
+<!-- tab React Router 版本 -->
+使用 `useNavigate` 進行前端跳轉，適合純 React 的 SPA 應用：
+
+```javascript
+import { useNavigate } from 'react-router-dom';
+import { useActionState } from 'react';
+
+function PaymentForm() {
+  const navigate = useNavigate();
+  
+  async function handlePayment(prevState, formData) {
+    const response = await fetch('/api/payment', {
+      method: 'POST',
+      body: JSON.stringify({
+        cardNumber: formData.get('cardNumber')
+      })
+    });
+    
+    const data = await response.json();
+    
+    // ✅ 使用 navigate() 進行條件式跳轉
+    if (data.success) {
+      navigate('/payment/success');
+    } else {
+      navigate('/payment/failed');
+    }
+    
+    return data;
+  }
+  
+  const [state, formAction] = useActionState(handlePayment, null);
+  
+  return (
+    <form action={formAction}>
+      <input name="cardNumber" required />
+      <button type="submit">確認付款</button>
+      {state?.error && <p style={{ color: 'red' }}>{state.error}</p>}
+    </form>
+  );
+}
+```
+<!-- endtab -->
+{% endtabs %}
+
+**適用場景：**
+
+| 場景       | 使用手動跳轉 | 說明                       |
+| ---------- | ------------ | -------------------------- |
+| 支付流程   | ✅ 必須使用   | 需要根據結果跳轉到不同頁面 |
+| 多步驟表單 | ✅ 必須使用   | 需要根據當前步驟決定下一步 |
+| 搜尋/篩選  | ✅ 建議使用   | 可以選擇是否跳轉           |
+| 購物車更新 | ✅ 建議使用   | 保持購物車狀態，彈性跳轉   |
+
+#### 選擇策略總結
+
+{% note info %}
+**如何選擇跳轉方式？**
+
+根據以下決策樹選擇：
+
+**使用 `permalink` 參數（自動跳轉）當：**
+- ✅ 成功後**總是**跳轉到同一個頁面
+- ✅ 不需要根據結果做條件判斷
+- ✅ 追求簡潔的程式碼
+
+**範例：**
+- 註冊成功 → 總是跳到儀表板
+- 聯絡表單送出 → 總是跳到感謝頁
+- 訂閱電子報 → 總是跳到訂閱成功頁
+
+---
+
+**使用 `router.push()` / `navigate()`（手動跳轉）當：**
+- ✅ 需要根據**不同結果**跳轉到不同頁面
+- ✅ 需要在跳轉前執行**額外邏輯**
+- ✅ 多步驟流程需要**動態決定**下一步
+
+**範例：**
+- 支付：成功 → `/success`、失敗 → `/failed`、需驗證 → `/verify`
+- 多步驟表單：步驟 1 → `/step-2`、步驟 2 → `/step-3`
+- 問卷：根據答案跳轉到不同的後續問題
+
+---
+
+**對照表：**
+
+| 需求               | permalink | router.push() |
+| ------------------ | --------- | ------------- |
+| 固定跳轉目標       | ✅ 推薦    | ⚠️ 可以但多餘  |
+| 條件式跳轉         | ❌ 不支援  | ✅ 必須        |
+| 多目標跳轉         | ❌ 不支援  | ✅ 必須        |
+| 跳轉前執行額外邏輯 | ❌ 不支援  | ✅ 必須        |
+| 程式碼簡潔度       | ✅ 簡單    | ⚠️ 稍微複雜    |
+
+{% endnote %}
 
 ### 解決方案：使用 useActionState
 
@@ -7048,17 +7424,15 @@ const [state, formAction, isPending] = useActionState(action, initialState);
 這樣可以避免無效的 API 請求，節省網路資源和伺服器負擔。
 {% endnote %}
 
-{% tabs useActionState 範例 %}
-<!-- tab 真實 API 呼叫✅ -->
-```javascript 真實 API 呼叫範例
-import React, { useActionState } from 'react';
+```javascript 完整範例：聯絡表單
+import { useActionState } from 'react';
 
 // 定義 Action 函式
 async function submitForm(previousState, formData) {
   const name = formData.get('name');
   const email = formData.get('email');
   
-  // 步驟 1：前端驗證（先檢查資料格式）
+  // 步驟 1：前端驗證
   if (!name || name.length < 2) {
     return { success: false, error: '姓名至少需要 2 個字元' };
   }
@@ -7066,27 +7440,37 @@ async function submitForm(previousState, formData) {
     return { success: false, error: '請輸入有效的電子郵件' };
   }
   
-  // 步驟 2：驗證通過後，才呼叫後端 API
+  // 步驟 2：呼叫後端 API
   try {
-    // 真實 API 呼叫範例
+    // === 真實 API 呼叫  start ===
+
     const response = await fetch('/api/contact', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email })
     });
     
     const data = await response.json();
     
-    // 步驟 3：根據 API 回應處理結果
     if (!response.ok) {
-      // API 回應錯誤（例如：500 伺服器錯誤）
+      // API 回應錯誤（例如：400、500）
       return { success: false, error: data.message || 'API 呼叫失敗' };
     }
     
     // API 回應成功
     return { success: true, message: data.message || '表單提交成功！' };
+
+    // === 真實 API 呼叫  end ===
+
+    /*
+    // === 或者使用模擬 API（開發測試用） Start ===
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return { success: true, message: '表單提交成功！' };
+
+    // === 或者使用模擬 API（開發測試用） Start ===
+    */
+    
   } catch (error) {
     // 網路錯誤（例如：無法連接到伺服器）
     return { success: false, error: '網路錯誤，請稍後再試' };
@@ -7127,102 +7511,32 @@ function ContactForm() {
 }
 ```
 
-**API 回應範例：**
+{% note info %}
+**完整錯誤處理流程：**
+1. ✅ **前端驗證錯誤** → 立即顯示，不呼叫 API
+2. ✅ **API 回應錯誤**（400、500 等）→ 顯示後端回傳的錯誤訊息
+3. ✅ **網路錯誤**（無法連接）→ 顯示「網路錯誤」訊息
+{% endnote %}
 
-```json
-// ✅ 成功回應（200 OK）
-{
-  "success": true,
-  "message": "感謝您的聯絡！我們會盡快回覆。"
-}
+{% note success %}
+**開發技巧：模擬 API 測試**
 
-// ❌ 失敗回應（400 Bad Request）
-{
-  "success": false,
-  "message": "電子郵件已被使用"
-}
+在後端 API 還沒準備好時，可以先用模擬 API 測試前端 UI：
 
-// ❌ 伺服器錯誤（500 Internal Server Error）
-{
-  "success": false,
-  "message": "伺服器錯誤，請稍後再試"
-}
+```javascript
+// 註解掉真實 API，改用模擬
+// const response = await fetch('/api/contact', { ... });
+
+// 使用模擬 API（延遲 1 秒後回傳成功）
+await new Promise(resolve => setTimeout(resolve, 1000));
+return { success: true, message: '表單提交成功！' };
 ```
 
-**完整錯誤處理：**
-- ✅ 前端驗證錯誤 → 立即顯示，不呼叫 API
-- ✅ API 回應錯誤（400、500 等）→ 顯示後端回傳的錯誤訊息
-- ✅ 網路錯誤（無法連接）→ 顯示「網路錯誤」訊息
-<!-- endtab -->
-
-<!-- tab 模擬 API（開發測試用）💡 -->
-```javascript 模擬 API 呼叫（開發/測試用）
-import React, { useActionState } from 'react';
-
-// 定義 Action 函式（模擬版本）
-async function submitForm(previousState, formData) {
-  const name = formData.get('name');
-  const email = formData.get('email');
-  
-  // 步驟 1：前端驗證
-  if (!name || name.length < 2) {
-    return { success: false, error: '姓名至少需要 2 個字元' };
-  }
-  if (!email || !email.includes('@')) {
-    return { success: false, error: '請輸入有效的電子郵件' };
-  }
-  
-  // 步驟 2：模擬 API 延遲（1 秒）
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // 步驟 3：模擬 API 回應
-  // 💡 在開發階段，可以用這種方式快速測試 UI 流程
-  return { success: true, message: '表單提交成功！' };
-}
-
-function ContactForm() {
-  const [state, formAction, isPending] = useActionState(submitForm, {
-    success: false,
-    error: null,
-    message: null
-  });
-  
-  return (
-    <div>
-      <h3>聯絡表單</h3>
-      <form action={formAction}>
-        <div>
-          <label>
-            姓名：
-            <input type="text" name="name" disabled={isPending} />
-          </label>
-        </div>
-        <div>
-          <label>
-            電子郵件：
-            <input type="email" name="email" disabled={isPending} />
-          </label>
-        </div>
-        <button type="submit" disabled={isPending}>
-          {isPending ? '提交中。..' : '提交'}
-        </button>
-      </form>
-      {state.error && <p style={{ color: 'red' }}>錯誤：{state.error}</p>}
-      {state.success && <p style={{ color: 'green' }}>{state.message}</p>}
-    </div>
-  );
-}
-```
-
-**適用時機：**
-- 💡 後端 API 還在開發中，前端可以先用模擬資料測試 UI
-- 💡 想快速驗證表單流程和狀態管理邏輯
-- 💡 單元測試時不想依賴真實 API
-
-**從模擬切換到真實 API：**
-只需要將 `await new Promise(...)` 替換成 `await fetch(...)`，其他程式碼完全不用改！
-<!-- endtab -->
-{% endtabs %}
+**優點：**
+- 💡 前端開發不需等待後端 API 完成
+- 💡 可以快速測試 UI 的 loading、成功、錯誤狀態
+- 💡 單元測試時不依賴真實 API
+{% endnote %}
 
 **對比傳統做法的改進：**
 
@@ -7243,6 +7557,7 @@ function ContactForm() {
 {% endnote %}
 
 ### 實際應用：常見場景
+本章將帶你快速掌握 `useActionState` 在各種實際場景下的簡易用法。你會看到如何應對常見表單需求，例如：多欄位驗證、條件式跳轉、不同錯誤顯示等。每個案例都貼近前端日常開發，助你靈活運用最新 React 表單技巧。
 
 #### 應用 1：多欄位驗證表單
 
@@ -7434,61 +7749,709 @@ function CommentForm() {
 }
 ```
 
-### 總結
+### 總結：useActionState 帶來的改變
 
-`useActionState` 是 React 19 專為**簡化表單處理**而設計的 Hook，將 Action 函式、狀態管理、Pending 狀態整合在一起。
+經過本章的學習，你已經掌握了 React 19 全新的表單處理方式。`useActionState` 不只是一個新的 Hook，它代表了 React 團隊對表單處理的全新思考方向。
 
-**重點回顧：**
+#### 核心價值
 
-| 項目           | 說明                                                                   |
-| -------------- | ---------------------------------------------------------------------- |
-| **核心功能**   | 處理表單提交和非同步狀態管理                                           |
-| **解決問題**   | 傳統表單需要多個 `useState` 和手動管理 loading                         |
-| **三個回傳值** | `state`（狀態）、`formAction`（綁定表單）、`isPending`（pending 狀態） |
-| **關鍵優勢**   | 使用 `FormData`，不需要受控元件，減少重新渲染                          |
+**三位一體的整合設計：**
+- **Action 函式**：集中處理表單邏輯和 API 呼叫
+- **狀態管理**：自動追蹤執行結果，無需手動 `setState`
+- **Pending 狀態**：內建 loading 狀態，提升使用者體驗
 
-**最佳實踐：**
+**解決了什麼問題？**
 
-1. ✅ 使用 `FormData` 取得表單資料，避免受控元件
-2. ✅ 在 Action 函式中處理驗證和錯誤
-3. ✅ 使用 `isPending` 禁用表單元素，提升 UX
-4. ✅ 利用 `previousState` 累積或保留歷史資料
-5. ✅ Action 函式可獨立測試，易於維護
+傳統的表單處理需要：
+```javascript
+// ❌ 傳統做法：需要多個狀態
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+const [data, setData] = useState(null);
+const [formData, setFormData] = useState({});
 
-**適用場景：**
+// 還要處理複雜的 onChange 和 onSubmit
+```
 
-| 適合             | 說明                         |
-| ---------------- | ---------------------------- |
-| ✅ 表單提交       | 聯絡表單、註冊表單、搜尋表單 |
-| ✅ 非同步操作     | API 呼叫、資料驗證           |
-| ✅ 狀態累積       | 留言板、待辦事項             |
-| ✅ Server Actions | Next.js 等框架的伺服器端操作 |
+使用 `useActionState` 後：
+```javascript
+// ✅ 新做法：一個 Hook 搞定
+const [state, formAction, isPending] = useActionState(submitForm, null);
+// 表單資料由 FormData 自動收集，無需受控元件
+```
 
-| 不適合         | 說明                                       |
-| -------------- | ------------------------------------------ |
-| ❌ 複雜表單邏輯 | 多步驟表單、複雜的條件邏輯（建議用表單庫） |
-| ❌ 即時驗證     | 需要即時反饋的欄位（用 `onChange` 更適合） |
-| ❌ 非表單場景   | 不涉及表單提交的狀態管理（用 `useState`）  |
+#### 重點回顧
 
-{% note info %}
-**與傳統做法的對比：**
-`useActionState` 最大的價值在於**減少狀態管理的複雜度**和**使用非受控表單提升效能**。如果你的表單需要即時驗證或複雜的欄位互動，可能需要結合受控元件或使用專門的表單庫（如 React Hook Form、Formik）。
+**三個回傳值的用途：**
+1. **`state`** → 儲存 action 執行結果（成功訊息、錯誤訊息、資料等）
+2. **`formAction`** → 直接綁定到 `<form action={formAction}>`
+3. **`isPending`** → 判斷是否正在執行（用於 loading 狀態）
+
+**三個參數的配置：**
+1. **`action`（必填）** → 處理表單的非同步函式
+2. **`initialState`（必填）** → 初始狀態
+3. **`permalink`（可選）** → 成功後自動跳轉的固定頁面
+
+**關鍵技巧：**
+- ✅ 使用 `FormData` 取得資料，避免受控元件的效能損耗
+- ✅ 在 action 函式中先驗證，再呼叫 API
+- ✅ 用 `isPending` 禁用表單，防止重複提交
+- ✅ 利用 `previousState` 實現狀態累積
+- ✅ `permalink` 只適合固定跳轉，條件式跳轉用 `navigate()`
+
+#### 適用場景
+
+**✅ 適合的場景：**
+- 聯絡表單、註冊表單、評論表單
+- 訂閱電子報、搜尋表單
+- 留言板、待辦清單（需要累積狀態）
+- 搭配 Next.js Server Actions
+
+**⚠️ 需要額外工具的場景：**
+- 複雜多步驟表單 → 建議使用 React Hook Form 或 Formik
+- 大量欄位互動（選 A 影響 B、C、D）→ 考慮使用專門的表單庫
+
+{% note success %}
+**使用建議**
+
+`useActionState` 專注處理「表單送出」這個時機點。如果你的表單主要邏輯發生在送出時（驗證、API 呼叫、顯示結果），那就很適合。
+
+如果表單有大量即時互動需求，可以混合使用：
+- 即時互動 → 用 `useState` + 受控元件
+- 送出處理 → 用 `useActionState`
+
+**核心原則：選擇最簡單能解決問題的方案。**
 {% endnote %}
 
 ## useOptimistic
+在現代 Web 應用中，許多操作需要與伺服器互動（例如：發送訊息、點讚、提交表單）。傳統做法是等待伺服器回應後才更新 UI，但這會導致**使用者體驗延遲**。想像一下：你在社群媒體上點讚，等待 1 秒後愛心才亮起，這種延遲感會讓人覺得應用「很慢」。
 
-`useOptimistic` 讓你可以樂觀地更新 UI，在等待非同步操作完成時先顯示預期的結果。
+`useOptimistic` Hook 解決了這個問題，它允許你**先預期性地更新 UI**（樂觀更新），再等待伺服器確認。如果操作失敗，React 會自動回滾到原始狀態。
 
-```javascript useOptimistic 基本用法
+### 問題情境：傳統的點讚功能
+
+假設我們要實作一個社群貼文的點讚功能，傳統做法會遇到以下問題：
+
+```javascript 傳統做法：等待 API 回應後才更新 UI
+import React, { useState } from 'react';
+
+async function toggleLikeAPI(postId, currentLiked) {
+  // 模擬 API 延遲 800ms
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return !currentLiked;
+}
+
+function SocialPost({ post }) {
+  const [likes, setLikes] = useState({
+    count: post.likes,
+    isLiked: post.isLiked
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleLike = async () => {
+    setIsLoading(true); // 👈 顯示 loading 狀態
+    
+    try {
+      const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
+      
+      // ⚠️ 問題：等待 800ms 後才更新 UI
+      setLikes({
+        count: likes.count + (newLikedState ? 1 : -1),
+        isLiked: newLikedState
+      });
+    } catch (error) {
+      alert('點讚失敗');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  return (
+    <div>
+      <h4>{post.title}</h4>
+      <button onClick={handleLike} disabled={isLoading}>
+        {/* ⚠️ 問題：按下按鈕後，愛心不會立即變化，要等 800ms */}
+        {isLoading ? '處理中。..' : (likes.isLiked ? '❤️ 已讚' : '🤍 讚')}
+      </button>
+      <span>{likes.count} 個讚</span>
+    </div>
+  );
+}
+```
+
+{% note danger %}
+**傳統做法的問題：**
+
+| 問題                 | 說明                                   | 影響                   |
+| -------------------- | -------------------------------------- | ---------------------- |
+| **UI 更新延遲**      | 點擊按鈕後，要等待 API 回應才看到變化  | 使用者感覺應用「卡頓」 |
+| **Loading 狀態干擾** | 需要顯示「處理中。..」，破壞視覺一致性 | 使用者體驗不流暢       |
+| **需要手動管理狀態** | 需要額外的 `isLoading` 狀態            | 程式碼變複雜           |
+| **錯誤處理麻煩**     | 失敗時需要手動恢復原始狀態             | 容易出錯               |
+
+**使用者期望：** 點讚後**立即看到愛心變紅**，而不是等待。
+{% endnote %}
+
+### 核心概念：樂觀更新流程
+
+**樂觀更新（Optimistic Update）**是一種 UI 設計模式，核心思想是：「樂觀地」假設操作會成功，所以先更新 UI。在大多數情況下（網路穩定），操作確實會成功，所以「樂觀」的假設是合理的。
+
+1. **假設操作會成功** → 先更新 UI
+2. **背景發送 API 請求** → 等待伺服器確認
+3. **根據結果調整**：
+   - ✅ **成功** → UI 保持更新狀態
+   - ❌ **失敗** → 自動回滾到原始狀態，並顯示錯誤訊息
+
+{% mermaid graph LR %}
+    A["👆 使用者點擊"] --> B["⚡ 立即更新 UI<br/><small>樂觀更新</small>"]
+    B --> C["📡 發送 API 請求<br/><small>背景執行</small>"]
+    C --> D{"✅ API 成功？"}
+    D -->|是| E["✨ 更新真實狀態<br/><small>UI 保持不變</small>"]
+    D -->|否| F["⏪ 自動回滾 UI<br/><small>恢復原始狀態</small>"]
+    E --> G["😊 使用者感覺超快"]
+    F --> H["⚠️ 顯示錯誤訊息"]
+    
+    style A fill:#e3f2fd
+    style B fill:#c8e6c9
+    style E fill:#c8e6c9
+    style F fill:#ffcdd2
+    style G fill:#fff9c4
+{% endmermaid %}
+
+### 語法說明
+
+`useOptimistic` 的語法設計非常精簡，只需要傳入兩個參數，就能實現樂觀更新功能。它的核心理念是：**維護兩個狀態（真實狀態 + 樂觀狀態），讓 UI 優先顯示樂觀狀態**。當 API 成功時，樂觀狀態自動同步到真實狀態；當 API 失敗時，樂觀狀態自動回滾到真實狀態。
+
+```javascript
+const [optimisticState, addOptimistic] = useOptimistic(
+  state,           // 參數 1：真實的狀態（來自 useState）
+  updateFn         // 參數 2：樂觀更新函式（定義如何計算樂觀狀態）
+);
+```
+
+#### 參數詳解
+
+**1. state — 真實狀態（資料來源）**
+
+| 屬性     | 說明                                                                  |
+| -------- | --------------------------------------------------------------------- |
+| **類型** | `any`                                                                 |
+| **來源** | 通常來自 `useState`，代表伺服器確認過的「真實資料」                   |
+| **用途** | 作為樂觀狀態的「基準」，當 API 成功時更新這個狀態，樂觀狀態會自動同步 |
+| **特性** | 只有在 API 成功時才更新，失敗時保持不變（因此樂觀狀態會自動回滾）     |
+
+**範例：**
+
+```javascript
+// 真實狀態：已確認的點讚資料
+const [likes, setLikes] = useState({
+  count: 5,       // 伺服器確認的讚數
+  isLiked: false  // 伺服器確認的點讚狀態
+});
+
+// 將真實狀態傳入 useOptimistic
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(likes, ...);
+```
+
+**2. updateFn — 樂觀更新函式（計算邏輯）**
+
+| 屬性         | 說明                                                                   |
+| ------------ | ---------------------------------------------------------------------- |
+| **類型**     | `(currentState, optimisticValue) => newState`                          |
+| **用途**     | 定義「樂觀狀態」應該如何計算，接收當前狀態和更新指令，返回新的樂觀狀態 |
+| **特性**     | 必須是**純函式**（無副作用），React 可能會多次呼叫                     |
+| **執行時機** | 當呼叫 `addOptimistic(value)` 時觸發                                   |
+
+**函式簽名：**
+
+```javascript
+(currentState, optimisticValue) => newState
+```
+
+| 參數/返回值         | 類型  | 說明                                                                         |
+| ------------------- | ----- | ---------------------------------------------------------------------------- |
+| **currentState**    | `any` | 當前的樂觀狀態（如果沒有進行中的樂觀更新，就是真實狀態 `state`）             |
+| **optimisticValue** | `any` | 呼叫 `addOptimistic(value)` 時傳入的值，可以是任何資料（物件、字串、數字等） |
+| **返回值**          | `any` | 新的樂觀狀態，這個值會立即顯示在 UI 上                                       |
+
+**範例：**
+
+```javascript
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+  likes,  // 真實狀態
+  (currentState, optimisticValue) => {
+    // currentState：當前的樂觀狀態（或真實狀態）
+    // optimisticValue：我們傳入的更新指令（這裡用不到，因為只是切換狀態）
+    
+    // 返回新的樂觀狀態
+    return {
+      count: currentState.count + (currentState.isLiked ? -1 : 1),
+      isLiked: !currentState.isLiked
+    };
+  }
+);
+
+// 使用時：
+onClick={() => updateOptimisticLikes()}  // 呼叫時會觸發 updateFn
+```
+
+**進階範例：使用 optimisticValue 傳遞指令**
+
+```javascript
+const [optimisticTodos, updateOptimisticTodos] = useOptimistic(
+  todos,
+  (currentState, { action, data }) => {  // 📌 optimisticValue 是一個物件
+    switch (action) {
+      case 'add':
+        return [...currentState, data];
+      case 'delete':
+        return currentState.filter(todo => todo.id !== data.id);
+      case 'toggle':
+        return currentState.map(todo =>
+          todo.id === data.id ? { ...todo, completed: !todo.completed } : todo
+        );
+      default:
+        return currentState;
+    }
+  }
+);
+
+// 使用時：
+updateOptimisticTodos({ action: 'add', data: newTodo });      // 新增
+updateOptimisticTodos({ action: 'delete', data: { id: 1 } }); // 刪除
+updateOptimisticTodos({ action: 'toggle', data: { id: 2 } }); // 切換
+```
+
+#### 返回值詳解
+
+`useOptimistic` 返回一個包含兩個元素的陣列：
+
+| 索引    | 名稱              | 類型                        | 說明                                                 |
+| ------- | ----------------- | --------------------------- | ---------------------------------------------------- |
+| **[0]** | `optimisticState` | `any`                       | **樂觀狀態**，這是你應該在 UI 中使用的狀態           |
+| **[1]** | `addOptimistic`   | `(optimisticValue) => void` | **觸發函式**，呼叫後會執行 `updateFn` 並更新樂觀狀態 |
+
+**1. optimisticState — 樂觀狀態（UI 顯示用）**
+
+| 屬性         | 說明                                                                                                              |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| **用途**     | 在 UI 中使用這個狀態來渲染，而不是真實的 `state`                                                                  |
+| **值的來源** | • 如果沒有進行中的樂觀更新 → 等於 `state`（真實狀態）<br/>• 如果有進行中的樂觀更新 → 等於 `updateFn` 返回的新狀態 |
+| **自動同步** | 當 `state` 更新時，`optimisticState` 會自動同步到最新的 `state` 值                                                |
+| **自動回滾** | 如果 API 失敗且你沒有更新 `state`，`optimisticState` 會自動恢復到 `state` 的值                                    |
+
+**範例：**
+
+```javascript
+const [likes, setLikes] = useState({ count: 5, isLiked: false });
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(likes, ...);
+
+return (
+  <div>
+    {/* ❌ 錯誤：不要使用真實狀態 */}
+    <p>{likes.count} 個讚</p>
+    
+    {/* ✅ 正確：使用樂觀狀態 */}
+    <p>{optimisticLikes.count} 個讚</p>
+  </div>
+);
+```
+
+**2. addOptimistic — 觸發函式（啟動樂觀更新）**
+
+| 屬性         | 說明                                                                              |
+| ------------ | --------------------------------------------------------------------------------- |
+| **類型**     | `(optimisisticValue: any) => void`                                                |
+| **用途**     | 呼叫這個函式來觸發樂觀更新，傳入的參數會作為 `updateFn` 的第二個參數              |
+| **執行時機** | 通常在執行非同步操作**之前**呼叫，先更新 UI                                       |
+| **參數**     | 可以傳入任何值（物件、字串、數字、null 等），也可以不傳（如果 `updateFn` 不需要） |
+| **副作用**   | 呼叫後會立即觸發 `updateFn` 並更新 `optimisticState`，導致重新渲染                |
+
+**範例：簡單用法（不傳參數）**
+
+```javascript
+const handleLike = async () => {
+  // 1️⃣ 立即觸發樂觀更新（UI 立刻變化）
+  updateOptimisticLikes();  // 不需要傳參數
+  
+  try {
+    // 2️⃣ 背景發送 API
+    const result = await toggleLikeAPI();
+    
+    // 3️⃣ 成功：更新真實狀態
+    setLikes(result);
+  } catch (error) {
+    // 4️⃣ 失敗：自動回滾（不需要手動處理）
+    alert('操作失敗');
+  }
+};
+```
+
+**範例：進階用法（傳遞指令）**
+
+```javascript
+const handleAddTodo = async (newTodoText) => {
+  // 1️⃣ 立即觸發樂觀更新（傳入 action 和 data）
+  updateOptimisticTodos({ 
+    action: 'add', 
+    data: { id: `temp-${Date.now()}`, text: newTodoText, completed: false }
+  });
+  
+  try {
+    // 2️⃣ 呼叫 API
+    const savedTodo = await addTodoAPI(newTodoText);
+    
+    // 3️⃣ 成功：更新真實狀態
+    setTodos(prev => [...prev, savedTodo]);
+  } catch (error) {
+    alert('新增失敗');
+  }
+};
+```
+
+#### 重要特性總結
+
+{% note warning %}
+**useOptimistic 的三大核心特性：**
+
+1. **樂觀狀態是暫時的**
+   - `optimisticState` 不是獨立的狀態，而是基於 `state` 計算出來的
+   - 當真實的 `state` 更新時（呼叫 `setState`），`optimisticState` 會**自動同步**到新的 `state` 值
+   - 這確保了 API 成功後，UI 會顯示伺服器確認的資料
+
+2. **自動回滾機制**
+   - 如果 API 失敗，你**不需要手動恢復**樂觀狀態
+   - 因為你沒有呼叫 `setState()`，所以 `state` 保持不變
+   - React 會自動讓 `optimisticState` 回滾到 `state` 的值
+   - 這大幅簡化了錯誤處理邏輯
+
+3. **渲染優先權**
+   - UI 應該使用 `optimisticState` 來渲染，而不是 `state`
+   - 這確保使用者看到的是「最新的預期狀態」
+   - 例如：點讚後立即看到愛心變紅，而不是等待 API 回應
+
+**範例說明：**
+
+```javascript
+// 初始狀態
+const [likes, setLikes] = useState({ count: 5, isLiked: false });
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(likes, ...);
+
+// 此時：optimisticLikes === { count: 5, isLiked: false }（等於 likes）
+
+// 使用者點擊「讚」
+updateOptimisticLikes();
+// 此時：optimisticLikes === { count: 6, isLiked: true }（樂觀更新）
+//      likes === { count: 5, isLiked: false }（保持不變）
+
+// 情境 A：API 成功
+await api.toggleLike();
+setLikes({ count: 6, isLiked: true });
+// 此時：optimisticLikes === { count: 6, isLiked: true }（自動同步到新的 likes）
+//      likes === { count: 6, isLiked: true }
+
+// 情境 B：API 失敗
+await api.toggleLike();  // 拋出錯誤
+// 沒有呼叫 setLikes()
+// 此時：optimisticLikes === { count: 5, isLiked: false }（自動回滾到原始 likes）
+//      likes === { count: 5, isLiked: false }（保持不變）
+```
+{% endnote %}
+
+#### 常見問題
+
+{% tabs 語法問題 %}
+<!-- tab 為什麼不直接更新 state？ -->
+**問題：為什麼不直接先更新 `state`，等 API 失敗再回滾？**
+
+```javascript
+// ❌ 錯誤做法：直接更新 state
+const handleLike = async () => {
+  const oldLikes = likes;
+  setLikes({ count: likes.count + 1, isLiked: true });  // 先更新
+  
+  try {
+    await api.toggleLike();
+  } catch (error) {
+    setLikes(oldLikes);  // ❌ 手動回滾，容易出錯
+  }
+};
+
+// ✅ 正確做法：使用 useOptimistic
+const handleLike = async () => {
+  updateOptimisticLikes();  // 樂觀更新
+  
+  try {
+    const result = await api.toggleLike();
+    setLikes(result);  // 更新真實狀態
+  } catch (error) {
+    // ✅ 自動回滾，不需要手動處理
+  }
+};
+```
+
+**原因：**
+1. 手動回滾容易出錯（如果有多個操作同時進行）
+2. 需要額外變數儲存舊狀態
+3. 無法區分「真實確認的資料」和「樂觀更新的資料」
+<!-- endtab -->
+
+<!-- tab updateFn 可以有副作用嗎？ -->
+**問題：可以在 `updateFn` 中執行副作用嗎（如 localStorage、console.log）？**
+
+```javascript
+// ❌ 錯誤：不要在 updateFn 中執行副作用
+const [optimisticData, updateOptimistic] = useOptimistic(
+  data,
+  (state, newValue) => {
+    console.log('更新中');  // ❌ 副作用
+    localStorage.setItem('data', newValue);  // ❌ 副作用
+    return [...state, newValue];
+  }
+);
+```
+
+**原因：**
+- `updateFn` 必須是**純函式**，React 可能會多次呼叫它
+- 副作用應該放在 `useEffect` 或事件處理函式中
+<!-- endtab -->
+
+<!-- tab 可以不傳 optimisticValue 嗎？ -->
+**問題：`addOptimistic()` 必須傳參數嗎？**
+
+```javascript
+// ✅ 可以不傳參數（如果 updateFn 不需要）
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+  likes,
+  (currentState) => ({  // 不使用第二個參數
+    count: currentState.count + (currentState.isLiked ? -1 : 1),
+    isLiked: !currentState.isLiked
+  })
+);
+
+updateOptimisticLikes();  // ✅ 不傳參數
+
+// ✅ 也可以傳參數（用於複雜場景）
+updateOptimisticLikes({ action: 'toggle' });
+```
+
+**結論：**
+- 如果 `updateFn` 不需要額外資訊，可以不傳參數
+- 如果需要根據不同操作更新（如 add/delete/toggle），建議傳入物件指令
+<!-- endtab -->
+{% endtabs %}
+
+### 解決方案：使用 useOptimistic
+
+讓我們用 `useOptimistic` 重構剛才的點讚功能：
+
+{% tabs useOptimistic 解決方案 %}
+<!-- tab 傳統做法❌（延遲感） -->
+```javascript 等待 API 回應才更新 UI
+function SocialPost({ post }) {
+  const [likes, setLikes] = useState({
+    count: post.likes,
+    isLiked: post.isLiked
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleLike = async () => {
+    setIsLoading(true);
+    
+    try {
+      const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
+      
+      // ⚠️ 等待 800ms 後才更新 UI
+      setLikes({
+        count: likes.count + (newLikedState ? 1 : -1),
+        isLiked: newLikedState
+      });
+    } catch (error) {
+      alert('點讚失敗');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  return (
+    <button onClick={handleLike} disabled={isLoading}>
+      {/* ⚠️ 延遲：點擊後要等 800ms 才看到愛心變化 */}
+      {isLoading ? '處理中。..' : (likes.isLiked ? '❤️ 已讚' : '🤍 讚')}
+    </button>
+  );
+}
+```
+<!-- endtab -->
+
+<!-- tab useOptimistic✅（即時反應） -->
+```javascript 立即更新 UI，背景等待 API
+import React, { useState, useOptimistic } from 'react';
+
+async function toggleLikeAPI(postId, currentLiked) {
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return !currentLiked;
+}
+
+function SocialPost({ post }) {
+  // 1️⃣ 真實狀態（來自伺服器的資料）
+  const [likes, setLikes] = useState({
+    count: post.likes,
+    isLiked: post.isLiked
+  });
+  
+  // 2️⃣ 樂觀狀態（用於 UI 顯示）
+  const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+    likes,  // 基於真實狀態
+    (currentState, optimisticValue) => {
+      // optimisticValue 是我們傳入的更新指令
+      return {
+        count: currentState.count + (currentState.isLiked ? -1 : 1),
+        isLiked: !currentState.isLiked
+      };
+    }
+  );
+  
+  const handleLike = async () => {
+    // 3️⃣ 立即更新樂觀狀態（UI 馬上變化）
+    updateOptimisticLikes();
+    
+    try {
+      // 4️⃣ 背景發送 API 請求
+      const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
+      
+      // 5️⃣ 成功：更新真實狀態（樂觀狀態會自動同步）
+      setLikes({
+        count: likes.count + (newLikedState ? 1 : -1),
+        isLiked: newLikedState
+      });
+      
+    } catch (error) {
+      // 6️⃣ 失敗：React 自動回滾到真實狀態（不需要手動處理）
+      alert('點讚失敗，請重試');
+    }
+  };
+  
+  return (
+    <div>
+      <h4>{post.title}</h4>
+      {/* ✅ 使用樂觀狀態渲染 UI */}
+      <button onClick={handleLike}>
+        {/* ✅ 點擊後立即變化，沒有延遲感 */}
+        {optimisticLikes.isLiked ? '❤️ 已讚' : '🤍 讚'}
+      </button>
+      <span>{optimisticLikes.count} 個讚</span>
+    </div>
+  );
+}
+```
+
+**對比效果：**
+
+| 操作     | 傳統做法                | useOptimistic                |
+| -------- | ----------------------- | ---------------------------- |
+| 點擊按鈕 | 顯示「處理中。..」      | 愛心立即變紅 ❤️               |
+| 等待 API | 按鈕 disabled，無法操作 | UI 已更新，可以繼續操作      |
+| API 成功 | 愛心變紅，按鈕恢復      | 保持紅色，無感知             |
+| API 失敗 | 顯示錯誤                | 愛心自動變回白色 🤍，顯示錯誤 |
+
+<!-- endtab -->
+{% endtabs %}
+
+{% note success %}
+**useOptimistic 的優勢：**
+
+1. ✅ **即時反饋**：點擊後 UI 立即變化，沒有延遲感
+2. ✅ **自動回滾**：失敗時不需要手動恢復狀態
+3. ✅ **簡化程式碼**：不需要 `isLoading` 狀態
+4. ✅ **提升體驗**：使用者感覺應用「超快」
+{% endnote %}
+
+### 完整運作流程
+
+讓我們用時間軸理解 `useOptimistic` 的完整運作過程：
+
+{% mermaid timeline %}
+    title useOptimistic 點讚流程（共 800ms）
+    
+    section 0ms：使用者點擊
+        用戶點擊「讚」按鈕
+        : 呼叫 updateOptimisticLikes()
+    
+    section 0ms：樂觀更新
+        optimisticLikes.isLiked 變為 true
+        : UI 立即顯示 ❤️ 已讚
+        : 按鈕顏色變紅
+    
+    section 1ms：發送 API
+        呼叫 toggleLikeAPI()
+        : fetch 請求發送到伺服器
+        : UI 保持 ❤️ 已讚（背景執行）
+    
+    section 800ms：API 回應
+        伺服器回傳成功
+        : 呼叫 setLikes() 更新真實狀態
+        : optimisticLikes 自動同步
+        : UI 保持 ❤️ 已讚（無變化）
+{% endmermaid %}
+
+#### 失敗情況的流程
+
+```javascript
+// 模擬 API 失敗
+async function toggleLikeAPI(postId, currentLiked) {
+  await new Promise(resolve => setTimeout(resolve, 800));
+  throw new Error('網路連接失敗'); // ❌ 失敗
+}
+
+const handleLike = async () => {
+  // 1️⃣ 0ms：立即更新樂觀狀態
+  updateOptimisticLikes(); 
+  // → optimisticLikes.isLiked = true（UI 顯示 ❤️）
+  
+  try {
+    // 2️⃣ 1ms：發送 API 請求
+    const result = await toggleLikeAPI(post.id, likes.isLiked);
+    
+    // 3️⃣ （不會執行，因為 API 失敗）
+    setLikes(result);
+    
+  } catch (error) {
+    // 4️⃣ 800ms：捕捉錯誤
+    alert('點讚失敗，請重試');
+    
+    // 5️⃣ ⚠️ 關鍵：不需要手動回滾
+    // React 會自動讓 optimisticLikes 同步到 likes（原始狀態）
+    // → optimisticLikes.isLiked = false（UI 自動恢復 🤍）
+  }
+};
+```
+
+{% note info %}
+**自動回滾的原理：**
+
+`useOptimistic` 內部維護兩個狀態：
+- **真實狀態**（`state`）：來自 `useState`，由你手動更新
+- **樂觀狀態**（`optimisticState`）：暫時的預期狀態
+
+當 `state` 更新時，`optimisticState` 會自動同步。如果 API 失敗，你沒有呼叫 `setLikes()`，所以 `state` 保持不變，`optimisticState` 就會自動回滾到 `state` 的值。
+{% endnote %}
+
+### 實際應用範例
+
+#### 範例 1：即時聊天室（發送訊息）
+
+這是 `useOptimistic` 的經典應用場景：發送訊息時立即顯示，等待伺服器確認後更新狀態。
+
+```javascript 即時聊天室
 import React, { useState, useOptimistic, useRef } from 'react';
 
-// 模擬發送訊息的 API
-async function sendMessage(message) {
+// 模擬發送訊息 API
+async function sendMessageAPI(message) {
   await new Promise(resolve => setTimeout(resolve, 1000));
   
   // 模擬 10% 的失敗率
   if (Math.random() < 0.1) {
-    throw new Error('網路錯誤，訊息發送失敗');
+    throw new Error('網路錯誤');
   }
   
   return {
@@ -7500,92 +8463,116 @@ async function sendMessage(message) {
 }
 
 function ChatApp() {
-  const [messages, setMessages] = useState([]);
+  // 1️⃣ 真實的訊息列表（已確認送出的訊息）
+  const [messages, setMessages] = useState([
+    { id: 1, text: '嗨！你好', timestamp: new Date(), status: 'sent' }
+  ]);
+  
+  // 2️⃣ 樂觀的訊息列表（包含「發送中」的訊息）
   const [optimisticMessages, addOptimisticMessage] = useOptimistic(
     messages,
-    (state, newMessage) => [...state, { ...newMessage, status: 'sending' }]
+    (currentMessages, newMessage) => {
+      // 將新訊息加入列表，標記為 'sending'
+      return [...currentMessages, { ...newMessage, status: 'sending' }];
+    }
   );
+  
   const [input, setInput] = useState('');
   const formRef = useRef();
   
-  const handleSendMessage = async (formData) => {
-    const messageText = formData.get('message');
-    if (!messageText.trim()) return;
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
     
-    const optimisticMessage = {
+    const messageText = input;
+    const tempMessage = {
       id: `temp-${Date.now()}`,
       text: messageText,
       timestamp: new Date(),
       status: 'sending'
     };
     
-    // 樂觀地添加訊息到 UI
-    addOptimisticMessage(optimisticMessage);
+    // 3️⃣ 立即顯示訊息（樂觀更新）
+    addOptimisticMessage(tempMessage);
     setInput('');
     formRef.current.reset();
     
     try {
-      // 發送訊息
-      const sentMessage = await sendMessage(messageText);
+      // 4️⃣ 發送到伺服器
+      const sentMessage = await sendMessageAPI(messageText);
       
-      // 用真實的訊息替換樂觀訊息
-      setMessages(prevMessages => [...prevMessages, sentMessage]);
+      // 5️⃣ 成功：更新真實訊息列表
+      setMessages(prev => [...prev, sentMessage]);
       
     } catch (error) {
-      // 處理失敗情況
-      console.error('發送失敗：', error);
+      // 6️⃣ 失敗：自動回滾（訊息消失），顯示錯誤
       alert('訊息發送失敗，請重試');
-      
-      // 失敗時不需要手動移除樂觀訊息，
-      // useOptimistic 會自動恢復到原始狀態
     }
   };
   
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-      <h3>即時聊天</h3>
+    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
+      <h3>即時聊天室</h3>
       
-      <div 
-        style={{ 
-          height: '300px', 
-          border: '1px solid #ccc', 
-          padding: '10px', 
-          overflowY: 'scroll',
-          marginBottom: '10px'
-        }}
-      >
-        {optimisticMessages.map((message, index) => (
+      {/* 訊息列表 */}
+      <div style={{ 
+        height: '300px', 
+        border: '1px solid #ccc', 
+        padding: '10px', 
+        overflowY: 'auto',
+        marginBottom: '10px',
+        backgroundColor: '#f9f9f9'
+      }}>
+        {optimisticMessages.map((message) => (
           <div 
-            key={message.id || index}
+            key={message.id}
             style={{
-              padding: '8px',
+              padding: '8px 12px',
               margin: '4px 0',
-              backgroundColor: message.status === 'sending' ? '#f0f8ff' : '#f5f5f5',
+              backgroundColor: message.status === 'sending' ? '#e3f2fd' : '#fff',
               borderRadius: '8px',
-              opacity: message.status === 'sending' ? 0.7 : 1
+              border: '1px solid',
+              borderColor: message.status === 'sending' ? '#90caf9' : '#e0e0e0',
+              opacity: message.status === 'sending' ? 0.7 : 1,
+              transition: 'all 0.3s'
             }}
           >
-            <div>{message.text}</div>
-            <small style={{ color: '#666' }}>
+            <div style={{ fontSize: '14px' }}>{message.text}</div>
+            <small style={{ color: '#666', fontSize: '11px' }}>
               {message.timestamp.toLocaleTimeString()} 
-              {message.status === 'sending' && ' （發送中。..)'}
+              {message.status === 'sending' && ' 📤 發送中。..'}
+              {message.status === 'sent' && ' ✅'}
             </small>
           </div>
         ))}
       </div>
       
-      <form action={handleSendMessage} ref={formRef}>
+      {/* 輸入表單 */}
+      <form onSubmit={handleSendMessage} ref={formRef}>
         <input
           type="text"
-          name="message"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="輸入訊息。.."
-          style={{ width: '70%', padding: '8px' }}
+          style={{ 
+            width: 'calc(100% - 90px)', 
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px'
+          }}
         />
         <button 
           type="submit"
-          style={{ width: '25%', padding: '8px', marginLeft: '5%' }}
+          style={{ 
+            width: '80px', 
+            padding: '10px',
+            marginLeft: '10px',
+            backgroundColor: '#1976d2',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
         >
           發送
         </button>
@@ -7595,14 +8582,240 @@ function ChatApp() {
 }
 ```
 
-```javascript useOptimistic 複雜範例
+**使用者體驗對比：**
+
+| 操作         | 傳統做法                | useOptimistic          |
+| ------------ | ----------------------- | ---------------------- |
+| 按下「發送」 | 顯示 loading...         | 訊息立即出現在列表中 📤 |
+| 等待 1 秒    | 按鈕 disabled，無法輸入 | 可以繼續輸入下一則訊息 |
+| API 成功     | 訊息出現，loading 消失  | 📤 變成 ✅（幾乎無感知） |
+| API 失敗     | 顯示錯誤                | 訊息自動消失，顯示錯誤 |
+
+#### 範例 2：待辦事項（複雜的樂觀更新）
+
+這個範例展示如何處理**多種操作**（新增、刪除、切換完成狀態）的樂觀更新。
+
+```javascript 待辦事項清單
 import React, { useState, useOptimistic } from 'react';
 
-// 模擬點讚 API
-async function toggleLike(postId, currentLiked) {
+// 模擬 API
+async function todoAPI(action, data) {
   await new Promise(resolve => setTimeout(resolve, 800));
   
-  // 模擬偶爾的網路錯誤
+  if (Math.random() < 0.1) {
+    throw new Error('操作失敗');
+  }
+  
+  switch (action) {
+    case 'add':
+      return { id: Date.now(), text: data.text, completed: false };
+    case 'toggle':
+      return { ...data, completed: !data.completed };
+    case 'delete':
+      return { id: data.id };
+    default:
+      throw new Error('未知操作');
+  }
+}
+
+function TodoApp() {
+  // 1️⃣ 真實的待辦事項列表
+  const [todos, setTodos] = useState([
+    { id: 1, text: '學習 React 19', completed: false },
+    { id: 2, text: '練習 useOptimistic', completed: true }
+  ]);
+  
+  // 2️⃣ 樂觀的待辦事項列表
+  const [optimisticTodos, updateOptimisticTodos] = useOptimistic(
+    todos,
+    (currentTodos, { action, data }) => {
+      switch (action) {
+        case 'add':
+          // 新增待辦事項
+          return [...currentTodos, { 
+            ...data, 
+            id: `temp-${Date.now()}`,
+            completed: false 
+          }];
+          
+        case 'toggle':
+          // 切換完成狀態
+          return currentTodos.map(todo =>
+            todo.id === data.id 
+              ? { ...todo, completed: !todo.completed }
+              : todo
+          );
+          
+        case 'delete':
+          // 刪除待辦事項
+          return currentTodos.filter(todo => todo.id !== data.id);
+          
+        default:
+          return currentTodos;
+      }
+    }
+  );
+  
+  const [input, setInput] = useState('');
+  
+  // 新增待辦事項
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    
+    const newTodo = { text: input };
+    
+    // 3️⃣ 樂觀更新：立即顯示新待辦事項
+    updateOptimisticTodos({ action: 'add', data: newTodo });
+    setInput('');
+    
+    try {
+      // 4️⃣ 呼叫 API
+      const savedTodo = await todoAPI('add', newTodo);
+      
+      // 5️⃣ 成功：更新真實狀態
+      setTodos(prev => [...prev, savedTodo]);
+    } catch (error) {
+      alert('新增失敗');
+    }
+  };
+  
+  // 切換完成狀態
+  const handleToggle = async (todo) => {
+    // 樂觀更新
+    updateOptimisticTodos({ action: 'toggle', data: todo });
+    
+    try {
+      await todoAPI('toggle', todo);
+      
+      // 更新真實狀態
+      setTodos(prev => prev.map(t =>
+        t.id === todo.id ? { ...t, completed: !t.completed } : t
+      ));
+    } catch (error) {
+      alert('操作失敗');
+    }
+  };
+  
+  // 刪除待辦事項
+  const handleDelete = async (todo) => {
+    // 樂觀更新
+    updateOptimisticTodos({ action: 'delete', data: todo });
+    
+    try {
+      await todoAPI('delete', todo);
+      
+      // 更新真實狀態
+      setTodos(prev => prev.filter(t => t.id !== todo.id));
+    } catch (error) {
+      alert('刪除失敗');
+    }
+  };
+  
+  return (
+    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
+      <h3>待辦事項</h3>
+      
+      {/* 新增表單 */}
+      <form onSubmit={handleAdd} style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="新增待辦事項。.."
+          style={{ 
+            width: 'calc(100% - 90px)', 
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '4px'
+          }}
+        />
+        <button 
+          type="submit"
+          style={{ 
+            width: '80px', 
+            padding: '10px',
+            marginLeft: '10px',
+            backgroundColor: '#4caf50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          新增
+        </button>
+      </form>
+      
+      {/* 待辦事項列表 */}
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {optimisticTodos.map((todo) => (
+          <li 
+            key={todo.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '10px',
+              marginBottom: '8px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '4px',
+              opacity: todo.id.toString().startsWith('temp') ? 0.6 : 1,
+              transition: 'all 0.3s'
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => handleToggle(todo)}
+              style={{ marginRight: '10px' }}
+            />
+            <span style={{ 
+              flex: 1,
+              textDecoration: todo.completed ? 'line-through' : 'none',
+              color: todo.completed ? '#999' : '#000'
+            }}>
+              {todo.text}
+              {todo.id.toString().startsWith('temp') && ' 📤'}
+            </span>
+            <button
+              onClick={() => handleDelete(todo)}
+              style={{
+                padding: '5px 10px',
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              刪除
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+{% note success %}
+**複雜應用的技巧：**
+
+1. **使用 action + data 模式**：`updateOptimisticTodos({ action: 'add', data: ... })` 讓更新邏輯更清晰
+2. **暫時 ID 標記**：用 `temp-${Date.now()}` 標記樂觀更新的項目，方便在 UI 中顯示不同樣式
+3. **統一的更新函式**：用 `switch` 處理多種操作，程式碼更簡潔
+{% endnote %}
+
+#### 範例 3：社群貼文點讚（視覺回饋）
+
+這個範例展示如何提供更豐富的視覺回饋：
+
+```javascript 社群貼文點讚
+import React, { useState, useOptimistic } from 'react';
+
+async function toggleLikeAPI(postId, currentLiked) {
+  await new Promise(resolve => setTimeout(resolve, 800));
+  
   if (Math.random() < 0.1) {
     throw new Error('網路連接失敗');
   }
@@ -7618,66 +8831,67 @@ function SocialPost({ post }) {
   
   const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
     likes,
-    (state, { type, value }) => {
-      switch (type) {
-        case 'toggle_like':
-          return {
-            count: state.count + (state.isLiked ? -1 : 1),
-            isLiked: !state.isLiked
-          };
-        default:
-          return state;
-      }
-    }
+    (currentState) => ({
+      count: currentState.count + (currentState.isLiked ? -1 : 1),
+      isLiked: !currentState.isLiked
+    })
   );
   
   const handleLike = async () => {
-    // 樂觀地更新 UI
-    updateOptimisticLikes({ type: 'toggle_like' });
+    // 樂觀更新
+    updateOptimisticLikes();
     
     try {
-      const newLikedState = await toggleLike(post.id, likes.isLiked);
+      const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
       
-      // 成功時更新真實狀態
-      setLikes(prevLikes => ({
-        count: prevLikes.count + (newLikedState ? 1 : -1),
+      // 更新真實狀態
+      setLikes(prev => ({
+        count: prev.count + (newLikedState ? 1 : -1),
         isLiked: newLikedState
       }));
       
     } catch (error) {
-      console.error('點讚失敗：', error);
       alert('點讚失敗，請重試');
-      
-      // useOptimistic 會自動恢復到原始狀態
     }
   };
   
   return (
     <div style={{ 
       border: '1px solid #ddd', 
-      borderRadius: '8px', 
-      padding: '16px', 
-      margin: '16px 0' 
+      borderRadius: '12px', 
+      padding: '20px', 
+      margin: '16px 0',
+      backgroundColor: '#fff',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     }}>
-      <h4>{post.title}</h4>
-      <p>{post.content}</p>
+      <h4 style={{ margin: '0 0 8px 0' }}>{post.title}</h4>
+      <p style={{ color: '#666', margin: '0 0 16px 0' }}>{post.content}</p>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button
           onClick={handleLike}
           style={{
-            background: optimisticLikes.isLiked ? '#ff6b6b' : '#f1f1f1',
-            color: optimisticLikes.isLiked ? 'white' : 'black',
+            background: optimisticLikes.isLiked ? 'linear-gradient(135deg, #ff6b6b, #ee5a6f)' : '#f1f1f1',
+            color: optimisticLikes.isLiked ? 'white' : '#333',
             border: 'none',
-            borderRadius: '4px',
-            padding: '8px 16px',
-            cursor: 'pointer'
+            borderRadius: '20px',
+            padding: '8px 20px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            transition: 'all 0.3s',
+            boxShadow: optimisticLikes.isLiked ? '0 4px 12px rgba(255,107,107,0.3)' : 'none',
+            transform: optimisticLikes.isLiked ? 'scale(1.05)' : 'scale(1)'
           }}
         >
           {optimisticLikes.isLiked ? '❤️ 已讚' : '🤍 讚'}
         </button>
         
-        <span>
+        <span style={{ 
+          fontSize: '14px', 
+          color: '#666',
+          fontWeight: '500'
+        }}>
           {optimisticLikes.count} 個讚
         </span>
       </div>
@@ -7704,7 +8918,7 @@ function SocialFeed() {
   ];
   
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       <h3>社群動態</h3>
       {posts.map(post => (
         <SocialPost key={post.id} post={post} />
@@ -7714,19 +8928,219 @@ function SocialFeed() {
 }
 ```
 
-{% mermaid graph TD %}
-    A["用戶點擊"] --> B["樂觀更新 UI"]
-    B --> C["發送 API 請求"]
-    C --> D{"API 成功？"}
-    D -->|是| E["更新真實狀態"]
-    D -->|否| F["恢復原始狀態"]
-    E --> G["UI 保持更新"]
-    F --> H["顯示錯誤訊息"]
-    
-    style B fill:#e8f5e8
-    style E fill:#e1f5fe
-    style F fill:#ffebee
-{% endmermaid %}
+### useOptimistic vs 傳統做法
+
+{% tabs 對比 %}
+<!-- tab 功能對比 -->
+| 面向             | 傳統做法                | useOptimistic              |
+| ---------------- | ----------------------- | -------------------------- |
+| **UI 更新時機**  | 等待 API 回應後更新     | 立即更新                   |
+| **使用者體驗**   | 有延遲感，感覺「慢」    | 即時反饋，感覺「快」       |
+| **Loading 狀態** | 需要顯示 loading 指示器 | 不需要（或僅顯示視覺標記） |
+| **錯誤處理**     | 需要手動恢復原始狀態    | 自動回滾                   |
+| **程式碼複雜度** | 需要管理多個狀態        | 簡潔，React 自動處理       |
+| **適用場景**     | 重要的不可逆操作        | 可逆的互動操作             |
+<!-- endtab -->
+
+<!-- tab 程式碼行數對比 -->
+**傳統做法：**
+
+```javascript
+const [likes, setLikes] = useState(initialLikes);
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState(null);
+
+const handleLike = async () => {
+  setIsLoading(true);
+  setError(null);
+  
+  try {
+    const result = await toggleLikeAPI();
+    setLikes(result);
+  } catch (err) {
+    setError(err);
+    // 需要手動恢復原始狀態（如果已更新 UI）
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+// UI 需要處理 loading 和 error 狀態
+```
+
+**useOptimistic：**
+
+```javascript
+const [likes, setLikes] = useState(initialLikes);
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+  likes,
+  (state) => ({ ...state, isLiked: !state.isLiked })
+);
+
+const handleLike = async () => {
+  updateOptimisticLikes();
+  
+  try {
+    const result = await toggleLikeAPI();
+    setLikes(result);
+  } catch (err) {
+    alert('操作失敗');
+    // 自動回滾，不需要手動處理
+  }
+};
+
+// UI 只需要使用 optimisticLikes
+```
+
+**程式碼行數：傳統做法 ~20 行 vs useOptimistic ~12 行**
+<!-- endtab -->
+{% endtabs %}
+
+### 何時使用 useOptimistic？
+
+#### ✅ 適合使用的場景
+
+| 場景         | 說明                       | 範例                        |
+| ------------ | -------------------------- | --------------------------- |
+| **社群互動** | 點讚、收藏、關注等可逆操作 | Facebook 點讚、Twitter 收藏 |
+| **即時通訊** | 發送訊息、已讀標記         | WhatsApp、Messenger         |
+| **待辦清單** | 新增、刪除、完成待辦事項   | Todoist、Microsoft To Do    |
+| **購物車**   | 新增商品、調整數量         | 電商平台購物車              |
+| **內容編輯** | 自動儲存草稿               | Google Docs、Notion         |
+
+#### ❌ 不適合使用的場景
+
+| 場景         | 原因                   | 建議做法                |
+| ------------ | ---------------------- | ----------------------- |
+| **金融交易** | 不可逆，必須確認成功   | 等待 API 確認           |
+| **刪除帳號** | 重要操作，需要二次確認 | 顯示確認彈窗 + 等待 API |
+| **上傳檔案** | 需要顯示進度           | 使用 loading 進度條     |
+| **表單驗證** | 需要後端驗證規則       | 等待伺服器回應          |
+| **權限變更** | 安全敏感操作           | 等待 API 確認           |
+
+{% note warning %}
+**判斷原則：**
+
+問自己：「如果這個操作失敗，使用者會不會損失重要資料或金錢？」
+
+- **不會** → 可以使用 `useOptimistic`
+- **會** → 使用傳統做法，等待 API 確認
+{% endnote %}
+
+### 最佳實踐
+
+#### 1. 為樂觀更新提供視覺回饋
+
+```javascript
+// ✅ 好的做法：用不同樣式標示「發送中」的狀態
+{optimisticMessages.map((message) => (
+  <div style={{
+    opacity: message.status === 'sending' ? 0.6 : 1,
+    backgroundColor: message.status === 'sending' ? '#e3f2fd' : '#fff'
+  }}>
+    {message.text}
+    {message.status === 'sending' && ' 📤'}
+  </div>
+))}
+
+// ❌ 不好的做法：完全看不出是「發送中」還是「已送達」
+{optimisticMessages.map((message) => (
+  <div>{message.text}</div>
+))}
+```
+
+#### 2. 提供友善的錯誤提示
+
+```javascript
+// ✅ 好的做法：具體說明錯誤原因
+catch (error) {
+  if (error.message === 'Network Error') {
+    alert('網路連接失敗，請檢查網路後重試');
+  } else {
+    alert('操作失敗，請稍後再試');
+  }
+}
+
+// ❌ 不好的做法：只顯示技術錯誤訊息
+catch (error) {
+  alert(error.message); // 使用者看不懂 "500 Internal Server Error"
+}
+```
+
+#### 3. 避免在樂觀更新中執行副作用
+
+```javascript
+// ❌ 錯誤：在 updateFn 中執行副作用
+const [optimisticData, updateOptimistic] = useOptimistic(
+  data,
+  (state, newValue) => {
+    console.log('更新中'); // ❌ 副作用
+    localStorage.setItem('data', newValue); // ❌ 副作用
+    return [...state, newValue];
+  }
+);
+
+// ✅ 正確：updateFn 應該是純函式
+const [optimisticData, updateOptimistic] = useOptimistic(
+  data,
+  (state, newValue) => {
+    return [...state, newValue]; // ✅ 純函式
+  }
+);
+```
+
+#### 4. 確保真實狀態最終會更新
+
+```javascript
+// ❌ 錯誤：只更新樂觀狀態，忘記更新真實狀態
+const handleAdd = async (item) => {
+  updateOptimisticItems({ action: 'add', data: item });
+  await addItemAPI(item);
+  // ❌ 忘記呼叫 setItems()
+};
+
+// ✅ 正確：記得更新真實狀態
+const handleAdd = async (item) => {
+  updateOptimisticItems({ action: 'add', data: item });
+  
+  try {
+    const savedItem = await addItemAPI(item);
+    setItems(prev => [...prev, savedItem]); // ✅ 更新真實狀態
+  } catch (error) {
+    alert('新增失敗');
+  }
+};
+```
+
+### 總結
+
+{% note success %}
+**重點回顧：**
+
+| 主題         | 重點                                                                      |
+| ------------ | ------------------------------------------------------------------------- |
+| **核心概念** | 先更新 UI（樂觀），再等待 API 確認                                        |
+| **優勢**     | 即時反饋、自動回滾、簡化程式碼、提升體驗                                  |
+| **語法**     | `const [optimisticState, addOptimistic] = useOptimistic(state, updateFn)` |
+| **適用場景** | 可逆的互動操作（點讚、發送訊息、待辦事項）                                |
+| **不適用**   | 不可逆的重要操作（金融交易、刪除帳號）                                    |
+| **最佳實踐** | 提供視覺回饋、友善錯誤提示、確保真實狀態更新                              |
+{% endnote %}
+
+**與其他 Hook 的關係：**
+
+- **與 `useState`**：`useOptimistic` 基於 `useState` 的真實狀態，產生樂觀狀態
+- **與 `useActionState`**：可以結合使用，`useActionState` 處理表單提交，`useOptimistic` 處理即時反饋
+- **與 `useTransition`**：都提升使用者體驗，但 `useTransition` 處理渲染優先級，`useOptimistic` 處理資料更新
+
+**實際應用建議：**
+
+1. **社群應用**：點讚、留言、分享 → 絕對適合
+2. **協作工具**：即時編輯、待辦清單 → 非常適合
+3. **電商平台**：加入購物車 → 適合；結帳 → 不適合
+4. **金融應用**：交易、轉帳 → 不適合
+
+`useOptimistic` 是 React 19 最強大的使用者體驗提升工具，善用它能讓你的應用「快如閃電」！⚡
 
 {% note success %}
 **React 19 新功能的優勢：**

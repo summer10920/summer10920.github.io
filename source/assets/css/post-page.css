@@ -33,7 +33,9 @@
     h1,
     h2,
     h3 {
-      margin-top: 3rem;
+      margin-top: 2rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
     }
 
     ol,
@@ -189,7 +191,7 @@
 
     .tabs {
       .nav-tabs .tab {
-        background: #fffe;
+        background: #f6eaef;
         transition: 0.5s;
       }
 
