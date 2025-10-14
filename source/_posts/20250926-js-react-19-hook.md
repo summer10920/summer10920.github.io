@@ -55,73 +55,31 @@ React Hooks 有嚴格的使用規則，必須遵循以下原則：
 
 以下是官方推薦的所有 Hooks 分類：
 
-{% mermaid graph LR %}
-    %% 節點定義
-    A["React 19 官方 Hooks"]
-    B["基礎 Hooks"]
-    C["效能優化 Hooks"]
-    D["進階 Hooks"]
-    E["React 19 新增"]
-    F["特殊用途 Hooks"]
+{% mermaid graph TD %}
+    A["選擇合適的 Hook"]
+    B["基礎需求"]
+    C["效能優化"]
+    D["複雜狀態"]
+    E["特殊用途"]
     
-    %% 關聯線
+    B --> B1["useState<br/>useEffect<br/>useContext<br/>useRef"]
+    C --> C1["useCallback<br/>useMemo<br/>useDeferredValue<br/>useTransition"]
+    D --> D1["useReducer<br/>useImperativeHandle<br/>useSyncExternalStore"]
+    E --> E1["useId<br/>useDebugValue<br/>useInsertionEffect<br/>useLayoutEffect"]
+    
     A --> B
     A --> C
     A --> D
     A --> E
+    
+    F["React 19 新增"] --> F1["useActionState<br/>useOptimistic"]
     A --> F
     
-    B --> B1["useState"]
-    B --> B2["useEffect"]
-    B --> B3["useContext"]
-    B --> B4["useRef"]
-    
-    C --> C1["useCallback"]
-    C --> C2["useMemo"]
-    C --> C3["useDeferredValue"]
-    C --> C4["useTransition"]
-    
-    D --> D1["useReducer"]
-    D --> D2["useImperativeHandle"]
-    D --> D3["useSyncExternalStore"]
-    
-    E --> E1["useActionState"]
-    E --> E2["useOptimistic"]
-    
-    F --> F1["useId"]
-    F --> F2["useDebugValue"]
-    F --> F3["useInsertionEffect"]
-    F --> F4["useLayoutEffect"]
-
-    %% 配色設定
-    style B fill:#E3F6FF,stroke:#1890FF,stroke-width:2px
-    style B1 fill:#E3F6FF,stroke:#1890FF
-    style B2 fill:#E3F6FF,stroke:#1890FF
-    style B3 fill:#E3F6FF,stroke:#1890FF
-    style B4 fill:#E3F6FF,stroke:#1890FF
-
-    style C fill:#FFF7E3,stroke:#FFB300,stroke-width:2px
-    style C1 fill:#FFF7E3,stroke:#FFB300
-    style C2 fill:#FFF7E3,stroke:#FFB300
-    style C3 fill:#FFF7E3,stroke:#FFB300
-    style C4 fill:#FFF7E3,stroke:#FFB300
-
-    style D fill:#F3E8FF,stroke:#9C27B0,stroke-width:2px
-    style D1 fill:#F3E8FF,stroke:#9C27B0
-    style D2 fill:#F3E8FF,stroke:#9C27B0
-    style D3 fill:#F3E8FF,stroke:#9C27B0
-
-    style E fill:#E8F5E9,stroke:#43A047,stroke-width:2px
-    style E1 fill:#E8F5E9,stroke:#43A047
-    style E2 fill:#E8F5E9,stroke:#43A047
-
-    style F fill:#FFF0F0,stroke:#F44336,stroke-width:2px
-    style F1 fill:#FFF0F0,stroke:#F44336
-    style F2 fill:#FFF0F0,stroke:#F44336
-    style F3 fill:#FFF0F0,stroke:#F44336
-    style F4 fill:#FFF0F0,stroke:#F44336
-
-    style A fill:#F5F5F5,stroke:#607D8B,stroke-width:2.5px
+    style B1 fill:#e8f5e8
+    style C1 fill:#e1f5fe
+    style D1 fill:#fff3e0
+    style E1 fill:#f3e5f5
+    style F1 fill:#ffebee
 {% endmermaid %}
 
 # 基礎 Hooks
@@ -6591,6 +6549,11 @@ function App() {
 
 React 19 引入了兩個全新的 Hooks，進一步提升了表單處理和樂觀更新的開發體驗。
 
+- `useActionState` 簡化了表單狀態管理，提供更好的用戶體驗
+- `useOptimistic` 讓 UI 反應更加即時，減少用戶等待時間
+- 兩者都與 Server Components 和 Server Actions 完美整合
+- 提供更直覺的錯誤處理和恢復機制
+
 ## useActionState
 
 在傳統的表單處理中，我們需要手動管理各種狀態：表單提交中（loading）、錯誤訊息、成功訊息、表單資料等。這會導致：
@@ -7923,7 +7886,7 @@ function SocialPost({ post }) {
 `useOptimistic` 的語法設計非常精簡，只需要傳入兩個參數，就能實現樂觀更新功能。它的核心理念是：**維護兩個狀態（真實狀態 + 樂觀狀態），讓 UI 優先顯示樂觀狀態**。當 API 成功時，樂觀狀態自動同步到真實狀態；當 API 失敗時，樂觀狀態自動回滾到真實狀態。
 
 ```javascript
-const [optimisticState, addOptimistic] = useOptimistic(
+const [optimisticState, addOptimistic] = useOptimistic(  // 返回 樂觀狀態（UI 顯示用） + 觸發函式（啟動樂觀更新）
   state,           // 參數 1：真實的狀態（來自 useState）
   updateFn         // 參數 2：樂觀更新函式（定義如何計算樂觀狀態）
 );
@@ -8437,9 +8400,9 @@ const handleLike = async () => {
 {% endnote %}
 
 ### 實際應用範例
+在這一節，我們將透過實際範例展示 `useOptimistic` 在樂觀 UI 更新的應用。你將看到如何讓使用者體驗「點下去馬上看見變化」，不必等待伺服器回應也能及時提供回饋，並且遇到錯誤時能自動回滾，讓開發流程更簡潔自然。
 
 #### 範例 1：即時聊天室（發送訊息）
-
 這是 `useOptimistic` 的經典應用場景：發送訊息時立即顯示，等待伺服器確認後更新狀態。
 
 ```javascript 即時聊天室
@@ -8511,34 +8474,15 @@ function ChatApp() {
   };
   
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
+    <div>
       <h3>即時聊天室</h3>
       
       {/* 訊息列表 */}
-      <div style={{ 
-        height: '300px', 
-        border: '1px solid #ccc', 
-        padding: '10px', 
-        overflowY: 'auto',
-        marginBottom: '10px',
-        backgroundColor: '#f9f9f9'
-      }}>
+      <div>
         {optimisticMessages.map((message) => (
-          <div 
-            key={message.id}
-            style={{
-              padding: '8px 12px',
-              margin: '4px 0',
-              backgroundColor: message.status === 'sending' ? '#e3f2fd' : '#fff',
-              borderRadius: '8px',
-              border: '1px solid',
-              borderColor: message.status === 'sending' ? '#90caf9' : '#e0e0e0',
-              opacity: message.status === 'sending' ? 0.7 : 1,
-              transition: 'all 0.3s'
-            }}
-          >
-            <div style={{ fontSize: '14px' }}>{message.text}</div>
-            <small style={{ color: '#666', fontSize: '11px' }}>
+          <div key={message.id}>
+            <div>{message.text}</div>
+            <small>
               {message.timestamp.toLocaleTimeString()} 
               {message.status === 'sending' && ' 📤 發送中。..'}
               {message.status === 'sent' && ' ✅'}
@@ -8554,26 +8498,8 @@ function ChatApp() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="輸入訊息。.."
-          style={{ 
-            width: 'calc(100% - 90px)', 
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '4px'
-          }}
         />
-        <button 
-          type="submit"
-          style={{ 
-            width: '80px', 
-            padding: '10px',
-            marginLeft: '10px',
-            backgroundColor: '#1976d2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
+        <button type="submit">
           發送
         </button>
       </form>
@@ -8590,6 +8516,58 @@ function ChatApp() {
 | 等待 1 秒    | 按鈕 disabled，無法輸入 | 可以繼續輸入下一則訊息 |
 | API 成功     | 訊息出現，loading 消失  | 📤 變成 ✅（幾乎無感知） |
 | API 失敗     | 顯示錯誤                | 訊息自動消失，顯示錯誤 |
+
+{% note warning %}
+**⚠️ 效能問題：函數重新創建**
+
+在上述範例中，`ChatApp` 組件使用了 `useState` 管理 `messages` 和 `input` 兩個 state。這意味著：
+- 每次**輸入框內容改變**時（`setInput`），整個 `ChatApp` 會重新渲染
+- 每次**訊息更新**時（`setMessages`），整個 `ChatApp` 也會重新渲染
+
+由於 `handleSendMessage` 函數定義在組件內部，它會在每次 `ChatApp` 渲染時重新創建。
+
+**解決方案：使用 `useCallback` 避免重複建立**
+
+```javascript
+import React, { useState, useOptimistic, useRef, useCallback } from 'react';
+
+function ChatApp() {
+  const [messages, setMessages] = useState([...]);
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(messages, ...);
+  const [input, setInput] = useState('');
+  const formRef = useRef();
+  
+  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  const handleSendMessage = useCallback(async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    
+    const messageText = input;
+    const tempMessage = {
+      id: `temp-${Date.now()}`,
+      text: messageText,
+      timestamp: new Date(),
+      status: 'sending'
+    };
+    
+    addOptimisticMessage(tempMessage);
+    setInput('');
+    formRef.current?.reset();
+    
+    try {
+      const sentMessage = await sendMessageAPI(messageText);
+      setMessages(prev => [...prev, sentMessage]);
+    } catch (error) {
+      alert('訊息發送失敗，請重試');
+    }
+  }, [input]); // 依賴 input，因為函數內部使用了 input
+  
+  // ... return JSX
+}
+```
+
+**注意**：`handleSendMessage` 需要依賴 `input`，因為函數內部使用了 `input.trim()` 和 `input` 的值。這意味著每次輸入時函數還是會重新創建，但至少不會因為 `messages` 更新而重新創建。
+{% endnote %}
 
 #### 範例 2：待辦事項（複雜的樂觀更新）
 
@@ -8637,7 +8615,6 @@ function TodoApp() {
             id: `temp-${Date.now()}`,
             completed: false 
           }];
-          
         case 'toggle':
           // 切換完成狀態
           return currentTodos.map(todo =>
@@ -8645,11 +8622,9 @@ function TodoApp() {
               ? { ...todo, completed: !todo.completed }
               : todo
           );
-          
         case 'delete':
           // 刪除待辦事項
           return currentTodos.filter(todo => todo.id !== data.id);
-          
         default:
           return currentTodos;
       }
@@ -8713,80 +8688,39 @@ function TodoApp() {
   };
   
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto', padding: '20px' }}>
+    <div>
       <h3>待辦事項</h3>
       
       {/* 新增表單 */}
-      <form onSubmit={handleAdd} style={{ marginBottom: '20px' }}>
+      <form onSubmit={handleAdd}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="新增待辦事項。.."
-          style={{ 
-            width: 'calc(100% - 90px)', 
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '4px'
-          }}
         />
         <button 
           type="submit"
-          style={{ 
-            width: '80px', 
-            padding: '10px',
-            marginLeft: '10px',
-            backgroundColor: '#4caf50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
         >
           新增
         </button>
       </form>
       
       {/* 待辦事項列表 */}
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+      <ul>
         {optimisticTodos.map((todo) => (
-          <li 
-            key={todo.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '10px',
-              marginBottom: '8px',
-              backgroundColor: '#f5f5f5',
-              borderRadius: '4px',
-              opacity: todo.id.toString().startsWith('temp') ? 0.6 : 1,
-              transition: 'all 0.3s'
-            }}
-          >
+          <li key={todo.id}>
             <input
               type="checkbox"
               checked={todo.completed}
               onChange={() => handleToggle(todo)}
-              style={{ marginRight: '10px' }}
             />
-            <span style={{ 
-              flex: 1,
-              textDecoration: todo.completed ? 'line-through' : 'none',
-              color: todo.completed ? '#999' : '#000'
-            }}>
+            <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
               {todo.text}
               {todo.id.toString().startsWith('temp') && ' 📤'}
             </span>
             <button
               onClick={() => handleDelete(todo)}
-              style={{
-                padding: '5px 10px',
-                backgroundColor: '#f44336',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
             >
               刪除
             </button>
@@ -8806,6 +8740,82 @@ function TodoApp() {
 3. **統一的更新函式**：用 `switch` 處理多種操作，程式碼更簡潔
 {% endnote %}
 
+{% note warning %}
+**⚠️ 效能問題：函數重新創建**
+
+在上述範例中，`TodoApp` 組件使用了 `useState` 管理 `todos` 和 `input` 兩個 state。這意味著：
+- 每次**輸入框內容改變**時（`setInput`），整個 `TodoApp` 會重新渲染
+- 每次**待辦事項更新**時（`setTodos`），整個 `TodoApp` 也會重新渲染
+
+由於 `handleAdd`、`handleToggle`、`handleDelete` 這三個函數定義在組件內部，它們會在每次 `TodoApp` 渲染時重新創建。這可能造成以下問題：
+
+1. **子組件不必要的重新渲染**：如果這些函數作為 props 傳遞給子組件，會導致子組件即使使用 `React.memo` 也會重新渲染（因為函數引用改變了）
+2. **列表項目全部重新渲染**：在 `optimisticTodos.map()` 中，每個 `<li>` 的 `onChange` 和 `onClick` 都是新的函數引用，導致所有列表項目都重新渲染
+3. **useEffect 依賴問題**：如果函數作為 useEffect 的依賴項，會導致 effect 不必要地重新執行
+
+**解決方案：使用 `useCallback` 避免重複建立**
+
+透過 `useCallback` 可以讓函數引用保持穩定，只有在依賴項改變時才重新創建。這樣即使 `TodoApp` 因為 `input` 或 `todos` 改變而重新渲染，這些 handler 函數的引用也不會改變：
+
+```javascript
+import React, { useState, useOptimistic, useCallback } from 'react';
+
+function TodoApp() {
+  const [todos, setTodos] = useState([...]);
+  const [optimisticTodos, updateOptimisticTodos] = useOptimistic(todos, ...);
+  const [input, setInput] = useState('');
+  
+  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  const handleAdd = useCallback(async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    
+    const newTodo = { text: input };
+    updateOptimisticTodos({ action: 'add', data: newTodo });
+    setInput('');
+    
+    try {
+      const savedTodo = await todoAPI('add', newTodo);
+      setTodos(prev => [...prev, savedTodo]);
+    } catch (error) {
+      alert('新增失敗');
+    }
+  }, [input]); // 只有 input 改變時才重新創建
+  
+  const handleToggle = useCallback(async (todo) => {
+    updateOptimisticTodos({ action: 'toggle', data: todo });
+    try {
+      await todoAPI('toggle', todo);
+      setTodos(prev => prev.map(t =>
+        t.id === todo.id ? { ...t, completed: !t.completed } : t
+      ));
+    } catch (error) {
+      alert('操作失敗');
+    }
+  }, []); // 沒有外部依賴
+  
+  const handleDelete = useCallback(async (todo) => {
+    updateOptimisticTodos({ action: 'delete', data: todo });
+    try {
+      await todoAPI('delete', todo);
+      setTodos(prev => prev.filter(t => t.id !== todo.id));
+    } catch (error) {
+      alert('刪除失敗');
+    }
+  }, []); // 沒有外部依賴
+  
+  // ... return JSX
+}
+```
+
+**何時需要優化？**
+- ✅ 函數作為 props 傳給子組件時
+- ✅ 列表中每個項目都使用這個函數時
+- ✅ 函數作為 useEffect 等 Hook 的依賴時
+- ❌ 簡單的示範範例 （為了可讀性可以省略）
+- ❌ 父組件很少重新渲染時
+{% endnote %}
+
 #### 範例 3：社群貼文點讚（視覺回饋）
 
 這個範例展示如何提供更豐富的視覺回饋：
@@ -8813,22 +8823,23 @@ function TodoApp() {
 ```javascript 社群貼文點讚
 import React, { useState, useOptimistic } from 'react';
 
+// 模擬後端切換點讚狀態
 async function toggleLikeAPI(postId, currentLiked) {
   await new Promise(resolve => setTimeout(resolve, 800));
-  
   if (Math.random() < 0.1) {
     throw new Error('網路連接失敗');
   }
-  
   return !currentLiked;
 }
 
 function SocialPost({ post }) {
+  // 管理真實點讚狀態
   const [likes, setLikes] = useState({
     count: post.likes,
     isLiked: post.isLiked
   });
-  
+
+  // 管理樂觀更新後的畫面狀態
   const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
     likes,
     (currentState) => ({
@@ -8836,62 +8847,29 @@ function SocialPost({ post }) {
       isLiked: !currentState.isLiked
     })
   );
-  
+
   const handleLike = async () => {
-    // 樂觀更新
     updateOptimisticLikes();
-    
     try {
       const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
-      
-      // 更新真實狀態
       setLikes(prev => ({
         count: prev.count + (newLikedState ? 1 : -1),
         isLiked: newLikedState
       }));
-      
     } catch (error) {
       alert('點讚失敗，請重試');
     }
   };
-  
+
   return (
-    <div style={{ 
-      border: '1px solid #ddd', 
-      borderRadius: '12px', 
-      padding: '20px', 
-      margin: '16px 0',
-      backgroundColor: '#fff',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-    }}>
-      <h4 style={{ margin: '0 0 8px 0' }}>{post.title}</h4>
-      <p style={{ color: '#666', margin: '0 0 16px 0' }}>{post.content}</p>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <button
-          onClick={handleLike}
-          style={{
-            background: optimisticLikes.isLiked ? 'linear-gradient(135deg, #ff6b6b, #ee5a6f)' : '#f1f1f1',
-            color: optimisticLikes.isLiked ? 'white' : '#333',
-            border: 'none',
-            borderRadius: '20px',
-            padding: '8px 20px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
-            transition: 'all 0.3s',
-            boxShadow: optimisticLikes.isLiked ? '0 4px 12px rgba(255,107,107,0.3)' : 'none',
-            transform: optimisticLikes.isLiked ? 'scale(1.05)' : 'scale(1)'
-          }}
-        >
+    <div>
+      <h4>{post.title}</h4>
+      <p>{post.content}</p>
+      <div>
+        <button onClick={handleLike}>
           {optimisticLikes.isLiked ? '❤️ 已讚' : '🤍 讚'}
         </button>
-        
-        <span style={{ 
-          fontSize: '14px', 
-          color: '#666',
-          fontWeight: '500'
-        }}>
+        <span>
           {optimisticLikes.count} 個讚
         </span>
       </div>
@@ -8916,9 +8894,9 @@ function SocialFeed() {
       isLiked: true
     }
   ];
-  
+
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+    <div>
       <h3>社群動態</h3>
       {posts.map(post => (
         <SocialPost key={post.id} post={post} />
@@ -8928,227 +8906,107 @@ function SocialFeed() {
 }
 ```
 
-### useOptimistic vs 傳統做法
-
-{% tabs 對比 %}
-<!-- tab 功能對比 -->
-| 面向             | 傳統做法                | useOptimistic              |
-| ---------------- | ----------------------- | -------------------------- |
-| **UI 更新時機**  | 等待 API 回應後更新     | 立即更新                   |
-| **使用者體驗**   | 有延遲感，感覺「慢」    | 即時反饋，感覺「快」       |
-| **Loading 狀態** | 需要顯示 loading 指示器 | 不需要（或僅顯示視覺標記） |
-| **錯誤處理**     | 需要手動恢復原始狀態    | 自動回滾                   |
-| **程式碼複雜度** | 需要管理多個狀態        | 簡潔，React 自動處理       |
-| **適用場景**     | 重要的不可逆操作        | 可逆的互動操作             |
-<!-- endtab -->
-
-<!-- tab 程式碼行數對比 -->
-**傳統做法：**
-
-```javascript
-const [likes, setLikes] = useState(initialLikes);
-const [isLoading, setIsLoading] = useState(false);
-const [error, setError] = useState(null);
-
-const handleLike = async () => {
-  setIsLoading(true);
-  setError(null);
-  
-  try {
-    const result = await toggleLikeAPI();
-    setLikes(result);
-  } catch (err) {
-    setError(err);
-    // 需要手動恢復原始狀態（如果已更新 UI）
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-// UI 需要處理 loading 和 error 狀態
-```
-
-**useOptimistic：**
-
-```javascript
-const [likes, setLikes] = useState(initialLikes);
-const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
-  likes,
-  (state) => ({ ...state, isLiked: !state.isLiked })
-);
-
-const handleLike = async () => {
-  updateOptimisticLikes();
-  
-  try {
-    const result = await toggleLikeAPI();
-    setLikes(result);
-  } catch (err) {
-    alert('操作失敗');
-    // 自動回滾，不需要手動處理
-  }
-};
-
-// UI 只需要使用 optimisticLikes
-```
-
-**程式碼行數：傳統做法 ~20 行 vs useOptimistic ~12 行**
-<!-- endtab -->
-{% endtabs %}
-
-### 何時使用 useOptimistic？
-
-#### ✅ 適合使用的場景
-
-| 場景         | 說明                       | 範例                        |
-| ------------ | -------------------------- | --------------------------- |
-| **社群互動** | 點讚、收藏、關注等可逆操作 | Facebook 點讚、Twitter 收藏 |
-| **即時通訊** | 發送訊息、已讀標記         | WhatsApp、Messenger         |
-| **待辦清單** | 新增、刪除、完成待辦事項   | Todoist、Microsoft To Do    |
-| **購物車**   | 新增商品、調整數量         | 電商平台購物車              |
-| **內容編輯** | 自動儲存草稿               | Google Docs、Notion         |
-
-#### ❌ 不適合使用的場景
-
-| 場景         | 原因                   | 建議做法                |
-| ------------ | ---------------------- | ----------------------- |
-| **金融交易** | 不可逆，必須確認成功   | 等待 API 確認           |
-| **刪除帳號** | 重要操作，需要二次確認 | 顯示確認彈窗 + 等待 API |
-| **上傳檔案** | 需要顯示進度           | 使用 loading 進度條     |
-| **表單驗證** | 需要後端驗證規則       | 等待伺服器回應          |
-| **權限變更** | 安全敏感操作           | 等待 API 確認           |
-
 {% note warning %}
-**判斷原則：**
+**⚠️ 效能問題：函數重新創建**
 
-問自己：「如果這個操作失敗，使用者會不會損失重要資料或金錢？」
+在上述範例中，`SocialPost` 組件使用了 `useState` 管理 `likes` state。這意味著每次點讚後（`setLikes`），整個 `SocialPost` 會重新渲染。
 
-- **不會** → 可以使用 `useOptimistic`
-- **會** → 使用傳統做法，等待 API 確認
-{% endnote %}
+由於 `handleLike` 函數定義在組件內部，它會在每次 `SocialPost` 渲染時重新創建。雖然這個範例中影響較小（只有一個按鈕使用這個函數），但在有多個互動元素時，使用 `useCallback` 仍是好習慣。
 
-### 最佳實踐
-
-#### 1. 為樂觀更新提供視覺回饋
+**解決方案：使用 `useCallback` 避免重複建立**
 
 ```javascript
-// ✅ 好的做法：用不同樣式標示「發送中」的狀態
-{optimisticMessages.map((message) => (
-  <div style={{
-    opacity: message.status === 'sending' ? 0.6 : 1,
-    backgroundColor: message.status === 'sending' ? '#e3f2fd' : '#fff'
-  }}>
-    {message.text}
-    {message.status === 'sending' && ' 📤'}
-  </div>
-))}
+import React, { useState, useOptimistic, useCallback } from 'react';
 
-// ❌ 不好的做法：完全看不出是「發送中」還是「已送達」
-{optimisticMessages.map((message) => (
-  <div>{message.text}</div>
-))}
-```
-
-#### 2. 提供友善的錯誤提示
-
-```javascript
-// ✅ 好的做法：具體說明錯誤原因
-catch (error) {
-  if (error.message === 'Network Error') {
-    alert('網路連接失敗，請檢查網路後重試');
-  } else {
-    alert('操作失敗，請稍後再試');
-  }
-}
-
-// ❌ 不好的做法：只顯示技術錯誤訊息
-catch (error) {
-  alert(error.message); // 使用者看不懂 "500 Internal Server Error"
-}
-```
-
-#### 3. 避免在樂觀更新中執行副作用
-
-```javascript
-// ❌ 錯誤：在 updateFn 中執行副作用
-const [optimisticData, updateOptimistic] = useOptimistic(
-  data,
-  (state, newValue) => {
-    console.log('更新中'); // ❌ 副作用
-    localStorage.setItem('data', newValue); // ❌ 副作用
-    return [...state, newValue];
-  }
-);
-
-// ✅ 正確：updateFn 應該是純函式
-const [optimisticData, updateOptimistic] = useOptimistic(
-  data,
-  (state, newValue) => {
-    return [...state, newValue]; // ✅ 純函式
-  }
-);
-```
-
-#### 4. 確保真實狀態最終會更新
-
-```javascript
-// ❌ 錯誤：只更新樂觀狀態，忘記更新真實狀態
-const handleAdd = async (item) => {
-  updateOptimisticItems({ action: 'add', data: item });
-  await addItemAPI(item);
-  // ❌ 忘記呼叫 setItems()
-};
-
-// ✅ 正確：記得更新真實狀態
-const handleAdd = async (item) => {
-  updateOptimisticItems({ action: 'add', data: item });
+function SocialPost({ post }) {
+  const [likes, setLikes] = useState({
+    count: post.likes,
+    isLiked: post.isLiked
+  });
   
-  try {
-    const savedItem = await addItemAPI(item);
-    setItems(prev => [...prev, savedItem]); // ✅ 更新真實狀態
-  } catch (error) {
-    alert('新增失敗');
-  }
-};
+  const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+    likes,
+    (currentState) => ({
+      count: currentState.count + (currentState.isLiked ? -1 : 1),
+      isLiked: !currentState.isLiked
+    })
+  );
+  
+  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  const handleLike = useCallback(async () => {
+    updateOptimisticLikes();
+    
+    try {
+      const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
+      
+      setLikes(prev => ({
+        count: prev.count + (newLikedState ? 1 : -1),
+        isLiked: newLikedState
+      }));
+      
+    } catch (error) {
+      alert('點讚失敗，請重試');
+    }
+  }, [post.id, likes.isLiked]); // 依賴 post.id 和 likes.isLiked
+  
+  // ... return JSX
+}
 ```
+
+**注意**：`handleLike` 依賴 `post.id` 和 `likes.isLiked`，因此當點讚狀態改變時函數會重新創建。這是合理的，因為函數邏輯確實依賴這些值。
+{% endnote %}
 
 ### 總結
 
-{% note success %}
-**重點回顧：**
+**useOptimistic 核心重點**
 
-| 主題         | 重點                                                                      |
-| ------------ | ------------------------------------------------------------------------- |
-| **核心概念** | 先更新 UI（樂觀），再等待 API 確認                                        |
-| **優勢**     | 即時反饋、自動回滾、簡化程式碼、提升體驗                                  |
-| **語法**     | `const [optimisticState, addOptimistic] = useOptimistic(state, updateFn)` |
-| **適用場景** | 可逆的互動操作（點讚、發送訊息、待辦事項）                                |
-| **不適用**   | 不可逆的重要操作（金融交易、刪除帳號）                                    |
-| **最佳實踐** | 提供視覺回饋、友善錯誤提示、確保真實狀態更新                              |
-{% endnote %}
+**基本概念：**
+- 先更新 UI（樂觀），再等待 API 確認
+- 成功 → 保持更新；失敗 → 自動回滾
+- 語法：`const [optimisticState, updateOptimistic] = useOptimistic(state, updateFn)`
+
+**主要優勢：**
+- ⚡ **即時反饋**：使用者操作立即看到結果
+- 🔄 **自動回滾**：API 失敗時自動恢復原始狀態
+- 📝 **簡化程式碼**：不需要手動管理 loading 和錯誤恢復
+- 🎯 **提升體驗**：減少等待時間，應用感覺更快
+
+**適用場景：**
+- ✅ 社群互動（點讚、收藏、關注）
+- ✅ 即時通訊（發送訊息、已讀標記）
+- ✅ 待辦清單（新增、刪除、完成）
+- ✅ 購物車（新增商品、調整數量）
+- ❌ 金融交易（不可逆，必須確認）
+- ❌ 刪除帳號（重要操作）
+- ❌ 權限變更（安全敏感）
+
+**判斷原則：** 問自己「操作失敗會損失重要資料或金錢嗎？」→ 不會就用 `useOptimistic`
+
+**最佳實踐：**
+1. 提供視覺回饋（如「發送中」標記 📤）
+2. 友善的錯誤提示（具體說明問題）
+3. updateFn 必須是純函式（不執行副作用）
+4. 確保 API 成功後更新真實狀態
+5. 使用 `useCallback` 避免 handler 重複創建
+
+**效能注意：**
+```javascript
+// ✅ 使用 useCallback 避免函數重複創建
+const handleAction = useCallback(async (data) => {
+  updateOptimistic(data);
+  try {
+    const result = await api(data);
+    setState(result);
+  } catch (error) {
+    alert('操作失敗');
+  }
+}, []); // 依賴項根據實際情況調整
+```
 
 **與其他 Hook 的關係：**
-
-- **與 `useState`**：`useOptimistic` 基於 `useState` 的真實狀態，產生樂觀狀態
-- **與 `useActionState`**：可以結合使用，`useActionState` 處理表單提交，`useOptimistic` 處理即時反饋
-- **與 `useTransition`**：都提升使用者體驗，但 `useTransition` 處理渲染優先級，`useOptimistic` 處理資料更新
-
-**實際應用建議：**
-
-1. **社群應用**：點讚、留言、分享 → 絕對適合
-2. **協作工具**：即時編輯、待辦清單 → 非常適合
-3. **電商平台**：加入購物車 → 適合；結帳 → 不適合
-4. **金融應用**：交易、轉帳 → 不適合
-
-`useOptimistic` 是 React 19 最強大的使用者體驗提升工具，善用它能讓你的應用「快如閃電」！⚡
-
-{% note success %}
-**React 19 新功能的優勢：**
-- `useActionState` 簡化了表單狀態管理，提供更好的用戶體驗
-- `useOptimistic` 讓 UI 反應更加即時，減少用戶等待時間
-- 兩者都與 Server Components 和 Server Actions 完美整合
-- 提供更直覺的錯誤處理和恢復機制
-{% endnote %}
+- `useState`：基於真實狀態產生樂觀狀態
+- `useActionState`：可結合使用，處理表單提交
+- `useTransition`：都提升體驗，但處理不同層面
 
 # 特殊用途 Hooks
 
@@ -9156,13 +9014,88 @@ const handleAdd = async (item) => {
 
 ## useId
 
-`useId` 產生唯一的 ID，主要用於可訪問性屬性和服務端渲染。
+`useId` 用於產生穩定且唯一的 ID，解決了傳統手動管理 ID 的三大問題。
 
-```javascript useId 基本用法
+### 為什麼需要 useId？
+
+在 React 開發中，我們經常需要將 `<label>` 和 `<input>` 關聯起來以提升可訪問性（accessibility）。傳統做法有三個嚴重問題：
+
+**❌ 問題 1：手動管理 ID 容易衝突**
+
+```javascript
+// ❌ 錯誤：硬編碼 ID
+function LoginForm() {
+  return (
+    <form>
+      <label htmlFor="email">電子郵件：</label>
+      <input id="email" type="email" />
+    </form>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <LoginForm />
+      <LoginForm />  {/* ❌ ID 衝突！兩個 input 都有 id="email" */}
+    </div>
+  );
+}
+```
+
+**結果**：點擊第一個 label 可能會聚焦到第二個 input，完全混亂！
+
+**❌ 問題 2：使用計數器或隨機數會導致 SSR 不匹配**
+
+```javascript
+// ❌ 錯誤：使用隨機數
+let counter = 0;
+
+function LoginForm() {
+  const id = `form-${counter++}`;  // 或 Math.random()
+  
+  return (
+    <form>
+      <label htmlFor={id}>電子郵件：</label>
+      <input id={id} type="email" />
+    </form>
+  );
+}
+```
+
+**SSR 問題**：
+- 服務端渲染時：`id="form-0"`
+- 客戶端 hydration 時：`id="form-1"` 
+- **結果**：React 會警告 hydration mismatch，造成畫面閃爍或錯誤
+
+**❌ 問題 3：useState 產生 ID 太過浪費**
+
+```javascript
+// ❌ 不好：為了 ID 使用 useState
+function LoginForm() {
+  const [id] = useState(() => `form-${Math.random()}`);
+  
+  return (
+    <form>
+      <label htmlFor={id}>電子郵件：</label>
+      <input id={id} type="email" />
+    </form>
+  );
+}
+```
+
+**問題**：ID 永遠不會改變，卻要消耗 state 的資源，而且仍然有 SSR 不匹配問題。
+
+### ✅ useId 完美解決
+`useId` 是 React 18+ 提供的全新 Hook，專為產生**穩定且唯一的 ID** 而設計。它用來解決表單欄位等元件「ID 衝突」、「SSR 不一致」等老問題，讓可訪問性（accessibility）開發變得既直觀又安全。本節將介紹 `useId` 的基本用法、常見錯誤寫法與最佳實作建議。
+
+**應用一：`useId` 的基本用法**
+
+```javascript
 import React, { useId } from 'react';
 
 function LoginForm() {
-  const id = useId();
+  const id = useId();  // ✅ React 自動產生穩定唯一的 ID
   
   return (
     <form>
@@ -9171,34 +9104,38 @@ function LoginForm() {
       
       <label htmlFor={`${id}-password`}>密碼：</label>
       <input id={`${id}-password`} type="password" />
-      
-      <button type="submit">登入</button>
     </form>
   );
 }
 
-// 多個表單實例
+// ✅ 多個實例完全沒問題
 function App() {
   return (
     <div>
-      <h2>登入區域</h2>
-      <LoginForm />
-      
-      <h2>註冊區域</h2>
-      <LoginForm />
+      <LoginForm />  {/* ID: :r1:-email, :r1:-password */}
+      <LoginForm />  {/* ID: :r2:-email, :r2:-password */}
+      <LoginForm />  {/* ID: :r3:-email, :r3:-password */}
     </div>
   );
 }
 ```
 
-```javascript useId 複雜範例
+**useId 的優勢**：
+1. ✅ **自動唯一**：每次呼叫產生不同 ID，組件重複使用也不會衝突
+2. ✅ **SSR 安全**：服務端和客戶端產生相同的 ID，避免 hydration 問題
+3. ✅ **零成本**：不佔用 state，性能最佳
+4. ✅ **符合標準**：產生的 ID 符合 HTML 規範
+
+**應用二：可訪問性表單元件**
+
+```javascript
 import React, { useId, useState } from 'react';
 
 function FormField({ label, type = 'text', required = false, helpText }) {
   const id = useId();
   const [value, setValue] = useState('');
   const [showError, setShowError] = useState(false);
-  
+
   const handleBlur = () => {
     if (required && !value.trim()) {
       setShowError(true);
@@ -9206,46 +9143,34 @@ function FormField({ label, type = 'text', required = false, helpText }) {
       setShowError(false);
     }
   };
-  
+
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <label 
-        htmlFor={id}
-        style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}
-      >
-        {label} {required && <span style={{ color: 'red' }}>*</span>}
+    <div>
+      {/* label 連結 input */}
+      <label htmlFor={id}>
+        {label} {required && <span>*</span>}
       </label>
-      
+
       <input
-        id={id}
+        id={id} // input 的 ID
         type={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onBlur={handleBlur}
-        aria-describedby={helpText ? `${id}-help` : undefined}
+        aria-describedby={helpText ? `${id}-help` : undefined} // 關聯說明文字
         aria-invalid={showError}
-        style={{
-          width: '100%',
-          padding: '8px',
-          border: showError ? '1px solid red' : '1px solid #ccc',
-          borderRadius: '4px'
-        }}
       />
-      
+
+      {/* 說明文字 */}
       {helpText && (
-        <div 
-          id={`${id}-help`}
-          style={{ fontSize: '0.8em', color: '#666', marginTop: '4px' }}
-        >
+        <div id={`${id}-help`}>
           {helpText}
         </div>
       )}
-      
+
+      {/* 錯誤訊息 */}
       {showError && (
-        <div 
-          style={{ fontSize: '0.8em', color: 'red', marginTop: '4px' }}
-          role="alert"
-        >
+        <div role="alert">
           此欄位為必填
         </div>
       )}
@@ -9253,233 +9178,649 @@ function FormField({ label, type = 'text', required = false, helpText }) {
   );
 }
 
-function AccessibleForm() {
+// 多個 FormField，每個 ID 獨立
+function UserForm() {
   return (
     <form>
-      <h3>用戶資料表單</h3>
-      
-      <FormField 
-        label="姓名" 
-        required 
+      <FormField
+        label="姓名"
+        required
         helpText="請輸入您的真實姓名"
       />
-      
-      <FormField 
-        label="電子郵件" 
-        type="email" 
-        required 
+
+      <FormField
+        label="電子郵件"
+        type="email"
+        required
         helpText="我們會使用此信箱與您聯繫"
       />
-      
-      <FormField 
-        label="電話號碼" 
-        type="tel" 
+
+      <FormField
+        label="電話"
+        type="tel"
         helpText="格式：0912-345-678"
       />
-      
+
       <button type="submit">提交</button>
     </form>
   );
 }
 ```
 
-{% note info %}
-**useId 重要特性：**
-- 在服務端和客戶端產生相同的 ID，避免 hydration 不匹配
-- 每次呼叫都會產生唯一的 ID
-- 不應該用作 key 屬性，請用於可訪問性屬性
-- ID 格式可能在不同版本間變化，不要依賴特定格式
-{% endnote %}
+**可訪問性效果**：
+- 點擊 label 會自動聚焦到對應的 input
+- 螢幕閱讀器會朗讀說明文字（`aria-describedby`）
+- 錯誤訊息會立即通知螢幕閱讀器（`role="alert"`）
+
+### 總結
+
+**useId 核心重點**
+
+**解決的問題：**
+- ❌ 手動 ID 容易衝突
+- ❌ 隨機 ID 導致 SSR hydration 不匹配
+- ❌ 使用 useState 產生 ID 浪費資源
+
+**主要優勢：**
+- ✅ 自動產生唯一 ID
+- ✅ SSR 和 CSR 完全一致（hydration 安全）
+- ✅ 零性能成本
+- ✅ 完美支援可訪問性屬性
+
+**使用場景：**
+- `<label htmlFor>` 與 `<input id>` 的關聯
+- `aria-describedby`、`aria-labelledby` 等可訪問性屬性
+- 任何需要穩定唯一 ID 的場景
+
+**注意事項：**
+- ❌ 不要用於 `key` 屬性（請用資料的唯一標識）
+- ❌ 不要依賴 ID 的具體格式（格式可能變化）
+- ✅ 一個組件可以呼叫多次 `useId`，產生多個 ID
+- ✅ 可以用字串模板組合：`` `${id}-email` ``
 
 ## useDebugValue
 
-`useDebugValue` 在 React DevTools 中顯示自定義 Hook 的標籤，僅在開發模式下生效。
+`useDebugValue` 讓自定義 Hook 在 React DevTools 中顯示有意義的調試資訊，幫助開發者快速了解 Hook 的內部狀態。
 
-```javascript useDebugValue 基本用法
-import React, { useState, useEffect, useDebugValue } from 'react';
+{% note info %}
+**React DevTools** 是 React 官方提供的瀏覽器擴充功能，用於調試 React 應用程式。它可以讓你檢查組件結構、state、props 和 Hooks。
 
-// 自定義 Hook 使用 useDebugValue
-function useCounter(initialValue = 0) {
-  const [count, setCount] = useState(initialValue);
+**如何使用：**
+1. 安裝後，打開任何 React 應用程式
+2. 按 <kbd>F12</kbd> 開啟瀏覽器開發者工具
+3. 切換到 **Components** 標籤
+4. 點擊組件即可查看其 state、props 和 Hooks
+
+**小技巧：**
+在 Components 標籤中，展開組件可以看到它使用的所有 Hooks（useState、useEffect、自定義 Hook 等）。這對於理解組件的內部運作非常有幫助！
+{% endnote %}
+
+### 為什麼需要 useDebugValue？
+在我們撰寫自定義 Hook 並在大型專案或團隊協作中開發時，經常會遇到「Hook 的內部狀態在 React DevTools 中辨識度不高」的情況。這讓除錯變得麻煩並影響維護效率。`useDebugValue` 就是專爲了解決這個問題而設計，讓你的自定義 Hook 在 DevTools 裡可以顯示語意化、易讀的資訊，提升開發體驗。
+
+下面我們先探討為什麼需要 `useDebugValue`，並結合實際情境說明它的應用與好處。
+
+**❌ 問題：自定義 Hook 在 DevTools 中難以理解**
+
+當你在 React DevTools 中檢查使用自定義 Hook 的組件時，會發現 Hook 的內部狀態只顯示原始值，很難一眼看出它的意義。
+
+```javascript
+import { useState, useEffect } from 'react';
+
+// 自定義 Hook：檢測網路狀態
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
   
-  // 在 React DevTools 中顯示當前計數
-  useDebugValue(count);
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
   
-  const increment = () => setCount(prev => prev + 1);
-  const decrement = () => setCount(prev => prev - 1);
-  const reset = () => setCount(initialValue);
-  
-  return { count, increment, decrement, reset };
+  return isOnline;
 }
 
-// 複雜的 useDebugValue 範例
-function useLocalStorage(key, initialValue) {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
-    }
+function UserStatus() {
+  const isOnline = useOnlineStatus();
+  return <div>{isOnline ? '🟢 在線' : '🔴 離線'}</div>;
+}
+```
+
+**在 React DevTools 中看到的**：
+```
+UserStatus
+  └─ Hooks
+       ├─ useOnlineStatus
+       │    └─ State: true  // ❌ 只看到 true，不知道這代表什麼
+       └─ useEffect
+```
+
+**問題**：
+- ❌ 只看到 `true`，不知道代表「在線」還是「離線」
+- ❌ 如果組件使用多個自定義 Hook，會看到一堆 `true`、`false`、`{}`，完全搞不清楚哪個是哪個
+- ❌ 必須查看程式碼才能理解每個值的意義
+- ❌ 團隊協作時，其他開發者更難調試
+
+### ✅ useDebugValue 解決
+當你開發自定義 Hook 時，可以使用 `useDebugValue` 幫助在 React DevTools 中顯示更有意義的 debug 訊息，讓狀態與邏輯一目了然。通常在開發團隊協作，或是自定義複雜 Hook 給其他人用的情境下，`useDebugValue` 可以大幅提升可維護性與除錯效率。以下將介紹常見問題、以及如何用 `useDebugValue` 改善開發體驗。
+
+#### 應用一：在 React DevTools 中顯示有意義的資訊
+
+```javascript
+import { useState, useEffect, useDebugValue } from 'react';
+
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
+  
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+  
+  // ✅ 在 DevTools 中顯示有意義的資訊
+  useDebugValue(isOnline ? '🟢 在線' : '🔴 離線');
+  
+  return isOnline;
+}
+```
+
+**在 React DevTools 中看到的**：
+```
+UserStatus
+  └─ useOnlineStatus: "🟢 在線"  // ✅ 一目了然！
+```
+
+#### 格式化顯示（效能優化）
+如果格式化資訊的成本較高，可以使用第二個參數（formatter function），它只在 DevTools 打開時才執行：
+
+```javascript
+function useUserData(userId) {
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(setUser);
+  }, [userId]);
+  
+  // ✅ 使用 formatter 避免不必要的計算
+  useDebugValue(user, (u) => {
+    // 只在 DevTools 打開時才執行
+    if (!u) return '⏳ 載入中。..';
+    return `👤 ${u.name} (${u.email})`;
   });
   
-  // 顯示複雜的調試資訊
-  useDebugValue(storedValue, value => {
-    return `${key}: ${JSON.stringify(value)}`;
-  });
+  return user;
+}
+```
+
+**對比**：
+```javascript
+// ❌ 不好：每次渲染都執行格式化
+useDebugValue(user ? `${user.name} (${user.email})` : '載入中。..');
+
+// ✅ 好：只在需要時才格式化
+useDebugValue(user, (u) => {
+  if (!u) return '載入中。..';
+  return `${u.name} (${u.email})`;
+});
+```
+
+#### 應用二：表單欄位 Hook
+
+```javascript
+import { useState, useDebugValue } from 'react';
+
+function useFormField(initialValue = '') {
+  const [value, setValue] = useState(initialValue);
+  const [isDirty, setIsDirty] = useState(false);
+  const [errors, setErrors] = useState([]);
   
-  const setValue = (value) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(`Error setting localStorage key "${key}":`, error);
-    }
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    setIsDirty(true);
   };
   
-  return [storedValue, setValue];
+  const validate = (validators) => {
+    const newErrors = validators
+      .map(validator => validator(value))
+      .filter(Boolean);
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
+  
+  const reset = () => {
+    setValue(initialValue);
+    setIsDirty(false);
+    setErrors([]);
+  };
+  
+  // ✅ 在 DevTools 中顯示摘要資訊
+  useDebugValue({ value, isDirty, errors }, (state) => {
+    const parts = [
+      `"${state.value}"`,
+      state.isDirty && '📝 已修改',
+      state.errors.length > 0 && `⚠️ ${state.errors.length} 個錯誤`
+    ].filter(Boolean);
+    
+    return parts.join(' | ');
+  });
+  
+  return {
+    value,
+    isDirty,
+    errors,
+    handleChange,
+    validate,
+    reset
+  };
 }
 
-// 使用自定義 Hook 的元件
-function DebugExample() {
-  const { count, increment, decrement, reset } = useCounter(0);
-  const [name, setName] = useLocalStorage('userName', '');
+// 使用範例
+function LoginForm() {
+  const email = useFormField('');
+  const password = useFormField('');
   
   return (
-    <div>
-      <h3>調試範例</h3>
-      <p>計數：{count}</p>
-      <button onClick={increment}>+1</button>
-      <button onClick={decrement}>-1</button>
-      <button onClick={reset}>重設</button>
+    <form>
+      <input
+        type="email"
+        value={email.value}
+        onChange={email.handleChange}
+        placeholder="電子郵件"
+      />
       
-      <div style={{ marginTop: '20px' }}>
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="輸入姓名"
-        />
-        <p>儲存的姓名：{name}</p>
-      </div>
-    </div>
+      <input
+        type="password"
+        value={password.value}
+        onChange={password.handleChange}
+        placeholder="密碼"
+      />
+      
+      <button type="submit">登入</button>
+    </form>
   );
 }
 ```
 
+**在 React DevTools 中看到的**：
+```
+LoginForm
+  ├─ useFormField: "user@example.com" | 📝 已修改
+  └─ useFormField: "••••••" | 📝 已修改 | ⚠️ 1 個錯誤
+```
+
+### 總結
+**useDebugValue 核心重點**
+
+**解決的問題：**
+- ❌ 自定義 Hook 的內部狀態在 DevTools 中難以理解
+- ❌ 調試複雜 Hook 時需要添加大量 console.log
+- ❌ 團隊成員不了解 Hook 的當前狀態
+
+**主要優勢：**
+- ✅ 在 DevTools 中顯示友善的調試資訊
+- ✅ 只在開發模式生效，不影響生產環境
+- ✅ 支援 formatter 函數，避免不必要的計算
+- ✅ 提升調試效率，特別是複雜 Hook
+
+**使用場景：**
+- 自定義 Hook 共享給團隊使用時
+- Hook 內部狀態複雜，需要摘要資訊
+- 開發 Hook 函式庫時
+- 調試多個自定義 Hook 的組件
+
+**注意事項：**
+- ⚠️ 只在自定義 Hook 內部使用（不是組件）
+- ⚠️ 對於簡單的 Hook 可以省略（避免過度使用）
+- ✅ 使用 formatter 函數優化效能
+- ✅ 只在開發環境生效，打包後會被移除
+
 ## useInsertionEffect
 
-`useInsertionEffect` 在所有 DOM 變更之前觸發，主要用於 CSS-in-JS 函式庫。
+`useInsertionEffect` 是 React 18+ 新增的特殊 Hook，專為 CSS-in-JS 函式庫設計，在 DOM 變更之前插入樣式，避免樣式閃爍問題。
 
-```javascript useInsertionEffect 基本用法
-import React, { useInsertionEffect, useLayoutEffect, useEffect } from 'react';
+{% note info %}
+**什麼是 CSS-in-JS？**
 
-function CSSInjector({ styles, className }) {
+**CSS-in-JS** 是一種在 JavaScript 中撰寫 CSS 的技術，讓樣式與組件緊密結合。常見的函式庫有：
+- **styled-components**：最流行的 CSS-in-JS 函式庫
+- **emotion**：高效能的 CSS-in-JS 解決方案
+- **JSS**：功能強大的 CSS-in-JS 工具
+
+**運作方式**：
+1. 你在 JavaScript 中定義樣式
+2. 函式庫動態生成 CSS
+3. 將生成的 `<style>` 標籤插入到 `<head>` 中
+
+**範例**（styled-components）：
+```javascript
+import styled from 'styled-components';
+
+// 在 JS 中定義樣式
+const Button = styled.button`
+  background: blue;
+  padding: 10px;
+  color: white;
+`;
+
+function App() {
+  return <Button>點我</Button>;
+}
+
+// 執行時，styled-components 會在 <head> 插入：
+// <style>.sc-xxx { background: blue; padding: 10px; color: white; }</style>
+```
+
+**優點**：樣式有作用域、支援動態樣式、方便維護
+
+**缺點**：如果插入樣式的時機不對，會造成畫面閃爍 ← `useInsertionEffect` 就是要解決這個問題！
+{% endnote %}
+
+### 為什麼需要 useInsertionEffect？
+
+當我們開發 CSS-in-JS 函式庫，或是需要動態插入樣式時，會遇到「樣式插入時機」的問題。如果使用一般的 `useEffect`，樣式會在畫面已經渲染後才插入，造成使用者看到元素「先沒樣式、後有樣式」的閃爍現象。
+
+下面我們來看看為什麼會有這個問題，以及 `useInsertionEffect` 如何解決。
+
+**Effect Hook 執行順序**
+
+首先，我們需要理解三種 Effect Hook 的執行時機：
+
+```javascript
+function TimingDemo() {
   useInsertionEffect(() => {
-    // 在 DOM 變更之前插入樣式
-    const style = document.createElement('style');
-    style.textContent = styles;
-    document.head.appendChild(style);
-    
-    console.log('useInsertionEffect: 樣式已插入');
-    
-    return () => {
-      document.head.removeChild(style);
-      console.log('useInsertionEffect: 樣式已移除');
-    };
-  }, [styles]);
+    console.log('1. useInsertionEffect 執行');
+  });
   
   useLayoutEffect(() => {
-    console.log('useLayoutEffect: DOM 已更新，但尚未繪製');
+    console.log('2. useLayoutEffect 執行');
   });
   
   useEffect(() => {
-    console.log('useEffect: DOM 已繪製完成');
+    console.log('3. useEffect 執行');
   });
   
-  return (
-    <div className={className}>
-      檢查 Console 看看執行順序
-    </div>
-  );
+  return <div>查看 Console 輸出</div>;
 }
+```
 
-// 實際的 CSS-in-JS 範例
-function useDynamicStyles() {
-  const [styleId] = React.useState(() => `style-${Math.random().toString(36)}`);
+**React 三種 Effect 執行時序（渲染一個畫面流程）**
+{% mermaid graph LR %}
+A[useInsertionEffect 執行<br/>最早同步插入樣式，確保 UI 不閃爍]
+B[React 更新 DOM<br/>完成虛擬 DOM 與實體 DOM diff，寫入新結構]
+C[useLayoutEffect 執行<br/>可安全存取與同步修改 DOM 佈局]
+D[瀏覽器開始繪製畫面<br/>使用者看到最新 DOM 狀態]
+E[useEffect 執行<br/>適合處理資料抓取、訂閱等非同步副作用]
+
+A --> B
+B --> C
+C --> D
+D --> E
+{% endmermaid %}
+
+**❌ 問題：使用 useEffect 導致樣式閃爍**
+
+如果我們用 `useEffect` 來插入動態樣式，會發生什麼事？
+
+```javascript
+function StyledButton() {
+  const [color] = useState('blue');
+  
+  // ❌ 用 useEffect 插入樣式
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .btn {
+        background: ${color};
+        padding: 10px;
+        color: white;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => document.head.removeChild(style);
+  }, [color]);
+  
+  return <button className="btn">點我</button>;
+}
+```
+
+**問題流程**：
+1. React 渲染組件 → `<button className="btn">` 出現在 DOM
+2. 瀏覽器繪製 → **使用者看到按鈕，但沒有 `.btn` 樣式**（閃一下）
+3. `useEffect` 執行 → 在 `<head>` 插入 `.btn` 樣式
+4. 瀏覽器重新繪製 → 按鈕突然有了樣式
+
+**結果**：使用者會看到按鈕先是灰色無樣式，然後突然變成藍色（閃爍）⚡
+
+**視覺效果**：
+```
+時間軸：
+0ms:  [灰色按鈕]          ← 沒有樣式
+100ms: [藍色按鈕]         ← 樣式生效（使用者看到閃爍）
+```
+
+### ✅ useInsertionEffect 解決
+在 React 應用中，使用動態插入樣式（像是 CSS-in-JS 技術）時，經常會出現「樣式閃爍」的問題。這是因為傳統的 `useEffect` 會在瀏覽器繪製畫面之後才插入樣式，導致元素一開始沒有樣式，使用者會短暫看到未加樣式的畫面。而 `useInsertionEffect` 是 React 18 之後新增的 Effect Hook，可讓我們在 DOM 變更後但瀏覽器繪製前，搶先插入樣式，確保元件一開始渲染時就有正確的樣式。
+
+#### 範例一：使用 useInsertionEffect 插入樣式
+
+重點在於：`useInsertionEffect` 的執行時機比 `useEffect` 早，能讓樣式和 DOM 同步插入，根本解決動態樣式閃爍或畫面跳動的問題。這對開發 CSS-in-JS 函式庫或自訂動態樣式尤為重要。
+
+```javascript
+import { useState, useInsertionEffect } from 'react';
+
+function StyledButton() {
+  const [color] = useState('blue');
+  
+  // ✅ 用 useInsertionEffect 插入樣式
+  useInsertionEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .btn {
+        background: ${color};
+        padding: 10px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => document.head.removeChild(style);
+  }, [color]);
+  
+  return <button className="btn">點我</button>;
+}
+```
+
+**執行流程**：
+{% mermaid graph LR %}
+    A["useInsertionEffect 執行<br/>（樣式先插入）"]
+    B["React 渲染組件<br/>&lt;button&gt; 出現在 DOM"]
+    C["瀏覽器繪製<br/>（按鈕直接帶著樣式顯示）"]
+
+    A --> B --> C
+{% endmermaid %}
+
+**結果**：沒有閃爍！✨
+
+#### 範例二：動態樣式 Hook
+以下提供一個自訂 Hook `useDynamicStyle` 的實作範例。這個 Hook 可讓你「程式化產生 CSS 樣式」並插入頁面，讓彈性樣式隨元件狀態及 props 變動時動態調整。關鍵在於使用 `useInsertionEffect`，確保樣式在 React 標記（Markup）進入 DOM 之前先插入，避免閃爍或抽跳。你僅需傳入自訂的 class 名稱及一組標準 CSS 樣式屬性，即可在元件內自由切換樣式。
+
+**使用步驟：**
+1. 呼叫 `const className = useDynamicStyle('my-btn', { ... })` 產生動態樣式
+2. 將 `className` 指定給任意元素
+3. 更改 Hook 傳入的 style 物件會自動即時刷新樣式
+
+
+```javascript
+import { useInsertionEffect, useState } from 'react';
+
+// 動態樣式 Hook
+function useDynamicStyle(className, styles) {
+  const [styleId] = useState(() => `${className}-${Date.now()}`);
   
   useInsertionEffect(() => {
-    const existingStyle = document.getElementById(styleId);
-    if (!existingStyle) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      document.head.appendChild(style);
+    // 檢查樣式是否已存在
+    let styleElement = document.getElementById(styleId);
+    
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      styleElement.id = styleId;
+      document.head.appendChild(styleElement);
     }
     
+    // 更新樣式內容
+    styleElement.textContent = `
+      .${className} {
+        ${Object.entries(styles)
+          .map(([key, value]) => `${key}: ${value};`)
+          .join('\n        ')}
+      }
+    `;
+    
+    // 清理函數
     return () => {
       const style = document.getElementById(styleId);
       if (style) {
         document.head.removeChild(style);
       }
     };
-  }, [styleId]);
+  }, [className, styles, styleId]);
   
-  const addCSS = (css) => {
-    const style = document.getElementById(styleId);
-    if (style) {
-      style.textContent = css;
-    }
-  };
-  
-  return { addCSS, styleId };
+  return className;
 }
 
-function StyledComponent() {
-  const { addCSS } = useDynamicStyles();
-  const [color, setColor] = React.useState('blue');
+// 使用範例
+function DynamicButton() {
+  const [color, setColor] = useState('blue');
   
-  React.useEffect(() => {
-    const css = `
-      .dynamic-style {
-        color: ${color};
-        font-weight: bold;
-        padding: 10px;
-        border: 2px solid ${color};
-        border-radius: 5px;
-      }
-    `;
-    addCSS(css);
-  }, [color, addCSS]);
+  const buttonClass = useDynamicStyle('dynamic-btn', {
+    background: color,
+    color: 'white',
+    padding: '12px 24px',
+    border: 'none',
+    'border-radius': '8px',
+    cursor: 'pointer',
+    'font-size': '16px'
+  });
   
   return (
     <div>
-      <div className="dynamic-style">
-        這個元素的樣式是動態注入的！
+      <button className={buttonClass}>
+        動態樣式按鈕
+      </button>
+      
+      <div style={{ marginTop: '10px' }}>
+        <button onClick={() => setColor('blue')}>藍色</button>
+        <button onClick={() => setColor('red')}>紅色</button>
+        <button onClick={() => setColor('green')}>綠色</button>
       </div>
-      <select value={color} onChange={(e) => setColor(e.target.value)}>
-        <option value="blue">藍色</option>
-        <option value="red">紅色</option>
-        <option value="green">綠色</option>
-      </select>
     </div>
   );
 }
 ```
 
+**為什麼需要 useInsertionEffect？**
+- 動態樣式需要在 DOM 出現前就插入，才不會閃爍
+- 如果用 `useEffect`，樣式會在繪製後才插入（太晚）
+- 如果用 `useLayoutEffect`，雖然不會閃爍，但性能不如 `useInsertionEffect`
+- 用 `useInsertionEffect` 確保樣式在最早的時機插入
+
+### 總結
+
+**useInsertionEffect 核心重點**
+
+**解決的問題：**
+- ❌ CSS-in-JS 使用 `useEffect` 會導致樣式閃爍
+- ❌ 樣式插入時機不當，使用者看到無樣式的元素
+- ❌ 動態樣式顯示不同步
+
+**主要優勢：**
+- ✅ 在 DOM 變更前插入樣式，完全避免閃爍
+- ✅ 專為 CSS-in-JS 函式庫優化
+- ✅ 執行時機最早，確保樣式就緒
+
+**使用場景：**
+- 開發 CSS-in-JS 函式庫（styled-components、emotion 等）
+- 需要動態插入 `<style>` 標籤的函式庫
+- 任何需要在 DOM 渲染前準備樣式的底層工具
+
+**注意事項：**
+- ⚠️ **99% 的一般開發者不需要使用**（這是給函式庫作者用的）
+- ⚠️ 不能在 `useInsertionEffect` 中讀取 refs（因為 DOM 還沒更新）
+- ⚠️ 不能在 `useInsertionEffect` 中更新 state（會造成額外渲染）
+- ✅ 如果你在用 styled-components 或 emotion，函式庫已經幫你處理好了
+- ✅ 一般應用開發請使用 `useEffect` 或 `useLayoutEffect`
+
+**三種 Effect 的選擇：**
+```javascript
+// ✅ 一般副作用（資料獲取、訂閱等）
+useEffect(() => {
+  // 99% 的情況用這個
+});
+
+// ✅ 需要讀取 DOM 佈局（測量尺寸、計算位置）
+useLayoutEffect(() => {
+  // 防止視覺閃爍時用這個
+});
+
+// ✅ 插入樣式到 <head>（開發 CSS-in-JS 函式庫）
+useInsertionEffect(() => {
+  // 只有開發底層函式庫時才用
+});
+```
+
 ## useLayoutEffect
 
-`useLayoutEffect` 在所有 DOM 變更後但在瀏覽器繪製前同步執行，用於需要讀取 DOM 佈局的操作。
+`useLayoutEffect` 在所有 DOM 變更後、但在瀏覽器繪製前同步執行，用於需要讀取 DOM 佈局並立即更新畫面的操作。
 
-```javascript useLayoutEffect 基本用法
-import React, { useState, useLayoutEffect, useRef } from 'react';
+### 為什麼需要 useLayoutEffect？
 
-function MeasureComponent() {
+在前面介紹 `useInsertionEffect` 時，我們了解了三種 Effect Hook 的執行順序：
+
+```
+useInsertionEffect（插入樣式）→ DOM 更新 → useLayoutEffect（讀取佈局）→ 繪製 → useEffect（副作用）
+```
+
+其中 `useLayoutEffect` 處於一個關鍵位置：**DOM 已經更新完成，但瀏覽器還沒繪製**。這個時機點非常適合「讀取 DOM 資訊並立即調整」的場景。
+
+**常見應用場景：**
+- 📏 測量元素的尺寸或位置
+- 🎯 計算彈出視窗、工具提示的定位
+- 📜 處理滾動位置
+- 🎨 根據 DOM 狀態動態調整樣式
+
+如果用 `useEffect` 來做這些事，會發生什麼問題呢？讓我們來看看。
+
+#### ❌ 問題：使用 useEffect 導致畫面跳動
+
+當你需要讀取 DOM 尺寸或位置，並根據這些資訊更新畫面時，使用 `useEffect` 會造成畫面閃爍，因為它在**瀏覽器繪製後**才執行。
+
+```javascript
+function MeasureBox() {
   const [height, setHeight] = useState(0);
   const divRef = useRef();
   
-  useLayoutEffect(() => {
-    // 在瀏覽器繪製前讀取 DOM 尺寸
+  // ❌ 用 useEffect 讀取高度
+  useEffect(() => {
     if (divRef.current) {
       const { height } = divRef.current.getBoundingClientRect();
       setHeight(height);
@@ -9488,21 +9829,74 @@ function MeasureComponent() {
   
   return (
     <div>
-      <div 
-        ref={divRef}
-        style={{ 
-          padding: '20px', 
-          border: '1px solid #ccc',
-          fontSize: '18px'
-        }}
-      >
+      <div ref={divRef} style={{ padding: '20px' }}>
         這個 div 的高度是：{height}px
       </div>
     </div>
   );
 }
+```
 
-// 實際應用：工具提示定位
+**問題流程**：
+1. React 渲染 → `<div>` 顯示高度是：0px
+2. 瀏覽器繪製 → **使用者看到 0px**（閃一下，此時 DOM 已經渲染完成）
+3. `useEffect` 執行（這時 DOM 確實已完成渲染）→ 讀取實際高度 → `setHeight(80)`
+4. React 重新渲染 → `<div>` 顯示 "高度是：80px"
+5. 瀏覽器重新繪製 → 使用者這時才看到正確的高度文字
+
+**結果**：使用者會看到數字從 0 跳到 80（視覺跳動）
+
+### ✅ useLayoutEffect 解決
+`useLayoutEffect` 是 React 提供的特殊 Effect Hook，其核心作用在於：**在 DOM 更新完成後但瀏覽器繪製畫面之前，同步存取與調整 DOM 佈局資料**。這意味著你可以在使用者真正「看到畫面」前，介入修改或測量實體 DOM 狀態，確保一切調整都及時生效，而不會造成畫面跳動或閃爍。
+
+主要觀念如下：
+- `useLayoutEffect` 與 `useEffect` 用法相似，但觸發時機更早：它是在 React 將最新狀態更新寫入 DOM 結構後、瀏覽器繪製畫面（repaint）前立刻執行，讓你能「攔截」即將顯示的畫面。
+- 常見應用場景包含：📏 元素尺寸與位置測量、🎯 動態計算彈窗或工具提示（tooltip/popover）定位、📜 滾動控制與同步、🎨 根據 DOM 狀態立即修改樣式、實現動畫同步等。
+
+`useLayoutEffect` 的最大價值，在於有效避免「先顯示錯誤狀態，後修正」所導致的視覺閃爍（例如：文字先顯示 0px，更新後才變成正確尺寸 80px）。所有需要精準控制畫面顯示、或仰賴 DOM 讀取調整的行為，都建議使用 `useLayoutEffect`。
+
+
+
+```javascript
+import { useState, useLayoutEffect, useRef } from 'react';
+
+function MeasureBox() {
+  const [height, setHeight] = useState(0);
+  const divRef = useRef();
+  
+  // ✅ 用 useLayoutEffect 讀取高度
+  useLayoutEffect(() => {
+    if (divRef.current) {
+      const { height } = divRef.current.getBoundingClientRect();
+      setHeight(height);
+    }
+  });
+  
+  return (
+    <div>
+      <div ref={divRef} style={{ padding: '20px' }}>
+        這個 div 的高度是：{height}px
+      </div>
+    </div>
+  );
+}
+```
+
+**執行流程**：
+1. React 首次渲染 → `<div>` 預計顯示 "高度是：0px"
+2. 此時 DOM 已經渲染完成（可以安全存取實體 DOM）
+3. `useLayoutEffect` 執行 → 立即同步讀取 `div` 高度（例如 80px）→ `setHeight(80)`
+4. React 重新渲染 → `<div>` 內容更新為 "高度是：80px"
+5. 瀏覽器繪製 → **使用者只會看到正確的 "80px"**
+
+**結果**：沒有閃爍！✨
+
+### 實際應用：智能工具提示定位
+這是 `useLayoutEffect` 最經典的應用場景之一。工具提示需要根據觸發元素的位置來計算自己應該出現在哪裡，並且要避免超出視窗邊界。如果用 `useEffect`，工具提示會先出現在預設位置 (0, 0)，然後跳到正確位置，造成明顯的視覺跳動。
+
+```javascript
+import { useState, useLayoutEffect, useRef } from 'react';
+
 function Tooltip({ children, content, visible }) {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef();
@@ -9513,16 +9907,18 @@ function Tooltip({ children, content, visible }) {
       const targetRect = targetRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       
+      // 計算最佳位置
       let top = targetRect.bottom + 5;
       let left = targetRect.left + (targetRect.width - tooltipRect.width) / 2;
       
-      // 防止工具提示超出視窗邊界
+      // 防止超出視窗邊界
       if (left < 0) left = 5;
       if (left + tooltipRect.width > window.innerWidth) {
         left = window.innerWidth - tooltipRect.width - 5;
       }
       
       if (top + tooltipRect.height > window.innerHeight) {
+        // 放在上方
         top = targetRect.top - tooltipRect.height - 5;
       }
       
@@ -9532,9 +9928,7 @@ function Tooltip({ children, content, visible }) {
   
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      <div ref={targetRef}>
-        {children}
-      </div>
+      <div ref={targetRef}>{children}</div>
       
       {visible && (
         <div
@@ -9559,11 +9953,12 @@ function Tooltip({ children, content, visible }) {
   );
 }
 
+// 使用範例
 function TooltipDemo() {
   const [showTooltip, setShowTooltip] = useState(false);
   
   return (
-    <div style={{ padding: '50px', textAlign: 'center' }}>
+    <div style={{ padding: '50px' }}>
       <Tooltip 
         content="這是一個智能定位的工具提示！"
         visible={showTooltip}
@@ -9571,15 +9966,6 @@ function TooltipDemo() {
         <button
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
-          style={{
-            padding: '12px 24px',
-            fontSize: '16px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
         >
           懸停顯示工具提示
         </button>
@@ -9589,13 +9975,79 @@ function TooltipDemo() {
 }
 ```
 
-{% note warning %}
-**效能考量：**
-- `useLayoutEffect` 會阻塞瀏覽器繪製，影響效能
-- 只在真正需要同步讀取 DOM 時使用
-- 優先考慮 `useEffect`，除非確實需要同步執行
-- 避免在 `useLayoutEffect` 中進行昂貴的計算
-{% endnote %}
+**為什麼需要 useLayoutEffect？**
+- 工具提示位置需要根據元素的實際尺寸和位置計算
+- 如果用 `useEffect`，工具提示會先出現在 (0, 0)，然後跳到正確位置
+- 用 `useLayoutEffect` 確保工具提示直接出現在正確位置
+
+### 總結
+
+**useLayoutEffect 核心重點**
+
+**解決的問題：**
+- ❌ 使用 `useEffect` 讀取 DOM 會導致畫面閃爍或跳動
+- ❌ 需要同步更新 DOM 的場景無法優雅處理
+- ❌ 測量 DOM 尺寸後立即使用會有視覺問題
+
+**主要優勢：**
+- ✅ 在瀏覽器繪製前同步執行，避免視覺跳動
+- ✅ 適合讀取 DOM 佈局並立即更新的場景
+- ✅ 確保使用者看到的總是正確的畫面
+
+**使用場景：**
+- 測量 DOM 元素尺寸或位置
+- 工具提示、彈出選單的智能定位
+- 滾動位置計算
+- 需要在繪製前同步更新 DOM 的任何場景
+
+**注意事項：**
+- ⚠️ **會阻塞瀏覽器繪製**，影響效能
+- ⚠️ 優先使用 `useEffect`，只在必要時才用 `useLayoutEffect`
+- ⚠️ 避免在 `useLayoutEffect` 中執行昂貴的計算
+- ✅ 大部分情況下應該使用 `useEffect`
+- ✅ 只在看到視覺閃爍問題時才考慮 `useLayoutEffect`
+
+**三種 Effect 的使用場景總結：**
+
+| Hook                 | 執行時機           | 適用場景               | 使用頻率         |
+| -------------------- | ------------------ | ---------------------- | ---------------- |
+| `useInsertionEffect` | DOM 變更前         | 插入 `<style>` 標籤    | ⭐ 函式庫作者專用 |
+| `useLayoutEffect`    | DOM 變更後、繪製前 | 測量 DOM、計算位置     | ⭐⭐ 特定需求      |
+| `useEffect`          | 繪製後             | 資料獲取、訂閱、副作用 | ⭐⭐⭐⭐⭐ 預設選擇   |
+
+**選擇流程圖：**
+{% mermaid graph TD %}
+    Q1["需要插入 CSS 樣式到 <head>?"]
+    Q2["需要讀取 DOM 尺寸/位置並立即更新?"]
+    Q3["其他所有情況"]
+    A1["useInsertionEffect<br/>(99% 的人不需要)"]
+    A2["useLayoutEffect<br/>(會看到閃爍才用)"]
+    A3["useEffect<br/>(預設選擇)"]
+
+    Q1 -- 是 --> A1
+    Q1 -- 否 --> Q2
+    Q2 -- 是 --> A2
+    Q2 -- 否 --> Q3
+    Q3 --> A3
+{% endmermaid %}
+
+**程式碼範例：**
+```javascript
+// ⭐⭐⭐⭐⭐ 99% 的情況用這個
+useEffect(() => {
+  // 資料獲取、訂閱、事件監聽、手動 DOM 操作等
+});
+
+// ⭐⭐ 只在看到畫面閃爍時才用
+useLayoutEffect(() => {
+  // 測量 DOM、計算位置、防止視覺跳動
+});
+
+// ⭐ 只給開發 CSS-in-JS 函式庫的人用
+useInsertionEffect(() => {
+  // 插入動態樣式到 <head>
+});
+```
 
 # 總結與最佳實踐
 
