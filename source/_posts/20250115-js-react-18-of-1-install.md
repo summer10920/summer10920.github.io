@@ -8,7 +8,7 @@ tag:
 date: 2025-01-15 13:09:14
 ---
 ![](assets/images/banner/react.png)
-React 是由 Facebook (Meta) 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用組件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Component 整個零件內。
+React 是由 Facebook (Meta) 所主導開發的 JavaScript 框架，與 AngularJS 相同都是採用元件 Component-based 來進行觀念導向設計，不像 VueJS 採用 MVVM（Model 資料管理、View 畫面顯示、ViewModal 溝通橋梁）觀念去區分細節，而是整個融合在 Component 整個零件內。
 
 <!-- more -->
 
@@ -30,8 +30,8 @@ React 是一種能夠協助開發者在 JavaScript 互動設計的用戶介面�
 ## 特性
 介紹前以下有幾個 React 特性可以討稐。
 
-- 組件導向
-React 凡事都採用 Component 來製作組件，需要就可重複運用。且都主要依賴 JavaScript 來編寫，因此整體維護性質很高。
+- 元件導向
+React 凡事都採用 Component 來製作元件，需要就可重複運用。且都主要依賴 JavaScript 來編寫，因此整體維護性質很高。
 - 只有 View
 由於不是 MVC 觀念，只注重在顯示 View 這部分。因此較能輕易跟其他框架工具混合使用。
 - 以 JSX 來表示 HTML

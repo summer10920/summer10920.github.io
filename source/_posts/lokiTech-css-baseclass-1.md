@@ -2927,7 +2927,7 @@ body { color: #333; }
 p { color: #555; }
 a { color: #007bff; }
 
-/* 組件樣式 - 可重複使用的組件 */
+/* 元件樣式 - 可重複使用的元件 */
 .btn { color: #fff; }
 .card { color: #333; }
 .nav { color: #666; }
@@ -2952,7 +2952,7 @@ a { color: #007bff; }
 .menu__item--active { color: #007bff; }
 .menu__item--disabled { color: #ccc; }
 
-/* 組件化思維 */
+/* 元件化思維 */
 .component { color: #333; }
 .component-header { color: #000; }
 .component-body { color: #666; }
@@ -2965,7 +2965,7 @@ a { color: #007bff; }
 2. 保持命名一致性
 3. 避免過於複雜的嵌套
 4. 使用統一的命名規範
-5. 建立可重複使用的組件
+5. 建立可重複使用的元件
 6. 適當使用 CSS 方法論來組織代碼
 {% endnote %}
 
@@ -2977,7 +2977,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 
 ### BEM 的核心概念
 
-**Block（區塊）**：獨立的組件，可以在任何地方重複使用
+**Block（區塊）**：獨立的元件，可以在任何地方重複使用
 **Element（元素）**：區塊的組成部分，與區塊緊密相關
 **Modifier（修飾符）**：區塊或元素的不同狀態、版本或變化
 
@@ -2993,7 +2993,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 
 ### 實際應用範例
 
-**1. 導航選單組件**
+**1. 導航選單元件**
 
 ```css
 /* 區塊：導航選單 */
@@ -3057,7 +3057,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 }
 ```
 
-**2. 卡片組件**
+**2. 卡片元件**
 
 ```css
 /* 區塊：卡片 */
@@ -3166,7 +3166,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 }
 ```
 
-**3. 按鈕組件**
+**3. 按鈕元件**
 
 ```css
 /* 區塊：按鈕 */
@@ -3287,11 +3287,11 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
   <meta charset="UTF-8">
   <title>BEM 方法論示範</title>
   <style>
-    /* BEM 組件樣式已在上面定義 */
+    /* BEM 元件樣式已在上面定義 */
   </style>
 </head>
 <body>
-  <!-- 導航選單組件 -->
+  <!-- 導航選單元件 -->
   <nav class="nav nav--horizontal">
     <a href="#" class="nav__item nav__item--active">
       <span class="nav__link">首頁</span>
@@ -3307,7 +3307,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
     </a>
   </nav>
 
-  <!-- 卡片組件 -->
+  <!-- 卡片元件 -->
   <div class="card card--featured">
     <div class="card__header">
       <h3 class="card__title">特色文章</h3>
@@ -3359,7 +3359,7 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 ### BEM 的優點
 
 1. **可預測性**：類名清楚表達了元素的用途和關係
-2. **可重用性**：組件可以在不同地方重複使用而不會衝突
+2. **可重用性**：元件可以在不同地方重複使用而不會衝突
 3. **可維護性**：修改樣式時不會意外影響其他元素
 4. **低優先權**：大多數選擇器都是單一類名，優先權較低且一致
 5. **團隊協作**：提供了統一的命名規範
@@ -3386,15 +3386,15 @@ BEM（Block Element Modifier）是一種廣泛使用的 CSS 類名命名規範�
 2. **保持一致性**：統一使用連字符或底線
 3. **避免過深的嵌套**：最多 `block__element` 兩層
 4. **修飾符要明確**：`--active`、`--disabled`、`--large` 等狀態清晰
-5. **區塊名稱要唯一**：避免與其他組件衝突
+5. **區塊名稱要唯一**：避免與其他元件衝突
 
 {% note success %}
 **BEM 方法論的核心原則**
-1. **Block**：獨立的功能組件
-2. **Element**：組件的組成部分
-3. **Modifier**：組件的狀態或變化
+1. **Block**：獨立的功能元件
+2. **Element**：元件的組成部分
+3. **Modifier**：元件的狀態或變化
 4. **一致性**：統一的命名規範
-5. **可重用性**：組件可以在任何地方使用
+5. **可重用性**：元件可以在任何地方使用
 6. **可維護性**：修改不會產生副作用
 {% endnote %}
 

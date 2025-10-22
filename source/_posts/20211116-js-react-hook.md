@@ -14,7 +14,7 @@ Hook 是 React 自版本 16.8 開始推廣出來的新功能，主要是用於�
 
 <!-- more -->
 
-Hook 本身也是一個多功能的巨集。未來 class 寫法也將被 React 的 hook 所取代。目前業界來說分別為新舊兩派正在使用 class 或 hook。想使用 hook 必須只能使用在 function 組件上，不能在 class 內使用（畢竟未來要捨棄 class)。Hook 可以在函式或函式型變數內使用。例如：
+Hook 本身也是一個多功能的巨集。未來 class 寫法也將被 React 的 hook 所取代。目前業界來說分別為新舊兩派正在使用 class 或 hook。想使用 hook 必須只能使用在 function 元件上，不能在 class 內使用（畢竟未來要捨棄 class)。Hook 可以在函式或函式型變數內使用。例如：
 ```js
 function Example1(props) {
   // 你可以在這裡使用 Hook！
@@ -120,7 +120,7 @@ const [state, setState] = useState(() => {
 ```
 
 # useEffect
-useEffect 是能讓你在組件內使用 Side Effect 副作用，對主調用函式產生附加的影響。useEffect 本身等價於生命週期的 componentDidMount, componentDidUpdate, componentWillUnmount 的組合用途，每當 react 對組件進行 render 時會觸發 useEffect 內的工作。
+useEffect 是能讓你在元件內使用 Side Effect 副作用，對主調用函式產生附加的影響。useEffect 本身等價於生命週期的 componentDidMount, componentDidUpdate, componentWillUnmount 的組合用途，每當 react 對元件進行 render 時會觸發 useEffect 內的工作。
 
 > 使用 useEffect 時同樣的需要從 React.js 匯入獲得此函式。
 
@@ -491,7 +491,7 @@ useEffect(() => {
 Hook 本身只是 React 開發出來的 javascrtipt 函式作為使用。因此重點說明使用 Hook 該注意的規則經驗。主要有兩個部分。
 
 ## 只在最上層呼叫 Hook
-不要在迴圈、條件式或是巢狀的 function 內的地方使用 Hook。你只會在組件內的第一層直接使用它。React 才能 useState 和 useEffect 之間呼叫 state。
+不要在迴圈、條件式或是巢狀的 function 內的地方使用 Hook。你只會在元件內的第一層直接使用它。React 才能 useState 和 useEffect 之間呼叫 state。
 
 舉例來說，我們符合規則使用 2 組 useState 與 useEffect，並觀察它的執行時間過程。
 ```js
@@ -579,7 +579,7 @@ useEffect(function persistForm() {
 ```
 
 ## 只在 React Function 中呼叫 Hook
-也就 React 的函式型組件內去使用它或者自訂 Hook，不要在普通的函式內使用。因為 React 設計它拿來做為組件內的功能用途。這部分不做解說。
+也就 React 的函式型元件內去使用它或者自訂 Hook，不要在普通的函式內使用。因為 React 設計它拿來做為元件內的功能用途。這部分不做解說。
 
 ## ESList 輔助工具
 如果你有使用 ESLint 來協助開發環境，可透過以下插件來增加 Hook 對上列 2 個條件增加規則限制：
@@ -603,9 +603,9 @@ npm install eslint-plugin-react-hooks --save-dev
 ```
 
 # 自訂 Hook
-比較簡單的說法為，透過自訂一個 function 將使用 state 的相同邏輯做成一個 use 名稱的 hook 函式。讓這個函式本身符合 hook 規則（只能被上層呼叫且提供給 function 組件使用）。
+比較簡單的說法為，透過自訂一個 function 將使用 state 的相同邏輯做成一個 use 名稱的 hook 函式。讓這個函式本身符合 hook 規則（只能被上層呼叫且提供給 function 元件使用）。
 
-舉例以下說明：有兩個函式組件透過某一邏輯使用到 useState 與 useEffect 做一個結果後的不同 return，而這邏輯內容一致：
+舉例以下說明：有兩個函式元件透過某一邏輯使用到 useState 與 useEffect 做一個結果後的不同 return，而這邏輯內容一致：
 
 ```js
 import { useState, useEffect } from 'react';
@@ -704,9 +704,9 @@ function FriendListItem(props) {
 
 - 自訂 Hook 可以內不去使用原有的 Hook 函式，自訂 Hook 只是一個普通 function。
 - 自訂 Hook 命名 use 開頭有提醒規則之用途（包含工具辨識）。
-- 不同組件使用同自訂 Hook 為彼此獨立，自訂 Hook 本身只是一個函式無特別之處。因此不同組件其邏輯操作到的 useState 與 useEffect 獨立不共享。
+- 不同元件使用同自訂 Hook 為彼此獨立，自訂 Hook 本身只是一個函式無特別之處。因此不同元件其邏輯操作到的 useState 與 useEffect 獨立不共享。
 
-我們也能對自訂 Hook 傳遞一個可變的像是上層 state 進去，促使下次該組件進行渲染時執行觸發獲得可變的 return 回來。下面為當上層 state 提供數字給自訂 useFriendCheck 能協助回應上線之狀態結果。下次當觸發修改 state 時又會從自訂 useFriendCheck 獲得另一個結果。而 useEffect 每次執行獨立性，前一個好友狀態會再下一次的 useEffect 執行而自動取消本次 useEffect 觸發 unsubscribeFromFriendStatus。
+我們也能對自訂 Hook 傳遞一個可變的像是上層 state 進去，促使下次該元件進行渲染時執行觸發獲得可變的 return 回來。下面為當上層 state 提供數字給自訂 useFriendCheck 能協助回應上線之狀態結果。下次當觸發修改 state 時又會從自訂 useFriendCheck 獲得另一個結果。而 useEffect 每次執行獨立性，前一個好友狀態會再下一次的 useEffect 執行而自動取消本次 useEffect 觸發 unsubscribeFromFriendStatus。
 
 ```js
 const friendList = [

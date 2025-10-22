@@ -144,7 +144,7 @@ export function ShoppingListReducer(state = initialState, action: Action) {
 - 我們參考 shopping-list/shopping-list.service.ts 需要一些 CRUD 行為，首先我們以新增一筆的 action 設計成 ADD_INGREDIENT 這個為第一組 action。
 - action.type 本身為文字串，因此規劃 ADD_INGREDIENT：增加一筆食物材料之動作。洞做為 return 新 state 回去。新 state 的做法就是將舊 state 與新材料進行重組。
 - 在 reducer 裡面我們不會去更改 state 值，只有 store 才能做修改 state，reducer 只是一個處理前置行為，因此要產生一個含有舊 state 資料的新組合。這裡使用解構方式完成。
-- 我們會回傳一個指定組件，指定組件包含了舊 state 與待更新 state。待更新 state 利用覆蓋特性的舊在前新在後的物件進行重搆寫法。
+- 我們會回傳一個指定元件，指定元件包含了舊 state 與待更新 state。待更新 state 利用覆蓋特性的舊在前新在後的物件進行重搆寫法。
 - 新材料可能來自於 Action 內先暫時寫下來（不是正確答案）。
 
 ```ts shopping-list.reducer.ts

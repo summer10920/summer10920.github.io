@@ -8518,13 +8518,13 @@ function ChatApp() {
 | API 失敗     | 顯示錯誤                | 訊息自動消失，顯示錯誤 |
 
 {% note warning %}
-**⚠️ 效能問題：函數重新創建**
+**⚠️ 效能問題：函式重新創建**
 
-在上述範例中，`ChatApp` 組件使用了 `useState` 管理 `messages` 和 `input` 兩個 state。這意味著：
+在上述範例中，`ChatApp` 元件使用了 `useState` 管理 `messages` 和 `input` 兩個 state。這意味著：
 - 每次**輸入框內容改變**時（`setInput`），整個 `ChatApp` 會重新渲染
 - 每次**訊息更新**時（`setMessages`），整個 `ChatApp` 也會重新渲染
 
-由於 `handleSendMessage` 函數定義在組件內部，它會在每次 `ChatApp` 渲染時重新創建。
+由於 `handleSendMessage` 函式定義在元件內部，它會在每次 `ChatApp` 渲染時重新創建。
 
 **解決方案：使用 `useCallback` 避免重複建立**
 
@@ -8537,7 +8537,7 @@ function ChatApp() {
   const [input, setInput] = useState('');
   const formRef = useRef();
   
-  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  // ✅ 使用 useCallback 緩存函式，避免每次渲染都重新建立
   const handleSendMessage = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -8560,13 +8560,13 @@ function ChatApp() {
     } catch (error) {
       alert('訊息發送失敗，請重試');
     }
-  }, [input]); // 依賴 input，因為函數內部使用了 input
+  }, [input]); // 依賴 input，因為函式內部使用了 input
   
   // ... return JSX
 }
 ```
 
-**注意**：`handleSendMessage` 需要依賴 `input`，因為函數內部使用了 `input.trim()` 和 `input` 的值。這意味著每次輸入時函數還是會重新創建，但至少不會因為 `messages` 更新而重新創建。
+**注意**：`handleSendMessage` 需要依賴 `input`，因為函式內部使用了 `input.trim()` 和 `input` 的值。這意味著每次輸入時函式還是會重新創建，但至少不會因為 `messages` 更新而重新創建。
 {% endnote %}
 
 #### 範例 2：待辦事項（複雜的樂觀更新）
@@ -8741,21 +8741,21 @@ function TodoApp() {
 {% endnote %}
 
 {% note warning %}
-**⚠️ 效能問題：函數重新創建**
+**⚠️ 效能問題：函式重新創建**
 
-在上述範例中，`TodoApp` 組件使用了 `useState` 管理 `todos` 和 `input` 兩個 state。這意味著：
+在上述範例中，`TodoApp` 元件使用了 `useState` 管理 `todos` 和 `input` 兩個 state。這意味著：
 - 每次**輸入框內容改變**時（`setInput`），整個 `TodoApp` 會重新渲染
 - 每次**待辦事項更新**時（`setTodos`），整個 `TodoApp` 也會重新渲染
 
-由於 `handleAdd`、`handleToggle`、`handleDelete` 這三個函數定義在組件內部，它們會在每次 `TodoApp` 渲染時重新創建。這可能造成以下問題：
+由於 `handleAdd`、`handleToggle`、`handleDelete` 這三個函式定義在元件內部，它們會在每次 `TodoApp` 渲染時重新創建。這可能造成以下問題：
 
-1. **子組件不必要的重新渲染**：如果這些函數作為 props 傳遞給子組件，會導致子組件即使使用 `React.memo` 也會重新渲染（因為函數引用改變了）
-2. **列表項目全部重新渲染**：在 `optimisticTodos.map()` 中，每個 `<li>` 的 `onChange` 和 `onClick` 都是新的函數引用，導致所有列表項目都重新渲染
-3. **useEffect 依賴問題**：如果函數作為 useEffect 的依賴項，會導致 effect 不必要地重新執行
+1. **子元件不必要的重新渲染**：如果這些函式作為 props 傳遞給子元件，會導致子元件即使使用 `React.memo` 也會重新渲染（因為函式引用改變了）
+2. **列表項目全部重新渲染**：在 `optimisticTodos.map()` 中，每個 `<li>` 的 `onChange` 和 `onClick` 都是新的函式引用，導致所有列表項目都重新渲染
+3. **useEffect 依賴問題**：如果函式作為 useEffect 的依賴項，會導致 effect 不必要地重新執行
 
 **解決方案：使用 `useCallback` 避免重複建立**
 
-透過 `useCallback` 可以讓函數引用保持穩定，只有在依賴項改變時才重新創建。這樣即使 `TodoApp` 因為 `input` 或 `todos` 改變而重新渲染，這些 handler 函數的引用也不會改變：
+透過 `useCallback` 可以讓函式引用保持穩定，只有在依賴項改變時才重新創建。這樣即使 `TodoApp` 因為 `input` 或 `todos` 改變而重新渲染，這些 handler 函式的引用也不會改變：
 
 ```javascript
 import React, { useState, useOptimistic, useCallback } from 'react';
@@ -8765,7 +8765,7 @@ function TodoApp() {
   const [optimisticTodos, updateOptimisticTodos] = useOptimistic(todos, ...);
   const [input, setInput] = useState('');
   
-  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  // ✅ 使用 useCallback 緩存函式，避免每次渲染都重新建立
   const handleAdd = useCallback(async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -8809,11 +8809,11 @@ function TodoApp() {
 ```
 
 **何時需要優化？**
-- ✅ 函數作為 props 傳給子組件時
-- ✅ 列表中每個項目都使用這個函數時
-- ✅ 函數作為 useEffect 等 Hook 的依賴時
+- ✅ 函式作為 props 傳給子元件時
+- ✅ 列表中每個項目都使用這個函式時
+- ✅ 函式作為 useEffect 等 Hook 的依賴時
 - ❌ 簡單的示範範例 （為了可讀性可以省略）
-- ❌ 父組件很少重新渲染時
+- ❌ 父元件很少重新渲染時
 {% endnote %}
 
 #### 範例 3：社群貼文點讚（視覺回饋）
@@ -8907,11 +8907,11 @@ function SocialFeed() {
 ```
 
 {% note warning %}
-**⚠️ 效能問題：函數重新創建**
+**⚠️ 效能問題：函式重新創建**
 
-在上述範例中，`SocialPost` 組件使用了 `useState` 管理 `likes` state。這意味著每次點讚後（`setLikes`），整個 `SocialPost` 會重新渲染。
+在上述範例中，`SocialPost` 元件使用了 `useState` 管理 `likes` state。這意味著每次點讚後（`setLikes`），整個 `SocialPost` 會重新渲染。
 
-由於 `handleLike` 函數定義在組件內部，它會在每次 `SocialPost` 渲染時重新創建。雖然這個範例中影響較小（只有一個按鈕使用這個函數），但在有多個互動元素時，使用 `useCallback` 仍是好習慣。
+由於 `handleLike` 函式定義在元件內部，它會在每次 `SocialPost` 渲染時重新創建。雖然這個範例中影響較小（只有一個按鈕使用這個函式），但在有多個互動元素時，使用 `useCallback` 仍是好習慣。
 
 **解決方案：使用 `useCallback` 避免重複建立**
 
@@ -8932,7 +8932,7 @@ function SocialPost({ post }) {
     })
   );
   
-  // ✅ 使用 useCallback 緩存函數，避免每次渲染都重新建立
+  // ✅ 使用 useCallback 緩存函式，避免每次渲染都重新建立
   const handleLike = useCallback(async () => {
     updateOptimisticLikes();
     
@@ -8953,7 +8953,7 @@ function SocialPost({ post }) {
 }
 ```
 
-**注意**：`handleLike` 依賴 `post.id` 和 `likes.isLiked`，因此當點讚狀態改變時函數會重新創建。這是合理的，因為函數邏輯確實依賴這些值。
+**注意**：`handleLike` 依賴 `post.id` 和 `likes.isLiked`，因此當點讚狀態改變時函式會重新創建。這是合理的，因為函式邏輯確實依賴這些值。
 {% endnote %}
 
 ### 總結
@@ -8991,7 +8991,7 @@ function SocialPost({ post }) {
 
 **效能注意：**
 ```javascript
-// ✅ 使用 useCallback 避免函數重複創建
+// ✅ 使用 useCallback 避免函式重複創建
 const handleAction = useCallback(async (data) => {
   updateOptimistic(data);
   try {
@@ -9121,7 +9121,7 @@ function App() {
 ```
 
 **useId 的優勢**：
-1. ✅ **自動唯一**：每次呼叫產生不同 ID，組件重複使用也不會衝突
+1. ✅ **自動唯一**：每次呼叫產生不同 ID，元件重複使用也不會衝突
 2. ✅ **SSR 安全**：服務端和客戶端產生相同的 ID，避免 hydration 問題
 3. ✅ **零成本**：不佔用 state，性能最佳
 4. ✅ **符合標準**：產生的 ID 符合 HTML 規範
@@ -9235,7 +9235,7 @@ function UserForm() {
 **注意事項：**
 - ❌ 不要用於 `key` 屬性（請用資料的唯一標識）
 - ❌ 不要依賴 ID 的具體格式（格式可能變化）
-- ✅ 一個組件可以呼叫多次 `useId`，產生多個 ID
+- ✅ 一個元件可以呼叫多次 `useId`，產生多個 ID
 - ✅ 可以用字串模板組合：`` `${id}-email` ``
 
 ## useDebugValue
@@ -9243,16 +9243,16 @@ function UserForm() {
 `useDebugValue` 讓自定義 Hook 在 React DevTools 中顯示有意義的調試資訊，幫助開發者快速了解 Hook 的內部狀態。
 
 {% note info %}
-**React DevTools** 是 React 官方提供的瀏覽器擴充功能，用於調試 React 應用程式。它可以讓你檢查組件結構、state、props 和 Hooks。
+**React DevTools** 是 React 官方提供的瀏覽器擴充功能，用於調試 React 應用程式。它可以讓你檢查元件結構、state、props 和 Hooks。
 
 **如何使用：**
 1. 安裝後，打開任何 React 應用程式
 2. 按 <kbd>F12</kbd> 開啟瀏覽器開發者工具
 3. 切換到 **Components** 標籤
-4. 點擊組件即可查看其 state、props 和 Hooks
+4. 點擊元件即可查看其 state、props 和 Hooks
 
 **小技巧：**
-在 Components 標籤中，展開組件可以看到它使用的所有 Hooks（useState、useEffect、自定義 Hook 等）。這對於理解組件的內部運作非常有幫助！
+在 Components 標籤中，展開元件可以看到它使用的所有 Hooks（useState、useEffect、自定義 Hook 等）。這對於理解元件的內部運作非常有幫助！
 {% endnote %}
 
 ### 為什麼需要 useDebugValue？
@@ -9262,7 +9262,7 @@ function UserForm() {
 
 **❌ 問題：自定義 Hook 在 DevTools 中難以理解**
 
-當你在 React DevTools 中檢查使用自定義 Hook 的組件時，會發現 Hook 的內部狀態只顯示原始值，很難一眼看出它的意義。
+當你在 React DevTools 中檢查使用自定義 Hook 的元件時，會發現 Hook 的內部狀態只顯示原始值，很難一眼看出它的意義。
 
 ```javascript
 import { useState, useEffect } from 'react';
@@ -9304,7 +9304,7 @@ UserStatus
 
 **問題**：
 - ❌ 只看到 `true`，不知道代表「在線」還是「離線」
-- ❌ 如果組件使用多個自定義 Hook，會看到一堆 `true`、`false`、`{}`，完全搞不清楚哪個是哪個
+- ❌ 如果元件使用多個自定義 Hook，會看到一堆 `true`、`false`、`{}`，完全搞不清楚哪個是哪個
 - ❌ 必須查看程式碼才能理解每個值的意義
 - ❌ 團隊協作時，其他開發者更難調試
 
@@ -9476,19 +9476,19 @@ LoginForm
 **主要優勢：**
 - ✅ 在 DevTools 中顯示友善的調試資訊
 - ✅ 只在開發模式生效，不影響生產環境
-- ✅ 支援 formatter 函數，避免不必要的計算
+- ✅ 支援 formatter 函式，避免不必要的計算
 - ✅ 提升調試效率，特別是複雜 Hook
 
 **使用場景：**
 - 自定義 Hook 共享給團隊使用時
 - Hook 內部狀態複雜，需要摘要資訊
 - 開發 Hook 函式庫時
-- 調試多個自定義 Hook 的組件
+- 調試多個自定義 Hook 的元件
 
 **注意事項：**
-- ⚠️ 只在自定義 Hook 內部使用（不是組件）
+- ⚠️ 只在自定義 Hook 內部使用（不是元件）
 - ⚠️ 對於簡單的 Hook 可以省略（避免過度使用）
-- ✅ 使用 formatter 函數優化效能
+- ✅ 使用 formatter 函式優化效能
 - ✅ 只在開發環境生效，打包後會被移除
 
 ## useInsertionEffect
@@ -9498,7 +9498,7 @@ LoginForm
 {% note info %}
 **什麼是 CSS-in-JS？**
 
-**CSS-in-JS** 是一種在 JavaScript 中撰寫 CSS 的技術，讓樣式與組件緊密結合。常見的函式庫有：
+**CSS-in-JS** 是一種在 JavaScript 中撰寫 CSS 的技術，讓樣式與元件緊密結合。常見的函式庫有：
 - **styled-components**：最流行的 CSS-in-JS 函式庫
 - **emotion**：高效能的 CSS-in-JS 解決方案
 - **JSS**：功能強大的 CSS-in-JS 工具
@@ -9602,7 +9602,7 @@ function StyledButton() {
 ```
 
 **問題流程**：
-1. React 渲染組件 → `<button className="btn">` 出現在 DOM
+1. React 渲染元件 → `<button className="btn">` 出現在 DOM
 2. 瀏覽器繪製 → **使用者看到按鈕，但沒有 `.btn` 樣式**（閃一下）
 3. `useEffect` 執行 → 在 `<head>` 插入 `.btn` 樣式
 4. 瀏覽器重新繪製 → 按鈕突然有了樣式
@@ -9653,7 +9653,7 @@ function StyledButton() {
 **執行流程**：
 {% mermaid graph LR %}
     A["useInsertionEffect 執行<br/>（樣式先插入）"]
-    B["React 渲染組件<br/>&lt;button&gt; 出現在 DOM"]
+    B["React 渲染元件<br/>&lt;button&gt; 出現在 DOM"]
     C["瀏覽器繪製<br/>（按鈕直接帶著樣式顯示）"]
 
     A --> B --> C
@@ -9696,7 +9696,7 @@ function useDynamicStyle(className, styles) {
       }
     `;
     
-    // 清理函數
+    // 清理函式
     return () => {
       const style = document.getElementById(styleId);
       if (style) {

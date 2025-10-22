@@ -1169,7 +1169,7 @@ removeBtn.addEventListener("click", function() {
 - 只能移除具名函式的處理器，匿名函式無法移除
 - 必須提供相同的函式參考和事件類型
 - 常用於清理資源、防止記憶體洩漏
-- 在組件卸載或頁面切換時特別重要
+- 在元件卸載或頁面切換時特別重要
 {% endnote %}
 
 #### AbortController
