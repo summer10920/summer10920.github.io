@@ -1,5 +1,5 @@
 ---
-title: '[框架課程] React v18 教學（二）- 初始學習與語法'
+title: '[框架課程] React 19 教學（二）- 基礎語法與核心概念'
 categories:
   - 職訓教材
   - ReactJS
@@ -10,15 +10,19 @@ hidden: true
 ---
 ![](assets/images/banner/react.png)
 
-本篇一開始將利用 Vite 所產生的預設專案內容環境進行理解開發部屬流程。同時一邊詳細地基本介紹 React 相關基礎知識撰寫技巧。在這裡可以學習所需要的 React。本篇使用的版本為最新的 React 18，部分 API 與用途稍有不同且新穎。
+本篇將深入探討 React 19 的核心概念與實作技巧，從 Vite 專案結構開始，逐步介紹 JSX 語法、元件設計、Props 傳遞、事件處理到狀態管理。透過實際範例，你將學會如何建構可重用的元件、管理應用程式狀態，以及掌握現代 React 開發的最佳實踐。
 
 <!-- more -->
 
 # 了解專案環境
-相較於 CDN 作法，我們已經不需要特別宣告載入 babel 來協助瀏覽器理解 JSX 寫什麼，vite 會協助我們轉換打包成瀏覽器能理解的代碼。練習方式請從前一篇的 vite 初始專案做說明開始動作。
 
-## 根元件
-由於 SPA 的設計，網頁只會載入根目錄下的`index.html`。接著透過 React 的語法，協助我們對瀏覽器下達 DOM API 相關操作指令。因此很清楚看到整個畫面只有一個 `div#root` 跟指定的`/src/main.jsx`。而這份 script 檔案就是 React 的所有起頭檔案。
+相較於 CDN 載入方式，使用 Vite 建立的 React 專案已經內建完整的開發環境。Vite 會自動處理 JSX 轉換、模組打包、熱更新等工作，讓我們專注在應用程式開發上。本章節將從 Vite 預設產生的專案結構開始，逐步了解 React 19 的核心觀念。
+
+## 根元件（Root Component）
+
+React 應用程式採用 **SPA（Single Page Application，單頁應用程式）** 架構，整個網站只會載入一個 `index.html` 檔案，所有的頁面切換和內容更新都透過 JavaScript 動態完成，不需要重新載入頁面。
+
+在 Vite 專案中，`index.html` 是整個應用的入口點，它只包含一個掛載點 `<div id="root"></div>` 和一個 JavaScript 模組引入 `<script type="module" src="/src/main.jsx"></script>`。React 會在這個掛載點渲染整個應用程式。
 
 ```html index.html
 <!doctype html>
@@ -36,55 +40,126 @@ hidden: true
 </html>
 ```
 
-> 副檔名 jsx 是為了讓 vite 知道這是一個含有 JSX 內容的 js 檔案需要特別解讀。如果你的代碼沒有任何 jsx 代碼，可以使用 js 為副檔名。
+{% note info %}
+**為什麼使用 `.jsx` 副檔名？**
 
-接著觀察`/src/main.jsx`，這是一隻使用 React 語法所寫的最上層根目錄的節點檔案。
+`.jsx` 副檔名明確告訴 Vite 這個檔案包含 JSX 語法，需要進行特殊處理。雖然 Vite 也能處理 `.js` 檔案中的 JSX，但使用 `.jsx` 能讓檔案用途更清晰，也方便編輯器提供更好的語法高亮和自動補全。
+{% endnote %}
 
-- 在最上面的根元件建議宣告 StrictMode 包覆起來，這代表整個 React 往下都需要嚴謹模式。`StrictMode` 是 React 提供的一種檢查工具，會檢測過時的 API 並在控制台中顯示警告，以及使特定生命周期方法（如 componentDidMount 和 componentDidUpdate）運行兩次，以幫助檢測意外的副作用。
-- createRoot 是宣告建立一個整個 React 最上層的 Root 元件。而 ReactDOM 包含了可以將 React 元素渲染 Render 到瀏覽器的工具包。
-- React 的每一層元件都可以直接匯入 CSS，供該層使用，並且下層元件也能繼承這些 CSS。
-- Vite 支援省略 `.jsx`，它會自動匹配尋找 `.js, .jsx, .json` 檔案。
-- render 負責產生一個虛擬的 DOM 並渲染觀察它，並不是一開始存在的實 體 DOM。
+### main.jsx - 應用程式入口
+
+`/src/main.jsx` 是整個 React 應用的入口檔案，負責初始化並渲染根元件。讓我們逐步了解每個部分的作用：
+
+**📌 核心概念說明：**
+
+1. **StrictMode（嚴格模式）**
+   - React 19 的開發輔助工具，用於檢測潛在問題
+   - 檢測不安全的生命週期、過時的 API 使用
+   - 在開發模式下會**故意執行元件兩次**，幫助發現副作用問題
+   - 只在開發環境生效，生產環境會自動移除
+
+2. **createRoot（建立根節點）**
+   - React 18+ 引入的新 API，取代舊的 `ReactDOM.render`
+   - 啟用 Concurrent Mode（並行模式），支援更好的效能優化
+   - 語法：`createRoot(DOM 元素）.render(React 元件）`
+
+3. **CSS 匯入**
+   - React 元件可以直接匯入 CSS 檔案
+   - 父元件的樣式會影響所有子元件（CSS 繼承特性）
+   - Vite 會自動處理 CSS 的打包和熱更新
+
+4. **模組匯入簡化**
+   - Vite 支援省略 `.jsx` 副檔名
+   - 會自動依序尋找 `.js`、`.jsx`、`.json` 檔案
+   - 例：`import App from './App'` 會自動找到 `App.jsx`
+
+5. **虛擬 DOM 渲染**
+   - `render` 方法會建立虛擬 DOM 樹
+   - React 透過 Diff 演算法比較變化
+   - 只更新實際改變的 DOM 部分，提升效能
 
 ```jsx /src/main.jsx
-import { StrictMode } from 'react'; // 引入 StrictMode 用於開發中的嚴格檢查
-import { createRoot } from 'react-dom/client'; // 使用 React 18 的 createRoot API
-import './index.css'; // 引入全局 css 樣式
-// import App from './App.jsx'; // 引入主應用元件（帶擴展名）
-import App from './App'; // 引入主應用元件（帶擴展名）
+import { StrictMode } from 'react'; // 引入 StrictMode 用於開發環境的嚴格檢查
+import { createRoot } from 'react-dom/client'; // React 18+ 的新 API
+import './index.css'; // 引入全域 CSS 樣式
+import App from './App'; // 引入主應用元件（省略副檔名， Vite 會自動解析出 .jsx）
 
+// 建立 React 根節點並渲染應用
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
   </StrictMode>
-); // 創建根容器並渲染 App，包裹在 StrictMode 中
+);
 ```
 
-> 根節點的建立方式`createRoot(element).render(JSX)`，在 17 版本以前是`ReactDOM.render(JSX,element)`，有所差異。React 17 開始，JSX 轉換已經改進，不再需要在每個文件中導入 `React`。
+{% note warning %}
+**React 18+ 重要變更：**
 
-隨著把滑鼠放在`<App />`位置，透過 <kbd>Ctrl</kbd>+<kbd>Click</kbd>，VSCode 會跳到該檔案上或這自己手動找到這份檔案，接著觀察此內容。React 都是用包覆的方式將元件設定於內部。因此 App 是 Main 的下層元件。每層元件都有自己的邏輯與渲染畫面方式。
+```javascript
+// ✅ React 18+ 正確寫法（啟用 Concurrent Mode）
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+
+// ❌ React 17 舊寫法（已不推薦）
+ReactDOM.render(<App />, document.getElementById('root'));
+```
+
+**關鍵差異：**
+- **Concurrent Mode**：React 18+ 預設啟用，支援自動批次更新、Suspense 等新特性
+- **更好的效能**：可中斷渲染，優先處理使用者互動
+- **未來兼容性**：React 19 的新功能都基於 createRoot API
+{% endnote %}
+
+{% note success %}
+**JSX 轉換改進（React 17+）：**
+
+從 React 17 開始，你不再需要在每個檔案中 `import React`：
+
+```javascript
+// ✅ React 17+ 不需要這樣宣告
+// import React, { useState, useEffect } from 'react';
+
+// 只需匯入使用到的 Hooks 或工具
+import { useState, useEffect } from 'react';
+
+function MyComponent() {
+  return <div>Hello</div>; // JSX 會自動轉換，不需要 React 在作用域中
+}
+```
+
+React 16 以前，因為 Babel 編譯 JSX 時會直接呼叫 `React.createElement`，所以每個使用 JSX 的檔案都必須手動寫上 `import React from 'react';`，確保 React 在作用域。自 React 17 起，Babel 或 SWC 等現代編譯器會自動注入轉換函式，讓你不必再手動引入 React，JSX 可以直接使用，開發流程更簡潔。
+{% endnote %}
+
+### App.jsx - 主應用元件
+
+在 VSCode 中，你可以按住 <kbd>Ctrl</kbd> 並點擊 `<App />`，快速跳轉到 `App.jsx` 檔案。這是 React 應用的主要元件，所有的 UI 邏輯都從這裡開始。
+
+React 採用**元件樹（Component Tree）**的架構，每個元件都可以包含子元件，形成巢狀結構。在這個例子中，`App` 是 `main.jsx` 的子元件，而 `App` 內部又可以包含更多子元件。每個元件都有自己獨立的邏輯、狀態和渲染輸出。
 
 ```jsx App.jsx
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react'; // 匯入 useState Hook 用於狀態管理
+import reactLogo from './assets/react.svg'; // 匯入 React 圖片資源
+import viteLogo from '/vite.svg'; // 匯入 Vite 圖片（位於 public 目錄）
+import './App.css'; // 匯入元件專屬樣式
 
 function App() {
-  const [count, setCount] = useState(0)
+  // 宣告狀態：count 是當前值，setCount 是更新函式
+  const [count, setCount] = useState(0);
 
   return (
     <>
+      {/* Fragment 空標籤：包裹多個元素但不產生額外 DOM */}
       <div>
-        <a href="https://vite.dev" target="_blank">
+        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
+        {/* 點擊按鈕時，將 count + 1 */}
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
@@ -96,163 +171,354 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App; // 預設匯出，讓 main.jsx 可以引入
 ```
 
-這份檔案上，可以看到：
+**📌 App.jsx 關鍵概念解析：**
 
-- 有使用到一個 Hook 為 useState，這是一個狀態管理，晚點會正式詳細解釋。大致上他記錄 count 變化，隨著 onClick 觸發，將目前的 count+1，利用 setCount 存入。這樣 count 的會被動態記住而改變。
-- 圖片可以當作一個模組來匯入使用。該元件的 css 也用匯入方式載入。
-- 宣告一個 function，他會返回一個 JSX 代碼。然後這份檔案預設 default 的會把 function 結果輸出。讓上層 Main 取得這份元件的東西。
-- return 的東西永遠只有一個標籤，JSX 的特性就是可以編寫多個 HTML 標籤方式內容。如果硬要回傳多個 HTML 標籤，可以考慮多包一個`<div>`（但跟著會渲染出來），或者可以使用空標籤`<>` React 會自動不產生此 DOM，但回傳仍只有一個標籤。
+1. **useState Hook（狀態管理）**
+   ```javascript
+   const [count, setCount] = useState(0);
+   //     ↑       ↑            ↑
+   //   當前值  更新函式    初始值
+   ```
+   - `count`：唯讀的狀態值，用於顯示
+   - `setCount`：更新狀態的函式，呼叫後會觸發重新渲染
+   - `0`：初始值，元件第一次渲染時的狀態
+   - 後續章節會詳細介紹
 
-並將練習的 React 檔案從`src/index.js`開始編寫，調整 html 請從`public/index.html`開始改寫。初始動作準備如下：
+2. **資源匯入**
+   - **圖片模組化**：Vite 允許直接 import 圖片，會自動處理路徑
+   - **CSS 匯入**：元件專屬樣式，支援 CSS Modules、PostCSS 等
+   - **路徑規則**：
+     - `./assets/xxx` - 相對路徑（src 目錄下）
+     - `/xxx` - public 目錄下的檔案
 
-```html public/index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <div id="root"></div>
-</body>
-</html>
+3. **函式元件結構**
+   ```javascript
+   function ComponentName() {
+     // 1. Hook 呼叫（必須在最上層）
+     // 2. 邏輯處理
+     // 3. return JSX
+     return <div>...</div>;
+   }
+   ```
+   - 函式名稱必須大寫開頭（React 規範）
+   - return 回傳 JSX，描述 UI 長什麼樣子
+   - 每次狀態改變，函式會重新執行
+
+4. **JSX Fragment（空標籤 `<>...</>`）**
+   - 用途：包裹多個並列元素，但不產生額外的 DOM 節點
+   - 等同於 `<React.Fragment>...</React.Fragment>`
+   - **為什麼需要？** React 元件的 return 只能回傳一個根元素
+   
+   ```javascript
+   // ❌ 錯誤：回傳多個根元素
+   return (
+     <h1>Title</h1>
+     <p>Content</p>
+   );
+   
+   // ✅ 正確：使用 Fragment 包裹
+   return (
+     <>
+       <h1>Title</h1>
+       <p>Content</p>
+     </>
+   );
+   
+   // ✅ 也正確，但會多一層 div
+   return (
+     <div>
+       <h1>Title</h1>
+       <p>Content</p>
+     </div>
+   );
+   ```
+
+5. **export default（預設匯出）**
+   - 每個檔案只能有一個 `export default`
+   - 匯入時可以自訂名稱：`import MyApp from './App'`
+   - 也可以使用具名匯出：`export function App() {...}`
+
+{% note warning %}
+**target="_blank" 安全性提醒：**
+
+使用 `target="_blank"` 開啟新分頁時，建議加上 `rel="noopener noreferrer"`：
+
+```jsx
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  Link
+</a>
 ```
 
-## 自動檢查與排版優化
-眼尖可以看到 Vite 的原本代碼沒有指定`;`符號，同時排版上可能不是平時習慣的統一風格作法。我們可以借助 ESLint 與 Prettier 來完成專案的代碼一致性與減少錯誤發生。如果一個專案很多人共同維護開發，這時候的 ESLint 就是統一寫法的限制警告，而 Prettier 是強制在格式化時排成我們統一的寫法風格。
+- `noopener`：防止新頁面存取 `window.opener`，避免潛在的安全風險
+- `noreferrer`：不發送 referrer 資訊，保護隱私
 
-### ESLint
-在 Vite 的專案內，已經包含了 ESLint 的安裝與設定如下位置。用於檢查 JavaScript 代碼中的問題，包括潛在的錯誤和不良實踐。
+React 19 的 JSX 會自動添加 `noopener`，但明確寫出來更清楚。
+{% endnote %}
+
+## 程式碼品質管理：ESLint 與 Prettier
+
+在團隊協作或大型專案中，統一的程式碼風格和即時的錯誤檢查至關重要。Vite 預設已經配置好 ESLint，但我們需要進一步優化設定，並整合 Prettier 來自動格式化程式碼。
+
+| 工具         | 用途           | 範例                                         |
+| ------------ | -------------- | -------------------------------------------- |
+| **ESLint**   | 程式碼品質檢查 | 檢測未使用的變數、潛在錯誤、不符合規範的寫法 |
+| **Prettier** | 程式碼格式化   | 統一縮排、引號、分號、換行等排版風格         |
+
+{% note success %}
+**最佳實踐組合：**
+- ESLint 負責「程式邏輯」的正確性
+- Prettier 負責「程式外觀」的美觀性
+- 兩者互補，避免衝突
+{% endnote %}
+
+### 配置 ESLint
+
+Vite 建立的 React 專案已經預裝 ESLint 並提供基礎配置檔 `eslint.config.js`。這是 ESLint 9+ 的新格式（扁平化配置），取代了舊的 `.eslintrc.js`。
+
+**eslint.config.js 配置檔解析：**
 
 ```js eslint.config.js
-import js from '@eslint/js' // 引入 ESLint 的 JavaScript 設定
-import globals from 'globals' // 引入全局變數設定
-import react from 'eslint-plugin-react' // 引入 ESLint 的 React 插件
-import reactHooks from 'eslint-plugin-react-hooks' // 引入 ESLint 的 React Hooks 插件
-import reactRefresh from 'eslint-plugin-react-refresh' // 引入 ESLint 的 React Refresh 插件
+import js from '@eslint/js'; // ESLint 核心 JavaScript 規則
+import globals from 'globals'; // 全域變數定義（browser, node 等）
+import react from 'eslint-plugin-react'; // React 專用規則
+import reactHooks from 'eslint-plugin-react-hooks'; // React Hooks 規則
+import reactRefresh from 'eslint-plugin-react-refresh'; // Vite HMR 規則
 
-// 匯出 ESLint 的設定
 export default [
-  { ignores: ['dist'] }, // 忽略 dist 目錄
+  { ignores: ['dist'] }, // 忽略打包輸出目錄
   {
-    files: ['**/*.{js,jsx}'], // 設定要檢查的檔案類型
+    files: ['**/*.{js,jsx}'], // 檢查所有 .js 和 .jsx 檔案
     languageOptions: {
-      ecmaVersion: 2020, // 設定 ECMAScript 版本
-      globals: globals.browser, // 設定全局變數
+      ecmaVersion: 2020, // 支援 ES2020 語法
+      globals: globals.browser, // 啟用瀏覽器全域變數（window, document 等）
       parserOptions: {
-        ecmaVersion: 'latest', // 設定 ECMAScript 版本
-        ecmaFeatures: { jsx: true }, // 啟用 JSX 支援
-        sourceType: 'module', // 設定模組化
+        ecmaVersion: 'latest', // 使用最新 ECMAScript 標準
+        ecmaFeatures: { jsx: true }, // 啟用 JSX 語法解析
+        sourceType: 'module', // 使用 ES Modules
       },
     },
-    settings: { react: { version: '18.3' } }, // 設定 React 版本
+    settings: { 
+      react: { version: '19.2' } // 指定 React 版本（根據專案調整）
+    },
     plugins: {
-      react, // 使用 React 插件
-      'react-hooks': reactHooks, // 使用 React Hooks 插件
-      'react-refresh': reactRefresh, // 使用 React Refresh 插件
+      react, // React 規則插件
+      'react-hooks': reactHooks, // Hooks 規則插件
+      'react-refresh': reactRefresh, // HMR 規則插件
     },
     rules: {
-      ...js.configs.recommended.rules, // 使用 JavaScript 推薦的規則
-      ...react.configs.recommended.rules, // 使用 React 推薦的規則
-      ...react.configs['jsx-runtime'].rules, // 使用 JSX Runtime 推薦的規則
-      ...reactHooks.configs.recommended.rules, // 使用 React Hooks 推薦的規則
-      'react/jsx-no-target-blank': 'off', // 關閉 JSX 的 no-target-blank 證則
-      'react-refresh/only-export-components': [ // 設定 React Refresh 的規則
+      ...js.configs.recommended.rules, // JavaScript 推薦規則
+      ...react.configs.recommended.rules, // React 推薦規則
+      ...react.configs['jsx-runtime'].rules, // React 17+ JSX 轉換規則
+      ...reactHooks.configs.recommended.rules, // Hooks 推薦規則
+      // 自訂規則覆寫
+      'react/jsx-no-target-blank': 'off', // 允許 target="_blank" 不加 rel
+      'react-refresh/only-export-components': [ // HMR 最佳化警告
         'warn',
-        { allowConstantExport: true },
+        { allowConstantExport: true }, // 允許匯出常數
       ],
     },
   },
-]
+];
 ```
 
-但這樣不會根據 IDE 操作下被套入 ESLint 反饋告知，因此需要安裝 VSCode 套件，協助我們開發時根據專案下的 ESLint 去檢查。安裝 VSCode 的 ESLint 
+{% note info %}
+**ESLint 9+ 扁平化配置說明：**
+
+新的 `eslint.config.js` 格式更簡潔、更容易理解：
+
+- ✅ 使用 JavaScript ES Module 語法
+- ✅ 配置以陣列形式組織，順序重要
+- ✅ 每個物件代表一組規則配置
+- ✅ 支援更靈活的條件配置
+
+**與舊格式的差異：**
+```javascript
+// ❌ 舊格式 (.eslintrc.js)
+module.exports = {
+  extends: ['eslint:recommended', 'plugin:react/recommended'],
+  // ...
+};
+
+// ✅ 新格式 (eslint.config.js)
+export default [
+  { rules: { ...js.configs.recommended.rules } },
+  // ...
+];
+```
+{% endnote %}
+
+### 整合 ESLint 到 VSCode
+
+光有 ESLint 配置檔還不夠，我們需要讓 VSCode 即時顯示錯誤提示。
+
+**步驟 1：安裝 VSCode ESLint 擴充套件**
+
+在 VSCode 擴充套件市場搜尋「**ESLint**」（by Microsoft），點擊安裝。
 
 ![](/assets/images/2025-01-19-21-42-58.png)
 
-為了讓 VSCode 能夠正確地使用專案中的 ESLint 設定，我們需要在專案根目錄建立 `.vscode/settings.json` 檔案。這些設定會：
-- 在儲存檔案時自動修復 ESLint 檢測到的問題（如果是 rule 內的要求下）
-- 設定 ESLint 要驗證的檔案類型（JavaScript 和 JSX）
+**步驟 2：配置專案級設定**
+
+在專案根目錄建立 `.vscode/settings.json` 檔案，啟用自動修復和驗證：
 
 ```json .vscode/settings.json
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit" // 儲存時自動修復 ESLint 錯誤
   },
   "eslint.validate": [
-    "javascript",
-    "javascriptreact"
+    "javascript", // 驗證 .js 檔案
+    "javascriptreact" // 驗證 .jsx 檔案
   ]
 }
 ```
 
-> 記得要把`.gitignore`的`.vscode/*`註解取消，讓 git 記錄此設定跟著專案一起提交，其他人的 VSCode 也會下載後有相同規則。
+{% note warning %}
+**專案設定共享：**
 
-現在故意在`src\App.jsx`某處添加兩次`;;`，試圖產生錯誤的警告。
+建議將 `.vscode/settings.json` 加入 Git 版本控制，讓團隊成員有一致的開發環境設定。
 
-![](/assets/images/2025-01-19-22-15-19.png)
-
-由於`eslint.config.js` 內沒有要求 ESLint 規則不能出現 2 次`;;`。我們需要補上禁止多餘的分號規則。
-
-```js eslint.config.js
- rules: {
-      ...js.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...react.configs['jsx-runtime'].rules,
-      ...reactHooks.configs.recommended.rules,
-      'react/jsx-no-target-blank': 'off',
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      'no-extra-semi': 'error'  // 加入這行
-    },
+在 `.gitignore` 中確保沒有忽略 `.vscode/` 目錄：
+```gitignore
+# .gitignore
+# .vscode/*  ← 註解或刪除這行
 ```
 
-現在回頭看`src\App.jsx`，就會出現錯誤提示了。
+這樣其他人 clone 專案後，VSCode 會自動套用這些設定。
+{% endnote %}
 
-![](/assets/images/2025-01-19-22-17-56.png)
+**步驟 3：測試 ESLint 自動修復**
 
-然後按下儲存。ESLint 就會幫我們自動修復了。
+在 `src/App.jsx` 故意添加多餘的分號：
 
-### Prettier
-用於自動格式化代碼，確保代碼風格的一致性。可以每次在 vscode 進行 format 時，強制格式化我們指定的排版樣式統一閱讀感。
-
-首先安裝必要的套件與用途：
-- prettier: Prettier 核心套件
-- eslint-config-prettier: 關閉所有和 Prettier 衝突的 ESLint 規則
-- eslint-plugin-prettier: 讓 ESLint 運行 Prettier 規則
-
-```bash
-# 安裝 Prettier 相關套件 
-pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
-```
-
-> `-D`是`--save-dev`的縮寫，用於將依賴保存到 devDependencies（開發依賴）中。這些套件只有開發模式下使用，不會用於產生模式。
-
-接著在專案目錄下，再建立 `.prettierrc` 檔案：
-
-```json .prettierrc
-{
-  "semi": true, // 是否在每個語句後面加上分號
-  "tabWidth": 2, // 定義每個縮進的空格數
-  "printWidth": 100, // 定義每行的最大字符數
-  "singleQuote": true, // 使用單引號
-  "trailingComma": "es5", // 是否在多行的最後一個元素後面盡可能使用尾隨逗號（包括函式參數）
-  "jsxSingleQuote": false, // 在 JSX 中是否使用單引號
-  "bracketSpacing": true // 在對象字面量中是否在括號內添加空格
+```javascript
+function App() {
+  const [count, setCount] = useState(0);;  // ← 多餘的分號
+  // ...
 }
 ```
 
-然後調整`eslint.config.js`，把 prettier 的相關套件綁給 ESLint。
+![](/assets/images/2025-01-19-22-15-19.png)
+
+此時 ESLint 預設規則可能不會檢測這個錯誤。我們可以添加自訂規則：
+
+```js eslint.config.js
+rules: {
+  ...js.configs.recommended.rules,
+  ...react.configs.recommended.rules,
+  ...react.configs['jsx-runtime'].rules,
+  ...reactHooks.configs.recommended.rules,
+  'react/jsx-no-target-blank': 'off',
+  'react-refresh/only-export-components': [
+    'warn',
+    { allowConstantExport: true },
+  ],
+  'no-extra-semi': 'error', // 禁止多餘分號
+},
+```
+
+儲存配置檔後，回到 `App.jsx`，錯誤提示會立即出現：
+
+![](/assets/images/2025-01-19-22-17-56.png)
+
+按下 <kbd>Ctrl</kbd>+<kbd>S</kbd> 儲存，ESLint 會自動移除多餘的分號。
+
+{% note success %}
+**ESLint 自動修復的魔法：**
+
+ESLint 可以自動修復的問題類型：
+- ✅ 多餘的空格、分號
+- ✅ 不一致的引號（單引號 vs 雙引號）
+- ✅ 缺少的分號
+- ✅ 未使用的 import
+
+無法自動修復的問題（需要手動處理）：
+- ❌ 邏輯錯誤
+- ❌ 未定義的變數
+- ❌ React Hooks 規則違反
+{% endnote %}
+
+### 配置 Prettier
+
+Prettier 是一個固執己見的程式碼格式化工具，能自動統一程式碼風格，避免團隊成員因為排版風格不同而產生無意義的 Git diff。
+
+**步驟 1：安裝 Prettier 相關套件**
+
+```bash
+# 安裝 Prettier 及整合套件
+pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
+```
+
+**套件說明：**
+- `prettier`：Prettier 核心套件
+- `eslint-config-prettier`：關閉 ESLint 中與 Prettier 衝突的格式規則
+- `eslint-plugin-prettier`：將 Prettier 規則整合到 ESLint 中
+
+{% note info %}
+**-D 參數說明：**
+
+`-D` 是 `--save-dev` 的縮寫，表示安裝為**開發依賴**（devDependencies）。這些工具只在開發時使用，打包後的生產環境不需要，可以減少最終打包體積。
+
+```json
+// package.json
+{
+  "dependencies": {      // 生產環境需要的套件
+    "react": "^19.0.0"
+  },
+  "devDependencies": {   // 僅開發環境需要的套件
+    "prettier": "^3.0.0",
+    "eslint": "^9.0.0"
+  }
+}
+```
+{% endnote %}
+
+**步驟 2：建立 Prettier 配置檔**
+
+在專案根目錄建立 `.prettierrc` 檔案：
+
+```json .prettierrc
+{
+  "semi": true,           // 語句結尾加分號
+  "tabWidth": 2,          // 縮排使用 2 個空格
+  "printWidth": 100,      // 每行最大字元數
+  "singleQuote": true,    // 使用單引號（字串）
+  "trailingComma": "es5", // ES5 允許的地方加尾逗號（物件、陣列）
+  "jsxSingleQuote": false, // JSX 屬性使用雙引號
+  "bracketSpacing": true,  // 物件大括號內加空格 { foo: bar }
+  "arrowParens": "always"  // 箭頭函式參數永遠加括號 (x) => x
+}
+```
+
+{% note success %}
+**Prettier 配置選項說明：**
+
+| 選項             | 預設值     | 說明               | 範例                            |
+| ---------------- | ---------- | ------------------ | ------------------------------- |
+| `semi`           | `true`     | 語句結尾是否加分號 | `const x = 1;` vs `const x = 1` |
+| `singleQuote`    | `false`    | 字串使用單引號     | `'hello'` vs `"hello"`          |
+| `tabWidth`       | `2`        | 縮排空格數         | 2 或 4                          |
+| `printWidth`     | `80`       | 每行最大字元數     | 80、100、120                    |
+| `trailingComma`  | `"es5"`    | 尾逗號規則         | `{ a: 1, }`                     |
+| `bracketSpacing` | `true`     | 物件括號內空格     | `{ foo }` vs `{foo}`            |
+| `arrowParens`    | `"always"` | 箭頭函式括號       | `(x) => x` vs `x => x`          |
+
+**React 專案推薦配置：**
+- 單引號（`singleQuote: true`）：更簡潔
+- JSX 雙引號（`jsxSingleQuote: false`）：符合 HTML 慣例
+- 分號（`semi: true`）：避免潛在錯誤
+- 100 字元（`printWidth: 100`）：平衡可讀性和寬螢幕利用率
+{% endnote %}
+
+**步驟 3：整合 Prettier 到 ESLint**
+
+修改 `eslint.config.js`，將 Prettier 整合進來：
 
 ```js eslint.config.js
 import js from '@eslint/js';
@@ -296,66 +562,349 @@ export default [
 ];
 ```
 
-> 因為 Prettier 會自動處理分號相關的格式問題，讓 Prettier 完全接管程式碼格式化的工作。所以我們不需要 ESLint 去檢查與格式化有關的規則。
+{% note warning %}
+**避免 ESLint 和 Prettier 衝突：**
 
-然後我們還要調整一下 setting.json。讓格式化工具都是使用 Prettier
+由於 Prettier 會自動處理所有格式相關的問題（縮排、分號、引號等），我們應該讓 Prettier 完全接管格式化工作，ESLint 只負責程式邏輯檢查。
 
-```json .vscode\settings.json
+- ✅ 移除 `no-extra-semi` 等格式規則
+- ✅ 添加 `prettier/prettier` 規則
+- ✅ 使用 `eslint-config-prettier` 自動關閉衝突規則
+{% endnote %}
+
+**步驟 4：更新 VSCode 設定**
+
+更新 `.vscode/settings.json`，設定 Prettier 為預設格式化工具：
+
+```json .vscode/settings.json
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit" // 儲存時修復 ESLint 錯誤
   },
   "eslint.validate": [
     "javascript",
     "javascriptreact"
   ],
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true, // 儲存時自動格式化
+  "editor.defaultFormatter": "esbenp.prettier-vscode" // 使用 Prettier 格式化
 }
 ```
 
-現在存檔時，都能自動根據我們的 prettier 的設定自動調整喜好的格式。
+現在每次按 <kbd>Ctrl</kbd>+<kbd>S</kbd> 儲存時，會自動執行：
+1. Prettier 格式化程式碼（縮排、引號、分號等）
+2. ESLint 修復可自動修復的問題（unused imports、簡單邏輯錯誤）
 
-如果想一口氣把整個 vite 都格式化。我們可以添加腳本來處理。對`package.json`追加腳本指令。
+**步驟 5：批次格式化整個專案**
+
+在 `package.json` 添加格式化腳本：
 
 ```json package.json
 {
   "scripts": {
-    // ... 其他現有的腳本 ...
-    "format": "prettier --write \"src/**/*.{js,jsx,css,json}\""
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,jsx,css,json}\"" // 新增這行
   }
 }
 ```
 
-然後輸入指令 `pnpm format`，根據腳本要求，把 src 目錄以下的所有指定檔案進行 format。
+執行格式化命令：
+
+```bash
+pnpm format
+```
 
 ![](/assets/images/2025-01-19-23-33-59.png)
 
-現在整個 Vite 預設檔案都是你固定的格式了。
+Prettier 會掃描 `src` 目錄下的所有 `.js`、`.jsx`、`.css`、`.json` 檔案並自動格式化。
 
-# 基礎觀念
-接下來正式學習一些基礎的 React 寫法。
+{% note success %}
+**ESLint + Prettier 完美組合總結：**
 
-## JSX 語法
-JSX 如前面已介紹，在 React 能夠方便的在 JavaScript 內直接寫入 HTML 標籤，使得 React 能透過 Babel 或 SWC 來偵測自動編譯成 JavaScript DOM API。JSX 有一定的規則與寫法。如果有大量 html 需轉換 JSX，可以利用官方提供的 [線上轉換器](https://transform.tools/html-to-jsx)。
+| 工具         | 負責範圍                           | 觸發時機              |
+| ------------ | ---------------------------------- | --------------------- |
+| **ESLint**   | 程式邏輯錯誤、最佳實踐、React 規則 | 即時檢查 + 儲存時修復 |
+| **Prettier** | 程式碼格式（縮排、引號、分號等）   | 儲存時自動格式化      |
 
-- JSX 比 HTML 更嚴格。您必須關閉諸如 之類的標籤`<br />`。
-- JSX 允許巢狀複合 JSX，但一個 JSX 只能一個標籤。例如 `const myBr = <br /><br />;`是錯誤的寫法。
-- 一個元件只能傳回一個元素。多個並排元素情況您必須將它們包裝到上層元素或使用片段元件 Fragment，例如一個`<div>...</div>`或一個空的`<>...</>`標籤
-- 變數、運算符、帶回傳之函式等各種需夾任何表達式都能以`{}`包覆。也可以把 JSX 語法成為一個變數。
-- 由於 JSX 是 JS 語言，因此插入的變數可以是物件，所以`{{}}`的寫法在 style 屬性上，代表插入一個物件屬性。
-- `{}`可以放任何變數、物件。理所當然物件的屬性指向值`.`也可以自由應用。
-- 若要代表 HTML 屬性，JSX 大多為同樣的寫法，但由於 JSX 是一種 JS 語言，因此在屬性上寫法有以下小注意：
-  1. 某些 JavaScript 保留字需要改用其他名稱，例如 `class` 要改用 `className`、`for` 要改用 `htmlFor`
-  2. 事件處理屬性採用駝峰式命名，例如 `onclick` 要改為 `onClick`、`onsubmit` 要改為 `onSubmit`
-  3. data-* 屬性保持原有的 kebab-case 寫法，例如 `data-id`、`data-test-id` 等
-- component 的 return 地方只能一行代碼返回 JSX，如果因 JSX 有多行代碼，可以用`()`來包覆一個複合的 HTML 標籤。
+**工作流程：**
+1. 寫程式碼 → ESLint 即時顯示錯誤（紅色波浪線）
+2. 按 <kbd>Ctrl</kbd>+<kbd>S</kbd> → Prettier 格式化 → ESLint 自動修復
+3. 提交前執行 `pnpm format` 確保所有檔案格式一致
+{% endnote %}
 
-> JSX 空標籤`<></>`是代表原語法`<Fragment></Fragment>`的快速縮寫。但注意`<>`不可以持有 key，需要改用`<Fragment key={yourKey}>...</Fragment>`傳遞 key。
+# React 核心語法與概念
 
-將`App.jsx`試圖調整，我們可以完成以下內容：
+環境配置完成後，讓我們深入學習 React 的核心語法和開發模式。
 
-```js src/index.js
+## JSX 語法完全指南
+
+JSX（JavaScript XML）是 React 的核心語法擴展，讓我們能在 JavaScript 中直接撰寫類似 HTML 的標記。Vite 會透過 SWC 自動將 JSX 編譯成標準的 JavaScript。
+
+### JSX 核心規則
+
+**1. 所有標籤必須閉合**
+
+```jsx
+// ✅ 正確：自閉合標籤必須加斜線
+<br />
+<img src="photo.jpg" alt="Photo" />
+<input type="text" />
+
+// ❌ 錯誤：HTML 中可以省略閉合，JSX 不行
+<br>
+<img src="photo.jpg" alt="Photo">
+<input type="text">
+```
+
+**2. 必須回傳單一根元素**
+
+```jsx
+// ❌ 錯誤：回傳多個並列元素
+function Component() {
+  return (
+    <h1>Title</h1>
+    <p>Content</p>
+  );
+}
+
+// ✅ 正確：使用 Fragment 包裹
+function Component() {
+  return (
+    <>
+      <h1>Title</h1>
+      <p>Content</p>
+    </>
+  );
+}
+
+// ✅ 也正確：使用 div 包裹（但會多一層 DOM）
+function Component() {
+  return (
+    <div>
+      <h1>Title</h1>
+      <p>Content</p>
+    </div>
+  );
+}
+```
+
+{% note info %}
+**Fragment 的使用時機：**
+
+`<Fragment>` 或簡寫 `<>` 用於包裹多個元素但不產生額外 DOM。
+
+```jsx
+// 使用 Fragment（不產生 DOM）
+<>
+  <h1>Title</h1>
+  <p>Content</p>
+</>
+
+// 如果需要 key，必須使用完整寫法
+import { Fragment } from 'react';
+
+items.map((item) => (
+  <Fragment key={item.id}>
+    <dt>{item.term}</dt>
+    <dd>{item.description}</dd>
+  </Fragment>
+));
+```
+
+**何時需要 key？**
+- `<>` 簡寫不支援 key 屬性
+- 在 map() 渲染列表時，必須提供 key
+- 這時要用 `<Fragment key={...}>` 完整寫法
+{% endnote %}
+
+**3. JavaScript 表達式需用 `{}` 包裹**
+
+```jsx
+function Greeting({ name, age }) {
+  // 變數
+  const greeting = `Hello, ${name}!`;
+  
+  // 運算
+  const nextYear = age + 1;
+  
+  // 函式呼叫
+  const formatted = name.toUpperCase();
+  
+  return (
+    <div>
+      <h1>{greeting}</h1>
+      <p>You are {age} years old</p>
+      <p>Next year you'll be {nextYear}</p>
+      <p>Uppercase name: {formatted}</p>
+      {/* 條件渲染 */}
+      <p>{age >= 18 ? 'Adult' : 'Minor'}</p>
+    </div>
+  );
+}
+```
+
+**4. HTML 屬性的 JSX 寫法**
+
+由於 JSX 是 JavaScript，某些 HTML 屬性名稱需要調整：
+
+| HTML       | JSX         | 原因                             |
+| ---------- | ----------- | -------------------------------- |
+| `class`    | `className` | `class` 是 JavaScript 保留字     |
+| `for`      | `htmlFor`   | `for` 是 JavaScript 保留字       |
+| `onclick`  | `onClick`   | 事件處理採用駝峰命名             |
+| `onchange` | `onChange`  | 事件處理採用駝峰命名             |
+| `tabindex` | `tabIndex`  | 屬性採用駝峰命名                 |
+| `data-id`  | `data-id`   | data-* 和 aria-* 保持 kebab-case |
+
+```jsx
+// ✅ 正確的 JSX 寫法
+<div className="container" data-testid="main">
+  <label htmlFor="username">Username:</label>
+  <input 
+    id="username"
+    type="text"
+    onChange={handleChange}
+    tabIndex={1}
+  />
+</div>
+
+// ❌ 錯誤：使用 HTML 屬性名稱
+<div class="container">
+  <label for="username">Username:</label>
+  <input onclick={handleChange} />
+</div>
+```
+
+**5. 內聯樣式使用物件**
+
+```jsx
+function StyledComponent() {
+  // 樣式物件
+  const boxStyle = {
+    backgroundColor: 'blue', // CSS 屬性改駝峰命名
+    fontSize: '16px',
+    padding: '20px',
+    borderRadius: '8px'
+  };
+  
+  return (
+    <div>
+      {/* 雙層大括號：外層是 JSX 表達式，內層是物件 */}
+      <div style={{ color: 'red', margin: '10px' }}>
+        Inline Style
+      </div>
+      
+      {/* 使用預定義的樣式物件 */}
+      <div style={boxStyle}>
+        Styled Box
+      </div>
+    </div>
+  );
+}
+```
+
+**6. 多行 JSX 需用 `()` 包裹**
+
+```jsx
+// ✅ 正確：多行 JSX 用括號包裹
+function Component() {
+  return (
+    <div>
+      <h1>Title</h1>
+      <p>Content</p>
+    </div>
+  );
+}
+
+// ❌ 錯誤：缺少括號會被當作單行
+function Component() {
+  return
+    <div>
+      <h1>Title</h1>
+    </div>;
+}
+
+// ✅ 單行可省略括號
+function Component() {
+  return <h1>Simple Title</h1>;
+}
+```
+
+### JSX 實用技巧
+
+#### 條件渲染
+
+```jsx
+function UserGreeting({ isLoggedIn, username }) {
+  // 1. 三元運算子
+  return (
+    <div>
+      {isLoggedIn ? (
+        <h1>Welcome back, {username}!</h1>
+      ) : (
+        <h1>Please log in</h1>
+      )}
+    </div>
+  );
+  
+  // 2. && 短路運算（僅顯示或不顯示）
+  return (
+    <div>
+      {isLoggedIn && <h1>Welcome, {username}!</h1>}
+      {!isLoggedIn && <button>Login</button>}
+    </div>
+  );
+  
+  // 3. 提前返回（推薦用於複雜邏輯）
+  if (!isLoggedIn) {
+    return <LoginForm />;
+  }
+  
+  return <Dashboard user={username} />;
+}
+```
+
+{% note warning %}
+**條件渲染的陷阱：**
+
+```jsx
+// ❌ 危險：數字 0 會被渲染出來
+{count && <p>Count: {count}</p>}  // 當 count = 0 時，會顯示 "0"
+
+// ✅ 安全：明確比較
+{count > 0 && <p>Count: {count}</p>}
+{count !== 0 && <p>Count: {count}</p>}
+
+// ❌ 危險：空字串會渲染空白
+{text && <p>{text}</p>}
+
+// ✅ 安全：明確檢查
+{text.length > 0 && <p>{text}</p>}
+{Boolean(text) && <p>{text}</p>}
+```
+{% endnote %}
+
+#### JSX 轉換工具
+
+如果有大量 HTML 需要轉換成 JSX，可以使用官方提供的 [HTML to JSX 線上轉換器](https://transform.tools/html-to-jsx)。
+
+{% note success %}
+**JSX 最佳實踐：**
+- ✅ 使用 `className` 而非 `class`
+- ✅ 所有標籤都要閉合
+- ✅ 事件處理使用駝峰命名（`onClick`、`onChange`）
+- ✅ 條件渲染時避免 falsy 值陷阱
+- ✅ 複雜邏輯抽取成變數或函式
+- ✅ 保持 JSX 簡潔易讀
+{% endnote %}
+
+### JSX 實作範例：重構 App.jsx
+
+讓我們應用剛學到的 JSX 知識，重構 `App.jsx`，展示 JSX 的靈活性：
+
+```jsx src/App.jsx
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
@@ -364,127 +913,484 @@ import './App.css';
 export default function App() {
   const [count, setCount] = useState(0);
 
+  // 將 JSX 存成變數
   const myBr = <br />;
   const imgVite = <img src={viteLogo} className="logo" alt="Vite logo" />;
   const imgReact = <img src={reactLogo} className="logo react" alt="React logo" />;
+  
+  // 字串變數
   const h1Title = 'Vite + React';
-
+  
+  // JSX 元素變數（帶 data 屬性）
   const h1Element = <h1 data-id="123">{h1Title}</h1>;
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
+        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           {imgVite}
         </a>
         {myBr}
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
           {imgReact}
         </a>
       </div>
+      
       {h1Element}
+      
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
     </>
   );
 }
 ```
 
-## Render 渲染
-React 的元素使用 JSX 來編寫形成一個物件，而瀏覽器的元素 node 是實體 DOM。如想要將元素物件塞到實體 DOM 做成 UI 畫面，就必須透過`ReactDOM.js`的特定函式`createRoot`來達到渲染。要注意的是，這個寫法從 React 18+ 開始使用，17 以前的寫法並不是這樣寫。可以觀察`main.jsx`了解。
+**範例重點：**
+- ✅ JSX 可以存成變數（`myBr`、`imgVite`、`h1Element`）
+- ✅ 變數可以在其他 JSX 中使用 `{變數名}`
+- ✅ `data-*` 屬性保持 kebab-case 寫法
+- ✅ 加上 `rel="noopener noreferrer"` 提升安全性
 
-```js src\main.jsx
+{% note info %}
+**為什麼要把 JSX 存成變數？**
+
+1. **重複使用**：避免重複撰寫相同的 JSX
+2. **邏輯分離**：複雜的 JSX 抽離出來，讓 return 更簡潔
+3. **條件渲染**：根據條件決定要顯示哪個 JSX
+4. **提升可讀性**：給 JSX 有意義的名稱
+
+```jsx
+// 範例：條件渲染不同的 JSX 變數
+const loadingElement = <div>Loading...</div>;
+const errorElement = <div>Error occurred</div>;
+const contentElement = <div>Content loaded</div>;
+
+return (
+  <>
+    {isLoading && loadingElement}
+    {hasError && errorElement}
+    {!isLoading && !hasError && contentElement}
+  </>
+);
+```
+{% endnote %}
+
+## React 渲染機制
+在現代網頁開發中，React 透過 JSX（JavaScript 語法擴充）來描述 UI 樣貌，有效將「元件邏輯」與「畫面結構」結合，提升開發效率與可維護性。本節將帶你認識 React 如何把這些用 JS 編寫的元素型物件，映射並渲染到瀏覽器的實體 DOM，並說明核心渲染方法（如 `createRoot`）的基本運作流程。學會這一套渲染機制，是 React 應用開發的基礎！
+
+### 虛擬 DOM 到實體 DOM
+React 使用 JSX 描述 UI，但瀏覽器只認識真實的 DOM 節點。React 透過以下流程將 JSX 轉換成實際的網頁內容：
+
+{% mermaid graph LR %}
+  A["JSX 代碼"]
+  B["React 元素物件"]
+  C["虛擬 DOM"] 
+  D["Diff 演算法"]
+  E["更新實體 DOM"]
+  A --> B --> C --> D --> E
+{% endmermaid %}
+
+**關鍵角色：`ReactDOM.createRoot`**
+
+`react-dom/client` 提供的 `createRoot` API 負責：
+1. 建立 React 根節點
+2. 將 React 元件樹渲染到指定的 DOM 容器
+3. 管理後續的更新和重新渲染
+
+### 基本渲染範例
+
+我們在 `main.jsx` 中已經看過基本用法：
+
+```jsx src/main.jsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 
-createRoot(document.getElementById('root')).render( //透過 createRoot 函式將實體 element 物件與 DOM 作為渲染位置
+// 選取 DOM 元素並建立 React 根節點
+const root = createRoot(document.getElementById('root'));
+
+// 渲染 App 元件
+root.render(
   <StrictMode>
     <App />
   </StrictMode>
 );
 ```
 
-如果想要在兩處實體 DOM 做內容動態渲染，邏輯是相同的。
+**分步解析：**
+1. `document.getElementById('root')` - 找到 HTML 中的掛載點
+2. `createRoot(...)` - 建立 React 根節點
+3. `root.render(...)` - 將元件樹渲染到 DOM
+
+### 多個根節點渲染
+
+在特殊情況下，你可能需要在同一個頁面的不同位置渲染獨立的 React 應用：
 
 ```html index.html
 <body>
   <div id="root"></div>
-  <div id="foot"></div>
+  <footer id="footer"></footer>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 ```
-```js src\main.jsx
+
+```jsx src/main.jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import Footer from './Footer';
+
+// 主應用
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
   </StrictMode>
 );
-createRoot(document.getElementById('foot')).render(<h1>hello world</h1>);
+
+// 頁尾獨立渲染
+createRoot(document.getElementById('footer')).render(
+  <Footer />
+);
 ```
 
-## Component 元件
-React 應用程式是由元件組成的。元件是 UI（使用者介面）的一部分，具有自己的資料邏輯和顯示外觀。元件可以小到一個按鈕，也可以大到整個頁面。
+{% note warning %}
+**多根節點的注意事項：**
 
-- 使用 function 的方式建立元件，以大寫字母開頭。這就是你知道它是一個 React 元件的方式。 React 元件名稱必須始終以大寫字母開頭，而 HTML 標籤必須小寫。
-- 舊版 React 能選擇使用 Class 類別來建立元件（具備生命週期觀念），不過大多數現在都是使用 function 搭配 Hook 來建立，相對簡單又快速便利。
-- 元件透過回傳 jsx 來決定顯示虛擬 DOM，同時也可以巢狀嵌套別的元件，形成上下層元件關係。
-- 定義多個 function 元件位置最好扁平化，不可以在定義 function 元件內部，巢狀的新定義一個元件。這些元件要串接上下層都是靠 JSX 來編寫指定。
+- 每個根節點都是獨立的 React 應用
+- 它們之間無法直接共享狀態
+- 僅在特殊場景使用（如漸進式遷移舊專案）
+- 一般情況下，整個應用只需要一個根節點
 
-請嘗試把原`App.jsx`的 LOGO 區域獨立為一個元件，內部再獨立出各自兩組超連結與圖片改為元件：
+**推薦做法：**
+如果需要在頁面不同位置顯示內容，應該在單一根節點中透過元件組合完成：
 
-```jsx src\App.jsx
+```jsx
+// ✅ 推薦：單一根節點，透過元件組合
+function App() {
+  return (
+    <>
+      <Header />
+      <Main />
+      <Footer />
+    </>
+  );
+}
+
+createRoot(document.getElementById('root')).render(<App />);
+```
+{% endnote %}
+
+### React 18+ 渲染 API 變更
+
+```javascript
+// ❌ React 17 舊寫法（已不推薦）
+import ReactDOM from 'react-dom';
+ReactDOM.render(<App />, document.getElementById('root'));
+
+// ✅ React 18+ 新寫法
+import { createRoot } from 'react-dom/client';
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+```
+
+**新 API 的優勢：**
+- ✅ 啟用 Concurrent Mode（並行渲染）
+- ✅ 支援自動批次更新（Automatic Batching）
+- ✅ 更好的 Suspense 支援
+- ✅ 更優的效能和使用者體驗
+
+{% note success %}
+**渲染機制總結：**
+
+1. **一次性渲染**：`createRoot` 和 `render` 通常只在應用啟動時呼叫一次
+2. **後續更新**：透過 `useState`、`useReducer` 等 Hook 觸發
+3. **自動優化**：React 會自動批次更新，只修改變化的 DOM 部分
+4. **StrictMode**：開發環境下會故意執行兩次，幫助發現副作用問題
+{% endnote %}
+
+## Component 元件系統
+本單元聚焦於 React 最核心的「元件系統」。你將從觀念、命名規則到語法範例，一步步掌握如何定義、撰寫、組合各種「函式元件」。同時也會說明現代 React 開發中元件拆分、組裝、資料傳遞的實務技巧。學會元件，等於掌握 React 開發的基礎與關鍵！
+
+元件是 React 應用的基本建構單元，就像樂高積木一樣，可以組合成完整的應用程式。元件封裝了：
+
+- **UI 結構**：JSX 描述的介面外觀
+- **資料邏輯**：State 和 Props 管理
+- **互動行為**：事件處理函式
+
+元件可以小到一個按鈕，也可以大到整個頁面。
+
+### 函式元件（Function Components）
+自從 React 16.8 推出 Hooks 開始，官方就推薦優先使用**函式元件 + Hooks** 這種現代開發方式。
+
+#### 基本語法
+
+```jsx
+// 1. 函式宣告式
+function Welcome() {
+  return <h1>Hello, World!</h1>;
+}
+
+// 2. 箭頭函式（推薦用於簡單元件）
+const Welcome = () => {
+  return <h1>Hello, World!</h1>;
+};
+
+// 3. 箭頭函式簡寫（單一表達式）
+const Welcome = () => <h1>Hello, World!</h1>;
+```
+
+**元件命名規則：**
+- ✅ 必須以大寫字母開頭（`Welcome`、`MyButton`、`UserProfile`）
+- ❌ 不能用小寫開頭（`welcome`、`myButton`）- React 會當成 HTML 標籤
+
+```jsx
+// ✅ 正確：大寫開頭，React 知道這是元件
+<Welcome />
+
+// ❌ 錯誤：小寫開頭，React 會尋找 <welcome> HTML 標籤
+<welcome />
+```
+
+{% note warning %}
+**為什麼元件名稱必須大寫？**
+
+這是 JSX 的語法規則，用來區分 React 元件和 HTML 標籤：
+
+```jsx
+// React 元件（大寫）
+<MyButton /> → React.createElement(MyButton)
+
+// HTML 標籤（小寫）
+<button /> → React.createElement('button')
+```
+
+如果你用小寫命名元件，React 會報錯找不到對應的 HTML 標籤。
+{% endnote %}
+
+#### 過時的 Class 元件
+React 在 16.8 版本後強調現代函式元件（Function Component）和 Hooks 開發模式，傳統的 Class 元件語法漸漸被棄用。本節將帶你快速對比兩種語法差異，建議直接採用「函式元件＋Hooks」這套未來趨勢寫法，寫起來更直覺、可讀性也高。
+
+| 特性          | 函式元件（推薦） | Class 元件（已過時） |
+| ------------- | ---------------- | -------------------- |
+| 語法          | 簡潔直觀         | 複雜冗長             |
+| 狀態管理      | `useState` Hook  | `this.state`         |
+| 副作用處理    | `useEffect` Hook | 生命週期方法         |
+| this 綁定     | 不需要           | 容易出錯             |
+| 效能          | 更優             | 較差                 |
+| React 19 支援 | ✅ 完整支援       | ⚠️ 維護模式           |
+
+```jsx
+// ✅ 現代寫法：函式元件 + Hooks
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  useEffect(() => {
+    document.title = `Count: ${count}`;
+  }, [count]);
+  
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      Count: {count}
+    </button>
+  );
+}
+
+// ❌ 舊寫法：Class 元件（不推薦）
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { count: 0 };
+    this.handleClick = this.handleClick.bind(this); // 需要綁定 this
+  }
+  
+  componentDidUpdate() {
+    document.title = `Count: ${this.state.count}`;
+  }
+  
+  handleClick() {
+    this.setState({ count: this.state.count + 1 });
+  }
+  
+  render() {
+    return (
+      <button onClick={this.handleClick}>
+        Count: {this.state.count}
+      </button>
+    );
+  }
+}
+```
+
+{% note info %}
+**Class 元件的未來：**
+
+雖然 React 仍支援 Class 元件，但官方已明確表示：
+- ✅ 新專案應使用函式元件 + Hooks
+- ⚠️ 舊專案可以漸進式遷移
+- ❌ 不再投入新功能開發（如 Server Components）
+- 📚 如果遇到舊專案，需要額外學習 Class 語法
+
+本課程完全使用現代的函式元件方式教學。
+{% endnote %}
+
+#### 元件組合規則
+React 推崇以小元件組合大型介面的設計哲學，如何正確組織元件結構、避免常見陷阱，將直接影響專案的可維護性與效能。
+
+**✅ 正確：扁平化定義元件**
+
+```jsx
+// 所有元件定義在同一層級
+function Header() {
+  return <h1>My App</h1>;
+}
+
+function Content() {
+  return <p>Welcome!</p>;
+}
+
+function App() {
+  return (
+    <>
+      <Header />
+      <Content />
+    </>
+  );
+}
+```
+
+**❌ 錯誤：巢狀定義元件**
+
+```jsx
+function App() {
+  // ❌ 不要在元件內部定義另一個元件
+  function Header() {
+    return <h1>My App</h1>;
+  }
+  
+  return <Header />;
+}
+```
+
+**為什麼不能巢狀定義？**
+- 每次 `App` 重新渲染，`Header` 都會被重新建立
+- 導致 React 認為這是新元件，強制重新掛載
+- 造成狀態丟失、效能問題、不必要的重新渲染
+
+#### 元件組合與重用
+
+元件可以像樂高積木一樣組合，形成元件樹：
+
+```jsx
+function Logo() {
+  return <img src="/logo.png" alt="Logo" />;
+}
+
+function Navigation() {
+  return (
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+    </nav>
+  );
+}
+
+function Header() {
+  return (
+    <header>
+      <Logo />
+      <Navigation />
+    </header>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Header />
+      <main>Content...</main>
+      <footer>Footer...</footer>
+    </>
+  );
+}
+```
+
+**元件樹結構：**
+```
+App
+├── Header
+│   ├── Logo
+│   └── Navigation
+├── main
+└── footer
+```
+
+#### 實作練習：將 App.jsx 拆分成多個元件
+讓我們將原本的 Logo 區域獨立成多個小元件，展示元件組合的威力：
+
+```jsx src/App.jsx
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
+// 模擬外部資料
 const alts = {
   vite: 'Vite Logo',
   react: 'React Logo',
 };
 
+// 圖片元件 A
 function ImgA() {
   return <img src={viteLogo} className="logo" alt={alts.vite} />;
 }
 
+// 連結元件 A（包含圖片 A）
 function LinkA() {
   return (
-    <a href="https://vite.dev" target="_blank">
+    <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
       <ImgA />
     </a>
   );
 }
 
+// 圖片元件 B
 function ImgB() {
   return <img src={reactLogo} className="logo react" alt={alts.react} />;
 }
 
+// 連結元件 B（包含圖片 B）
 function LinkB() {
   return (
-    <a href="https://react.dev" target="_blank">
+    <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
       <ImgB />
     </a>
   );
 }
 
+// Logo 區域元件（組合 LinkA 和 LinkB）
 function MyLogo() {
   const myBr = <br />;
   return (
     <div>
-      <LinkA></LinkA>
+      <LinkA />
       {myBr}
       <LinkB />
     </div>
   );
 }
 
+// 主應用元件
 export default function App() {
   const [count, setCount] = useState(0);
   const h1Title = 'Vite + React';
@@ -495,23 +1401,206 @@ export default function App() {
       <MyLogo />
       {h1Element}
       <div className="card" style={{ color: 'red', background: 'black' }}>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
     </>
   );
 }
 ```
 
->設計 Component 元件命名時必需一定是大寫開頭，這是避免在 JSX 內編寫時與小寫開頭的 HTML 元素混淆衝突，例如`<Div />`與`<div />`前者是元件後者是 HTML 標籤。
+**元件拆分的優勢：**
+1. **可讀性提升**：每個元件職責單一，容易理解
+2. **可重用性**：`ImgA`、`LinkA` 可以在其他地方使用
+3. **易於維護**：修改圖片邏輯只需改動 `ImgA` 或 `ImgB`
+4. **測試友好**：可以單獨測試每個小元件
 
-### 傳遞資料 props
-概念上來說，component 就像是 JS 的 function，它接收任意的參數（稱之為「props」）並且回傳描述畫面的 React element。如果這個元件有提供屬性參數會以 props 物件方式來保留，用途廣泛的傳遞資料於內外存取屬性。例如我們對外部元件設定添加`myname=Loki`，便能在內部元件利用此 props 來獲得進行應用。舉例使用 JSX 的`{}`表達式來插入 props 物件之變數：
+**元件組合結構：**
+```
+App
+├── MyLogo
+│   ├── LinkA
+│   │   └── ImgA
+│   ├── <br />
+│   └── LinkB
+│       └── ImgB
+├── h1Element
+├── div.card
+└── p.read-the-docs
+```
 
-例如，剛剛的範例我們可以把 Img 的 src 值與 alt 值，利用 props 來傳遞給元件。但此時應該會出現 ESLint 的錯誤。
+{% note success %}
+**元件拆分原則：**
+
+1. **單一職責**：每個元件只做一件事
+2. **可重用性**：如果某段 UI 會重複出現，就抽成元件
+3. **命名清晰**：元件名稱應該清楚描述其用途
+4. **大小適中**：太大不好維護，太小過度複雜
+
+**何時該拆分元件？**
+- ✅ 相同的 UI 出現多次
+- ✅ 某段邏輯複雜，影響可讀性
+- ✅ 想要獨立測試某部分功能
+- ✅ 團隊成員需要並行開發不同區塊
+{% endnote %}
+
+### Props：元件間的資料傳遞
+Props（properties 的縮寫）是父元件傳遞資料給子元件的機制。就像函式的參數一樣，元件可以接收 props 並根據這些資料渲染不同的內容。
+
+**Props 的特性：**
+- **唯讀（Read-Only）**：子元件不能修改 props
+- **單向資料流**：資料只能從父元件流向子元件
+- **任意類型**：可以傳遞字串、數字、物件、陣列、函式等
+
+#### Props 基本用法
+
+```jsx
+// 子元件：接收 props
+function Greeting(props) {
+  return <h1>Hello, {props.name}!</h1>;
+}
+
+// 父元件：傳遞 props
+function App() {
+  return (
+    <div>
+      <Greeting name="Alice" />
+      <Greeting name="Bob" />
+      <Greeting name="Charlie" />
+    </div>
+  );
+}
+```
+
+**執行結果：**
+```
+Hello, Alice!
+Hello, Bob!
+Hello, Charlie!
+```
+
+#### Props 解構（Destructuring）
+
+為了讓程式碼更簡潔，通常會使用解構語法直接取出需要的 props：
+
+```jsx
+// ❌ 不推薦：每次都要寫 props.
+function Greeting(props) {
+  return (
+    <div>
+      <h1>Hello, {props.name}!</h1>
+      <p>Age: {props.age}</p>
+      <p>City: {props.city}</p>
+    </div>
+  );
+}
+
+// ✅ 推薦：使用解構
+function Greeting({ name, age, city }) {
+  return (
+    <div>
+      <h1>Hello, {name}!</h1>
+      <p>Age: {age}</p>
+      <p>City: {city}</p>
+    </div>
+  );
+}
+
+// 使用元件
+<Greeting name="Alice" age={25} city="Taipei" />
+```
+
+#### Props 傳遞各種資料類型
+Props（屬性）允許父元件將任何型別的資料傳遞給子元件，包括基本型別（字串、數字、布林）、陣列、物件，甚至是函式和整段 JSX。這種設計讓 React 元件在資料傳遞和 UI 組合上具有極大的彈性。搭配解構語法，可以讓程式碼更簡潔、易讀。初學者在設計元件時，建議善用解構 props 慣例，也能避免未來 props 變更時維護上的困擾。
+
+常見函式型 props 的用途，如將某些行為（像是 onClick、onChange、onSave 等事件處理函式）傳進去子元件，由子元件觸發時再回傳給父元件進行狀態處理，這也是 React 元件間互動的核心模式。
+
+
+```jsx
+function UserProfile({ 
+  name,        // 字串
+  age,         // 數字
+  isActive,    // 布林值
+  hobbies,     // 陣列
+  address,     // 物件
+  onSave       // 函式
+}) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>Age: {age}</p>
+      <p>Status: {isActive ? 'Active' : 'Inactive'}</p>
+      <ul>
+        {hobbies.map((hobby, index) => (
+          <li key={index}>{hobby}</li>
+        ))}
+      </ul>
+      <p>City: {address.city}</p>
+      <button onClick={onSave}>Save Profile</button>
+    </div>
+  );
+}
+
+// 使用元件
+function App() {
+  const user = {
+    name: 'Alice',
+    age: 25,
+    isActive: true,
+    hobbies: ['Reading', 'Gaming', 'Coding'],
+    address: { city: 'Taipei', country: 'Taiwan' }
+  };
+
+  const handleSave = () => {
+    console.log('Profile saved!');
+  };
+
+  return (
+    <UserProfile
+      name={user.name}
+      age={user.age}
+      isActive={user.isActive}
+      hobbies={user.hobbies}
+      address={user.address}
+      onSave={handleSave}
+    />
+  );
+}
+```
+
+{% note info %}
+**Props 語法注意事項：**
+
+1. **字串可以不用大括號**：
+```jsx
+<Greeting name="Alice" />       // ✅ 字串可以不用大括號，也可以用大括號包住（但不必）。
+<Greeting age={25} />           // ✅ 數字須用大括號
+<Greeting isActive />           // ✅ 布林值 true 可省略（等同於 isActive={true}）
+<Greeting isActive={false} />   // ✅ 傳遞布林值 false 需明確寫出
+```
+
+2. **布林值簡寫**：
+```jsx
+<Button disabled={true} />  // 完整寫法
+<Button disabled />         // 簡寫（等同於 true）
+```
+
+3. **JSX 作為 Props**：
+```jsx
+<Card header={<h1>Title</h1>} />
+```
+{% endnote %}
+
+#### 實作範例：重構元件使用 Props
+
+讓我們改寫之前的範例，我們可以把 Img 的 src 值與 alt 值，利用 props 來傳遞給元件。但此時應該會出現 ESLint 的錯誤。
 
 ```jsx src\App.jsx
 import { useState } from 'react';
@@ -580,7 +1669,19 @@ export default function App() {
 }
 ```
 
-由於 Vite 的環境有 ESLint 而檢查預設開啟，因此我們必需對這兩個錯誤的元件定義 props 的別以及是否必存在。透過套件 prop-types 來導入使用。
+由於 Vite 的環境有 ESLint 而檢查預設開啟，因此我們必需對這兩個錯誤的元件定義 props 的型別以及是否必存在。透過套件 prop-types 來導入使用。
+
+{% note info %}
+**prop-types 是什麼？**  
+`prop-types` 是一個 React 官方維護的第三方套件，用來在開發階段「檢查元件 props 的型別和必填性」。透過設置每個元件的 `propTypes` 屬性，我們可以定義每個 props 應該是什麼型別（例如：`string`、`number`、`array`、`object`），以及是否一定要傳遞。這能幫助開發時及早發現資料型別錯誤，提升專案的穩定性與可維護性。
+
+**常見用途：**
+- 避免父層傳入錯誤型別資料，導致元件渲染異常
+- 提升團隊開發時的明確溝通與自動化檢查
+
+**注意：**  
+prop-types 只會在開發模式下提供警告，生產環境(正式 build)不會影響效能。如果你使用 TypeScript，則不需要再用 prop-types，因為型別檢查已被 TypeScript 覆蓋。
+{% endnote %}
 
 ```jsx src\App.jsx
 import PropTypes from 'prop-types';
@@ -590,9 +1691,11 @@ function ImgA(props) {
 }
 
 // 由於 Vite 的環境有 ESLint 而檢查預設開啟，因此我們必需定義 props 的型別以及是否必存在。
+
+// 定義 ImgA 元件的 props 型別與是否必填
 ImgA.propTypes = {
-  logo: PropTypes.string.isRequired,
-  txt: PropTypes.string,
+  logo: PropTypes.string.isRequired, // logo 必須是字串且為必填
+  txt: PropTypes.string, // txt 是字串型別，非必填
 };
 
 function LinkA() {
@@ -607,6 +1710,7 @@ function ImgB({ logo, txt }) {
   return <img src={logo} className="logo" alt={txt} />;
 }
 
+// 設定 ImgB 元件的 props 型別驗證
 ImgB.propTypes = {
   logo: PropTypes.string.isRequired,
   txt: PropTypes.string,
@@ -639,7 +1743,7 @@ function LinkB() {
 
 現在不需要 props-type 也不會發生錯誤了。
 
-### 組合 Component
+#### 組合 Component
 小元件本身可重複利用的，在另一個大元件內利用 JSX 編寫重複使用，再透過 props 獲得差異性的顯示。例如我們的 ImgA 跟 ImgB 有類似的 UI 可以組合為 MyImg。
 
 ```jsx src\App.jsx
@@ -742,7 +1846,7 @@ function MyLogo() {
 }
 ```
 
-### 匯出匯入
+#### 匯出匯入
 元件的神奇之處在於它們的可重複使用性：您可以建立由其他元件組成的元件。但是，當您嵌套越來越多的元件時，開始將它們拆分為不同的檔案通常是有意義的。這使您可以輕鬆掃描文件並在更多地方重複使用元件。您可以透過三個步驟移動元件：
 
 - 建立一個新的 JS 檔案來放入元件。
@@ -832,7 +1936,7 @@ export default defineConfig({
 });
 ```
 
-### 渲染列表
+#### 渲染列表
 JSX 支援元件陣列方式作為渲染，如果有任何資料需要提供元件，我們可以用 JS array 的原生方法來操作批次輸出多個元件。
 
 React 支援元件陣列的寫法。React 會自動了解陣列內容，以迴圈方式多筆輸出在畫面上：
@@ -874,7 +1978,6 @@ Check the render method of `MyLogo`. See https://reactjs.org/link/warning-keys f
 
 - 每個元素的 key 都必須在同個陣列內要有唯一性才能讓 React 去追蹤這些元素。只要確保 render 該指定陣列時能透過 key 判斷出此陣列底下的這些獨立元素。
 - key 的指定為在 JSX 元素上透過屬性來賦予（類似 props 方式），但是你無法讀取此值，即便 props.key 也做不到。
-
 
 這樣可以幫助 React 更好地管理列表中的元素，並避免一些常見的錯誤。通常會使用資料（來自 SQL 提供） 的 id 來辦定。目前沒有 id 情況下可以手動選擇代表性且不重複的資料為值，但不要使用 array index 來當作值，因為索引值不能代表該資料的識別唯一值。修正如下：
 
@@ -933,7 +2036,7 @@ export default function MyLogo() {
 
 每一個元件函式都必須保持乾淨的過程與結果輸出，由於元件是可以重複利用的。透過 props 來提供相同的輸入傳遞，並始終返回相同的 JSX。
 
-### 作為 children 傳遞
+#### 作為 children 傳遞
 任何被元件包覆起來的元件或內容都被視為 children props，我們可以用來接受並使用，形成由上層提供至下層進行管理渲染的做法。例如我們在上層決定 children 是什麼，下層去取得自己的 children 做指定渲染。您可以將帶有 prop 的元件 children 視為具有洞口，其父元件可以使用任意 JSX 來填充。經常會使用 children 道具來進行視覺包裝：面板、格子等等。
 
 ```jsx src\component\MyH1\MyH1.jsx
@@ -971,162 +2074,271 @@ export default function App() {
 }
 ```
 
-## 互動性
+### 互動性
 畫面上的某些內容會根據使用者輸入事件進行更新。例如 click 或 change value，在 React 中，隨時間操作變化的資料稱為 state 狀態。您可以為任何 component 元件新增 state 狀態，並根據需要更新它。在本章中，您將學習如何編寫處理互動、更新其狀態並隨時間顯示不同輸出的元件。
 
-### Events 事件
-在 React 內對某 HTML 元素綁訂一個事件，可透過 JSX 來編寫。整體寫法與 HTML DOM 的事件寫法雷同，但有以下差異性：
+### 事件處理（Events）
 
-- React Events 採用駝峰式命名（如`onClick`為例），與 HTML （如`onclick`為例） 原有屬性 events 屬性標籤做差異。
-- 綁定事件執行某函式，React 的 events 值只需要寫該函式名稱或指定一匿名函式即可；HTML 則是直接寫 JS 語法字串。
+#### React 事件系統
 
-```jsx src\component\MyButton\MyButton.jsx
-const handleClick = () => console.log('is click event!!');
-const MyButton = ({ children }) => <button onClick={handleClick}>{children}</button>;
+React 實作了一個跨瀏覽器的合成事件系統（SyntheticEvent），統一了各瀏覽器的事件處理差異，讓開發者不需要擔心瀏覽器相容性問題。
 
-export default MyButton;
+#### React 事件 vs HTML 事件
+
+| 特性     | HTML 事件            | React 事件                 |
+| -------- | -------------------- | -------------------------- |
+| 命名方式 | 小寫 `onclick`       | 駝峰命名 `onClick`         |
+| 事件處理 | 字串 `"alert('Hi')"` | 函式 `{handleClick}`       |
+| 阻止預設 | `return false`       | `e.preventDefault()`       |
+| 事件物件 | 原生 Event           | SyntheticEvent（跨瀏覽器） |
+
+```jsx
+// ❌ HTML 原生寫法
+<button onclick="alert('Clicked!')">Click</button>
+
+// ✅ React 寫法
+<button onClick={() => alert('Clicked!')}>Click</button>
 ```
-```jsx src\App.jsx
-import { useState } from 'react';
-import './App.css';
-import MyLogo from './component/MyLogo/MyLogo';
-import MyH1 from './component/MyH1/MyH1';
-import MyButton from './component/MyButton/MyButton';
 
-export default function App() {
-  const [count, setCount] = useState(0);
-  const h1Title = 'Vite + React';
+#### 事件處理的三種方式
+
+##### 1. 內聯匿名函式（適合簡單邏輯）
+
+```jsx
+function App() {
+  return (
+    <button onClick={() => alert('Clicked!')}>
+      Click Me
+    </button>
+  );
+}
+```
+
+##### 2. 元件內部函式（推薦）
+
+```jsx
+function App() {
+  const handleClick = () => {
+    alert('Clicked!');
+  };
+
+  return <button onClick={handleClick}>Click Me</button>;
+}
+```
+
+{% note warning %}
+**常見錯誤：不要立即執行函式！**
+
+```jsx
+// ❌ 錯誤：函式會立即執行
+<button onClick={handleClick()}>Click</button>
+
+// ✅ 正確：傳遞函式參考
+<button onClick={handleClick}>Click</button>
+
+// ✅ 正確：需要傳參數時使用箭頭函式
+<button onClick={() => handleClick(123)}>Click</button>
+```
+{% endnote %}
+
+##### 3. 傳遞事件處理函式給子元件
+
+```jsx
+// 子元件
+function MyButton({ onClick, children }) {
+  return <button onClick={onClick}>{children}</button>;
+}
+
+// 父元件
+function App() {
+  const handleClick = () => {
+    console.log('Button clicked!');
+  };
+
+  return <MyButton onClick={handleClick}>Click Me</MyButton>;
+}
+```
+
+#### 常用的 React 事件
+
+React 支援所有標準的 DOM 事件，這裡列出最常用的：
+
+##### 滑鼠事件
+- `onClick` - 點擊
+- `onDoubleClick` - 雙擊
+- `onMouseEnter` - 滑鼠移入
+- `onMouseLeave` - 滑鼠移出
+- `onMouseMove` - 滑鼠移動
+- `onMouseDown` / `onMouseUp` - 滑鼠按下/放開
+
+##### 鍵盤事件
+- `onKeyDown` - 按鍵按下
+- `onKeyUp` - 按鍵放開
+- `onKeyPress` - 按鍵按下（已廢棄，用 onKeyDown）
+
+##### 表單事件
+- `onChange` - 輸入值改變
+- `onSubmit` - 表單提交
+- `onFocus` - 獲得焦點
+- `onBlur` - 失去焦點
+
+##### 其他常用事件
+- `onScroll` - 滾動
+- `onDrag` / `onDrop` - 拖曳
+- `onLoad` / `onError` - 載入/錯誤（圖片、媒體）
+
+#### 事件物件（Event Object）
+
+React 事件處理函式會自動接收一個 `SyntheticEvent` 物件：
+
+```jsx
+function App() {
+  const handleClick = (event) => {
+    console.log('事件類型：', event.type);           // "click"
+    console.log('目標元素：', event.target);         // <button>
+    console.log('當前元素：', event.currentTarget); // <button>
+    console.log('滑鼠座標：', event.clientX, event.clientY);
+  };
+
+  const handleInput = (event) => {
+    console.log('輸入值：', event.target.value);
+  };
 
   return (
     <>
-      <MyLogo />
-      <MyH1>{h1Title}</MyH1>
-      <div className="card" style={{ color: 'red', background: 'black' }}>
-        <MyButton>Click Me!</MyButton> {/*追加此行*/}
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <button onClick={handleClick}>Click Me</button>
+      <input onChange={handleInput} />
     </>
   );
 }
 ```
 
-- React 不接受 return false 的方式來取消 events 事件（但 HTML DOM 可以，如`onsumbit="return false"`為例），因此需透過 preventDefault 來取消預定事件動作。
+#### preventDefault 與 stopPropagation
 
-```jsx src\component\MyForm\MyForm.jsx
-import MyButton from '../MyButton/MyButton';
+##### preventDefault - 阻止預設行為
 
-const MyForm = () => {
+```jsx
+function LoginForm() {
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('submit');
-  };
-
-  const handelChangeText = (e) => {
-    console.log(e.target.value);
+    e.preventDefault(); // 阻止表單提交時重新載入頁面
+    
+    const formData = new FormData(e.target);
+    const username = formData.get('username');
+    const password = formData.get('password');
+    
+    console.log('提交資料：', { username, password });
+    // 在這裡處理登入邏輯（如 API 請求）
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="text" placeholder="請輸入內容" onChange={handelChangeText} />
-      <MyButton>提交</MyButton>
-      <hr />
+      <input name="username" type="text" placeholder="使用者名稱" />
+      <input name="password" type="password" placeholder="密碼" />
+      <button type="submit">登入</button>
     </form>
-  );
-};
-
-export default MyForm;
-```
-```jsx src\App.jsx
-//...
-import MyForm from './component/MyForm/MyForm';
-
-export default function App() {
-  const [count, setCount] = useState(0);
-  const h1Title = 'Vite + React';
-
-  return (
-    <>
-      <MyLogo />
-      <MyH1>{h1Title}</MyH1>
-      <div className="card" style={{ color: 'red', background: 'black' }}>
-        <MyForm /> {/*追加此行*/}
-        <MyButton>Click Me!</MyButton>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
   );
 }
 ```
 
-通常一些團隊會要求資料處理由上層負責，下層只負責基本的渲染與執行。因此我們可以把事件動作搬移至上層，而上層可以命名喜好的名稱函式，上層不管哪種 event 事件，只管要發生甚麼事。
+{% note warning %}
+**React 不支援 `return false`**
 
-```jsx src\component\MyForm\MyForm.jsx
-import MyButton from '../MyButton/MyButton';
+在 HTML 中可以用 `return false` 阻止預設行為，但在 React 中必須明確呼叫 `preventDefault()`：
 
-const MyForm = ({ onLokiSubmit, onLokiChange }) => {
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log('submit');
-  // };
+```jsx
+// ❌ HTML 寫法（React 無效）
+<form onsubmit="return false">
 
-  // const handelChangeText = (e) => {
-  //   console.log(e.target.value);
-  // };
-
-  return (
-    <form onSubmit={onLokiSubmit}>
-      <input type="text" placeholder="請輸入內容" onChange={onLokiChange} />
-      <MyButton>提交</MyButton>
-      <hr />
-    </form>
-  );
-};
-
-export default MyForm;
+// ✅ React 正確寫法
+<form onSubmit={(e) => e.preventDefault()}>
 ```
-```jsx src\App.jsx
-//...
-export default function App() {
-  const [count, setCount] = useState(0);
-  const h1Title = 'Vite + React';
+{% endnote %}
 
-  /*提升 MyForm 事件處理致上層，上層自由命名 props，提供給下層*/
-  const onPasswordSubmit = (e) => {
-    e.preventDefault();
-    console.log('submit');
+##### stopPropagation - 阻止事件冒泡
+
+```jsx
+function App() {
+  const handleParentClick = () => {
+    console.log('父元素被點擊');
   };
-  const onPasswordChange = (e) => {
-    console.log(e.target.value);
+
+  const handleChildClick = (e) => {
+    e.stopPropagation(); // 阻止事件冒泡到父元素
+    console.log('子元素被點擊');
   };
 
   return (
-    <>
-      <MyLogo />
-      <MyH1>{h1Title}</MyH1>
-      <div className="card" style={{ color: 'red', background: 'black' }}>
-        <MyForm onLokiSubmit={onPasswordSubmit} onLokiChange={onPasswordChange} />
-        <MyButton>Click Me!</MyButton>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    <div onClick={handleParentClick} style={{ padding: '20px', background: 'lightgray' }}>
+      父元素
+      <button onClick={handleChildClick}>子元素按鈕</button>
+    </div>
+  );
+}
+```
+
+#### 事件處理最佳實踐：狀態提升
+
+通常建議將事件處理邏輯放在父元件（狀態所在處），子元件只負責觸發事件：
+
+```jsx
+// 子元件：純展示 + 觸發事件
+function SearchInput({ value, onChange, onSearch }) {
+  return (
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      onSearch();
+    }}>
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder="搜尋。.."
+      />
+      <button type="submit">搜尋</button>
+    </form>
   );
 }
 
+// 父元件：管理狀態 + 處理邏輯
+function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState([]);
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearch = () => {
+    // 執行搜尋邏輯
+    console.log('搜尋：', searchTerm);
+    // 模擬 API 請求
+    setResults([`結果 1 for ${searchTerm}`, `結果 2 for ${searchTerm}`]);
+  };
+
+  return (
+    <div>
+      <SearchInput
+        value={searchTerm}
+        onChange={handleInputChange}
+        onSearch={handleSearch}
+      />
+      <ul>
+        {results.map((result, index) => (
+          <li key={index}>{result}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 ```
 
-### State 狀態管理
+**這種模式的優勢：**
+- ✅ 關注點分離：UI 和邏輯分開
+- ✅ 可重用性：子元件可以在不同場景使用
+- ✅ 易於測試：邏輯集中在父元件
+- ✅ 狀態管理清晰：所有狀態在一個地方
+
+#### State 狀態管理
 我們是使用 React 來協助我們對瀏覽器畫面進行控制，因此不能使用 JS 觀念認為我們可以用一般變數去控制 DOM 畫面重新變化。React 就像汽車雨刷器，當偵測到畫面需要更動時，才會進行畫面重新渲染，我們需要讓 React 知道什麼時候發生了狀態改變。React 提供了一些內建 Hook 來協助溝通。此時要學到的是 useState。
 
 在 Vite 初始模板上有看到`const [count, setCount] = useState(0);`的使用，可以看出一些用法：
@@ -1305,7 +2517,6 @@ export default MyGallery;
 
 > 你可以利用 JSX 的`{}`來插入一個複合邏輯並根據特性`true && element`將回傳 element，而`false && element`則回傳 false 之技巧，做一個簡易具備行內判斷的 JSX。注意：如果 JSX 出現`{false}`之表達結果代表忽略。
 
-
 如果 App 元件重複使用 MyGallery 元件時，它們的 state 是彼此獨立不共享。如果希望這兩個元件共用同樣的 state，其作法是由上層負責 state，透過 prop 傳遞給下層使用。
 
 ```jsx src\component\MyGallery\MyGallery.jsx
@@ -1380,7 +2591,6 @@ export default function App() {
 }
 
 ```
-
 
 # 參考文獻
 - [Quick Start – React](https://react.dev/learn)

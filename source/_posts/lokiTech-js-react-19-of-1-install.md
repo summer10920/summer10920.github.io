@@ -217,9 +217,9 @@ React 主要包含兩個核心函式庫：
 
 如果要使用 JSX 語法，還需要編譯工具（如 Babel 或 Vite）將 JSX 轉換成瀏覽器能理解的 JavaScript。
 
-## 方式一：使用 React 18+ CDN（快速測試用）
+## 快速測試：使用 React 18+ CDN
 
-這種方式很適合用來快速練習或理解 React 的基本概念。官方也提供了一份[React 線上測試 HTML 範例](https://gist.githubusercontent.com/gaearon/0275b1e1518599bbeafcde4722e79ed1/raw/db72dcbf3384ee1708c4a07d3be79860db04bff0/example.html)，結合 CDN 以及 Babel Standalone 來轉譯 JSX，方便立即練習。但由於需要瀏覽器即時進行轉譯，效能相對低落，**只推薦用於課程學習和原型測試，不適合任何正式專案**。
+這種方式很適合用來快速練習或理解 React 的基本概念。官方也提供了一份 [React 線上測試 HTML 範例](https://gist.githubusercontent.com/gaearon/0275b1e1518599bbeafcde4722e79ed1/raw/db72dcbf3384ee1708c4a07d3be79860db04bff0/example.html)，結合 CDN 以及 Babel Standalone 來轉譯 JSX，方便立即練習。但由於需要瀏覽器即時進行轉譯，效能相對低落，**只推薦用於課程學習和原型測試，不適合任何正式專案**。
 
 {% note warning %}
 **不推薦用於生產環境：**
@@ -231,7 +231,7 @@ React 主要包含兩個核心函式庫：
 
 ```html index.html
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
     <title>React 19 CDN 測試</title>
@@ -240,7 +240,7 @@ React 主要包含兩個核心函式庫：
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
     <!-- Babel Standalone（將 JSX 轉換成 JavaScript） -->
-    <!-- ⚠️ 警告：不要在正式環境使用！ -->
+    <!-- ⚠️ 警告：僅供學習使用，正式環境必須使用建置工具！ -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
@@ -249,10 +249,15 @@ React 主要包含兩個核心函式庫：
     <!-- type="text/babel" 告訴 Babel 需要轉譯這段程式碼 -->
     <script type="text/babel">
       function MyApp() {
-        return <h1>Hello, React 19!</h1>;
+        return (
+          <div>
+            <h1>Hello, React 19! 🎉</h1>
+            <p>這是使用 CDN 方式載入的 React 應用</p>
+          </div>
+        );
       }
 
-      // React 18+ 的渲染方式
+      // React 18+ 的渲染方式（React 19 相容）
       const root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(<MyApp />);
     </script>
@@ -280,6 +285,8 @@ ReactDOM.render(<App />, document.getElementById('root'));
 透過 Babel 的 JSX 來設計，就會非常簡單。但要特別宣告`type="text/babel"` 讓 Babel 知道哪個 JS 代碼需要做 JSX 轉譯。
 
 ```html cdn-of-index-with-JSX.html
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <title>Hello World</title>
@@ -293,29 +300,60 @@ ReactDOM.render(<App />, document.getElementById('root'));
 <body>
   <div id="root"></div>
 
-  <!-- 告知 Babel 這裡的 JS 有 JSX 語法需要轉譯處理 -->
+  <!-- type="text/babel" 告訴 Babel 這裡的 JS 有 JSX 語法需要轉譯處理 -->
   <script type="text/babel">
     function MyApp() {
-      const [lokiClick, setLokiClick] = React.useState(false); // 使用 Hooks 管理狀態，初始狀態 false
+      // 使用 useState Hook 管理狀態，初始狀態為 false
+      const [isClicked, setIsClicked] = React.useState(false);
 
-      if (lokiClick) {
-        return <h1>I am your first click!</h1>;
+      // 條件渲染：根據狀態顯示不同內容
+      if (isClicked) {
+        return <h1>這是你的第一次點擊！</h1>;
       }
-      return <h1 onClick={() => setLokiClick(true)}>Hello, world!</h1>;
+      
+      return (
+        <h1 onClick={() => setIsClicked(true)}>
+          點擊我試試看！
+        </h1>
+      );
     }
 
+    // React 18+ 的渲染方式（React 19 完全相容）
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<MyApp />);
   </script>
 </body>
+</html>
 ```
 
-> React 18 引入 Concurrent Mode 的 API，使用 `ReactDOM.createRoot` 提供了更好的性能和更高的靈活性，特別是在處理異步。在版本 17 以前不支援此作法，而是直接渲染例如 `ReactDOM.render(<MyApp />, document.querySelector('#root'))`
+{% note info %}
+**React 18+ 的 Concurrent Mode：**
+
+React 18 開始引入 Concurrent Mode（並發模式），使用 `ReactDOM.createRoot` API 取代舊的 `ReactDOM.render`，提供更好的效能和靈活性，特別是在處理非同步更新時：
+
+```javascript
+// ✅ React 18+ / React 19 正確方式
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<MyApp />);
+
+// ❌ React 17 舊方式（已廢棄，不建議使用）
+ReactDOM.render(<MyApp />, document.getElementById('root'));
+```
+
+**Concurrent Mode 的優勢：**
+- ⚡ 更流暢的 UI 更新（可中斷渲染）
+- 🔄 自動批次處理（Automatic Batching）
+- 📊 更好的優先級管理
+- 🎯 支援 Suspense 和 Transitions
+{% endnote %}
 
 ### 不使用 JSX 的寫法
-如果不想使用 Babel 來編寫 React，可以完全利用 `React.createElement` 方法來建立元件，這等同於 React 幫你手動呼叫瀏覽器的 `document.createElement`、`document.createTextNode` 和 `element.addEventListener` 等底層函式。不過，這種寫法會比使用 JSX 語法糖來得繁瑣，也較不直觀。
+
+如果不想使用 Babel 來編寫 React，可以完全使用 `React.createElement` 方法來建立元件。這是 JSX 背後的真實運作方式 —— JSX 最終都會被編譯成 `React.createElement` 呼叫。不過，這種寫法會比使用 JSX 語法糖來得繁瑣，也較不直觀。
 
 ```html cdn-of-index-without-JSX.html
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <title>Hello World</title>
@@ -328,43 +366,125 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 <body>
   <div id="root"></div>
+  
   <script type="text/javascript">
     function MyApp() {
-      const [lokiClick, setLokiClick] = React.useState(false); // 使用 Hooks 管理狀態，初始狀態 false
+      // 使用 useState Hook 管理狀態
+      const [isClicked, setIsClicked] = React.useState(false);
 
-      if (lokiClick) {
-        return React.createElement('h1', null, 'I am your first click!');  // 參數分別為 (標籤名、屬性、子元素)
+      // 條件渲染
+      if (isClicked) {
+        // React.createElement（標籤名，屬性物件，子元素。..)
+        return React.createElement('h1', null, '這是你的第一次點擊！');
       }
-      return React.createElement('h1', { onClick: () => setLokiClick(true) }, 'Hello, world!'); // 參數分別為 (標籤名、屬性包含點擊事件、子元素)
+      
+      // React.createElement（標籤名，屬性物件（包含事件處理）, 子元素。..)
+      return React.createElement(
+        'h1', 
+        { onClick: () => setIsClicked(true) }, 
+        '點擊我試試看！'
+      );
     }
 
+    // React 18+ 的渲染方式
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(MyApp));
   </script>
 </body>
+</html>
 ```
 
-## 部屬 NodeJS
-NodeJS 是一種 Chrome V8 JavaScript 引擎的環境工具，能讓電腦成為 JavaScript 執行環境。Node.js 有龐大的 NPM（Node Package Manager）生態系統，可以快速安裝和使用第三方模組，提升開發效率。一些前端框架整合工具（如 Vite、Webpack、Babel 等）都依賴於 Node.js 安裝和管理運行。
+**JSX vs React.createElement 對照：**
 
-### 直接安裝或版本管理工具
-首先需要在電腦上 [安裝 NodeJS](https://nodejs.org/en)，安裝完成後整個全局環境上。此電腦的命令提示字元就能使用 node 相關指令。新專案下，安裝時通常版本會選擇 LTS 穩定常用的版本，而不會選擇 Current 當前最新的版本。如下圖，官方示範了如何用透過版本管理工具 command 指令安裝，或是直接下載安裝。
+```javascript
+// JSX 寫法（需要 Babel）
+<div className="container">
+  <h1>Hello</h1>
+  <p>World</p>
+</div>
+
+// 編譯後的 React.createElement 寫法
+React.createElement(
+  'div',
+  { className: 'container' },
+  React.createElement('h1', null, 'Hello'),
+  React.createElement('p', null, 'World')
+)
+```
+
+{% note warning %}
+**為什麼推薦使用 JSX？**
+
+雖然理論上可以不使用 JSX，但實務上幾乎沒有人這樣做：
+- ❌ 程式碼冗長難讀
+- ❌ 巢狀結構非常複雜
+- ❌ 容易出錯
+- ✅ JSX 更直觀、更接近 HTML
+
+**了解 `React.createElement` 的價值：**
+- 理解 JSX 的本質（只是語法糖）
+- 除錯時看懂編譯後的程式碼
+- 理解 React 的底層運作
+
+但在實際開發中，請務必使用 JSX！
+{% endnote %}
+
+## 部署 Node.js 開發環境
+
+Node.js 是基於 Chrome V8 JavaScript 引擎的執行環境，讓 JavaScript 可以在瀏覽器之外運行。對於 React 開發而言，Node.js 是必備工具，因為：
+
+**為什麼 React 開發需要 Node.js？**
+- 📦 **套件管理**：使用 npm 或 pnpm 安裝 React 及相關套件
+- 🔧 **建置工具**：Vite、Webpack、Babel 等工具都需要 Node.js 運行
+- 🚀 **開發伺服器**：提供熱模組替換（HMR）的開發體驗
+- 📝 **程式碼轉譯**：將 JSX、TypeScript 轉換成瀏覽器可執行的程式碼
+- 🎯 **生產建置**：打包優化後的程式碼供部署使用
+
+{% note info %}
+**Node.js 不等於後端開發！**
+
+雖然 Node.js 可以用來開發後端服務，但在 React 開發中，Node.js 主要是作為**前端建置工具的執行環境**。你不需要會寫 Node.js 後端程式也能開發 React 應用。
+{% endnote %}
+
+### 為什麼需要版本管理工具？
+
+你可以直接從 [Node.js 官網](https://nodejs.org/en) 下載安裝檔，但這樣做會遇到問題：
+
+**直接安裝的問題：**
+- ❌ 一台電腦只能安裝一個 Node.js 版本
+- ❌ 舊專案可能需要舊版本 Node.js
+- ❌ 新專案可能需要新版本 Node.js
+- ❌ 切換版本需要重新安裝，非常麻煩
+- ❌ 不同專案的套件可能有版本相依性問題
+
+**版本管理工具的優勢：**
+- ✅ 一台電腦可安裝多個 Node.js 版本
+- ✅ 快速切換不同版本（幾秒鐘）
+- ✅ 每個專案可使用不同版本
+- ✅ 團隊協作時確保環境一致
 
 ![官方提供的下載方式](/assets/images/2025-01-19-12-46-26.png)
 
-但通常我們不會直接下載安裝，因為每個專案創立所使用的 Node 版本不同。如果在較新的 Node 版本上執行舊專案時，有可能會導致專案無法啟用成功（專案內套件有版本相依問題）。
+### 推薦的版本管理工具
+我們都希望透過一個工具來讓電腦可以安裝多個 Node 版本。這樣在指定的專案執行前，我們只需透過工具做切換，讓電腦的 Node 可以抽換指定的 Node 版本。
 
-因此我們都希望透過一個工具來讓電腦可以安裝多個 Node 版本。這樣在指定的專案執行前，我們只需透過工具做切換，讓電腦的 Node 可以抽換指定的 Node 版本。
+#### 🌟 nvs (Node Version Switcher) - 最推薦新手使用
 
-較為有名的工具為 [nvm(Node Version Manager)](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)。但是僅適用於 Linux 或 macOS 系統，也有人為了 Windows 而開發了 [nvm-windows](https://github.com/coreybutler/nvm-windows/releases)。
+**為什麼推薦 nvs？**
+- ✅ 支援 Windows、macOS、Linux 三大平台
+- ✅ 互動式介面，直觀易用
+- ✅ 無需複雜設定，安裝即用
+- ✅ 指令簡單好記
 
-但個人推薦新手的是另一套 [nvs(Node Version Switcher)](https://github.com/jasongin/nvs) 作為工具使用。他有比較易懂的介面直接操作快速上手。**不論選擇哪種**都只是一個 Node 版本管理工具，都不影響專案開發的使用。
+**安裝方式：**
+1. 前往 [nvs GitHub](https://github.com/jasongin/nvs) 下載安裝檔
+2. 執行安裝程式
+3. 重新開啟終端機
+4. 輸入 `nvs` 確認安裝成功
 
-> 目前比較熱門受討論的工具為 [fnm(Fast Node Manager)](https://github.com/Schniz/fnm)，擁有極快的執行效率。但初始設定上需要額外一些 PATH 與 shell 設定步驟。因此建議有興趣且對環境參數熟悉的人可自行了解。
+安裝完成後，直接在終端機輸入 `nvs`，就會出現互動式選單，可以直接選擇安裝或切換 Node 版本：
 
-你可以透過下載並安裝完畢後。直接於終端機輸入`nvs`，就能選擇安裝或執行任何 Node 版本。要切換也是輸入相同指令。還有更多指令技巧可以自行研究。
-
-![](/assets/images/2025-01-19-14-06-17.png)
+![nvs 互動式介面](/assets/images/2025-01-19-14-06-17.png)
 
 {% note info %}
 **nvs 常用指令**
@@ -403,53 +523,440 @@ nvs auto on            # 啟用自動切換功能
 - 使用 `nvs link` 設定預設版本後，每次開啟新的終端機都會自動使用該版本
 - `nvs use` 只影響當前終端機，關閉後會恢復為預設版本
 - 建議在專案開始前先用 `nvs link` 設定好常用的 LTS 版本
+
+**LTS vs Current 版本選擇：**
+- **LTS（Long Term Support）**：長期支援版本，穩定可靠，適合正式專案
+- **Current**：最新功能版本，可能有未知 bug，適合嘗鮮或測試
+- **建議：新手和正式專案請使用 LTS 版本**
 {% endnote %}
 
-### 安裝 pnpm
-接下來，使用 VSCode 準備好一個新專案目錄之上層位置。
+#### 🚀 其他版本管理工具
 
-- 使用 `nvs` 指令，選擇一個 Node 版本。
-- 選擇好你指定的 Node 版本環境，確認指令為 `node -v`。
-- 我們需要在全局`g`上面額外安裝 pnpm 工具。讓整台電腦 Node 隨時可以接受 pnpm 指令。（一次就好，以後不用在此 Node 上安裝）
+**nvm (Node Version Manager)**
+- 最老牌的 Node 版本管理工具
+- 僅支援 macOS 和 Linux
+- Windows 需使用 [nvm-windows](https://github.com/coreybutler/nvm-windows)
+- 指令：`nvm install 20`, `nvm use 20`
 
-![](/assets/images/2025-01-19-14-54-17.png)
+**fnm (Fast Node Manager)**
+- 超快速的版本管理工具（Rust 開發）
+- 支援所有平台
+- 需要手動設定 PATH 和 Shell
+- 適合進階使用者
+- 指令：`fnm install 20`, `fnm use 20`
 
-## 使用 Vite (CLI)
-CLI 是一種能夠快速建立 React 開發所需要的伺服器環境與轉譯系統。React 18 開始改推薦使用提供 [Vite](https://vite.dev/) 的 CLI 工具。能無腦的解決環境應用進行開發出一個 SPA（單頁應用程序）的專案，推薦新手學習快樹初始化一個 SPA 專案環境。
+{% note success %}
+**新手建議：**
+如果你是第一次設定 Node.js 環境，強烈建議使用 **nvs**。它的互動式介面最友善，不需要記憶複雜指令，也不需要手動設定環境變數。等熟悉後再考慮其他工具也不遲。
+{% endnote %}
 
-使用 Vite 開發模式下時直接利用瀏覽器原生支持的 ESModules，无需預打包（早期很多都利用 webpack 來打包），啟動速度極快。而在 Building 生成時，使用 Rollup 進行打包，類似於 Webpack 的用途，但更輕量。
+### 安裝套件管理器：pnpm
 
-> 在 React 17 版本以前推薦的 CLI 工具為 create-react-app （可另簡稱為 React cli 或為 CRA 工具），Create React App 本身僅包含了 webpack 與 babel 的前端建置管道，不提供任何後端服務功能，且 18 版本開始已經不再作為推薦方法。
+設定好 Node.js 版本後，接下來需要安裝**套件管理器**。Node.js 預設提供 npm，但我們推薦使用更現代、更高效的 **pnpm**。
 
-使用 Vite 部屬 React 的第一步環境。在 node 指令上操作：
+#### 什麼是套件管理器？
 
-- 輸入指令`pnpm create vite`
-- 命名一個名稱做為下層專案目錄。
-- 選擇 React 為前端框架工具。
-- 選擇最基本的 JavaScript。（也可以選擇 JavaScript+SWC，他會採用另一種更高快的編譯方式，開發操作上無差異）。
+套件管理器（Package Manager）負責「下載、安裝、更新、管理」專案所需的各種第三方套件（如 React、Vite 等）。想像它是一個「軟體商店」，幫你自動處理套件之間的相依性。
 
-![](/assets/images/2025-01-19-14-55-17.gif)
+#### npm vs pnpm 詳細比較
 
-- 照畫面提示的三道指令輸入
-- `cd react-learn`，或者直接 VScode 直接重新開啟此目錄。
-- `pnpm install`，避免遺漏套件，重新檢查安裝所需的模組套件。
-- `pnpm run dev`，執行開發模式，產生及改及看的虛擬服務。
+| 特性              | npm                | pnpm                  |
+| ----------------- | ------------------ | --------------------- |
+| 安裝速度          | 慢                 | 超快（2-3 倍快）      |
+| 硬碟空間          | 重複儲存，浪費空間 | 全域共用，節省 50-70% |
+| node_modules 大小 | 極大（可達數 GB）  | 小（使用符號連結）    |
+| 依賴管理          | 扁平化，可能衝突   | 嚴謹，避免幽靈依賴    |
+| 學習成本          | -                  | 極低（指令幾乎相同）  |
+| 生態支援          | 官方預設           | 主流專案廣泛採用      |
 
-![](/assets/images/2025-01-19-16-03-24.png)
+**什麼是幽靈依賴（Phantom Dependencies）？**
 
-> 在 package.json 內可以看到細節，以及 scripts 腳本指令，例如輸入`pnpm dev`代表輸入`pnpm vite`。
+npm 會將所有套件「扁平化」安裝在 `node_modules` 根目錄，導致你可以 import 根本沒有在 `package.json` 聲明的套件。這會造成：
+- 專案在別人電腦上無法執行（缺少隱含依賴）
+- 套件升級時意外破壞功能
 
-此時會獲得一個網站網址為`http://localhost:5173/`，並且已經存在一個範例用的專案應用網站。透過這個目錄的內部層級檔案各用途說明：
+pnpm 使用嚴格的依賴管理，只能 import 明確聲明的套件，避免上述問題。
 
-- **public:**
-作為公共區域，通常會把一些靜態資源例如圖片放置在這裡。
-- **src:**
-為 React 程式集中區，包含 React 會 import 的 css 也放在這，舉例看到一些 JSX 格式的檔案，以及 CSS 檔案。
-- **dist:**
-如果要將專案正式發佈到線上環境，透過`pnpm build`進行建置作業，會產生該目錄（產生瀏覽器看得懂的純 HTML、JS、CSS 專案目錄）。
+#### 安裝 pnpm
+
+**步驟 1：確認 Node.js 版本**
+```bash
+# 使用 nvs 切換到 LTS 版本
+nvs use lts
+
+# 確認版本（建議 18.0 以上）
+node -v
+```
+
+**步驟 2：全域安裝 pnpm**
+```bash
+# 全域安裝 pnpm（只需執行一次）
+npm install -g pnpm
+
+# 確認安裝成功
+pnpm -v
+```
+
+![安裝 pnpm](/assets/images/2025-01-19-14-54-17.png)
+
+{% note success %}
+**pnpm 指令與 npm 對照：**
+
+| 操作         | npm 指令              | pnpm 指令                    |
+| ------------ | --------------------- | ---------------------------- |
+| 安裝套件     | `npm install`         | `pnpm install` 或 `pnpm i`   |
+| 新增套件     | `npm install react`   | `pnpm add react`             |
+| 新增開發套件 | `npm install -D vite` | `pnpm add -D vite`           |
+| 移除套件     | `npm uninstall react` | `pnpm remove react`          |
+| 執行腳本     | `npm run dev`         | `pnpm dev` 或 `pnpm run dev` |
+| 更新套件     | `npm update`          | `pnpm update`                |
+
+**小技巧：** pnpm 執行腳本時可省略 `run`，例如 `pnpm dev` 即可。
+{% endnote %}
+
+{% note info %}
+**為什麼 React 19 專案推薦 pnpm？**
+
+1. **效能提升**：React 19 搭配 Vite，pnpm 的快速安裝能讓開發更流暢
+2. **專案品質**：嚴格的依賴管理避免隱藏問題
+3. **業界趨勢**：主流開源專案（Vite、Vue、Nuxt 等）都已改用 pnpm
+4. **團隊協作**：一致的 `node_modules` 結構，減少「在我電腦能跑」的問題
+
+安裝一次，終身受益！
+{% endnote %}
+
+## 使用 Vite 建立 React 19 專案
+
+### 什麼是 Vite？
+
+**Vite**（法語「快」的意思，發音為 /vit/）是新一代的前端建置工具，由 Vue.js 作者尤雨溪（Evan You）開發。React 官方從 React 18 開始推薦使用 Vite 取代舊的 Create React App（CRA）。
+
+**Vite 的核心優勢：**
+
+| 特性       | Vite              | Create React App (CRA) |
+| ---------- | ----------------- | ---------------------- |
+| 啟動速度   | ⚡ 極快（< 1 秒）  | 🐢 慢（5-10 秒）        |
+| 熱更新速度 | ⚡ 即時（< 100ms） | 🐢 慢（1-3 秒）         |
+| 建置工具   | Rollup（輕量）    | Webpack（笨重）        |
+| 開發模式   | ESM 原生支援      | 需預先打包             |
+| 配置複雜度 | 簡單              | 複雜（需 eject）       |
+| 生態支援   | 主流推薦          | 已不再維護             |
+
+**Vite 的運作原理：**
+
+{% mermaid graph LR %}
+    A["開發模式<br/>Dev Server"]
+    B["瀏覽器<br/>原生 ESM"]
+    C["即時編譯<br/>On-Demand"]
+    D["生產模式<br/>Build"]
+    E["Rollup<br/>打包優化"]
+    F["優化後的<br/>靜態檔案"]
+    
+    A --> B
+    B --> C
+    D --> E
+    E --> F
+{% endmermaid %}
+
+- **開發模式**：直接使用瀏覽器原生 ES Modules，不需預先打包，啟動極快
+- **生產模式**：使用 Rollup 打包優化，產生高效能的靜態檔案
+
+{% note warning %}
+**Create React App (CRA) 已不推薦使用！**
+
+React 官方已不再推薦 Create React App（CRA），原因：
+- ❌ 啟動和熱更新速度慢
+- ❌ 配置複雜，需要 `eject` 才能自訂
+- ❌ 已長期不更新，不支援最新功能
+- ❌ 打包後的檔案體積大
+
+**請使用 Vite！** 這是 React 19 官方推薦的建置工具。
+{% endnote %}
+
+### 建立 React 19 + Vite 專案
+
+**步驟 1：建立專案**
+
+打開終端機（Terminal），輸入以下指令：
+
+```bash
+pnpm create vite
+```
+
+接著會出現互動式問答：
+
+1. **專案名稱（Project name）**：輸入專案名稱，例如 `my-react-app`
+2. **選擇框架（Select a framework）**：選擇 `React`
+3. **選擇變體（Select a variant）**：選擇 `JavaScript` 或 `JavaScript + SWC`
+
+![Vite 建立專案流程](/assets/images/2025-01-19-14-55-17.gif)
+
+{% note info %}
+**JavaScript vs JavaScript + SWC，該選哪個？**
+
+- **JavaScript**：使用 Babel 編譯，穩定成熟，適合新手
+- **JavaScript + SWC**：使用 SWC 編譯，速度更快（2-20 倍），適合大型專案
+
+**SWC（Speedy Web Compiler）是什麼？**
+- 用 Rust 開發的超高速編譯器
+- 編譯速度比 Babel 快 20 倍以上
+- 支援多執行緒編譯
+- React 19 + Vite 完美支援
+
+**建議：**
+- 新手學習：選 `JavaScript`（錯誤訊息更詳細）
+- 正式專案：選 `JavaScript + SWC`（效能更好）
+
+兩者使用方式完全相同，只是編譯器不同！
+{% endnote %}
+
+**步驟 2：進入專案目錄並安裝套件**
+
+```bash
+# 進入專案目錄
+cd my-react-app
+
+# 安裝所有依賴套件
+pnpm install
+
+# 啟動開發伺服器
+pnpm dev
+```
+
+![啟動 Vite 開發伺服器](/assets/images/2025-01-19-16-03-24.png)
+
+**步驟 3：開啟瀏覽器**
+
+開發伺服器啟動後，會顯示本地網址（通常是 `http://localhost:5173/`），在瀏覽器開啟即可看到 React 應用！
+
+{% note success %}
+**開發伺服器的特性：**
+- ⚡ **熱模組替換（HMR）**：修改程式碼時，畫面即時更新，不會重新載入整個頁面
+- 🔍 **即時錯誤提示**：語法錯誤會直接顯示在瀏覽器上
+- 📊 **效能監控**：可以看到每個模組的載入時間
+- 🎯 **自動開啟瀏覽器**：啟動時可自動開啟預設瀏覽器
+
+**常用開發指令：**
+```bash
+pnpm dev          # 啟動本地開發伺服器，支援熱更新（HMR），即時預覽程式碼修改
+pnpm build        # 將專案編譯、優化成生產用靜態檔案（輸出至 dist/ 目錄）
+pnpm preview      # 在本地啟動預覽 Web Server 伺服器，載入 dist/ 目錄下的檔案，模擬正式建置後的網站效果
+```
+{% endnote %}
+
+### Vite 專案結構解析
+
+建立完成後，專案目錄結構如下：
+
+```
+my-react-app/
+├── node_modules/       # 套件依賴目錄（pnpm 管理）
+├── public/             # 靜態資源目錄
+│   └── vite.svg       # 公開的靜態檔案（不經過編譯）
+├── src/                # React 原始碼目錄
+│   ├── assets/        # 資源檔案（會被編譯優化）
+│   │   └── react.svg
+│   ├── App.css        # App 元件樣式
+│   ├── App.jsx        # 主要元件
+│   ├── index.css      # 全域樣式
+│   └── main.jsx       # 應用程式入口
+├── .gitignore          # Git 忽略檔案設定
+├── eslint.config.js    # ESLint 配置
+├── index.html          # HTML 模板（唯一的 HTML 檔）
+├── package.json        # 專案配置和依賴清單
+├── pnpm-lock.yaml      # pnpm 鎖定版本檔案
+├── README.md           # 專案說明文件
+└── vite.config.js      # Vite 配置檔案
+```
+
+**重要目錄和檔案說明：**
+
+| 目錄/檔案        | 用途      | 說明                                                                  |
+| ---------------- | --------- | --------------------------------------------------------------------- |
+| `public/`        | 靜態資源  | 放置不需編譯的檔案（如 favicon、robots.txt），可直接透過 `/` 路徑存取 |
+| `src/`           | 原始碼    | React 元件、樣式、邏輯都放這裡，會經過編譯和優化                      |
+| `src/main.jsx`   | 入口檔案  | 應用程式的起點，負責渲染根元件到 DOM                                  |
+| `src/App.jsx`    | 主元件    | 預設的主要元件，可自由修改                                            |
+| `index.html`     | HTML 模板 | SPA 的唯一 HTML 檔案，`<div id="root">` 是 React 掛載點               |
+| `package.json`   | 專案配置  | 記錄依賴套件、腳本指令、專案資訊                                      |
+| `vite.config.js` | Vite 配置 | 自訂建置規則、外掛、路徑別名等                                        |
+| `dist/`          | 建置輸出  | 執行 `pnpm build` 後生成，包含優化後的靜態檔案                        |
+
+{% note warning %}
+**public/ vs src/assets/ 的差異：**
+
+- public/：檔案會原封不動複製到 `dist/`，不經過編譯
+  - 適合：favicon.ico、robots.txt、不需優化的第三方檔案
+  - 存取方式：`/vite.svg`（根路徑）
+  
+- src/assets/：檔案會經過 Vite 編譯優化
+  - 適合：圖片、字型、CSS 等需要優化的資源
+  - 存取方式：`import logo from './assets/react.svg'`
+  - 優勢：自動壓縮、hash 檔名（防快取）、死碼消除
+
+**建議：** 除非有特殊需求，一般資源都放 `src/assets/`，享受自動優化！
+{% endnote %}
 
 ## 擴展開發工具
+在開發大型應用程式時，推薦額外安裝與整合多種輔助型開發工具，可以大幅提升開發效率、減少重複性錯誤，並統一團隊內的程式碼風格。本單元將介紹一些常見且實用的 React 開發搭配工具，協助你建立更專業、可維護的技術環境。
+
+### React Developer Tools（瀏覽器擴充套件）
+
 [React Developer Tools](https://react.dev/learn/react-developer-tools) 是一個能在開發上獲得更好的檢查工具，可透過加裝 [Chrome 擴充工具](https://chromewebstore.google.com/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en) 協助我們開發過程上對於資料流的掌握不需要一直 console 出來看。
+
+**主要功能：**
+- 🔍 檢視元件樹狀結構
+- 📊 查看 Props 和 State 的即時變化
+- 🎯 追蹤 Hooks 的執行狀態
+- ⚡ 分析元件渲染效能
+- 🐛 快速定位問題元件
+
+{% note success %}
+**安裝建議：**
+React 開發必裝！安裝後在瀏覽器的開發者工具（F12）會多出 **Components** 和 **Profiler** 兩個分頁，可以即時查看 React 元件的狀態和效能。
+{% endnote %}
+
+### VSCode 擴充套件推薦
+
+以下是 React 開發時強烈推薦的 VSCode 擴充套件，能大幅提升開發效率：
+
+#### 🎯 必裝套件
+
+**1. ES7+ React/Redux/React-Native snippets**
+- **作者：** dsznajder
+- **功能：** 提供大量 React 程式碼片段快捷鍵
+- **常用快捷鍵：**
+  - `rfce` → 建立函式元件（附 export）
+  - `rafce` → 建立箭頭函式元件（附 export）
+  - `useState` → 快速插入 useState Hook
+  - `useEffect` → 快速插入 useEffect Hook
+- **為什麼需要：** 大幅減少重複輸入，提升開發速度
+
+**2. Auto Rename Tag**
+- **作者：** Jun Han
+- **功能：** 自動重新命名成對的 HTML/JSX 標籤
+- **範例：** 修改 `<div>` 時自動同步修改 `</div>`
+- **為什麼需要：** 避免標籤不配對的錯誤
+
+**3. Auto Close Tag**
+- **作者：** Jun Han
+- **功能：** 自動補全閉合標籤
+- **範例：** 輸入 `<div>` 自動補上 `</div>`
+- **為什麼需要：** 減少手動輸入，避免遺漏閉合標籤
+
+**4. Prettier - Code formatter**
+- **作者：** Prettier
+- **功能：** 自動格式化程式碼，統一程式碼風格
+- **設定建議：** 啟用「Format On Save」自動儲存時格式化
+- **為什麼需要：** 團隊協作必備，確保程式碼風格一致
+
+**5. ESLint**
+- **作者：** Microsoft
+- **功能：** 即時檢查程式碼錯誤和潛在問題
+- **特點：** 顯示錯誤提示、語法警告、最佳實踐建議
+- **為什麼需要：** 提早發現錯誤，養成良好編碼習慣
+
+#### 💡 進階推薦套件
+
+**6. ES6 Code Snippets**
+- **作者：** charalampos karypidis
+- **功能：** 提供 ES6+ 語法快捷鍵
+- **常用快捷鍵：**
+  - `imp` → `import moduleName from 'module'`
+  - `imd` → `import { } from 'module'`
+  - `exp` → `export default`
+  - `fof` → `for...of` 迴圈
+- **為什麼需要：** 加速現代 JavaScript 語法撰寫
+
+**7. Console Ninja**
+- **作者：** WallabyJs
+- **功能：** 在編輯器內直接顯示 console.log 結果
+- **特點：** 不用切換到瀏覽器就能看到 log 輸出
+- **為什麼需要：** 極大提升除錯效率
+
+**8. Error Lens**
+- **作者：** Alexander
+- **功能：** 將錯誤和警告直接顯示在程式碼行末
+- **特點：** 不用移到問題面板就能看到錯誤訊息
+- **為什麼需要：** 即時發現問題，減少來回切換
+
+**9. Path Intellisense**
+- **作者：** Christian Kohler
+- **功能：** 自動補全檔案路徑
+- **範例：** 輸入 `import './` 自動顯示可用檔案
+- **為什麼需要：** 避免路徑打錯，加速檔案引入
+
+**10. GitLens — Git supercharged**
+- **作者：** GitKraken
+- **功能：** 強化 Git 功能，顯示程式碼作者和修改歷史
+- **特點：** 可以看到每行程式碼是誰、何時寫的
+- **為什麼需要：** 團隊協作時追蹤程式碼變更
+
+#### 🎨 UI/UX 增強套件
+
+**11. Material Icon Theme**
+- **作者：** Philipp Kief
+- **功能：** 為檔案和資料夾提供美觀的圖示
+- **特點：** 快速辨識檔案類型
+- **為什麼需要：** 提升視覺辨識度，更容易找到檔案
+
+**12. Indent Rainbow**
+- **作者：** oderwat
+- **功能：** 為縮排添加彩色標記
+- **特點：** 更容易看出程式碼層級
+- **為什麼需要：** 減少縮排錯誤，提升可讀性
+
+**13. Highlight Matching Tag**
+- **作者：** vincaslt
+- **功能：** 高亮顯示配對的 HTML/JSX 標籤
+- **特點：** 游標移到標籤時，自動標記對應的開始/結束標籤
+- **為什麼需要：** 快速找到標籤配對，避免結構混亂
+
+#### 🔧 React 專屬套件
+
+**14. vscode-styled-components**
+- **作者：** Styled Components
+- **功能：** 為 styled-components 提供語法高亮和自動補全
+- **適用對象：** 使用 CSS-in-JS 的開發者
+- **為什麼需要：** 在 JS 檔案中撰寫 CSS 時獲得完整支援
+
+**15. Tailwind CSS IntelliSense**
+- **作者：** Tailwind Labs
+- **功能：** Tailwind CSS 自動補全和語法提示
+- **適用對象：** 使用 Tailwind CSS 的開發者
+- **為什麼需要：** 不用記住所有 class 名稱，大幅提升效率
+
+{% note info %}
+**快速安裝設定**
+
+你可以在 VSCode 中按下 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>（macOS: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>）開啟擴充套件面板，直接搜尋套件名稱安裝。
+
+**Prettier 設定建議（settings.json）：**
+```json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.tabWidth": 2
+}
+```
+
+**ESLint 設定建議（.eslintrc.json）：**
+Vite 建立的 React 專案會自動產生，通常不需要額外設定。
+{% endnote %}
+
+{% note success %}
+**新手建議安裝順序：**
+1. 先裝「必裝套件」（1-5）
+2. 熟悉後再加裝「進階推薦」（6-10）
+3. 根據專案需求選裝「UI/UX」和「React 專屬」套件
+
+不用一次全裝，太多套件可能影響 VSCode 效能。建議根據實際需求逐步添加。
+{% endnote %}
 
 # 參考文獻
 - [採用 SWC 取代 Babel，大幅提升編譯速度](https://medium.com/dcardlab/%E6%8E%A1%E7%94%A8-swc-%E5%8F%96%E4%BB%A3-babel-%E5%A4%A7%E5%B9%85%E6%8F%90%E5%8D%87%E7%B7%A8%E8%AD%AF%E9%80%9F%E5%BA%A6-802d9cd0db35)
