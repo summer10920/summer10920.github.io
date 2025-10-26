@@ -1134,6 +1134,7 @@ root.render(<App />);
 自從 React 16.8 推出 Hooks 開始，官方就推薦優先使用**函式元件 + Hooks** 這種現代開發方式。
 
 #### 基本語法
+在 React 中，「元件」本質上就是由**函式**來宣告的一段程式，用來描述畫面的某一部分。你只需要撰寫一個 JavaScript 函式，並回傳 JSX，就可以建立一個自訂的元件，不需要寫 class、繼承或額外語法。這讓 React 的元件開發變得簡單、直觀，也利於複用與維護。
 
 ```jsx
 // 1. 函式宣告式
@@ -1151,6 +1152,8 @@ const Welcome = () => <h1>Hello, World!</h1>;
 ```
 
 **元件命名規則：**
+在撰寫 JSX 時，React 會根據標籤名稱自動判斷該標籤應被解讀為「React 元件」還是「原生 HTML 標籤」。**以大寫字母開頭**的標籤會被視為 React 元件，而**小寫字母開頭**的則會解讀為原生 HTML 標籤。若不小心將自訂元件以小寫命名，React 會嘗試尋找相應的 DOM 標籤，造成錯誤（找不到對應 HTML 標籤）。因此，請務必遵守元件命名規則，確保 React 能正確渲染元件。
+
 - ✅ 必須以大寫字母開頭（`Welcome`、`MyButton`、`UserProfile`）
 - ❌ 不能用小寫開頭（`welcome`、`myButton`）- React 會當成 HTML 標籤
 
@@ -1160,12 +1163,10 @@ const Welcome = () => <h1>Hello, World!</h1>;
 
 // ❌ 錯誤：小寫開頭，React 會尋找 <welcome> HTML 標籤
 <welcome />
+
 ```
 
-{% note warning %}
-**為什麼元件名稱必須大寫？**
-
-這是 JSX 的語法規則，用來區分 React 元件和 HTML 標籤：
+元件名稱必須大寫，用來區分 React 元件和 HTML 標籤：
 
 ```jsx
 // React 元件（大寫）
@@ -1174,9 +1175,6 @@ const Welcome = () => <h1>Hello, World!</h1>;
 // HTML 標籤（小寫）
 <button /> → React.createElement('button')
 ```
-
-如果你用小寫命名元件，React 會報錯找不到對應的 HTML 標籤。
-{% endnote %}
 
 #### 過時的 Class 元件
 React 在 16.8 版本後強調現代函式元件（Function Component）和 Hooks 開發模式，傳統的 Class 元件語法漸漸被棄用。本節將帶你快速對比兩種語法差異，建議直接採用「函式元件＋Hooks」這套未來趨勢寫法，寫起來更直覺、可讀性也高。
@@ -1245,12 +1243,24 @@ class Counter extends React.Component {
 {% endnote %}
 
 #### 元件組合規則
-React 推崇以小元件組合大型介面的設計哲學，如何正確組織元件結構、避免常見陷阱，將直接影響專案的可維護性與效能。
+React 強調「小元件組合而成大型介面」的設計理念。能否妥善組織元件結構、避開常見錯誤，將直接影響開發的可維護性與效能。
+
+**觀念重點：**
+- **外部定義元件（最佳實踐）**：例如 `Header` 若定義在元件外層，函式只建立一次，每次重新渲染只是重跑函式內容。子元件會隨父元件一起重新渲染，但元件實例（狀態）保持不變。
+- **巢狀定義元件（常見陷阱）**：如果在 `App` 內部重新宣告 `Header`，每次 `App` 渲染時，`Header` 也會被認為是全新的，React 會強制重新掛載（re-mount），造成狀態丟失與效能浪費。
+- **總結**：元件應該都定義在外層，勿在其他元件內部宣告。
+
+**什麼是重新渲染？什麼是重新掛載？**
+
+- **重新渲染 (Re-render\)**：原本的元件實例存在，只會重新執行函式內容並更新畫面。
+- **重新掛載 (Re-mount\)**：舊元件被完全移除（連同所有狀態），然後建立一個全新實例。
+
+> 元件必須定義在外部作用域，切勿在其他元件內部宣告。這有助於狀態穩定與執行效能最佳化。
 
 **✅ 正確：扁平化定義元件**
 
 ```jsx
-// 所有元件定義在同一層級
+// 所有元件定義在同一層級外部
 function Header() {
   return <h1>My App</h1>;
 }
@@ -1262,8 +1272,8 @@ function Content() {
 function App() {
   return (
     <>
-      <Header />
-      <Content />
+      <Header /> {/* Header 函數只建立一次，每次只是重新渲染*/}
+      <Content /> {/* Content 函數只建立一次，每次只是重新渲染 */}
     </>
   );
 }
@@ -1274,18 +1284,14 @@ function App() {
 ```jsx
 function App() {
   // ❌ 不要在元件內部定義另一個元件
+  // 每次 App 重新渲染時，這個函數都會被重新建立
   function Header() {
     return <h1>My App</h1>;
   }
   
-  return <Header />;
+  return <Header />; {/* React 認為這是新元件，會重新掛載 */}
 }
 ```
-
-**為什麼不能巢狀定義？**
-- 每次 `App` 重新渲染，`Header` 都會被重新建立
-- 導致 React 認為這是新元件，強制重新掛載
-- 造成狀態丟失、效能問題、不必要的重新渲染
 
 #### 元件組合與重用
 
@@ -1452,76 +1458,232 @@ App
 {% endnote %}
 
 ### Props：元件間的資料傳遞
-Props（properties 的縮寫）是父元件傳遞資料給子元件的機制。就像函式的參數一樣，元件可以接收 props 並根據這些資料渲染不同的內容。
+在 React 中，Props（properties 的縮寫）是元件之間傳遞資料的主要方式。就像函式可以接收參數一樣，React 元件可以接收 props 並根據這些資料來決定渲染的內容。
 
-**Props 的特性：**
-- **唯讀（Read-Only）**：子元件不能修改 props
-- **單向資料流**：資料只能從父元件流向子元件
-- **任意類型**：可以傳遞字串、數字、物件、陣列、函式等
+#### Props 基本概念
+
+**三個重要特性：**
+1. **唯讀（Read-Only）**
+   - Props 是唯讀的，子元件不能修改接收到的 props
+   - 這確保了資料流的可預測性
+
+2. **單向資料流**
+   - 資料只能從父元件傳遞到子元件
+   - 這種單向流動讓程式更容易理解和除錯
+
+3. **資料型別**
+   - 可以傳遞任何 JavaScript 資料型別
+   - 包括：字串、數字、布林值、物件、陣列、函式等
 
 #### Props 基本用法
 
+讓我們從最簡單的例子開始：
+
 ```jsx
-// 子元件：接收 props
+// 1. 最基本的 props 使用方式
 function Greeting(props) {
   return <h1>Hello, {props.name}!</h1>;
 }
 
-// 父元件：傳遞 props
 function App() {
-  return (
-    <div>
-      <Greeting name="Alice" />
-      <Greeting name="Bob" />
-      <Greeting name="Charlie" />
-    </div>
-  );
+  return <Greeting name="Alice" />;
 }
 ```
 
-**執行結果：**
-```
-Hello, Alice!
-Hello, Bob!
-Hello, Charlie!
-```
-
-#### Props 解構（Destructuring）
-
-為了讓程式碼更簡潔，通常會使用解構語法直接取出需要的 props：
+當我們需要傳遞多個 props 時：
 
 ```jsx
-// ❌ 不推薦：每次都要寫 props.
-function Greeting(props) {
+// 2. 傳遞多個 props
+function UserCard(props) {
   return (
     <div>
-      <h1>Hello, {props.name}!</h1>
-      <p>Age: {props.age}</p>
-      <p>City: {props.city}</p>
+      <h2>{props.name}</h2>
+      <p>年齡：{props.age}</p>
+      <p>城市：{props.city}</p>
     </div>
   );
 }
 
-// ✅ 推薦：使用解構
-function Greeting({ name, age, city }) {
+function App() {
+  return (
+    <UserCard 
+      name="Alice"
+      age={25}
+      city="台北"
+    />
+  );
+}
+```
+
+**注意事項：**
+- 字串可以直接用引號：`name="Alice"`
+- 其他型別要用大括號：`age={25}`
+- 布林值 `true` 可以省略值：`isActive` 等同於 `isActive={true}`
+
+#### Props 解構寫法
+
+在 React 中，我們常常使用解構賦值（Destructuring）來簡化 props 的使用。讓我們看看如何逐步改善程式碼：
+
+```jsx
+// 1. 基本寫法：使用 props 物件
+function UserCard(props) {
   return (
     <div>
-      <h1>Hello, {name}!</h1>
-      <p>Age: {age}</p>
-      <p>City: {city}</p>
+      <h2>{props.name}</h2>
+      <p>年齡：{props.age}</p>
+      <p>城市：{props.city}</p>
+    </div>
+  );
+}
+
+// 2. 解構寫法：在參數中解構
+function UserCard({ name, age, city }) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>年齡：{age}</p>
+      <p>城市：{city}</p>
+    </div>
+  );
+}
+
+// 3. 函式內解構：當需要用到 props 本身時
+function UserCard(props) {
+  const { name, age, city } = props;
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>年齡：{age}</p>
+      <p>城市：{city}</p>
     </div>
   );
 }
 
 // 使用元件
-<Greeting name="Alice" age={25} city="Taipei" />
+function App() {
+  return <UserCard name="Alice" age={25} city="台北" />;
+}
 ```
 
 #### Props 傳遞各種資料類型
-Props（屬性）允許父元件將任何型別的資料傳遞給子元件，包括基本型別（字串、數字、布林）、陣列、物件，甚至是函式和整段 JSX。這種設計讓 React 元件在資料傳遞和 UI 組合上具有極大的彈性。搭配解構語法，可以讓程式碼更簡潔、易讀。初學者在設計元件時，建議善用解構 props 慣例，也能避免未來 props 變更時維護上的困擾。
 
-常見函式型 props 的用途，如將某些行為（像是 onClick、onChange、onSave 等事件處理函式）傳進去子元件，由子元件觸發時再回傳給父元件進行狀態處理，這也是 React 元件間互動的核心模式。
+React 的 props 可以傳遞各種資料類型，讓我們逐一看看：
 
+```jsx
+// 1. 基本型別
+function BasicProps({ 
+  name,     // 字串
+  age,      // 數字
+  isActive  // 布林值
+}) {
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>年齡：{age}</p>
+      <p>狀態：{isActive ? '啟用' : '停用'}</p>
+    </div>
+  );
+}
+
+// 2. 陣列與物件
+function AdvancedProps({ 
+  hobbies,   // 陣列
+  address    // 物件
+}) {
+  return (
+    <div>
+      <ul>
+        {hobbies.map((hobby, index) => (
+          <li key={index}>{hobby}</li>
+        ))}
+      </ul>
+      <p>地址：{address.city}, {address.country}</p>
+    </div>
+  );
+}
+
+// 3. 函式（事件處理）
+function ButtonWithHandler({ 
+  onClick,    // 函式
+  children    // JSX
+}) {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+// 使用範例
+function App() {
+  // 準備資料
+  const userData = {
+    name: "Alice",
+    age: 25,
+    isActive: true,
+    hobbies: ["閱讀", "寫程式", "旅遊"],
+    address: {
+      city: "台北",
+      country: "台灣"
+    }
+  };
+
+  // 事件處理函式
+  const handleClick = () => {
+    console.log("按鈕被點擊了！");
+  };
+
+  return (
+    <div>
+      {/* 傳遞基本型別 */}
+      <BasicProps 
+        name={userData.name}
+        age={userData.age}
+        isActive={userData.isActive}
+      />
+
+      {/* 傳遞陣列與物件 */}
+      <AdvancedProps 
+        hobbies={userData.hobbies}
+        address={userData.address}
+      />
+
+      {/* 傳遞函式和 JSX */}
+      <ButtonWithHandler onClick={handleClick}>
+        點擊我
+      </ButtonWithHandler>
+    </div>
+  );
+}
+```
+
+{% note info %}
+**Props 使用的最佳實踐**
+
+1. **命名規範**
+   - Props 名稱使用小駝峰式命名（camelCase）
+   - 事件處理函式以 `on` 開頭：`onClick`、`onChange`
+   - 布林值 props 使用 `is`、`has` 開頭：`isActive`、`hasError`
+
+2. **預設值處理**
+   ```jsx
+   function UserCard({ name = "訪客", age = 0 }) {
+     return <div>{name} ({age}歲）</div>;
+   }
+   ```
+
+3. **型別檢查**
+   - 開發時使用 PropTypes 或 TypeScript
+   - 避免傳遞錯誤的資料型別
+
+4. **資料整理**
+   - 複雜的資料處理放在父元件
+   - 子元件保持簡單，專注於渲染
+
+5. **避免過度傳遞**
+   - 只傳遞必要的 props
+   - 使用物件打包相關的 props
+{% endnote %}
 
 ```jsx
 function UserProfile({ 
@@ -1680,7 +1842,7 @@ export default function App() {
 - 提升團隊開發時的明確溝通與自動化檢查
 
 **注意：**  
-prop-types 只會在開發模式下提供警告，生產環境(正式 build)不會影響效能。如果你使用 TypeScript，則不需要再用 prop-types，因為型別檢查已被 TypeScript 覆蓋。
+prop-types 只會在開發模式下提供警告，生產環境（正式 build) 不會影響效能。如果你使用 TypeScript，則不需要再用 prop-types，因為型別檢查已被 TypeScript 覆蓋。
 {% endnote %}
 
 ```jsx src\App.jsx
@@ -1744,17 +1906,29 @@ function LinkB() {
 現在不需要 props-type 也不會發生錯誤了。
 
 #### 組合 Component
-小元件本身可重複利用的，在另一個大元件內利用 JSX 編寫重複使用，再透過 props 獲得差異性的顯示。例如我們的 ImgA 跟 ImgB 有類似的 UI 可以組合為 MyImg。
 
+React 的一大特色是可以將小元件組合成更大的元件。透過這種組合方式，我們可以：
+1. 重複使用相似的 UI 結構
+2. 讓程式碼更容易維護
+3. 提高程式碼的可讀性
+
+讓我們透過實際範例，一步步學習如何組合元件：
+
+**步驟 1：建立基礎圖片元件**
 ```jsx src\App.jsx
+// 1. 建立可重用的圖片元件
 function MyImg({ logo, txt }) {
   return <img src={logo} className="logo" alt={txt} />;
 }
 
+// 2. 使用基礎元件建立兩個連結
 function LinkA() {
   return (
     <a href="https://vite.dev" target="_blank">
-      <MyImg logo={viteLogo} txt="Vite Logo" />
+      <MyImg 
+        logo={viteLogo} 
+        txt="Vite Logo" 
+      />
     </a>
   );
 }
@@ -1762,30 +1936,38 @@ function LinkA() {
 function LinkB() {
   return (
     <a href="https://react.dev" target="_blank">
-      <MyImg logo={reactLogo} txt="React Logo" />
+      <MyImg 
+        logo={reactLogo} 
+        txt="React Logo" 
+      />
     </a>
   );
 }
 
+// 3. 組合成一個完整的 Logo 區塊
 function MyLogo() {
-  const myBr = <br />;
   return (
     <div>
-      <LinkA></LinkA>
-      {myBr}
+      <LinkA />
+      <br />
       <LinkB />
     </div>
   );
 }
 ```
 
-可以挑戰看看把 LinkA 跟 LinkB 也組合為 MyLink。
+**步驟 2：優化元件結構**
+
+觀察上面的程式碼，我們可以發現 `LinkA` 和 `LinkB` 結構非常相似，只是傳入的資料不同。
+讓我們將它們合併成一個更通用的 `MyLink` 元件：
 
 ```jsx src\App.jsx
+// 1. 基礎圖片元件（保持不變）
 function MyImg({ logo, txt }) {
   return <img src={logo} className="logo" alt={txt} />;
 }
 
+// 2. 建立通用的連結元件
 function MyLink({ logo, txt, link }) {
   return (
     <a href={link} target="_blank">
@@ -1794,25 +1976,43 @@ function MyLink({ logo, txt, link }) {
   );
 }
 
+// 3. 使用通用元件
 function MyLogo() {
-  const myBr = <br />;
   return (
     <div>
-      <MyLink logo={viteLogo} txt="Vite Logo" link="https://vite.dev"></MyLink>
-      {myBr}
-      <MyLink logo={reactLogo} txt="React Logo" link="https://react.dev" />
+      <MyLink 
+        logo={viteLogo} 
+        txt="Vite Logo" 
+        link="https://vite.dev"
+      />
+      <br />
+      <MyLink 
+        logo={reactLogo} 
+        txt="React Logo" 
+        link="https://react.dev" 
+      />
     </div>
   );
 }
 ```
 
-如果需要，也可以把資料獨立出來（未來可能資料來自於後端提供 API 回傳）成為一個資料陣列。透過物件方式傳遞下去，這樣就不用寫一堆 props 了。但見仁見智，React 的寫法很自由。
+**步驟 3：資料與元件的分離**
+
+在實際開發中，資料通常會從 API 或配置檔案中獲取。讓我們將資料與元件分離，使程式碼更容易維護：
 
 ```jsx src\App.jsx
+// 1. 基礎圖片元件（使用物件解構）
 function MyImg({ imgItem }) {
-  return <img src={imgItem.img} className="logo" alt={imgItem.name} />;
+  return (
+    <img 
+      src={imgItem.img} 
+      className="logo" 
+      alt={imgItem.name} 
+    />
+  );
 }
 
+// 2. 通用連結元件（使用物件解構）
 function MyLink({ linkItem }) {
   return (
     <a href={linkItem.url} target="_blank">
@@ -1821,8 +2021,9 @@ function MyLink({ linkItem }) {
   );
 }
 
+// 3. Logo 區塊（資料與渲染分離）
 function MyLogo() {
-  const myBr = <br />;
+  // 資料可能來自 API 或配置檔案
   const dataList = [
     {
       name: 'Vite Logo',
@@ -1838,50 +2039,108 @@ function MyLogo() {
 
   return (
     <div>
-      <MyLink linkItem={dataList[0]}></MyLink>
-      {myBr}
+      <MyLink linkItem={dataList[0]} />
+      <br />
       <MyLink linkItem={dataList[1]} />
     </div>
   );
 }
 ```
 
-#### 匯出匯入
-元件的神奇之處在於它們的可重複使用性：您可以建立由其他元件組成的元件。但是，當您嵌套越來越多的元件時，開始將它們拆分為不同的檔案通常是有意義的。這使您可以輕鬆掃描文件並在更多地方重複使用元件。您可以透過三個步驟移動元件：
+{% note info %}
+**元件組合的最佳實踐**
 
-- 建立一個新的 JS 檔案來放入元件。
-- 從該文件導出函式元件（使用預設導出或命名導出）。
-- 將其匯入到您將使用該元件的檔案中（使用匯入預設或命名匯出的相應技術）。
+1. **單一職責原則**
+   - 每個元件只負責一個功能
+   - 避免元件過於複雜
+   - 適時拆分大型元件
 
-試著將 MyLogo 與 MyLink 獨立成檔案，在適合的地方匯入：
+2. **資料流向**
+   - Props 從父元件向下傳遞
+   - 保持資料流向清晰
+   - 避免過度傳遞 props
 
-> 如果發生大量的`Delete ␍`錯誤，這是換行符號（line ending）的問題。這個錯誤通常出現在 Windows 系統上，因為 Windows 使用 `CRLF (\r\n)`，而 Unix/Linux 使用 `LF (\n)`。右下角可以切換本檔案使用哪種，或者在`.vscode\settings.json` 追加`"files.eol": "\n"`，使得每次新增檔案預設為 LF 格式。
+3. **命名規範**
+   - 元件名稱使用大寫開頭
+   - Props 名稱使用小駝峰式
+   - 保持命名語意化
 
-```jsx src\App.jsx
-import { useState } from 'react';
+4. **程式碼組織**
+   - 相關元件放在同一目錄
+   - 共用元件獨立管理
+   - 適當的檔案結構
+
+5. **效能考量**
+   - 避免不必要的渲染
+   - 適時使用 memo 優化
+   - 注意資料結構的設計
+{% endnote %}
+
+#### 匯出匯入（Export & Import）
+
+隨著專案成長，我們需要將元件拆分到不同的檔案中，這樣可以：
+- 提高程式碼的可維護性
+- 方便團隊協作開發
+- 實現元件的重複使用
+
+**匯出匯入的兩種方式：**
+
+1. **預設匯出（Default Export）**
+   - 一個檔案只能有一個預設匯出
+   - 匯入時可以使用任意名稱
+   - 適合作為檔案的主要元件
+
+2. **命名匯出（Named Export）**
+   - 一個檔案可以有多個命名匯出
+   - 匯入時需要使用大括號和原始名稱
+   - 適合匯出多個相關的元件或函式
+
+讓我們看看如何將元件拆分到不同檔案：
+
+**步驟 1：建立元件檔案結構**
+
+```plaintext
+src/
+├── components/
+│   ├── MyLogo/
+│   │   ├── MyLogo.jsx   # 主要元件
+│   │   ├── MyLink.jsx   # 子元件
+│   │   └── MyImg.jsx    # 子元件
+│   └── ...
+└── App.jsx
+```
+
+**步驟 2：撰寫各個元件檔案**
+
+{% tabs React 分檔練習 %}
+<!-- tab App.jsx -->
+```jsx
+// 1. 預設匯入：不需要大括號
+import MyLogo from './components/MyLogo/MyLogo';
+// 2. 樣式匯入
 import './App.css';
-import MyLogo from './component/MyLogo/MyLogo'; // 透過 import 取得別處的 component
 
 export default function App() {
-  //...
+  return (
+    <div>
+      <MyLogo />
+      {/* 其他內容。.. */}
+    </div>
+  );
 }
-
 ```
+<!-- endtab -->
 
-```jsx src\component\MyLogo\MyLogo.jsx
-import reactLogo from './../../assets/react.svg';
-import viteLogo from '/vite.svg';
-import { MyLink } from './MyLink'; //因為是命名匯出，所以可多個
+<!-- tab MyLogo.jsx -->
+```jsx
+// 1. 資源匯入
+import reactLogo from '@assets/react.svg';
+import viteLogo from '@assets/vite.svg';
+// 2. 命名匯入：使用大括號
+import { MyLink } from './MyLink';
 
-/**
- * 一個文件只能有一個 default export 預設匯出
- * 導入時可以使用任意名稱
- * 導入時不需要使用大括號
- * 如果元件是該文件的主要功能，使用 export default
- */
-
+// 預設匯出：一個檔案只能有一個
 export default function MyLogo() {
-  const myBr = <br />;
   const dataList = [
     {
       name: 'Vite Logo',
@@ -1897,19 +2156,21 @@ export default function MyLogo() {
 
   return (
     <div>
-      <MyLink linkItem={dataList[0]}></MyLink>
-      {myBr}
-      <MyLink linkItem={dataList[1]} />
+      {dataList.map(item => (
+        <MyLink key={item.name} linkItem={item} />
+      ))}
     </div>
   );
 }
 ```
-```jsx src\component\MyLogo\MyLink.jsx
-function MyImg({ imgItem }) {
-  return <img src={imgItem.img} className="logo" alt={imgItem.name} />;
-}
+<!-- endtab -->
 
-//採用命名匯出
+<!-- tab MyLink.jsx -->
+```jsx
+// 1. 命名匯入
+import { MyImg } from './MyImg';
+
+// 命名匯出：可以有多個
 export function MyLink({ linkItem }) {
   return (
     <a href={linkItem.url} target="_blank">
@@ -1918,81 +2179,197 @@ export function MyLink({ linkItem }) {
   );
 }
 ```
+<!-- endtab -->
 
-如果路徑變得越來越複雜，也可以用別名路徑來定義。例如常用的 assets 目錄設定一個別名起頭 `import reactLogo from '@assets/react.svg';`。跟隨以下設定與新增`vite.config.js`：
+<!-- tab MyImg.jsx -->
+```jsx
+// 命名匯出
+export function MyImg({ imgItem }) {
+  return (
+    <img 
+      src={imgItem.img} 
+      className="logo" 
+      alt={imgItem.name} 
+    />
+  );
+}
+```
+<!-- endtab -->
+{% endtabs %}
 
-```js vite.config.js
+**步驟 3：使用路徑別名（Path Alias）**
+
+在大型專案中，我們常常需要處理複雜的檔案路徑。路徑別名可以幫助我們：
+- 簡化匯入路徑
+- 避免過長的相對路徑
+- 提高程式碼可讀性
+
+{% note info %}
+**設定路徑別名的步驟**
+
+1. **編輯 vite.config.js**
+```js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@assets': '/src/assets',
+      '@': '/src',               // 指向 src 目錄
+      '@assets': '/src/assets',  // 指向資源目錄
+      '@components': '/src/components', // 指向元件目錄
     },
   },
 });
 ```
 
-#### 渲染列表
-JSX 支援元件陣列方式作為渲染，如果有任何資料需要提供元件，我們可以用 JS array 的原生方法來操作批次輸出多個元件。
+2. **使用別名匯入**
+```jsx
+// 舊寫法：使用相對路徑
+import MyButton from '../../components/MyButton';
+import logo from '../../assets/logo.svg';
 
-React 支援元件陣列的寫法。React 會自動了解陣列內容，以迴圈方式多筆輸出在畫面上：
-```jsx src\component\MyLogo\MyLogo.jsx
+// 新寫法：使用路徑別名
+import MyButton from '@components/MyButton';
+import logo from '@assets/logo.svg';
+```
+{% endnote %}
+
+**實際應用範例：**
+
+```jsx src\components\MyLogo\MyLogo.jsx
+// 使用路徑別名匯入資源
+import reactLogo from '@assets/react.svg';
+import viteLogo from '@assets/vite.svg';
+// 使用路徑別名匯入元件
+import { MyLink } from '@components/MyLogo/MyLink';
+
 export default function MyLogo() {
-  const myBr = <br />;
-  const dataList = [
-    {
-      name: 'Vite Logo',
-      img: viteLogo,
-      url: 'https://vite.dev',
-    },
-    {
-      name: 'React Logo',
-      img: reactLogo,
-      url: 'https://react.dev',
-    },
-  ];
-
   return (
-    <div>{[<MyLink linkItem={dataList[0]}></MyLink>, <MyLink linkItem={dataList[1]} />]}</div>
+    <div>
+      <img src={viteLogo} className="logo" alt="Vite Logo" />
+      <img src={reactLogo} className="logo" alt="React Logo" />
+    </div>
+  );
+}
+```
+
+{% note success %}
+**匯出匯入的最佳實踐**
+
+1. **檔案組織**
+   - 相關元件放在同一目錄
+   - 使用 index.js 匯出公開 API
+   - 保持檔案結構清晰
+
+2. **命名規範**
+   - 檔案名稱與元件名稱一致
+   - 使用 PascalCase 命名元件檔案
+   - 使用 camelCase 命名工具檔案
+
+3. **匯出策略**
+   - 主要元件使用預設匯出
+   - 工具函式使用命名匯出
+   - 避免混用兩種匯出方式
+
+4. **路徑管理**
+   - 使用路徑別名避免深層相對路徑
+   - 集中管理路徑別名配置
+   - 保持匯入路徑一致性
+
+5. **效能考量**
+   - 使用動態匯入延遲載入
+   - 適當拆分程式碼
+   - 避免循環依賴
+{% endnote %}
+
+{% note warning %}
+**換行符號錯誤處理**
+
+如果發生大量的 `Delete ␍` 錯誤，這是**換行符號（Line Ending）**的問題。
+
+**問題原因：**
+- **Windows 系統**：使用 `CRLF (\r\n)` 作為換行符號
+- **Unix/Linux/Mac**：使用 `LF (\n)` 作為換行符號
+- **Git 差異**：不同系統間的換行符號不一致會造成版本控制問題
+
+**錯誤症狀：**
+```shell
+# 在 Git 中會看到類似這樣的錯誤
+warning: LF will be replaced by CRLF in src/App.jsx
+The file will have its original line endings in your working directory
+```
+
+**解決方法：**
+
+**方法 1：VSCode 右下角切換**
+- 點擊 VSCode 右下角的 `CRLF` 或 `LF`
+- 選擇 `LF` 並重新載入檔案
+
+**方法 2：全域設定（推薦）**
+```json .vscode/settings.json
+{
+  "files.eol": "\n",  // 統一使用 LF 格式
+  "files.insertFinalNewline": true,  // 檔案結尾自動加入換行
+  "files.trimFinalNewlines": true    // 移除多餘的結尾換行
+}
+```
+
+**方法 3：Git 設定**
+```bash
+# 設定 Git 自動轉換換行符號
+git config core.autocrlf false
+git config core.eol lf
+```
+
+**預防措施：**
+- 團隊統一使用 LF 格式
+- 在 `.editorconfig` 檔案中設定換行符號規則
+- 使用 ESLint 檢查換行符號一致性
+{% endnote %}
+
+#### 渲染列表（List Rendering）
+
+在 React 中，我們經常需要將資料陣列轉換成元件列表來顯示。React 提供了簡單且強大的方式來處理列表渲染：
+
+1. **使用陣列直接渲染**
+   - JSX 可以直接渲染元件陣列
+   - React 會自動展開陣列內容
+
+2. **使用 map 方法轉換**
+   - 將資料陣列轉換為元件陣列
+   - 更靈活且易於維護
+
+讓我們透過實際範例來學習列表渲染：
+**方法 1：直接使用元件陣列**
+
+```jsx
+function SimpleList() {
+  // 1. 準備資料
+  const items = ['React', 'Vue', 'Angular'];
+  
+  // 2. 直接在 JSX 中使用陣列
+  return (
+    <ul>
+      {[
+        <li>第一個項目</li>,
+        <li>第二個項目</li>,
+        <li>第三個項目</li>
+      ]}
+    </ul>
   );
 }
 
-```
-
-如果此時查看 console 會出現錯誤資訊
-
-```shell
-MyLogo.jsx:28 Warning: Each child in a list should have a unique "key" prop.
-
-Check the render method of `MyLogo`. See https://reactjs.org/link/warning-keys for more information.
-    at MyLink (http://localhost:5173/src/component/MyLogo/MyLink.jsx:23:26)
-    at MyLogo
-    at App (http://localhost:5173/src/App.jsx?t=1738305513593:18:31)
-```
-
-這是因為 React 需要 key 來識別列表中的每個元素，以便在列表發生資料更新時，能夠正確地被動進行重新渲染更新或刪除已存在的畫面元素。key 是幫助 React 進行識別用而不是給開發人員使用的。用途為判斷哪些元素被改變（新增修改刪除），有以下特性：
-
-- 每個元素的 key 都必須在同個陣列內要有唯一性才能讓 React 去追蹤這些元素。只要確保 render 該指定陣列時能透過 key 判斷出此陣列底下的這些獨立元素。
-- key 的指定為在 JSX 元素上透過屬性來賦予（類似 props 方式），但是你無法讀取此值，即便 props.key 也做不到。
-
-這樣可以幫助 React 更好地管理列表中的元素，並避免一些常見的錯誤。通常會使用資料（來自 SQL 提供） 的 id 來辦定。目前沒有 id 情況下可以手動選擇代表性且不重複的資料為值，但不要使用 array index 來當作值，因為索引值不能代表該資料的識別唯一值。修正如下：
-
-```jsx src\component\MyLogo\MyLogo.jsx
-export default function MyLogo() {
-  const myBr = <br />;
+// 使用資料陣列（但還沒有 key）
+function LogoList() {
   const dataList = [
     {
-      id: 1, // 最好的方式是讓資料有唯一值作為識別
       name: 'Vite Logo',
       img: viteLogo,
       url: 'https://vite.dev',
     },
     {
-      id: 2,
       name: 'React Logo',
       img: reactLogo,
       url: 'https://react.dev',
@@ -2002,19 +2379,155 @@ export default function MyLogo() {
   return (
     <div>
       {[
-        <MyLink key={dataList[0].id} linkItem={dataList[0]}></MyLink>,
-        <MyLink key={dataList[1].id} linkItem={dataList[1]} />,
+        <MyLink linkItem={dataList[0]}></MyLink>,
+        <MyLink linkItem={dataList[1]} />
       ]}
+    </div>
+  );
+}
+
+```
+
+**重要：列表渲染中的 key**
+
+當我們執行上面的程式碼時，會在 console 看到警告：
+
+```shell
+Warning: Each child in a list should have a unique "key" prop.
+```
+
+{% note warning %}
+**為什麼需要 key？**
+
+React 需要 `key` 屬性來識別列表中的每個元素，這樣才能：
+- 正確追蹤元素的變化
+- 優化重新渲染的效能
+- 維護元素的狀態
+
+**key 的特性：**
+1. 在同一個列表中必須唯一
+2. 不會作為 props 傳遞給元件
+3. 應該保持穩定（不要使用隨機數或索引）
+
+**選擇 key 的原則：**
+- ✅ 使用資料的唯一識別（如 ID）
+- ✅ 使用穩定且唯一的值
+- ❌ 避免使用索引（index）作為 key
+- ❌ 避免使用不穩定的值（如隨機數）
+{% endnote %}
+
+讓我們修改程式碼，加入適當的 key：
+
+**方法 2：使用 map 方法**
+
+```jsx
+// 1. 簡單的列表範例
+function SimpleList() {
+  const items = ['React', 'Vue', 'Angular'];
+  
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+
+// 2. 使用物件陣列
+function LogoList() {
+  const dataList = [
+    {
+      id: 1,          // 加入唯一識別
+      name: 'Vite Logo',
+      img: viteLogo,
+      url: 'https://vite.dev',
+    },
+    {
+      id: 2,          // 加入唯一識別
+      name: 'React Logo',
+      img: reactLogo,
+      url: 'https://react.dev',
+    },
+  ];
+
+  return (
+    <div>
+      {dataList.map(item => (
+        <MyLink 
+          key={item.id}    // 使用唯一識別作為 key
+          linkItem={item} 
+        />
+      ))}
     </div>
   );
 }
 ```
 
-同時，也可以對資料陣列利用 map 方式轉換為元件陣列。
+{% note info %}
+**map 方法的優點：**
+
+1. **更具彈性**
+   - 可以對資料進行轉換
+   - 可以加入條件判斷
+   - 程式碼更容易維護
+
+2. **更好的效能**
+   - React 可以更有效地追蹤變化
+   - 減少不必要的重新渲染
+
+3. **更好的可讀性**
+   - 程式碼更簡潔
+   - 邏輯更清晰
+{% endnote %}
+
+{% note success %}
+**列表渲染的進階技巧**
+
+1. **條件渲染**
+```jsx
+{items.map(item => (
+  item.isVisible && (
+    <ListItem 
+      key={item.id} 
+      data={item} 
+    />
+  )
+))}
+```
+
+2. **資料轉換**
+```jsx
+{items.map(item => (
+  <ListItem 
+    key={item.id}
+    title={item.name.toUpperCase()}
+    {...item}
+  />
+))}
+```
+
+3. **巢狀列表**
+```jsx
+{categories.map(category => (
+  <div key={category.id}>
+    <h2>{category.name}</h2>
+    <ul>
+      {category.items.map(item => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  </div>
+))}
+```
+{% endnote %}
+
+#### 實作範例：規劃為渲染列表
+
+現在讓我們把之前的 Logo 元件改寫成使用列表渲染的方式：
 
 ```jsx src\component\MyLogo\MyLogo.jsx
 export default function MyLogo() {
-  const myBr = <br />;
   const dataList = [
     {
       id: 1,
@@ -2030,20 +2543,131 @@ export default function MyLogo() {
     },
   ];
 
-  return dataList.map((val) => <MyLink key={val.id} linkItem={val} />);
+  return (
+    <div>
+      {dataList.map((val) => (
+        <MyLink key={val.id} linkItem={val} />
+      ))}
+    </div>
+  );
 }
 ```
 
-每一個元件函式都必須保持乾淨的過程與結果輸出，由於元件是可以重複利用的。透過 props 來提供相同的輸入傳遞，並始終返回相同的 JSX。
+這個改寫有幾個重點：
+1. 加入 `id` 作為唯一識別
+2. 使用 `map` 方法轉換資料
+3. 設定 `key` 屬性避免警告
+4. 使用 `div` 包裹確保返回單一根元素
+5. 移除未使用的 `myBr` 變數
+
+這樣的寫法不僅更簡潔且易於擴充，同時也符合 React 的基本原則：
+- 每個元件必須返回單一根元素
+- 列表項目需要唯一的 key
+- 資料與渲染邏輯分離
 
 #### 作為 children 傳遞
-任何被元件包覆起來的元件或內容都被視為 children props，我們可以用來接受並使用，形成由上層提供至下層進行管理渲染的做法。例如我們在上層決定 children 是什麼，下層去取得自己的 children 做指定渲染。您可以將帶有 prop 的元件 children 視為具有洞口，其父元件可以使用任意 JSX 來填充。經常會使用 children 道具來進行視覺包裝：面板、格子等等。
+
+在 React 中，`children` 是一個特殊的 prop，它代表元件標籤之間的內容。這個機制讓我們能夠建立更靈活的可重用元件。
+
+{% note info %}
+**children prop 的三個重要特性：**
+
+1. **自動傳遞**
+   - React 自動收集標籤內的內容
+   - 不需要明確宣告或傳遞
+   - 可以包含任何有效的 JSX
+
+2. **彈性使用**
+   - 可以傳遞文字、數字
+   - 可以傳遞其他 React 元件
+   - 可以傳遞複雜的 JSX 結構
+
+3. **容器模式**
+   - 適合建立包裝元件
+   - 方便實現共用的 UI 結構
+   - 提高程式碼重用性
+{% endnote %}
+
+**為什麼需要 children？**
+
+想像一下，如果沒有 children，我們要建立一個通用的卡片元件：
+
+```jsx
+// ❌ 不好的做法：需要定義很多 props
+function Card({ title, content, footer }) {
+  return (
+    <div className="card">
+      <div className="card-header">{title}</div>
+      <div className="card-body">{content}</div>
+      <div className="card-footer">{footer}</div>
+    </div>
+  );
+}
+
+// 使用時很不靈活
+<Card 
+  title="標題"
+  content={<p>內容</p>}
+  footer={<button>確定</button>}
+/>
+```
+
+使用 children 後：
+
+```jsx
+// ✅ 好的做法：使用 children 更靈活
+function Card({ children }) {
+  return (
+    <div className="card">
+      {children}
+    </div>
+  );
+}
+
+// 使用時更直覺且靈活
+<Card>
+  <h2>我的標題</h2>
+  <p>任何內容都可以</p>
+  <img src="圖片。jpg" />
+  <button>甚至可以放按鈕</button>
+</Card>
+```
+
+這就是為什麼我們需要 children：
+- 更靈活的內容傳遞
+- 更直覺的元件使用方式
+- 更好的程式碼可維護性
+
+#### 實作範例：使用 children 改寫標題元件
+
+讓我們透過實際的例子來了解如何使用 children prop：
 
 ```jsx src\component\MyH1\MyH1.jsx
+/*
+  **React 元件的不同宣告方式**
+
+  1. 使用函式宣告（Function Declaration）
+  function MyH1({ children }) {
+    return <h1>{children}</h1>;
+  }
+  
+  2. 使用箭頭函式（Arrow Function）
+  const MyH1 = ({ children }) => <h1>{children}</h1>;
+  
+  3. 使用函式表達式（Function Expression）
+  const MyH1 = function({ children }) {
+    return <h1>{children}</h1>;
+  };
+*/
+
+// 這三種寫法都是合法的，我們使用第二種
 const MyH1 = ({ children }) => <h1>{children}</h1>;
 
 export default MyH1;
 ```
+
+然後在 App 元件中使用它：
+
 ```jsx src\App.jsx
 import { useState } from 'react';
 import './App.css';
@@ -2074,16 +2698,13 @@ export default function App() {
 }
 ```
 
-### 互動性
+## 互動性
 畫面上的某些內容會根據使用者輸入事件進行更新。例如 click 或 change value，在 React 中，隨時間操作變化的資料稱為 state 狀態。您可以為任何 component 元件新增 state 狀態，並根據需要更新它。在本章中，您將學習如何編寫處理互動、更新其狀態並隨時間顯示不同輸出的元件。
 
 ### 事件處理（Events）
-
-#### React 事件系統
-
 React 實作了一個跨瀏覽器的合成事件系統（SyntheticEvent），統一了各瀏覽器的事件處理差異，讓開發者不需要擔心瀏覽器相容性問題。
 
-#### React 事件 vs HTML 事件
+**React 事件 vs HTML 事件**
 
 | 特性     | HTML 事件            | React 事件                 |
 | -------- | -------------------- | -------------------------- |
@@ -2100,11 +2721,14 @@ React 實作了一個跨瀏覽器的合成事件系統（SyntheticEvent），統
 <button onClick={() => alert('Clicked!')}>Click</button>
 ```
 
-#### 事件處理的三種方式
+在 React 中，我們有三種主要的事件處理方式：
 
-##### 1. 內聯匿名函式（適合簡單邏輯）
+1. **內聯匿名函式**：適合簡單的邏輯處理
+2. **元件內部函式**：推薦的做法，讓程式碼更清晰且易於維護
+3. **傳遞給子元件**：在父元件中管理狀態，讓子元件保持純粹
 
 ```jsx
+// 1. 內聯匿名函式（適合簡單邏輯）
 function App() {
   return (
     <button onClick={() => alert('Clicked!')}>
@@ -2112,17 +2736,27 @@ function App() {
     </button>
   );
 }
-```
 
-##### 2. 元件內部函式（推薦）
-
-```jsx
+// 2. 元件內部函式（推薦）
 function App() {
   const handleClick = () => {
     alert('Clicked!');
   };
 
   return <button onClick={handleClick}>Click Me</button>;
+}
+
+// 3. 傳遞事件處理函式給子元件
+function MyButton({ onClick, children }) {
+  return <button onClick={onClick}>{children}</button>;
+}
+
+function App() {
+  const handleClick = () => {
+    console.log('Button clicked!');
+  };
+
+  return <MyButton onClick={handleClick}>Click Me</MyButton>;
 }
 ```
 
@@ -2141,101 +2775,148 @@ function App() {
 ```
 {% endnote %}
 
-##### 3. 傳遞事件處理函式給子元件
-
-```jsx
-// 子元件
-function MyButton({ onClick, children }) {
-  return <button onClick={onClick}>{children}</button>;
-}
-
-// 父元件
-function App() {
-  const handleClick = () => {
-    console.log('Button clicked!');
-  };
-
-  return <MyButton onClick={handleClick}>Click Me</MyButton>;
-}
-```
-
 #### 常用的 React 事件
 
 React 支援所有標準的 DOM 事件，這裡列出最常用的：
 
-##### 滑鼠事件
-- `onClick` - 點擊
-- `onDoubleClick` - 雙擊
-- `onMouseEnter` - 滑鼠移入
-- `onMouseLeave` - 滑鼠移出
-- `onMouseMove` - 滑鼠移動
-- `onMouseDown` / `onMouseUp` - 滑鼠按下/放開
+| 事件類型     | 事件名稱        | 說明               | 範例                                                |
+| ------------ | --------------- | ------------------ | --------------------------------------------------- |
+| **滑鼠事件** | `onClick`       | 點擊               | `<button onClick={handleClick}>點擊</button>`       |
+|              | `onDoubleClick` | 雙擊               | `<div onDoubleClick={handleDoubleClick}>雙擊</div>` |
+|              | `onMouseEnter`  | 滑鼠移入           | `<div onMouseEnter={handleEnter}>移入</div>`        |
+|              | `onMouseLeave`  | 滑鼠移出           | `<div onMouseLeave={handleLeave}>移出</div>`        |
+|              | `onMouseMove`   | 滑鼠移動           | `<div onMouseMove={handleMove}>移動</div>`          |
+|              | `onMouseDown`   | 滑鼠按下           | `<button onMouseDown={handleDown}>按下</button>`    |
+|              | `onMouseUp`     | 滑鼠放開           | `<button onMouseUp={handleUp}>放開</button>`        |
+| **鍵盤事件** | `onKeyDown`     | 按鍵按下           | `<input onKeyDown={handleKeyDown} />`               |
+|              | `onKeyUp`       | 按鍵放開           | `<input onKeyUp={handleKeyUp} />`                   |
+|              | `onKeyPress`    | 按鍵按下（已廢棄） | 建議使用 `onKeyDown`                                |
+| **表單事件** | `onChange`      | 輸入值改變         | `<input onChange={handleChange} />`                 |
+|              | `onSubmit`      | 表單提交           | `<form onSubmit={handleSubmit}>`                    |
+|              | `onFocus`       | 獲得焦點           | `<input onFocus={handleFocus} />`                   |
+|              | `onBlur`        | 失去焦點           | `<input onBlur={handleBlur} />`                     |
+| **其他事件** | `onScroll`      | 滾動               | `<div onScroll={handleScroll}>滾動</div>`           |
+|              | `onDrag`        | 拖曳               | `<div onDrag={handleDrag}>拖曳</div>`               |
+|              | `onDrop`        | 放置               | `<div onDrop={handleDrop}>放置</div>`               |
+|              | `onLoad`        | 載入完成           | `<img onLoad={handleLoad} />`                       |
+|              | `onError`       | 載入錯誤           | `<img onError={handleError} />`                     |
 
-##### 鍵盤事件
-- `onKeyDown` - 按鍵按下
-- `onKeyUp` - 按鍵放開
-- `onKeyPress` - 按鍵按下（已廢棄，用 onKeyDown）
-
-##### 表單事件
-- `onChange` - 輸入值改變
-- `onSubmit` - 表單提交
-- `onFocus` - 獲得焦點
-- `onBlur` - 失去焦點
-
-##### 其他常用事件
-- `onScroll` - 滾動
-- `onDrag` / `onDrop` - 拖曳
-- `onLoad` / `onError` - 載入/錯誤（圖片、媒體）
-
-#### 事件物件（Event Object）
-
-React 事件處理函式會自動接收一個 `SyntheticEvent` 物件：
+**實際範例：綜合事件處理**
 
 ```jsx
-function App() {
-  const handleClick = (event) => {
-    console.log('事件類型：', event.type);           // "click"
-    console.log('目標元素：', event.target);         // <button>
-    console.log('當前元素：', event.currentTarget); // <button>
-    console.log('滑鼠座標：', event.clientX, event.clientY);
+function EventDemo() {
+  const [message, setMessage] = useState('請與我互動');
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  // 滑鼠事件
+  const handleClick = () => setMessage('你點擊了按鈕！');
+  const handleMouseEnter = () => setMessage('滑鼠移入了！');
+  const handleMouseLeave = () => setMessage('滑鼠移出了！');
+  const handleMouseMove = (e) => {
+    setPosition({ x: e.clientX, y: e.clientY });
+    setMessage(`滑鼠位置：${e.clientX}, ${e.clientY}`);
   };
 
-  const handleInput = (event) => {
-    console.log('輸入值：', event.target.value);
+  // 鍵盤事件
+  const handleKeyDown = (e) => {
+    setMessage(`按下了鍵：${e.key}`);
+  };
+
+  // 表單事件
+  const handleChange = (e) => {
+    setMessage(`輸入內容：${e.target.value}`);
   };
 
   return (
-    <>
-      <button onClick={handleClick}>Click Me</button>
-      <input onChange={handleInput} />
-    </>
+    <div>
+      <h3>{message}</h3>
+      <p>滑鼠座標：{position.x}, {position.y}</p>
+      
+      <button onClick={handleClick}>點擊我</button>
+      
+      <div 
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+        style={{ padding: '20px', border: '1px solid #ccc', margin: '10px 0' }}
+      >
+        滑鼠互動區域
+      </div>
+      
+      <input 
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder="輸入文字或按鍵"
+      />
+    </div>
   );
 }
 ```
 
-#### preventDefault 與 stopPropagation
+#### 事件物件（Event Object）
+React 事件處理函式會自動接收一個 `SyntheticEvent` 物件，它封裝了原生 DOM 事件，提供跨瀏覽器的一致性：
 
-##### preventDefault - 阻止預設行為
+| 屬性                              | 說明                 | 範例                               |
+| --------------------------------- | -------------------- | ---------------------------------- |
+| `event.type`                      | 事件類型             | `"click"`, `"change"`, `"keydown"` |
+| `event.target`                    | 觸發事件的元素       | `<button>`, `<input>`              |
+| `event.currentTarget`             | 綁定事件的元素       | 通常與 `target` 相同               |
+| `event.clientX` / `event.clientY` | 滑鼠相對於視窗的座標 | `150`, `200`                       |
+| `event.pageX` / `event.pageY`     | 滑鼠相對於頁面的座標 | `150`, `200`                       |
+| `event.screenX` / `event.screenY` | 滑鼠相對於螢幕的座標 | `150`, `200`                       |
+| `event.preventDefault()`          | 阻止預設行為         | 阻止表單提交、連結跳轉             |
+| `event.stopPropagation()`         | 阻止事件冒泡         | 防止事件向上傳播                   |
+
+**實際範例：事件物件使用**
 
 ```jsx
-function LoginForm() {
-  const handleSubmit = (e) => {
-    e.preventDefault(); // 阻止表單提交時重新載入頁面
-    
-    const formData = new FormData(e.target);
-    const username = formData.get('username');
-    const password = formData.get('password');
-    
-    console.log('提交資料：', { username, password });
-    // 在這裡處理登入邏輯（如 API 請求）
+function EventObjectDemo() {
+  const [log, setLog] = useState([]);
+
+  const addLog = (message) => {
+    setLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
+  const handleClick = (event) => {
+    addLog(`點擊事件 - 類型：${event.type}`);
+    addLog(`目標元素：${event.target.tagName}`);
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault(); // 阻止表單預設提交
+    addLog('表單提交被阻止');
+  };
+
+  const handleInputChange = (event) => {
+    addLog(`輸入值：${event.target.value}`);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      addLog('按下了 Enter 鍵');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input name="username" type="text" placeholder="使用者名稱" />
-      <input name="password" type="password" placeholder="密碼" />
-      <button type="submit">登入</button>
-    </form>
+    <div>
+      <h3>事件日誌</h3>
+      <div>
+        {log.map((item, index) => (
+          <div key={index}>{item}</div>
+        ))}
+      </div>
+      
+      <button onClick={handleClick}>點擊我</button>
+      
+      <form onSubmit={handleFormSubmit}>
+        <input 
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="輸入文字"
+        />
+        <button type="submit">提交表單</button>
+      </form>
+    </div>
   );
 }
 ```
@@ -2254,24 +2935,114 @@ function LoginForm() {
 ```
 {% endnote %}
 
-##### stopPropagation - 阻止事件冒泡
+#### 實作範例：事件物件與處理
 
-```jsx
-function App() {
-  const handleParentClick = () => {
-    console.log('父元素被點擊');
+讓我們透過實際的專案範例來學習事件處理的應用。我們將建立一個按鈕元件和表單元件，展示不同的事件處理方式。
+
+**步驟 1：建立按鈕元件**
+
+```jsx src\component\MyButton\MyButton.jsx
+const handleClick = () => console.log('is click event!!');
+const MyButton = ({ children }) => <button onClick={handleClick}>{children}</button>;
+
+export default MyButton;
+```
+
+這個按鈕元件展示了基本的事件處理：
+- 使用 `onClick` 屬性綁定點擊事件
+- 事件處理函式 `handleClick` 在元件內部定義
+- 透過 `children` prop 接收按鈕文字
+
+**步驟 2：在 App 中使用按鈕元件**
+
+```jsx src\App.jsx
+import { useState } from 'react';
+import './App.css';
+import MyLogo from './component/MyLogo/MyLogo';
+import MyH1 from './component/MyH1/MyH1';
+import MyButton from './component/MyButton/MyButton';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  const h1Title = 'Vite + React';
+
+  return (
+    <>
+      <MyLogo />
+      <MyH1>{h1Title}</MyH1>
+      <div className="card" style={{ color: 'red', background: 'black' }}>
+        <MyButton>Click Me!</MyButton>{/*追加此行*/}
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>{/*原本的事件按鈕*/}
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+    </>
+  );
+}
+```
+
+這裡展示了兩種不同的按鈕：
+- **自定義元件**：`<MyButton>` 使用元件內部的事件處理
+- **內聯事件**：`onClick={() => setCount(...)}` 直接在 JSX 中定義
+
+**步驟 3：建立表單元件（preventDefault 應用）**
+
+```jsx src\component\MyForm\MyForm.jsx
+import MyButton from '../MyButton/MyButton';
+
+const MyForm = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault(); // 阻止表單預設提交行為
+    console.log('submit');
   };
 
-  const handleChildClick = (e) => {
-    e.stopPropagation(); // 阻止事件冒泡到父元素
-    console.log('子元素被點擊');
+  const handelChangeText = (e) => {
+    console.log(e.target.value);
   };
 
   return (
-    <div onClick={handleParentClick} style={{ padding: '20px', background: 'lightgray' }}>
-      父元素
-      <button onClick={handleChildClick}>子元素按鈕</button>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input type="text" placeholder="請輸入內容" onChange={handelChangeText} />
+      <MyButton>提交</MyButton>
+      <hr />
+    </form>
+  );
+};
+
+export default MyForm;
+```
+
+這個表單元件展示了：
+- **`preventDefault()`**：阻止表單的預設提交行為（頁面重新載入）
+- **`onChange` 事件**：監聽輸入框內容變化
+- **事件物件使用**：透過 `e.target.value` 取得輸入值
+
+**步驟 4：整合表單到 App**
+
+```jsx src\App.jsx
+//...
+import MyForm from './component/MyForm/MyForm';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  const h1Title = 'Vite + React';
+
+  return (
+    <>
+      <MyLogo />
+      <MyH1>{h1Title}</MyH1>
+      <div className="card" style={{ color: 'red', background: 'black' }}>
+        <MyForm /> {/*追加此行*/}
+        <MyButton>Click Me!</MyButton>
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+    </>
   );
 }
 ```
@@ -2279,6 +3050,12 @@ function App() {
 #### 事件處理最佳實踐：狀態提升
 
 通常建議將事件處理邏輯放在父元件（狀態所在處），子元件只負責觸發事件：
+
+**這種模式的優勢：**
+- ✅ 關注點分離：UI 和邏輯分開
+- ✅ 可重用性：子元件可以在不同場景使用
+- ✅ 易於測試：邏輯集中在父元件
+- ✅ 狀態管理清晰：所有狀態在一個地方
 
 ```jsx
 // 子元件：純展示 + 觸發事件
@@ -2332,29 +3109,64 @@ function App() {
 }
 ```
 
-**這種模式的優勢：**
-- ✅ 關注點分離：UI 和邏輯分開
-- ✅ 可重用性：子元件可以在不同場景使用
-- ✅ 易於測試：邏輯集中在父元件
-- ✅ 狀態管理清晰：所有狀態在一個地方
+#### 實作範例：狀態提升
 
-#### State 狀態管理
-我們是使用 React 來協助我們對瀏覽器畫面進行控制，因此不能使用 JS 觀念認為我們可以用一般變數去控制 DOM 畫面重新變化。React 就像汽車雨刷器，當偵測到畫面需要更動時，才會進行畫面重新渲染，我們需要讓 React 知道什麼時候發生了狀態改變。React 提供了一些內建 Hook 來協助溝通。此時要學到的是 useState。
+讓我們透過實際範例來學習狀態提升的概念。我們將修改 `MyForm` 元件，將事件處理邏輯提升到父元件 `App` 中。
 
-在 Vite 初始模板上有看到`const [count, setCount] = useState(0);`的使用，可以看出一些用法：
+**步驟 1：修改 MyForm 元件（移除內部事件處理）**
 
-- useState() 的參數作為初始時，我們可以定義一開始數字為 0
-- useState 會返回一個陣列，透過解構第一個會是讀取 state 當下的值定義為 count 變數，第二個會是可以修改值的方法，定義為`setCount()`函式。
-- 我們可以顯示當下的 count 為多少，如`count is {count}`為例，而綁定一個 click 事件，試圖對當下 count+1 的結果放入到`setCount()`內。
-- 當 React 感覺到 setCount 有更動，他會去自行觸發畫面需要重新渲染所需要的新畫面。
+這個修改展示了：
+- **移除內部事件處理**：註解掉原本的 `handleSubmit` 和 `handelChangeText`
+- **接收 props 函式**：透過 `onLokiSubmit` 和 `onLokiChange` 接收父元件傳入的事件處理函式
+- **純粹的 UI 元件**：元件只負責渲染，不包含業務邏輯
+
+```jsx src\component\MyForm\MyForm.jsx
+import MyButton from '../MyButton/MyButton';
+
+const MyForm = ({ onLokiSubmit, onLokiChange }) => {
+  // 原本的事件處理函式被註解掉，改由父元件提供
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log('submit');
+  // };
+
+  // const handelChangeText = (e) => {
+  //   console.log(e.target.value);
+  // };
+
+  return (
+    <form onSubmit={onLokiSubmit}>
+      <input type="text" placeholder="請輸入內容" onChange={onLokiChange} />
+      <MyButton>提交</MyButton>
+      <hr />
+    </form>
+  );
+};
+
+export default MyForm;
+```
+
+**步驟 2：在 App 中實現事件處理邏輯**
+
+這個實作展示了：
+- **事件處理提升**：將 `MyForm` 的事件處理邏輯移到 `App` 元件
+- **自由命名 props**：父元件可以自由命名函式（如 `onPasswordSubmit`），然後傳給子元件
+- **props 傳遞**：透過 `onLokiSubmit={onPasswordSubmit}` 將父元件的函式傳給子元件
 
 ```jsx src\App.jsx
-import { useState } from 'react';
 //...
-
 export default function App() {
   const [count, setCount] = useState(0);
-  //...
+  const h1Title = 'Vite + React';
+
+  /*提升 MyForm 事件處理至父層，父層自由命名 props，提供給子層*/
+  const onPasswordSubmit = (e) => {
+    e.preventDefault();
+    console.log('submit');
+  };
+  const onPasswordChange = (e) => {
+    console.log(e.target.value);
+  };
 
   return (
     <>
@@ -2363,7 +3175,7 @@ export default function App() {
       <div className="card" style={{ color: 'red', background: 'black' }}>
         <MyForm onLokiSubmit={onPasswordSubmit} onLokiChange={onPasswordChange} />
         <MyButton>Click Me!</MyButton>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button> {/*重點處*/}
+        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
@@ -2374,7 +3186,263 @@ export default function App() {
 }
 ```
 
-我們嘗試新規劃一個狀態管理作為我們的幻燈片操作。
+**狀態提升的優勢：**
+
+1. **關注點分離**：UI 元件專注於渲染，邏輯元件專注於業務邏輯
+2. **可重用性**：`MyForm` 可以在不同場景使用，只需傳入不同的事件處理函式
+3. **易於測試**：邏輯集中在父元件，更容易進行單元測試
+4. **狀態管理清晰**：所有狀態和邏輯都在父元件中，便於管理
+
+{% note info %}
+**狀態提升的核心概念**
+
+- **子元件**：只負責 UI 渲染，透過 props 接收事件處理函式
+- **父元件**：負責狀態管理和業務邏輯，將函式透過 props 傳遞給子元件
+- **命名自由**：父元件可以自由命名函式，子元件透過 props 名稱接收
+{% endnote %}
+
+### State 狀態管理
+在傳統的 JavaScript 中，我們可以直接操作 DOM 來更新畫面：
+
+```js
+// 傳統 JavaScript 方式
+let count = 0;
+const button = document.getElementById('myButton');
+const display = document.getElementById('display');
+
+button.addEventListener('click', () => {
+  count++;
+  display.textContent = `count is ${count}`;
+});
+```
+
+但在 React 中，我們不能直接操作 DOM，因為 React 使用**虛擬 DOM（Virtual DOM）**來管理畫面更新。
+
+#### 虛擬 DOM 的概念
+
+React 的虛擬 DOM 是一個 JavaScript 物件，它代表真實 DOM 的結構：
+
+```jsx
+// 虛擬 DOM 物件（簡化版）
+const virtualDOM = {
+  type: 'div',
+  props: {
+    children: [
+      {
+        type: 'button',
+        props: {
+          onClick: handleClick,
+          children: 'Click me'
+        }
+      },
+      {
+        type: 'span',
+        props: {
+          children: `count is ${count}`
+        }
+      }
+    ]
+  }
+};
+```
+
+**虛擬 DOM 的工作流程：**
+1. **狀態改變**：當 `useState` 的 setter 被調用時
+2. **重新渲染**：React 重新執行元件函式，產生新的虛擬 DOM
+3. **差異比較**：React 比較新舊虛擬 DOM 的差異（Diffing）
+4. **更新真實 DOM**：只更新有變化的部分
+
+{% mermaid graph LR %}
+A["狀態改變<br/>（setState/setter）"]
+B["元件重新執行<br/>產生新虛擬 DOM"]
+C["差異比較（Diffing）<br/>新舊虛擬 DOM"]
+D["只更新有變化部分<br/>同步至真實 DOM"]
+
+A --> B --> C --> D
+{% endmermaid %}
+
+**為什麼需要虛擬 DOM？**
+
+傳統的 DOM 操作存在以下問題：
+
+1. **效能瓶頸**：直接操作 DOM 會觸發瀏覽器的重排（reflow）和重繪（repaint），這些都是昂貴的操作
+2. **頻繁更新**：每次狀態改變都要重新計算整個 DOM 樹
+3. **難以追蹤**：手動管理 DOM 更新容易出錯，難以維護
+
+**虛擬 DOM 的優勢：**
+
+- **批量更新**：將多個 DOM 操作合併為一次更新
+- **差異比較**：只更新真正改變的部分，避免不必要的 DOM 操作
+- **預測性**：透過 JavaScript 物件操作，比直接操作 DOM 更快
+- **跨瀏覽器一致性**：統一不同瀏覽器的 DOM 操作差異
+
+**效能對比範例：**
+
+```js
+// ❌ 傳統 DOM 操作（效能差）
+function updateCounter(count) {
+  // 每次都要重新查詢和更新 DOM
+  document.getElementById('counter').textContent = count;
+  document.getElementById('status').textContent = count > 10 ? 'High' : 'Low';
+  document.getElementById('progress').style.width = count + '%';
+}
+
+// ✅ React 虛擬 DOM（效能好）
+function Counter({ count }) {
+  return (
+    <div>
+      <span>{count}</span>
+      <span>{count > 10 ? 'High' : 'Low'}</span>
+      <div style={{ width: count + '%' }} />
+    </div>
+  );
+}
+```
+
+React 的虛擬 DOM 設計讓開發者可以專注於狀態管理，而不用擔心 DOM 操作的效能問題。
+
+#### useState Hook 基本概念
+
+`useState` 是 React 提供的一個 Hook，用於在函式元件中管理狀態：
+
+```jsx
+const [state, setState] = useState(initialValue);
+```
+
+**useState 的特點：**
+- **參數**：`initialValue` 是狀態的初始值
+- **返回值**：返回一個陣列，包含兩個元素
+  - `state`：當前的狀態值
+  - `setState`：更新狀態的函式
+- **重新渲染**：當 `setState` 被調用時，元件會重新渲染
+
+**基本使用範例：**
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0); // 初始值為 0
+  
+  return (
+    <div>
+      <p>count is {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+#### 狀態更新的兩種方式
+
+React 提供了兩種更新狀態的方式，理解它們的差異對於避免常見的狀態更新錯誤非常重要。
+
+**方式 1：直接傳遞新值**
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(count + 1); // 使用當前 count 值
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>+1</button>
+    </div>
+  );
+}
+```
+
+**方式 2：使用函式更新（推薦）**
+
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(prevCount => prevCount + 1); // 使用前一個值
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>+1</button>
+    </div>
+  );
+}
+```
+
+**為什麼推薦使用函式更新？**
+
+讓我們透過實際範例來理解兩種方式的差異：
+
+**問題場景：快速點擊按鈕**
+
+```jsx
+function ProblematicCounter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    // ❌ 問題：快速點擊時可能使用舊的 count 值
+    setCount(count + 1);
+    setCount(count + 1); // 第二次更新可能基於舊值
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>+2 （可能有問題）</button>
+    </div>
+  );
+}
+```
+
+**解決方案：使用函式更新**
+
+```jsx
+function FixedCounter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    // ✅ 正確：每次更新都基於最新的狀態值
+    setCount(prevCount => prevCount + 1);
+    setCount(prevCount => prevCount + 1); // 確保使用最新值
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>+2 （正確）</button>
+    </div>
+  );
+}
+```
+**關鍵差異總結：**
+
+| 特性         | 直接傳遞新值     | 函式更新           |
+| ------------ | ---------------- | ------------------ |
+| **基於值**   | 當前渲染的狀態值 | 最新的狀態值       |
+| **異步安全** | ❌ 可能使用舊值   | ✅ 總是使用最新值   |
+| **批量更新** | ❌ 可能計算錯誤   | ✅ 正確處理         |
+| **適用場景** | 簡單的單次更新   | 複雜邏輯、多次更新 |
+
+**最佳實踐建議：**
+
+1. **簡單更新**：如果只是簡單的單次更新，兩種方式都可以
+2. **複雜邏輯**：涉及條件判斷或多次更新時，必須使用函式更新
+3. **依賴前值**：當新值依賴於前一個值時，使用函式更新
+4. **批量操作**：多個狀態更新時，使用函式更新確保正確性
+
+#### 實作範例：圖片幻燈片
+
+讓我們透過建立一個圖片幻燈片元件來學習 useState 的實際應用。這個範例將展示多個狀態管理、條件渲染，以及狀態提升的概念。
+
+**步驟 1：準備圖片資料**
 
 ```js src\component\MyGallery\data.js
 const data = [
@@ -2398,12 +3466,15 @@ const data = [
 
 export default data;
 ```
+
+**步驟 2：建立基礎幻燈片元件**
+
 ```jsx src\component\MyGallery\MyGallery.jsx
 import { useState } from 'react';
 import data from './data.js';
 
 const MyGallery = () => {
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(0); // 當前圖片索引
 
   /*
    * 這種寫法乍看之下沒啥問題，由於 idx 是我們讀取出來的暫存值，而狀態更新是異步的。
@@ -2443,32 +3514,13 @@ const MyGallery = () => {
 
 export default MyGallery;
 ```
-```jsx src\App.jsx
-//...
-import MyGallery from './component/MyGallery/MyGallery';
 
-export default function App() {
-  //...
+這個基礎版本展示了：
+- **單一狀態管理**：使用 `idx` 來追蹤當前圖片
+- **狀態更新**：`handlePrev` 使用直接賦值，`handleNext` 使用函式更新
+- **陣列索引計算**：使用模運算實現循環切換
 
-  return (
-    <>
-      <MyLogo />
-      <MyH1>{h1Title}</MyH1>
-      <MyGallery/> {/*重點處*/}
-      <div className="card" style={{ color: 'red', background: 'black' }}>
-        <MyForm onLokiSubmit={onPasswordSubmit} onLokiChange={onPasswordChange} />
-        <MyButton>Click Me!</MyButton>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
-  );
-}
-```
-
+**步驟 3：添加多個狀態管理**
 一個元件可以多個 state 管理，我們多控制一個 boolean 是否要顯示 title。
 
 ```jsx src\component\MyGallery\MyGallery.jsx
@@ -2515,9 +3567,12 @@ const MyGallery = () => {
 export default MyGallery;
 ```
 
-> 你可以利用 JSX 的`{}`來插入一個複合邏輯並根據特性`true && element`將回傳 element，而`false && element`則回傳 false 之技巧，做一個簡易具備行內判斷的 JSX。注意：如果 JSX 出現`{false}`之表達結果代表忽略。
+這個版本展示了：
+- **多個狀態**：`idx` 和 `toShow` 兩個獨立的狀態
+- **條件渲染**：使用 `{toShow && <label>}` 來控制標題顯示
+- **函式更新**：`setToShow((bool) => !bool)` 切換布林值
 
-如果 App 元件重複使用 MyGallery 元件時，它們的 state 是彼此獨立不共享。如果希望這兩個元件共用同樣的 state，其作法是由上層負責 state，透過 prop 傳遞給下層使用。
+**步驟 4：狀態提升到父元件**
 
 ```jsx src\component\MyGallery\MyGallery.jsx
 import { useState } from 'react';
@@ -2561,6 +3616,7 @@ const MyGallery = ({ toShow, setToShow }) => {
 
 export default MyGallery;
 ```
+
 ```jsx src\App.jsx
 import { useState } from 'react';
 //...
@@ -2591,6 +3647,21 @@ export default function App() {
 }
 
 ```
+
+這個最終版本展示了：
+- **狀態提升**：將 `toShow` 狀態提升到 `App` 元件
+- **共享狀態**：兩個 `MyGallery` 元件共享同一個 `toShow` 狀態
+- **props 傳遞**：透過 props 將狀態和更新函式傳遞給子元件
+- **解構語法**：`{...{ toShow, setToShow }}` 簡化 props 傳遞
+
+{% note info %}
+**條件渲染技巧**
+
+使用 `{condition && <element>}` 來實現條件渲染：
+- `true && element` 回傳 `element`
+- `false && element` 回傳 `false`（React 會忽略）
+- 比 `condition ? <element> : null` 更簡潔
+{% endnote %}
 
 # 參考文獻
 - [Quick Start – React](https://react.dev/learn)
