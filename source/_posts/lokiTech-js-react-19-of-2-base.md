@@ -920,7 +920,7 @@ export default function App() {
   
   // 字串變數
   const h1Title = 'Vite + React';
-  
+
   // JSX 元素變數（帶 data 屬性）
   const h1Element = <h1 data-id="123">{h1Title}</h1>;
 
@@ -3353,7 +3353,7 @@ function Counter() {
     <div>
       <p>Count: {count}</p>
       <button onClick={handleClick}>+1</button>
-    </div>
+      </div>
   );
 }
 ```

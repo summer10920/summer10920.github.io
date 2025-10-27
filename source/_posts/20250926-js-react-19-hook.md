@@ -8838,7 +8838,7 @@ function SocialPost({ post }) {
     count: post.likes,
     isLiked: post.isLiked
   });
-
+  
   // 管理樂觀更新後的畫面狀態
   const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
     likes,
@@ -8847,7 +8847,7 @@ function SocialPost({ post }) {
       isLiked: !currentState.isLiked
     })
   );
-
+  
   const handleLike = async () => {
     updateOptimisticLikes();
     try {
@@ -8860,7 +8860,7 @@ function SocialPost({ post }) {
       alert('點讚失敗，請重試');
     }
   };
-
+  
   return (
     <div>
       <h4>{post.title}</h4>
@@ -8894,7 +8894,7 @@ function SocialFeed() {
       isLiked: true
     }
   ];
-
+  
   return (
     <div>
       <h3>社群動態</h3>
@@ -8924,19 +8924,19 @@ function SocialPost({ post }) {
     isLiked: post.isLiked
   });
   
-  const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
-    likes,
+const [optimisticLikes, updateOptimisticLikes] = useOptimistic(
+  likes,
     (currentState) => ({
       count: currentState.count + (currentState.isLiked ? -1 : 1),
       isLiked: !currentState.isLiked
     })
-  );
-  
+);
+
   // ✅ 使用 useCallback 緩存函式，避免每次渲染都重新建立
   const handleLike = useCallback(async () => {
-    updateOptimisticLikes();
-    
-    try {
+  updateOptimisticLikes();
+  
+  try {
       const newLikedState = await toggleLikeAPI(post.id, likes.isLiked);
       
       setLikes(prev => ({
@@ -9135,7 +9135,7 @@ function FormField({ label, type = 'text', required = false, helpText }) {
   const id = useId();
   const [value, setValue] = useState('');
   const [showError, setShowError] = useState(false);
-
+  
   const handleBlur = () => {
     if (required && !value.trim()) {
       setShowError(true);
@@ -9143,14 +9143,14 @@ function FormField({ label, type = 'text', required = false, helpText }) {
       setShowError(false);
     }
   };
-
+  
   return (
     <div>
       {/* label 連結 input */}
       <label htmlFor={id}>
         {label} {required && <span>*</span>}
       </label>
-
+      
       <input
         id={id} // input 的 ID
         type={type}
@@ -9167,7 +9167,7 @@ function FormField({ label, type = 'text', required = false, helpText }) {
           {helpText}
         </div>
       )}
-
+      
       {/* 錯誤訊息 */}
       {showError && (
         <div role="alert">
@@ -9182,25 +9182,25 @@ function FormField({ label, type = 'text', required = false, helpText }) {
 function UserForm() {
   return (
     <form>
-      <FormField
-        label="姓名"
-        required
+      <FormField 
+        label="姓名" 
+        required 
         helpText="請輸入您的真實姓名"
       />
-
-      <FormField
-        label="電子郵件"
-        type="email"
-        required
+      
+      <FormField 
+        label="電子郵件" 
+        type="email" 
+        required 
         helpText="我們會使用此信箱與您聯繫"
       />
-
-      <FormField
+      
+      <FormField 
         label="電話"
-        type="tel"
+        type="tel" 
         helpText="格式：0912-345-678"
       />
-
+      
       <button type="submit">提交</button>
     </form>
   );
@@ -9445,7 +9445,7 @@ function LoginForm() {
         placeholder="電子郵件"
       />
       
-      <input
+        <input
         type="password"
         value={password.value}
         onChange={password.handleChange}
@@ -9631,7 +9631,7 @@ function StyledButton() {
   
   // ✅ 用 useInsertionEffect 插入樣式
   useInsertionEffect(() => {
-    const style = document.createElement('style');
+      const style = document.createElement('style');
     style.textContent = `
       .btn {
         background: ${color};
@@ -9641,7 +9641,7 @@ function StyledButton() {
         border-radius: 4px;
       }
     `;
-    document.head.appendChild(style);
+      document.head.appendChild(style);
     
     return () => document.head.removeChild(style);
   }, [color]);
