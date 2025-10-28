@@ -1,5 +1,5 @@
 ---
-title: '[框架課程] React v18 教學（四）- Context 與 Reducer'
+title: '[框架課程] React 19 教學（四）- Context 與 useReducer'
 categories:
   - 職訓教材
   - ReactJS
@@ -11,1624 +11,2605 @@ hidden: true
 
 ![](assets/images/banner/react.png)
 
-React 依賴 Status 去管理多層元件下的渲染時機，以及利用 props 由上層去傳遞下層做資料取得。隨著元件複雜化，有些事情變得很繁瑣，因此我們需要額外了解 Context 與 Reducer 的應用。
+React 透過 State 管理元件的資料和渲染時機，透過 Props 由父元件向子元件傳遞資料。但當元件樹變得複雜時，Props 傳遞會變得繁瑣（Prop Drilling）。本章將學習 Context API 和 useReducer, 它們能幫助我們更優雅地管理跨元件的狀態共享和複雜的狀態邏輯。
 
 <!-- more -->
 
+{% note info %}
+**本教學使用版本：**
+- React 19+
+- React Router 7.9.4+
+- Vite 6.0+
+- Node.js 20+ LTS
 
-# Context
-通常，你會透過 props 將訊息從父元件傳遞到子元件。但是，如果您必須透過中間的許多元件傳遞它們，或者如果您的應用程式中的許多元件都需要相同的訊息，那麼傳遞 props 可能會變得冗長且不方便。上下文允許父元件向其下方樹中的任何元件提供一些資訊 - 無論其深度如何 - 而無需透過 props 明確傳遞它。
+本章將延續前面章節的專案結構，逐步建立多個範例來深入理解 Context 和 useReducer 的使用場景。
 
-透過官方的圖片說明可以了解到，當父層級元件管理大家的 status 時，隨著子孫層元件要使用 status 的值，勢必會透過 props 來取得與操作。如之前章節範例幻燈片來說。兩個下層會透過 props 去連接父層的 status，但如果層級一多。每層都需要傳遞一個個往下傳。
+**CSS 語法說明：**
+本章的 CSS 範例均使用**原生巢狀 CSS 語法**（CSS Nesting），這是現代瀏覽器已支援的標準功能（Chrome 112+、Firefox 117+、Safari 16.5+）。巢狀語法讓樣式更易讀且結構更清晰，特別適合與 React 元件搭配使用。
+{% endnote %}
 
-![](/assets/images/2025-02-02-13-52-46.png)
+# Context API：解決 Props 傳遞問題
+在開始學習 Context 之前，讓我們先了解它要解決的問題。
 
-## 部屬與取得
-使用`createContext`創造一個上下文特定元件，你可以 create 初期指定預設值，或者透過 value 改變值。放置在任何一個主元件上並包覆起來。該主元件的任何子孫層元件都能隨時取得此 Context 的 value 值。不需要透過 props 來傳遞。
+**Prop Drilling（屬性鑽取）** 是指當你需要將資料從父元件傳遞到深層巢狀的子元件時，必須透過中間的每一層元件逐層傳遞 Props, 即使中間層元件並不需要使用這些資料。
 
-以本例來說：
+{% mermaid graph TD %}
+A["👤 UserProfile 元件<br/>（管理 user 資料）"]
+B["📄 Layout 元件<br/>（不使用 user)"]
+C["📋 Content 元件<br/>（不使用 user)"]
+D["💬 UserInfo 元件<br/>（需要 user)"]
 
-- 我們在 MyContext 主元件規劃一個 createContext 並命名為 ThemeContext。
-- 接著，將主元件內的子元件使用 Provider 包覆起來，在這裡指定 ThemeContext 給予新值 。此時 ThemeContext 值被更新。
-- 而 MyContextLv1 這層我們不需要使用到 Context 也沒有任何 props 需傳遞，直接規劃下一層 MyContextLv2。
-- MyContextLv2 希望讀取到主元件當時指定的 ThemeContext 值，能透過 hook 的 useContext 抽取出值，形成了不需要 props 就能從主元件拿到值。
+A -->|"props: user"| B
+B -->|"props: user"| C
+C -->|"props: user"| D
+{% endmermaid %}
 
-```jsx src\App.jsx
-import { Routes, Route } from 'react-router';
-import Layout from './template/layout';
-import Base from './pages/lesson01/base';
-import MyContext from './pages/lesson02/myContext';
+**問題點：**
+- 中間層元件（Layout、Content）不需要 `user` 資料，卻必須傳遞它
+- 如果 Props 結構改變，需要修改所有中間層元件
+- 程式碼冗長且難以維護
+
+## Context API 解決方案
+
+**Context API** 允許父元件向其子樹中的任何元件提供資料，無論層級多深，都不需要透過 Props 逐層傳遞。
+
+{% mermaid graph TD %}
+A["👤 UserProfile 元件<br/>(createContext + Provider)"]
+B["📄 Layout 元件<br/>（不感知 Context)"]
+C["📋 Content 元件<br/>（不感知 Context)"]
+D["💬 UserInfo 元件<br/>(useContext 讀取 user)"]
+
+A -.->|"Context 直接傳遞"| D
+A --> B
+B --> C
+C --> D
+{% endmermaid %}
+
+**優點：**
+- ✅ 中間層元件不需要處理 Props
+- ✅ 資料結構改變時，只需修改 Provider 和消費者
+- ✅ 程式碼更簡潔、可維護性更高
+
+### 規劃專案結構
+讓我們從一個簡單的主題切換範例開始，理解 Context 的基本用法。延續前面的課程，我們將在 `lesson03` 中建立 Context 相關的範例：
+
+```
+src/
+├── pages/
+│   ├── lesson01/          # 第一章：基礎元件
+│   ├── lesson02/          # 第二章：Router 教學
+│   └── lesson03/          # 🌟 第三章：Context 與 Reducer
+│       ├── index.jsx      # Lesson03 主頁面
+│       ├── index.css
+│       └── pages/
+│           ├── ThemeExample/      # 主題切換範例
+│           │   ├── index.jsx
+│           │   ├── ThemeContext.js
+│           │   └── index.css
+│           ├── MenuExample/       # 巢狀選單範例
+│           └── TodoExample/       # Todo List 範例
+└── App.jsx
+```
+
+### 更新路由配置
+
+首先，更新 `App.jsx` 添加 Lesson03 的路由：
+```jsx src/App.jsx
+import { Routes, Route, Navigate } from 'react-router';
+import Layout from './components/Layout';
+import Lesson01 from './pages/lesson01';
+import Lesson02 from './pages/lesson02';
+import Lesson03 from './pages/lesson03'; // 🌟 新增
 
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<Base />} />
-        <Route path="base" element={<Base />} />
-        <Route path="lesson02" element={<MyContext />}>
-          <Route path="my-context" element={<MyContext />} />
-        </Route>
+        <Route index element={<Navigate to="/lesson01" replace />} />
+        <Route path="lesson01" element={<Lesson01 />} />
+        <Route path="lesson02/*" element={<Lesson02 />} />
+        <Route path="lesson03/*" element={<Lesson03 />} /> {/* 🌟 新增 */}
       </Route>
     </Routes>
   );
 }
 ```
-```jsx src\template\layout.jsx
+
+### 更新 Layout 側邊選單
+
+在 `Layout.jsx` 中添加 Lesson03 的選單項目：
+```jsx src/components/Layout.jsx
+import { Outlet, NavLink } from 'react-router';
+import './Layout.css';
+
 export default function Layout() {
   return (
-    <>
+    <div className="layout">
+      <aside className="sidebar">
+        <h2>🎓 React 學習系統</h2>
       <nav>
-        <h2>選單</h2>
         <ul>
           <li>
-            <NavLink to="/base">基礎學習</NavLink>
+              <NavLink to="/lesson01">
+                📘 Lesson 01：基礎元件
+              </NavLink>
           </li>
           <li>
-            <NavLink to="/lesson02/my-context">Context Sample 1</NavLink>
+              <NavLink to="/lesson02">
+                📗 Lesson 02：Router 教學
+              </NavLink>
+          </li>
+          <li>
+              <NavLink to="/lesson03">
+                📙 Lesson 03：Context & Reducer
+              </NavLink>
           </li>
         </ul>
       </nav>
+      </aside>
 
-      <main>
-        <div className="container">
+      <main className="content">
           <Outlet />
-        </div>
-        <footer>本專案為 Loki Jiang 課程教材使用</footer>
       </main>
-    </>
+    </div>
   );
 }
 ```
-```jsx src\pages\lesson02\myContext.jsx
-import { createContext, useContext } from 'react';
 
-const themes = {
+### 建立 Lesson03 主頁面
+
+創建 Lesson03 的主頁面和內部路由：
+```jsx src/pages/lesson03/index.jsx
+import { Routes, Route, Navigate, Link, Outlet } from 'react-router';
+import './index.css';
+
+// 子頁面元件（稍後建立）
+import ThemeExample from './pages/ThemeExample';
+import MenuExample from './pages/MenuExample';
+import TodoExample from './pages/TodoExample';
+
+export default function Lesson03() {
+  return (
+    <div className="lesson03-container">
+      {/* 內部導航列 */}
+      <nav className="lesson03-nav">
+        <h2>📚 Context & Reducer 範例</h2>
+        <div className="nav-links">
+          <Link to="theme" className="nav-link">🎨 主題切換</Link>
+          <Link to="menu" className="nav-link">📑 巢狀選單</Link>
+          <Link to="todo" className="nav-link">✅ Todo List</Link>
+        </div>
+      </nav>
+
+      {/* 子頁面渲染區域 */}
+      <div className="lesson03-content">
+        <Routes>
+          <Route index element={<Navigate to="theme" replace />} />
+          <Route path="theme" element={<ThemeExample />} />
+          <Route path="menu" element={<MenuExample />} />
+          <Route path="todo" element={<TodoExample />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+```
+
+```css src/pages/lesson03/index.css
+.lesson03-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lesson03-nav {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+
+  h2 {
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+  }
+}
+
+.lesson03-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+}
+```
+
+## 範例：主題切換
+本篇範例將用「主題切換」來說明 Context 的基本使用方式與實作步驟。
+
+### 第一步：建立 Context
+
+創建一個 Context 來管理主題狀態：
+```js src/pages/lesson03/pages/ThemeExample/ThemeContext.js
+import { createContext } from 'react';
+
+// 定義主題資料
+export const themes = {
   light: {
+    name: 'light',
     foreground: '#000000',
     background: '#eeeeee',
+    buttonBg: '#ffffff',
+    buttonBorder: '#cccccc',
   },
   dark: {
+    name: 'dark',
     foreground: '#ffffff',
     background: '#222222',
+    buttonBg: '#333333',
+    buttonBorder: '#555555',
   },
 };
 
-const ThemeContext = createContext(themes.dark);
-
-const MyContext = () => (
-  <>
-    <ThemeContext.Provider value={themes.dark}>
-      <MyContextLv1 />
-    </ThemeContext.Provider>
-  </>
-);
-
-const MyContextLv1 = () => <MyContextLv2 />;
-
-const MyContextLv2 = () => {
-  const theme = useContext(ThemeContext);
-  return (
-    <button style={{ background: theme.background, color: theme.foreground }}>
-      I am styled by theme context!
-    </button>
-  );
-};
-
-export default MyContext;
+// 🌟 建立 Context（提供預設值）
+export const ThemeContext = createContext(themes.light);
 ```
 
-## 取得與重複修改
-接著看另一個案例，先設計一個巢狀選單，並多規劃一個路由。
-- 增加一路由，期望為 `http://localhost:5173/lesson02/my-list-menu`，並追加選單連結。
-- 規劃 MyListMenu 元件，透過巢狀資料陣列產生下層 MyItem 元件，並透過 props 把 data 資料傳遞下去。
-- 根據必要性追加 MyListMenu CSS。
-- MyItem 使用 data 取得，由於每一個元件取得 data 不相同，不適合 Context 方式獲取。
-- MyItem 根據有無下層資料，決定呼喚 MyItem 為下層。
-- MyItem 規劃 state 控制是否顯示下層選單。
+{% note info %}
+**createContext 的預設值：**
 
-```jsx src\App.jsx
-import { Routes, Route } from 'react-router';
-import Layout from './template/layout';
-import Base from './pages/lesson01/base';
-import MyContext from './pages/lesson02/myContext';
-import MyListMenu from './pages/lesson02/myListMenu';
-
-export default function App() {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Base />} />
-        <Route path="base" element={<Base />} />
-        <Route path="lesson02">
-          <Route index element={<MyContext />} />
-          <Route path="my-context" element={<MyContext />} />
-          <Route path="my-list-menu" element={<MyListMenu />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
-}
+```js
+const ThemeContext = createContext(themes.light);
 ```
-```jsx src\template\layout.jsx
-import { Link, Outlet, NavLink } from 'react-router';
-import './layout.css';
 
-export default function Layout() {
-  return (
-    <>
-      <nav>
-        <h2>選單</h2>
-        <ul>
-          <li>
-            <NavLink to="/base">基礎學習</NavLink>
-          </li>
-          <li>
-            <NavLink to="/lesson02/my-context">Context Sample 1</NavLink>
-          </li>
-          <li>
-            <NavLink to="/lesson02/my-list-menu">Context Sample Menu</NavLink>
-          </li>
-        </ul>
-      </nav>
+- 預設值只在元件**沒有被任何 Provider 包覆時**才會使用
+- 通常用於測試或獨立使用元件時
+- 在實際應用中，大多數情況下會被 Provider 的 `value` 覆蓋
+{% endnote %}
 
-      <main>
-        <div className="container">
-          <Outlet />
-        </div>
-        <footer>本專案為 Loki Jiang 課程教材使用</footer>
-      </main>
-    </>
-  );
-}
-```
-```jsx src\pages\lesson02\myListMenu.jsx
+### 第二步：使用 Provider 提供資料
+
+創建主頁面元件，使用 `<ThemeContext.Provider>` 提供主題資料：
+```jsx src/pages/lesson03/pages/ThemeExample/index.jsx
 import { useState } from 'react';
-import MyItem from './myItem';
-import './myListMenu.css';
+import { ThemeContext, themes } from './ThemeContext';
+import ThemedButton from './ThemedButton';
+import './index.css';
 
-const listData = [
+export default function ThemeExample() {
+  // 管理當前主題狀態
+  const [currentTheme, setCurrentTheme] = useState(themes.light);
+
+  // 切換主題的函式
+  const toggleTheme = () => {
+    setCurrentTheme((prev) => 
+      prev.name === 'light' ? themes.dark : themes.light
+    );
+  };
+
+  return (
+    <div className="theme-example">
+      <h1>🎨 Context API：主題切換範例</h1>
+      
+      <div className="example-intro">
+        <p>這個範例展示如何使用 Context API 在多層元件中共享主題資料，</p>
+        <p>中間層元件（Toolbar）不需要處理 Props。</p>
+      </div>
+
+      {/* 切換主題按鈕 */}
+      <div className="control-panel">
+        <button onClick={toggleTheme} className="toggle-btn">
+          切換到 {currentTheme.name === 'light' ? '深色' : '淺色'} 主題
+        </button>
+        <p className="current-theme">
+          當前主題：<strong>{currentTheme.name === 'light' ? '淺色' : '深色'}</strong>
+        </p>
+      </div>
+
+      {/* 🌟 使用 Provider 提供主題資料給子樹 */}
+      <ThemeContext.Provider value={currentTheme}>
+        <Toolbar />
+      </ThemeContext.Provider>
+
+      {/* 說明區域 */}
+      <div className="explanation">
+        <h3>💡 程式碼說明</h3>
+        <ol>
+          <li><code>ThemeContext.Provider</code> 包覆子元件樹</li>
+          <li><code>value</code> 屬性提供當前主題資料</li>
+          <li>子樹中的任何元件都可以透過 <code>useContext</code> 讀取主題</li>
+          <li>中間層元件（Toolbar）不需要處理 Props</li>
+        </ol>
+      </div>
+    </div>
+  );
+}
+
+// 中間層元件：不需要處理 theme 相關的 Props
+function Toolbar() {
+  return (
+    <div className="toolbar">
+      <h3>🛠️ Toolbar 元件（中間層）</h3>
+      <p className="note">這個元件不需要知道 theme 的存在</p>
+      <ThemedButton />
+        </div>
+  );
+}
+```
+
+### 第三步：使用 useContext 消費資料
+
+創建一個會使用主題資料的按鈕元件：
+```jsx src/pages/lesson03/pages/ThemeExample/ThemedButton.jsx
+import { useContext } from 'react';
+import { ThemeContext } from './ThemeContext';
+
+export default function ThemedButton() {
+  // 🌟 使用 useContext 讀取 Context 資料
+  const theme = useContext(ThemeContext);
+
+  return (
+    <div className="themed-button-container">
+      <h4>🎨 ThemedButton 元件（消費者）</h4>
+      <button
+        style={{
+          background: theme.buttonBg,
+          color: theme.foreground,
+          border: `2px solid ${theme.buttonBorder}`,
+          padding: '12px 24px',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '16px',
+          fontWeight: '500',
+          transition: 'all 0.3s',
+        }}
+      >
+        我是一個使用 {theme.name === 'light' ? '淺色' : '深色'} 主題的按鈕
+      </button>
+      <p className="code-hint">
+        <code>const theme = useContext(ThemeContext)</code>
+      </p>
+      </div>
+  );
+}
+```
+
+### 樣式文件
+
+```css src/pages/lesson03/pages/ThemeExample/index.css
+.theme-example {
+  padding: 1rem;
+}
+
+.example-intro {
+  background: #f0f7ff;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid #3b82f6;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+  color: #1e40af;
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+.control-panel {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.toggle-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.current-theme {
+  margin-top: 1rem;
+  font-size: 18px;
+  color: #495057;
+
+  strong {
+    color: #3b82f6;
+  }
+}
+
+.toolbar {
+  background: #ffffff;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+
+  h3 {
+    margin-top: 0;
+    color: #495057;
+  }
+}
+
+.note {
+  color: #6c757d;
+  font-style: italic;
+  margin: 0.5rem 0 1rem;
+}
+
+.themed-button-container {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 6px;
+  border: 1px dashed #adb5bd;
+
+  h4 {
+    margin-top: 0;
+    color: #495057;
+  }
+}
+
+.code-hint {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #e9ecef;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 14px;
+  color: #495057;
+}
+
+.explanation {
+  background: #fff8e1;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+  margin-top: 2rem;
+
+  h3 {
+    margin-top: 0;
+    color: #f57c00;
+  }
+
+  ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+    color: #e65100;
+  }
+
+  li {
+    margin: 0.5rem 0;
+    line-height: 1.6;
+  }
+
+  code {
+    background: #ffe082;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    color: #e65100;
+  }
+}
+```
+
+### 測試運行
+
+1. 訪問 `http://localhost:5173/lesson03/theme`
+2. 點擊「切換主題」按鈕
+3. 觀察按鈕樣式的變化
+4. 注意 Toolbar 元件不需要處理任何 Props
+
+{% note success %}
+**Context API 三步驟總結：**
+
+1. **建立 Context**：`createContext(defaultValue)`
+2. **提供資料**：使用 `<Context.Provider value={資料}>`
+3. **消費資料**：使用 `useContext(Context)` 讀取
+
+**資料流向：**
+{% mermaid graph TD %}
+  P["Provider<br/>（提供資料）"]
+  C["Consumer<br/>（useContext 讀取）"]
+  P -- "Context" --> C
+{% endmermaid %}
+{% endnote %}
+
+## 範例：巢狀選單與動態更新
+
+這個範例展示如何在遞迴元件中使用 Context, 以及如何動態更新 Context 值。
+
+### 規劃需求
+
+建立一個可展開/收合的巢狀選單，每一層的文字大小會遞減，展示：
+- 如何在遞迴元件中使用 Context
+- 如何在子元件中修改 Context 值（透過 Provider 的巢套）
+
+### 建立 FontSize Context
+
+```js src/pages/lesson03/pages/MenuExample/FontSizeContext.js
+import { createContext } from 'react';
+
+// 建立字體大小 Context
+export const FontSizeContext = createContext(3);
+```
+
+### 建立巢狀選單元件
+
+```jsx src/pages/lesson03/pages/MenuExample/index.jsx
+import { useState } from 'react';
+import MenuItem from './MenuItem';
+import { FontSizeContext } from './FontSizeContext';
+import './index.css';
+
+// 模擬巢狀選單資料
+const menuData = [
   {
     name: 'Menu A',
-    child: [
-      { name: 'Menu 1' },
-      { name: 'Menu 2' },
-      { name: 'Menu 3', child: [{ name: 'Menu I' }, { name: 'Menu II' }, { name: 'Menu III' }] },
+    children: [
+      { name: 'Menu A-1' },
+      { name: 'Menu A-2' },
+      {
+        name: 'Menu A-3',
+        children: [
+          { name: 'Menu A-3-I' },
+          { name: 'Menu A-3-II' },
+          { name: 'Menu A-3-III' },
+        ],
+      },
     ],
   },
   {
     name: 'Menu B',
-    child: [
-      { name: 'Menu 1' },
-      { name: 'Menu 2' },
-      { name: 'Menu 3', child: [{ name: 'Menu I' }, { name: 'Menu II' }, { name: 'Menu III' }] },
+    children: [
+      { name: 'Menu B-1' },
+      {
+        name: 'Menu B-2',
+        children: [
+          { name: 'Menu B-2-I' },
+          { name: 'Menu B-2-II' },
+        ],
+      },
+      { name: 'Menu B-3' },
     ],
   },
   {
     name: 'Menu C',
-    child: [
-      { name: 'Menu 1' },
-      { name: 'Menu 2' },
-      { name: 'Menu 3', child: [{ name: 'Menu I' }, { name: 'Menu II' }, { name: 'Menu III' }] },
+    children: [
+      { name: 'Menu C-1' },
+      { name: 'Menu C-2' },
     ],
   },
 ];
 
-const MyListMenu = () => {
+export default function MenuExample() {
   return (
-    <ul>
-      {listData.map((obj) => (
-        <MyItem key={obj.name} data={obj} />
-      ))}
-    </ul>
-  );
-};
+    <div className="menu-example">
+      <h1>📑 Context 進階：巢狀選單</h1>
 
-export default MyListMenu;
-```
-```css src\pages\lesson02\myListMenu.css
-button {
-  display: inline;
-  border: 1px solid black;
-  padding: 0;
-  border-radius: 5px;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-left: 1rem;
-}
-
-```
-```jsx src\pages\lesson02\myItem.jsx
-import { useState } from 'react';
-
-const MyItem = ({ data }) => {
-  const [showChild, setShowChild] = useState(true);
-  return (
-    <li>
-      <span>{data.name}</span>
-      {data.child?.length && (
-        <button onClick={() => setShowChild((bool) => !bool)}>{showChild ? '+' : '-'}</button>
-      )}
-      {showChild && data.child?.length > 0 && (
-        <ul>
-          {data.child.map((obj) => (
-            <MyItem key={obj.name} data={obj} />
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-};
-export default MyItem;
-```
-
-接著規劃，每個 li 文字大寫從 3rem 開始，隨著往下一層，讀取 3 並除 1.2 之後，回存 Context，讓下一層拿到改變後的 Context 值，以此類推不斷減少。
-- 新的 Context，我們獨立一個檔案放置。初始我們設定為 3
-- 第一層 MyListMenu 我們沒有要改變 Context 值，可以不用去使用 Context。
-- 第二層 MyItem 我們讀取出來，設為指定 li 文字大小，在往下層渲染之前，將值改變。
-- 第三層跟著以此類推，拿到新值、套用、在下層渲染之前改變下一個新值。
-
-```js src\pages\lesson02\FontSizeContext.js
-import { createContext } from 'react';
-export const FontSizeContext = createContext('3');
-```
-```jsx src\pages\lesson02\myItem.jsx
-import { useContext } from 'react';
-import { useState } from 'react';
-import { FontSizeContext } from './FontSizeContext';
-
-const MyItem = ({ data }) => {
-  const [showChild, setShowChild] = useState(true);
-  const fzVal = useContext(FontSizeContext);
-  return (
-    <li>
-      <span style={{ fontSize: fzVal + 'rem' }}>{data.name}</span>
-      {data.child?.length && (
-        <button onClick={() => setShowChild((bool) => !bool)}>{showChild ? '+' : '-'}</button>
-      )}
-      {showChild && data.child?.length > 0 && (
-        <FontSizeContext.Provider value={fzVal / 1.5}>
-          <ul>
-            {data.child.map((obj) => (
-              <MyItem key={obj.name} data={obj} />
-            ))}
-          </ul>
-        </FontSizeContext.Provider>
-      )}
-    </li>
-  );
-};
-export default MyItem;
-```
-
-## 發生 CSS 全局汙染
-由於我們規劃了 button 樣式效果，此時檢查 lesson01 任何畫面。可以發現我們的 css 影響到全局而汙染。這是因為 React 預設把所有 CSS 都提升到 head style 產生全局影響。因此建議的方式除了改用行內樣式，你也可以把特定 css 檔案設計成使用 CSS Modules，好處為 React 預設會產生 hash 亂碼，使得使用的 class 有唯一值不重複。重新調整如下：
-
-- 評估 `myListMenu.css` 影響範圍只有 MyItem 元件，故改名並追加 module 必要關鍵字眼，例如 `myItem.module.css`
-- 修改 css 的 selector，不能直接以 element 為 selector 方式，故改用`.btn`
-- 移除原本在 MyListMenu 的 import css 而改到 MyItem 元件匯入，注意寫法差異多一個`import style from`
-- 特定的元素位置上使用 className 載入 style 模組的指定 selector，例如`className={style.btn}`
-
-```css src\pages\lesson02\myItem.module.css
-.btn {
-  display: inline;
-  border: 1px solid black;
-  padding: 0;
-  border-radius: 5px;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-left: 1rem;
-}
-```
-```jsx src\pages\lesson02\myItem.jsx
-import { useContext } from 'react';
-import { useState } from 'react';
-import { FontSizeContext } from './FontSizeContext';
-import style from './myItem.module.css';
-
-const MyItem = ({ data }) => {
-  const [showChild, setShowChild] = useState(true);
-  const fzVal = useContext(FontSizeContext);
-  return (
-    <li>
-      <span style={{ fontSize: fzVal + 'rem' }}>{data.name}</span>
-      {data.child?.length && (
-        <button className={style.btn} onClick={() => setShowChild((bool) => !bool)}>
-          {showChild ? '+' : '-'}
-        </button>
-      )}
-      {showChild && data.child?.length > 0 && (
-        <FontSizeContext.Provider value={fzVal / 1.5}>
-          <ul>
-            {data.child.map((obj) => (
-              <MyItem key={obj.name} data={obj} />
-            ))}
-          </ul>
-        </FontSizeContext.Provider>
-      )}
-    </li>
-  );
-};
-export default MyItem;
-```
-
-此時檢查瀏覽器的代碼檢視，可以發現特定的 class 都有隨機的後綴 hash 值，確保不會影響全部同名的 class name。結論來說，凡是透過 moduleCSS 取回的 style，其物件的 key 都已經自帶 hash。
-
-# Reducer
-Reducer 的主要功能是將複雜的 state 存取轉化為公式化的形式，讓開發者能夠更容易地管理和維護應用程式的狀態。透過 Reducer，我們可以將狀態的變化轉化為一系列的動作，從而實現更好的狀態管理和應用程式的可預測性。
-
-## ToDo List 基礎設計
-為了更好解釋，我們嘗試編寫一個 ToDo List，利用現成版型 [How To Create a To Do List](https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_todo) 做成 React 版型，請注意以下要點：
-
-- 增加一路由，期望為`http://localhost:5173/lesson02/todo-list`，並追加選單連結。
-- JS 邏輯請勿全部參考，應避免使用 for 而是使用 map，以及真實從 state 內刪除資料而不是使用 div.style.display 方式處理。
-
-```jsx src\App.jsx
-import { Routes, Route } from 'react-router';
-import Layout from './template/layout';
-import Base from './pages/lesson01/base';
-import MyContext from './pages/lesson02/myContext';
-import MyListMenu from './pages/lesson02/myListMenu';
-import TodoList from './pages/lesson02/todoList';
-
-export default function App() {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Base />} />
-        <Route path="base" element={<Base />} />
-        <Route path="lesson02">
-          <Route index element={<MyContext />} />
-          <Route path="my-context" element={<MyContext />} />
-          <Route path="my-list-menu" element={<MyListMenu />} />
-          <Route path="todo-list" element={<TodoList />} />
-        </Route>
-      </Route>
-    </Routes>
-  );   
-}
-```
-```jsx src\template\layout.jsx
-import { Link, Outlet, NavLink } from 'react-router';
-import './layout.css';
-
-export default function Layout() {
-  return (
-    <>
-      <nav>
-        <h2>選單</h2>
-        <ul>
-          <li>
-            <NavLink to="/base">基礎學習</NavLink>
-          </li>
-          <li>
-            <NavLink to="/lesson02/my-context">Context Sample 1</NavLink>
-          </li>
-          <li>
-            <NavLink to="/lesson02/my-list-menu">Context Sample Menu</NavLink>
-          </li>
-          <li>
-            <NavLink to="/lesson02/todo-list">ToDo List</NavLink>
-          </li>
-        </ul>
-      </nav>
-
-      <main>
-        <div className="container">
-          <Outlet />
-        </div>
-        <footer>本專案為 Loki Jiang 課程教材使用</footer>
-      </main>
-    </>
-  );
-}
-```
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
-  return null;
-};
-
-export default TodoList;
-```
-
-### 規劃 html 與 css 的單一元件
-將 html 與 css 拆成適合 React 的 JSX 跟 CSS Module。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-import style from './todoList.module.css';
-
-const TodoList = () => {
-  return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <input type="text" id="myInput" placeholder="Title..." />
-        <span className={style.addBtn}>Add</span>
+      <div className="example-intro">
+        <p>這個範例展示如何在遞迴元件中使用 Context，</p>
+        <p>每一層的文字大小會自動遞減（3rem → 2rem → 1.33rem → ...）。</p>
       </div>
 
-      <ul className={style.todoList}>
-        <li>Hit the gym</li>
-        <li className={style.checked}>Pay bills</li>
-        <li>Meet George</li>
-        <li>Buy eggs</li>
-        <li>Read a book</li>
-        <li>Organize office</li>
-      </ul>
-    </>
-  );
-};
+      {/* 🌟 提供初始字體大小 */}
+      <FontSizeContext.Provider value={3}>
+        <ul className="menu-list">
+          {menuData.map((item) => (
+            <MenuItem key={item.name} data={item} />
+          ))}
+        </ul>
+      </FontSizeContext.Provider>
 
-export default TodoList;
+      <div className="explanation">
+        <h3>💡 重點技巧</h3>
+        <ul>
+          <li>
+            <strong>Context 巢套：</strong>
+            子元件可以用新的 <code>Provider</code> 覆蓋父層的值
+          </li>
+          <li>
+            <strong>遞迴元件：</strong>
+            MenuItem 會渲染自己作為子元件（樹狀結構）
+          </li>
+          <li>
+            <strong>動態計算：</strong>
+            每一層讀取當前 Context 值，計算後提供新值給下一層
+          </li>
+        </ul>
+
+        <h4>📐 字體大小計算：</h4>
+        <div className="formula">
+          <code>新字體大小 = 當前字體大小 ÷ 1.5</code>
+      </div>
+    </div>
+  );
+}
 ```
-```css src\pages\lesson02\todoList\todoList.module.css
-ul.todoList {
-  margin: 0;
-  padding: 0;
+
+### 建立 MenuItem 元件
+
+```jsx src/pages/lesson03/pages/MenuExample/MenuItem.jsx
+import { useState, useContext } from 'react';
+import { FontSizeContext } from './FontSizeContext';
+import styles from './MenuItem.module.css';
+
+export default function MenuItem({ data }) {
+  // 控制子選單展開/收合
+  const [isExpanded, setIsExpanded] = useState(true);
+  
+  // 🌟 讀取當前層級的字體大小
+  const currentFontSize = useContext(FontSizeContext);
+  
+  // 是否有子選單
+  const hasChildren = data.children && data.children.length > 0;
+
+  return (
+    <li>
+      <div className={styles.menuItem}>
+        {/* 顯示選單名稱，字體大小由 Context 決定 */}
+        <span style={{ fontSize: `${currentFontSize}rem` }}>
+          {data.name}
+        </span>
+
+        {/* 如果有子選單，顯示展開/收合按鈕 */}
+        {hasChildren && (
+          <button
+            className={styles.toggleBtn}
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-label={isExpanded ? '收合' : '展開'}
+          >
+            {isExpanded ? '−' : '+'}
+          </button>
+        )}
+      </div>
+
+      {/* 渲染子選單 */}
+      {isExpanded && hasChildren && (
+        // 🌟 為子選單提供新的字體大小（遞減 1.5 倍）
+        <FontSizeContext.Provider value={currentFontSize / 1.5}>
+          <ul className={styles.submenu}>
+            {data.children.map((child) => (
+              <MenuItem key={child.name} data={child} />
+            ))}
+          </ul>
+        </FontSizeContext.Provider>
+      )}
+    </li>
+  );
+}
+```
+
+### CSS Module 樣式
+
+```css src/pages/lesson03/pages/MenuExample/MenuItem.module.css
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    color: #3b82f6;
+  }
+}
+
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #dee2e6;
+  background: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #495057;
+  transition: all 0.2s;
+  margin-left: 1rem;
+
+  &:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.submenu {
+  margin-left: 1.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e9ecef;
+  list-style: none;
+}
+```
+
+```css src/pages/lesson03/pages/MenuExample/index.css
+.menu-example {
+  padding: 1rem;
+}
+
+.example-intro {
+  background: #f0f7ff;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid #3b82f6;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+  color: #1e40af;
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+.menu-list {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  list-style: none;
+}
+
+.explanation {
+  background: #fff8e1;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+  margin-top: 2rem;
+
+  h3 {
+    margin-top: 0;
+    color: #f57c00;
+  }
+
+  ul {
+    margin: 1rem 0;
+    color: #e65100;
+    line-height: 1.8;
+  }
 
   li {
-    cursor: pointer;
-    position: relative;
-    padding: 12px 8px 12px 40px;
-    list-style-type: none;
-    background: #eee;
-    font-size: 18px;
-    transition: 0.2s;
-    user-select: none;
+    margin: 0.75rem 0;
+  }
 
-    &:nth-child(odd) {
-      background: #f9f9f9;
+  strong {
+    color: #e65100;
+  }
+
+  code {
+    background: #ffe082;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    color: #e65100;
+  }
+}
+
+.formula {
+  background: #ffe082;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  margin-top: 0.5rem;
+
+  code {
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+```
+
+{% note success %}
+**Context 巢套的關鍵概念：**
+
+```jsx
+// 第一層：字體大小 3rem
+<FontSizeContext.Provider value={3}>
+  <MenuItem />  {/* 讀取到 3 */}
+  
+  {/* 第二層：字體大小 2rem (3 ÷ 1.5) */}
+  <FontSizeContext.Provider value={2}>
+    <MenuItem />  {/* 讀取到 2 */}
+    
+    {/* 第三層：字體大小 1.33rem (2 ÷ 1.5) */}
+    <FontSizeContext.Provider value={1.33}>
+      <MenuItem />  {/* 讀取到 1.33 */}
+    </FontSizeContext.Provider>
+  </FontSizeContext.Provider>
+</FontSizeContext.Provider>
+```
+
+- 子層的 Provider 會**覆蓋**父層的值
+- 每一層元件讀取到的是**最近的** Provider 提供的值
+- 這種模式適合遞迴結構和動態層級的場景
+{% endnote %}
+
+## CSS Modules：避免樣式汙染
+
+在上面的範例中，我們使用了 CSS Modules（`.module.css`）。讓我們深入了解這個重要的技術。
+
+### 問題：全域樣式汙染
+
+如果直接使用普通的 `.css` 文件：
+```css MenuItem.css
+.toggleBtn {
+  /* ... */}
+```
+
+這個樣式會影響**全域所有**名為 `toggleBtn` 的元素，造成樣式汙染。
+
+### 解決方案：CSS Modules
+
+**CSS Modules** 是 Vite/Webpack 內建的功能，會自動為 class 名稱添加唯一的 hash 值。
+
+#### 使用方式
+
+**1. 檔案命名**
+
+將 `.css` 改名為 `.module.css`:
+
+```
+MenuItem.css       → MenuItem.module.css
+todoList.css       → todoList.module.css
+```
+
+**2. 匯入方式改變**
+
+```jsx
+// ❌ 普通 CSS（會全域汙染）
+import './MenuItem.css';
+
+// ✅ CSS Modules（局部作用域）
+import styles from './MenuItem.module.css';
+```
+
+**3. 使用 className**
+
+```jsx
+export default function MenuItem() {
+  return (
+    <div className={styles.toggleBtn}> {/* 使用 styles.className */}
+      <button className={styles.button}>
+        點我
+      </button>
+      </div>
+  );
+}
+```
+
+#### 渲染結果
+
+瀏覽器實際渲染的 HTML:
+
+```html
+<!-- CSS Modules 自動添加唯一 hash -->
+<div class="MenuItem_toggleBtn__a7f3k">
+  <button class="MenuItem_button__x9m2p">
+    點我
+  </button>
+</div>
+```
+
+對應的 CSS:
+
+```css
+/* 自動產生的唯一 class */
+.MenuItem_toggleBtn__a7f3k {
+  /* ... */
+}
+
+.MenuItem_button__x9m2p {
+  /* ... */
+}
+```
+
+{% note info %}
+**CSS Modules 注意事項：**
+
+**✅ 支援的 Selector（推薦）**
+```css
+/* Class Selector */
+.btn { }
+.card-header { }
+
+/* 巢狀 Selector（使用現代原生巢狀語法）*/
+.btn {
+  &:hover { }
+}
+
+.card {
+  .title { }
+}
+```
+
+**❌ 避免使用（會失去局部作用域）**
+```css
+/* Element Selector（全域汙染） */
+button { }
+div { }
+
+/* ID Selector（全域汙染） */
+#myButton { }
+```
+
+**🎯 建議：**
+- 所有樣式都用 class
+- class 命名使用小駝峰（camelCase）或連字符（kebab-case）
+- 避免使用 element 和 ID selector
+{% endnote %}
+
+### CSS Modules vs 其他方案
+
+| 方案                | 優點                     | 缺點                   | 適用場景               |
+| ------------------- | ------------------------ | ---------------------- | ---------------------- |
+| **CSS Modules**     | 自動局部作用域、零配置   | 需要 `styles.` 前綴    | 中小型專案（推薦）     |
+| **Inline Styles**   | 完全隔離、動態樣式方便   | 無法使用偽類、媒體查詢 | 簡單動態樣式           |
+| **CSS-in-JS**       | 完整 JS 能力、主題化強大 | 學習成本高、包體積大   | 大型應用、複雜主題系統 |
+| **Tailwind CSS**    | 快速開發、一致性高       | HTML 冗長、學習成本中  | 快速原型、團隊協作     |
+| **Scoped CSS(Vue)** | 自動局部作用域           | Vue 專屬               | Vue 專案               |
+
+{% note warning %}
+**常見錯誤：**
+
+```jsx
+// ❌ 錯誤：直接使用字串
+<button className="toggleBtn">點我</button>
+
+// ✅ 正確：使用 styles 物件
+<button className={styles.toggleBtn}>點我</button>
+
+// ❌ 錯誤：忘記 import
+<button className={styles.btn}>點我</button> // styles 未定義
+
+// ✅ 正確：記得 import
+import styles from './MyComponent.module.css';
+<button className={styles.btn}>點我</button>
+```
+{% endnote %}
+
+# useReducer：管理複雜狀態
+
+當 `useState` 無法滿足複雜的狀態管理需求時，`useReducer` 提供了更好的解決方案。
+
+## useState vs useReducer
+
+### useState 適用場景
+
+```jsx
+// ✅ 簡單狀態：適合 useState
+function Counter() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      點擊次數：{count}
+    </button>
+  );
+}
+```
+
+### useReducer 適用場景
+
+```jsx
+// ✅ 複雜狀態：適合 useReducer
+function TodoApp() {
+  // 多個相關狀態
+  const [todos, setTodos] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // 多個操作函式
+  const addTodo = (text) => { /* ... */ };
+  const deleteTodo = (id) => { /* ... */ };
+  const toggleTodo = (id) => { /* ... */ };
+  const updateTodo = (id, text) => { /* ... */ };
+  
+  // 程式碼變得複雜且難以維護。..
+}
+```
+
+{% note success %}
+**何時使用 useReducer？**
+
+建議在以下情況使用 `useReducer`:
+
+- ✅ 狀態邏輯複雜（多個子值、多個操作）
+- ✅ 下一個狀態依賴前一個狀態
+- ✅ 需要集中管理狀態更新邏輯
+- ✅ 狀態更新邏輯需要測試
+- ✅ 需要向深層子元件傳遞 dispatch（比傳遞多個回呼更好）
+
+**使用 useState 的情況：**
+- ✅ 狀態簡單（單一值、boolean、string、number）
+- ✅ 狀態更新邏輯簡單
+- ✅ 不需要複雜的狀態轉換
+{% endnote %}
+
+## useReducer 基礎：Todo List 範例
+
+讓我們透過一個完整的 Todo List 範例來學習 useReducer。
+
+### Todo List 專案規劃
+
+我們將建立一個功能完整的 Todo List, 支援：
+- ✅ 新增待辦事項
+- ✅ 刪除待辦事項
+- ✅ 切換完成狀態
+- ✅ 元件拆分（關注點分離）
+
+**專案結構：**
+
+```
+src/pages/lesson03/pages/TodoExample/
+├── index.jsx              # Todo 主元件
+├── index.css              # 主樣式
+├── todoList.module.css    # CSS Modules
+├── components/
+│   ├── TaskAdd.jsx        # 新增待辦元件
+│   └── TaskList.jsx       # 待辦列表元件
+└── store/                 # 🌟 稍後會建立（useReducer 進階）
+    ├── actions.js
+    └── reducer.js
+```
+
+### 步驟 1：建立靜態 HTML/CSS
+
+首先，我們先建立靜態版本，確認樣式正確。
+
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
+import styles from './todoList.module.css';
+
+export default function TodoExample() {
+  return (
+    <div className="todo-example">
+      <h1>✅ Todo List：useReducer 範例</h1>
+      
+      {/* 輸入區域 */}
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        <input
+          type="text"
+          placeholder="輸入新的待辦事項。.."
+        />
+        <span className={styles.addBtn}>新增</span>
+      </div>
+
+      {/* 待辦列表 */}
+      <ul className={styles.todoList}>
+        <li>去健身房</li>
+        <li className={styles.checked}>繳帳單</li>
+        <li>見 George</li>
+        <li>買雞蛋</li>
+        <li>讀一本書</li>
+      </ul>
+    </div>
+  );
+}
+```
+
+```css src/pages/lesson03/pages/TodoExample/todoList.module.css
+/* 列表容器 */
+.todoList {
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 600px;
+
+  /* 列表項目 */
+  li {
+    position: relative;
+    padding: 16px 48px 16px 48px;
+    background: #f9f9f9;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.2s;
+
+    &:first-child {
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
     }
+
+    &:last-child {
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      border-bottom: none;
+    }
+
+    &:nth-child(even) {
+      background: #ffffff;
+    }
+
     &:hover {
-      background: #ddd;
+      background: #e9ecef;
     }
+
+    /* 已完成的項目 */
     &.checked {
-      background: #888;
+      background: #6c757d;
       color: #fff;
       text-decoration: line-through;
+
       &::before {
         content: '';
         position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        width: 8px;
+        height: 16px;
         border-color: #fff;
         border-style: solid;
-        border-width: 0 2px 2px 0;
-        top: 10px;
-        left: 16px;
-        transform: rotate(45deg);
-        height: 15px;
-        width: 7px;
+        border-width: 0 3px 3px 0;
       }
     }
   }
 }
 
+/* 刪除按鈕 */
 .close {
   position: absolute;
   right: 0;
   top: 0;
-  padding: 12px 16px 12px 16px;
+  height: 100%;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
 
   &:hover {
-    background-color: #f44336;
+    background: #dc3545;
     color: white;
   }
 }
 
+/* 輸入區域 */
 .header {
-  background-color: #f44336;
-  padding: 30px 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+
+  h2 {
+    margin: 0 0 1rem 0;
+    font-size: 28px;
+  }
+
+  input {
+    width: calc(75% - 8px);
+    padding: 12px;
+    border: none;
+    border-radius: 6px 0 0 6px;
+    font-size: 16px;
+    outline: none;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+/* 新增按鈕 */
+.addBtn {
+  display: inline-block;
+  width: 25%;
+  padding: 12px;
+  background: #28a745;
   color: white;
   text-align: center;
-  &:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-  input {
-    margin: 0;
-    border: none;
-    border-radius: 0;
-    width: 75%;
-    padding: 10px;
-    float: left;
-    font-size: 16px;
-  }
-}
-
-.addBtn {
-  padding: 10px;
-  width: 25%;
-  background: #d9d9d9;
-  color: #555;
-  float: left;
-  text-align: center;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
-  border-radius: 0;
+  border-radius: 0 6px 6px 0;
+  transition: all 0.2s;
+  user-select: none;
 
   &:hover {
-    background-color: #bbb;
+    background: #218838;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 ```
 
-### 資料陣列化
-將 li 的文字組合成資料陣列，我們需要一個 text 紀錄 string，也還需要一個 checked 來記錄 boolean。別忘了還需要一個 id 作為 key。
+### 步驟 2：資料陣列化
 
-- 透過 map 將資料轉為 JSX 元素。
-- 順便將`<span className={style.close}>×</span>`補在 li 內。
+將靜態的 `<li>` 改為從資料陣列渲染：
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
+import styles from './todoList.module.css';
 
-```jsx src\pages\lesson02\todoList\index.jsx
-import style from './todoList.module.css';
-
+// 🌟 初始資料
 const initData = [
-  {
-    id: 1,
-    text: 'Hit the gym',
-    checked: false,
-  },
-  {
-    id: 2,
-    text: 'Pay bills',
-    checked: true,
-  },
-  {
-    id: 3,
-    text: 'Meet George',
-    checked: false,
-  },
-  {
-    id: 4,
-    text: 'Buy eggs',
-    checked: false,
-  },
-  {
-    id: 5,
-    text: 'Read a book',
-    checked: false,
-  },
-  {
-    id: 6,
-    text: 'Organize office',
-    checked: false,
-  },
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
 ];
 
-const TodoList = () => {
+export default function TodoExample() {
   return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <input type="text" id="myInput" placeholder="Title..." />
-        <span className={style.addBtn}>Add</span>
+    <div className="todo-example">
+      <h1>✅ Todo List：useReducer 範例</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        <input type="text" placeholder="輸入新的待辦事項。.." />
+        <span className={styles.addBtn}>新增</span>
       </div>
 
-      <ul className={style.todoList}>
+      {/* 🌟 從資料陣列渲染 */}
+      <ul className={styles.todoList}>
         {initData.map((item) => (
-          <li key={item.id} className={item.checked ? style.checked : null}>
-            {item.text}
-            <span className={style.close}>×</span>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-};
-
-export default TodoList;
-```
-
-### 規劃互動
-由於我們要對資料 CRUD 可以進行新增刪除打勾的事件，以及需要考量 useState 管理資料，使得畫面渲染。
-
-#### Read
-規劃一個 state 必需放在元件內部。他能讀取來自 state 的資料。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-//...
-const TodoList = () => {
-  const [list, setList] = useState(initData); // key point
-
-  return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <input type="text" id="myInput" placeholder="Title..." />
-        <span className={style.addBtn}>Add</span>
-      </div>
-
-      <ul className={style.todoList}>
-        {list.map((item) => ( // key point
           <li
             key={item.id}
-            className={item.checked ? style.checked : null}
+            className={item.checked ? styles.checked : ''}
           >
             {item.text}
-            <span className={style.close}>×</span>
+            <span className={styles.close}>×</span>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
-};
-//...
+}
 ```
 
-#### Create
-試圖讓 input 的值可以被 Add Button 觸發事件，這兩個元素是平行的以及隨著輸入能清空文字，與渲染快照有關，最好的方式多用一個 state 來共享資源。
- 
- - 以及每次新增我們都需要讓 id 疊加。根據資料最後一筆來決定添加的 id 為多少，這個 id 可以偷懶不用 state 管理，因為畫面上沒有用到 id。
- - text State 作為讀寫的用途。記得每次寫入資料都是用解構方式完成，這能保證記憶體不受汙染。
- - 每一次的文字輸入都把 text 更新，確保都是最新的 text，所以需要用 onChange 事件。
- - 在 Add Button 上面試圖呼叫 onClick 的 handle 事件，同時防呆無效的提交。
- - 最後在 handle 上，試圖把新的 item 整合放入到 list 內。
+### 步驟 3：添加 useState（CRUD 基礎）
 
-```jsx src\pages\lesson02\todoList\index.jsx
-//...
-const TodoList = () => {
+現在使用 `useState` 來管理待辦列表，實現基本的 CRUD 功能。
+
+#### Read（讀取）
+
+```jsx
+import { useState } from 'react';
+import styles from './todoList.module.css';
+
+const initData = [
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
+];
+
+export default function TodoExample() {
+  // 🌟 使用 useState 管理待辦列表
   const [list, setList] = useState(initData);
-  const [text, setText] = useState('');
 
+  return (
+    <div className="todo-example">
+      <h1>✅ Todo List：useState 版本</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        <input type="text" placeholder="輸入新的待辦事項。.." />
+        <span className={styles.addBtn}>新增</span>
+      </div>
+
+      <ul className={styles.todoList}>
+        {list.map((item) => ( {/* 從 state 讀取 */}
+          <li
+            key={item.id}
+            className={item.checked ? styles.checked : ''}
+          >
+            {item.text}
+            <span className={styles.close}>×</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+#### Create（新增）
+
+```jsx
+import { useState } from 'react';
+import styles from './todoList.module.css';
+
+const initData = [
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
+];
+
+export default function TodoExample() {
+  const [list, setList] = useState(initData);
+  const [text, setText] = useState(''); // 🌟 管理輸入框的文字
+
+  // 🌟 新增待辦事項
   const handleAdd = (text) => {
-    setList((data) => {
-      return [
-        ...data,
-        {
-          id: list[list.length - 1].id + 1,
-          text: text,
-          checked: false,
-        },
-      ];
-    });
+    if (!text.trim()) return; // 防呆：空白不處理
+    
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: prevList[prevList.length - 1].id + 1, // 自動遞增 ID
+        text: text,
+        checked: false,
+      },
+    ]);
   };
 
   return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
+    <div className="todo-example">
+      <h1>✅ Todo List：實作 Create</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
         <input
           type="text"
-          id="myInput"
-          placeholder="Title..."
+          placeholder="輸入新的待辦事項。.."
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => setText(e.target.value)} // 🌟 同步輸入框
         />
         <span
-          className={style.addBtn}
+          className={styles.addBtn}
           onClick={() => {
-            if (text === '') return;
             handleAdd(text);
-            setText('');
+            setText(''); // 🌟 清空輸入框
           }}
         >
-          Add
+          新增
         </span>
       </div>
 
-      <ul className={style.todoList}>
+      <ul className={styles.todoList}>
         {list.map((item) => (
           <li
             key={item.id}
-            className={item.checked ? style.checked : null}
+            className={item.checked ? styles.checked : ''}
           >
             {item.text}
-            <span className={style.close}>×</span>
+            <span className={styles.close}>×</span>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
-};
-
-//...
+}
 ```
 
-#### Delete
-刪除的工作很簡單，透過 id 尋找到指定 item，可以利用 array filter 過濾掉不要的 item。返回的會是新 array，不影響記憶體汙染。
+#### Delete（刪除）
 
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
+```jsx
+export default function TodoExample() {
   const [list, setList] = useState(initData);
   const [text, setText] = useState('');
 
   const handleAdd = (text) => {
-    //...
+    if (!text.trim()) return;
+    
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: prevList[prevList.length - 1].id + 1,
+        text: text,
+        checked: false,
+      },
+    ]);
   };
 
+  // 🌟 刪除待辦事項
   const handleDelete = (id) => {
-    setList((data) => data.filter((item) => item.id !== id));
+    setList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
   return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
+    <div className="todo-example">
+      <h1>✅ Todo List：實作 Delete</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
         <input
           type="text"
-          id="myInput"
-          placeholder="Title..."
+          placeholder="輸入新的待辦事項。.."
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <span
-          className={style.addBtn}
+          className={styles.addBtn}
           onClick={() => {
-            if (text === '') return;
             handleAdd(text);
             setText('');
           }}
         >
-          Add
+          新增
         </span>
       </div>
 
-      <ul className={style.todoList}>
+      <ul className={styles.todoList}>
         {list.map((item) => (
           <li
             key={item.id}
-            className={item.checked ? style.checked : null}
+            className={item.checked ? styles.checked : ''}
           >
             {item.text}
-            <span className={style.close} onClick={() => handleDelete(item.id)}>
+            <span
+              className={styles.close}
+              onClick={() => handleDelete(item.id)} // 🌟 點擊刪除
+            >
               ×
             </span>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
-};
+}
 ```
 
-#### Update
-更新的只有當下 item 的 checked boolean 值，我們可以在 JSX 上進行 handle 之前，把新資料準備好再提交 handle 去。而 handle 的工作就是替換掉現有 list 內的舊 item 資料，這部分用 map 即可完成。
+#### Update（更新）
 
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
+```jsx
+export default function TodoExample() {
   const [list, setList] = useState(initData);
   const [text, setText] = useState('');
 
   const handleAdd = (text) => {
-    //...
+    if (!text.trim()) return;
+    
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: prevList[prevList.length - 1].id + 1,
+        text: text,
+        checked: false,
+      },
+    ]);
   };
 
   const handleDelete = (id) => {
-    //...
+    setList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
-  const handleChecked = (newItem) => {
-    setList((data) =>
-      data.map((item) => {
-        return item.id === newItem.id ? newItem : item;
-      })
+  // 🌟 切換完成狀態
+  const handleToggle = (id) => {
+    setList((prevList) =>
+      prevList.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
     );
   };
 
   return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
+    <div className="todo-example">
+      <h1>✅ Todo List：實作 Update</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
         <input
           type="text"
-          id="myInput"
-          placeholder="Title..."
+          placeholder="輸入新的待辦事項。.."
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <span
-          className={style.addBtn}
+          className={styles.addBtn}
           onClick={() => {
-            if (text === '') return;
             handleAdd(text);
             setText('');
           }}
         >
-          Add
+          新增
         </span>
       </div>
 
-      <ul className={style.todoList}>
+      <ul className={styles.todoList}>
         {list.map((item) => (
           <li
             key={item.id}
-            className={item.checked ? style.checked : null}
-            onClick={() =>
-              handleChecked({
-                ...item,
-                checked: !item.checked,
-              })
-            }
+            className={item.checked ? styles.checked : ''}
+            onClick={() => handleToggle(item.id)} // 🌟 點擊切換
           >
             {item.text}
-            <span className={style.close} onClick={() => handleDelete(item.id)}>
+            <span
+              className={styles.close}
+              onClick={(e) => {
+                e.stopPropagation(); // 🌟 阻止事件冒泡
+                handleDelete(item.id);
+              }}
+            >
               ×
             </span>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
-};
+}
 ```
 
-### 拆分元件
-拆分元件有效把工作分配清楚，保持上層負責資料處理，下層負責顯示畫面。透過 props 把 state 的值傳遞下去，而 handle 事件則傳遞 fn 下去，使得下層能向上執行本層函式。大致上就完成了無難度。
+{% note warning %}
+**事件冒泡問題：**
 
-```jsx src\pages\lesson02\todoList\component\taskAdd.jsx
+```jsx
+<li onClick={() => handleToggle(item.id)}>  {/* 父元素：切換 */}
+  {item.text}
+  <span onClick={() => handleDelete(item.id)}>  {/* 子元素：刪除 */}
+    ×
+  </span>
+</li>
+```
+
+**問題：** 點擊 `×` 時，會同時觸發 `handleDelete` 和 `handleToggle`
+
+**解決方案：** 在子元素的事件處理中呼叫 `e.stopPropagation()`
+
+```jsx
+<span
+  onClick={(e) => {
+    e.stopPropagation(); // 🌟 阻止事件向上冒泡
+    handleDelete(item.id);
+  }}
+>
+  ×
+</span>
+```
+{% endnote %}
+
+### 步驟 4：元件拆分
+
+將元件拆分為更小的子元件，遵循單一職責原則。
+
+**拆分策略：**
+- `TodoExample`（主元件）：管理狀態和業務邏輯
+- `TaskAdd`（新增元件）：負責輸入和新增
+- `TaskList`（列表元件）：負責顯示待辦列表
+
+#### TaskAdd 元件
+
+```jsx src/pages/lesson03/pages/TodoExample/components/TaskAdd.jsx
 import { useState } from 'react';
-import style from '../todoList.module.css';
+import styles from '../todoList.module.css';
 
-const TaskAdd = ({ onAdd }) => {
+export default function TaskAdd({ onAdd }) {
   const [text, setText] = useState('');
+
+  const handleSubmit = () => {
+    if (!text.trim()) {
+      alert('請輸入待辦事項！');
+      return;
+    }
+    
+    onAdd(text); // 呼叫父元件傳來的函式
+    setText('');  // 清空輸入框
+  };
 
   return (
     <>
       <input
         type="text"
-        id="myInput"
-        placeholder="Title..."
+        placeholder="輸入新的待辦事項。.."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSubmit(); // 支援 Enter 鍵
+        }}
       />
       <span
-        className={style.addBtn}
-        onClick={() => {
-          if (text === '') return;
-          onAdd(text);
-          setText('');
-        }}
+        className={styles.addBtn}
+        onClick={handleSubmit}
       >
-        Add
+        新增
       </span>
     </>
   );
-};
-export default TaskAdd;
+}
 ```
-```jsx src\pages\lesson02\todoList\component\taskList.jsx
-import style from '../todoList.module.css';
 
-const TaskList = ({ items, onDelete, onChecked }) => {
+#### TaskList 元件
+
+```jsx src/pages/lesson03/pages/TodoExample/components/TaskList.jsx
+import styles from '../todoList.module.css';
+
+export default function TaskList({ items, onToggle, onDelete }) {
   return (
-    <ul className={style.todoList}>
-      {items.map((item) => (
-        <li
-          key={item.id}
-          className={item.checked ? style.checked : null}
-          onClick={() =>
-            onChecked({
-              ...item,
-              checked: !item.checked,
-            })
-          }
-        >
-          {item.text}
-          <span className={style.close} onClick={() => onDelete(item.id)}>
-            ×
-          </span>
+    <ul className={styles.todoList}>
+      {items.length === 0 ? (
+        <li style={{ textAlign: 'center', color: '#6c757d', cursor: 'default' }}>
+          沒有待辦事項，新增一個吧！
         </li>
-      ))}
+      ) : (
+        items.map((item) => (
+          <li
+            key={item.id}
+            className={item.checked ? styles.checked : ''}
+            onClick={() => onToggle(item.id)}
+          >
+            {item.text}
+            <span
+              className={styles.close}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(item.id);
+              }}
+            >
+              ×
+            </span>
+          </li>
+        ))
+      )}
     </ul>
   );
-};
-export default TaskList;
+}
 ```
-```jsx src\pages\lesson02\todoList\index.jsx
+
+#### 更新主元件
+
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
 import { useState } from 'react';
-import style from './todoList.module.css';
-import TaskAdd from './component/taskAdd';
-import TaskList from './component/taskList';
+import styles from './todoList.module.css';
+import TaskAdd from './components/TaskAdd';
+import TaskList from './components/TaskList';
 
 const initData = [
-  {
-    id: 1,
-    text: 'Hit the gym',
-    checked: false,
-  },
-  {
-    id: 2,
-    text: 'Pay bills',
-    checked: true,
-  },
-  {
-    id: 3,
-    text: 'Meet George',
-    checked: false,
-  },
-  {
-    id: 4,
-    text: 'Buy eggs',
-    checked: false,
-  },
-  {
-    id: 5,
-    text: 'Read a book',
-    checked: false,
-  },
-  {
-    id: 6,
-    text: 'Organize office',
-    checked: false,
-  },
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
 ];
 
-const TodoList = () => {
+export default function TodoExample() {
   const [list, setList] = useState(initData);
 
+  // 新增
   const handleAdd = (text) => {
-    setList((data) => {
+    setList((prevList) => [
+      ...prevList,
+      {
+        id: prevList.length > 0 ? prevList[prevList.length - 1].id + 1 : 1,
+        text: text,
+        checked: false,
+      },
+    ]);
+  };
+
+  // 刪除
+  const handleDelete = (id) => {
+    setList((prevList) => prevList.filter((item) => item.id !== id));
+  };
+
+  // 切換完成狀態
+  const handleToggle = (id) => {
+    setList((prevList) =>
+      prevList.map((item) =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    );
+  };
+
+  return (
+    <div className="todo-example">
+      <h1>✅ Todo List：useState 版本（已拆分元件）</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        <TaskAdd onAdd={handleAdd} />
+      </div>
+
+      <TaskList
+        items={list}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+      />
+    </div>
+  );
+}
+```
+
+{% note success %}
+**元件拆分的好處：**
+
+1. **單一職責**：每個元件只負責一件事
+2. **可重用性**：子元件可以在其他地方重用
+3. **可測試性**：小元件更容易測試
+4. **可維護性**：修改某個功能時，只需要修改對應的元件
+5. **關注點分離**：
+   - 主元件：管理狀態和業務邏輯
+   - 子元件：負責 UI 渲染
+
+**Props 資料流向：**
+```
+TodoExample（父元件）
+   ├─ state: list
+   ├─ handleAdd()
+   ├─ handleDelete()
+   └─ handleToggle()
+         ↓ （透過 Props 傳遞）
+TaskAdd & TaskList（子元件）
+   └─ 呼叫 onAdd/onDelete/onToggle
+```
+{% endnote %}
+
+##  從 useState 升級到 useReducer
+
+現在我們的 Todo List 使用 `useState` 已經可以正常運作了，但隨著功能增加，會遇到一些問題：
+
+**問題點：**
+1. **狀態更新邏輯分散**：`handleAdd`、`handleDelete`、`handleToggle` 分散在元件各處
+2. **難以測試**：狀態更新邏輯混在元件中，無法單獨測試
+3. **重複的邏輯**：多個地方可能需要類似的狀態更新邏輯
+4. **難以擴充**：新增功能時需要修改元件，容易出錯
+
+**useReducer 的優勢：**
+- ✅ **集中管理**：所有狀態更新邏輯都在 reducer 中
+- ✅ **易於測試**：reducer 是純函式，容易測試
+- ✅ **可預測性**：相同的 state + action = 相同的結果
+- ✅ **易於擴充**：新增功能只需添加 action 和對應的 case
+- ✅ **更好的除錯**：可以記錄所有 action, 追蹤狀態變化
+
+### useReducer 核心概念
+
+{% mermaid graph LR %}
+    A["元件觸發事件"]
+    B["dispatch(action)"]
+    C["Reducer 函式"]
+    D["返回新 state"]
+    E["React 重新渲染"]
+    
+    A -->|"1. 呼叫"| B
+    B -->|"2. 傳遞"| C
+    C -->|"3. 計算"| D
+    D -->|"4. 更新"| E
+    E -.->|"顯示最新狀態"| A
+    
+    style A fill:#e3f2fd
+    style C fill:#fff3e0
+    style E fill:#e8f5e9
+{% endmermaid %}
+
+**useReducer 的組成：**
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+| 參數           | 說明                                       | 範例                             |
+| -------------- | ------------------------------------------ | -------------------------------- |
+| `reducer`      | 純函式，根據 action 更新 state             | `(state, action) => newState`    |
+| `initialState` | 初始狀態                                   | `[]` 或 `{ todos: [], count: 0}` |
+| `state`        | 當前狀態（類似 `useState` 的第一個返回值） | `list`、`todos`                  |
+| `dispatch`     | 觸發狀態更新的函式                         | `dispatch({ type: 'ADD' })`      |
+
+**Reducer 函式：**
+
+```jsx
+function reducer(state, action) {
+  switch (action.type) {
+    case 'ACTION_TYPE':
+      return newState; // 根據 action 返回新 state
+    default:
+      return state;    // 未知 action, 返回原 state
+  }
+}
+```
+
+**Action 物件：**
+
+```jsx
+// Action 通常包含 type 和 payload
+{
+  type: 'ADD_TODO',      // 必需：表示操作類型
+  payload: {              // 可選：攜帶的資料
+    text: '買牛奶',
+    id: 123
+  }
+}
+
+// 簡化寫法（直接把資料放在 action 根層級）
+{
+  type: 'ADD_TODO',
+  text: '買牛奶',
+  id: 123
+}
+```
+
+### 步驟 1：將 useState 轉換為 useReducer
+
+讓我們一步步將 Todo List 從 `useState` 轉換為 `useReducer`。
+
+**第一步：定義 Reducer 函式**
+
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
+import { useReducer } from 'react'; // 🌟 改用 useReducer
+import styles from './todoList.module.css';
+import TaskAdd from './components/TaskAdd';
+import TaskList from './components/TaskList';
+
+// 🌟 定義初始狀態
+const initialState = [
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
+];
+
+// 🌟 定義 Reducer 函式
+function todoReducer(state, action) {
+  switch (action.type) {
+    case 'ADD': {
       return [
-        ...data,
+        ...state,
         {
-          id: list[list.length - 1].id + 1,
-          text: text,
+          id: state.length > 0 ? state[state.length - 1].id + 1 : 1,
+          text: action.text,
           checked: false,
         },
       ];
-    });
-  };
-
-  const handleDelete = (id) => {
-    setList((data) => data.filter((item) => item.id !== id));
-  };
-
-  const handleChecked = (newItem) => {
-    setList((data) =>
-      data.map((item) => {
-        return item.id === newItem.id ? newItem : item;
-      })
-    );
-  };
-
-  return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <TaskAdd onAdd={handleAdd} />
-      </div>
-      <TaskList items={list} onDelete={handleDelete} onChecked={handleChecked} />
-    </>
-  );
-};
-
-export default TodoList;
-```
-
-## ToDo List 整合 Reducer 設計
-隨著 CRUD 需求的增加，我們對於 setList 的操作有了多樣化的需求。當元件的規模逐步擴大時，這些寫在 handle 內的邏輯就會變得不易維護和管理。這時候，Reducer 就能夠發揮作用，作為一個溝通的橋樑，任何想對 State 進行存取或修改的操作，都能夠通過 Reducer 來完成。這樣不僅能夠簡化代碼，提高代碼的可讀性和可維護性，還能夠讓代碼更加模組化和可重用。
-
-### 解釋
-useReducer 是一個 React hook 功能，他類似 useState 的使用觀念，持有一個整個 store 的觀念，store 的邏輯可以分為：
-
-1. 需提供一個 Reducer function 定義，該定義會根據哪種 action 要求，對資料進行修改。只有 reducer 才能對 store 內的資料修改。
-2. 須提供一個初始資料，讓 Reducer 一開始的 initState 內容為何。
-3. 會返回一個目前 store 的資料為何，用於畫面上。如果 store 更新了，React 會重新快照部屬。
-4. 會返還 dispatch 方法，方便我們對 reducer 下達指令。
-5. 同上，操作 dispatch，我們需要 action 指令，以及提供必要的資料。reducer 會根據哪種 action 觸發工作。
-
-這是 useReducer 的指令範例：
-
-```js
-import { useReducer } from 'react';
-//...
-const [state, dispatch] = useReducer(reducerFn, initState);
-```
-
-### 調整 ToDo
-跟著步驟，逐步幫 useState  轉換為 useReducer 使用。
-
-- 取消原本的 useState 替換成 useReducer
-- useReducer 需要先提供定義 reducerFn 跟 initState。因此調整 initData 更名為 initState，並移動位置到 useReducer 之前。
-- reducerFn，會提供兩個參數 state 是目前 store 內的資料，action 是觸發的指令要求，返回是更新為新的 state 回到 store，先暫定 return null。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
-  // reducer
-  // ---------------------------------------------------------------
-  const reducerFn = (state, action) => {
-    return null;
-  };
-
-  const initState = [
-    { id: 1, text: 'Hit the gym', checked: false,},
-    { id: 2, text: 'Pay bills', checked: true,},
-    { id: 3, text: 'Meet George', checked: false,},
-    { id: 4, text: 'Buy eggs', checked: false,},
-    { id: 5, text: 'Read a book', checked: false,},
-    { id: 6, text: 'Organize office', checked: false,},
-  ];
-
-  // const [list, setList] = useState(initData);
-  const [state, dispatch] = useReducer(reducerFn, initState);
-
-  //...
-}
-```
-
-接著，由於 reducerFn 處理的結果是要對 store 內的的 state 資料重新改變，因此把原本 handle 的事件分離成**請求代碼**與**資料改變的代碼**。
-- action 基本會包含一個 type 是指令名稱，其他 props 都是設計者在操作 dispatch 時會附上，因此稍晚我們會決定 dispatch 要提供什麼。
-- 我們可以先暫訂寫好三個動作 CUD 對 State 什麼事情，透過 switch 來決定哪個 action 對 state 做怎樣的修改。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
-  // reducer
-  // ---------------------------------------------------------------
-  const reducerFn = (list, action) => {
-    switch (action.type) {
-      case 'add todo': {
-        return [
-          ...list,
-          {
-            id: action.id,
-            text: action.text,
-            checked: false,
-          },
-        ];
-      }
-      case 'delete todo': {
-        return list.filter((item) => item.id !== action.id);
-      }
-      case 'checked todo': {
-        return list.map((item) => (item.id === action.item.id ? action.item : item));
-      }
-      default: {
-        throw Error('Unknown action: ' + action.type);
-      }
     }
-  };
-  //...
-}
-```
-
-回到 ToDo 這裡，我們使用了 useReducer，也定義好了 reducerFn 跟 initState。他會返回 state, dispatch 給我們使用。
-- dispatch 就是要發送給 reducer 的操作碼。我們要指定 action 名稱跟夾帶的 props，因此原本拆開的 handle 內容清空，只留下請求 dispatch。
-- state 就是 store 資料的現況，替換原本從 useState 拿到的 list，換成從 useReducer 拿到的 state。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-const TodoList = () => {
-  // reducer
-  // ---------------------------------------------------------------
-  const reducerFn = (state, action) => {
-    switch (action.type) {
-      case 'add todo': {
-        return [
-          ...state,
-          {
-            id: action.id,
-            text: action.text,
-            checked: false,
-          },
-        ];
-      }
-      case 'delete todo': {
-        return state.filter((item) => item.id !== action.id);
-      }
-      case 'checked todo': {
-        return state.map((item) => (item.id === action.item.id ? action.item : item));
-      }
-      default: {
-        throw Error('Unknown action: ' + action.type);
-      }
+    case 'DELETE': {
+      return state.filter((item) => item.id !== action.id);
     }
-  };
-
-  // initState
-  // ---------------------------------------------------------------
-  const initState = [
-    { id: 1, text: 'Hit the gym', checked: false },
-    { id: 2, text: 'Pay bills', checked: true },
-    { id: 3, text: 'Meet George', checked: false },
-    { id: 4, text: 'Buy eggs', checked: false },
-    { id: 5, text: 'Read a book', checked: false },
-    { id: 6, text: 'Organize office', checked: false },
-  ];
-
-  // useReducer
-  // ---------------------------------------------------------------
-  const [state, dispatch] = useReducer(reducerFn, initState);
-
-  // dispatch
-  // --------------------------------------------------------------
-
-  // const handleAdd = (text) => {
-  //   setList((data) => {
-  //     return [
-  //       ...data,
-  //       {
-  //         id: list[list.length - 1].id + 1,
-  //         text: text,
-  //         checked: false,
-  //       },
-  //     ];
-  //   });
-  // };
-  const handleAdd = (text) => {
-    dispatch({
-      type: 'add todo',
-      id: state[state.length - 1].id + 1,
-      text: text,
-      checked: false,
-    });
-  };
-
-  // const handleDelete = (id) => {
-  //   setList((data) => data.filter((item) => item.id !== id));
-  // };
-  const handleDelete = (id) => {
-    dispatch({
-      type: 'delete todo',
-      id,
-    });
-  };
-
-  // const handleChecked = (newItem) => {
-  //   setList((data) =>
-  //     data.map((item) => {
-  //       return item.id === newItem.id ? newItem : item;
-  //     })
-  //   );
-  // };
-  const handleChecked = (newItem) => {
-    dispatch({
-      type: 'checked todo',
-      item: newItem,
-    });
-  };
-
-  return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <TaskAdd onAdd={handleAdd} />
-      </div>
-      <TaskList items={state} onDelete={handleDelete} onChecked={handleChecked} />
-    </>
-  );
-};
-```
-
-現在嘗試操作看看，功能保持不變。設計上提升到一個可集中管理的 reducer。reducer 適合對於同一個 state 有多個資料操作的應用。如果 state 規模小需求低可以只用 useState 就好。
-
-部分設計者，會在一個主元件只使用一個 reducer 來規劃所有資料異動。不管任何資料都來自同一個 store 內的 state 來管理，例如這個範例上，除了 Todo 主元件的 list 資料還有 Add 元件的 text。可能 store 的 initState 會規劃成：
-
-```js
-const initState = {
-  inputText:'',
-  todoList:[
-    { id: 1, text: 'Hit the gym', checked: false },
-    { id: 2, text: 'Pay bills', checked: true },
-    { id: 3, text: 'Meet George', checked: false },
-    { id: 4, text: 'Buy eggs', checked: false },
-    { id: 5, text: 'Read a book', checked: false },
-    { id: 6, text: 'Organize office', checked: false },
-  ]
-};
-```
-
-在 reducerFn 根據哪個 action 來決定對資料物件的 inputText 還是 list 做更新。但事實上， inputText 是否適合放入 reducer 內則因人而異，因為它的使用很單純。但集中管理 state 狀態就是 reducer 的優點。
-
-# 結合 Reducer 與 Context 獨立為一個自訂的 hook
-接著 useReducer 話題，他只是替換 useState 的用法。資料流位置於上層元件往下傳的原理還是一樣的，由父層來規劃資料源頭，透過 props 往下傳遞。目前的做法雖然集中管理，但個人覺得還不夠完美。
- 
-- 最上層規劃了 useReducer 而代碼變多。
-- action type 被 dispatch 跟 reducer 兩處使用，應規劃可共用的 action 值。
-- 仍還是需要透過 props 把資料往下傳，把資料異動事件往上傳。
-
-## 獨立 action
-先試圖把 action 獨立，使得 dispatch 跟 reducer 可以更方便共享 action。
-
-- 共享的 action 命名，設計成靜態變數，方便從別處拿取使用。
-- action 可以建議改成拿一個參數，他會返回包含 type 的新物件。
-
-```js src\pages\lesson02\todoList\store\actions.js
-export const ADD_TODO = 'add todo';
-export const DELETE_TODO = 'delete todo';
-export const CHECKED_TODO = 'checked todo';
-
-// actions
-// ---------------------------------------------------------------
-export const addTodo = (item) => ({ type: ADD_TODO, item });
-export const deleteTodo = (id) => ({ type: DELETE_TODO, id });
-export const checkedTodo = (item) => ({ type: CHECKED_TODO, item });
-
-```
-
-而影響的 dispatch 跟 reducer 改變。
-- import 可以用 * 萬用字元接住別名化，使得拿回來的是一個大物件。
-- action 參數可以透過 ES6 先解構，拆成 type 跟其他 props，這個 props 再解取成所需的資料
-- 注意因為 action 的參數被我們改成只有一個，因此 dispatch 的部分要調整配合。
-
-```jsx src\pages\lesson02\todoList\index.jsx
-//...
-import * as action from './store/actions.js';
-
-const TodoList = () => {
-  // reducer
-  // ---------------------------------------------------------------
-  const reducerFn = (state, { type, ...props }) => {
-    switch (type) {
-      case action.ADD_TODO: {
-        return [...state, props.item];
-      }
-      case action.DELETE_TODO: {
-        return state.filter((item) => item.id !== props.id);
-      }
-      case action.CHECKED_TODO: {
-        return state.map((item) => (item.id === props.item.id ? props.item : item));
-      }
-      default: {
-        throw Error('Unknown action: ' + action.type);
-      }
-    }
-  };
-
-  const initState = [
-    { id: 1, text: 'Hit the gym', checked: false },
-    { id: 2, text: 'Pay bills', checked: true },
-    { id: 3, text: 'Meet George', checked: false },
-    { id: 4, text: 'Buy eggs', checked: false },
-    { id: 5, text: 'Read a book', checked: false },
-    { id: 6, text: 'Organize office', checked: false },
-  ];
-
-  const [state, dispatch] = useReducer(reducerFn, initState);
-
-  // dispatch
-  // --------------------------------------------------------------
-  // const handleAdd = (text) => {
-  //   dispatch({
-  //     type: 'add todo',
-  //     id: state[state.length - 1].id + 1,
-  //     text: text,
-  //     checked: false,
-  //   });
-  // };
-  const handleAdd = (text) =>
-    dispatch(
-      action.addTodo({
-        id: state[state.length - 1].id + 1,
-        text,
-        checked: false,
-      })
-    );
-
-  // const handleDelete = (id) => {
-  //   dispatch({
-  //     type: 'delete todo',
-  //     id,
-  //   });
-  // };
-  const handleDelete = (id) => dispatch(action.deleteTodo(id));
-
-  // const handleChecked = (newItem) => {
-  //   dispatch({
-  //     type: 'checked todo',
-  //     item: newItem,
-  //   });
-  // };
-  const handleChecked = (newItem) => dispatch(action.checkedTodo(newItem));
-
-  return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <TaskAdd onAdd={handleAdd} />
-      </div>
-      <TaskList items={state} onDelete={handleDelete} onChecked={handleChecked} />
-    </>
-  );
-};
-```
-
-## 獨立 reducer
-接著搬移 useReducer 所需要的前置準備，注意 useReducer 還是要保留在主元件上無法移動。
-
-```js src\pages\lesson02\todoList\store\reducer.js
-import * as action from './actions.js';
-
-// reducer
-// ---------------------------------------------------------------
-export const reducerFn = (state, { type, ...props }) => {
-  switch (type) {
-    case action.ADD_TODO: {
-      return [...state, props.item];
-    }
-    case action.DELETE_TODO: {
-      return state.filter((item) => item.id !== props.id);
-    }
-    case action.CHECKED_TODO: {
-      return state.map((item) => (item.id === props.item.id ? props.item : item));
+    case 'TOGGLE': {
+      return state.map((item) =>
+        item.id === action.id ? { ...item, checked: !item.checked } : item
+      );
     }
     default: {
-      throw Error('Unknown action: ' + action.type);
+      throw new Error(`未知的 action type: ${action.type}`);
     }
   }
+}
+
+export default function TodoExample() {
+  // 🌟 使用 useReducer 取代 useState
+  const [list, dispatch] = useReducer(todoReducer, initialState);
+
+  // 事件處理函式只需要呼叫 dispatch
+  const handleAdd = (text) => {
+    dispatch({ type: 'ADD', text });
+  };
+
+  const handleDelete = (id) => {
+    dispatch({ type: 'DELETE', id });
+  };
+
+  const handleToggle = (id) => {
+    dispatch({ type: 'TOGGLE', id });
+  };
+
+  return (
+    <div className="todo-example">
+      <h1>✅ Todo List：useReducer 版本</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        <TaskAdd onAdd={handleAdd} />
+      </div>
+
+      <TaskList
+        items={list}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+      />
+    </div>
+  );
+}
+```
+
+{% note info %}
+**useState vs useReducer 對比：**
+
+**useState 版本：**
+```jsx
+const [list, setList] = useState(initialState);
+
+const handleAdd = (text) => {
+  setList((prevList) => [
+    ...prevList,
+    {
+      id: prevList.length > 0 ? prevList[prevList.length - 1].id + 1 : 1,
+      text: text,
+      checked: false,
+    },
+  ]);
+};
+```
+
+**useReducer 版本：**
+```jsx
+const [list, dispatch] = useReducer(todoReducer, initialState);
+
+const handleAdd = (text) => {
+  dispatch({ type: 'ADD', text });
 };
 
-export const initState = [
-  { id: 1, text: 'Hit the gym', checked: false },
-  { id: 2, text: 'Pay bills', checked: true },
-  { id: 3, text: 'Meet George', checked: false },
-  { id: 4, text: 'Buy eggs', checked: false },
-  { id: 5, text: 'Read a book', checked: false },
-  { id: 6, text: 'Organize office', checked: false },
+// 邏輯移到 reducer
+function todoReducer(state, action) {
+  switch (action.type) {
+    case 'ADD': {
+      return [
+        ...state,
+        {
+          id: state.length > 0 ? state[state.length - 1].id + 1 : 1,
+          text: action.text,
+          checked: false,
+        },
+      ];
+    }
+  }
+}
+```
+
+**優勢：**
+- ✅ 元件中的事件處理函式變得簡潔
+- ✅ 狀態更新邏輯集中在 reducer 中
+- ✅ reducer 是純函式，易於測試
+{% endnote %}
+
+### 步驟 2：重構 Action（Action Creator）
+
+為了避免手動編寫 action 物件時出錯，我們可以建立 Action Creator 函式。
+
+```js src/pages/lesson03/pages/TodoExample/store/actions.js
+// Action Types（使用常數避免拼寫錯誤）
+export const ADD_TODO = 'ADD_TODO';
+export const DELETE_TODO = 'DELETE_TODO';
+export const TOGGLE_TODO = 'TOGGLE_TODO';
+
+// Action Creators
+export const addTodo = (text) => ({
+  type: ADD_TODO,
+  text,
+});
+
+export const deleteTodo = (id) => ({
+  type: DELETE_TODO,
+  id,
+});
+
+export const toggleTodo = (id) => ({
+  type: TOGGLE_TODO,
+  id,
+});
+```
+
+**為什麼要使用 Action Creator？**
+
+| 方式                  | 優點                       | 缺點                     |
+| --------------------- | -------------------------- | ------------------------ |
+| **手動建立 action**   | 簡單直觀                   | 容易拼寫錯誤、重複代碼多 |
+| **Action Creator**    | 類型安全、可重用、易於重構 | 需要額外的函式           |
+| **Action Types 常數** | 防止拼寫錯誤、支援自動完成 | 需要額外的常數定義       |
+
+{% note success %}
+**Action Creator 的好處：**
+
+**❌ 手動建立 action（容易出錯）：**
+```jsx
+// 可能拼寫錯誤
+dispatch({ type: 'ADD_TOD', text });  // 錯誤：TOD
+dispatch({ type: 'ADD_TODO', txt: text });  // 錯誤：txt
+```
+
+**✅ 使用 Action Creator（類型安全）：**
+```jsx
+import { addTodo, ADD_TODO } from './store/actions';
+
+// 在元件中
+dispatch(addTodo(text));
+
+// 在 reducer 中
+case ADD_TODO: {  // IDE 會自動完成，不會拼錯
+  return [...state, { id: state.length + 1, text: action.text, checked: false }];
+}
+```
+{% endnote %}
+
+### 步驟 3：重構 Reducer
+
+將 Reducer 獨立成單獨的文件：
+```js src/pages/lesson03/pages/TodoExample/store/reducer.js
+import { ADD_TODO, DELETE_TODO, TOGGLE_TODO } from './actions';
+
+// 初始狀態
+export const initialState = [
+  { id: 1, text: '去健身房', checked: false },
+  { id: 2, text: '繳帳單', checked: true },
+  { id: 3, text: '見 George', checked: false },
+  { id: 4, text: '買雞蛋', checked: false },
+  { id: 5, text: '讀一本書', checked: false },
 ];
+
+// Reducer 函式
+export function todoReducer(state, action) {
+  switch (action.type) {
+    case ADD_TODO: {
+      return [
+        ...state,
+        {
+          id: state.length > 0 ? state[state.length - 1].id + 1 : 1,
+          text: action.text,
+          checked: false,
+        },
+      ];
+    }
+    case DELETE_TODO: {
+      return state.filter((item) => item.id !== action.id);
+    }
+    case TOGGLE_TODO: {
+      return state.map((item) =>
+        item.id === action.id ? { ...item, checked: !item.checked } : item
+      );
+    }
+    default: {
+      throw new Error(`未知的 action type: ${action.type}`);
+    }
+  }
+}
 ```
-```jsx src\pages\lesson02\todoList\index.jsx
+
+**更新主元件：**
+
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
 import { useReducer } from 'react';
-import style from './todoList.module.css';
-import TaskAdd from './component/taskAdd';
-import TaskList from './component/taskList';
-import * as action from './store/actions.js';
-import * as reducer from './store/reducer.js';
+import styles from './todoList.module.css';
+import TaskAdd from './components/TaskAdd';
+import TaskList from './components/TaskList';
 
-const TodoList = () => {
-  const [state, dispatch] = useReducer(reducer.reducerFn, reducer.initState);
+// 🌟 匯入 actions 和 reducer
+import * as actions from './store/actions';
+import { todoReducer, initialState } from './store/reducer';
 
-  // event of dispatch
-  const handleAdd = (text) =>
-    dispatch(
-      action.addTodo({
-        id: state[state.length - 1].id + 1,
-        text,
-        checked: false,
-      })
-    );
-  const handleDelete = (id) => dispatch(action.deleteTodo(id));
-  const handleChecked = (newItem) => dispatch(action.checkedTodo(newItem));
+export default function TodoExample() {
+  const [list, dispatch] = useReducer(todoReducer, initialState);
+
+  // 🌟 使用 Action Creator
+  const handleAdd = (text) => dispatch(actions.addTodo(text));
+  const handleDelete = (id) => dispatch(actions.deleteTodo(id));
+  const handleToggle = (id) => dispatch(actions.toggleTodo(id));
 
   return (
-    <>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
+    <div className="todo-example">
+      <h1>✅ Todo List：useReducer 重構版</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
         <TaskAdd onAdd={handleAdd} />
       </div>
-      <TaskList items={state} onDelete={handleDelete} onChecked={handleChecked} />
-    </>
-  );
-};
 
-export default TodoList;
-```
+      <TaskList
+        items={list}
+        onToggle={handleToggle}
+        onDelete={handleDelete}
+      />
 
-## 獨立 Context
-我們會利用 Context 來讓整個上下層元件都能隨時存取。因此原本在主元件的 action, reducer, dispatch, 甚至 事件的函式都全部透過 Context 來管理。任何元件都不再需要去在乎 reducer 相關用途，只需要透過我們新規劃的 Context 來處理就好。
-
-### 設計 provider
-把主元件的 useReducer, handle 事件都規劃到新 Context 指定位置 ，然後透過 provider 來存取。元件跟 provider 有關聯的資料與方法為：
-
-- 建立 provider 設計為 TodoContext 元件，試圖獲取 state，也就是我們的資料列表之讀取。
-- TodoContext 元件 也可以試圖對 provider 操作 add, checked, delete 的方法。也就是資料的寫入。
-- provider 會返回一個 provider 的 JSX 元件，
-- 根據從主元件搬移過來的資料影響，可以 create 兩個 context 做讀取與寫入兩組。
-- createContext 需要放在外面，成為模組作用域，而不是放在函式的作用域內。這是因為函式會重新渲染，導致 createContext 的實例被重新創建，從而導致 Context 的值不斷變化，影響應用程序的穩定性。
-- 返回上層元件，將剛建立的 TodoContext 元件包覆到 JSX 內，使得整組元件都能利用該 TodoProvider。
-
-```jsx src\pages\lesson02\todoList\context\todoContext.jsx
-import { createContext, useContext, useReducer } from 'react';
-import * as action from '../store/actions.js';
-import * as reducer from '../store/reducer.js';
-
-// 模組作用域建立 Context，確保全局統一
-const StateContext = createContext([]);
-const DispatchContext = createContext(null);
-
-export function TodoContext({ children }) {
-  const [state, dispatch] = useReducer(reducer.reducerFn, reducer.initState);
-
-  function onAdd(text) {
-    dispatch(
-      action.addTodo({
-        id: state[state.length - 1].id + 1,
-        text,
-        checked: false,
-      })
-    );
-  }
-
-  function onDelete(id) {
-    dispatch(action.deleteTodo(id));
-  }
-
-  function onChecked(item) {
-    dispatch(action.checkedTodo(item));
-  }
-
-  return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={{ onAdd, onDelete, onChecked }}>
-        {children}
-      </DispatchContext.Provider>
-    </StateContext.Provider>
-  );
-}
-```
-
-```jsx src\pages\lesson02\todoList\index.jsx
-// import { useReducer } from 'react';
-import style from './todoList.module.css';
-import TaskAdd from './component/taskAdd';
-import TaskList from './component/taskList';
-import { TodoContext } from './context/todoContext';
-
-const TodoList = () => {
-  // const [state, dispatch] = useReducer(reducer.reducerFn, reducer.initState);
-  // const handleAdd = (text) =>
-  //   dispatch(
-  //     action.addTodo({
-  //       id: state[state.length - 1].id + 1,
-  //       text,
-  //       checked: false,
-  //     })
-  //   );
-  // const handleDelete = (id) => dispatch(action.deleteTodo(id));
-  // const handleChecked = (newItem) => dispatch(action.checkedTodo(newItem));
-
-  return (
-    <TodoContext>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
-        <TaskAdd onAdd={handleAdd} />
+      {/* 🌟 顯示統計資訊 */}
+      <div className="todo-stats">
+        <p>總共：{list.length} 項</p>
+        <p>已完成：{list.filter((item) => item.checked).length} 項</p>
+        <p>未完成：{list.filter((item) => !item.checked).length} 項</p>
       </div>
-      <TaskList items={state} onDelete={handleDelete} onChecked={handleChecked} />
-    </TodoContext>
+    </div>
   );
-};
-export default TodoList;
+}
 ```
 
-### 透過自訂 hook 替換 useContext 的方式
-要使用 useContext 的元件必需用到 TodoContext 內的 StateContext 跟 DispatchContext，我們也可以換個方式。透過自己設計並匯出的 function 來直接完成在 TodoContext 內的 StateContext 跟 DispatchContext 操作。這就好比自訂一個 hook 使用，故意命名為 use____。說穿了 hook 就是一個好用的 fn 提供使用。
+{% note success %}
+**專案結構（重構後）：**
 
-- 讀取資料在一些專案上，習慣命名為 selector，我們可以命名 useSelector 作為取得資料 hook。
-- 修改資料在一些專案上，習慣命名為 facade，我們可以命名 useFacade 作為修改資料 hook。
-- 如此一來，元件更清爽，不用理會 context 設計，
-- 拔除所有元件上原本的 props，在任何元件需要拿就使用 useSelector，需要修改就使用 useFacade。
+```
+src/pages/lesson03/pages/TodoExample/
+├── index.jsx              # 主元件（使用 useReducer）
+├── index.css              # 主樣式
+├── todoList.module.css    # CSS Modules
+├── components/
+│   ├── TaskAdd.jsx        # 新增元件
+│   └── TaskList.jsx       # 列表元件
+└── store/                 # 🌟 狀態管理
+    ├── actions.js         # Action Types & Creators
+    └── reducer.js         # Reducer & Initial State
+```
 
-```jsx src\pages\lesson02\todoList\context\todoContext.jsx
+**優勢：**
+- ✅ **關注點分離**：UI、邏輯、狀態管理分離
+- ✅ **可測試性**：reducer 和 action 可以單獨測試
+- ✅ **可維護性**：新增功能只需修改 actions 和 reducer
+- ✅ **類型安全**：使用常數避免拼寫錯誤
+{% endnote %}
+
+# Context + useReducer：終極解決方案
+
+現在我們已經學會了 Context 和 useReducer, 讓我們將它們結合起來，創建一個更強大的狀態管理方案。
+
+## 當前問題：Props Drilling
+
+即使使用了 `useReducer`, 我們仍然需要透過 Props 傳遞 `dispatch` 和 `state`:
+
+```jsx
+<TodoExample>  {/* 管理 state 和 dispatch */}
+  <TaskAdd onAdd={handleAdd} />  {/* Props: onAdd */}
+  <TaskList items={list} onToggle={handleToggle} onDelete={handleDelete} />
+  {/* Props: items, onToggle, onDelete */}
+</TodoExample>
+```
+
+**問題：**
+- 主元件需要管理所有 handler 函式
+- 每個子元件都需要透過 Props 接收函式
+- 如果元件層級更深，Props 傳遞會更複雜
+
+## 解決方案：Context + useReducer
+
+將 `state` 和 `dispatch` 放入 Context, 任何深層子元件都可以直接存取。
+
+{% mermaid graph TD %}
+    A["TodoContext Provider<br/>（提供 state + dispatch)"]
+    B["TodoExample 主元件<br/>（只負責渲染 UI)"]
+    C["TaskAdd 元件<br/>(useContext 取得 dispatch)"]
+    D["TaskList 元件<br/>(useContext 取得 state + dispatch)"]
+    
+    A -.->|"Context 直接傳遞"| C
+    A -.->|"Context 直接傳遞"| D
+    A --> B
+    B --> C
+    B --> D
+    
+    style A fill:#e3f2fd
+    style B fill:#f5f5f5
+    style C fill:#e8f5e9
+    style D fill:#e8f5e9
+{% endmermaid %}
+
+### 步驟 1：建立 Context + Provider
+
+```jsx src/pages/lesson03/pages/TodoExample/context/TodoContext.jsx
 import { createContext, useContext, useReducer } from 'react';
-import * as action from '../store/actions.js';
-import * as reducer from '../store/reducer.js';
+import { todoReducer, initialState } from '../store/reducer';
+import * as actions from '../store/actions';
 
-// 在模块作用域创建 Context，确保全局唯一
-const StateContext = createContext([]);
-const DispatchContext = createContext(null);
+// 🌟 建立兩個 Context
+const TodoStateContext = createContext(null);
+const TodoDispatchContext = createContext(null);
 
-export function TodoContext({ children }) {
-  const [state, dispatch] = useReducer(reducer.reducerFn, reducer.initState);
+// 🌟 Provider 元件
+export function TodoProvider({ children }) {
+  const [state, dispatch] = useReducer(todoReducer, initialState);
 
-  function onAdd(text) {
-    dispatch(
-      action.addTodo({
-        id: state[state.length - 1].id + 1,
-        text,
-        checked: false,
-      })
-    );
-  }
-
-  function onDelete(id) {
-    dispatch(action.deleteTodo(id));
-  }
-
-  function onChecked(item) {
-    dispatch(action.checkedTodo(item));
-  }
+  // 🌟 封裝 dispatch 函式（可選，提供更友善的 API）
+  const handlers = {
+    addTodo: (text) => dispatch(actions.addTodo(text)),
+    deleteTodo: (id) => dispatch(actions.deleteTodo(id)),
+    toggleTodo: (id) => dispatch(actions.toggleTodo(id)),
+  };
 
   return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={{ onAdd, onDelete, onChecked }}>
+    <TodoStateContext.Provider value={state}>
+      <TodoDispatchContext.Provider value={handlers}>
         {children}
-      </DispatchContext.Provider>
-    </StateContext.Provider>
+      </TodoDispatchContext.Provider>
+    </TodoStateContext.Provider>
   );
 }
 
-// 自定義 Hooks
-export function useSelector() {
-  return useContext(StateContext);
+// 🌟 自訂 Hook：讀取 state
+export function useTodoState() {
+  const context = useContext(TodoStateContext);
+  if (context === null) {
+    throw new Error('useTodoState 必須在 TodoProvider 內使用');
+  }
+  return context;
 }
 
-export function useFacade() {
-  return useContext(DispatchContext);
+// 🌟 自訂 Hook：讀取 dispatch handlers
+export function useTodoDispatch() {
+  const context = useContext(TodoDispatchContext);
+  if (context === null) {
+    throw new Error('useTodoDispatch 必須在 TodoProvider 內使用');
+  }
+  return context;
 }
 ```
-```jsx src\pages\lesson02\todoList\index.jsx
-import style from './todoList.module.css';
-import TaskAdd from './component/taskAdd';
-import TaskList from './component/taskList';
-import { TodoContext } from './context/todoContext';
 
-const TodoList = () => {
+{% note info %}
+**為什麼要分兩個 Context？**
+
+```jsx
+// ❌ 方案 A：單一 Context（不推薦）
+const TodoContext = createContext(null);
+<TodoContext.Provider value={{ state, handlers }}>
+
+// ✅ 方案 B：分離 Context（推薦）
+const TodoStateContext = createContext(null);
+const TodoDispatchContext = createContext(null);
+```
+
+**分離的好處：**
+- ✅ **性能優化**：只訂閱需要的資料
+  - 只讀取 `state` 的元件不會因為 `dispatch` 改變而重新渲染
+  - 只使用 `dispatch` 的元件不會因為 `state` 改變而重新渲染
+- ✅ **語意清晰**：明確區分「資料」和「操作」
+- ✅ **更好的 TypeScript 支援**：類型推斷更精確
+{% endnote %}
+
+### 步驟 2：更新主元件
+
+```jsx src/pages/lesson03/pages/TodoExample/index.jsx
+import styles from './todoList.module.css';
+import TaskAdd from './components/TaskAdd';
+import TaskList from './components/TaskList';
+import { TodoProvider, useTodoState } from './context/TodoContext';
+
+// 🌟 統計資訊元件（展示如何使用 Context）
+function TodoStats() {
+  const todos = useTodoState(); // 🌟 直接從 Context 讀取
+
   return (
-    <TodoContext>
-      <div className={style.header}>
-        <h2>My To Do List</h2>
+    <div className="todo-stats">
+      <p>總共：{todos.length} 項</p>
+      <p>已完成：{todos.filter((item) => item.checked).length} 項</p>
+      <p>未完成：{todos.filter((item) => !item.checked).length} 項</p>
+    </div>
+  );
+}
+
+// 🌟 主元件內容
+function TodoContent() {
+  return (
+    <div className="todo-example">
+      <h1>✅ Todo List：Context + useReducer</h1>
+      
+      <div className={styles.header}>
+        <h2>我的待辦清單</h2>
+        {/* 🌟 不再需要傳遞 Props */}
         <TaskAdd />
       </div>
+
+      {/* 🌟 不再需要傳遞 Props */}
       <TaskList />
-    </TodoContext>
+      
+      {/* 🌟 新增統計元件 */}
+      <TodoStats />
+    </div>
   );
-  // return (
-  //   <TodoContext>
-  //     <div className={style.header}>
-  //       <h2>My To Do List</h2>
-  //       <TaskAdd onAdd={handleAdd} />
-  //     </div>
-  //     <TaskList items={state} onDelete={handleDelete} onChecked={handleChecked} />
-  //   </TodoContext>
-  // );
-};
+}
 
-export default TodoList;
+// 🌟 匯出元件：用 Provider 包覆
+export default function TodoExample() {
+  return (
+    <TodoProvider>
+      <TodoContent />
+    </TodoProvider>
+  );
+}
 ```
-```jsx src\pages\lesson02\todoList\component\taskAdd.jsx
-import { useState } from 'react';
-import style from '../todoList.module.css';
-import { useFacade } from '../context/todoContext';
 
-// const TaskAdd = ({ onAdd }) => {
-const TaskAdd = () => {
-  // 沒有 prop 可用取得 fn
+### 步驟 3：更新子元件
+
+#### TaskAdd 元件
+
+```jsx src/pages/lesson03/pages/TodoExample/components/TaskAdd.jsx
+import { useState } from 'react';
+import styles from '../todoList.module.css';
+import { useTodoDispatch } from '../context/TodoContext'; // 🌟 匯入 Hook
+
+export default function TaskAdd() {
   const [text, setText] = useState('');
-  const { onAdd } = useFacade(); // 改用 custom hook 來取得 fn
+  const { addTodo } = useTodoDispatch(); // 🌟 從 Context 取得 addTodo
+
+  const handleSubmit = () => {
+    if (!text.trim()) {
+      alert('請輸入待辦事項！');
+      return;
+    }
+    
+    addTodo(text); // 🌟 直接呼叫
+    setText('');
+  };
 
   return (
     <>
       <input
         type="text"
-        id="myInput"
-        placeholder="Title..."
+        placeholder="輸入新的待辦事項。.."
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSubmit();
+        }}
       />
       <span
-        className={style.addBtn}
-        onClick={() => {
-          if (text === '') return;
-          onAdd(text);
-          setText('');
-        }}
+        className={styles.addBtn}
+        onClick={handleSubmit}
       >
-        Add
+        新增
       </span>
     </>
   );
-};
-export default TaskAdd;
+}
 ```
-```jsx src\pages\lesson02\todoList\component\taskList.jsx
-import style from '../todoList.module.css';
-import { useFacade, useSelector } from '../context/todoContext';
 
-// const TaskList = ({ items, onDelete, onChecked }) => {
-const TaskList = () => { // 沒有 props 可用
-  const state = useSelector(); // 透過 hook，並注意名字也改了注意 items 改名為 state
-  const { onChecked, onDelete } = useFacade(); //透過 hook
+#### TaskList 元件
+
+```jsx src/pages/lesson03/pages/TodoExample/components/TaskList.jsx
+import styles from '../todoList.module.css';
+import { useTodoState, useTodoDispatch } from '../context/TodoContext';
+
+export default function TaskList() {
+  const todos = useTodoState(); // 🌟 從 Context 取得 state
+  const { toggleTodo, deleteTodo } = useTodoDispatch(); // 🌟 從 Context 取得 dispatch
 
   return (
-    <ul className={style.todoList}>
-      {state.map((item) => (
-        <li
-          key={item.id}
-          className={item.checked ? style.checked : null}
-          onClick={() =>
-            onChecked({
-              ...item,
-              checked: !item.checked,
-            })
-          }
-        >
-          {item.text}
-          <span className={style.close} onClick={() => onDelete(item.id)}>
-            ×
-          </span>
+    <ul className={styles.todoList}>
+      {todos.length === 0 ? (
+        <li style={{ textAlign: 'center', color: '#6c757d', cursor: 'default' }}>
+          沒有待辦事項，新增一個吧！
         </li>
-      ))}
+      ) : (
+        todos.map((item) => (
+          <li
+            key={item.id}
+            className={item.checked ? styles.checked : ''}
+            onClick={() => toggleTodo(item.id)} // 🌟 直接呼叫
+          >
+            {item.text}
+            <span
+              className={styles.close}
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteTodo(item.id); // 🌟 直接呼叫
+              }}
+            >
+              ×
+            </span>
+          </li>
+        ))
+      )}
     </ul>
   );
-};
-export default TaskList;
+}
 ```
 
+{% note success %}
+**Context + useReducer 的優勢：**
+
+**Before（Props Drilling）：**
+```jsx
+<TodoExample>  {/* 管理所有 state 和 handlers */}
+  <TaskAdd onAdd={handleAdd} />
+  <TaskList items={list} onToggle={handleToggle} onDelete={handleDelete} />
+  <TodoStats items={list} />
+</TodoExample>
+```
+
+**After（Context）：**
+```jsx
+<TodoProvider>  {/* 只在最外層提供 Context */}
+  <TodoExample>
+    <TaskAdd />         {/* 不需要 Props */}
+    <TaskList />        {/* 不需要 Props */}
+    <TodoStats />       {/* 不需要 Props */}
+  </TodoExample>
+</TodoProvider>
+```
+
+**好處：**
+- ✅ **消除 Props Drilling**：子元件直接從 Context 讀取
+- ✅ **關注點分離**：主元件不需要管理所有 handlers
+- ✅ **易於擴展**：新增元件時不需要修改父元件
+- ✅ **更好的封裝**：Context 內部實作可以隨時改變，不影響元件
+- ✅ **提升可測試性**：可以輕鬆 mock Context Provider
+{% endnote %}
+
+# 總結
+
+## 本章學習重點
+
+✅ **Context API**
+- 解決 Prop Drilling 問題
+- 三步驟：`createContext` → `Provider` → `useContext`
+- 適用場景：主題、語言、使用者資訊等跨元件共享的資料
+- Context 巢套：子層 Provider 覆蓋父層值
+
+✅ **CSS Modules**
+- 避免全域樣式汙染
+- 檔案命名：`.module.css`
+- 使用方式：`import styles from './MyComponent.module.css'`
+- 自動產生唯一 class hash 值
+
+✅ **useReducer**
+- 管理複雜狀態的更好選擇
+- 組成：`reducer` + `initialState` → `[state, dispatch]`
+- Reducer 是純函式：`(state, action) => newState`
+- Action Creator：避免手動建立 action 時出錯
+- 適用場景：多個相關狀態、複雜的狀態更新邏輯
+
+✅ **Context + useReducer**
+- 結合兩者優勢：跨元件狀態 + 集中管理
+- 分離 StateContext 和 DispatchContext（性能優化）
+- 自訂 Hook：提供更友善的 API
+- 消除 Props Drilling, 提升可維護性
+
+## 最佳實踐建議
+
+### 1. 何時使用 Context？
+
+**✅ 適合使用 Context：**
+- 跨多層元件的共享資料（主題、語言、使用者資訊）
+- 避免 Prop Drilling（Props 需要傳遞超過 3 層）
+- 全域設定（API 端點、功能開關）
+
+**❌ 不適合使用 Context：**
+- 頻繁變動的資料（會導致大量重新渲染）
+- 元件間的直接通信（考慮使用狀態提升或自訂事件）
+- 簡單的 Props 傳遞（1-2 層，直接用 Props 即可）
+
+### 2. Context 性能優化
+
+```jsx
+// ❌ 錯誤：每次渲染都建立新物件
+<Context.Provider value={{ user, theme }}>
+
+// ✅ 正確：使用 useMemo 避免不必要的重新渲染
+const value = useMemo(() => ({ user, theme }), [user, theme]);
+<Context.Provider value={value}>
+```
+
+### 3. useReducer vs useState 選擇指南
+
+| 場景                    | 使用 useState | 使用 useReducer |
+| ----------------------- | ------------- | --------------- |
+| 簡單狀態（單一值）      | ✅             | ❌               |
+| 複雜狀態（多個相關值）  | ❌             | ✅               |
+| 狀態更新邏輯簡單        | ✅             | ❌               |
+| 狀態更新邏輯複雜        | ❌             | ✅               |
+| 需要測試狀態邏輯        | ❌             | ✅               |
+| 狀態依賴前一個狀態      | △             | ✅               |
+| 需要向下傳遞多個 setter | ❌             | ✅               |
+
+### 4. 專案結構建議
+
+```
+src/
+├── contexts/              # 全域 Context
+│   ├── AuthContext.jsx    # 使用者認證
+│   ├── ThemeContext.jsx   # 主題管理
+│   └── AppProviders.jsx   # 整合所有 Provider
+├── pages/
+│   └── TodoPage/
+│       ├── index.jsx          # 頁面主元件
+│       ├── context/            # 頁面專屬 Context
+│       │   └── TodoContext.jsx
+│       ├── store/              # Reducer 相關
+│       │   ├── actions.js
+│       │   └── reducer.js
+│       ├── components/         # 子元件
+│       └── styles.module.css
+```
+
+### 5. 錯誤處理
+
+```jsx
+// 🌟 在自訂 Hook 中檢查 Context 是否存在
+export function useTodoState() {
+  const context = useContext(TodoStateContext);
+  
+  if (context === null) {
+    throw new Error(
+      'useTodoState 必須在 TodoProvider 內使用。' +
+      '請確保元件被 <TodoProvider> 包覆。'
+    );
+  }
+  
+  return context;
+}
+```
+
+## React 19 相關更新
+
+{% note primary %}
+**React 19 對 Context 和 Reducer 的改進：**
+
+1. **React Compiler（實驗性）**
+   - 自動優化 Context 的重新渲染
+   - 不需要手動使用 `useMemo`/`useCallback`
+
+2. **更好的 DevTools 支援**
+   - Context 的資料流更清晰
+   - Reducer Action 可以在 Timeline 中追蹤
+
+3. **Server Components（伺服器元件）**
+   - Context 在 Server Components 中的使用限制
+   - 建議將 Context 用於 Client Components
+
+4. **Actions（表單處理）**
+   - 可以結合 `useActionState` 處理表單提交
+   - 與 `useReducer` 類似，但專為表單設計
+{% endnote %}
+
+## 下一步學習
+
+完成本章後，建議繼續學習：
+
+1. **第三方狀態管理**
+   - **Zustand**：輕量、簡單（推薦初學者）
+   - **Redux Toolkit**：企業級、生態系完整
+   - **Jotai**：原子化狀態管理
+
+2. **資料獲取與快取**
+   - **TanStack Query（React Query）**：伺服器狀態管理
+   - **SWR**：輕量的資料獲取 Hook
+   - 與 `useReducer` 整合處理載入狀態
+
+3. **進階模式**
+   - Context 性能優化技巧
+   - Reducer 的副作用處理（搭配 `useEffect`）
+   - Immer：簡化不可變更新
+
+4. **全端框架**
+   - **Next.js 15**：Server Components + Actions
+   - **Remix**：Loader + Action 模式
+
 # 參考文獻
-- [Quick Start – React](https://react.dev/learn)
+
+- [React 官方文件 - useContext](https://react.dev/reference/react/useContext)
+- [React 官方文件 - useReducer](https://react.dev/reference/react/useReducer)
+- [React 官方部落格 - React 19 Beta](https://react.dev/blog/2024/04/25/react-19)
+- [When to use useReducer vs useState](https://beta.react.dev/learn/extracting-state-logic-into-a-reducer)
+- [CSS Modules 官方文件](https://github.com/css-modules/css-modules)

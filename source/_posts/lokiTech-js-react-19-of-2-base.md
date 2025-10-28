@@ -409,18 +409,18 @@ function App() {
 此時 ESLint 預設規則可能不會檢測這個錯誤。我們可以添加自訂規則：
 
 ```js eslint.config.js
-rules: {
-  ...js.configs.recommended.rules,
-  ...react.configs.recommended.rules,
-  ...react.configs['jsx-runtime'].rules,
-  ...reactHooks.configs.recommended.rules,
-  'react/jsx-no-target-blank': 'off',
-  'react-refresh/only-export-components': [
-    'warn',
-    { allowConstantExport: true },
-  ],
+ rules: {
+      ...js.configs.recommended.rules,
+      ...react.configs.recommended.rules,
+      ...react.configs['jsx-runtime'].rules,
+      ...reactHooks.configs.recommended.rules,
+      'react/jsx-no-target-blank': 'off',
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
   'no-extra-semi': 'error', // 禁止多餘分號
-},
+    },
 ```
 
 儲存配置檔後，回到 `App.jsx`，錯誤提示會立即出現：

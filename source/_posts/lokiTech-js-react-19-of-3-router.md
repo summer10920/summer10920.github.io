@@ -6,7 +6,7 @@ categories:
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-18 13:09:14
-hidden: false
+hidden: true
 ---
 
 ![](/assets/images/banner/react-router.png)
@@ -23,6 +23,9 @@ hidden: false
 - **Node.js**: 20+ LTS
 
 由於 React Router 版本間可能存在 API 差異，請確認你安裝的版本。如果未來有新版本發布，請參考官方文件的版本遷移指南。
+
+**CSS 語法說明：**
+本章的 CSS 範例均使用**原生巢狀 CSS 語法**（CSS Nesting），這是現代瀏覽器已支援的標準功能（Chrome 112+、Firefox 117+、Safari 16.5+）。巢狀語法讓樣式更易讀且結構更清晰。
 {% endnote %}
 
 # 整合 Router
@@ -352,7 +355,7 @@ export default function Lesson01() {
 ```
 
 ```css src/pages/lesson01/index.css
-/* 這是原本 App.css 的內容，現在成為 Lesson01 專屬樣式 */
+/* 這是原本 App.css 的內容，現在成為 Lesson01 專屬樣式，並修改為巢狀寫法 */
 
 #root {
   max-width: 1280px;
@@ -430,6 +433,18 @@ export default function Lesson03() {
 
 建立 Layout 元件來提供統一的佈局框架，包含側邊選單（aside menu）和主要內容區域：
 
+**程式碼說明：**
+
+1. `<NavLink>`：
+   - React Router 提供的導航連結元件
+   - `to` 參數：指定要導向的 URL 路徑
+   - 會自動為當前頁面的連結添加 `.active` class
+
+2. `<Outlet />`：
+   - 子路由的渲染位置（佔位符）
+   - 類似「插槽」的概念，子路由的元件會在這裡顯示
+   - 例如：訪問 `/lesson01` 時，`<Lesson01 />` 會渲染在 `<Outlet />` 的位置
+
 ```jsx src/components/Layout.jsx
 import { Outlet, NavLink } from 'react-router';
 import './Layout.css';
@@ -486,45 +501,47 @@ export default function Layout() {
   height: 100vh;
   overflow-y: auto;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-}
 
-.sidebar h2 {
-  margin: 0 0 2rem 0;
-  font-size: 1.5rem;
-  text-align: center;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-}
+  h2 {
+    margin: 0 0 2rem 0;
+    font-size: 1.5rem;
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  }
 
-.sidebar nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+  nav {
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-.sidebar nav li {
-  margin-bottom: 0.5rem;
-}
+    li {
+      margin-bottom: 0.5rem;
+    }
 
-.sidebar nav a {
-  display: block;
-        color: white;
-  text-decoration: none;
-  padding: 1rem;
-  border-radius: 8px;
-  transition: all 0.3s;
-  font-weight: 500;
-}
+    a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 1rem;
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-weight: 500;
 
-.sidebar nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
-}
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+      }
 
-.sidebar nav a.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      &.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
 }
 
 /* 主要內容區域 */
@@ -541,7 +558,7 @@ export default function Layout() {
   .sidebar {
     width: 100%;
     height: auto;
-  position: relative;
+    position: relative;
   }
 
   .content {
@@ -639,7 +656,6 @@ pnpm dev
 # Router 功能實作教學
 在 Lesson01 中我們完成了基礎元件的建立，現在讓我們在 Lesson02 頁面中實作一個「個人作品集」(Portfolio) 系統，透過這個完整的 demo 來學習所有 React Router 的核心功能。
 
-
 我們要在 Lesson02 中建立一個包含以下功能的作品集系統：
 
 ```
@@ -700,9 +716,9 @@ export default function Lesson02() {
       <nav className="lesson02-nav">
         <h2>📂 我的作品集</h2>
         <div className="nav-links">
-          <Link to="/lesson02/projects" className="nav-link">作品列表</Link>
-          <Link to="/lesson02/about" className="nav-link">關於我</Link>
-          <Link to="/lesson02/contact" className="nav-link">聯絡我</Link>
+          <Link to="projects" className="nav-link">作品列表</Link>
+          <Link to="about" className="nav-link">關於我</Link>
+          <Link to="contact" className="nav-link">聯絡我</Link>
         </div>
       </nav>
 
@@ -721,24 +737,69 @@ export default function Lesson02() {
 }
 ```
 
+{% note info %}
+**Link 的 `to` 參數說明：**
+
+`to` 接受的是 **URL 路徑**（不是元件名稱或檔案路徑），React Router 會根據這個 URL 去匹配 `<Route>` 的 `path`，然後渲染對應的元件。
+
+**巢狀路由的路徑組合：**
+
+在巢狀路由中，子路由的路徑會**自動附加**在父路由後面：
+
+```jsx
+// App.jsx - 父路由
+<Route path="lesson02/*" element={<Lesson02 />} />
+
+// Lesson02/index.jsx - 子路由
+<Route path="projects" element={<ProjectList />} />
+// ↓ 自動組合成
+// 最終 URL: /lesson02/projects
+```
+
+**Link 的相對路徑運作：**
+
+```jsx
+// 在 Lesson02 元件內（當前 URL: /lesson02）
+<Link to="projects">作品列表</Link>
+// ↓ 點擊後
+// URL 變成：/lesson02/projects ✅
+
+// React Router 匹配流程：
+// 1. 尋找父路由 lesson02/*
+// 2. 在其子路由中尋找 path="projects"
+// 3. 渲染 <ProjectList /> 元件
+```
+
+**兩種寫法對比：**
+
+| 寫法                      | 實際 URL             | 優點                             | 缺點                 |
+| ------------------------- | -------------------- | -------------------------------- | -------------------- |
+| `to="projects"`           | `/lesson02/projects` | 簡潔、靈活，父路由改變時自動跟隨 | -                    |
+| `to="/lesson02/projects"` | `/lesson02/projects` | 明確、不依賴當前位置             | 父路由改名需全部修改 |
+
+**建議：**
+- ✅ 在巢狀路由內部導航：使用相對路徑 `to="projects"`
+- ✅ 跨層級導航（如從 Lesson01 跳到 Lesson02）：使用絕對路徑 `to="/lesson02/projects"`
+{% endnote %}
+
 ```css src/pages/lesson02/index.css
 .lesson02-container {
   max-width: 1200px;
-  margin: 0 auto;
-}
+    margin: 0 auto;
+  }
 
 .lesson02-nav {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+    color: white;
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
 
-.lesson02-nav h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.8rem;
+  h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.8rem;
+  }
 }
 
 .nav-links {
@@ -754,11 +815,11 @@ export default function Lesson02() {
   border-radius: 8px;
   transition: all 0.3s;
   font-weight: 500;
-}
 
-.nav-link:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+  }
 }
 
 .lesson02-content {
@@ -770,10 +831,10 @@ export default function Lesson02() {
 }
 ```
 
-## 步驟 3：建立作品列表頁面（Link 導航）
+## 步驟 3：建立作品列表頁面（Link 導航 + useLocation）
 
 ```jsx src/pages/lesson02/pages/ProjectList.jsx
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import './ProjectList.css';
 
 // 模擬作品資料
@@ -802,8 +863,19 @@ const projects = [
 ];
 
 export default function ProjectList() {
+  // 🌟 接收從其他頁面傳來的 state
+  const location = useLocation();
+  const successMessage = location.state?.message;
+
   return (
     <div>
+      {/* 🌟 如果有成功訊息，顯示提示框 */}
+      {successMessage && (
+        <div className="success-alert">
+          ✅ {successMessage}
+        </div>
+      )}
+
       <h1>我的作品集</h1>
       <p className="subtitle">點擊任一作品查看詳細資訊</p>
 
@@ -833,6 +905,29 @@ export default function ProjectList() {
 ```
 
 ```css src/pages/lesson02/pages/ProjectList.css
+/* 成功訊息提示框 */
+.success-alert {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .subtitle {
   color: #666;
   margin-bottom: 2rem;
@@ -853,29 +948,29 @@ export default function ProjectList() {
   color: inherit;
   transition: all 0.3s;
   background: white;
-}
 
-.project-card:hover {
-  border-color: #667eea;
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+  &:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #667eea;
+  }
+
+  p {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
 }
 
 .project-image {
   font-size: 4rem;
-  text-align: center;
+    text-align: center;
   margin-bottom: 1rem;
-}
-
-.project-card h3 {
-  margin: 0 0 0.5rem 0;
-  color: #667eea;
-}
-
-.project-card p {
-  color: #666;
-  margin-bottom: 1rem;
-  line-height: 1.6;
 }
 
 .tech-tags {
@@ -899,6 +994,55 @@ export default function ProjectList() {
 - 動態生成路徑：`` to={`/lesson02/projects/${project.id}`} ``
 - 使用 `:hover` 提供視覺回饋
 
+{% note info %}
+**Link vs NavLink 的差異：**
+
+這是第一次使用 `<Link>` 元件，讓我們了解它與前面使用的 `<NavLink>` 有什麼不同：
+
+**`<Link>`：一般導航連結**
+```jsx
+<Link to="/lesson02/projects/1" className="project-card">
+  <h3>React 部落格系統</h3>
+</Link>
+```
+- 用於一般的頁面跳轉（按鈕、卡片、文字連結）
+- **不會**自動添加任何樣式或 class
+- 適合：內容卡片、操作按鈕、文章列表
+
+**`<NavLink>`：導航選單專用連結**
+```jsx
+<NavLink to="/lesson01" className="nav-link">
+  Lesson 01
+</NavLink>
+```
+- 用於導航選單、側邊欄、頁籤
+- **會自動**為當前頁面的連結添加 `.active` class
+- 適合：主選單、側邊欄、麵包屑導航
+
+**何時使用哪一個？**
+
+| 使用場景               | 使用元件    | 原因                 |
+| ---------------------- | ----------- | -------------------- |
+| 側邊選單、導航列       | `<NavLink>` | 需要高亮顯示當前頁面 |
+| 作品卡片、文章列表     | `<Link>`    | 不需要 active 狀態   |
+| 操作按鈕（編輯、查看） | `<Link>`    | 不需要 active 狀態   |
+| 頁籤切換               | `<NavLink>` | 需要高亮顯示當前頁籤 |
+
+**實際渲染結果：**
+
+```jsx
+// NavLink 當前頁面時
+<NavLink to="/lesson01">Lesson 01</NavLink>
+// 渲染成：
+<a href="/lesson01" class="active">Lesson 01</a>
+
+// Link 永遠不會有 active
+<Link to="/lesson01">Lesson 01</Link>
+// 渲染成：
+<a href="/lesson01">Lesson 01</a>
+```
+{% endnote %}
+
 ## 步驟 4：建立作品詳情頁面（useParams）
 
 ```jsx src/pages/lesson02/pages/ProjectDetail.jsx
@@ -906,8 +1050,9 @@ import { useParams, useNavigate, Link } from 'react-router';
 import './ProjectDetail.css';
 
 // 模擬完整作品資料
-const projectsData = {
-  1: {
+const projectsData = [
+  {
+    id: 1,
     title: 'React 部落格系統',
     description: '使用 React + Router 建立的現代化部落格系統，支援文章分類、標籤搜尋、留言功能。',
     tech: ['React 19', 'React Router v7', 'CSS Modules', 'LocalStorage'],
@@ -922,7 +1067,8 @@ const projectsData = {
     githubUrl: 'https://github.com/example/blog',
     image: '🌐',
   },
-  2: {
+  {
+    id: 2,
     title: '待辦事項應用',
     description: '支援拖拉排序、分類標籤的 Todo App，資料儲存在 LocalStorage。',
     tech: ['React', 'LocalStorage', 'CSS Grid', 'Drag & Drop API'],
@@ -937,7 +1083,8 @@ const projectsData = {
     githubUrl: 'https://github.com/example/todo',
     image: '📝',
   },
-  3: {
+  {
+    id: 3,
     title: '天氣查詢應用',
     description: '串接 OpenWeather API 的天氣預報工具，支援城市搜尋與多日預報。',
     tech: ['React', 'OpenWeather API', 'Axios', 'Chart.js'],
@@ -952,12 +1099,14 @@ const projectsData = {
     githubUrl: 'https://github.com/example/weather',
     image: '🌤️',
   },
-};
+];
 
 export default function ProjectDetail() {
   const { projectId } = useParams(); // 🌟 從 URL 獲取參數
   const navigate = useNavigate();
-  const project = projectsData[projectId];
+  
+  // 從陣列中尋找對應的作品
+  const project = projectsData.find((p) => p.id === Number(projectId));
 
   // 如果作品不存在
   if (!project) {
@@ -1066,10 +1215,10 @@ export default function ProjectDetail() {
   font-size: 1rem;
   margin-bottom: 2rem;
   transition: all 0.3s;
-}
 
-.btn-back:hover {
-  background: #cbd5e0;
+  &:hover {
+    background: #cbd5e0;
+  }
 }
 
 .project-header {
@@ -1079,15 +1228,15 @@ export default function ProjectDetail() {
   margin-bottom: 2rem;
   padding-bottom: 2rem;
   border-bottom: 2px solid #e2e8f0;
+
+  h1 {
+    margin: 0 0 0.5rem 0;
+    color: #667eea;
+  }
 }
 
 .project-icon {
   font-size: 5rem;
-}
-
-.project-header h1 {
-  margin: 0 0 0.5rem 0;
-  color: #667eea;
 }
 
 .project-desc {
@@ -1099,11 +1248,11 @@ export default function ProjectDetail() {
 
 .section {
   margin-bottom: 2rem;
-}
 
-.section h2 {
-  color: #333;
-  margin-bottom: 1rem;
+  h2 {
+    color: #333;
+    margin-bottom: 1rem;
+  }
 }
 
 .tech-list {
@@ -1123,14 +1272,14 @@ export default function ProjectDetail() {
 .feature-list {
   list-style: none;
   padding: 0;
-}
 
-.feature-list li {
-  padding: 0.75rem;
-  background: #f7fafc;
-  border-left: 4px solid #667eea;
-  margin-bottom: 0.5rem;
-  border-radius: 4px;
+  li {
+    padding: 0.75rem;
+    background: #f7fafc;
+    border-left: 4px solid #667eea;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+  }
 }
 
 .link-buttons {
@@ -1150,21 +1299,21 @@ export default function ProjectDetail() {
 .btn-demo {
   background: #667eea;
   color: white;
-}
 
-.btn-demo:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
 }
 
 .btn-github {
   background: #333;
   color: white;
-}
 
-.btn-github:hover {
-  background: #000;
-  transform: translateY(-2px);
+  &:hover {
+    background: #000;
+    transform: translateY(-2px);
+  }
 }
 
 .nav-projects {
@@ -1180,21 +1329,21 @@ export default function ProjectDetail() {
   border-radius: 8px;
   font-weight: 500;
   transition: all 0.3s;
-}
 
-.btn-nav:hover {
-  background: #667eea;
-  color: white;
+  &:hover {
+    background: #667eea;
+    color: white;
+  }
 }
 
 .not-found {
   text-align: center;
   padding: 3rem;
-}
 
-.not-found h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .btn-primary {
@@ -1209,10 +1358,11 @@ export default function ProjectDetail() {
 ```
 
 **學習重點：**
-- `useParams()`：從 URL 取得 `projectId` 參數
+- `useParams()`：從 URL 取得 `projectId` 參數（字串格式）
+- `Array.find()`：從陣列中尋找符合條件的項目
+- 參數轉換：`Number(projectId)` 將 URL 參數（字串）轉為數字進行比對
 - `navigate(-1)`：返回上一頁
-- 參數轉換：`Number(projectId)` 將字串轉為數字
-- 錯誤處理：當作品不存在時顯示友善訊息
+- 錯誤處理：當作品不存在時（`find()` 返回 `undefined`）顯示友善訊息
 
 ## 步驟 5：建立關於我頁面
 
@@ -1284,17 +1434,17 @@ export default function About() {
 
 .about-section {
   margin-bottom: 3rem;
-}
 
-.about-section h2 {
-  color: #667eea;
-  margin-bottom: 1rem;
-}
+  h2 {
+    color: #667eea;
+    margin-bottom: 1rem;
+  }
 
-.about-section p {
-  line-height: 1.8;
-  color: #666;
-  font-size: 1.1rem;
+  p {
+    line-height: 1.8;
+    color: #666;
+    font-size: 1.1rem;
+  }
 }
 
 .skills-grid {
@@ -1308,58 +1458,58 @@ export default function About() {
   background: #f7fafc;
   border-radius: 8px;
   border-left: 4px solid #667eea;
-}
 
-.skill-card h3 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-}
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
 
-.skill-card p {
-  margin: 0;
-  color: #666;
-  font-size: 0.95rem;
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+  }
 }
 
 .timeline {
   position: relative;
   padding-left: 2rem;
-}
 
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #667eea;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #667eea;
+  }
 }
 
 .timeline-item {
   position: relative;
   padding-bottom: 2rem;
-}
 
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: -2.5rem;
-  top: 0;
-  width: 12px;
-  height: 12px;
-  background: #667eea;
-  border-radius: 50%;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    left: -2.5rem;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    border-radius: 50%;
+  }
 
-.timeline-item h3 {
-  margin: 0 0 0.5rem 0;
-  color: #667eea;
-}
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #667eea;
+  }
 
-.timeline-item p {
-  margin: 0;
-  color: #666;
+  p {
+    margin: 0;
+    color: #666;
+  }
 }
 ```
 
@@ -1523,34 +1673,32 @@ export default function Contact() {
 
 .form-group {
   margin-bottom: 1.5rem;
-}
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-weight: 500;
-}
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+  }
 
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
 
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #667eea;
-}
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+    }
 
-.form-group input.error,
-.form-group textarea.error {
-  border-color: #e53e3e;
+    &.error {
+      border-color: #e53e3e;
+    }
+  }
 }
 
 .error-message {
@@ -1580,87 +1728,252 @@ export default function Contact() {
 .btn-submit {
   background: #667eea;
   color: white;
-}
 
-.btn-submit:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
 }
 
 .btn-cancel {
   background: #e2e8f0;
   color: #333;
-}
 
-.btn-cancel:hover {
-  background: #cbd5e0;
+  &:hover {
+    background: #cbd5e0;
+  }
 }
 ```
 
 **學習重點：**
 - 表單驗證：即時顯示錯誤訊息
 - `navigate()` 配合表單提交使用
-- `navigate()` 傳遞 state 資料到下一頁
+- **程式導航傳遞資料**：透過 `navigate()` 的第二個參數 `{ state: {...} }` 傳遞資料到下一頁
 
-## 測試運行
+{% note info %}
+**如何接收 navigate 傳遞的 state 資料？**
 
-現在啟動專案並測試 Lesson02：
+當我們在 Contact 頁面使用 `navigate()` 傳遞資料：
 
-```bash
-pnpm dev
+```jsx
+// Contact.jsx 送出表單後
+navigate('/lesson02/projects', {
+  state: { message: '感謝您的聯絡，我會盡快回覆！' }
+});
 ```
 
-1. **訪問** `/lesson02`：自動導向到作品列表
-2. **點擊作品卡片**：進入作品詳情頁面（觀察 URL 變化）
-3. **點擊「上一個/下一個作品」**：在不同作品間切換
-4. **點擊「返回」按鈕**：返回作品列表
-5. **點擊「關於我」**：查看個人資訊
-6. **點擊「聯絡我」**：填寫並提交表單（觀察導航行為）
+在目標頁面（ProjectList）可以使用 `useLocation()` 接收：
 
-## 學習總結
+```jsx
+// ProjectList.jsx
+import { Link, useLocation } from 'react-router';
 
-透過這個完整的作品集系統，我們學會了：
+export default function ProjectList() {
+  const location = useLocation();
+  const successMessage = location.state?.message; // 接收傳遞的資料
 
-✅ **巢狀路由（Nested Routes）**
-- Lesson02 內部管理自己的子路由
-- 使用 `/*` 允許內部路由
+  return (
+    <div>
+      {/* 顯示成功訊息 */}
+      {successMessage && (
+        <div className="success-alert">
+          ✅ {successMessage}
+        </div>
+      )}
+      
+      <h1>我的作品集</h1>
+      {/* 其他內容。.. */}
+    </div>
+  );
+}
+```
 
-✅ **Link 導航**
-- 使用 `<Link>` 建立可點擊元素
-- 動態生成路徑
+**完整流程圖：**
 
-✅ **useParams**
-- 從 URL 獲取參數
-- 根據參數顯示不同內容
+{% mermaid graph TD %}
+A["Contact 頁面<br/>[表單填寫 & 送出]"]
+B["navigate('/lesson02/projects',<br/>{ state: { message: '感謝您。..' } })"]
+C["ProjectList 頁面<br/>(useLocation() 取得 state)"]
+D["顯示成功訊息"]
 
-✅ **useNavigate**
-- 程式控制導航
-- 返回上一頁 `navigate(-1)`
-- 傳遞狀態資料
+A -->|送出表單| B
+B -->|跳轉並帶 state| C
+C -->|讀取 state.message| D
+{% endmermaid %}
 
-✅ **實際應用場景**
-- 作品展示系統
-- 表單驗證與提交
-- 錯誤處理
 
-下一步可以嘗試：
-- 添加更多作品
-- 實作分類篩選功能
-- 連接真實的後端 API
+**實際應用場景：**
+- ✅ 表單送出後顯示成功訊息
+- ✅ 刪除資料後顯示確認訊息
+- ✅ 登入成功後顯示歡迎訊息
+- ✅ 從編輯頁返回列表時保留篩選條件
 
-## 步驟 7：添加 404 錯誤處理
+**與 URL 參數 (`?key=value`) 的差異：**
 
-在 Lesson02 的路由配置中添加 404 處理，當使用者輸入不存在的路徑時顯示友善的錯誤訊息：
+| 方式         | 範例                                  | 特點                           | 適用場景           |
+| ------------ | ------------------------------------- | ------------------------------ | ------------------ |
+| `state`      | `navigate('/page', { state: {...} })` | 不會出現在 URL，重新整理會消失 | 臨時訊息、敏感資料 |
+| URL 參數     | `navigate('/page?id=1&tab=2')`        | 會出現在 URL，可分享連結       | 篩選條件、頁碼、ID |
+| 動態路由參數 | `navigate('/projects/123')`           | RESTful 風格，SEO 友好         | 資源 ID、詳情頁    |
+{% endnote %}
+
+## 步驟 7：404 錯誤處理策略
+
+在規劃 404 錯誤處理之前，我們需要先理解一個關鍵問題：**要不要讓子模組（如 Lesson02）管理自己的路由？**
+
+這個決策會影響：
+- 404 錯誤頁面的數量（單一 vs 多個）
+- 路由配置的位置（集中在 App.jsx vs 分散到各模組）
+- 專案的複雜度和維護成本
+
+### 兩種設計方向對比
+
+{% mermaid graph TD %}
+A["專案路由架構選擇"]
+B["方案 A：集中式路由<br/>（推薦給中小型專案）"]
+C["方案 B：分散式路由<br/>（推薦給大型應用）"]
+D["特點：<br/>✓ 所有路由在 App.jsx 集中定義<br/>✓ 統一的 404 頁面<br/>✓ 簡單直觀，易於維護"]
+E["特點：<br/>✓ 各模組管理自己的子路由<br/>✓ 可設計多層 404（全站 + 模組）<br/>✓ 高度模組化，適合團隊協作"]
+F["適用：<br/>• 個人部落格<br/>• 作品集網站<br/>• 企業官網<br/>• 學習專案"]
+G["適用：<br/>• 電商平台<br/>• 後台管理系統<br/>• 多租戶 SaaS<br/>• 大型內容平台"]
+
+A --> B
+A --> C
+B --> D
+C --> E
+D --> F
+E --> G
+{% endmermaid %}
+
+---
+
+### 方案 A：集中式路由
+所有路由在 `App.jsx` 集中定義，子模組（如 Lesson02）**只負責渲染內容，不管理路由**。
+
+**核心特點：**
+- ✅ 路由配置集中在一處，易於查看和維護
+- ✅ 單一 404 頁面，使用者體驗一致
+- ✅ 不需要巢狀路由，結構簡單直觀
+- ✅ **適合 90% 的專案**（個人部落格、作品集、企業官網、學習專案）
+
+#### 路由架構圖
+
+```
+App.jsx（集中管理所有路由）
+├── /                     → Navigate to /lesson01
+├── /lesson01             → Lesson01 元件
+├── /lesson02             → Lesson02 元件（只渲染導航列）
+├── /lesson02/projects    → ProjectList 元件
+├── /lesson02/about       → About 元件
+├── /lesson02/contact     → Contact 元件
+└── /*                    → NotFound 元件（統一 404）
+
+Lesson02 元件
+└── 只負責渲染內部導航列，不管理路由
+```
+
+#### 實作步驟
+
+##### 修改 App.jsx（集中定義所有路由）
+
+將原本使用 `lesson02/*` 的巢狀路由改為**平面路由**，所有 Lesson02 相關的路由都在 App.jsx 中定義：
+
+```jsx src/App.jsx
+import { Routes, Route, Navigate } from 'react-router';
+import Layout from './components/Layout';
+import Lesson01 from './pages/lesson01';
+import Lesson02 from './pages/lesson02'; // 只負責渲染導航列
+import Lesson03 from './pages/lesson03';
+
+// Lesson02 的子頁面元件
+import ProjectList from './pages/lesson02/pages/ProjectList';
+import ProjectDetail from './pages/lesson02/pages/ProjectDetail';
+import About from './pages/lesson02/pages/About';
+import Contact from './pages/lesson02/pages/Contact';
+
+// 統一的 404 頁面
+import NotFound from './pages/NotFound';
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        {/* 根路徑導向 lesson01 */}
+        <Route index element={<Navigate to="/lesson01" replace />} />
+        
+        {/* Lesson01 */}
+        <Route path="lesson01" element={<Lesson01 />} />
+        
+        {/* Lesson02 - 所有子路由都在這裡定義 */}
+        <Route path="lesson02" element={<Lesson02 />}>
+          <Route index element={<Navigate to="/lesson02/projects" replace />} />
+        </Route>
+        <Route path="lesson02/projects" element={<ProjectList />} />
+        <Route path="lesson02/projects/:projectId" element={<ProjectDetail />} />
+        <Route path="lesson02/about" element={<About />} />
+        <Route path="lesson02/contact" element={<Contact />} />
+        
+        {/* Lesson03 */}
+        <Route path="lesson03" element={<Lesson03 />} />
+        
+        {/* 🌟 統一的 404：捕捉所有未匹配的路徑 */}
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+**關鍵改動說明：**
+
+| 項目                 | 原本（方案 B - 巢狀路由）         | 現在（方案 A - 集中式）           |
+| -------------------- | --------------------------------- | --------------------------------- |
+| `lesson02` 路由      | `path="lesson02/*"`               | `path="lesson02"`（移除 `/*`）    |
+| 子路由定義位置       | 在 `Lesson02/index.jsx` 內        | 在 `App.jsx` 內                   |
+| 子頁面元件引入       | 在 `Lesson02/index.jsx` 引入      | 在 `App.jsx` 引入                 |
+| 404 處理             | 全站 + Lesson02 專屬（兩層）      | 只有一個統一 404                  |
+| `Lesson02` 元件職責  | 管理內部路由 + 渲染導航列         | 只渲染導航列                      |
+
+##### 修改 Lesson02 元件（移除路由管理）
+
+現在 `Lesson02` 只負責渲染內部導航列，不再管理路由：
 
 ```jsx src/pages/lesson02/index.jsx
-import { Routes, Route, Navigate, Link } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import './index.css';
 
-import ProjectList from './pages/ProjectList';
-import ProjectDetail from './pages/ProjectDetail';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import NotFound from './pages/NotFound'; // 新增 404 頁面
+export default function Lesson02() {
+  return (
+    <div className="lesson02-container">
+      {/* 內部導航列 */}
+      <nav className="lesson02-nav">
+        <h2>📂 我的作品集</h2>
+        <div className="nav-links">
+          <Link to="/lesson02/projects" className="nav-link">作品列表</Link>
+          <Link to="/lesson02/about" className="nav-link">關於我</Link>
+          <Link to="/lesson02/contact" className="nav-link">聯絡我</Link>
+        </div>
+      </nav>
+
+      {/* 子頁面渲染位置 */}
+      <div className="lesson02-content">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+```
+
+**程式碼差異：**
+
+```diff
+- import { Routes, Route, Navigate, Link } from 'react-router';
++ import { Link, Outlet } from 'react-router';
+
+- import ProjectList from './pages/ProjectList';
+- import ProjectDetail from './pages/ProjectDetail';
+- import About from './pages/About';
+- import Contact from './pages/Contact';
 
 export default function Lesson02() {
   return (
@@ -1668,9 +1981,395 @@ export default function Lesson02() {
       <nav className="lesson02-nav">
         <h2>📂 我的作品集</h2>
         <div className="nav-links">
-          <Link to="/lesson02/projects" className="nav-link">作品列表</Link>
-          <Link to="/lesson02/about" className="nav-link">關於我</Link>
-          <Link to="/lesson02/contact" className="nav-link">聯絡我</Link>
+-         <Link to="projects" className="nav-link">作品列表</Link>
+-         <Link to="about" className="nav-link">關於我</Link>
+-         <Link to="contact" className="nav-link">聯絡我</Link>
++         <Link to="/lesson02/projects" className="nav-link">作品列表</Link>
++         <Link to="/lesson02/about" className="nav-link">關於我</Link>
++         <Link to="/lesson02/contact" className="nav-link">聯絡我</Link>
+        </div>
+      </nav>
+
+      <div className="lesson02-content">
+-       <Routes>
+-         <Route index element={<Navigate to="projects" replace />} />
+-         <Route path="projects" element={<ProjectList />} />
+-         <Route path="projects/:projectId" element={<ProjectDetail />} />
+-         <Route path="about" element={<About />} />
+-         <Route path="contact" element={<Contact />} />
+-       </Routes>
++       <Outlet />
+      </div>
+    </div>
+  );
+}
+```
+
+##### 建立統一的 404 頁面
+
+```jsx src/pages/GlobalNotFound.jsx
+import { Link, useNavigate, useLocation } from 'react-router';
+import './GlobalNotFound.css';
+
+export default function GlobalNotFound() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return (
+    <div className="global-not-found">
+      <div className="error-content">
+        <h1 className="error-code">404</h1>
+        <h2>🔍 找不到此頁面</h2>
+        <p>您訪問的路徑 <code>{location.pathname}</code> 不存在</p>
+        
+        <div className="error-actions">
+          <button onClick={() => navigate(-1)} className="btn-back">
+            ← 返回上一頁
+          </button>
+          <Link to="/lesson01" className="btn-home">
+            🏠 回到首頁
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+```css src/pages/GlobalNotFound.css
+.global-not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.error-content {
+  text-align: center;
+  padding: 3rem;
+
+  h2 {
+    font-size: 2rem;
+    margin: 1rem 0;
+    color: #333;
+  }
+
+  p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  code {
+    background: #f1f3f5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    color: #e83e8c;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+.error-code {
+  font-size: 8rem;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.error-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-back,
+.btn-home {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.btn-back {
+  background: #e2e8f0;
+  color: #333;
+  border: none;
+
+  &:hover {
+    background: #cbd5e0;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-home {
+  background: #667eea;
+  color: white;
+  display: inline-block;
+
+  &:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+}
+```
+
+現在這個統一的 404 頁面會處理所有路徑錯誤：
+
+| 訪問路徑                 | 結果               | 說明                             |
+| ------------------------ | ------------------ | -------------------------------- |
+| `/lesson99`              | ✅ 顯示 404 頁面   | 全站路由找不到                   |
+| `/lesson02/unknown`      | ✅ 顯示 404 頁面   | Lesson02 子路由找不到            |
+| `/lesson02/projects/999` | ⚠️ 需額外處理（見下方） | 動態路由會匹配，但資料不存在     |
+
+##### 處理動態 ID 驗證（ProjectDetail）
+
+動態路由 `/lesson02/projects/:projectId` 會匹配任何 ID（包括 `999`、`abc`），因此需要在元件內驗證資料是否存在：
+
+```jsx src/pages/lesson02/pages/ProjectDetail.jsx
+import { useParams, Navigate, Link } from 'react-router';
+
+// ... projectsData 定義 ...
+
+export default function ProjectDetail() {
+  const { projectId } = useParams();
+  const project = projectsData.find((p) => p.id === Number(projectId));
+
+  // 🌟 如果作品不存在，顯示友善錯誤訊息
+  if (!project) {
+    return (
+      <div className="project-not-found">
+        <h2>😢 找不到此作品</h2>
+        <p>專案 ID「<code>{projectId}</code>」不存在</p>
+        <p className="hint">我們目前只有 3 個作品（ID: 1, 2, 3）</p>
+        <Link to="/lesson02/projects" className="btn-back-to-list">
+          ← 返回作品列表
+        </Link>
+      </div>
+    );
+  }
+
+  // 正常顯示作品內容
+  return (
+    <div className="project-detail">
+      {/* ... 作品詳情內容 ... */}
+    </div>
+  );
+}
+```
+
+#### 測試清單
+
+完成方案 A 的實作後，測試以下情況：
+
+- 訪問 `/` 自動導向 `/lesson01`
+- 訪問 `/lesson02` 自動導向 `/lesson02/projects`
+- 訪問 `/lesson02/projects` 顯示作品列表
+- 訪問 `/lesson02/projects/1` 顯示作品詳情
+- 訪問 `/lesson02/projects/999` 顯示「找不到此作品」
+- 訪問 `/lesson99` 顯示統一 404 頁面
+- 訪問 `/lesson02/unknown` 顯示統一 404 頁面
+- 從 Contact 送出表單後，跳轉到 ProjectList 並顯示成功訊息
+
+#### 方案 A 總結
+
+{% note success %}
+**🎉 完成集中式路由設計！**
+
+**優點：**
+- ✅ 所有路由一目了然，集中在 `App.jsx`
+- ✅ 單一 404 頁面，使用者體驗一致
+- ✅ 結構簡單，易於理解和維護
+- ✅ 適合大多數中小型專案
+
+**適用場景：**
+- 個人部落格、作品集、企業官網
+- 學習專案、文件網站
+- 路由層級不超過 3 層的應用
+
+**何時考慮方案 B？**
+當你的專案需要：
+- 多個團隊獨立開發不同模組
+- 每個模組需要自己的 404 處理邏輯
+- 模組需要完全獨立（可單獨提取或重用）
+- 路由結構非常複雜（超過 4 層巢狀）
+{% endnote %}
+
+---
+
+### 方案 B：分散式路由
+
+#### 設計理念
+
+讓各模組**自行管理自己的子路由**，父層只負責定義模組的入口。
+
+**核心特點：**
+- ✅ 高度模組化，各模組完全獨立
+- ✅ 可設計多層 404（全站 + 各模組專屬）
+- ✅ 適合大型應用和團隊協作
+- ✅ 模組可獨立開發、測試、部署
+
+#### 路由架構圖（三層 404）
+
+```
+App.jsx（定義模組入口）
+├── /lesson01                → Lesson01 元件
+├── /lesson02/*              → Lesson02 元件（管理內部路由）
+│   └── Lesson02/index.jsx（內部路由）
+│       ├── projects         → ProjectList
+│       ├── projects/:id     → ProjectDetail
+│       ├── about            → About
+│       ├── contact          → Contact
+│       └── *                → NotFound（Lesson02 專屬 404）
+└── /*                       → GlobalNotFound（全站 404）
+
+三層 404 處理：
+1️⃣ 全站 404（App.jsx）         ← 處理 /lesson99
+2️⃣ 模組 404（Lesson02）        ← 處理 /lesson02/unknown
+3️⃣ 資料驗證（ProjectDetail）   ← 處理 /lesson02/projects/999
+```
+
+#### 實作步驟
+
+這就是我們在「步驟 1-6」完成的巢狀路由結構！現在讓我們補充完整的 404 處理。
+
+##### 全站 404（App.jsx）
+
+在 `App.jsx` 中添加全站 404 路由：
+
+```jsx src/App.jsx
+import GlobalNotFound from './components/GlobalNotFound'; // 🌟 作為共用元件
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Navigate to="/lesson01" replace />} />
+        <Route path="lesson01" element={<Lesson01 />} />
+        <Route path="lesson02/*" element={<Lesson02 />} />
+        <Route path="lesson03" element={<Lesson03 />} />
+        
+        {/* 🌟 全站 404：使用共用元件 */}
+        <Route path="*" element={<GlobalNotFound />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+{% note info %}
+**共用 404 元件設計：**
+
+雖然方案 B 採用分散式路由，但**全站 404 可以定義為共用元件**，放在 `src/components/GlobalNotFound.jsx`：
+
+```
+src/
+├── components/
+│   ├── Layout.jsx
+│   └── GlobalNotFound.jsx        ← 🌟 全站共用 404
+└── pages/
+    ├── lesson01/
+    ├── lesson02/
+    │   └── pages/
+    │       └── NotFound.jsx       ← Lesson02 專屬 404
+    └── lesson03/
+```
+
+**為什麼要共用？**
+- ✅ 避免重複程式碼
+- ✅ 統一的全站錯誤訊息風格
+- ✅ 易於維護（只需修改一處）
+- ✅ 各模組可選擇性地使用或自訂 404
+
+**靈活使用：**
+- 模組可以**直接使用**共用的 `GlobalNotFound`
+- 或者**自訂專屬** 404 以提供更精確的錯誤訊息和導航
+{% endnote %}
+
+建立共用的全站 404 元件：
+
+```jsx src/components/GlobalNotFound.jsx
+import { Link, useNavigate, useLocation } from 'react-router';
+import './GlobalNotFound.css';
+
+export default function GlobalNotFound() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  return (
+    <div className="global-not-found">
+      <div className="error-content">
+        <h1 className="error-code">404</h1>
+        <h2>🔍 找不到此頁面</h2>
+        <p>您訪問的路徑 <code>{location.pathname}</code> 不存在</p>
+        
+        <div className="error-actions">
+          <button onClick={() => navigate(-1)} className="btn-back">
+            ← 返回上一頁
+          </button>
+          <Link to="/lesson01" className="btn-home">
+            🏠 回到首頁
+          </Link>
+        </div>
+
+        {/* 🌟 提供快速導航 */}
+        <div className="quick-links">
+          <h3>或前往以下頁面：</h3>
+          <div className="link-grid">
+            <Link to="/lesson01" className="quick-link">📘 Lesson 01</Link>
+            <Link to="/lesson02/projects" className="quick-link">📂 作品列表</Link>
+            <Link to="/lesson02/about" className="quick-link">👤 關於我</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**重用 GlobalNotFound 的示例：**
+
+如果某個模組不需要專屬 404，可以直接重用共用元件：
+
+```jsx src/pages/lesson03/index.jsx
+import GlobalNotFound from '../../components/GlobalNotFound'; // 重用
+
+export default function Lesson03() {
+  return (
+    <div className="lesson03-container">
+      <Routes>
+        <Route index element={<Lesson03Home />} />
+        <Route path="section1" element={<Section1 />} />
+        
+        {/* 🌟 直接重用全站 404 */}
+        <Route path="*" element={<GlobalNotFound />} />
+      </Routes>
+    </div>
+  );
+}
+```
+
+##### 模組 404（Lesson02/index.jsx）
+
+在 `Lesson02/index.jsx` 的路由配置中添加專屬 404：
+
+```jsx src/pages/lesson02/index.jsx
+import NotFound from './pages/NotFound'; // Lesson02 專屬 404
+
+export default function Lesson02() {
+  return (
+    <div className="lesson02-container">
+      <nav className="lesson02-nav">
+        <h2>📂 我的作品集</h2>
+        <div className="nav-links">
+          <Link to="projects" className="nav-link">作品列表</Link>
+          <Link to="about" className="nav-link">關於我</Link>
+          <Link to="contact" className="nav-link">聯絡我</Link>
         </div>
       </nav>
 
@@ -1682,7 +2381,7 @@ export default function Lesson02() {
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           
-          {/* 404 路由：必須放在最後 */}
+          {/* 🌟 Lesson02 專屬 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
@@ -1691,28 +2390,28 @@ export default function Lesson02() {
 }
 ```
 
-建立 404 頁面元件：
+建立 Lesson02 專屬 404 頁面（程式碼與方案 A 類似，但文案改為針對作品集模組）：
 
 ```jsx src/pages/lesson02/pages/NotFound.jsx
-import { Link, useNavigate } from 'react-router';
-import './NotFound.css';
+import { Link, useNavigate, useLocation } from 'react-router';
 
 export default function NotFound() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="not-found-container">
       <div className="not-found-content">
         <h1 className="not-found-title">404</h1>
         <h2>😢 找不到此頁面</h2>
-        <p>抱歉，您訪問的頁面不存在或已被移除。</p>
+        <p>路徑 <code>{location.pathname}</code> 在作品集中不存在</p>
         
         <div className="not-found-actions">
           <button onClick={() => navigate(-1)} className="btn-back">
-            返回上一頁
+            ← 返回上一頁
           </button>
-          <Link to="/lesson02/projects" className="btn-home">
-            回到作品列表
+          <Link to="projects" className="btn-home">
+            📂 回到作品列表
           </Link>
         </div>
       </div>
@@ -1721,85 +2420,96 @@ export default function NotFound() {
 }
 ```
 
-```css src/pages/lesson02/pages/NotFound.css
-.not-found-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-}
+##### 資料驗證 404（ProjectDetail）
 
-.not-found-content {
-  text-align: center;
-  padding: 3rem;
-}
+處理方式與方案 A 相同（參考前面的 ProjectDetail 動態 ID 驗證）。
 
-.not-found-title {
-  font-size: 6rem;
-  margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+#### 404 觸發流程圖
 
-.not-found-content h2 {
-  font-size: 2rem;
-  margin: 1rem 0;
-  color: #333;
-}
+{% mermaid graph TD %}
+A["使用者訪問路徑"]
+B{"/lesson99 ?"}
+C{"/lesson02/unknown ?"}
+D{"/lesson02/projects/999 ?"}
+E["GlobalNotFound<br/>(全站 404)"]
+F["NotFound<br/>(Lesson02 專屬 404)"]
+G["ProjectDetail 內部驗證"]
+H["顯示「作品不存在」"]
+I["正常顯示作品內容"]
 
-.not-found-content p {
-  color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
+A --> B
+B -->|是，全站路由找不到| E
+B -->|否| C
+C -->|是，Lesson02 子路由找不到| F
+C -->|否| D
+D -->|是，符合動態路由但 ID 不存在| G
+D -->|否，ID 存在| I
+G --> H
+{% endmermaid %}
 
-.not-found-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
+#### 方案 B 總結
 
-.btn-back,
-.btn-home {
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s;
-}
+{% note success %}
+**🎉 完成分散式路由設計！**
 
-.btn-back {
-  background: #e2e8f0;
-  color: #333;
-  border: none;
-  cursor: pointer;
-}
+**優點：**
+- ✅ 各模組完全獨立，可單獨開發和測試
+- ✅ 可為不同模組提供專屬的 404 頁面（同時保留共用 404）
+- ✅ 適合大型應用和多團隊協作
+- ✅ 模組可重用或單獨提取
 
-.btn-back:hover {
-  background: #cbd5e0;
-  transform: translateY(-2px);
-}
+**404 處理策略：**
+- 🌟 **全站 404**：定義為共用元件（`components/GlobalNotFound.jsx`）
+- 🌟 **模組 404**：各模組可選擇：
+  - **重用**全站 404（簡單模組）
+  - **自訂**專屬 404（需要精確錯誤訊息的模組）
 
-.btn-home {
-  background: #667eea;
-  color: white;
-  display: inline-block;
-}
+**適用場景：**
+- 電商平台（商品模組、訂單模組、使用者模組各自獨立）
+- 後台管理系統（各功能模組由不同團隊維護）
+- 多租戶 SaaS（每個租戶有自己的模組）
+- 大型內容平台（文章、影片、音樂等模組）
 
-.btn-home:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
-}
-```
+**最佳實踐：**
+- 全站 404 應該是共用元件，避免重複程式碼
+- 只有真正需要客製化的模組才自訂 404
+- 保持 404 頁面的設計風格一致
+{% endnote %}
 
-**學習重點：**
-- `path="*"`：匹配所有未被其他路由匹配的路徑
-- 必須放在路由配置的**最後**（優先權最低）
-- 提供友善的錯誤訊息和返回選項
-- 同時使用 `navigate(-1)` 和 `Link` 提供多種返回方式
+---
+
+### 兩種方案比較
+
+| 特性           | 方案 A：集中式路由          | 方案 B：分散式路由             |
+| -------------- | --------------------------- | ------------------------------ |
+| **路由定義**   | 全部在 App.jsx              | 分散在各模組                   |
+| **404 層級**   | 單一 404                    | 多層 404（全站 + 模組）        |
+| **實作難度**   | ⭐ 簡單                     | ⭐⭐⭐ 複雜                     |
+| **維護成本**   | ⭐ 低                       | ⭐⭐⭐ 高                       |
+| **模組獨立性** | ⭐⭐ 中等                   | ⭐⭐⭐⭐⭐ 非常高                 |
+| **適用專案**   | 中小型（90%）               | 大型應用（10%）                |
+| **團隊規模**   | 1-5 人                      | 5+ 人，多團隊協作              |
+| **學習曲線**   | 平緩                        | 陡峭                           |
+| **錯誤訊息**   | 通用                        | 可針對性（更友善）             |
+
+{% note warning %}
+**💡 選擇建議：**
+
+**90% 的專案應該使用方案 A（集中式）：**
+- 個人部落格、作品集、企業官網
+- 學習專案、文件網站
+- 中小型 SaaS、電商（商品數 < 10000）
+- 團隊規模 < 10 人
+
+**只有 10% 的專案需要方案 B（分散式）：**
+- 大型電商平台（商品數 > 10000，多個業務線）
+- 企業級 ERP/CRM 系統
+- 多租戶 SaaS（每個租戶有獨立模組）
+- 超過 10 人的大型團隊，多模組並行開發
+
+**記住：開始時用方案 A，需要時再重構為方案 B！** 
+過早優化會增加不必要的複雜度，大多數專案永遠不需要方案 B。
+{% endnote %}
 
 ## 步驟 8：useNavigate 完整用法總結
 
@@ -2056,7 +2766,7 @@ URL 會變成 `https://example.com/#/lessons`，但不需要伺服器配置。�
 
 # 總結
 
-## 本章學習重點
+**本章學習重點**
 
 ✅ **SPA 路由概念**
 - 理解單頁應用與多頁應用的差異
@@ -2078,35 +2788,6 @@ URL 會變成 `https://example.com/#/lessons`，但不需要伺服器配置。�
 - 建立完整的作品集系統（Lesson02）
 - 目錄結構規劃
 - 部署配置
-
-## 下一步學習
-
-完成 React Router 後，建議學習：
-
-1. **State 管理**（第四章）
-   - useReducer
-   - Context API
-   - 全域狀態管理
-
-2. **資料獲取**
-   - useEffect 非同步操作
-   - TanStack Query（React Query）
-   - API 整合
-
-3. **全端框架**（進階）
-   - Next.js 15（SSR、ISR、App Router）
-   - Remix（React Router 團隊開發）
-
-{% note success %}
-**學習建議：**
-
-1. **動手實作**：跟著教學建立完整的專案
-2. **修改範例**：改變路由結構、添加新頁面
-3. **閱讀官方文件**：[React Router 官方文件](https://reactrouter.com)
-4. **解決實際問題**：用 React Router 建立自己的專案
-
-掌握 React Router 後，你就能建立完整的單頁應用了！🎉
-{% endnote %}
 
 # 參考文獻
 
