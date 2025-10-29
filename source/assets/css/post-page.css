@@ -171,6 +171,7 @@
       }
 
       .code-lang {
+        font-family: monospace, sans-serif;
         opacity: 0.5;
         right: 2rem;
         top: 0.5rem;
