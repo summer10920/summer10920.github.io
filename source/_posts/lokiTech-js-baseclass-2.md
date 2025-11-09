@@ -13,20 +13,23 @@ date: 2025-08-02 17:27:33
 ---
 ![](assets/images/banner/js.png)
 
-JavaScript 是現代網頁開發不可或缺的程式語言，它讓原本靜態的 HTML 網頁能夠擁有動態互動功能。本教學將從零開始，循序漸進地介紹 JavaScript 的基礎觀念。
+在實際的程式開發中，我們經常需要處理大量的資料，例如使用者清單、商品資訊、統計數據等。當資料量龐大時，如何有效地組織、存取、計算和轉換這些資料，就成為程式設計的重要課題。
 
 <!-- more -->
 
-JavaScript 是一種「腳本語言」（Scripting Language），最初設計用於網頁瀏覽器中，讓開發者能夠對瀏覽器下達指令，動態操作網頁內容。透過 JavaScript，我們可以根據特定的語法，要求瀏覽器執行各種動作，例如：
+JavaScript 提供了陣列（Array）、物件（Object）和函式（Function）三種強大的資料結構與工具，讓我們能夠有效地管理大量相關資料並進行複雜的計算。本教學將深入介紹這些資料結構的使用方式，以及各種資料處理的方法與技巧，包括：
 
-- 動態修改畫面上的 HTML 結構或樣式
-- 偵測並回應使用者的互動（如點擊、輸入、滑鼠移動等事件）
-- 執行各種運算與資料處理
-- 與伺服器進行資料交換（如 AJAX 技術）
+- **陣列操作**：如何建立、存取、修改陣列元素，以及使用內建方法進行資料處理
+- **物件操作**：如何建立和操作物件，存取和修改屬性
+- **函式應用**：函式的基本語法、參數傳遞、回傳值，以及匿名函式和箭頭函式在資料處理中的應用
+- **資料轉換**：使用 `map`、`filter`、`reduce` 等方法進行資料篩選、轉換和計算（這些方法都需要傳入函式作為參數）
+- **進階技巧**：展開運算子、解構賦值、閉包、`this` 等概念在資料處理中的應用
+
+透過這些方法，我們可以輕鬆處理複雜的資料運算，無論是統計分析、資料篩選、格式轉換，都能以簡潔且高效的方式完成。
 
 {% note info %}
-  **小技巧：現代 JavaScript 的應用**
-  除了在瀏覽器中操作網頁，現代 JavaScript 也能在伺服器端（如 Node.js）、行動裝置、桌面應用程式等多種環境中運行，應用範圍非常廣泛。
+**資料處理的重要性：**
+在現代網頁開發中，資料處理是核心技能之一。無論是從 API 獲取的 JSON 資料、使用者輸入的表單資料，還是需要進行統計分析的數據集合，都需要運用這些資料處理技巧來完成任務。
 {% endnote %}
 
 {% note primary %}
@@ -918,16 +921,12 @@ console.log(localVar); // 錯誤！無法存取區域變數
 - 函式可以存取其被定義時的作用域中的變數
 - 即使外部函式已經執行完畢，內部函式仍然可以存取這些變數
 - 閉包常用於資料隱藏、模組化程式設計
-{% endnote %}
 
-
-{% note info %}
 **閉包的三個關鍵要素：**
-1. **外部函式**：`outerFunction` 建立作用域
-2. **內部函式**：`innerFunction` 存取外部變數
+1. **外部函式**：建立作用域並包含私有變數
+2. **內部函式**：存取外部函式的變數
 3. **變數保持**：即使外部函式結束，內部函式仍能存取變數
 {% endnote %}
-
 
 #### 基本閉包範例
 
@@ -946,29 +945,32 @@ let myFunction = outerFunction();
 myFunction(); // 輸出：Hello from outer function
 ```
 
+這個範例展示了閉包的基本運作方式：
+
+1. **`outerFunction` 建立作用域**：宣告了 `message` 變數，這是外部函式的私有變數
+2. **`innerFunction` 形成閉包**：內部函式可以存取外部的 `message` 變數
+3. **返回內部函式**：將 `innerFunction` 返回給外部，此時閉包已經形成
+4. **外部執行**：即使 `outerFunction` 執行完畢，`myFunction`（實際上是 `innerFunction`）仍然可以存取 `message` 變數
 
 {% note warning %}
 **重要理解：**
-- `message` 變數在 `outerFunction` 執行完畢後仍然存在
-- `innerFunction` 透過閉包機制「記住」了 `message` 的值
-- 這就是閉包的核心：函式可以存取其被定義時的作用域
+`message` 變數在 `outerFunction` 執行完畢後仍然存在，因為 `innerFunction` 透過閉包機制「記住」了這個變數的引用。這就是閉包的核心：函式可以存取其被定義時的作用域。
 {% endnote %}
 
-##### 作用域層級結構
+##### 閉包作用域結構
 
 {% mermaid graph TD %}
-    subgraph "全域作用域 Global Scope"
-        A["let myFunction = outerFunction()<br/>全域變數，接收返回的函式"]
+    subgraph "執行流程"
+        A["outerFunction() 執行<br/>建立作用域，宣告 message"]
+        B["innerFunction 定義<br/>形成閉包，引用 message"]
+        C["return innerFunction<br/>返回內部函式"]
+        D["myFunction = outerFunction()<br/>接收返回的函式"]
+        E["myFunction() 執行<br/>即使 outerFunction 已結束<br/>仍能存取 message"]
     end
     
-    subgraph "outerFunction 作用域 Function Scope"
-        B["let message = 'Hello from outer function'<br/>外部函式的私有變數"]
-        C["function innerFunction() {<br/>console.log(message);<br/>}<br/>內部函式定義"]
-        D["return innerFunction<br/>返回內部函式"]
-    end
-    
-    subgraph "innerFunction 作用域 Closure Scope"
-        E["console.log(message)<br/>存取外部變數<br/>形成閉包引用"]
+    subgraph "閉包機制"
+        F["innerFunction 的閉包環境<br/>保存了 message 變數的引用"]
+        G["即使 outerFunction 作用域結束<br/>閉包仍保持變數引用"]
     end
     
     A --> B
@@ -976,130 +978,9 @@ myFunction(); // 輸出：Hello from outer function
     C --> D
     D --> E
     
-    B -.->|"閉包引用"| E
-    C -.->|"形成閉包"| E
-    
-    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:4px
-    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:4px
-    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:4px
-    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:4px
-    style E fill:#fce4ec,stroke:#c2185b,stroke-width:4px
-{% endmermaid %}
-
-
-##### 逐行分析
-讓我們逐行分析這個基本閉包範例的執行過程：
-
-**第 1 行：`function outerFunction() {`**
-- **動作**：宣告一個名為 `outerFunction` 的函式
-- **思考**：這是外部函式，建立一個新的作用域
-- **作用域**：創建一個函式作用域，內部變數對外部不可見
-
-**第 2 行：`let message = "Hello from outer function";`**
-- **動作**：在 `outerFunction` 作用域內宣告變數 `message`
-- **思考**：這是外部函式的區域變數
-- **作用域**：`message` 只在 `outerFunction` 內部可見
-
-**第 4-6 行：`function innerFunction() { console.log(message); }`**
-- **動作**：在 `outerFunction` 內部定義 `innerFunction`
-- **思考**：這是內部函式，形成閉包
-- **閉包特性**：`innerFunction` 可以存取 `outerFunction` 的變數 `message`
-- **詞法作用域**：JavaScript 根據函式定義的位置決定作用域
-
-**第 8 行：`return innerFunction;`**
-- **動作**：返回 `innerFunction` 函式本身（不是執行結果）
-- **思考**：將內部函式暴露給外部
-- **閉包形成**：`innerFunction` 會「記住」其被定義時的作用域
-
-**第 11 行：`let myFunction = outerFunction();`**
-- **動作**：呼叫 `outerFunction()` 並將返回的函式賦值給 `myFunction`
-- **思考**：此時 `outerFunction` 執行完畢，但 `innerFunction` 被保存
-- **閉包保持**：`innerFunction` 仍然保持對 `message` 變數的引用
-
-**第 12 行：`myFunction();`**
-- **動作**：執行 `myFunction`（實際上是 `innerFunction`）
-- **思考**：即使 `outerFunction` 已經結束，`innerFunction` 仍能存取 `message`
-- **閉包作用**：`console.log(message)` 成功輸出 `"Hello from outer function"`
-
-
-
-
-##### 閉包形成過程
-
-{% mermaid graph TD %}
-    A["1. outerFunction 執行"] --> B["2. message 變數被宣告"]
-    B --> C["3. innerFunction 被定義，形成閉包"]
-    C --> D["4. innerFunction 記住 message 變數"]
-    D --> E["5. outerFunction 返回 innerFunction"]
-    E --> F["6. outerFunction 執行完畢，但 message 仍被 innerFunction 引用"]
-    
-    style A fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
-    style B fill:#e0f2f1,stroke:#00695c,stroke-width:2px
-    style C fill:#fff8e1,stroke:#f57f17,stroke-width:2px
-    style D fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    style E fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style F fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
-{% endmermaid %}
-
-##### 執行階段流程
-
-{% mermaid graph TD %}
-    A["7. myFunction() 被呼叫"] --> B["8. innerFunction 執行"]
-    B --> C["9. 透過閉包存取 message 變數"]
-    C --> D["10. 輸出：Hello from outer function"]
-    
-    style A fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    style B fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
-    style C fill:#e0f2f1,stroke:#00695c,stroke-width:2px
-    style D fill:#fff8e1,stroke:#f57f17,stroke-width:2px
-{% endmermaid %}
-
-##### 作用域與閉包關係圖
-
-{% mermaid graph TD %}
-    subgraph "作用域層級結構"
-        subgraph "全域作用域 Global Scope"
-            A["let myFunction = outerFunction()"]
-        end
-        
-        subgraph "outerFunction 作用域 Function Scope"
-            B["let message = 'Hello from outer function'"]
-            C["function innerFunction() { console.log(message); }"]
-            D["return innerFunction"]
-        end
-        
-        subgraph "innerFunction 作用域 Closure Scope"
-            E["console.log(message) - 存取外部變數"]
-        end
-    end
-    
-    subgraph "閉包引用關係"
-        F["innerFunction 的閉包環境"]
-        G["包含：message 變數的引用"]
-        H["即使 outerFunction 結束，引用仍存在"]
-    end
-    
-    subgraph "執行時的作用域鏈"
-        I["innerFunction 執行時"]
-        J["1. 檢查自己的作用域"]
-        K["2. 找不到 message，向上查找"]
-        L["3. 在閉包環境中找到 message"]
-        M["4. 成功存取並輸出"]
-    end
-    
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    
-    E -.->|"閉包引用"| F
+    B -.->|"形成閉包"| F
     F --> G
-    G --> H
-    
-    I --> J
-    J --> K
-    K --> L
-    L --> M
+    E -.->|"透過閉包存取"| F
     
     style A fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
     style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
@@ -1108,15 +989,11 @@ myFunction(); // 輸出：Hello from outer function
     style E fill:#fce4ec,stroke:#c2185b,stroke-width:3px
     style F fill:#fff8e1,stroke:#f57f17,stroke-width:3px
     style G fill:#f1f8e9,stroke:#388e3c,stroke-width:3px
-    style H fill:#e0f2f1,stroke:#00695c,stroke-width:3px
-    style I fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style J fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
-    style K fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
-    style L fill:#fce4ec,stroke:#c2185b,stroke-width:3px
-    style M fill:#fff8e1,stroke:#f57f17,stroke-width:3px
 {% endmermaid %}
 
 #### 計數器閉包
+
+閉包常用來建立私有變數和封裝資料。這個範例展示了如何使用閉包建立一個計數器，其中 `count` 變數是私有的，只能透過返回的方法來操作。
 
 ```js closure-counter.js
 function createCounter() {
@@ -1143,20 +1020,26 @@ counter.increment(); // 計數：2
 console.log(counter.getCount()); // 2
 ```
 
-##### 計數器閉包作用域結構
+**運作原理：**
+- `createCounter` 建立一個包含私有變數 `count` 的作用域
+- `increment` 和 `getCount` 兩個函式透過閉包共享同一個 `count` 變數
+- 返回的物件提供操作 `count` 的公開方法，但 `count` 本身無法從外部直接存取
+
+##### 計數器閉包結構
 
 {% mermaid graph TD %}
-    subgraph "createCounter 函式作用域"
-        A["let count = 0<br/>私有計數變數"]
-        B["function increment() {<br/>count++;<br/>console.log(`計數：${count}`);<br/>}"]
-        C["function getCount() {<br/>return count;<br/>}"]
-        D["return {<br/>increment,<br/>getCount<br/>}"]
+    subgraph "createCounter 閉包結構"
+        A["私有變數：count = 0"]
+        B["increment()<br/>透過閉包存取 count"]
+        C["getCount()<br/>透過閉包存取 count"]
+        D["返回公開方法<br/>{ increment, getCount }"]
     end
     
-    subgraph "閉包引用關係"
-        E["increment 函式<br/>引用 count 變數<br/>形成閉包"]
-        F["getCount 函式<br/>引用 count 變數<br/>形成閉包"]
-        G["count 變數被兩個函式共享<br/>狀態在函式間保持"]
+    subgraph "狀態變化"
+        E["初始：count = 0"]
+        F["increment() → count = 1"]
+        G["increment() → count = 2"]
+        H["getCount() → 返回 2"]
     end
     
     A --> B
@@ -1164,41 +1047,23 @@ console.log(counter.getCount()); // 2
     B --> D
     C --> D
     
-    B -.->|"閉包引用"| E
-    C -.->|"閉包引用"| F
-    E --> G
+    E --> F
     F --> G
+    G --> H
     
-    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:4px
-    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:4px
-    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:4px
-    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:4px
-    style E fill:#fce4ec,stroke:#c2185b,stroke-width:3px
-    style F fill:#f1f8e9,stroke:#388e3c,stroke-width:3px
-    style G fill:#e0f2f1,stroke:#00695c,stroke-width:3px
-{% endmermaid %}
-
-##### 計數器狀態變化
-
-{% mermaid graph TD %}
-    A["初始狀態：count = 0"] --> B["counter.increment()"]
-    B --> C["狀態：count = 1"]
-    C --> D["counter.increment()"]
-    D --> E["狀態：count = 2"]
-    E --> F["counter.getCount()"]
-    F --> G["返回：2"]
-    
-    style A fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
-    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    style C fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
-    style D fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    style E fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
-    style F fill:#e0f2f1,stroke:#00695c,stroke-width:2px
-    style G fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
+    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    style E fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    style F fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
+    style G fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style H fill:#fff8e1,stroke:#f57f17,stroke-width:2px
 {% endmermaid %}
 
 #### 模組化閉包
-函式裡面宣告兩個小函式，透過物件的寫法回傳給外部。
+
+閉包可以用來建立模組化的程式碼結構，將相關的功能和資料封裝在一起。這個範例展示了如何建立一個動物叫聲模組，其中多個函式共享同一個閉包環境。
 
 ```js closure-module.js
 function Module() {
@@ -1242,52 +1107,47 @@ animalModule.dog(); // 輸出：汪！這是第 3 次動物叫聲，最後叫的
 console.log(animalModule.stats()); // 輸出：{ totalCalls: 3, lastAnimal: '狗' }
 ```
 
-##### 模組化閉包作用域結構
+**運作原理：**
+- `Module` 函式建立一個包含共享狀態的作用域（`animalCount` 和 `lastAnimal`）
+- `dogsay`、`catsay` 和 `getStats` 三個函式透過閉包共享這些變數
+- 返回的物件提供公開的 API，但內部狀態被保護，無法從外部直接修改
+
+##### 模組化閉包結構
 
 {% mermaid graph TD %}
-    subgraph "Module 函式作用域"
-        A["let animalCount = 0<br/>共享計數變數"]
-        B["let lastAnimal = ''<br/>共享狀態變數"]
-        C["function dogsay() {<br/>animalCount++;<br/>lastAnimal = '狗';<br/>console.log(...);<br/>}"]
-        D["function catsay() {<br/>animalCount++;<br/>lastAnimal = '貓';<br/>console.log(...);<br/>}"]
-        E["function getStats() {<br/>return {<br/>totalCalls: animalCount,<br/>lastAnimal: lastAnimal<br/>};<br/>}"]
-        F["return {<br/>dog: dogsay,<br/>cat: catsay,<br/>stats: getStats<br/>}"]
+    subgraph "Module 閉包環境"
+        A["共享變數<br/>animalCount = 0<br/>lastAnimal = ''"]
+        B["dogsay()<br/>修改共享變數"]
+        C["catsay()<br/>修改共享變數"]
+        D["getStats()<br/>讀取共享變數"]
+        E["返回公開 API<br/>{ dog, cat, stats }"]
     end
     
-    subgraph "閉包引用關係"
-        G["dogsay 函式<br/>引用 animalCount 和 lastAnimal<br/>形成閉包"]
-        H["catsay 函式<br/>引用 animalCount 和 lastAnimal<br/>形成閉包"]
-        I["getStats 函式<br/>引用 animalCount 和 lastAnimal<br/>形成閉包"]
-        J["三個函式共享同一個作用域<br/>狀態在函式間保持"]
+    subgraph "使用範例"
+        F["animalModule.dog()<br/>→ animalCount = 1"]
+        G["animalModule.cat()<br/>→ animalCount = 2"]
+        H["animalModule.stats()<br/>→ 返回統計資料"]
     end
     
+    A --> B
     A --> C
     A --> D
-    A --> E
-    B --> C
-    B --> D
     B --> E
-    C --> F
-    D --> F
+    C --> E
+    D --> E
+    
     E --> F
+    F --> G
+    G --> H
     
-    C -.->|"閉包引用"| G
-    D -.->|"閉包引用"| H
-    E -.->|"閉包引用"| I
-    G --> J
-    H --> J
-    I --> J
-    
-    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:4px
-    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:4px
-    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:4px
-    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:4px
-    style E fill:#fce4ec,stroke:#c2185b,stroke-width:4px
-    style F fill:#f1f8e9,stroke:#388e3c,stroke-width:4px
-    style G fill:#e0f2f1,stroke:#00695c,stroke-width:3px
-    style H fill:#fff8e1,stroke:#f57f17,stroke-width:3px
-    style I fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    style J fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
+    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
+    style C fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:3px
+    style E fill:#fce4ec,stroke:#c2185b,stroke-width:3px
+    style F fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
+    style G fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style H fill:#fff8e1,stroke:#f57f17,stroke-width:2px
 {% endmermaid %}
 
 ### 函式內的 this
@@ -2244,7 +2104,7 @@ console.log('下一小時：', nextHour(now).toLocaleString());
 ### 練習
 {% tabs 跨年倒數 %}
 <!-- tab 題目 -->
-請寫一個 JavaScript 程式，計算「距離今年跨年（12/31 23:59:59）」還有幾天、幾小時、幾分鐘、幾秒，並將結果用 `console.log` 輸出。
+請寫一個 JavaScript 程式，計算並將結果用 `console.log` 輸出`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`。
 
 - 提示：可用 `Date` 物件、時間相減、毫秒轉換等技巧
 

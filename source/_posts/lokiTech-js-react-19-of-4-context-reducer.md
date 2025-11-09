@@ -64,7 +64,7 @@ C --> D
 
 **優點：**
 - 中間層元件不需要處理 Props
-- 資料結構改變時，只需修改 Provider 和消費者
+- 當資料結構變動時，僅需調整 Provider 端與需要讀取資料的元件即可
 - 程式碼更簡潔、可維護性更高
 
 ### Context 語法說明
@@ -75,7 +75,7 @@ Context API 包含三個核心概念：**建立 Context**、**提供 Context** �
 
 使用 `createContext()` 建立一個 Context 物件：
 
-```jsx
+```jsx context/ThemeContext.jsx
 import { createContext } from 'react';
 
 // 建立主題 Context
@@ -85,7 +85,13 @@ const ThemeContext = createContext();
 **第二步：上層元件提供資料（Provider）**
 Context 建立後，需要由上層元件透過 `Provider` 提供實際的資料值：
 
-```jsx
+```jsx App.jsx
+import { useState } from 'react';
+import { ThemeContext } from './context/ThemeContext';
+import Header from './components/Header';
+import Main from './components/Main';
+import Footer from './components/Footer';
+
 function App() {
   const [theme, setTheme] = useState('light');
   
@@ -109,8 +115,9 @@ function App() {
 
 子元件使用 `useContext()` 讀取 Context 中的資料：
 
-```jsx
+```jsx components/Header.jsx
 import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 
 function Header() {
   const { theme, setTheme } = useContext(ThemeContext);
@@ -127,123 +134,68 @@ function Header() {
 
 #### 初始值 vs Provider 的 value
 
-**重要概念：Context 的值來源優先順序**
+Context 的值來源遵循以下優先順序：
 
-當子元件使用 `useContext()` 時，實際得到的值遵循以下規則：
-
-1. **有 Provider 時**：使用 Provider 的 `value` 屬性
-2. **沒有 Provider 時**：使用 `createContext()` 的初始值
+1. **有 Provider 時**：使用 Provider 的 `value` 屬性（優先）
+2. **沒有 Provider 時**：使用 `createContext()` 的初始值（備用）
 3. **都沒有時**：得到 `undefined`
 
-**實際範例說明**
+**完整範例說明**
 
-```jsx
+```jsx example-context-value-priority.jsx
 // 建立 Context，設定初始值為 'light'
 const ThemeContext = createContext('light');
 
-// 情況一：沒有 Provider 包裝
+// 情況一：沒有 Provider → 使用初始值
 function App1() {
-  return (
-    <div>
-      <Header />  {/* 沒有被 Provider 包裝 */}
-    </div>
-  );
+  return <Header />;  // 沒有被 Provider 包裝
 }
 
-function Header() {
-  const theme = useContext(ThemeContext);
-  console.log(theme); // 輸出：'light'（使用初始值）
-  return <div className={theme}>內容</div>;
-}
-
-// 情況二：有 Provider 包裝，但 value 是 'dark'
+// 情況二：有 Provider → 使用 Provider 的 value（優先）
 function App2() {
   return (
     <ThemeContext.Provider value="dark">
-      <Header />  {/* 被 Provider 包裝 */}
+      <Header />  {/* 讀取到 'dark'，不是初始值 'light' */}
     </ThemeContext.Provider>
   );
 }
 
-function Header() {
-  const theme = useContext(ThemeContext);
-  console.log(theme); // 輸出：'dark'（使用 Provider 的 value）
-  return <div className={theme}>內容</div>;
-}
-
-// 情況三：有 Provider 包裝，value 是動態的
+// 情況三：動態 Provider value
 function App3() {
   const [theme, setTheme] = useState('dark');
-  
   return (
     <ThemeContext.Provider value={theme}>
-      <Header />  {/* 被 Provider 包裝 */}
+      <Header />  {/* 讀取到動態值，會隨 state 變化 */}
     </ThemeContext.Provider>
   );
 }
 
 function Header() {
   const theme = useContext(ThemeContext);
-  console.log(theme); // 輸出：'dark'（使用 Provider 的 value，會隨 state 變化）
   return <div className={theme}>內容</div>;
 }
-```
 
-**初始值的作用**
-
-```jsx
-// 不設定初始值
-const ThemeContext1 = createContext();
-
-// 設定初始值
-const ThemeContext2 = createContext('light');
+// 對比：初始值的作用
+const ContextWithoutInit = createContext();        // 沒有初始值
+const ContextWithInit = createContext('light');    // 有初始值
 
 function Component() {
-  const theme1 = useContext(ThemeContext1); // undefined（沒有初始值）
-  const theme2 = useContext(ThemeContext2); // 'light'（有初始值）
-  
-  return (
-    <div>
-      <div>Theme1: {theme1}</div>  {/* 顯示：Theme1: undefined */}
-      <div>Theme2: {theme2}</div>  {/* 顯示：Theme2: light */}
-    </div>
-  );
-}
-```
-
-**Provider 的 value 優先於初始值**
-
-```jsx
-// 即使設定了初始值，Provider 的 value 仍然優先
-const ThemeContext = createContext('light'); // 初始值：'light'
-
-function App() {
-  return (
-    <ThemeContext.Provider value="dark">  {/* Provider 的 value：'dark' */}
-      <Header />
-    </ThemeContext.Provider>
-  );
-}
-
-function Header() {
-  const theme = useContext(ThemeContext);
-  console.log(theme); // 輸出：'dark'（Provider 的 value 優先）
-  return <div className={theme}>內容</div>;
+  const value1 = useContext(ContextWithoutInit);  // undefined
+  const value2 = useContext(ContextWithInit);     // 'light'
+  return <div>{value1} / {value2}</div>;  // undefined / light
 }
 ```
 
 {% note info %}
-**總結：**
-
-1. **Provider 的 value 優先**：如果有 Provider，永遠使用 Provider 的 value
-2. **初始值是備用方案**：只有在沒有 Provider 時才會使用
-3. **初始值的作用**：防止沒有 Provider 時出現 undefined 錯誤
-4. **實際使用建議**：複雜的 Context 不設定初始值，強制要求必須有 Provider
+**重點整理：**
+- **Provider 的 value 永遠優先**：即使設定了初始值，Provider 的 value 會覆蓋它
+- **初始值是備用方案**：只有在沒有 Provider 時才會使用，可防止 undefined 錯誤
+- **實際建議**：複雜的 Context 通常不設定初始值，強制要求必須有 Provider，這樣更安全且明確
 {% endnote %}
 
 #### 完整語法結構
 
-```jsx
+```jsx context-syntax.jsx
 // 1. 建立 Context
 const MyContext = createContext();
 
@@ -572,7 +524,7 @@ export default function ThemedButton() {
 
   return (
     <div className="themed-button-container">
-      <h4>🎨 ThemedButton 元件（消費者）</h4>
+      <h4>🎨 ThemedButton 元件（存取者）</h4>
       <button
         style={{
           background: theme.buttonBg,
@@ -1053,7 +1005,7 @@ export default function MenuItem({ data }) {
 {% note success %}
 **Context 巢套的關鍵概念：**
 
-```jsx
+```jsx example-nested-context.jsx
 // 第一層：字體大小 3rem
 <FontSizeContext.Provider value={3}>
   <MenuItem />  {/* 讀取到 3 */}
@@ -1084,7 +1036,8 @@ export default function MenuItem({ data }) {
 如果直接使用普通的 `.css` 文件：
 ```css MenuItem.css
 .toggleBtn {
-  /* ... */}
+  /* ... */
+}
 ```
 
 這個樣式會影響**全域所有**名為 `toggleBtn` 的元素，造成樣式汙染。
@@ -1106,7 +1059,7 @@ todoList.css       → todoList.module.css
 
 **2. 匯入方式改變**
 
-```jsx
+```jsx example-css-modules-import.jsx
 // ❌ 普通 CSS（會全域汙染）
 import './MenuItem.css';
 
@@ -1116,7 +1069,7 @@ import styles from './MenuItem.module.css';
 
 **3. 使用 className**
 
-```jsx
+```jsx example-css-modules-usage.jsx
 export default function MenuItem() {
   return (
     <div className={styles.toggleBtn}> {/* 使用 styles.className */}
@@ -1202,7 +1155,7 @@ div { }
 {% note warning %}
 **常見錯誤：**
 
-```jsx
+```jsx example-css-modules-errors.jsx
 // ❌ 錯誤：直接使用字串
 <button className="toggleBtn">點我</button>
 
@@ -1253,7 +1206,7 @@ import styles from './MyComponent.module.css';
 在學習 useReducer 的語法時，我們需要理解以下三個基本要素：
 
 - **Reducer（歸納函式）**：這是一個純函式，負責根據舊的 `state` 與收到的 `action` 計算並回傳新的 `state`。
-```jsx
+```jsx reducer-pattern.jsx
 function reducer(state, action) {
   switch (action.type) {
     case 'ACTION_TYPE':
@@ -1264,7 +1217,7 @@ function reducer(state, action) {
 }
 ```
 - **Action（動作）**：一個描述「要做什麼行為」的物件，最少要有 `type` 屬性，代表動作的分類，也能夠帶入其他資料（payload）。
-```jsx
+```jsx action-pattern.jsx
 // Action 通常包含 type 和 payload
 {
   type: 'ADD_TODO',      // 必需：表示操作類型
@@ -1284,7 +1237,7 @@ function reducer(state, action) {
 - **Dispatch（派發）**：透過 `dispatch(action)` 來呼叫 reducer，讓指定的 action 進行狀態更新。
 
 **Hook 函式簽名與回傳**
-```jsx
+```jsx useReducer-syntax.jsx
 const [state, dispatch] = useReducer(reducer, initialArg, init?);
 ```
 - 提供（參數）：
@@ -1303,7 +1256,7 @@ const [state, dispatch] = useReducer(reducer, initialArg, init?);
   - 在 `reducer` 內用不可變方式回傳「新」狀態（不要直接改動原 state）
   - 可額外建立 Action Creator 以統一產生 action 物件
 
-```jsx
+```jsx example-useReducer-init.jsx
 // 懶加載初始化（可選）
 function init(initialCount) {
   return { count: initialCount };
@@ -1344,7 +1297,7 @@ dispatch({ type: 'reset', to: 10 });
 所以 `initialArg` 只是「原料」，不是第二個 default。只有「一個」初始狀態，來源依你是否提供 `init` 而定。
 
 對比範例：
-```jsx
+```jsx example-init-comparison.jsx
 // 情況 A：沒有 init → 初始狀態就是 initialArg（數字 0）
 const [stateA] = useReducer(reducer, 0);
 // stateA 的初始值為 0
@@ -1363,7 +1316,7 @@ const [stateB] = useReducer(reducer, 0, init);
 - 初始狀態需要經過「推導」或「外部來源」(localStorage、URL 參數）
 - 需要在 reset 時，重用同一份初始化邏輯
 
-```jsx
+```jsx example-init-usage.jsx
 function init(size) {
   // 只在首次建立 state 時執行
   return { items: Array.from({ length: size }, (_, i) => ({ id: i + 1 })) };
@@ -1397,7 +1350,7 @@ const [state, dispatch] = useReducer(reducer, 10000, init);
 `dispatch` 不會觸發 `init`。如果你在 reducer 內部的某個分支（例如 `reset`）主動呼叫了 `init(...)` 來復用初始化邏輯，那是你「自己呼叫了 `init`」，不是 useReducer 幫你再次執行初始化。
 
 快速觀察範例：
-```jsx
+```jsx example-init-timing.jsx
 function init(n) {
   console.log('init run once');
   return { count: n };
@@ -1421,7 +1374,7 @@ const [state, dispatch] = useReducer(reducer, 0, init);
 ```
 {% endnote %}
 
-```jsx
+```jsx example-todo-reducer.jsx
 // 1) 定義 action types（選用，避免拼字錯誤）
 const ADD = 'ADD_TODO';
 const DELETE = 'DELETE_TODO';
@@ -1483,7 +1436,7 @@ export default function TodoExample() {
 
 {% tabs 狀態管理對照 %}
 <!-- tab useState 範例 -->
-```jsx
+```jsx example-counter-usestate.jsx
 // 簡單計數器（useState）
 import { useState } from 'react';
 
@@ -1499,7 +1452,7 @@ export default function Counter() {
 <!-- endtab -->
 
 <!-- tab useReducer 範例 -->
-```jsx
+```jsx example-counter-usereducer.jsx
 // 計數器（useReducer：多動作 + 集中邏輯）
 import { useReducer } from 'react';
 
@@ -2353,7 +2306,7 @@ export default function TodoExample() {
 **useState vs useReducer 對比：**
 
 **useState 版本：**
-```jsx
+```jsx example-todo-usestate.jsx
 const [list, setList] = useState(initialState);
 
 const handleAdd = (text) => {
@@ -2369,7 +2322,7 @@ const handleAdd = (text) => {
 ```
 
 **useReducer 版本：**
-```jsx
+```jsx example-todo-usereducer.jsx
 const [list, dispatch] = useReducer(todoReducer, initialState);
 
 const handleAdd = (text) => {
@@ -2438,14 +2391,14 @@ export const toggleTodo = (id) => ({
 **Action Creator 的好處：**
 
 **❌ 手動建立 action（容易出錯）：**
-```jsx
+```jsx example-action-manual.jsx
 // 可能拼寫錯誤
 dispatch({ type: 'ADD_TOD', text });  // 錯誤：TOD
 dispatch({ type: 'ADD_TODO', txt: text });  // 錯誤：txt
 ```
 
 **使用 Action Creator（類型安全）：**
-```jsx
+```jsx example-action-creator.jsx
 import { addTodo, ADD_TODO } from './store/actions';
 
 // 在元件中
@@ -2578,7 +2531,7 @@ src/pages/lesson03/pages/TodoExample/
 
 即使使用了 `useReducer`, 我們仍然需要透過 Props 傳遞 `dispatch` 和 `state`:
 
-```jsx
+```jsx example-props-drilling.jsx
 <TodoExample>  {/* 管理 state 和 dispatch */}
   <TaskAdd onAdd={handleAdd} />  {/* Props: onAdd */}
   <TaskList items={list} onToggle={handleToggle} onDelete={handleDelete} />
