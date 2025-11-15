@@ -49,7 +49,10 @@ date: YYYY-MM-DD HH:mm:ss
 - `{% youtube video_id %}` - 嵌入 YouTube 影片
 - `{% vimeo video_id %}` - 嵌入 Vimeo 影片
 - `{% jsfiddle username/code_id js,html,css,result dark 100% 500 %}` - 嵌入 JSFiddle
-- `{% codepen username code_id [html,css,result 250] %}` - 嵌入 CodePen
+- `{% codepen username code_id theme defaultTab height %}` - 嵌入 CodePen
+  - 參數順序：`username`、`code_id`、`theme`（如 `dark` 或 `light`）、`defaultTab`（如 `html,css,result`）、`height`（數字，如 `900`）
+  - 範例：`{% codepen summer10920 abRMXwm dark html,css,result 900 %}`
+  - **注意**：必須明確指定 `theme` 參數，否則後續參數位置會錯位導致高度設定無效
 
 ### 互動元素
 - `{% tabs 標籤名,1 %}<!-- tab -->內容<!-- endtab -->{% endtabs %}` - 分頁標籤

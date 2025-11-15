@@ -2360,7 +2360,7 @@ function color(re) {
 - [code](https://github.com/summer10920/studies_TeachDemo_JSJQ/blob/master/vanillaJS/colorEditor/index.html)
 
 商務示範二：
-{% codepen summer10920 abRMXwm [html,css,result 900] %}
+{% codepen summer10920 abRMXwm dark result 600 %}
 
 # 總結
 

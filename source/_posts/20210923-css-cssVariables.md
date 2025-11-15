@@ -269,7 +269,7 @@ element.style.setProperty("--my-var", jsVar + 4);
 ### 實體效果
 只要善用 calc 帶入特定數字就能算出獨立且邏輯性的數值。綁定相同的外觀且差異性。
 
-{% codepen summer10920 ExXOLxa [html,css,result 250 %}
+{% codepen summer10920 ExXOLxa dark html,css,result 250 %}
 
 # 參考文獻
   - [使用 CSS 自定义属性（变量） - CSS（层叠样式表） | MDN](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties)

@@ -60,11 +60,15 @@ for Learning book demo use
 
 # codepen
 
-{% codepen userId|anonymous|anon slugHash theme [defaultTab [height [width]]] %}
+{% codepen userId|anonymous|anon slugHash theme defaultTab height [width] %}
 
 替换参数后的语法：(*设置宽高时不要用%，会导致编译错误*)
-<!-- {% codepen summer10920 ExXOLxa dark [html,css,result 500 %} -->
-{% codepen summer10920 ExXOLxa [html,css,result 250 %}
+- 參數順序：`userId`、`slugHash`、`theme`（必須指定，如 `dark` 或 `light`）、`defaultTab`（如 `html,css,result`）、`height`（數字，如 `900`）、`width`（可選，如 `100%`）
+- **重要**：必須明確指定 `theme` 參數，否則後續參數位置會錯位導致高度設定無效~~
+
+範例：
+{% codepen summer10920 abRMXwm dark html,css,result 900 %}
+{% codepen summer10920 ExXOLxa dark html,css,result 250 %}
 
 [hexo 官方 tag 說明](https://hexo.io/zh-tw/docs/tag-plugins.html)
 [theme.next 官方 tag 說明](https://theme-next.iissnan.com/tag-plugins.html)
