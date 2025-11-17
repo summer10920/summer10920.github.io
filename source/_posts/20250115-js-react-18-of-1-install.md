@@ -1,7 +1,7 @@
 ---
 title: '[框架課程] React v18 教學（一）- 環境安裝與準備'
 categories:
-  - 職訓教材
+  - Archived Courses
   - ReactJS
 tag:
   - JavaScript 程式設計（假日班）

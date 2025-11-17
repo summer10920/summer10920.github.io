@@ -6,7 +6,7 @@ categories:
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-19 13:09:14
-hidden: true
+hidden: false
 ---
 
 ![](assets/images/banner/react.png)
@@ -73,7 +73,7 @@ Context API 包含三個核心概念：**建立 Context**、**提供 Context** �
 
 **第一步：宣告 Context**
 
-使用 `createContext()` 建立一個 Context 物件：
+使用 `createContext()` 建立一個 Context 物件。通常建議將這個 Context 物件集中存放在 `context` 資料夾的獨立檔案中（例如 `ThemeContext.jsx`），而不是直接寫在元件內，這樣可以讓多個元件引用同一份 Context，讓程式碼更清晰易維護：
 
 ```jsx context/ThemeContext.jsx
 import { createContext } from 'react';
@@ -82,8 +82,29 @@ import { createContext } from 'react';
 const ThemeContext = createContext();
 ```
 
+{% note info %}
+**小技巧：Context 可以提供預設值**
+`createContext()` 函數可以接受一個參數作為「預設值」。這個預設值會在 Context 沒有被 Provider 包覆時生效，有助於元件在缺少外層 Provider 的情境下仍能正常運作（如測試或靜態展示元件時）。
+
+```jsx context/ThemeContext.jsx
+import { createContext } from 'react';
+
+// 建立主題 Context，同時指定預設值
+const ThemeContext = createContext({
+  theme: 'light',           // 主題預設為 light
+  setTheme: () => {}        // 預設提供一個空函式，避免使用時出錯
+});
+
+export { ThemeContext };
+```
+
+預設值主要用於「找不到 Provider」時才會觸發，一般應用盡量讓所有使用 Context 的元件都被 Provider 包覆。
+{% endnote %}
+
 **第二步：上層元件提供資料（Provider）**
-Context 建立後，需要由上層元件透過 `Provider` 提供實際的資料值：
+Context 建立後，必須由上層元件透過 `Provider` 提供實際的資料值。這是因為應用程式的「狀態」與資料來源，通常會掌握在 App 或其他高層元件。只有上層才知道整個應用狀態需要如何傳遞給下層元件，並能確保所有需要該資料的元件都被包在 Provider 內，才能順利讀取 Context。如果在下層元件或個別元件才設 Provider，其他同層或上層元件就無法存取同一份資料，不利於集中管理與維護。
+
+也就是說，「上層統一管理、下層方便取得」是 Context 的設計原則之一。
 
 ```jsx App.jsx
 import { useState } from 'react';
@@ -105,15 +126,16 @@ function App() {
 }
 ```
 
-**Provider 的作用：**
-- `Provider` 是 Context 的「提供者」
-- 它包裝需要共享資料的元件樹
-- 透過 `value` 屬性傳遞實際的資料
-- 所有被包裝的子元件都可以讀取這個資料
+{% note info %}
+**Provider 角色與使用說明：**
+- `Provider` 是 Context API 中的「資料提供者」，負責將需要共享的狀態（state）透過 `value` 屬性傳遞給所有被其包覆的元件。
+- 當 Provider 設在元件樹的頂層時，下層的所有元件（消費者，Consumer）都能直接取用這些共用資料或方法，無需一層層透過 props 傳遞。
+- 這種共享機制能大幅簡化元件間的資料流動，使專案結構更清晰、維護更容易。
+{% endnote %}
 
-**第三步：子元件讀取資料**
+**第三步：任一子孫元件讀取資料**
 
-子元件使用 `useContext()` 讀取 Context 中的資料：
+只有在被高層 Provider 元件包覆的範圍內，所有子元件才會「共用同一份」Context 資料。這些子元件只要透過 `useContext()` 就能直接取得該 Context 的資料：
 
 ```jsx components/Header.jsx
 import { useContext } from 'react';
@@ -691,21 +713,6 @@ export default function ThemedButton() {
 3. 觀察按鈕樣式的變化
 4. 注意 Toolbar 元件不需要處理任何 Props
 
-{% note success %}
-**Context API 三步驟總結：**
-
-1. **建立 Context**：`createContext(defaultValue)`
-2. **提供資料**：使用 `<Context.Provider value={資料}>`
-3. **消費資料**：使用 `useContext(Context)` 讀取
-
-**資料流向：**
-{% mermaid graph TD %}
-  P["Provider<br/>（提供資料）"]
-  C["Consumer<br/>（useContext 讀取）"]
-  P -- "Context" --> C
-{% endmermaid %}
-{% endnote %}
-
 ## 範例：巢狀選單與動態更新
 
 這個範例展示如何在遞迴元件中使用 Context, 以及如何動態更新 Context 值。
@@ -1028,152 +1035,218 @@ export default function MenuItem({ data }) {
 {% endnote %}
 
 ## CSS Modules：避免樣式汙染
+在上面的範例中，我們使用了 CSS Modules（`.module.css`）。這是一項重要技術，能讓 React 專案的樣式管理更加安全。在 React 專案中，若直接使用一般的 `.css` 文件，所有的樣式都會以**全域作用域**存在，這會導致樣式汙染問題。
 
-在上面的範例中，我們使用了 CSS Modules（`.module.css`）。讓我們深入了解這個重要的技術。
-
-### 問題：全域樣式汙染
-
-如果直接使用普通的 `.css` 文件：
 ```css MenuItem.css
 .toggleBtn {
-  /* ... */
+  padding: 10px;
+  background: blue;
 }
 ```
 
-這個樣式會影響**全域所有**名為 `toggleBtn` 的元素，造成樣式汙染。
+這個 `.toggleBtn` 樣式會影響**整個應用中所有**名為 `toggleBtn` 的元素，當多個元件使用相同 class 名稱時，就會互相干擾。
 
-### 解決方案：CSS Modules
+也就是說，不同元件若使用相同 class 名稱，樣式會互相干擾，整個應用中的所有同 class 名稱元素都會受到影響。CSS Modules 則能自動為每個 class 名稱加上唯一的 hash 值，做到**局部作用域**，讓每一個元件的樣式彼此隔離、不會互相影響，是 Vite 或 Webpack 預設支援的功能。
 
-**CSS Modules** 是 Vite/Webpack 內建的功能，會自動為 class 名稱添加唯一的 hash 值。
+### CSS Modules 完整實作指南
+**CSS Modules** 是 Vite/Webpack 內建的功能，透過自動為 class 名稱添加唯一的 hash 值，實現**局部作用域**，讓每個元件的樣式完全隔離。
 
-#### 使用方式
+**步驟 1：檔案命名**
 
-**1. 檔案命名**
-
-將 `.css` 改名為 `.module.css`:
+將 `.css` 改名為 `.module.css`：
 
 ```
 MenuItem.css       → MenuItem.module.css
 todoList.css       → todoList.module.css
 ```
 
-**2. 匯入方式改變**
+**步驟 2：匯入樣式物件**
 
-```jsx example-css-modules-import.jsx
+```jsx MenuItem.jsx
 // ❌ 普通 CSS（會全域汙染）
 import './MenuItem.css';
 
-// CSS Modules（局部作用域）
+// ✅ CSS Modules（局部作用域）
 import styles from './MenuItem.module.css';
 ```
 
-**3. 使用 className**
+**步驟 3：在元件中使用**
 
-```jsx example-css-modules-usage.jsx
+```jsx MenuItem.jsx
 export default function MenuItem() {
   return (
-    <div className={styles.toggleBtn}> {/* 使用 styles.className */}
+    <div className={styles.toggleBtn}>
       <button className={styles.button}>
         點我
       </button>
-      </div>
+    </div>
   );
 }
 ```
 
-#### 渲染結果
+**步驟 4：撰寫 CSS 樣式**
 
-瀏覽器實際渲染的 HTML:
+```css MenuItem.module.css
+.toggleBtn {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
 
-```html
-<!-- CSS Modules 自動添加唯一 hash -->
-<div class="MenuItem_toggleBtn__a7f3k">
-  <button class="MenuItem_button__x9m2p">
-    點我
-  </button>
+.button {
+  background: blue;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+/* 支援巢狀語法 */
+.button:hover {
+  background: darkblue;
+}
+```
+
+#### 渲染機制解析
+
+CSS Modules 會在編譯時自動為每個 class 添加唯一的 hash 值，確保樣式不會衝突：
+
+**編譯前的 HTML（開發時）：**
+```jsx
+<div className={styles.toggleBtn}>
+  <button className={styles.button}>點我</button>
 </div>
 ```
 
-對應的 CSS:
+**編譯後的 HTML（瀏覽器實際渲染）：**
+```html
+<div class="MenuItem_toggleBtn__a7f3k">
+  <button class="MenuItem_button__x9m2p">點我</button>
+</div>
+```
 
+**對應的 CSS（自動產生）：**
 ```css
 /* 自動產生的唯一 class */
 .MenuItem_toggleBtn__a7f3k {
-  /* ... */
+  padding: 10px;
+  border: 1px solid #ccc;
 }
 
 .MenuItem_button__x9m2p {
+  background: blue;
+  color: white;
   /* ... */
+}
+
+.MenuItem_button__x9m2p:hover {
+  background: darkblue;
 }
 ```
 
-{% note info %}
-**CSS Modules 注意事項：**
+#### 最佳實踐與注意事項
 
-**支援的 Selector（推薦）**
+**CSS Modules 使用建議**
+
+- 儘量全程使用 class selector 來撰寫樣式，不要用元素選擇器或 ID 選擇器避免全域汙染。
+- class 名稱可採小駝峰（camelCase）或連字符（kebab-case）命名。
+- 善用現代原生巢狀語法，讓程式碼更清楚。
+
+**推薦的 CSS Modules Selector 範例：**
 ```css
-/* Class Selector */
+/* 使用 class selector（推薦） */
 .btn { }
 .card-header { }
 
-/* 巢狀 Selector（使用現代原生巢狀語法）*/
+/* 巢狀語法示範 */
 .btn {
   &:hover { }
+  &:active { }
 }
 
 .card {
   .title { }
+  .content { }
 }
 ```
 
-**❌ 避免使用（會失去局部作用域）**
+**避免以下做法（避免樣式汙染）：**
 ```css
-/* Element Selector（全域汙染） */
+/* 全域元素與 ID selector 容易造成汙染 */
 button { }
 div { }
-
-/* ID Selector（全域汙染） */
 #myButton { }
 ```
 
-**🎯 建議：**
-- 所有樣式都用 class
-- class 命名使用小駝峰（camelCase）或連字符（kebab-case）
-- 避免使用 element 和 ID selector
-{% endnote %}
+**常見命名注意事項：**
+- 請勿混用 class 與 element/id selector，範例（錯誤寫法）：
+```css
+/* 不建議這樣寫：會污染全域 */
+.menuItem button { color: red; }
+#mainTitle { font-size: 2rem; }
+```
 
-### CSS Modules vs 其他方案
+- class 命名清晰，貼合用途，例如：`.menuItem`、`.toggleBtn` 等，範例（正確寫法）：
+```css
+/* 完全使用 class selector */
+.menuItemBtn { color: red; }
+.mainTitle { font-size: 2rem; }
+```
+
+**CSS Modules 常見錯誤與解法說明**
+
+1. **直接使用字串 className 無效**
+   ```jsx
+   // 錯誤寫法（不會套用 CSS Modules）
+   <button className="toggleBtn">點我</button>
+   // 正確寫法
+   <button className={styles.toggleBtn}>點我</button>
+   ```
+
+2. **忘記 import CSS module**
+   ```jsx
+   // styles 未定義就直接呼叫會報錯
+   <button className={styles.btn}>點我</button>
+
+   // 記得先 import
+   import styles from './MyComponent.module.css';
+   <button className={styles.btn}>點我</button>
+   ```
+
+3. **class 名稱拼錯或沒定義**
+   ```jsx
+   // styles.nonExistent 為 undefined，不會生效
+   <button className={styles.nonExistent}>點我</button>
+   // 解法：確認 CSS 裡有對應的 class 命名
+   ```
+
+4. **組合多個 class（動態條件時）**
+   ```jsx
+   // 使用模板字串
+   <div className={`${styles.card} ${styles.active}`}>
+   // 也可以用 clsx 這類輔助套件（專門處理 className 合併的函式庫，可以根據條件方便適當組合多個 class 名稱，常用於 React 專案。）
+   import clsx from 'clsx';
+   <div className={clsx(styles.card, isActive && styles.active)}>
+   ```
+
+**重點總結：**
+- 請全程用 class 局部化你的元件樣式。
+- 不要用元素 selector 和 ID。
+- 動態狀態請用物件的方式組合 class。
+- 開發時，仔細檢查 class 與 CSS module 是否正確對應、import 是否遺漏。
+
+### CSS Modules vs 其他樣式方案
 
 | 方案                | 優點                     | 缺點                   | 適用場景               |
 | ------------------- | ------------------------ | ---------------------- | ---------------------- |
-| **CSS Modules**     | 自動局部作用域、零配置   | 需要 `styles.` 前綴    | 中小型專案（推薦）     |
-| **Inline Styles**   | 完全隔離、動態樣式方便   | 無法使用偽類、媒體查詢 | 簡單動態樣式           |
-| **CSS-in-JS**       | 完整 JS 能力、主題化強大 | 學習成本高、包體積大   | 大型應用、複雜主題系統 |
-| **Tailwind CSS**    | 快速開發、一致性高       | HTML 冗長、學習成本中  | 快速原型、團隊協作     |
-| **Scoped CSS(Vue)** | 自動局部作用域           | Vue 專屬               | Vue 專案               |
-
-{% note warning %}
-**常見錯誤：**
-
-```jsx example-css-modules-errors.jsx
-// ❌ 錯誤：直接使用字串
-<button className="toggleBtn">點我</button>
-
-// 正確：使用 styles 物件
-<button className={styles.toggleBtn}>點我</button>
-
-// ❌ 錯誤：忘記 import
-<button className={styles.btn}>點我</button> // styles 未定義
-
-// 正確：記得 import
-import styles from './MyComponent.module.css';
-<button className={styles.btn}>點我</button>
-```
-{% endnote %}
+| **CSS Modules**     | 自動局部作用域、零配置、支援偽類和媒體查詢 | 需要 `styles.` 前綴    | 中小型專案（推薦）     |
+| **Inline Styles**   | 完全隔離、動態樣式方便   | 無法使用偽類、媒體查詢、效能較差 | 簡單動態樣式           |
+| **CSS-in-JS**       | 完整 JS 能力、主題化強大、動態樣式靈活 | 學習成本高、包體積大、執行時開銷 | 大型應用、複雜主題系統 |
+| **Tailwind CSS**    | 快速開發、一致性高、工具類豐富 | HTML 冗長、學習成本中、需要配置 | 快速原型、團隊協作     |
+| **Scoped CSS(Vue)** | 自動局部作用域、語法簡潔 | Vue 專屬、無法跨框架使用 | Vue 專案               |
 
 # useReducer：管理複雜狀態
 
-當你的狀態邏輯變得複雜、牽涉多個子狀態、需要根據不同「動作類型」（如新增、刪除、切換）來更新狀態時，單純使用 `useState` 維護資料會讓程式零散且難以維護。這時候，`useReducer` 提供了類似 Redux 的「Reducer 模式」，把所有狀態變化集中用一個規則化的函式（reducer）處理。這不但讓程式邏輯更清楚（容易追蹤每個動作怎麼影響狀態），還能更方便日後的擴充與除錯。
+當狀態邏輯變得複雜、需要根據不同動作類型（如新增、刪除、切換）來更新狀態時，使用 `useState` 會讓程式碼零散且難以維護。`useReducer` 提供類似 Redux 的「Reducer 模式」，將所有狀態變化集中在一個規則化的函式（reducer）中處理，讓程式邏輯更清楚、更容易追蹤每個動作如何影響狀態，也方便日後的擴充與除錯。
 
 {% mermaid graph TD %}
     A["元件觸發事件"]
@@ -1182,10 +1255,10 @@ import styles from './MyComponent.module.css';
     D["返回新 state"]
     E["React 重新渲染"]
     
-    A -->|"1.呼叫"| B
-    B -->|"2.傳遞"| C
-    C -->|"3.計算"| D
-    D -->|"4.更新"| E
+    A -->|"呼叫"| B
+    B -->|"傳遞"| C
+    C -->|"計算"| D
+    D -->|"更新"| E
     E -.->|"顯示最新狀態"| A
     
     style A fill:#e3f2fd
@@ -1193,19 +1266,14 @@ import styles from './MyComponent.module.css';
     style E fill:#e8f5e9
 {% endmermaid %}
 
-{% note info %}
-**小技巧：什麼時候該用 `useReducer`？**
-- 狀態更新邏輯複雜、有多種動作型態
-- 多個子元件要共用或協同修改一組狀態
-- 需要為特定行為建立預期動作流（如表單多步驟流程、Todo List 等）
-- 想要將「狀態變化」集中管理、日後方便重構
-{% endnote %}
+## useReducer 完整實作指南
 
-## 語法說明
+### 核心概念：Reducer、Action、Dispatch
 
-在學習 useReducer 的語法時，我們需要理解以下三個基本要素：
+**useReducer** 由三個核心要素組成：
 
-- **Reducer（歸納函式）**：這是一個純函式，負責根據舊的 `state` 與收到的 `action` 計算並回傳新的 `state`。
+**1. Reducer（歸納函式）**：純函式，根據舊的 `state` 與收到的 `action` 計算並回傳新的 `state`。
+
 ```jsx reducer-pattern.jsx
 function reducer(state, action) {
   switch (action.type) {
@@ -1216,7 +1284,9 @@ function reducer(state, action) {
   }
 }
 ```
-- **Action（動作）**：一個描述「要做什麼行為」的物件，最少要有 `type` 屬性，代表動作的分類，也能夠帶入其他資料（payload）。
+
+**2. Action（動作）**：描述「要做什麼行為」的物件，最少要有 `type` 屬性，代表動作的分類，也能夠帶入其他資料（payload）。
+
 ```jsx action-pattern.jsx
 // Action 通常包含 type 和 payload
 {
@@ -1234,146 +1304,36 @@ function reducer(state, action) {
   id: 123
 }
 ```
-- **Dispatch（派發）**：透過 `dispatch(action)` 來呼叫 reducer，讓指定的 action 進行狀態更新。
 
-**Hook 函式簽名與回傳**
+**3. Dispatch（派發）**：透過 `dispatch(action)` 來呼叫 reducer，讓指定的 action 進行狀態更新。在元件內呼叫 `dispatch`，就能依據 action 執行狀態變更：
+
+```jsx someoneComponent.jsx
+dispatch({ type: 'ADD_TODO', text: '買牛奶' });
+```
+
+這會把 action 傳給 reducer 處理，reducer 回傳的新 state 會立即更新 React 畫面。
+
+### Hook 語法與使用方式
+
+**函式簽名：**
 ```jsx useReducer-syntax.jsx
 const [state, dispatch] = useReducer(reducer, initialArg, init?);
 ```
-- 提供（參數）：
-  - `reducer`：`(state, action) => newState` 的純函式（必填）
-  - `initialArg`：初始資料（必填），可為物件、陣列、數值等
-  - `init`：懶加載初始化函式（可選），簽名 `init(initialArg) => initialState`
-- 回傳（結果）：
-  - `state`：目前狀態值（讀取用）
-  - `dispatch`：派發 action 的函式（更新用）
-- 初始值規則（僅有「一個」最終 initialState）：
-  - 無提供 `init`：`initialState = initialArg`
-  - 有提供 `init`：`initialState = init(initialArg)`
 
-- 如何操作：
-  - 在元件中呼叫 `dispatch({ type: 'SOME_ACTION', ...payload })`
-  - 在 `reducer` 內用不可變方式回傳「新」狀態（不要直接改動原 state）
-  - 可額外建立 Action Creator 以統一產生 action 物件
+**參數說明：**
+- `reducer`：`(state, action) => newState` 的純函式（必填）
+- `initialArg`：初始資料（必填），可為物件、陣列、數值等
+- `init`：懶加載初始化函式（可選），簽名 `init(initialArg) => initialState`
 
-```jsx example-useReducer-init.jsx
-// 懶加載初始化（可選）
-function init(initialCount) {
-  return { count: initialCount };
-}
+**回傳值：**
+- `state`：目前狀態值（讀取用）
+- `dispatch`：派發 action 的函式（更新用）
 
-function counterReducer(state, action) {
-  switch (action.type) {
-    case 'increment':
-      return { count: state.count + 1 };
-    case 'reset':
-      return init(action.to);
-    default:
-      return state;
-  }
-}
+**初始值規則：**
+- 無提供 `init`：`initialState = initialArg`
+- 有提供 `init`：`initialState = init(initialArg)`
 
-// 提供 reducer、初始參數與 init；回傳 [state, dispatch]
-const [state, dispatch] = useReducer(counterReducer, 0, init);
-
-// 操作：透過 dispatch 派發動作
-dispatch({ type: 'increment' });
-dispatch({ type: 'reset', to: 10 });
-```
-
-### 懶加載初始化與渲染行為
-
-**什麼是懶加載初始化（init）？**
-- 位置：`useReducer(reducer, initialArg, init)` 的第三個參數
-- 作⽤：把 `initialArg` 轉成真正的初始狀態
-- 時機：只在「第一次」建立 state 時呼叫一次
-
-{% note info %}
-**initialArg vs init(initialArg) 回傳值：到底誰是初始狀態？**
-
-- 沒有提供 `init`：初始狀態 = `initialArg`
-- 有提供 `init`：初始狀態 = `init(initialArg)` 的回傳值
-
-所以 `initialArg` 只是「原料」，不是第二個 default。只有「一個」初始狀態，來源依你是否提供 `init` 而定。
-
-對比範例：
-```jsx example-init-comparison.jsx
-// 情況 A：沒有 init → 初始狀態就是 initialArg（數字 0）
-const [stateA] = useReducer(reducer, 0);
-// stateA 的初始值為 0
-
-// 情況 B：有 init → 初始狀態來自 init(initialArg)
-function init(count) {
-  return { count }; // 把數字包成物件
-}
-const [stateB] = useReducer(reducer, 0, init);
-// stateB 的初始值為 { count: 0 }
-```
-{% endnote %}
-
-**什麼時候需要用到 init？**
-- 初始狀態很「重」（要做昂貴計算或大量資料建構）
-- 初始狀態需要經過「推導」或「外部來源」(localStorage、URL 參數）
-- 需要在 reset 時，重用同一份初始化邏輯
-
-```jsx example-init-usage.jsx
-function init(size) {
-  // 只在首次建立 state 時執行
-  return { items: Array.from({ length: size }, (_, i) => ({ id: i + 1 })) };
-}
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'reset':
-      // 想要回到某個初始狀態時，可以主動重用 init
-      return init(action.size);
-    default:
-      return state;
-  }
-}
-
-const [state, dispatch] = useReducer(reducer, 10000, init);
-```
-
-**和重新渲染的關係（用最簡單規則記）：**
-- `dispatch(action)` 只會跑 reducer，不會重新執行 `init`
-- 只有當 reducer 回傳「新的物件/陣列」時，React 才會重新渲染使用到它的元件
-- 如果你在 reducer 內「自己呼叫」了 `init(...)`，那是你主動做初始化（不是 useReducer 自動重跑）
-
-**不是每次都要用 init：**
-- 初始狀態很輕量（常數或小物件）→ 直接給 `initialArg` 更簡單
-- `init` 是為了省下昂貴初始化的成本，沒有昂貴成本就省略
-
-{% note warning %}
-**常見誤解：為什麼看起來像是 init 又被執行？**
-
-`dispatch` 不會觸發 `init`。如果你在 reducer 內部的某個分支（例如 `reset`）主動呼叫了 `init(...)` 來復用初始化邏輯，那是你「自己呼叫了 `init`」，不是 useReducer 幫你再次執行初始化。
-
-快速觀察範例：
-```jsx example-init-timing.jsx
-function init(n) {
-  console.log('init run once');
-  return { count: n };
-}
-
-function reducer(state, action) {
-  console.log('reducer run');
-  switch (action.type) {
-    case 'increment':
-      return { count: state.count + 1 };
-    case 'reset':
-      // 這裡是我們主動呼叫 init，而非 useReducer 自動重跑
-      return init(action.to);
-    default:
-      return state;
-  }
-}
-
-const [state, dispatch] = useReducer(reducer, 0, init);
-// 載入時只會看到一次 `init run once`；之後每次 dispatch 只會看到 `reducer run`
-```
-{% endnote %}
-
+**基本使用範例：**
 ```jsx example-todo-reducer.jsx
 // 1) 定義 action types（選用，避免拼字錯誤）
 const ADD = 'ADD_TODO';
@@ -1416,17 +1376,87 @@ export default function TodoExample() {
 }
 ```
 
-{% note success %}
-**為什麼它更好維護？**
+### 懶加載初始化（init）
 
-- 更新邏輯集中在 `reducer`，事件處理器極度精簡
-- 相同輸入（state + action）得到相同輸出，便於單元測試
-- 可與 Context 搭配，把 `dispatch` 下放至深層元件，消除 Props Drilling
+`init` 是 `useReducer` 的第三個可選參數，用於將 `initialArg` 轉換成真正的初始狀態。它只在「第一次」建立 state 時呼叫一次，適合用於初始狀態需要昂貴計算、從外部來源推導（如 localStorage、URL 參數），或需要在 reset 時重用初始化邏輯的場景。
+
+**初始值規則：**
+- 沒有提供 `init`：初始狀態 = `initialArg`
+- 有提供 `init`：初始狀態 = `init(initialArg)` 的回傳值
+
+```jsx example-init-comparison.jsx
+// 情況 A：沒有 init → 初始狀態就是 initialArg（數字 0）
+const [stateA] = useReducer(reducer, 0);
+// stateA 的初始值為 0
+
+// 情況 B：有 init → 初始狀態來自 init(initialArg)
+function init(count) {
+  return { count }; // 把數字包成物件
+}
+const [stateB] = useReducer(reducer, 0, init);
+// stateB 的初始值為 { count: 0 }
+```
+
+**使用範例：**
+```jsx example-init-usage.jsx
+function init(size) {
+  // 只在首次建立 state 時執行
+  return { items: Array.from({ length: size }, (_, i) => ({ id: i + 1 })) };
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'reset':
+      // 想要回到某個初始狀態時，可以主動重用 init
+      return init(action.size);
+    default:
+      return state;
+  }
+}
+
+const [state, dispatch] = useReducer(reducer, 10000, init);
+```
+
+**重要注意事項：**
+- `dispatch(action)` 只會執行 reducer，不會重新執行 `init`
+- 只有當 reducer 回傳「新的物件/陣列」時，React 才會重新渲染使用到它的元件
+- 如果在 reducer 內主動呼叫了 `init(...)`，那是你主動做初始化，不是 useReducer 自動重跑
+- 初始狀態很輕量（常數或小物件）時，直接給 `initialArg` 更簡單，不需要使用 `init`
+
+{% note warning %}
+**常見誤解：為什麼看起來像是 init 又被執行？**
+
+`dispatch` 不會觸發 `init`。如果你在 reducer 內部的某個分支（例如 `reset`）主動呼叫了 `init(...)` 來復用初始化邏輯，那是你「自己呼叫了 `init`」，不是 useReducer 幫你再次執行初始化。
+
+```jsx example-init-timing.jsx
+function init(n) {
+  console.log('init run once');
+  return { count: n };
+}
+
+function reducer(state, action) {
+  console.log('reducer run');
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'reset':
+      // 這裡是我們主動呼叫 init，而非 useReducer 自動重跑
+      return init(action.to);
+    default:
+      return state;
+  }
+}
+
+const [state, dispatch] = useReducer(reducer, 0, init);
+// 載入時只會看到一次 `init run once`；之後每次 dispatch 只會看到 `reducer run`
+```
 {% endnote %}
 
 ### useState vs useReducer
 
-| 想達成的目標 | useState（單一值/簡單邏輯） | useReducer（多動作/複雜邏輯）       |
+當狀態邏輯簡單時，`useState` 就足夠了；但當狀態更新邏輯複雜、有多種動作型態、多個子元件要共用或協同修改一組狀態時，`useReducer` 會是更好的選擇。它讓狀態變化集中管理，更容易追蹤每個動作如何影響狀態，也方便日後重構與除錯。
+
+| 比較項目 | useState（單一值/簡單邏輯） | useReducer（多動作/複雜邏輯）       |
 | ------------ | --------------------------- | ----------------------------------- |
 | 狀態複雜度   | 低（單一值或少量欄位）      | 高（多欄位、多種操作）              |
 | 更新方式     | 直接 setState               | dispatch(action) → reducer 決定更新 |
@@ -1434,8 +1464,12 @@ export default function TodoExample() {
 | 可測試性     | 一般                        | 佳（純函式 reducer 易測）           |
 | 向下傳遞     | 多個 setter 容易凌亂        | 傳 dispatch 簡潔，適合搭配 Context  |
 
-{% tabs 狀態管理對照 %}
-<!-- tab useState 範例 -->
+**使用建議：**
+- **使用 useReducer**：需要多種動作、集中更新邏輯、較好測試性，或要把更新方法往下傳（搭配 Context）
+- **使用 useState**：只有簡單值或少量欄位、更新邏輯單純
+
+**對照範例：**
+
 ```jsx example-counter-usestate.jsx
 // 簡單計數器（useState）
 import { useState } from 'react';
@@ -1449,9 +1483,7 @@ export default function Counter() {
   );
 }
 ```
-<!-- endtab -->
 
-<!-- tab useReducer 範例 -->
 ```jsx example-counter-usereducer.jsx
 // 計數器（useReducer：多動作 + 集中邏輯）
 import { useReducer } from 'react';
@@ -1481,21 +1513,17 @@ export default function CounterReducer() {
   );
 }
 ```
-<!-- endtab -->
-{% endtabs %}
 
-{% note success %}
-**快速判斷：**
-- 用 useReducer：當你需要多種動作、集中更新邏輯、較好測試性，或要把更新方法往下傳（搭配 Context）。
-- 用 useState：當你只有簡單值或少量欄位、更新邏輯單純。
-{% endnote %}
+**useReducer 的優勢：**
+- 更新邏輯集中在 `reducer`，事件處理器極度精簡
+- 相同輸入（state + action）得到相同輸出，便於單元測試
+- 可與 Context 搭配，把 `dispatch` 下放至深層元件，消除 Props Drilling
 
-## 範例：Todo List（useState）
-讓我們透過一個完整的 Todo List 範例來學習 useReducer。
+## 範例：Todo List 實作
 
-### Todo List 專案規劃
+我們將透過一個完整的 Todo List 範例來學習 useReducer。這個範例會先使用 `useState` 實作基本功能，再逐步重構為 `useReducer`，讓你能清楚看到兩種方式的差異。
 
-我們將建立一個功能完整的 Todo List, 支援：
+**功能需求：**
 - 新增待辦事項
 - 刪除待辦事項
 - 切換完成狀態
@@ -2525,28 +2553,9 @@ src/pages/lesson03/pages/TodoExample/
 
 # Context + useReducer：終極解決方案
 
-現在我們已經學會了 Context 和 useReducer, 讓我們將它們結合起來，創建一個更強大的狀態管理方案。
+將 Context 和 useReducer 結合，可建立更強大的狀態管理方案。即使使用了 `useReducer`，若仍透過 Props 傳遞 `dispatch` 和 `state`，會遇到 Props Drilling 問題：主元件需要管理所有 handler 函式，每個子元件都需要透過 Props 接收函式，當元件層級更深時，Props 傳遞會更複雜。
 
-## 當前問題：Props Drilling
-
-即使使用了 `useReducer`, 我們仍然需要透過 Props 傳遞 `dispatch` 和 `state`:
-
-```jsx example-props-drilling.jsx
-<TodoExample>  {/* 管理 state 和 dispatch */}
-  <TaskAdd onAdd={handleAdd} />  {/* Props: onAdd */}
-  <TaskList items={list} onToggle={handleToggle} onDelete={handleDelete} />
-  {/* Props: items, onToggle, onDelete */}
-</TodoExample>
-```
-
-**問題：**
-- 主元件需要管理所有 handler 函式
-- 每個子元件都需要透過 Props 接收函式
-- 如果元件層級更深，Props 傳遞會更複雜
-
-## 解決方案：Context + useReducer
-
-將 `state` 和 `dispatch` 放入 Context, 任何深層子元件都可以直接存取。
+**解決方案是將 `state` 和 `dispatch` 放入 Context**，讓任何深層子元件都可以直接存取，完全消除 Props Drilling。
 
 {% mermaid graph TD %}
     A["TodoContext Provider<br/>（提供 state + dispatch)"]
@@ -2566,19 +2575,44 @@ src/pages/lesson03/pages/TodoExample/
     style D fill:#e8f5e9
 {% endmermaid %}
 
-### 步驟 1：建立 Context + Provider
+
+## 建立 Context 與 Provider
+
+首先，我們需要建立兩個分離的 Context：一個用於 state，一個用於 dispatch。這樣做可以優化性能，讓只讀取 `state` 的元件不會因為 `dispatch` 改變而重新渲染，只使用 `dispatch` 的元件也不會因為 `state` 改變而重新渲染。
+
+**為什麼要分兩個 Context？**
+
+```jsx
+// ❌ 方案 A：單一 Context（不推薦）
+const TodoContext = createContext(null);
+<TodoContext.Provider value={{ state, handlers }}>
+
+// ✅ 方案 B：分離 Context（推薦）
+const TodoStateContext = createContext(null);
+const TodoDispatchContext = createContext(null);
+```
+
+**分離的好處：**
+- **性能優化**：只訂閱需要的資料，避免不必要的重新渲染
+- **語意清晰**：明確區分「資料」和「操作」
+- **更好的 TypeScript 支援**：類型推斷更精確
+
+**完整實作：**
 
 ```jsx src/pages/lesson03/pages/TodoExample/context/TodoContext.jsx
-import { useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer } from 'react';
 import { todoReducer, initialState } from '../store/reducer';
 import * as actions from '../store/actions';
-import { TodoStateContext, TodoDispatchContext } from '../../lessonContext';
 
-// 🌟 Provider 元件
+// 建立兩個分離的 Context
+const TodoStateContext = createContext(null);
+const TodoDispatchContext = createContext(null);
+
+// Provider 元件
 export function TodoProvider({ children }) {
   const [state, dispatch] = useReducer(todoReducer, initialState);
 
-  // 🌟 封裝 dispatch 函式（可選，提供更友善的 API）
+  // 封裝 dispatch 函式（提供更友善的 API）
   const handlers = {
     addTodo: (text) => dispatch(actions.addTodo(text)),
     deleteTodo: (id) => dispatch(actions.deleteTodo(id)),
@@ -2594,7 +2628,7 @@ export function TodoProvider({ children }) {
   );
 }
 
-// 🌟 自訂 Hook：讀取 state
+// 自訂 Hook：讀取 state
 export function useTodoState() {
   const context = useContext(TodoStateContext);
   if (context === null) {
@@ -2603,7 +2637,7 @@ export function useTodoState() {
   return context;
 }
 
-// 🌟 自訂 Hook：讀取 dispatch handlers
+// 自訂 Hook：讀取 dispatch handlers
 export function useTodoDispatch() {
   const context = useContext(TodoDispatchContext);
   if (context === null) {
@@ -2613,28 +2647,11 @@ export function useTodoDispatch() {
 }
 ```
 
-{% note info %}
-**為什麼要分兩個 Context？**
+## 更新元件使用 Context
 
-```jsx
-// ❌ 方案 A：單一 Context（不推薦）
-const TodoContext = createContext(null);
-<TodoContext.Provider value={{ state, handlers }}>
+建立好 Context 和 Provider 後，我們需要更新主元件和子元件來使用 Context。主元件只需要用 `TodoProvider` 包覆，子元件則透過自訂 Hook 直接從 Context 讀取資料和操作函式，完全不需要透過 Props 傳遞。
 
-// 方案 B：分離 Context（推薦）
-const TodoStateContext = createContext(null);
-const TodoDispatchContext = createContext(null);
-```
-
-**分離的好處：**
-- **性能優化**：只訂閱需要的資料
-  - 只讀取 `state` 的元件不會因為 `dispatch` 改變而重新渲染
-  - 只使用 `dispatch` 的元件不會因為 `state` 改變而重新渲染
-- **語意清晰**：明確區分「資料」和「操作」
-- **更好的 TypeScript 支援**：類型推斷更精確
-{% endnote %}
-
-### 步驟 2：更新主元件
+**主元件：**
 
 ```jsx src/pages/lesson03/pages/TodoExample/index.jsx
 import styles from './todoList.module.css';
@@ -2642,9 +2659,9 @@ import TaskAdd from './components/TaskAdd';
 import TaskList from './components/TaskList';
 import { TodoProvider, useTodoState } from './context/TodoContext';
 
-// 🌟 統計資訊元件（展示如何使用 Context）
+// 統計資訊元件（展示如何使用 Context）
 function TodoStats() {
-  const todos = useTodoState(); // 🌟 直接從 Context 讀取
+  const todos = useTodoState(); // 直接從 Context 讀取
 
   return (
     <div className="todo-stats">
@@ -2655,7 +2672,7 @@ function TodoStats() {
   );
 }
 
-// 🌟 主元件內容
+// 主元件內容
 function TodoContent() {
   return (
     <div className="todo-example">
@@ -2663,20 +2680,20 @@ function TodoContent() {
       
       <div className={styles.header}>
         <h2>我的待辦清單</h2>
-        {/* 🌟 不再需要傳遞 Props */}
+        {/* 不再需要傳遞 Props */}
         <TaskAdd />
       </div>
 
-      {/* 🌟 不再需要傳遞 Props */}
+      {/* 不再需要傳遞 Props */}
       <TaskList />
       
-      {/* 🌟 新增統計元件 */}
+      {/* 新增統計元件 */}
       <TodoStats />
     </div>
   );
 }
 
-// 🌟 匯出元件：用 Provider 包覆
+// 匯出元件：用 Provider 包覆
 export default function TodoExample() {
   return (
     <TodoProvider>
@@ -2686,18 +2703,16 @@ export default function TodoExample() {
 }
 ```
 
-### 步驟 3：更新子元件
-
-#### TaskAdd 元件
+**子元件：TaskAdd**
 
 ```jsx src/pages/lesson03/pages/TodoExample/components/TaskAdd.jsx
 import { useState } from 'react';
 import styles from '../todoList.module.css';
-import { useTodoDispatch } from '../context/TodoContext'; // 🌟 匯入 Hook
+import { useTodoDispatch } from '../context/TodoContext';
 
 export default function TaskAdd() {
   const [text, setText] = useState('');
-  const { addTodo } = useTodoDispatch(); // 🌟 從 Context 取得 addTodo
+  const { addTodo } = useTodoDispatch(); // 從 Context 取得 addTodo
 
   const handleSubmit = () => {
     if (!text.trim()) {
@@ -2705,7 +2720,7 @@ export default function TaskAdd() {
       return;
     }
     
-    addTodo(text); // 🌟 直接呼叫
+    addTodo(text); // 直接呼叫
     setText('');
   };
 
@@ -2731,15 +2746,15 @@ export default function TaskAdd() {
 }
 ```
 
-#### TaskList 元件
+**子元件：TaskList**
 
 ```jsx src/pages/lesson03/pages/TodoExample/components/TaskList.jsx
 import styles from '../todoList.module.css';
 import { useTodoState, useTodoDispatch } from '../context/TodoContext';
 
 export default function TaskList() {
-  const todos = useTodoState(); // 🌟 從 Context 取得 state
-  const { toggleTodo, deleteTodo } = useTodoDispatch(); // 🌟 從 Context 取得 dispatch
+  const todos = useTodoState(); // 從 Context 取得 state
+  const { toggleTodo, deleteTodo } = useTodoDispatch(); // 從 Context 取得 dispatch
 
   return (
     <ul className={styles.todoList}>
@@ -2752,14 +2767,14 @@ export default function TaskList() {
           <li
             key={item.id}
             className={item.checked ? styles.checked : ''}
-            onClick={() => toggleTodo(item.id)} // 🌟 直接呼叫
+            onClick={() => toggleTodo(item.id)} // 直接呼叫
           >
             {item.text}
             <span
               className={styles.close}
               onClick={(e) => {
                 e.stopPropagation();
-                deleteTodo(item.id); // 🌟 直接呼叫
+                deleteTodo(item.id); // 直接呼叫
               }}
             >
               ×
@@ -2772,8 +2787,7 @@ export default function TaskList() {
 }
 ```
 
-{% note success %}
-**Context + useReducer 的優勢：**
+## Context + useReducer 的優勢
 
 **Before（Props Drilling）：**
 ```jsx
@@ -2795,82 +2809,67 @@ export default function TaskList() {
 </TodoProvider>
 ```
 
-**好處：**
-- **消除 Props Drilling**：子元件直接從 Context 讀取
-- **關注點分離**：主元件不需要管理所有 handlers
-- **易於擴展**：新增元件時不需要修改父元件
-- **更好的封裝**：Context 內部實作可以隨時改變，不影響元件
-- **提升可測試性**：可以輕鬆 mock Context Provider
-{% endnote %}
+**主要優勢：**
+- **消除 Props Drilling**：子元件直接從 Context 讀取，不需要透過 Props 層層傳遞
+- **關注點分離**：主元件不需要管理所有 handlers，只需負責 UI 渲染
+- **易於擴展**：新增元件時不需要修改父元件，直接使用 Context 即可
+- **更好的封裝**：Context 內部實作可以隨時改變，不影響使用它的元件
+- **提升可測試性**：可以輕鬆 mock Context Provider 進行單元測試
+- **性能優化**：分離 state 和 dispatch Context，避免不必要的重新渲染
 
 # 總結
 
 ## 本章學習重點
 
-**Context API**
-- 解決 Prop Drilling 問題
-- 三步驟：`createContext` → `Provider` → `useContext`
-- 適用場景：主題、語言、使用者資訊等跨元件共享的資料
-- Context 巢套：子層 Provider 覆蓋父層值
+本章學習了四個核心技術，它們可以獨立使用，也可以組合使用來建立更強大的狀態管理方案：
 
-**CSS Modules**
-- 避免全域樣式汙染
-- 檔案命名：`.module.css`
-- 使用方式：`import styles from './MyComponent.module.css'`
-- 自動產生唯一 class hash 值
+**Context API**：解決 Prop Drilling 問題，透過 `createContext` → `Provider` → `useContext` 三步驟實現跨元件資料共享。適用於主題、語言、使用者資訊等跨元件共享的資料。注意 Context 巢套時，子層 Provider 會覆蓋父層值。
 
-**useReducer**
-- 管理複雜狀態的更好選擇
-- 組成：`reducer` + `initialState` → `[state, dispatch]`
-- Reducer 是純函式：`(state, action) => newState`
-- Action Creator：避免手動建立 action 時出錯
-- 適用場景：多個相關狀態、複雜的狀態更新邏輯
+**CSS Modules**：避免全域樣式汙染，透過 `.module.css` 檔案命名和 `import styles from './MyComponent.module.css'` 使用方式，自動產生唯一 class hash 值，實現局部作用域。
 
-**Context + useReducer**
-- 結合兩者優勢：跨元件狀態 + 集中管理
-- 分離 StateContext 和 DispatchContext（性能優化）
-- 自訂 Hook：提供更友善的 API
-- 消除 Props Drilling, 提升可維護性
+**useReducer**：管理複雜狀態的更好選擇，由 `reducer` + `initialState` → `[state, dispatch]` 組成。Reducer 是純函式 `(state, action) => newState`，搭配 Action Creator 可避免手動建立 action 時出錯。適用於多個相關狀態、複雜的狀態更新邏輯。
 
-## 最佳實踐建議
+**Context + useReducer**：結合兩者優勢，實現跨元件狀態與集中管理。透過分離 StateContext 和 DispatchContext 可優化性能，使用自訂 Hook 提供更友善的 API，完全消除 Props Drilling，大幅提升可維護性。
 
-### 1. 何時使用 Context？
+## 最佳實踐與選擇指南
 
-**適合使用 Context：**
+### Context 使用時機與性能優化
+
+**適合使用 Context 的場景：**
 - 跨多層元件的共享資料（主題、語言、使用者資訊）
 - 避免 Prop Drilling（Props 需要傳遞超過 3 層）
 - 全域設定（API 端點、功能開關）
 
-**❌ 不適合使用 Context：**
+**不適合使用 Context 的場景：**
 - 頻繁變動的資料（會導致大量重新渲染）
 - 元件間的直接通信（考慮使用狀態提升或自訂事件）
 - 簡單的 Props 傳遞（1-2 層，直接用 Props 即可）
 
-### 2. Context 性能優化
-
+**性能優化技巧：**
 ```jsx
 // ❌ 錯誤：每次渲染都建立新物件
 <Context.Provider value={{ user, theme }}>
 
-// 正確：使用 useMemo 避免不必要的重新渲染
+// ✅ 正確：使用 useMemo 避免不必要的重新渲染
 const value = useMemo(() => ({ user, theme }), [user, theme]);
 <Context.Provider value={value}>
 ```
 
-### 3. useReducer vs useState 選擇指南
+### useState vs useReducer 選擇指南
 
 | 場景                    | 使用 useState | 使用 useReducer |
 | ----------------------- | ------------- | --------------- |
-| 簡單狀態（單一值）      |               | ❌               |
-| 複雜狀態（多個相關值）  | ❌             |                 |
-| 狀態更新邏輯簡單        |               | ❌               |
-| 狀態更新邏輯複雜        | ❌             |                 |
-| 需要測試狀態邏輯        | ❌             |                 |
-| 狀態依賴前一個狀態      | △             |                 |
-| 需要向下傳遞多個 setter | ❌             |                 |
+| 簡單狀態（單一值）      | ✅             | ❌               |
+| 複雜狀態（多個相關值）  | ❌             | ✅               |
+| 狀態更新邏輯簡單        | ✅             | ❌               |
+| 狀態更新邏輯複雜        | ❌             | ✅               |
+| 需要測試狀態邏輯        | ❌             | ✅               |
+| 狀態依賴前一個狀態      | △             | ✅               |
+| 需要向下傳遞多個 setter | ❌             | ✅               |
 
-### 4. 專案結構建議
+### 專案結構與錯誤處理
 
+**建議的專案結構：**
 ```
 src/
 ├── contexts/              # 全域 Context
@@ -2889,10 +2888,8 @@ src/
 │       └── styles.module.css
 ```
 
-### 5. 錯誤處理
-
+**錯誤處理：在自訂 Hook 中檢查 Context 是否存在**
 ```jsx
-// 🌟 在自訂 Hook 中檢查 Context 是否存在
 export function useTodoState() {
   const context = useContext(TodoStateContext);
   
@@ -2909,48 +2906,27 @@ export function useTodoState() {
 
 ## React 19 相關更新
 
-{% note primary %}
-**React 19 對 Context 和 Reducer 的改進：**
+React 19 對 Context 和 Reducer 帶來了一些改進：
 
-1. **React Compiler（實驗性）**
-   - 自動優化 Context 的重新渲染
-   - 不需要手動使用 `useMemo`/`useCallback`
+**React Compiler（實驗性）**：自動優化 Context 的重新渲染，不需要手動使用 `useMemo`/`useCallback`。
 
-2. **更好的 DevTools 支援**
-   - Context 的資料流更清晰
-   - Reducer Action 可以在 Timeline 中追蹤
+**更好的 DevTools 支援**：Context 的資料流更清晰，Reducer Action 可以在 Timeline 中追蹤。
 
-3. **Server Components（伺服器元件）**
-   - Context 在 Server Components 中的使用限制
-   - 建議將 Context 用於 Client Components
+**Server Components（伺服器元件）**：Context 在 Server Components 中有使用限制，建議將 Context 用於 Client Components。
 
-4. **Actions（表單處理）**
-   - 可以結合 `useActionState` 處理表單提交
-   - 與 `useReducer` 類似，但專為表單設計
-{% endnote %}
+**Actions（表單處理）**：可以結合 `useActionState` 處理表單提交，與 `useReducer` 類似，但專為表單設計。
 
-## 下一步學習
+## 下一步學習方向
 
-完成本章後，建議繼續學習：
+完成本章後，建議繼續學習以下主題：
 
-1. **第三方狀態管理**
-   - **Zustand**：輕量、簡單（推薦初學者）
-   - **Redux Toolkit**：企業級、生態系完整
-   - **Jotai**：原子化狀態管理
+**第三方狀態管理**：當專案規模擴大時，可以考慮使用 Zustand（輕量、簡單，推薦初學者）、Redux Toolkit（企業級、生態系完整）或 Jotai（原子化狀態管理）等第三方狀態管理方案。
 
-2. **資料獲取與快取**
-   - **TanStack Query（React Query）**：伺服器狀態管理
-   - **SWR**：輕量的資料獲取 Hook
-   - 與 `useReducer` 整合處理載入狀態
+**資料獲取與快取**：學習 TanStack Query（React Query）進行伺服器狀態管理，或使用 SWR 作為輕量的資料獲取 Hook，並與 `useReducer` 整合處理載入狀態。
 
-3. **進階模式**
-   - Context 性能優化技巧
-   - Reducer 的副作用處理（搭配 `useEffect`）
-   - Immer：簡化不可變更新
+**進階模式**：深入學習 Context 性能優化技巧、Reducer 的副作用處理（搭配 `useEffect`），以及使用 Immer 簡化不可變更新。
 
-4. **全端框架**
-   - **Next.js 15**：Server Components + Actions
-   - **Remix**：Loader + Action 模式
+**全端框架**：探索 Next.js 15 的 Server Components + Actions，或 Remix 的 Loader + Action 模式，了解如何在全端框架中使用 Context 和 Reducer。
 
 # 參考文獻
 

@@ -6,7 +6,7 @@ categories:
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-15 13:09:14
-hidden: true
+hidden: false
 ---
 ![](assets/images/banner/react.png)
 React 是由 Meta（前 Facebook）所主導開發的 JavaScript 函式庫，採用元件化（Component-based）的設計思維，讓開發者能以可重用的元件來構建使用者介面。與 Angular 類似都強調元件化開發，但與 Vue.js 的 MVVM 模式不同，React 將所有邏輯（資料、事件、渲染）都整合在元件內部。
