@@ -61,7 +61,6 @@ JavaScript 提供了陣列（Array）、物件（Object）和函式（Function�
 
 通常建議使用 `[]` 來建立「陣列實例」（Array instance），這樣建立出來的物件會自動擁有所有陣列方法（如 push、pop、forEach 等），語法簡潔且不易混淆。只有建立出「陣列實例」時，才能使用這些陣列專屬的方法。
 
-
 ```js array-creation.js
 // 方法 1：使用方括號（推薦）
 let emptyArray = [];
@@ -270,7 +269,7 @@ Array.isArray('abc');   // false
 ```js
 Array.of(3);        // [3]
 Array.of(1,2,3);    // [1,2,3]
-new Array(3);       // [empty × 3]（長度為3的空陣列）
+new Array(3);       // [empty × 3](長度為 3 的空陣列)
 ```
 
 {% note info %}
@@ -1180,7 +1179,7 @@ var obj = {
 };
 
 // 不同的呼叫方式，this 指向不同物件
-room();           // 輸出：A (this 指向全域物件)
+room();           // 輸出：A (this 指向全域物件）
 obj.first();      // 輸出：B (this 指向 obj)
 obj.second.goto(); // 輸出：C (this 指向 obj.second)
 ```
@@ -1252,7 +1251,6 @@ const person = {
 person.sayHello(); // 輸出：你好，我是 小明，今年 25 歲
 person.birthday(); // 輸出：生日快樂！現在 26 歲了
 ```
-
 
 #### this 的執行環境圖解
 
@@ -1608,7 +1606,7 @@ console.log(person.skills[0]);              // JavaScript
 console.log(person.contact.address.city);   // 台北市
 person.sayHello();                          // 你好，我是 小明
 person.greet();                             // 歡迎，小明！
-console.log(person.info.getInfo());         // 小明, 25 歲
+console.log(person.info.getInfo());         // 小明，25 歲
 ```
 
 ### 物件方法定義的兩種語法
@@ -1665,8 +1663,8 @@ user.profile = {
 
 // 動態添加陣列
 user.posts = [
-  { title: '第一篇文章', content: '內容...' },
-  { title: '第二篇文章', content: '內容...' }
+  { title: '第一篇文章', content: '內容。..' },
+  { title: '第二篇文章', content: '內容。..' }
 ];
 
 // 使用動態添加的屬性
@@ -2049,8 +2047,8 @@ console.log('原始時間：', date.toLocaleString());
 date.setFullYear(2025);
 console.log('設定年份後：', date.toLocaleString());
 
-// 設定月份（注意：0=1月，11=12月）
-date.setMonth(5); // 設定為6月
+// 設定月份（注意：0=1 月，11=12 月）
+date.setMonth(5); // 設定為 6 月
 console.log('設定月份後：', date.toLocaleString());
 
 // 設定日期
@@ -2156,15 +2154,46 @@ getCountdownToNewYear();
 
 在程式執行過程中，難免會遇到各種錯誤（例如：資料格式錯誤、除以零、存取不存在的屬性等）。如果不加以處理，這些錯誤會導致程式中斷。JavaScript 提供了 `try-catch` 機制，讓我們可以「攔截」錯誤，並給予適當的處理方式，提升程式的穩定性與使用者體驗。
 
+### try-catch 的基本結構
+
 - `try` 區塊：放入可能發生錯誤的程式碼
 - `catch` 區塊：當 try 內發生錯誤時，會跳到這裡執行錯誤處理
 - `finally` 區塊（可選）：不論有無錯誤，最後都會執行這裡的程式碼（常用於資源釋放、收尾工作）
 
-這種結構讓我們可以針對錯誤進行友善提示、記錄錯誤資訊，甚至避免整個程式崩潰。
+### 捕捉任何 JavaScript 錯誤
 
-```js try-catch.js
+`try-catch` 可以捕捉 `try` 區塊內發生的**任何 JavaScript 錯誤**，包括：
+- 執行時錯誤（Runtime Error）
+- 型別錯誤（TypeError）
+- 參考錯誤（ReferenceError）
+- 語法錯誤（SyntaxError，但需注意語法錯誤通常在執行前就會被發現）
+- 以及任何透過 `throw` 拋出的錯誤
+
+```js try-catch-basic.js
+// 範例 1：捕捉系統產生的錯誤
+function accessProperty(obj, prop) {
+    try {
+        // 如果 obj 是 null 或 undefined，會產生 TypeError
+        return obj[prop].toUpperCase();
+    } catch (error) {
+        console.error('存取屬性時發生錯誤：', error.message);
+        return '無法存取屬性';
+    }
+}
+
+console.log(accessProperty({ name: 'John' }, 'name'));  // "JOHN"
+console.log(accessProperty(null, 'name'));  // "無法存取屬性"
+```
+
+### 自訂錯誤並拋出
+
+除了捕捉系統產生的錯誤外，我們也可以使用 `throw` 關鍵字**主動拋出自訂錯誤**，讓 `try-catch` 捕捉。這讓我們可以針對特定業務邏輯或資料驗證情境，提供更明確的錯誤訊息。
+
+```js try-catch-custom.js
+// 捕捉除以零的錯誤
 function divide(a, b) {
     try {
+        // JavaScript 中除以零不會拋出錯誤，但我們可以自訂檢查
         if (b === 0) {
             throw new Error('除數不能為零');
         }
@@ -2179,14 +2208,61 @@ function divide(a, b) {
 
 console.log(divide(10, 2));  // 5
 console.log(divide(10, 0));  // null，並顯示錯誤訊息
+
+//-----------------------------------------------
+
+// 自訂錯誤類別
+class ValidationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ValidationError';
+    }
+}
+
+function validateUser(user) {
+    try {
+        // 自訂錯誤檢查
+        if (!user) {
+            throw new ValidationError('使用者資料不能為空');
+        }
+        if (!user.name) {
+            throw new ValidationError('使用者名稱不能為空');
+        }
+        if (user.age < 0) {
+            throw new Error('年齡不能為負數');
+        }
+        
+        return `使用者 ${user.name} 驗證成功`;
+    } catch (error) {
+        // 捕捉所有錯誤（包括自訂錯誤）
+        if (error instanceof ValidationError) {
+            console.error('驗證錯誤：', error.message);
+        } else {
+            console.error('其他錯誤：', error.message);
+        }
+        return null;
+    }
+}
+
+console.log(validateUser({ name: 'John', age: 25 }));  // "使用者 John 驗證成功"
+console.log(validateUser(null));  // null，顯示驗證錯誤
+console.log(validateUser({ age: 25 }));  // null，顯示驗證錯誤
 ```
 
 {% note info %}
-**補充說明：throw new Error(message) 是什麼？**
-- `throw` 是 JavaScript 用來「主動拋出」錯誤的關鍵字，會立即中斷目前的程式流程，並將錯誤物件傳遞到最近的 catch 區塊。
-- `new Error(message)` 會建立一個錯誤物件，訊息內容可自訂。
-- 結合起來，`throw new Error('除數不能為零')` 代表「主動產生一個錯誤，並帶有自訂訊息」，讓我們可以針對特定情境（如除以零）給出明確的錯誤提示。
-- 這種寫法常用於資料驗證、API 回傳錯誤、流程控制等場合。
+**補充說明：throw 和 Error 物件**
+- `throw` 是 JavaScript 用來「主動拋出」錯誤的關鍵字，會立即中斷目前的程式流程，並將錯誤物件傳遞到最近的 `catch` 區塊。
+- `new Error(message)` 會建立一個標準的錯誤物件，訊息內容可自訂。
+- 也可以建立自訂錯誤類別（如 `ValidationError`），繼承 `Error` 類別，提供更細緻的錯誤分類。
+- `throw` 可以拋出任何值（字串、數字、物件等），但建議使用 `Error` 物件，因為它包含 `stack` 屬性，方便除錯。
+{% endnote %}
+
+{% note success %}
+**跟著做：**
+1. 嘗試在 `try` 區塊中故意產生錯誤（如存取不存在的屬性）
+2. 觀察 `catch` 區塊如何捕捉這些錯誤
+3. 練習使用 `throw new Error()` 拋出自訂錯誤
+4. 測試 `finally` 區塊是否無論有無錯誤都會執行
 {% endnote %}
 
 ## 除錯技巧
