@@ -17,8 +17,15 @@ date: 2022-11-15 23:03:07
 正式開始教學之前，請先獲取本教學所需的初始素材。該素材已提供具備靜態的商務網站版型內容（主題：露營官網），透過此素材作為商務網站練習之實作起始點。並透過 VSCode 與 Live Server 套件完成布署。
 
 ## 素材下載
-請前往下載加以使用，確保安裝置環境內容。本教材與前期 RWD 響應式網頁設計（假日班）期末實作教材稍些取不同，請從新下載此份：
-  - [Source Project](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/project_Camp/source) 基本 HTML/CSS/Bootstrap5.2 之商務網站素材。
+本教材的範例程式碼已放在 GitHub 專案中，建議直接使用 Git `clone` 下來，以便之後同步更新。
+
+```bash
+git clone https://github.com/summer10920/studies_TeachDemo_JS.git
+cd studies_TeachDemo_JS/project_Camp/source
+```
+
+如果你暫時不想用 Git，也可以改用瀏覽器前往 GitHub 專案頁面下載壓縮檔：
+- [Source Project](https://github.com/summer10920/studies_TeachDemo_JS/tree/master/project_Camp/source) 基本 HTML/CSS/Bootstrap5.2 之商務網站素材。
 
 此時檢查內容，包含了
 - **db.json**
