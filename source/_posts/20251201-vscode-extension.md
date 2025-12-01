@@ -22,36 +22,37 @@ hidden: false
 
 ## 程式語言支援
 
-| 套件名稱                               | 說明                                                    | 作者                  | Visual Studio Marketplace | Open VSX |
-| -------------------------------------- | ------------------------------------------------------- | --------------------- | ------------------------- | -------- |
-| Angular Language Service               | 提供 Angular 開發的語法高亮、程式碼補全等功能           | Angular               | ✅                         | ✅        |
-| Angular 1.x Snippets                   | AngularJS 1.x 的程式碼片段集合                          | John Papa             | ✅                         | ✅        |
-| Angular 2+ Snippets                    | Angular 2+ 的程式碼片段集合                             | John Papa             | ✅                         | ✅        |
-| Angular Switcher                       | 快速在 Angular 檔案間切換的工具                         | infinity1207          | ✅                         | ✅        |
-| Angular Beast Code                     | Angular 開發的增強工具集                                | Mikael                | ✅                         | ✅        |
-| Angular Console                        | Angular CLI 的圖形化介面                                | Nrwl                  | ✅                         | ✅        |
-| AngularJS Snippets                     | AngularJS 的程式碼片段                                  | Nicholas Hsiang       | ✅                         | ✅        |
-| PHP Intelephense                       | 高效的 PHP 語言伺服器，提供程式碼補全、定義跳轉等功能   | Ben Mewburn           | ✅                         | ✅        |
-| PHP IntelliSense                       | PHP 的智慧提示和程式碼補全工具                          | Zobo                  | ✅                         | ❓        |
-| Tailwind CSS IntelliSense              | 為 Tailwind CSS 提供智慧提示和程式碼補全                | Brad Cornes           | ✅                         | ✅        |
-| ESLint                                 | 整合 ESLint，提供 JavaScript 和 TypeScript 的程式碼檢查 | Dirk Baeumer          | ✅                         | ✅        |
-| JavaScript (ES6) Code Snippets         | JavaScript ES6 的程式碼片段集合                         | Charalampos Karypidis | ✅                         | ✅        |
-| ES7+ React/Redux/React-Native Snippets | React、Redux、React Native 的程式碼片段                 | dsznajder             | ✅                         | ✅        |
-| jQuery Code Snippets                   | jQuery 的程式碼片段集合                                 | Don Jayamanne         | ✅                         | ✅        |
-| GraphQL                                | GraphQL 語法高亮和程式碼補全                            | GraphQL Foundation    | ✅                         | ✅        |
-| GraphQL Syntax                         | GraphQL 語法支援                                        | GraphQL Foundation    | ✅                         | ✅        |
-| Language Babel                         | JavaScript Babel 語法支援                               | Michael McDermott     | ✅                         | ✅        |
-| Styled Components                      | 為 styled-components 提供語法高亮和程式碼補全           | Julien Poissonnier    | ✅                         | ✅        |
-| language-stylus                        | Stylus CSS 預處理器的語法支援                           | sysoev                | ✅                         | ✅        |
-| Stylus Supremacy                       | Stylus 程式碼格式化工具                                 | thisismanta           | ✅                         | ✅        |
-| Live Sass Compiler                     | 即時編譯 Sass/SCSS 檔案                                 | Glenn Marks           | ✅                         | ✅        |
-| SCSS Formatter                         | SCSS 程式碼格式化工具                                   | sibiraj-s             | ✅                         | ✅        |
-| SCSS Everywhere                        | 在 HTML 中提供 CSS/SCSS 類別和 ID 的補全                | gencer                | ✅                         | ✅        |
-| Sass                                   | Sass 語法支援和自動排版                                 | Syler                 | ✅                         | ✅        |
-| Vetur                                  | Vue.js 開發工具，提供語法高亮、補全和格式化             | octref                | ✅                         | ✅        |
-| XML                                    | XML 語法支援和工具                                      | Red Hat               | ✅                         | ✅        |
-| PowerShell                             | PowerShell 語法支援和開發工具                           | Microsoft             | ✅                         | ❌        |
-| Playwright Test                        | Playwright 測試框架支援                                 | Microsoft             | ✅                         | ❌        |
+| 套件名稱                                                            | 說明                                                    | 作者                  | Visual Studio Marketplace | Open VSX |
+| ------------------------------------------------------------------- | ------------------------------------------------------- | --------------------- | ------------------------- | -------- |
+| Angular Language Service                                            | 提供 Angular 開發的語法高亮、程式碼補全等功能           | Angular               | ✅                         | ✅        |
+| Angular 1.x Snippets                                                | AngularJS 1.x 的程式碼片段集合                          | John Papa             | ✅                         | ✅        |
+| Angular 2+ Snippets                                                 | Angular 2+ 的程式碼片段集合                             | John Papa             | ✅                         | ✅        |
+| Angular Switcher                                                    | 快速在 Angular 檔案間切換的工具                         | infinity1207          | ✅                         | ✅        |
+| Angular Beast Code                                                  | Angular 開發的增強工具集                                | Mikael                | ✅                         | ✅        |
+| Angular Console                                                     | Angular CLI 的圖形化介面                                | Nrwl                  | ✅                         | ✅        |
+| AngularJS Snippets                                                  | AngularJS 的程式碼片段                                  | Nicholas Hsiang       | ✅                         | ✅        |
+| PHP Intelephense                                                    | 高效的 PHP 語言伺服器，提供程式碼補全、定義跳轉等功能   | Ben Mewburn           | ✅                         | ✅        |
+| PHP IntelliSense                                                    | PHP 的智慧提示和程式碼補全工具                          | Zobo                  | ✅                         | ❓        |
+| Tailwind CSS IntelliSense                                           | 為 Tailwind CSS 提供智慧提示和程式碼補全                | Brad Cornes           | ✅                         | ✅        |
+| ESLint                                                              | 整合 ESLint，提供 JavaScript 和 TypeScript 的程式碼檢查 | Dirk Baeumer          | ✅                         | ✅        |
+| JavaScript (ES6) Code Snippets                                      | JavaScript ES6 的程式碼片段集合                         | Charalampos Karypidis | ✅                         | ✅        |
+| ES7+ React/Redux/React-Native Snippets                              | React、Redux、React Native 的程式碼片段                 | dsznajder             | ✅                         | ✅        |
+| jQuery Code Snippets                                                | jQuery 的程式碼片段集合                                 | Don Jayamanne         | ✅                         | ✅        |
+| GraphQL                                                             | GraphQL 語法高亮和程式碼補全                            | GraphQL Foundation    | ✅                         | ✅        |
+| GraphQL Syntax                                                      | GraphQL 語法支援                                        | GraphQL Foundation    | ✅                         | ✅        |
+| Language Babel                                                      | JavaScript Babel 語法支援                               | Michael McDermott     | ✅                         | ✅        |
+| Styled Components                                                   | 為 styled-components 提供語法高亮和程式碼補全           | Julien Poissonnier    | ✅                         | ✅        |
+| language-stylus                                                     | Stylus CSS 預處理器的語法支援                           | sysoev                | ✅                         | ✅        | F |
+| Stylus Supremacy                                                    | Stylus 程式碼格式化工具                                 | thisismanta           | ✅                         | ✅        |
+| Live Sass Compiler                                                  | 即時編譯 Sass/SCSS 檔案                                 | Glenn Marks           | ✅                         | ✅        |
+| SCSS Formatter                                                      | SCSS 程式碼格式化工具                                   | sibiraj-s             | ✅                         | ✅        |
+| SCSS Everywhere                                                     | 在 HTML 中提供 CSS/SCSS 類別和 ID 的補全                | gencer                | ✅                         | ✅        |
+| Sass                                                                | Sass 語法支援和自動排版                                 | Syler                 | ✅                         | ✅        |
+| Vetur                                                               | Vue.js 開發工具，提供語法高亮、補全和格式化             | octref                | ✅                         | ✅        |
+| XML                                                                 | XML 語法支援和工具                                      | Red Hat               | ✅                         | ✅        |
+| PowerShell                                                          | PowerShell 語法支援和開發工具                           | Microsoft             | ✅                         | ❌        |
+| Playwright Test                                                     | Playwright 測試框架支援                                 | Microsoft             | ✅                         | ❌        |
+| Compile Hero Pro（Sass/Less/Stylus/Pug/Jade/TypeScript/JavaScript） | 多語言即時編譯、快捷自動化生產工具                      | Eno Yao               | ✅                         | ❓        |
 
 ## 程式碼品質與格式化
 
@@ -147,8 +148,3 @@ hidden: false
 | ----------------------------------- | -------------- | --------- | ------------------------- | -------- |
 | Chinese (Traditional) Language Pack | 繁體中文語言包 | Microsoft | ✅                         | ✅        |
 
-## 其他工具
-
-| 套件名稱                                                         | 說明           | 作者   | Visual Studio Marketplace | Open VSX |
-| ---------------------------------------------------------------- | -------------- | ------ | ------------------------- | -------- |
-| Compile Hero Pro（Sass/Less/Stylus/Pug/Jade/TypeScript/JavaScript） | 多語言即時編譯、快捷自動化生產工具 | Eno Yao | ✅                         | ❓        |
