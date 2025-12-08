@@ -91,6 +91,14 @@ date: 2025-08-04 01:32:41
 
 <div class="imgs-box">
   <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
+  <img src="/img/state.png" />
 </div>
 <div class="control">
   <span>剩餘時間：<span id="time">0</span>s</span>
@@ -112,9 +120,9 @@ date: 2025-08-04 01:32:41
 - **佔用避讓**：目標格若非等待狀態（非 `state.png`），延遲 100ms 改投到其他格，避免事件擁塞與浪費機會。
 - **得分判定**：僅當格子為紅色（`on.png`）時有效，成功後變綠（`off.png`），1 秒後自動回黃（`state.png`）。
 - **鍵盤對應（數字鍵盤）**：
-  - 第一列：`7(103) → 0`、`8(104) → 1`、`9(105) → 2`
-  - 第二列：`4(100) → 3`、`5(101) → 4`、`6(102) → 5`
-  - 第三列：`1(97) → 6`、`2(98) → 7`、`3(99) → 8`
+  - 第一列：`7 → 位置 0`、`8 → 位置 1`、`9 → 位置 2`
+  - 第二列：`4 → 位置 3`、`5 → 位置 4`、`6 → 位置 5`
+  - 第三列：`1 → 位置 6`、`2 → 位置 7`、`3 → 位置 8`
 
 ## 流程圖
 {% mermaid graph TD %}
@@ -275,17 +283,17 @@ animal.forEach((img, index) => {
 
 document.addEventListener('keydown', (e) => {
   const keyMap = {
-    103: 0,
-    104: 1,
-    105: 2,
-    100: 3,
-    101: 4,
-    102: 5,
-    97: 6,
-    98: 7,
-    99: 8,
+    'Numpad7': 0,
+    'Numpad8': 1,
+    'Numpad9': 2,
+    'Numpad4': 3,
+    'Numpad5': 4,
+    'Numpad6': 5,
+    'Numpad1': 6,
+    'Numpad2': 7,
+    'Numpad3': 8,
   };
-  keyMap[e.keyCode] && getCount(keyMap[e.keyCode]);
+  e.code in keyMap && getCount(keyMap[e.code]);
 });
 
 btn.addEventListener('click', gameStart, { once: true });
