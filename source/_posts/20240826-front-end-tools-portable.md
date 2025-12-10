@@ -2,7 +2,7 @@
 title: '[行動工具] VSCode 的 Portable 免安裝開發環境 - 包含 Git、NVS 整合'
 categories:
   - Misc Notes
-  - Web Frontend
+  - Tools
 tag:
   - Git/GitHub
   - NodeJS
