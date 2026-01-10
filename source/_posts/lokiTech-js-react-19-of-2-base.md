@@ -2287,47 +2287,134 @@ export default function MyLogo() {
 {% note warning %}
 **換行符號錯誤處理**
 
-如果發生大量的 `Delete ␍` 錯誤，這是**換行符號（Line Ending）**的問題。
+如果發生大量的`Delete ␍`錯誤，這是**換行符號 (Line Ending)**的問題。
 
 **問題原因：**
-- **Windows 系統**：使用 `CRLF (\r\n)` 作為換行符號
-- **Unix/Linux/Mac**：使用 `LF (\n)` 作為換行符號
-- **Git 差異**：不同系統間的換行符號不一致會造成版本控制問題
+這個問題通常發生在**執行 Prettier 格式化** (`pnpm format`或儲存時自動格式化）時：
+
+1. **系統差異**：
+   - Windows 使用 `CRLF ( \r\n )` 作為換行符號
+   - Mac/Linux 使用 `LF ( \n )` 作為換行符號
+   - `App.jsx` 檔案可能從 Windows 系統建立，使用了 CRLF 格式
+2. **Prettier 轉換**：
+   - Prettier 在格式化時會將 `CRLF` 轉換為 `LF`
+   - 這個轉換過程會產生大量的 `Delete ␍` 錯誤 ( ␍ 代表 CR，即 `\r` )
+3. **Git 版本控制問題**：
+   - 不同系統間的換行符號不一致會造成 Git 顯示「整個檔案都被修改」的假象
+   - 可能導致不必要的 merge conflict
 
 **錯誤症狀：**
 ```shell
-# 在 Git 中會看到類似這樣的錯誤
+# 執行 Prettier 格式化時會看到
+Delete ␍
+# ... 大量的 Delete ␍ 錯誤
+
+# 或在 Git 中會看到
 warning: LF will be replaced by CRLF in src/App.jsx
-The file will have its original line endings in your working directory
 ```
 
 **解決方法：**
 
-**方法 1：VSCode 右下角切換**
-- 點擊 VSCode 右下角的 `CRLF` 或 `LF`
-- 選擇 `LF` 並重新載入檔案
+**方法 1：在 Prettier 配置中明確設定（推薦）**
 
-**方法 2：全域設定（推薦）**
-```json .vscode/settings.json
+在 `.prettierrc` 檔案中添加 `endOfLine` 選項：
+
+```json .prettierrc
 {
-  "files.eol": "\n",  // 統一使用 LF 格式
-  "files.insertFinalNewline": true,  // 檔案結尾自動加入換行
-  "files.trimFinalNewlines": true    // 移除多餘的結尾換行
+  "semi": true,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "jsxSingleQuote": false,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "endOfLine": "lf" // 統一使用 LF 格式
 }
 ```
 
-**方法 3：Git 設定**
-```bash
-# 設定 Git 自動轉換換行符號
-git config core.autocrlf false
-git config core.eol lf
+**方法 2: VSCode 設定**
+
+在 `.vscode/settings.json` 中設定：
+
+```json .vscode/settings.json
+{
+  "files.eol": "\n", // 統一使用 LF 格式
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true
+}
 ```
 
-**預防措施：**
-- 團隊統一使用 LF 格式
-- 在 `.editorconfig` 檔案中設定換行符號規則
-- 使用 ESLint 檢查換行符號一致性
-{% endnote %}
+或直接在 VSCode 右下角點擊 `CRLF`/`LF` 切換為 `LF`。
+
+**方法 3: Git 設定**
+
+```bash
+# 所有平台統一設定 ( 推薦 )
+git config --global core.autocrlf false
+git config --global core.eol lf
+```
+
+**團隊協作建議：**
+
+統一使用 `LF` 是**跨平台開發的業界標準**，所有平台 ( Windows、Mac、Linux ) 都能正確處理，不會造成困擾。
+
+**步驟 1：建立 `.editorconfig` 檔案 ( 團隊統一標準 ) **
+
+在專案根目錄建立 `.editorconfig`，所有主流編輯器會自動讀取：
+
+```ini .editorconfig
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{js,jsx,ts,tsx,json,css,scss,md}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+```
+
+**步驟 2：確保 Prettier 配置一致**
+
+`.prettierrc` 中設定 `"endOfLine": "lf"`，確保 Prettier 格式化時統一使用 LF。
+
+**步驟 3：團隊成員 Git 設定**
+
+所有團隊成員執行：
+
+```bash
+git config --global core.autocrlf false
+git config --global core.eol lf
+```
+
+**步驟 4：專案級別 Git 設定（可選）**
+
+在專案根目錄建立 `.gitattributes`：
+
+```gitattributes .gitattributes
+-   text=auto eol=lf
+*.{js,jsx,ts,tsx,json,css,scss,md} text eol=lf
+*.{png,jpg,jpeg,gif,ico,svg} binary
+```
+
+**工作流程：**
+
+1. **新成員加入時**：執行 `pnpm format` 統一格式
+2. **日常開發**：編輯器和 Prettier 會自動處理為 LF
+3. **如果已有 CRLF 檔案**：執行 `pnpm format` 自動轉換
+
+**總結：**
+
+- ✅ `.editorconfig` + `.prettierrc` + `.gitattributes` 三重保障
+- ✅ 所有平台都能正常工作，團隊成員無需手動處理
+- ✅ 統一使用 LF 避免 Git 混亂和 merge conflict
+  {% endnote %}
 
 #### 渲染列表（List Rendering）
 
@@ -2342,50 +2429,46 @@ git config core.eol lf
    - 更靈活且易於維護
 
 讓我們透過實際範例來學習列表渲染：
-**方法 1：直接使用元件陣列**
+
+**範例 1：使用 map 方法轉換陣列（缺少 key)**
 
 ```jsx
+// 1. 簡單的字串陣列
 function SimpleList() {
-  // 1. 準備資料
-  const items = ['React', 'Vue', 'Angular'];
-  
-  // 2. 直接在 JSX 中使用陣列
+  const items = ["React", "Vue", "Angular"];
+
   return (
     <ul>
-      {[
-        <li>第一個項目</li>,
-        <li>第二個項目</li>,
-        <li>第三個項目</li>
-      ]}
+      {items.map((item) => (
+        <li>{item}</li> // ⚠️ 缺少 key 屬性
+      ))}
     </ul>
   );
 }
 
-// 使用資料陣列（但還沒有 key）
+// 2. 使用物件陣列
 function LogoList() {
   const dataList = [
     {
-      name: 'Vite Logo',
+      name: "Vite Logo",
       img: viteLogo,
-      url: 'https://vite.dev',
+      url: "https://vite.dev",
     },
     {
-      name: 'React Logo',
+      name: "React Logo",
       img: reactLogo,
-      url: 'https://react.dev',
+      url: "https://react.dev",
     },
   ];
 
   return (
     <div>
-      {[
-        <MyLink linkItem={dataList[0]}></MyLink>,
-        <MyLink linkItem={dataList[1]} />
-      ]}
+      {dataList.map((item) => (
+        <MyLink linkItem={item} /> // ⚠️ 缺少 key 屬性
+      ))}
     </div>
   );
 }
-
 ```
 
 **重要：列表渲染中的 key**
@@ -2418,45 +2501,47 @@ React 需要 `key` 屬性來識別列表中的每個元素，這樣才能：
 
 讓我們修改程式碼，加入適當的 key：
 
-**方法 2：使用 map 方法**
+**範例 2：正確使用 key 屬性**
+
+讓我們修改程式碼，加入適當的 key：
 
 ```jsx
-// 1. 簡單的列表範例
+// 1. 簡單的列表範例 ( 使用值本身作為 key )
 function SimpleList() {
-  const items = ['React', 'Vue', 'Angular'];
-  
+  const items = ["React", "Vue", "Angular"];
+
   return (
     <ul>
-      {items.map((item, index) => (
-        <li key={item}>{item}</li>
+      {items.map((item) => (
+        <li key={item}>{item}</li> // ⚠️ 使用值本身作為 key ( 僅適用於靜態、唯一且不變的資料 )
       ))}
     </ul>
   );
 }
 
-// 2. 使用物件陣列
+// 2. 使用物件陣列 ( 使用唯一 ID 作為 key )
 function LogoList() {
   const dataList = [
     {
-      id: 1,          // 加入唯一識別
-      name: 'Vite Logo',
+      id: 1, // ✅ 加入唯一識別
+      name: "Vite Logo",
       img: viteLogo,
-      url: 'https://vite.dev',
+      url: "https://vite.dev",
     },
     {
-      id: 2,          // 加入唯一識別
-      name: 'React Logo',
+      id: 2, // ✅ 加入唯一識別
+      name: "React Logo",
       img: reactLogo,
-      url: 'https://react.dev',
+      url: "https://react.dev",
     },
   ];
 
   return (
     <div>
-      {dataList.map(item => (
-        <MyLink 
-          key={item.id}    // 使用唯一識別作為 key
-          linkItem={item} 
+      {dataList.map((item) => (
+        <MyLink
+          key={item.id} // ✅ 使用唯一識別作為 key
+          linkItem={item}
         />
       ))}
     </div>
@@ -2481,6 +2566,42 @@ function LogoList() {
    - 邏輯更清晰
 {% endnote %}
 
+{% note warning %}
+**使用字串值作為 key 的限制**
+
+上面的範例使用字串值本身作為 key，這**不是最佳實踐**，原因如下：
+
+1. **資料可能重複**：如果陣列中有重複的值，會違反 key 必須唯一的規則
+2. **資料可能變動**：如果資料會動態更新、排序或刪除，使用值作為 key 可能導致渲染問題
+3. **效能問題**：React 無法正確追蹤元素的變化，可能造成不必要的重新渲染
+
+**最佳實踐：**
+
+- ✅ **優先使用資料庫的唯一 ID** ( 如 `id: 1`, `id: 2` )
+- ✅ 使用穩定且唯一的識別符 ( 如 UUID )
+- ✅ 如果資料沒有唯一 ID，考慮在資料處理時添加唯一識別
+- ⚠️ 只有在資料是**靜態、唯一且永遠不變**的情況下，才考慮使用值本身作為 key
+
+**改進範例：**
+
+```jsx
+// 更好的做法：為資料添加唯一 ID
+const items = [
+  { id: 1, name: "React" },
+  { id: 2, name: "Vue" },
+  { id: 3, name: "Angular" },
+];
+
+return (
+  <ul>
+    {items.map((item) => (
+      <li key={item.id}>{item.name}</li> // ✅ 使用唯一 ID
+    ))}
+  </ul>
+);
+```
+
+{% endnote %}
 {% note success %}
 **列表渲染的進階技巧**
 
@@ -3015,8 +3136,8 @@ export default MyForm;
 ```
 
 這個表單元件展示了：
-- **`preventDefault()`**：阻止表單的預設提交行為（頁面重新載入）
-- **`onChange` 事件**：監聽輸入框內容變化
+- `preventDefault()`：阻止表單的預設提交行為（頁面重新載入）
+- `onChange` 事件：監聽輸入框內容變化
 - **事件物件使用**：透過 `e.target.value` 取得輸入值
 
 **步驟 4：整合表單到 App**
