@@ -56,7 +56,7 @@ React 本身只是一個 UI 函式庫，實際專案開發通常會搭配豐富�
 
 **UI 元件庫**
 - **shadcn/ui**：基於 Radix UI 的現代元件庫（推薦）
-- **Material-UI (MUI)**：Google Material Design 風格
+- **MUI \(Material-UI\)**：Google Material Design 風格
 - **Ant Design**：企業級 UI 元件庫
 
 **全端框架**

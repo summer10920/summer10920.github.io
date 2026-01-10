@@ -131,7 +131,7 @@ const calendarService = () => {
 ```
 
 ### 生成 li 列表
-列印之前，要將左側`<ul class="leftDayList">`與右側`<ul class="rightDayList">的各自 li 元素產生出來。而生成這些列表需要思考一些發想：
+列印之前，要將左側`<ul class="leftDayList">`與右側`<ul class="rightDayList">`的各自 li 元素產生出來。而生成這些列表需要思考一些發想：
 
 - 兩個日曆的第一天是幾年幾月，以及個別 1 號是禮拜幾開始排列。需要透過時間物件來查詢這些資訊。
 - 預設載入時，會是以目前的年月來當作左側日曆。
