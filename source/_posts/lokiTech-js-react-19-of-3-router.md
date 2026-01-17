@@ -613,9 +613,17 @@ export default function App() {
 
 **路由配置說明：**
 
-1. **巢狀路由結構**：
+1. **Outlet-based 巢狀路由機制**：
+   - 這是一種**基於 Outlet 的巢狀路由（Outlet-based Nested Routing）**架構
    - `<Route element={<Layout />}>`：父路由，作為佈局容器（不設定 `path`）
    - 所有子路由都會渲染在 Layout 的 `<Outlet />` 位置
+   - `<Outlet />` 元件作為**子路由的渲染抽換位置**，類似「插槽」概念
+
+   **這種架構的優點：**
+   - ✅ **統一管理佈局**：側邊選單、導航等共用元素集中在 `Layout.jsx` 管理
+   - ✅ **結構清晰**：父路由負責佈局，子路由只關注頁面內容
+   - ✅ **易於維護**：修改佈局時只需修改 `Layout.jsx`，不影響子路由
+   - ✅ **符合關注點分離**：佈局邏輯與頁面內容分離，程式碼更模組化
 
 2. **預設導向（index 路由）**：
    - 使用 `<Navigate to="/lesson01" replace />` 自動導向首頁
@@ -696,6 +704,74 @@ export default function App() {
   );
 }
 ```
+
+{% note info %}
+**Component-level Routing vs Outlet-based Routing**
+
+這裡我們採用的是**元件層級路由（Component-level Routing）**，與前面的 **Outlet-based 巢狀路由**不同：
+
+**Outlet-based Routing（前面 Layout 的做法）：**
+```jsx
+// App.jsx - 父路由定義子路由
+<Route element={<Layout />}>
+  <Route path="lesson01" element={<Lesson01 />} />
+</Route>
+
+// Layout.jsx - 使用 Outlet 作為渲染位置
+export default function Layout() {
+  return (
+    <div>
+      <aside>側邊選單</aside>
+      <main>
+        <Outlet />  {/* 子路由在這裡渲染 */}
+      </main>
+    </div>
+  );
+}
+```
+
+**Component-level Routing（Lesson02 的做法）：**
+```jsx
+// App.jsx - 只定義父路由，不定義子路由
+<Route path="lesson02/*" element={<Lesson02 />} />
+
+// Lesson02/index.jsx - 元件內部自己管理子路由
+export default function Lesson02() {
+  return (
+    <div>
+      <nav>內部導航</nav>
+      <div>
+        <Routes>  {/* 在元件內部定義 Routes */}
+          <Route path="projects" element={<ProjectList />} />
+          <Route path="about" element={<About />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+```
+
+**兩種方式的差異：**
+
+| 特性                | Outlet-based Routing    | Component-level Routing       |
+| ------------------- | ----------------------- | ----------------------------- |
+| **路由定義位置**    | 集中在父元件（App.jsx） | 分散在各個元件內部            |
+| **是否需要 Outlet** | ✅ 需要 `<Outlet />`     | ❌ 不需要，直接使用 `<Routes>` |
+| **適用場景**        | 統一佈局（如側邊選單）  | 獨立功能模組（如作品集系統）  |
+| **路由管理**        | 集中管理，一目了然      | 分散管理，各自負責            |
+| **靈活性**          | 佈局統一，結構固定      | 每個元件可自訂結構            |
+
+**為什麼 Lesson02 不需要 Outlet？**
+
+1. **路由定義在元件內部**：Lesson02 元件內部直接使用 `<Routes>` 和 `<Route>` 來定義子路由
+2. **直接渲染**：子路由元件會直接替換整個 `<Routes>` 區塊，不需要額外的「插槽」
+3. **獨立管理**：Lesson02 是一個獨立的功能模組，自己管理內部的路由結構
+
+**選擇建議：**
+- ✅ **使用 Outlet-based**：當需要統一佈局（如側邊選單、頂部導航）時
+- ✅ **使用 Component-level**：當每個功能模組需要獨立的路由結構時
+- ✅ **混合使用**：大型專案中，最外層用 Outlet-based，功能模組內部用 Component-level
+{% endnote %}
 
 ## 步驟 2：建立 Lesson02 主架構
 
@@ -832,6 +908,42 @@ export default function Lesson02() {
 ```
 
 ## 步驟 3：建立作品列表頁面（Link 導航 + useLocation）
+
+**useLocation Hook 說明：**
+
+`useLocation` 是 React Router 提供的 Hook，用於**取得當前路由的位置資訊**。它會返回一個 `location` 物件，包含以下資訊：
+
+```jsx
+const location = useLocation();
+
+// location 物件包含：
+// {
+//   pathname: "/lesson02/projects",     // 當前 URL 路徑
+//   search: "?sort=date",              // URL 查詢參數（? 後面的部分）
+//   hash: "#section1",                 // URL 錨點（# 後面的部分）
+//   state: { message: "表單提交成功" }, // 導航時傳遞的狀態資料
+//   key: "default"                      // 唯一識別符
+// }
+```
+
+**主要用途：**
+
+1. **接收導航時傳遞的狀態資料**：
+   - 當使用 `navigate('/path', { state: { message: '成功' } })` 導航時
+   - 目標頁面可以透過 `location.state` 取得這些資料
+   - 常用於：表單提交成功後顯示提示訊息
+
+2. **監聽路由變化**：
+   - 可以搭配 `useEffect` 監聽路由變化
+   - 例如：頁面切換時重置某些狀態
+
+3. **取得當前 URL 資訊**：
+   - 取得 `pathname`、`search`、`hash` 等資訊
+   - 用於條件渲染或邏輯判斷
+
+**在這個範例中的應用：**
+
+我們將使用 `useLocation` 來接收從後面步驟六的「聯絡表單」頁面傳來的成功訊息，並在作品列表頁面顯示提示框。不明白用途可先暫時忽略需求性，等完成步驟六再回頭理解這裡的應用。
 
 ```jsx src/pages/lesson02/pages/ProjectList.jsx
 import { Link, useLocation } from 'react-router';
@@ -1044,6 +1156,66 @@ export default function ProjectList() {
 {% endnote %}
 
 ## 步驟 4：建立作品詳情頁面（useParams）
+
+**useParams Hook 說明：**
+
+`useParams` 是 React Router 提供的 Hook，用於**從 URL 中取得動態路由參數**。
+
+```jsx
+// 路由定義：path="/projects/:projectId"
+// URL：/lesson02/projects/1
+
+const { projectId } = useParams();
+// projectId = "1" (字串格式)
+```
+
+**主要用途：**
+- ✅ 取得動態路由參數（如 `/projects/:id` 中的 `id`）
+- ✅ 用於根據 URL 參數載入對應的資料
+- ✅ 常用於：文章詳情頁、商品詳情頁、使用者個人頁面等
+
+**注意事項：**
+- 參數值永遠是**字串格式**，需要時記得轉換為數字：`Number(projectId)`
+- 參數名稱必須與路由定義中的 `:參數名` 一致
+
+**useNavigate Hook 說明：**
+
+`useNavigate` 是 React Router 提供的 Hook，用於**程式化導航**（在 JavaScript 中控制頁面跳轉）。
+
+```jsx
+const navigate = useNavigate();
+
+// 導航到指定路徑
+navigate('/lesson02/projects');
+
+// 導航並傳遞狀態資料
+navigate('/lesson02/projects', { 
+  state: { message: '表單提交成功' } 
+});
+
+// 返回上一頁
+navigate(-1);
+
+// 前進一頁
+navigate(1);
+
+// 替換當前歷史記錄（不會留下上一頁記錄）
+navigate('/lesson02/projects', { replace: true });
+```
+
+**主要用途：**
+- ✅ **程式化導航**：在事件處理函式中控制頁面跳轉（如表單提交後跳轉）
+- ✅ **條件式導航**：根據邏輯判斷決定跳轉到哪個頁面
+- ✅ **瀏覽器歷史操作**：返回上一頁、前進一頁
+- ✅ **傳遞狀態資料**：跳轉時可以傳遞資料給目標頁面
+
+**與 `<Link>` 的差異：**
+- `<Link>`：用於**使用者點擊**的導航連結（按鈕、卡片、選單）
+- `useNavigate`：用於**程式邏輯**中的導航（表單提交、條件判斷、事件處理）
+
+**在這個範例中的應用：**
+- 使用 `useParams` 取得 URL 中的 `projectId`，用來載入對應的作品資料
+- 使用 `useNavigate` 實作「返回上一頁」按鈕功能
 
 ```jsx src/pages/lesson02/pages/ProjectDetail.jsx
 import { useParams, useNavigate, Link } from 'react-router';
@@ -1801,7 +1973,6 @@ B -->|跳轉並帶 state| C
 C -->|讀取 state.message| D
 {% endmermaid %}
 
-
 **實際應用場景：**
 - ✅ 表單送出後顯示成功訊息
 - ✅ 刪除資料後顯示確認訊息
@@ -1926,13 +2097,13 @@ export default function App() {
 
 **關鍵改動說明：**
 
-| 項目                 | 原本（方案 B - 巢狀路由）         | 現在（方案 A - 集中式）           |
-| -------------------- | --------------------------------- | --------------------------------- |
-| `lesson02` 路由      | `path="lesson02/*"`               | `path="lesson02"`（移除 `/*`）    |
-| 子路由定義位置       | 在 `Lesson02/index.jsx` 內        | 在 `App.jsx` 內                   |
-| 子頁面元件引入       | 在 `Lesson02/index.jsx` 引入      | 在 `App.jsx` 引入                 |
-| 404 處理             | 全站 + Lesson02 專屬（兩層）      | 只有一個統一 404                  |
-| `Lesson02` 元件職責  | 管理內部路由 + 渲染導航列         | 只渲染導航列                      |
+| 項目                | 原本（方案 B - 巢狀路由）    | 現在（方案 A - 集中式）        |
+| ------------------- | ---------------------------- | ------------------------------ |
+| `lesson02` 路由     | `path="lesson02/*"`          | `path="lesson02"`（移除 `/*`） |
+| 子路由定義位置      | 在 `Lesson02/index.jsx` 內   | 在 `App.jsx` 內                |
+| 子頁面元件引入      | 在 `Lesson02/index.jsx` 引入 | 在 `App.jsx` 引入              |
+| 404 處理            | 全站 + Lesson02 專屬（兩層） | 只有一個統一 404               |
+| `Lesson02` 元件職責 | 管理內部路由 + 渲染導航列    | 只渲染導航列                   |
 
 ##### 修改 Lesson02 元件（移除路由管理）
 
@@ -2121,11 +2292,11 @@ export default function GlobalNotFound() {
 
 現在這個統一的 404 頁面會處理所有路徑錯誤：
 
-| 訪問路徑                 | 結果               | 說明                             |
-| ------------------------ | ------------------ | -------------------------------- |
-| `/lesson99`              | ✅ 顯示 404 頁面   | 全站路由找不到                   |
-| `/lesson02/unknown`      | ✅ 顯示 404 頁面   | Lesson02 子路由找不到            |
-| `/lesson02/projects/999` | ⚠️ 需額外處理（見下方） | 動態路由會匹配，但資料不存在     |
+| 訪問路徑                 | 結果                   | 說明                         |
+| ------------------------ | ---------------------- | ---------------------------- |
+| `/lesson99`              | ✅ 顯示 404 頁面        | 全站路由找不到               |
+| `/lesson02/unknown`      | ✅ 顯示 404 頁面        | Lesson02 子路由找不到        |
+| `/lesson02/projects/999` | ⚠️ 需額外處理（見下方） | 動態路由會匹配，但資料不存在 |
 
 ##### 處理動態 ID 驗證（ProjectDetail）
 
@@ -2431,7 +2602,7 @@ A["使用者訪問路徑"]
 B{"/lesson99 ?"}
 C{"/lesson02/unknown ?"}
 D{"/lesson02/projects/999 ?"}
-E["GlobalNotFound<br/>(全站 404)"]
+E["GlobalNotFound<br/>（全站 404)"]
 F["NotFound<br/>(Lesson02 專屬 404)"]
 G["ProjectDetail 內部驗證"]
 H["顯示「作品不存在」"]
@@ -2480,17 +2651,17 @@ G --> H
 
 ### 兩種方案比較
 
-| 特性           | 方案 A：集中式路由          | 方案 B：分散式路由             |
-| -------------- | --------------------------- | ------------------------------ |
-| **路由定義**   | 全部在 App.jsx              | 分散在各模組                   |
-| **404 層級**   | 單一 404                    | 多層 404（全站 + 模組）        |
-| **實作難度**   | ⭐ 簡單                     | ⭐⭐⭐ 複雜                     |
-| **維護成本**   | ⭐ 低                       | ⭐⭐⭐ 高                       |
-| **模組獨立性** | ⭐⭐ 中等                   | ⭐⭐⭐⭐⭐ 非常高                 |
-| **適用專案**   | 中小型（90%）               | 大型應用（10%）                |
-| **團隊規模**   | 1-5 人                      | 5+ 人，多團隊協作              |
-| **學習曲線**   | 平緩                        | 陡峭                           |
-| **錯誤訊息**   | 通用                        | 可針對性（更友善）             |
+| 特性           | 方案 A：集中式路由 | 方案 B：分散式路由      |
+| -------------- | ------------------ | ----------------------- |
+| **路由定義**   | 全部在 App.jsx     | 分散在各模組            |
+| **404 層級**   | 單一 404           | 多層 404（全站 + 模組） |
+| **實作難度**   | ⭐ 簡單             | ⭐⭐⭐ 複雜                |
+| **維護成本**   | ⭐ 低               | ⭐⭐⭐ 高                  |
+| **模組獨立性** | ⭐⭐ 中等            | ⭐⭐⭐⭐⭐ 非常高            |
+| **適用專案**   | 中小型（90%）      | 大型應用（10%）         |
+| **團隊規模**   | 1-5 人             | 5+ 人，多團隊協作       |
+| **學習曲線**   | 平緩               | 陡峭                    |
+| **錯誤訊息**   | 通用               | 可針對性（更友善）      |
 
 {% note warning %}
 **💡 選擇建議：**
