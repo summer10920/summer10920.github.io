@@ -10,7 +10,7 @@ date: 2026-08-30 08:00:00
 
 ![網站開發爆炸圖：HTML、CSS、JavaScript、Tailwind、React 等前端技能樹](assets/images/banner/frontend-skill-tree.png)
 
-這是約 120 小時的在職前端入門計畫，依階段排，不鎖死每天 8 小時。你會用 VS Code、Git、HTML、CSS、Tailwind、JavaScript、React 做出旅行社網站，深度停在看得懂、改得動、講得出來。工具與 HTML 的講義已寫好，可直接上課。
+這是約 120 小時的在職前端入門計畫，依階段排，不鎖死每天 8 小時。你會用 VS Code、Git、HTML、CSS、Tailwind、JavaScript、React 做出旅行社網站，深度停在看得懂、改得動、講得出來。各階段講義在下面的表，檔名就是連結。
 
 <!-- more -->
 
@@ -28,18 +28,18 @@ date: 2026-08-30 08:00:00
 
 # 階段課表
 
-合計約 120 小時。時數是階段估時，可依進度前後挪。檔名就是下面的連結；01、02 已寫。
+合計約 120 小時。時數是階段估時，可依進度前後挪。檔名就是下面的連結。
 
 ## 階段、時數與講義
 
 | 階段 | 約略時數 | 主題 | 講義 |
 | --- | --- | --- | --- |
-| 1 工具與 HTML | ~24h | VS Code、Git／GitHub、語意標籤、表單、a11y | {% post_link lokiTech-15day-01-intro %}、{% post_link lokiTech-15day-02-html-1 %}（已寫） |
-| 2 CSS 基礎 | ~16h | 選擇器、盒模型、Flex、Grid、RWD | {% post_link lokiTech-15day-03-css-1 %} |
-| 3 Tailwind | ~8h | utilities、RWD、dark mode、改寫先前頁面 | {% post_link lokiTech-15day-04-tailwind-1 %}、{% post_link lokiTech-15day-05-tailwind-2 %}、{% post_link lokiTech-15day-06-tailwind-3 %}、{% post_link lokiTech-15day-07-tailwind-4 %} |
-| 4 JavaScript | ~32h | 變數、函式、陣列／物件、DOM／事件、fetch／async、modules、小練習 | {% post_link lokiTech-15day-08-js-1 %}、{% post_link lokiTech-15day-09-js-2 %}、{% post_link lokiTech-15day-10-js-3 %} |
-| 5 React | ~24h | Vite、元件／props、state、effect、列表／表單、簡單路由 | {% post_link lokiTech-15day-11-react-1 %}、{% post_link lokiTech-15day-12-react-2 %}、{% post_link lokiTech-15day-13-react-3 %}、{% post_link lokiTech-15day-14-react-4 %} |
-| 6 結業專案 | ~16h | 規劃、元件組裝、API、佈署 GitHub Pages、demo | {% post_link lokiTech-15day-15-react-5 %}、{% post_link lokiTech-15day-16-react-6 %} |
+| 1 工具與 HTML | ~24h | VS Code、Git／GitHub、語意標籤、表單、a11y | {% post_link lokiTech-15day-01-tools %}、{% post_link lokiTech-15day-02-html %} |
+| 2 CSS 基礎 | ~16h | 選擇器、盒模型、Flex、Grid、RWD | {% post_link lokiTech-15day-03-css %} |
+| 3 Tailwind | ~8h | utilities、RWD、dark mode、改寫先前頁面 | {% post_link lokiTech-15day-04-tailwind %} |
+| 4 JavaScript | ~32h | 變數、函式、陣列／物件、DOM／事件、fetch／async、modules、小練習 | {% post_link lokiTech-15day-05-js-basics %}、{% post_link lokiTech-15day-06-js-dom %}、{% post_link lokiTech-15day-07-js-async %} |
+| 5 React | ~24h | Vite、元件／props、state、effect、列表／表單、簡單路由 | {% post_link lokiTech-15day-08-react-basics %}、{% post_link lokiTech-15day-09-react-advanced %} |
+| 6 結業專案 | ~16h | 規劃、元件組裝、API、佈署 GitHub Pages、demo | {% post_link lokiTech-15day-10-project-travel %} |
 
 # 作業對到專題元件
 
@@ -49,12 +49,12 @@ date: 2026-08-30 08:00:00
 
 | 作業 | 專題元件 | 做在哪一階段 | 講義 |
 | --- | --- | --- | --- |
-| 頁首與導覽 | `SiteHeader`（`#site-header`、`#nav-toggle`） | 階段 1 語意骨架；階段 3 可開合導覽 | {% post_link lokiTech-15day-02-html-1 %}、{% post_link lokiTech-15day-06-tailwind-3 %} |
-| 首頁主視覺 | `Hero` | 階段 3 改寫先前頁面 | {% post_link lokiTech-15day-07-tailwind-4 %} |
-| 行程卡片列表 | `TourList`／`TourCard`（`#tour-list`） | 階段 3 卡片版；階段 4 用資料重繪；階段 5 拆成 React 元件 | {% post_link lokiTech-15day-05-tailwind-2 %}、{% post_link lokiTech-15day-09-js-2 %}、{% post_link lokiTech-15day-12-react-2 %} |
-| 行程詳情 | `TourDetail` | 階段 3 靜態詳情；階段 5 改成 `/tours/:id` | {% post_link lokiTech-15day-07-tailwind-4 %}、{% post_link lokiTech-15day-13-react-3 %} |
-| 報名表 | `BookingForm`（`#booking-form`） | 階段 1 表單欄位；階段 4 POST；階段 5 接到 `/booking` | {% post_link lokiTech-15day-02-html-1 %}、{% post_link lokiTech-15day-10-js-3 %}、{% post_link lokiTech-15day-13-react-3 %} |
-| 頁尾 | `SiteFooter` | 階段 1 語意 `footer`；階段 3 各頁共用 | {% post_link lokiTech-15day-02-html-1 %}、{% post_link lokiTech-15day-07-tailwind-4 %} |
+| 頁首與導覽 | `SiteHeader`（`#site-header`、`#nav-toggle`） | 階段 1 語意骨架；階段 3 可開合導覽 | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-04-tailwind %} |
+| 首頁主視覺 | `Hero` | 階段 3 改寫先前頁面 | {% post_link lokiTech-15day-04-tailwind %} |
+| 行程卡片列表 | `TourList`／`TourCard`（`#tour-list`） | 階段 2 手寫卡片；階段 3 utility 卡片；階段 4 資料與重繪；階段 5 拆成 React 元件 | {% post_link lokiTech-15day-03-css %}、{% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-05-js-basics %}、{% post_link lokiTech-15day-06-js-dom %}、{% post_link lokiTech-15day-08-react-basics %} |
+| 行程詳情 | `TourDetail` | 階段 3 靜態詳情；階段 5 改成 `/tours/:id` | {% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-09-react-advanced %} |
+| 報名表 | `BookingForm`（`#booking-form`） | 階段 1 表單欄位；階段 4 POST；階段 5 接到 `/booking` | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-07-js-async %}、{% post_link lokiTech-15day-09-react-advanced %} |
+| 頁尾 | `SiteFooter` | 階段 1 語意 `footer`；階段 3 各頁共用 | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-04-tailwind %} |
 
 # 期末專題
 
