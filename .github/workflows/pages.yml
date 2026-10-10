@@ -14,23 +14,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           # If your repository depends on submodule, please see: https://github.com/actions/checkout
           submodules: recursive
-      - name: Use Node.js 23.6.0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.10.1
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          # Examples: 20, 18.19, >=16.20.2, lts/Iron, lts/Hydrogen, *, latest, current, node
-          # Ref: https://github.com/actions/setup-node#supported-version-syntax
-          node-version: "23.6.0"
-      - name: Cache NPM dependencies
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.OS }}-npm-cache
-          restore-keys: |
-            ${{ runner.OS }}-npm-cache
+          node-version: "24"
+          cache: pnpm
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

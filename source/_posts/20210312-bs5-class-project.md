@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] Bootstrap5 實作：一頁式網站"
 categories:
-  - 職訓教材
+  - 職訓課程
   - Bootstrap
 tag:
   - PHP 資料庫網頁設計（職前班）

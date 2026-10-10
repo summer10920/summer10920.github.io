@@ -2,12 +2,13 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "private": true,
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
-    "start": "npx hexo server",
-    "restart": "npx hexo clean && npx hexo generate",
-    "build": "npx hexo generate",
-    "clean": "npx hexo clean",
-    "deploy": "npx hexo deploy",
+    "start": "hexo server",
+    "restart": "hexo clean && hexo generate",
+    "build": "hexo generate",
+    "clean": "hexo clean",
+    "deploy": "hexo deploy",
     "postinstall": "patch-package"
   },
   "hexo": {

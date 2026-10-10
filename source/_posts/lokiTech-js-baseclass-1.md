@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] JavaScript 教學（一）：現代基礎觀念"
 categories:
-  - 職訓教材
+  - 職訓課程
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

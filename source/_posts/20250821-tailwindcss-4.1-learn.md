@@ -1,8 +1,8 @@
 ---
 title: '[獨自升級] TailwindCSS v4.1 - 安裝與介紹'
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 職訓課程
+  - HTML/CSS
 tag:
   - CSS
   - TailwindCSS

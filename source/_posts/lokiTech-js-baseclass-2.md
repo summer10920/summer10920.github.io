@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] JavaScript 教學（二）：資料處理"
 categories:
-  - 職訓教材
+  - 職訓課程
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

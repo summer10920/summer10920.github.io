@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] CSS 教學（三）：盒子模型與定位點"
 categories:
-  - 職訓教材
+  - 職訓課程
   - HTML/CSS
 tag:
   - RWD 響應式網頁設計（假日班）

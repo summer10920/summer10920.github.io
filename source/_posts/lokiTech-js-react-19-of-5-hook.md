@@ -1,7 +1,7 @@
 ---
 title: '[基礎課程] React 19 - 官方推薦 Hooks 完整指南'
 categories:
-  - 職訓教材
+  - 職訓課程
   - ReactJS
 tag:
   - React

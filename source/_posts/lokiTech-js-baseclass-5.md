@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] JavaScript 教學（五）：非同步、AJAX、本地儲存"
 categories:
-  - 職訓教材
+  - 職訓課程
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

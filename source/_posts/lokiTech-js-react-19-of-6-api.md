@@ -1,7 +1,7 @@
 ---
 title: '[框架課程] React 19 教學（六）- API 串接與 CRUD 操作'
 categories:
-  - 職訓教材
+  - 職訓課程
   - ReactJS
 tag:
   - JavaScript 程式設計（假日班）
@@ -592,7 +592,7 @@ npm run dev
 
 **啟動成功的標誌：**
 - 終端機顯示「已連接到 SQLite 資料庫」
-- 終端機顯示「伺服器運行在 http://localhost:3000」
+- 終端機顯示「伺服器運行在 `http://localhost:3000`」
 - 終端機顯示「已插入初始資料」（第一次啟動時）
 
 ### 測試 API

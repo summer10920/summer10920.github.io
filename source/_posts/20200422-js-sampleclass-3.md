@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] JavaScript 實作（三）：類比時鐘設計"
 categories:
-  - 職訓教材
+  - 職訓課程
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

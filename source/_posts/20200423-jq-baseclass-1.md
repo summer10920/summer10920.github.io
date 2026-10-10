@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] jQuery 教學（一）：基礎觀念"
 categories:
-  - 職訓教材
+  - Archived Courses
   - jQuery
 tag:
   - JavaScript 程式設計（假日班）

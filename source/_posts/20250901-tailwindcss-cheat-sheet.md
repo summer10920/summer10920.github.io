@@ -1,8 +1,8 @@
 ---
 title: '[實用工具] TailwindCSS v4.1 - 公式表'
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 職訓課程
+  - HTML/CSS
 tag:
   - CSS
   - TailwindCSS

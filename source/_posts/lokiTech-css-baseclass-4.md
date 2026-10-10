@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] CSS 教學（四）：現代布局技術 - Float、FlexBox、Grid"
 categories:
-  - 職訓教材
+  - 職訓課程
   - HTML/CSS
 tag:
   - RWD 響應式網頁設計（假日班）

@@ -1,0 +1,3 @@
+allowBuilds:
+  hexo-util: false
+  hexo-word-counter: false

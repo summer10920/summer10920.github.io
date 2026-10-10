@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] JavaScript 實作（四）：小故事遊戲 (Feat.SweetAlert)"
 categories:
-  - 職訓教材
+  - 職訓課程
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

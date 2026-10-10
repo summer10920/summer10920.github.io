@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] Bootstrap5 期末實作：商務網站"
 categories:
-  - 職訓教材
+  - 職訓課程
   - 範例實作網站
 tag:
   - RWD 響應式網頁設計（假日班）

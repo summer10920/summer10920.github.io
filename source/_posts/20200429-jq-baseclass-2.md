@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] jQuery 教學（二）：Ajax 技術"
 categories:
-  - 職訓教材
+  - Archived Courses
   - jQuery
 tag:
   - JavaScript 程式設計（假日班）

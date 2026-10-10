@@ -1,9 +1,35 @@
+diff --git a/node_modules/hexo-word-counter/index.js b/node_modules/hexo-word-counter/index.js
+--- a/node_modules/hexo-word-counter/index.js
++++ b/node_modules/hexo-word-counter/index.js
+@@ -3,8 +3,18 @@
+ 'use strict';
+ 
+ const helper = require('./lib/helper');
+-const { wordCount } = require('./index.node');
+ 
++// Prebuilt index.node 404s and this machine has no Cargo. Count like the Rust
++// helper: drop "](...)" targets, then tally Unicode word-like segments.
++function wordCount(content) {
++  const segmenter = new Intl.Segmenter(undefined, { granularity: 'word' });
++  let count = 0;
++  for (const line of String(content).replace(/\]\([^)]*\)/g, ']').split('\n')) {
++    for (const part of segmenter.segment(line)) if (part.isWordLike) count += 1;
++  }
++  return count;
++}
++
+ const rBacktick = /^((?:[^\S\r\n]*>){0,3}[^\S\r\n]*)(`{3,}|~{3,})[^\S\r\n]*((?:.*?[^`\s])?)[^\S\r\n]*\n((?:[\s\S]*?\n)?)(?:(?:[^\S\r\n]*>){0,3}[^\S\r\n]*)\2[^\S\r\n]?(\n+|$)/gm;
+ 
+ hexo.config.symbols_count_time = Object.assign({
 diff --git a/node_modules/hexo-word-counter/lib/helper.js b/node_modules/hexo-word-counter/lib/helper.js
-index 3400ee1..95b6cfd 100644
 --- a/node_modules/hexo-word-counter/lib/helper.js
 +++ b/node_modules/hexo-word-counter/lib/helper.js
-@@ -10,30 +10,44 @@ function getSymbols(post) {
-   return post.length;
+@@ -7,33 +7,47 @@
+ };
+ 
+ function getSymbols(post) {
+-  return post.length;
++  return typeof post.length === 'number' ? post.length : 0;
  }
  
 -function getFormatTime(minutes, suffix) {
@@ -64,7 +90,7 @@ index 3400ee1..95b6cfd 100644
  };
  
  function getSymbolsTotal(site) {
-@@ -46,12 +60,15 @@ function getSymbolsTotal(site) {
+@@ -46,12 +60,15 @@
  
  module.exports.symbolsCountTotal = function(site) {
    const symbolsResultTotal = getSymbolsTotal(site);

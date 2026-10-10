@@ -1,7 +1,7 @@
 ---
 title: '[框架課程] React 19 教學（二）- 基礎語法與核心概念'
 categories:
-  - 職訓教材
+  - 職訓課程
   - ReactJS
 tag:
   - JavaScript 程式設計（假日班）

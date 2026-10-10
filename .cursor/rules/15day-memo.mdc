@@ -1,0 +1,15 @@
+---
+description: 15 天前端待補：Prettier／ESLint 專案設定（scaffold 時補）
+alwaysApply: true
+---
+
+# 待補：Prettier 與 ESLint
+
+第一天只裝套件與工作區 `formatOnSave`。專案設定檔還沒寫，**第一次 scaffold 時要補**，不要再拖到第一天講義。
+
+- **`practice/`**：不要放 ESLint。HTML 用 HTMLHint。Prettier 不要設 `requireConfig: true`。
+- **第一次 `create-vite`（`tailwind/`）**：補 `.prettierrc`（2 空格；分號／引號全班同一套）。排版只交給 Prettier。
+- **`react/`（及之後 `project/`）**：Vite ESLint + `eslint-config-prettier`（避免和 Prettier 打架）。`source.fixAll.eslint` 也這天再加。
+- 規則跟**專案**走，不要寫進使用者 `settings.json` 的 `prettier.semi` 這類鍵。
+- 教材 repo：`/Users/loki/github/studiesAdvanced` 的 `teacher/`、`student/` 對應專案各放一份。不要動 `backup/`。
+- 還沒選定 semi／singleQuote 時，scaffold 當天先定一組再寫檔。
