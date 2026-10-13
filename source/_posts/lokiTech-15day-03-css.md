@@ -30,6 +30,25 @@ CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：�
 每一份示範都是完整文件。在 `student/practice/css/` 新建一個檔（檔名可自訂），貼上該節的程式碼，存檔後用 Live Server 開。改完要重新整理。Styles 裡被劃掉的宣告代表沒有用上。
 {% endnote %}
 
+## 搭配免費 AI 學習
+
+這一章的選擇器、盒子與欄位仍要你自己讀、自己在 Chrome 裡對。免費聊天室用來解釋、除錯、陪你核對，不能代替講義與開發者工具（DevTools）。編輯器繼續用 VS Code；不需要 Cursor，也不需要付費方案。
+
+瀏覽器打開 ChatGPT、Gemini、Claude 或 Grok 的免費額度即可。問的時候貼你正在看的一小段規則，並寫明要繁體中文、不要整份重寫。三種問法就夠：
+
+- **解釋**：這條選擇器打到誰、這個屬性改的是盒子的哪一層。
+- **除錯**：畫面和示範不一樣時，貼上規則與你看到的現象，請它指出原因。
+- **核對**：把它說的屬性、單位、權重，拿去 MDN 對一次，再按 <kbd>F12</kbd> 看 **Styles** 有沒有劃掉、**Computed** 最後是什麼值。
+
+VS Code 若已登入 GitHub，可另開 **GitHub Copilot Free** 的行內補完：灰字出現時先讀再按 <kbd>Tab</kbd>。補完只負責接著打屬性，不負責判斷權重與單位對不對。免費額度會用完；同一題反覆貼整份 HTML，容易被限流。先用講義圈出疑問，再問那一小段。
+
+模型會**幻覺（hallucination）**：屬性名、已經少用的寫法、權重算法都可能說得很像真的。和講義或 MDN 衝突時，以 MDN 與你在 Chrome 看到的為準，再改檔。
+
+{% note warning %}
+**先對再信**
+聊天室貼回的整段 CSS、Copilot 的灰字，都先存檔用 Live Server 打開，再用 F12 看 Styles 與 Computed。對不上就不要整段覆蓋練習檔。
+{% endnote %}
+
 ## 規則怎麼套上元素
 
 樣式表是一組規則：先選到元素，再寫要改的屬性。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。這一節把規則的寫法、選擇器與繼承收在一起。
@@ -166,6 +185,19 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 **注意事項**
 行內樣式的權重高過樣式表裡的一般宣告，所以專題不要把版面塗在標籤上。`href` 寫錯時，Network 會看到那份 CSS 是 404，Styles 裡則完全沒有你的規則。
 {% endnote %}
+
+##### 用 AI 練習
+規則的零件與三種寫法，問一小段就好。不要請它把整頁改成框架或預處理器。
+
+```text
+這條規則裡 h1 寫了 colour: red; 以及兩個 color。請用繁體中文說明拼錯的宣告會怎樣、同屬性寫兩次誰留下。不要重寫整份 HTML。
+```
+
+```text
+行內 style、頁內 style、外部 link 差在哪？專題為什麼用 link？請各用一句話，並寫我該在 Chrome 的哪個面板確認 CSS 檔是不是 404。
+```
+
+對答案：存 `syntax.html`，F12 點 `h1`，Styles 裡 `colour` 應無效、第一個 `color` 被劃掉。再到 [MDN：CSS 語法](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_syntax/Syntax) 對宣告怎麼寫，[MDN：link](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/link) 對 `rel="stylesheet"`。
 
 ### 選擇器與權重
 
@@ -527,6 +559,28 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 它會讓下一個人只能再寫一個 `!important`。id 寫很多、選擇器拉很長，也是同一類問題。先把 class 取清楚。
 {% endnote %}
 
+{% note warning %}
+**AI 給錯的例子**
+模型常把權重說成「class 是 10 分、id 是 100 分，加總比較」。四欄不進位：兩個 class 仍是 class 欄的 2，不會變成 20 去跟 id 進位。它也常叫你加 `!important` 蓋過一個 class。示範裡 `.force` 只是讓你看見刪除線，練習不要把它當預設。F12 看的是哪一條被劃掉。
+{% endnote %}
+
+##### 用 AI 練習
+貼打中同一個 `color` 的那幾條，請它用四欄說明誰贏。回答裡若出現 10／100 計分或叫你加 `!important`，先不要改檔。
+
+```text
+p.note 與 #one 都寫了 color，另一段還有行內 style。請用四欄權重（不要用 10／100 計分）說明誰贏，行內 style 在哪一欄。繁體中文，不要加 !important。
+```
+
+```text
+.tour .price 與 .tour.price 差在哪？請用「中間有沒有空格」說明打到的是子孫還是同一個元素。不要改寫成 :has()。
+```
+
+```text
+:hover 與 :focus-visible 各在什麼時候出現？為什麼按鈕不要只寫 :hover？請各一句，並寫 MDN 頁名。
+```
+
+對答案：開權重那份檔，F12 點 `#one`、帶行內的那段、`.force`。id 的顏色應蓋過 class；行內蓋過樣式表裡的一般宣告；灰色那條被劃掉。[MDN：權重](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Specificity)。
+
 ### 繼承與層疊
 
 **層疊（cascade）**決定很多宣告搶同一個屬性時誰留下：來源、`!important`、權重、原始碼順序。**繼承（inheritance）**是另一件事：這個元素**根本沒有**人寫這個屬性時，要不要沿用父層已經算出來的值。上一節比的是「都有寫」；這一節處理「沒寫」以及你明示要跟父層還是回到初始。見 [MDN：繼承](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Inheritance)。
@@ -656,6 +710,19 @@ miss --> init["不可繼承的用初始值"]
   </body>
 </html>
 ```
+
+##### 用 AI 練習
+繼承問的是「沒寫的屬性會不會跟父層」，不要和上一節的權重混成同一題。
+
+```text
+.story 設了 color、margin-left、border、background。裡面的 p 沒寫這些屬性。請說明哪些會出現在 p 上、哪些不會，並分開「繼承」與「背景透出來」。
+```
+
+```text
+color 寫成 initial、unset、inherit、revert，在 keywords.html 各會看到什麼？請用四句話。不要把 initial 說成回到 body 上你寫的顏色。
+```
+
+對答案：F12 點 `.story` 裡第一段 `p`，Computed 的 `color` 是磚紅，`border` 不是那條 4px。點 `.price`，字色是它自己的深青綠。[MDN：繼承](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Inheritance)。
 
 ## 字、色與背景
 
@@ -869,6 +936,24 @@ miss --> init["不可繼承的用初始值"]
 **小技巧：吸色**
 Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低。過低時優先改亮度，不要先把字級放大來彌補。
 {% endnote %}
+
+{% note warning %}
+**AI 給錯的例子**
+模型常說「1em 就是 16px」。`em` 用在 `font-size` 上是相對父層字級：父層已經是 1.25 倍，子層再寫 `2em`，不是根字級的 32px。它也常把內文全改成 `px` 或 `vw`。這篇內文用 `rem`，`px` 留給髮絲邊框。F12 的 Computed 會換算成像素，拿那個數字跟父層比，不要跟根字級比錯對象。
+{% endnote %}
+
+##### 用 AI 練習
+請它估算 Computed，再打開單位那份檔自己對。不要接受「全部改成 px」的重寫。
+
+```text
+html 字級 16px。父層 font-size: 1.25em，其中一個子層 font-size: 2em，另一個 font-size: 2rem。請分別估算大約多少 px，並說明 em 與 rem 相對誰。
+```
+
+```text
+#0f766e、rgb(15 118 110 / 50%) 差在哪？八碼 HEX 最後兩碼是什麼？不要改成顏色名稱，也不要重寫整份清單。
+```
+
+對答案：F12 看子層 Computed 的 `font-size`。`2em` 約 40px、`2rem` 約 32px。[MDN：length](https://developer.mozilla.org/zh-TW/docs/Web/CSS/length)、[MDN：color 值](https://developer.mozilla.org/zh-TW/docs/Web/CSS/color_value)。
 
 ### 文字與背景
 
@@ -1164,6 +1249,19 @@ Day 3 濟州</p>
 把 `background.html` 存好後，在 Chrome 把視窗拉窄再拉寬，看 `cover` 與 `contain` 裁切的差別。F12 點 `.hero`，在 Styles 取消其中一層 `background-image`，確認先寫的那層在上面。
 {% endnote %}
 
+##### 用 AI 練習
+字型堆疊與背景圖層，貼 `.hero` 那幾行即可。不要請它改成 `<img>` 或外連字型服務。
+
+```text
+font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif; 為什麼最後要有 sans-serif？只寫微軟正黑體，在沒有這個家族的系統上會怎樣？
+```
+
+```text
+.hero 有兩層 background-image，漸層寫在前面。請說明哪一層畫在上面，以及 cover 和 contain 差在哪。不要改成 img。
+```
+
+對答案：F12 點 `.hero`，在 Styles 取消其中一層 `background-image`，確認先寫的那層在上面。拉視窗看 `cover` 與 `contain`。[MDN：font-family](https://developer.mozilla.org/zh-TW/docs/Web/CSS/font-family)、[MDN：background-size](https://developer.mozilla.org/zh-TW/docs/Web/CSS/background-size)。
+
 ### 選讀：進階選擇器、分層與字型
 
 上面的示範已經夠字與背景這一節。屬性選擇器的進階比對、`:is()`／`:where()`／`:has()`、自訂屬性、`@layer`、BEM 命名、自行載入字型檔可以整節跳過。之後維護較大的樣式表時再回來。
@@ -1336,6 +1434,19 @@ BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器
   color: #64748b;
 }
 ```
+
+##### 用 AI 練習
+這一節可以整節跳過。若要問，只貼 `:where()` 或一段 `@font-face`，不要請它重排整份樣式表。
+
+```text
+:is(h1, h2, #title) 與 :where(h1, h2, #title) 外觀可以一樣。請說明權重差在哪，以及重置樣式為什麼用 :where()。不要用 10／100 計分。
+```
+
+```text
+@font-face 寫了 font-display: swap。字型檔還沒到時畫面會怎樣？為什麼這篇不要用 @import 拉字型？
+```
+
+對答案：`:where()` 的權重是 0，所以後面的普通 class 蓋得過；`:is()` 取括號裡最高的那個。[MDN：:where](https://developer.mozilla.org/zh-TW/docs/Web/CSS/:where)、[MDN：font-display](https://developer.mozilla.org/zh-TW/docs/Web/CSS/@font-face/font-display)。
 
 ## 盒子與欄位排版
 
@@ -2074,6 +2185,28 @@ padding --> content["content 內容"]
 把視窗縮到標題那一行放不下，確認結尾是省略號。在 Styles 取消 `.title` 的 `white-space`，它會改回換行。再取消 `.clip` 的 `overflow`，看色帶的直角。
 {% endnote %}
 
+{% note warning %}
+**AI 給錯的例子**
+兩段一般區塊上下相鄰時，模型常把 `margin-bottom: 2rem` 與 `margin-top: 0.5rem` 相加成 2.5rem。垂直外距會合併，中間留下較大的那個。另一個錯法是沒離開 `static` 就寫 `z-index: 9999`。一般盒子的 `z-index` 要先定位才生效（Flex、Grid 的小孩例外）。F12 看盒子圖的 margin，以及 Styles 裡的 `position`。
+{% endnote %}
+
+##### 用 AI 練習
+盒子、`display`、定位與溢出分開放問。不要請它直接改成 Flex 或 Grid，那是下一節。
+
+```text
+兩段 p 上下相鄰，上段 margin-bottom: 2rem，下段 margin-top: 0.5rem。中間距是多少？請說明合併，不要把它們改成 Flex。
+```
+
+```text
+width: 100% 在 border-box 與 content-box 差在哪？為什麼這篇卡片用 border-box？請指向 Computed 盒子圖的哪一圈。
+```
+
+```text
+徽章是 position: absolute，卡片沒寫 position（仍是 static）。徽章會相對誰？要改卡片的哪個屬性，才相對這張卡？z-index 在 static 上有沒有效？
+```
+
+對答案：盒模型那份看兩段之間是 2rem，不是 2.5rem；兩條軌道比有沒有凸出虛線。定位那份拿掉卡片的 `relative`，徽章會離開這張卡。[MDN：盒模型](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)、[MDN：position](https://developer.mozilla.org/zh-TW/docs/Web/CSS/position)。
+
 ### 欄位排版
 
 一個方向上的排列用 Flex：導覽列、一排按鈕、卡片橫列。兩個方向同時切用 Grid：頁首與側欄、或欄線要對齊的卡片牆。兩者都寫在父層，只排**直接子元素**；孫子仍由它們自己的父層排。項目之間的縫用 `gap`，不加在容器外緣，外緣用 padding。Flex 與 Grid 的項目之間不合併 margin。`float` 不是這一章的欄位手法。
@@ -2606,6 +2739,28 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
 骨架裡的 `main` 是一格。主文裡的標題與段落不會自動變成格子，除非你在 `main` 上再設一次 `display: grid` 或 `flex`。視窗窄到放不下 8rem 加 9rem 時，頁面骨架會橫向溢出；改成一欄是後面媒體查詢的事。F12 點 Grid 徽章，線應夾住導覽與側欄。
 {% endnote %}
 
+{% note warning %}
+**AI 給錯的例子**
+要三欄時，模型仍常回 `float: left` 配 `width: 33%`。這一章用 Flex 或 Grid，縫用 `gap`。另一個錯法是長單字把項目撐破，卻只加 `overflow: hidden`，沒寫 `min-width: 0`（Grid 則是 `minmax(0, 1fr)`）。F12 點容器，徽章應是 flex 或 grid。
+{% endnote %}
+
+##### 用 AI 練習
+先講你要排一個方向還是欄與列，再請它寫屬性該放父層還是子層。整份版面不要一次貼上去重寫。
+
+```text
+導覽要橫排、中間留縫、窄畫面可換行。請只說明 display、flex-wrap、gap 該寫在父層還是子層。不要用 float，也不要寫 -webkit- 前綴。
+```
+
+```text
+卡片牆要欄數隨寬度變、欄線對齊。什麼時候用 Grid 的 repeat(auto-fit, minmax(...))，什麼時候一行按鈕用 Flex？請各一句。
+```
+
+```text
+Flex 項目裡一長串沒有空白的字把整行撐破。請說明 min-width: 0 在做什麼。不要改字級，也不要改成 float。
+```
+
+對答案：F12 點容器，確認是 flex 或 grid，項目之間是 `gap`。拿掉 `min-width: 0` 或把 `minmax(0, 1fr)` 改回沒有 0，長字應把欄撐開。[MDN：Flexbox 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)、[MDN：grid-template-columns](https://developer.mozilla.org/zh-TW/docs/Web/CSS/grid-template-columns)。
+
 ## 響應式、變數與動態
 
 同一份 HTML 先在窄畫面讀得完，再依視窗改結構、把重複的色與間距收成代幣，並讓狀態變化有轉場與少量動畫。畫面和規則對不上時，用開發者工具看最終值。這一節四份檔都是完整 HTML。
@@ -2836,6 +2991,19 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 存成 `rwd.html` 用 Live Server 打開。慢慢拉寬視窗，或按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）打開裝置工具列，選一顆手機寬度。頁首那句話應從「側欄版面」變成「單欄，導覽橫排」。再拉寬，確認句子與欄數一起變。接著 <kbd>Ctrl</kbd>+<kbd>P</kbd> 看列印預覽：導覽與行前欄不在紙上。
 {% endnote %}
 
+##### 用 AI 練習
+斷點問「為什麼由窄到寬」，不要請它依手機型號各寫一份 CSS。
+
+```text
+這份預設單欄，32rem 卡片變兩欄，48rem 變成側欄。為什麼用 min-width 由小到大，而不是先寫桌機再用 max-width 往回改？寬視窗時兩段查詢會不會同時成立？
+```
+
+```text
+@media 裡的 32rem 相對誰？我寫在 html 的 font-size 會不會改變這個斷點？查詢看的是視窗還是手機型號？請各一句。
+```
+
+對答案：拉寬 `rwd.html`，頁首那句話應跟著欄數變。寬視窗時兩段 `min-width` 同時成立，寫在後面的 `.now::after` 留下。[MDN：使用媒體查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_media_queries/Using_media_queries)。
+
 ### CSS 變數
 
 自訂屬性（custom properties）是你自己命名、可被繼承的 CSS 值，寫法是 `--名字: 值`，取用時寫 `var(--名字)`。前面選讀看過品牌色收成變數；這裡把色、間距、圓角收成一組代幣，改一處就整頁一起變。它們跟預處理器的變數不同：瀏覽器在套用樣式時才算出來，所以會參加繼承與覆寫。見 [MDN：使用 CSS 自訂屬性](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties)。
@@ -3002,6 +3170,19 @@ JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。�
 **跟著做**
 打開 `vars.html`，按 <kbd>F12</kbd> 選中 `<html>`，在 **Styles** 把 `--brand` 改成 `#9f1239`。色塊與第一張卡的按鈕應一起變，夜卡的按鈕仍是杏色，因為它自己又宣告了 `--brand`。點 `.bad`，**Computed** 的 `color` 應是繼承來的深青綠，不是玫瑰紅。
 {% endnote %}
+
+##### 用 AI 練習
+代幣問繼承與備援。不要把它說成 Sass 變數，也不要整頁改成預處理器。
+
+```text
+:root 宣告 --brand，.night 再宣告一次 --brand。兩張卡的按鈕各讀到誰？var(--tag-bg, #ffedd5) 在 --tag-bg 沒宣告時用哪一個？
+```
+
+```text
+同一條 color 後面又寫了 color: 1rem。請說明這條為什麼作廢、畫面會回到哪種字色。不要說成「退回同一條規則裡上一個色碼」。
+```
+
+對答案：F12 選中 `html`，把 `--brand` 改成另一個色。色塊與第一張卡的按鈕一起變，夜卡按鈕仍用它自己的 `--brand`。點 `.bad`，Computed 的 `color` 是繼承來的深青綠。[MDN：使用 CSS 自訂屬性](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties)。
 
 ### 轉場與動畫
 
@@ -3321,6 +3502,24 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
+{% note warning %}
+**AI 給錯的例子**
+模型常寫 `transition: all 300ms`，或叫 `display`、`height: auto` 做開合。`display` 不能補間；`all` 會把沒打算動的屬性也算進去。這篇要動的是 `transform` 與 `opacity`。懸停若沒包在 `(hover: hover) and (pointer: fine)` 裡，觸控裝置可能黏住。Animations 面板看得到的，才是真的在補間的屬性。
+{% endnote %}
+
+##### 用 AI 練習
+貼一個狀態與它的 `transition`，請它說明誰觸發、哪些屬性會動。不要接受 `transition: all`。
+
+```text
+卡片平時就有 rotate，移入只想再加一段 translate。若 :hover 把 transform 整段改成只剩 translate，角度會怎樣？請說明為什麼位移要分開寫。
+```
+
+```text
+@keyframes 已經寫了，但 animation 沒有持續時間。動畫會不會播？prefers-reduced-motion: reduce 時，這份示範應關掉哪一類效果？
+```
+
+對答案：開 `motion.html`，移入卡片應仍帶著原來的角度。系統要求減少動態時，熱賣、旋轉與進場停住。[MDN：使用 CSS 轉場](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_transitions/Using_CSS_transitions)。
+
 ### 用開發者工具除錯
 
 樣式沒有出現時，先分清楚是選錯節點、規則沒打中、被另一條蓋過，還是值本身無效。Chrome 按 <kbd>F12</kbd>，主畫面用 **Elements**。下面的 `inspect.html` 故意留了劃掉的宣告、拼錯的屬性，以及贏過 class 的 id，三節都對這一張票，也回頭看 `vars.html`、`motion.html`、`rwd.html`。
@@ -3434,6 +3633,19 @@ transition: background-color 200ms ease, translate 200ms ease;
   </body>
 </html>
 ```
+
+##### 用 AI 練習
+規則沒出現時，先請它分「沒打中、被蓋過、值無效」，再對照這張票。面板上的修改不要當成已經存檔。
+
+```text
+.ticket 裡有 colour: red、兩個 color，元素還有 id="featured"。請列出 Styles 應看到的刪除線與無效宣告，以及 Computed 的字色從哪一條來。
+```
+
+```text
+我在 Styles 改了 padding，重新整理後不見了。這代表檔案有沒有被改到？確認之後我該把值寫回哪裡？
+```
+
+對答案：選中 `#featured`。灰色 `color` 有刪除線，`colour` 無效，字色來自 id 那條。重新整理後面板修改消失，要寫回 `<style>` 或外部 CSS 再存檔。
 
 ## 選讀：邊界與進階動效
 
@@ -3716,6 +3928,23 @@ transition: background-color 200ms ease, translate 200ms ease;
   </body>
 </html>
 ```
+
+##### 用 AI 練習
+選讀可以整節跳過。若要問，一次只貼一種寫法，並請它對照前面已經用過的 Flex、Grid 或 `transition`。
+
+```text
+圖旁要繞一段說明。請說明 float: left 在做什麼，以及父層為什麼用 display: flow-root。不要把它寫成三欄版面。
+```
+
+```text
+同一張卡片在窄側欄與寬主文，視窗寬度相同。請說明 @container 與 @media 各看誰，以及 100vh 與 100dvh 差在哪。
+```
+
+```text
+transition: --brand 300ms 時顏色瞬間跳過去。請說明沒有 @property 時自訂屬性為什麼不能補間，以及 syntax 寫錯會怎樣。不要改成 transition: all。
+```
+
+對答案：`float.html` 拿掉 `flow-root`，短文時底色會變矮。`read-extra.html` 兩格視窗一樣寬，只有容器超過 22rem 的那張圖改到左側；移入按鈕時品牌色應補間，而不是跳色。[MDN：float](https://developer.mozilla.org/zh-TW/docs/Web/CSS/float)、[MDN：CSS 容器查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)、[MDN：@property](https://developer.mozilla.org/zh-TW/docs/Web/CSS/@property)。
 
 ## 本篇重點回顧
 

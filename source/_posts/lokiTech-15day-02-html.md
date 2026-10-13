@@ -14,8 +14,26 @@ date: 2026-08-30 10:01:00
 
 <!-- more -->
 
+# 搭配免費 AI 學習
+這一章的標籤仍要你自己讀、自己在瀏覽器裡對。免費聊天室用來解釋、除錯、陪你核對，不能代替講義與開發者工具（DevTools）。編輯器繼續用 VS Code；不需要 Cursor，也不需要付費方案。
+
+瀏覽器打開 ChatGPT、Gemini、Claude 或 Grok 的免費額度即可。問的時候貼你正在看的一小段，並寫明要繁體中文、不要整份重寫。三種問法就夠：
+
+- **解釋**：這段在做什麼、和旁邊那個標籤差在哪。
+- **除錯**：畫面或路徑不對時，貼上片段與你看到的現象，請它指出原因。
+- **核對**：把它說的標籤名、屬性、是否已淘汰，拿去 [MDN 的 HTML 元素](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element) 對一次，再按 <kbd>F12</kbd> 看 **Elements** 樹上是不是這個名字。
+
+VS Code 若已登入 GitHub，可另開 **GitHub Copilot Free** 的行內補完：灰字出現時先讀再按 <kbd>Tab</kbd>。補完只負責接著打，不負責判斷語意對不對。免費額度會用完；同一題反覆貼十份檔，容易被限流。先用講義圈出疑問，再問那一小段。
+
+模型會**幻覺（hallucination）**：標籤、屬性、過時寫法都可能說得很像真的。和講義或 MDN 衝突時，以 MDN 與你在 Chrome 看到的為準，再改檔。
+
+{% note warning %}
+**先對再信**
+聊天室貼回的整段 HTML、Copilot 的灰字，都先存檔用 Live Server 打開，再用 F12 對標籤名。對不上就不要整段覆蓋練習檔。
+{% endnote %}
+
 # 取得素材
-把下面分頁依檔名存進 `student/practice/html/`。外層 `index.html` 放在 `html/`，其餘九份放在 `html/pages/`。在 VS Code 開啟 `student/practice/`，再用 Live Server 開 `html/index.html`。標籤說明對齊 {% post_link lokiTech-html-baseclass-1 %}；你用 F12 對照的，就是這十份檔。
+把下面分頁依檔名存進 `student/practice/html/`。外層 `index.html` 放在 `html/`，其餘九份放在 `html/pages/`。在 VS Code 開啟 `student/practice/`，再用 Live Server 開 `html/index.html`。你用 F12 對照的，就是這十份檔。
 
 每一份子頁都是完整文件（有 `DOCTYPE`、`html`、`head`、`body`）。不要改檔名和資料夾名稱，左邊選單的路徑才對得起來。
 
@@ -923,6 +941,23 @@ date: 2026-08-30 10:01:00
 點左邊換右欄，只為了這堂課對照標籤、快速複習。專題與之後的正式頁，不要複製這套用 iframe 串多頁的做法。
 {% endnote %}
 
+##### 用 AI 練習
+檔案怎麼放、`target` 為什麼對得到右欄，用聊天室問一小段就好，不要請它重寫十份檔。回答先對 MDN 的屬性說明，再回 Live Server 點一次選單。
+
+```text
+選單是 <a href="pages/1_box.html" target="demo">，右欄是 <iframe name="demo" src="pages/1_box.html">。請用繁體中文說明 target 與 name 為什麼要相同，以及點選單後網址為什麼仍停在 index.html。不要改寫整份檔。
+```
+
+```text
+我把 pages/1_box.html 存成 pages/box.html，左邊點「盒子」右邊空白。請只根據相對路徑說明 href 與檔名哪裡不一致。不要建議改用框架。
+```
+
+```text
+為什麼這份用 iframe 串多頁適合課堂複習，正式網站卻不建議整站這樣做？請分 SEO 與 RWD 各用兩句話，並寫出你依據的 MDN 頁面名稱。
+```
+
+對答案：打開 [MDN：iframe](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/iframe) 看 `name`，[MDN：a](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/a) 看 `target`。Live Server 開 `html/index.html`，點左邊，網址應仍是外層；檔名改錯時右欄空白，改回就恢復。
+
 # 認識區塊盒
 瀏覽器把每個元素畫成一顆**盒子（box）**。先看區塊盒與行內盒怎麼排，再看有名字的語意標籤。沒有這些盒子，後面 CSS 也沒有「區域」可以選。點左邊「盒子」與「版面」，對 `pages/1_box.html`、`pages/2_layout.html`。
 
@@ -983,6 +1018,19 @@ HTML 元素依預設怎麼排，大致分成兩類：
 **跟著做**
 在右欄 F12 點「甲」那個 `span`，畫面只亮幾個字；點外層 `div`，亮整塊。確認兩個 `span` 同一行、兩個 `div` 上下分開。
 {% endnote %}
+
+##### 用 AI 練習
+請聊天室比較你貼上的 `span` 與 `div`，不要請它改成 Flex 或 Grid。你要的是預設怎麼排，以及 DevTools 哪個欄位可以證明。
+
+```text
+pages/1_box.html 裡，兩個 span 會緊挨在同一行，兩個 div 會各自換行。請用繁體中文說明 block 與 inline 的差別，並寫出它們的預設 display。不要改寫成版面框架。
+```
+
+```text
+img 常被說成跟 span 一樣是行內。請說明 img 為什麼是置換元素、能不能設寬高，以及我該在 Chrome DevTools 的哪個欄位確認 display。
+```
+
+對答案：F12 點「甲」與外層 `div`，看 **Computed → display**。`span` 應是 `inline`，`div` 應是 `block`。再到 [MDN：span](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/span) 與 [MDN：div](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/div) 對預設。
 
 ## 語意標籤
 點左邊「版面」（載入 `pages/2_layout.html`）。HTML5 引入語意標籤（semantic tag）：盒子還在，標籤名直接說明這區是什麼。好處是搜尋引擎較好懂、螢幕閱讀器較好讀、之後也比較好維護。這一頁的 `nav` 裡是普通文字清單，**不是在教連結**；可點的 `a` 在「連結」那一頁。
@@ -1060,6 +1108,24 @@ s2 --> a2["article"]
 **跟著做**
 F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。展開 `main` 應是 `section`；「文章區塊」裡是兩篇 `article`，不是一串無名 `div`。
 {% endnote %}
+
+{% note warning %}
+**AI 給錯的例子**
+模型常回 `<div class="header">`、`<div class="nav">`，或叫你用 `<br>` 把兩個 `div` 排在同一行。class 只是名字，瀏覽器不會因此把它當成頁首；兩個 `div` 換行是 block 的預設。對照 `2_layout.html`：頁首是 `header`，選單是 `nav`。F12 看的是標籤名。
+{% endnote %}
+
+##### 用 AI 練習
+把 `2_layout.html` 的骨架貼去問「這區是什麼」，不要請它補一堆連結。`nav` 這一頁是示意清單，可點的 `a` 在連結那一頁。
+
+```text
+pages/2_layout.html 的 body 底下有 header、main、footer。請說明 section 和 article 差在哪，並用「京都三日遊」那段當例子。不要把 nav 改成一堆 a。
+```
+
+```text
+一份 HTML 可以有幾個 main？aside 能不能取代 main？請各用一句話回答，並指出我該查 MDN 的哪個元素頁。
+```
+
+對答案：F12 展開 `body`，應是 `header`、`main`、`footer`，不是一串 `div`。[MDN：main](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/main) 說明主內容區；[MDN：article](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/article) 對「可獨立成篇」。
 
 # 認識常用元素
 認完區塊盒之後，依類型點左邊選單。**元素（element）**由**標籤（tag）**組成：開始標籤與結束標籤把內文包起來。開始標籤上賦予**屬性（attribute）**（名="值"），元素才獲得具體功能，例如 `a` 的 `href` 才能跳轉、`img` 的 `src` 才有圖。頭尾標籤包覆的 **context** 就是這段**文字流**。
@@ -1147,6 +1213,21 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在 `p` 裡面，`hr` 與 `p` 同層。
 {% endnote %}
 
+##### 用 AI 練習
+請它判斷層級與換行，不要接受「為了字變小就改標題」或跑馬燈。改完用 F12 看 `br` 在不在 `p` 裡。
+
+```text
+這一頁已有一個 h1。請判斷哪一個寫法對，並說明為什麼不要為了字變小就跳到 h4：
+甲：<h1>行程</h1> 下一層直接 <h4>注意事項</h4>
+乙：<h1>行程</h1> 下一層是 <h2>注意事項</h2>
+```
+
+```text
+p 裡面的 br 和段落外的 hr 差在哪？請用「還是不是同一段」回答。不要建議 marquee。
+```
+
+對答案：F12 看 `br` 是否在 `p` 內、`hr` 是否與 `p` 同層。[MDN：標題元素](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/Heading_Elements) 說明標題是大綱。若回答出現 `marquee`，視為過時，不要採用。
+
 ## 連結
 點左邊「連結」（載入 `pages/4_links.html`）。可點的文字用 `a`，去哪裡寫在 `href`。沒有 `href` 就不是真正的連結。
 
@@ -1216,6 +1297,23 @@ html/
 2. 點「跳到本頁的聯絡」，確認捲到 `#contact`，再點「回到頁首」。
 3. 點 MDN 連結，應開新分頁。
 {% endnote %}
+
+##### 用 AI 練習
+路徑與錨點最容易被講成絕對網址。把你檔案所在的資料夾寫進問題裡，再自己點一次右欄。
+
+```text
+pages/4_links.html 裡 <a href="3_headings.html"> 和 <a href="#contact"> 點下去分別會怎樣？請說明相對路徑與錨點，並說明 id="contact" 要寫在哪個元素上。
+```
+
+```text
+外連 MDN 用了 target="_blank" 與 rel="noreferrer"。請說明少了 rel 時多了什麼風險。不要建議拿掉 href。
+```
+
+```text
+檔案在 pages/4_links.html，我想連到上一層的 index.html。相對路徑該寫什麼？請只給 href，並說明為什麼課堂少用 /index.html。
+```
+
+對答案：點頁內連結，右欄應換成 `3_headings.html`，或捲到 `#contact`。外連應開新分頁。連回外層是 `../index.html`。[MDN：a](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/a) 對 `href`、`target`、`rel`。
 
 ## 文字效果與實體
 點左邊「文字」（載入 `pages/5_text.html`）。這一頁看「字本身」怎麼標。很多標籤不只改樣子，還帶有意義，有助於 SEO 與無障礙。原則：**先考慮語意，再考慮外觀。**
@@ -1381,6 +1479,28 @@ HTML 用 `<`、`>` 識別標籤，用 `&` 識別實體，因此這些字不能�
 F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`。畫面可能相似，樹上的名字不同。展開 `pre > code`，確認小於號是實體。
 {% endnote %}
 
+{% note warning %}
+**AI 給錯的例子**
+要在畫面上看到 `<div>` 這五個字元時，若原始碼真的寫 `<div>`，瀏覽器會開一顆盒子。應寫 `&lt;div&gt;`，和 `5_text.html` 的 `pre > code` 一樣。另一個常錯是「重要就用 `b`」：重要用 `strong`，`b` 只是外觀。F12 看標籤名，不要只看粗體。
+{% endnote %}
+
+##### 用 AI 練習
+請它分辨語意與外觀，並讓它寫出「畫面上要出現標籤字元」的原始碼。對過再決定要不要改你的檔。
+
+```text
+strong 和 b、del 和 s 畫面可能很像。請用語意說明各該在什麼時候用，並各舉一句旅行注意事項。不要用 CSS 改字重。
+```
+
+```text
+我想在畫面上看到這五個字元：<div>。請寫一行放在 p 裡的 HTML，並說明小於號為什麼要寫成實體。
+```
+
+```text
+abbr 的 title 和 time 的 datetime 各給誰讀？請用 HTML、JR、出發日當例子，兩句話講完。
+```
+
+對答案：F12 點 `strong` 與 `b`，樹上的名字要不同。畫面要出現 `<div>` 時，原始碼應含 `&lt;div&gt;`。[MDN：strong](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/strong)、[MDN：Character reference](https://developer.mozilla.org/en-US/docs/Glossary/Character_reference)。
+
 ## 清單
 點左邊「清單」（載入 `pages/6_lists.html`）。相關項目請用語意清單，不要用一堆 `p` 加符號假裝。
 
@@ -1457,6 +1577,23 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 **跟著做**
 F12 點「可巢狀」那個 `li`：裡面還有一個 `ul`。再看 `dl`：`dt` 與 `dd` 成對，沒有 `li`。
 {% endnote %}
+
+##### 用 AI 練習
+讓它選對清單種類，並修好巢狀位置。內層清單必須留在某個 `li` 裡面。
+
+```text
+導覽選單、報名步驟、詞彙對照，分別該用 ul、ol 還是 dl？請各給一個不超過三項的例子，項目必須包在正確的子標籤裡。
+```
+
+```text
+下面這段為什麼不合規定？請只改巢狀位置，不要改成 div。
+<ul>
+  <li>可巢狀</li>
+  <ul><li>內層</li></ul>
+</ul>
+```
+
+對答案：內層 `ul` 應在外層 `li` 裡面。F12 點「可巢狀」那個 `li`，裡面應還有一個 `ul`。[MDN：ul](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/ul)、[MDN：dl](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/dl)。
 
 ## 多媒體
 點左邊「多媒體」（載入 `pages/7_media.html`）。圖片、影片、音訊和嵌入網頁幾乎都是置換元素：畫面上看到的不是標籤包住的文字。教室沒有外網時，圖或影片可能載不進來，F12 仍看得到 `src`。
@@ -1546,6 +1683,19 @@ HTML5 提供原生播放，不必再靠 Flash。
 **跟著做**
 F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、以及這一頁的 iframe。沒有外網時對屬性即可，不必等到播出來。
 {% endnote %}
+
+##### 用 AI 練習
+圖的替代文字、影片能不能自己播，都讓它說明原因。空的 `alt` 與「圖片」兩個字都先當錯，再對 MDN。
+
+```text
+這張圖沒寫 alt：<img src="kyoto.jpg">。請說明內容圖的 alt 該寫什麼、裝飾圖何時才用空字串，並補上 width 與 height 為什麼能減少版面跳動。不要改成 background-image。
+```
+
+```text
+video 加了 autoplay 卻常常沒聲音。請說明現代瀏覽器為什麼常擋住有聲音的自動播放，以及 autoplay muted 是什麼意思。練習頁仍應保留 controls。
+```
+
+對答案：F12 看 `img` 的 `alt` 與 `video` 裡的 `source`。內容圖的 `alt` 要寫得出畫面，例如「清水寺本堂與參道」。[MDN：img](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/img)、[MDN：video](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/video)。
 
 ## 表格
 點左邊「表格」（載入 `pages/8_table.html`）。資料表用列（row）和欄（column）排出結構化資訊。`index.html` 那張 `table` 是左右欄排版，**不要跟這一頁的資料表混在一起**。`border="1"` 只為了讓格線看得見。
@@ -1688,6 +1838,33 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 **跟著做**
 F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮山海」看 `colspan`、點「第一天」看 `rowspan`。最後一張數 `thead` 兩列有幾個 `th`，核對合併說明。
 {% endnote %}
+
+{% note warning %}
+**AI 給錯的例子**
+合併常被寫成 `<td colspan="2">三日套裝</td>` 後面又多一顆空的 `<td>`。`colspan="2"` 已經佔兩欄，多出來的格子會再長出一欄。刪掉被合併掉的那一格，再對 `8_table.html` 的「花蓮山海」列。用 `<table>` 包整頁左右欄也是舊式排版，資料表看這一頁，不要跟 `index.html` 那張切欄的表混在一起。
+{% endnote %}
+
+##### 用 AI 練習
+問表名放哪、`scope` 管哪一方向、合併後格子怎麼數。請它改儲存格，不要改成 `div` 排版。
+
+```text
+caption 必須是 table 的第一個子元素。若我希望表名出現在表格下方，請說明該搬標籤還是用 CSS，並寫出要用的屬性名稱。
+```
+
+```text
+scope="col" 和 scope="row" 差在哪？請用「京都三日遊價目」的「人數」和「成人」當例子，各一句話。
+```
+
+```text
+表頭有三欄：行程、天數、售價。請指出下面這列多出來的儲存格，並改到欄數對齊。不要用 div 排版。
+<tr>
+  <th scope="row">花蓮山海</th>
+  <td colspan="2">三日套裝</td>
+  <td>多餘</td>
+</tr>
+```
+
+對答案：F12 沿每一列數格子（把 `colspan`／`rowspan` 算進去）。表名在下用 `caption-side: bottom`，`caption` 仍放在 `table` 開頭。「人數」是 `scope="col"`，「成人」是 `scope="row"`。[MDN：td](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/td)。
 
 ## 表單
 點左邊「表單」（載入 `pages/9_form.html`），檢查 `#booking-form`。表單用來收集文字、選項、檔案，再送到某個位置處理。常見於報名、搜尋、問卷。控制項很多，先把「label 對得起來、radio 同名、三種 button」弄清楚，其餘 `type` 用短範例當速查。
@@ -1873,6 +2050,28 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 3. 填姓名後按送出：iframe 位址應出現 `name=`。按「不送出」不應送出。
 {% endnote %}
 
+{% note warning %}
+**AI 給錯的例子**
+常見的「能動就好」長這樣：`<p>姓名</p>` 配上只有 `placeholder="請輸入姓名"` 的 `input`，按鈕寫 `<button>送出</button>`。`placeholder` 不是欄位名稱；`button` 在 `form` 裡沒寫 `type` 時預設就是送出。應寫 `label` 的 `for` 對到 `input` 的 `id`，並寫明 `type="submit"` 或 `type="button"`。對照 `#booking-form`。
+{% endnote %}
+
+##### 用 AI 練習
+讓它說明 `for`／`id`、`name`、同一組 radio、三種 `button`。貼回來的欄位先在這頁點文字、按送出，不要只看版面像不像。
+
+```text
+label 的 for="guest-name" 和 input 的 id="guest-name" 為什麼要一樣？name="name" 又是給誰的？請用送出後網址列會出現什麼來說明。不要拿掉 required。
+```
+
+```text
+同一組 radio 若一個 name="bus"、一個 name="train"，點選時會怎樣？請改成交通欄（巴士／火車），value 用 bus 與 train，name 用同一個。
+```
+
+```text
+form 裡有三顆按鈕：送出、重設、不送出。請寫出各自的 type，並說明為什麼不能省略 type。
+```
+
+對答案：填姓名按送出，iframe 位址出現 `name=`；按不送出的那顆不應出現 query。F12 看兩個 radio 的 `name` 是否都是 `traffic`。[MDN：button](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/button) 對預設 type，[MDN：label](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/label) 對 `for`。
+
 # 選讀：無障礙（a11y）
 **無障礙（accessibility）**縮寫成 **a11y**（a 與 y 中間 11 個字母）。目標是：不同身體條件、不同裝置、不同情境下，這頁仍然用得起來。不只是「身障專用」——只靠鍵盤、螢幕閱讀器、弱視、暫時受傷、或滑鼠壞掉，都算。
 
@@ -1882,7 +2081,7 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 
 {% note info %}
 **自己聽一次（可選）**
-Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer）找 **Accessibility**。點一個元素，看 Name、Role、有沒有被當成按鈕。macOS 也可開旁白（VoiceOver）聽頁面，今天不必當成作業。
+Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer）找 **Accessibility**。點一個元素，看 Name、Role、有沒有被當成按鈕。macOS 也可開旁白（VoiceOver）聽頁面，這段不必當成必須交的練習。
 {% endnote %}
 
 ## 語言與標題大綱
@@ -1981,7 +2180,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 <!-- endtab -->
 {% endtabs %}
 
-`onclick` 今天不必寫；重點是：**可操作的東西要用本來就可聚焦的元素**。`button` 沒寫 `type`、又放在 `form` 裡，預設會送出，所以練習檔才三種 `type` 都寫明。
+`onclick` 這一節不必寫；重點是：**可操作的東西要用本來就可聚焦的元素**。`button` 沒寫 `type`、又放在 `form` 裡，預設會送出，所以練習檔才三種 `type` 都寫明。
 
 ## 資料表要有表頭
 輔助工具讀表格時，會把 `th` 跟資料格綁在一起。只有 `td`、沒有 `caption`／`scope`，就只是一堆格子。`index.html` 那張左右欄 `table` 是排版，不是資料表——正式站不要這樣用，對閱讀器也不友善。
@@ -2005,7 +2204,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ```
 
 ## 鍵盤走得過整頁
-許多人不用滑鼠。連結與按鈕可用 <kbd>Tab</kbd> 移動、<kbd>Enter</kbd>（按鈕也常用 <kbd>Space</kbd>）啟動。若你把焦點外框用 CSS 拿掉，鍵盤使用者會在頁上「消失」。對比不夠（淺灰字配白底）弱視也讀不到——這是 CSS，明天之後再調，但不要一開始就做成看不見的字。
+許多人不用滑鼠。連結與按鈕可用 <kbd>Tab</kbd> 移動、<kbd>Enter</kbd>（按鈕也常用 <kbd>Space</kbd>）啟動。若你把焦點外框用 CSS 拿掉，鍵盤使用者會在頁上「消失」。對比不夠（淺灰字配白底）弱視也讀不到——這是 CSS，之後用樣式再調，但不要一開始就做成看不見的字。
 
 ```html
 <!-- 對比差：看起來「很淡很時尚」，其實讀不到 -->
@@ -2032,9 +2231,27 @@ iframe 示範站把主文藏在另一份文件，輔助工具較難讀——這�
 專題能把語意、`lang`、`alt`、`label`、真正的 `a`／`button` 寫對，就已經走在無障礙的路上。對比、焦點樣式、ARIA 之後對 WCAG 再補。
 {% endnote %}
 
+##### 用 AI 練習
+請它改短範例，並聲明不要加一堆 ARIA。改完用 Accessibility 面板與鍵盤走一遍，名稱對了再留。
+
+```text
+下面這段閱讀器為什麼讀不好？請改成有 lang、一個 h1，以及 label 對到 input。不要加 aria-label。
+<html><body><div class="big">報名</div><input placeholder="姓名"></body></html>
+```
+
+```text
+img 的 alt 寫「圖片」有什麼問題？請改寫一張清水寺照片的 alt，並說明裝飾圖何時用空字串。
+```
+
+```text
+連結寫「點這裡」、送出寫成 div onclick，各有什麼問題？請改成 a 與 button，並說明 button 在 form 裡為什麼要寫 type。
+```
+
+對答案：F12 → **Accessibility** 看 Name／Role。只按 <kbd>Tab</kbd> 應進得了欄位與按鈕。`alt` 要寫得出畫面內容，不是「圖片」。[MDN：img](https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/img) 對替代文字。
+
 # 本篇重點回顧
 這份範例用 iframe 把多個 HTML 串成可切換的假性網站，外層是 `index.html`，主題在 `pages/`。點選單只換右欄，網址仍停在外層；`target` 與 iframe 的 `name` 要相同。正式網站不這樣切，SEO 與 RWD 都會吃虧。
 
 瀏覽器把元素畫成盒子：區塊獨佔一行，行內跟文字排。`div`／`span` 只負責包一層；頁首、主文、頁尾用語意標籤。元素由標籤組成，屬性給功能，頭尾包覆的 context 是文字流。
 
-常用元素依類型對過：標題與段落、連結與路徑、文字與實體、清單、多媒體、表格、表單。選讀的無障礙（a11y）從語意、`lang`、`alt`、`label`、真正的 `a`／`button` 開始。
+常用元素依類型對過：標題與段落、連結與路徑、文字與實體、清單、多媒體、表格、表單。選讀的無障礙（a11y）從語意、`lang`、`alt`、`label`、真正的 `a`／`button` 開始。免費聊天室與 Copilot Free 的建議，留檔前用 MDN 與 F12 再對一次。
