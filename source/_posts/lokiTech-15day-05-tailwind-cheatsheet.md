@@ -888,6 +888,18 @@ CSS 屬性值有兩種設定方式：
 # Flex & Grid
 Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的佈局能力。Flex 適合一維佈局（單行或單列），而 Grid 則適合二維佈局（行列組合）。以下將詳細介紹這兩種佈局系統的相關類別。
 
+### 常見組合
+單格的類別見後面各節。下面是課堂上會直接疊在一起的寫法。
+
+| 你想做的事 | class |
+| --- | --- |
+| 橫排、垂直置中 | `flex items-center` |
+| 左右貼邊 | `justify-between` |
+| 放不下就換行 | `flex-wrap` |
+| 直向再改橫向 | `flex flex-col md:flex-row` |
+| 預設一欄、夠寬三欄 | `grid grid-cols-1 lg:grid-cols-3` |
+| 子項目之間的縫 | `gap-4` |
+
 ## flex-basis
 用於設定 flex 項目的初始主軸尺寸，決定 flex 項目在分配剩餘空間之前的基準尺寸。此屬性常與 `flex-grow`、`flex-shrink` 一起協作，實作彈性且可預測的版面。
 
@@ -5848,6 +5860,20 @@ SVG（Scalable Vector Graphics，可縮放向量圖形）是一種用於網頁�
 | `*` | 直接子元素 `:is(& > *)` | 子元素上的同類別蓋不掉，因為產生順序在後 |
 | `**` | 所有後代 `:is(& *)` | 例如 `**:data-avatar:rounded-full` |
 
+### 視窗斷點
+沒有前綴的類別在所有寬度都生效。`sm:` 到 `2xl:` 是 `min-width`：視窗到達那個寬度之後成立，更寬時仍然成立。同一個屬性寫了多個前綴時，較寬的那個覆蓋較窄的。rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px）。
+
+| 前綴 | 最小寬度 | 大約像素 | 編成的查詢 |
+| --- | --- | --- | --- |
+| （沒有） | 0 | 手機直向 | 沒有媒體查詢 |
+| `sm:` | 40rem | 640px | `@media (width >= 40rem)` |
+| `md:` | 48rem | 768px | `@media (width >= 48rem)` |
+| `lg:` | 64rem | 1024px | `@media (width >= 64rem)` |
+| `xl:` | 80rem | 1280px | `@media (width >= 80rem)` |
+| `2xl:` | 96rem | 1536px | `@media (width >= 96rem)` |
+
+`max-md:hidden` 這類是「小於該斷點才成立」。自訂門檻用 `@theme` 的 `--breakpoint-*`，見 [主題指令](#import-與-theme)。
+
 堆疊順序：`*:first:pt-0`，不要寫成 v3 的 `first:*:pt-0`。
 
 ## has-*、not-*、in-*
@@ -5972,6 +5998,16 @@ v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒
 <button class="bg-brand-500 3xl:px-8">品牌色</button>
 ```
 
+### @theme inline 與 static
+
+| 寫法 | 什麼時候用 |
+| --- | --- |
+| `@theme` | 新增品牌色、間距、自訂斷點。沒用到的 class 不會輸出 |
+| `@theme inline` | utility 要直接寫入另一個變數的值，而不是執行時再讀那顆變數 |
+| `@theme static` | 某個值必須留在 CSS 裡，即使原始碼沒寫到那個 class。檔案會變大 |
+
+`--color-*: initial;` 會清掉全部預設顏色，只留下你接著宣告的那些。`--spacing` 是整份間距刻度的一級（預設 `0.25rem`，`p-4` = 1rem）。單一格用 `--spacing-18: 4.5rem`，之後才有 `p-18`、`m-18`、`gap-18`。
+
 預設 `dark:` 跟系統。要改成祖先有 `.dark` 才生效，覆寫變體，不要在 JS 設定檔寫 `darkMode: "class"`：
 
 ```css
@@ -5988,6 +6024,16 @@ v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒
 
 ## @utility
 自訂工具用 `@utility`，才能跟 `hover:`、`lg:` 一起用。v3 寫在 `@layer utilities` 的 class，v4 不會自動變成變體可用的工具。
+
+### @layer
+`@layer` 把一般 CSS 放進 `base`、`components`、`utilities` 其中一層。放在 `@layer components` 的 `.kicker` 是普通 class，不能寫成 `md:kicker`。要讓前綴接得上，改用 `@utility`。`@apply` 是在手寫規則裡展開 utility；標籤你改得到時，class 留在 HTML 上。
+
+| 寫法 | 什麼時候用 |
+| --- | --- |
+| 標籤上的 utility | 這一顆元件的外觀就在 class 裡看完 |
+| `@layer components` | 固定的元件 class，不需要 `md:`、`hover:` 接在它前面 |
+| `@utility` | 自訂 class 要跟斷點、狀態前綴一起用 |
+| `@apply` | 同一串 utility 重複很多次，而且改不到每一個標籤。不要整頁都收進去 |
 
 版心沒有內建的置中 `container`。要自己定義：
 
