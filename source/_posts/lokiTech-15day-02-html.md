@@ -10,16 +10,18 @@ date: 2026-08-30 10:01:00
 
 ![](assets/images/banner/html5.png)
 
-這篇一次給十份可跑的 HTML。為了上課對題、之後複習也好找，主題拆成多份。這份範例用 iframe 把多個網頁串在一起，點左邊就能切換右欄內容，看起來像一個網站。先複製到 `student/practice/html/`（含子資料夾），用 Live Server 開 `index.html`。
+練習站在 `studiesAdvanced/01-html-css-js/02-html/`：左邊是選單，右邊用 iframe 顯示選到的那一頁。用 VS Code 開 `01-html-css-js/`，Live Server 開 `02-html/index.html`。
+
+選單的 `a` 寫 `target="content"`，iframe 寫 `name="content"`。兩邊字串相同，點連結只把新頁畫進右欄，網址仍停在 `index.html`。第一頁預設載入「檔案一覽」（`pages/01-shell.html`）。
 
 <!-- more -->
 
 # 取得素材
-把下面分頁依檔名存進 `student/practice/html/`。外層 `index.html` 放在 `html/`，其餘九份放在 `html/pages/`。在 VS Code 開啟 `student/practice/`，再用 Live Server 開 `html/index.html`。標籤說明對齊 {% post_link lokiTech-html-baseclass-1 %}；你用 F12 對照的，就是這十份檔。
+上課開的是開頭那個練習站：VS Code 開 `studiesAdvanced/01-html-css-js/`，Live Server 開 `02-html/index.html`，點左邊選單換右欄。標籤說明對齊 {% post_link lokiTech-html-baseclass-1 %}；你用 F12 對照的，是 `pages/` 裡各節的起點。下面分頁是講義上的完整對照檔。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/`（`01-shell/`、`02-box/`、`03-layout/`、`04-headings/`、`05-links/`、`06-text/`、`07-lists/`、`08-media/`、`09-table/`、`10-form/`、`11-a11y/`）
+練習檔：`studiesAdvanced/01-html-css-js/02-html/index.html`，以及 `pages/01-shell.html`、`pages/02-box.html`、`pages/03-layout.html`、`pages/04-headings.html`、`pages/05-links.html`、`pages/06-text.html`、`pages/07-lists.html`、`pages/08-media.html`、`pages/09-table.html`、`pages/10-form.html`、`pages/11-a11y.html`。用 Live Server 開 `02-html/index.html`，第一頁是選單「檔案一覽」。
 
-每一份子頁都是完整文件（有 `DOCTYPE`、`html`、`head`、`body`）。不要改檔名和資料夾名稱，左邊選單的路徑才對得起來。
+每一份練習頁都是完整文件（有 `DOCTYPE`、`html`、`head`、`body`）。不要改 `pages/` 的檔名，左邊選單的路徑才對得起來。
 
 {% note info %}
 **為什麼叫 `index.html`**
@@ -29,7 +31,7 @@ date: 2026-08-30 10:01:00
 ## 檔案一覽
 後面每一節會寫要點左邊哪一項。`index.html` 只負責左邊選單；觀念在 `pages/` 各檔。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/01-shell/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/01-shell.html`，用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
 
 | 存檔位置 | 左邊選單 | 這一頁在講什麼 |
 | --- | --- | --- |
@@ -44,11 +46,11 @@ date: 2026-08-30 10:01:00
 | `pages/8_table.html` | 表格 | 資料表、`scope`、`caption`、合併儲存格 |
 | `pages/9_form.html` | 表單 | `#booking-form` 與常用控制項 |
 
-先存 `index.html`，再建立 `pages/` 存其餘九份。選單寫的是 `pages/1_box.html` 這種路徑；資料夾或檔名改了，左邊點了右邊會空白。
+練習站選單寫的是 `pages/01-shell.html` 這種路徑；檔名改了，左邊點了右邊會空白。下面分頁的完整對照檔用 `pages/1_box.html` 這套檔名，用來對觀念，不是要你另存一份。
 
 {% tabs html素材,1 %}
 <!-- tab index.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/01-shell/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
 
 ```html index.html
 <!doctype html>
@@ -103,7 +105,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/1_box.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/02-box/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
 
 ```html pages/1_box.html
 <!doctype html>
@@ -147,7 +149,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/2_layout.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/03-layout/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「版面」。
 
 ```html pages/2_layout.html
 <!DOCTYPE html>
@@ -200,7 +202,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/3_headings.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/04-headings/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
 
 ```html pages/3_headings.html
 <!DOCTYPE html>
@@ -238,7 +240,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/4_links.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/05-links/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「連結」。
 
 ```html pages/4_links.html
 <!DOCTYPE html>
@@ -325,7 +327,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/5_text.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/06-text/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「文字」。
 
 ```html pages/5_text.html
 <!DOCTYPE html>
@@ -454,7 +456,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/6_lists.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/07-lists/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「清單」。
 
 ```html pages/6_lists.html
 <!DOCTYPE html>
@@ -500,7 +502,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/7_media.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/08-media/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
 
 ```html pages/7_media.html
 <!DOCTYPE html>
@@ -541,7 +543,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/8_table.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/09-table/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「表格」。
 
 ```html pages/8_table.html
 <!DOCTYPE html>
@@ -774,7 +776,7 @@ date: 2026-08-30 10:01:00
 ```
 <!-- endtab -->
 <!-- tab pages/9_form.html -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/10-form/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「表單」。
 
 ```html pages/9_form.html
 <!DOCTYPE html>
@@ -906,16 +908,16 @@ date: 2026-08-30 10:01:00
 
 {% note success %}
 **跟著做**
-1. 建立 `student/practice/html/pages/`。依分頁檔名各存一份（`index.html` 在 `html/`，其餘在 `pages/`）。
-2. Live Server 開 `html/index.html`。點左邊每一項，確認右邊會換頁，網址列仍停在 `index.html`。
+1. 用 VS Code 開 `studiesAdvanced/01-html-css-js/`，Live Server 開 `02-html/index.html`。
+2. 點左邊每一項，確認右邊會換頁，網址列仍停在 `index.html`。
 {% endnote %}
 
 ## 為什麼拆成多份 HTML
 若把所有標籤塞進同一頁，上課難停在某一題，複習也不好對照。所以主題拆開。這份範例用 iframe 把多個網頁串在一起，點左邊就換右欄，形成可切換內容的假性網站。這是**課堂導覽**，不是市面產品上的主流現代架構。
 
-`index.html` 用最傳統的寫法：子頁連結加上 `target="demo"`，右邊 iframe 的 `name="demo"`，兩邊字串相同，點選單就只換右欄。早期整頁切割還用過 `frameset`／`frame`，已經淘汰；現在課堂只用 iframe。
+`index.html` 用最傳統的寫法：子頁連結加上 `target`，右邊 iframe 的 `name` 用同一個字串，點選單就只換右欄。你打開的練習站寫的是 `content`。下面分頁的完整對照檔寫的是 `demo`。重點是兩個屬性的值要相同，不是特定哪一個單字。早期整頁切割還用過 `frameset`／`frame`，已經淘汰；現在課堂只用 iframe。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/01-shell/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
 
 ```html
 <!-- index.html（節錄）：target 與 name 必須一樣 -->
@@ -952,12 +954,12 @@ date: 2026-08-30 10:01:00
 # 認識區塊盒
 瀏覽器把每個元素畫成一顆**盒子（box）**。先看區塊盒與行內盒怎麼排，再看有名字的語意標籤。沒有這些盒子，後面 CSS 也沒有「區域」可以選。點左邊「盒子」與「版面」，對 `pages/1_box.html`、`pages/2_layout.html`。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/`（`02-box/`、`03-layout/`）
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/02-box.html`、`pages/03-layout.html`。用 Live Server 開 `02-html/index.html`，再點選單「盒子」或「版面」。
 
 ## 區塊與行內
 點左邊「盒子」（載入 `pages/1_box.html`）。盒子可以再裝盒子：外層決定這區佔畫面哪一塊，內層才放內容。這一頁的框線只為了讓你看出邊界，不是正式樣式。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/02-box/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/02-box.html`，用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
 
 HTML 元素依預設怎麼排，大致分成兩類：
 
@@ -979,7 +981,7 @@ HTML 元素依預設怎麼排，大致分成兩類：
 
 `div` 與 `span` 本身不說明這區是什麼，只負責包一層：要獨佔一行用 `div`，要跟文字排在同一行用 `span`。頁首、主文、章節請用 `header`、`main`、`section`，不要整頁堆 `div` 假裝結構。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/02-box/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
 
 ```html
 <!-- pages/1_box.html：inline -->
@@ -1019,7 +1021,7 @@ HTML 元素依預設怎麼排，大致分成兩類：
 ## 語意標籤
 點左邊「版面」（載入 `pages/2_layout.html`）。HTML5 引入語意標籤（semantic tag）：盒子還在，標籤名直接說明這區是什麼。好處是搜尋引擎較好懂、螢幕閱讀器較好讀、之後也比較好維護。這一頁的 `nav` 裡是普通文字清單，**不是在教連結**；可點的 `a` 在「連結」那一頁。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/03-layout/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/03-layout.html`，用 Live Server 開 `02-html/index.html` 再點選單「版面」。
 
 ![左側整頁都是灰色 div 盒子；右側同樣版面改用 header、nav、main、section、aside、footer 上色區分](assets/images/html-boxes-semantic.png)
 
@@ -1036,7 +1038,7 @@ HTML 元素依預設怎麼排，大致分成兩類：
 
 `header`／`footer` 也可以出現在 `article` 裡面，表示「這篇文章自己的頁首／頁尾」，跟整份文件的頁首不是同一層。本頁先認得 `body` 底下那一層。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/03-layout/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「版面」。
 
 ```html
 <!-- pages/2_layout.html：頁首與導覽（示意清單，沒有 a） -->
@@ -1100,7 +1102,7 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 # 認識常用元素
 認完區塊盒之後，依類型點左邊選單。**元素（element）**由**標籤（tag）**組成：開始標籤與結束標籤把內文包起來。開始標籤上賦予**屬性（attribute）**（名="值"），元素才獲得具體功能，例如 `a` 的 `href` 才能跳轉、`img` 的 `src` 才有圖。頭尾標籤包覆的 **context** 就是這段**文字流**。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/`（`04-headings/`、`05-links/`、`06-text/`、`07-lists/`、`08-media/`、`09-table/`、`10-form/`）
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/04-headings.html`、`pages/05-links.html`、`pages/06-text.html`、`pages/07-lists.html`、`pages/08-media.html`、`pages/09-table.html`、`pages/10-form.html`。用 Live Server 開 `02-html/index.html`，再點選單「標題與段落」「連結」「文字」「清單」「多媒體」「表格」或「表單」。
 
 ```html
 <p class="lead" id="intro">這段是文字流。</p>
@@ -1115,7 +1117,7 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 ## 標題與段落
 點左邊「標題與段落」（載入 `pages/3_headings.html`）。標題排出層級，段落承載正文。可點的連結在下一頁。`h1` 出現在畫面裡；`title` 出現在分頁或書籤（要進 iframe 文件，才看得到這一頁自己的 `title`）。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/04-headings/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/04-headings.html`，用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
 
 ### 標題標籤（h1～h6）
 從 `<h1>` 到 `<h6>` 共六層，排出這一頁的標題層級：
@@ -1127,7 +1129,7 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 - **h5**：更細的標題，較少使用
 - **h6**：最細的一層，很少當主結構
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/04-headings/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
 
 ```html
 <!-- pages/3_headings.html -->
@@ -1192,7 +1194,7 @@ F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在
 ## 連結
 點左邊「連結」（載入 `pages/4_links.html`）。可點的文字用 `a`，去哪裡寫在 `href`。沒有 `href` 就不是真正的連結。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/05-links/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/05-links.html`，用 Live Server 開 `02-html/index.html` 再點選單「連結」。
 
 - **href**：要去的網址、檔案路徑或頁面錨點
 - **target**：開在哪裡（例如 `_blank` 開新分頁；`index.html` 左邊選單的 `target="demo"` 開在右欄 iframe）
@@ -1201,7 +1203,7 @@ F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在
 
 這一頁後半段的京都／大阪文字只是把頁面撐高，讓錨點真的會捲動，不是新觀念。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/05-links/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「連結」。
 
 ```html
 <!-- pages/4_links.html（節錄） -->
@@ -1266,7 +1268,7 @@ html/
 ## 文字效果與實體
 點左邊「文字」（載入 `pages/5_text.html`）。這一頁看「字本身」怎麼標。很多標籤不只改樣子，還帶有意義，有助於 SEO 與無障礙。原則：**先考慮語意，再考慮外觀。**
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/06-text/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/06-text.html`，用 Live Server 開 `02-html/index.html` 再點選單「文字」。
 
 ### 語意化強調標籤
 這組除了視覺效果，更重要的是傳達意義。
@@ -1276,7 +1278,7 @@ html/
 - **em**：語氣強調，通常顯示為斜體
 - **mark**：畫重點，通常顯示為黃色背景
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/06-text/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「文字」。
 
 ```html
 <!-- pages/5_text.html -->
@@ -1434,14 +1436,14 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 ## 清單
 點左邊「清單」（載入 `pages/6_lists.html`）。相關項目請用語意清單，不要用一堆 `p` 加符號假裝。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/07-lists/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/07-lists.html`，用 Live Server 開 `02-html/index.html` 再點選單「清單」。
 
 ### 無序清單（ul）
 沒有先後順序的項目用 `ul`。瀏覽器會自動為每個項目加上符號（通常是圓點），之後可用 CSS 改。
 
 適用於導覽選單、功能列表。項目必須包在 `li` 裡。`index.html` 左邊與版面頁的選單也是 `ul`；那是「這一區是一串項目」，跟「要不要做成連結」是兩件事。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/07-lists/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「清單」。
 
 ```html
 <!-- pages/6_lists.html -->
@@ -1515,7 +1517,7 @@ F12 點「可巢狀」那個 `li`：裡面還有一個 `ul`。再看 `dl`：`dt`
 ## 多媒體
 點左邊「多媒體」（載入 `pages/7_media.html`）。圖片、影片、音訊和嵌入網頁幾乎都是置換元素：畫面上看到的不是標籤包住的文字。教室沒有外網時，圖或影片可能載不進來，F12 仍看得到 `src`。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/08-media/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/08-media.html`，用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
 
 ### 圖片元素（img）
 最常用的多媒體標籤：
@@ -1525,7 +1527,7 @@ F12 點「可巢狀」那個 `li`：裡面還有一個 `ul`。再看 `dl`：`dt`
 - **title**：滑鼠停著時的提示（可選）
 - **width／height**：尺寸，可先佔位置、減少版面跳動
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/08-media/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
 
 ```html
 <!-- pages/7_media.html -->
@@ -1608,7 +1610,7 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 ## 表格
 點左邊「表格」（載入 `pages/8_table.html`）。資料表用列（row）和欄（column）排出結構化資訊。`index.html` 那張 `table` 是左右欄排版，**不要跟這一頁的資料表混在一起**。`border="1"` 只為了讓格線看得見。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/09-table/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/09-table.html`，用 Live Server 開 `02-html/index.html` 再點選單「表格」。
 
 ### 表格的基本結構
 - **table**：表格容器
@@ -1616,7 +1618,7 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 - **td**（table data）：資料儲存格，從左到右
 - **th**（table header）：標題儲存格，用來當欄名或列名
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/09-table/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「表格」。
 
 ```html
 <!-- pages/8_table.html：最簡的一列資料（大阪表 tbody） -->
@@ -1754,7 +1756,7 @@ F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮
 ## 表單
 點左邊「表單」（載入 `pages/9_form.html`），檢查 `#booking-form`。表單用來收集文字、選項、檔案，再送到某個位置處理。常見於報名、搜尋、問卷。控制項很多，先把「label 對得起來、radio 同名、三種 button」弄清楚，其餘 `type` 用短範例當速查。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/10-form/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/10-form.html`，用 Live Server 開 `02-html/index.html` 再點選單「表單」。
 
 本頁 `action="#"`、`method="get"`：送出後仍停在這一頁，位址列出現 `name=王小明` 這類 query 是瀏覽器預設，不是錯誤。
 
@@ -1766,7 +1768,7 @@ F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮
 - **enctype**：有檔案要上傳時用 `post` 加上 `multipart/form-data`
 - **target**：結果要顯示在哪（也可以指向某個 iframe 的 `name`）
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/10-form/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「表單」。
 
 ```html
 <!-- pages/9_form.html -->
@@ -1942,7 +1944,7 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 # 選讀：無障礙（a11y）
 **無障礙（accessibility）**縮寫成 **a11y**（a 與 y 中間 11 個字母）。目標是：不同身體條件、不同裝置、不同情境下，這頁仍然用得起來。不只是「身障專用」——只靠鍵盤、螢幕閱讀器、弱視、暫時受傷、或滑鼠壞掉，都算。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/11-a11y/`
+練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/11-a11y.html`，用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 這章**選讀**，不新增 `pages/` 檔。下面的短範例可另存空檔自己開，或只看程式碼。正式規範之後再查 [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)（Web Content Accessibility Guidelines）。課堂上先把標籤用對，比先背 ARIA 有用。
 
@@ -1958,7 +1960,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y標題,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <html>
@@ -1994,7 +1996,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y圖片,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <img src="kyoto.jpg" />
@@ -2014,7 +2016,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y表單,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <p>姓名</p>
@@ -2041,7 +2043,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y按鈕,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <div onclick="submit()">送出</div>
@@ -2062,7 +2064,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ## 資料表要有表頭
 輔助工具讀表格時，會把 `th` 跟資料格綁在一起。只有 `td`、沒有 `caption`／`scope`，就只是一堆格子。`index.html` 那張左右欄 `table` 是排版，不是資料表——正式站不要這樣用，對閱讀器也不友善。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <table>
@@ -2085,7 +2087,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ## 鍵盤走得過整頁
 許多人不用滑鼠。連結與按鈕可用 <kbd>Tab</kbd> 移動、<kbd>Enter</kbd>（按鈕也常用 <kbd>Space</kbd>）啟動。若你把焦點外框用 CSS 拿掉，鍵盤使用者會在頁上「消失」。對比不夠（淺灰字配白底）弱視也讀不到——這是 CSS，明天之後再調，但不要一開始就做成看不見的字。
 
-用 Live Server 開 `studiesAdvanced/01-html-css-js/02-html/11-a11y/index.html`。
+用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <!-- 對比差：看起來「很淡很時尚」，其實讀不到 -->

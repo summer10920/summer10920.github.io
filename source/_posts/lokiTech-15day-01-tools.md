@@ -431,7 +431,7 @@ git pull
 先 `git fetch origin` 再 `git checkout new-tech`。若 fork 沒帶齊 branch，到 GitHub 的 fork 設定勾同步，或 clone 時加上 `--branch new-tech`。
 {% endnote %}
 
-靜態練習用 **Live Server** 開資料夾裡的 `index.html`。VS Code 選 **檔案 → 開啟資料夾**，可以開整個 `studiesAdvanced`，也可以只開 `01-html-css`。在檔案總管對該節的 `index.html` 右鍵 **Open with Live Server**（狀態列 **Go Live**）。HTML 在 `01-html-css-js/02-html/`，CSS 在 `01-html-css-js/03-css/`，每一節一個子資料夾。預覽請用 Chrome。
+靜態練習用 **Live Server** 開 `index.html`。VS Code 選 **檔案 → 開啟資料夾**，可以開整個 `studiesAdvanced`，也可以只開 `01-html-css-js`。在檔案總管對該頁右鍵 **Open with Live Server**（狀態列 **Go Live**）。HTML 開 `01-html-css-js/02-html/index.html`（左邊選單、右邊 iframe，各節在 `pages/`）。CSS 開 `01-html-css-js/03-css/index.html`（選單加 iframe，各節在 `pages/`，該頁樣式是同名 `.css`，外層選單在 `css/site.css`）。預覽請用 Chrome。
 
 同一個 fork、同一條班級 branch。外層 `studiesAdvanced` 是 Git 根目錄；老師給的和你寫的用資料夾分開：
 
@@ -457,7 +457,7 @@ git pull
 2. Clone **你的** fork（核對網址裡是你的帳號）。
 3. Clone 時加上 `--branch new-tech`，進資料夾後 `git pull`。
 4. 確認有 `teacher/`、`student/`，以及 `practice`、`tailwind`、`react`、`project` 四個專案資料夾。
-5. 用 Live Server 開 `01-html-css-js/02-html/` 或 `01-html-css-js/03-css/` 裡該節資料夾的 `index.html`。
+5. HTML 用 Live Server 開 `01-html-css-js/02-html/index.html`，再點左邊選單。CSS 用 Live Server 開 `01-html-css-js/03-css/index.html`，再點選單。
 {% endnote %}
 
 
