@@ -27,14 +27,14 @@ Tailwind CSS 把常用的 CSS 宣告做成一粒一粒的 class，稱為 utility
 
 {% note primary %}
 **素材準備**
-練習專案是 `studiesAdvanced/02-tailwind`。目錄頁是 `index.html`，每一節有自己的 `pages/*.html`。全站樣式在 `src/style.css`（`@import "tailwindcss"`、品牌色、版心）。手動深色只讓 `pages/10-dark-toggle.html` 額外載入 `src/dark-manual.css` 與 `src/dark-toggle.js`。不要裝 Bootstrap，也不要另寫 `tailwind.config.js`。
+練習專案是 `studiesAdvanced/02-tailwind`。目錄頁是 `index.html`，每一節有自己的 `pages/*.html`。選單只有一份，在 `partials/nav.html`，每一頁用一行 `<load>` 嵌進來。全站樣式在 `src/style.css`（`@import "tailwindcss"`、品牌色、版心）。手動深色只讓 `pages/10-dark-toggle.html` 額外載入 `src/dark-manual.css` 與 `src/dark-toggle.js`。不要裝 Bootstrap，也不要另寫 `tailwind.config.js`。
 {% endnote %}
 
 # 環境
 
 HTML 檔可以直接用瀏覽器開。Tailwind 的 class 要先編成一般 CSS，瀏覽器才知道 `p-4` 是 `padding: 1rem`。Vite 負責這段編譯，也負責本機的開發伺服器。這一章先看 utility 解決了哪三件煩惱，再看專案裡每個檔在做什麼。文件見 [安裝 Tailwind（Vite）](https://tailwindcss.com/docs/installation/using-vite) 與 [用 utility 寫樣式](https://tailwindcss.com/docs/styling-with-utility-classes)。
 
-練習檔：`studiesAdvanced/02-tailwind/`（`pages/01-compare.html`、`pages/02-naming.html`、`pages/03-size.html`、`pages/04-scan.html`、`package.json`、`vite.config.js`、`src/style.css`、`src/main.js`、`.prettierrc`）
+練習檔：`studiesAdvanced/02-tailwind/`（`index.html`、`partials/nav.html`、`pages/01-compare.html`、`pages/02-naming.html`、`pages/03-size.html`、`pages/04-scan.html`、`package.json`、`vite.config.js`、`src/style.css`、`src/main.js`、`.prettierrc`）
 
 ## 為什麼 Tailwind 方便
 
@@ -322,7 +322,7 @@ pnpm dev
 ```bash
 pnpm create vite@latest 02-tailwind --template vanilla
 cd 02-tailwind
-pnpm add -D tailwindcss @tailwindcss/vite
+pnpm add -D tailwindcss @tailwindcss/vite vite-plugin-html-inject
 ```
 
 ### 專案裡的檔
@@ -332,9 +332,10 @@ pnpm add -D tailwindcss @tailwindcss/vite
 | `package.json` | 名稱、`engines`、`scripts`、依賴 |
 | `pnpm-lock.yaml` | 鎖定實際安裝的版本 |
 | `node_modules/` | 下載下來的套件，不 commit |
-| `index.html` | 目錄頁，連到每一節 |
-| `pages/*.html` | 各節示範。Vite 會把它們當網址 |
-| `vite.config.js` | 掛上 Tailwind 插件，並列出每一份 HTML 入口 |
+| `index.html` | 目錄頁，網址是 `/` |
+| `pages/*.html` | 各節示範。網址是 `/pages/檔名.html` |
+| `partials/nav.html` | 全站選單，只寫一份 |
+| `vite.config.js` | Tailwind 插件、HTML 嵌入、自動收集 `pages/*.html` 入口 |
 | `src/main.js` | `import "./style.css"`，給多數頁面用 |
 | `src/style.css` | `@import "tailwindcss"`、`@theme`、`@utility container` |
 | `src/dark-manual.css` | 只把 `dark` 改成看 class |
@@ -342,46 +343,52 @@ pnpm add -D tailwindcss @tailwindcss/vite
 | `.prettierrc` | 全專案的排版：2 空格、分號、雙引號 |
 | `dist/` | `pnpm build` 的產出，不 commit |
 
-打開 `studiesAdvanced/02-tailwind/vite.config.js`。插件讓 Vite 在處理 CSS 時跑 Tailwind。`build.rollupOptions.input` 把目錄頁和每一份 `pages/*.html` 都列成打包入口。少列的那一頁，`pnpm build` 不會產出。
+打開 `studiesAdvanced/02-tailwind/vite.config.js`。`@tailwindcss/vite` 讓 Vite 在處理 CSS 時跑 Tailwind。`vite-plugin-html-inject` 負責把選單嵌進 HTML。`build.rollupOptions.input` 的入口是目錄頁，加上 `pages/` 裡每一份副檔名是 `.html` 的檔。新加一頁、檔名仍放在這個資料夾，`pnpm build` 就會把它算進去。
 
 ```js vite.config.js
+import { readdirSync } from "node:fs";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
+import injectHTML from "vite-plugin-html-inject";
+
+const pages = readdirSync("pages")
+  .filter((name) => name.endsWith(".html"))
+  .sort()
+  .map((name) => `pages/${name}`);
 
 export default defineConfig({
-  plugins: [tailwindcss()],
+  plugins: [injectHTML({ replace: { undefined: "false" } }), tailwindcss()],
   build: {
     rollupOptions: {
-      input: [
-        "index.html",
-        "pages/01-compare.html",
-        "pages/02-naming.html",
-        "pages/03-size.html",
-        "pages/04-scan.html",
-        "pages/05-palette.html",
-        "pages/06-opacity.html",
-        "pages/07-paint.html",
-        "pages/08-theme.html",
-        "pages/09-dark-system.html",
-        "pages/10-dark-toggle.html",
-        "pages/11-button.html",
-        "pages/12-card.html",
-        "pages/13-nav.html",
-        "pages/14-form.html",
-        "pages/15-scale.html",
-        "pages/16-layout.html",
-        "pages/17-states.html",
-        "pages/18-formula.html",
-        "pages/19-mobile.html",
-        "pages/20-breakpoints.html",
-        "pages/21-container.html",
-        "pages/22-custom-breakpoint.html",
-        "pages/23-container-query.html",
-      ],
+      input: ["index.html", ...pages],
     },
   },
 });
 ```
+
+`replace.undefined` 那一行留在設定檔。選單裡沒被這一頁指定的 `{=$…}` 會變成文字 `false`。頁面本身不用為了選單寫 JavaScript。
+
+### 共用選單
+
+HTML 與 CSS 那兩份練習在 `studiesAdvanced/01-html-css-js/02-html` 與 `studiesAdvanced/01-html-css-js/03-css`。它們用 Live Server 打開外層的 `index.html`：選單留在外層，點了以後換右邊 iframe 裡的另一份文件。那兩份沒有要編譯的 class，iframe 就把「選單」和「這一節」分成兩個文件。
+
+這一份的 class 要先編成 CSS，所以每一節就是 Vite 的一個 HTML 入口。目錄的網址是 `/`，第一節是 `/pages/01-compare.html`。網址列、重新整理、F12 的 Elements 都停在你正在看的那一頁。選單的 markup 只放在 `studiesAdvanced/02-tailwind/partials/nav.html`。`pnpm dev` 與 `pnpm build` 時，插件讀每一頁 body 開頭的 `<load>`，把同一份選單嵌進去，`dist/` 裡也是嵌好的結果。Tailwind 掃的是專案裡的檔，`partials/nav.html` 上的 class 會跟各頁一起進 CSS。
+
+選單是貼在視窗上方的頂欄：`sticky top-0`。同一批連結寫兩次。寬螢幕那份是 `nav`，class 是 `hidden md:flex`，夠寬就橫排換行。窄螢幕那份放進 `<details>` 與 `<summary>`，外層是 `md:hidden`，按「選單」才打開。這樣關掉的 `details` 不會把桌面連結藏起來。目前這一頁的連結帶 `aria-current="page"`，外觀用 `aria-[current=page]:`。深色用 `dark:`，跟系統那一頁走系統偏好，手動切換那一頁跟著 html 上的 `dark` class。內層有 `container`，左右留白是 `px-4` 與 `sm:px-6`。`container` 的定義仍是 `src/style.css` 裡的 TODO，補上之後這列會收到版心。
+
+目錄頁這一行的路徑從專案根目錄算：
+
+```html index.html
+<load src="./partials/nav.html" home="page" />
+```
+
+`pages/` 裡多一層，屬性號碼對到檔名。`pages/01-compare.html` 是：
+
+```html pages/01-compare.html
+<load src="../partials/nav.html" p01="page" />
+```
+
+`p01` 對上選單裡的 `{=$p01}`，值固定寫 `page`。這一行保持自閉合，插件才認得。後面各節貼出的 HTML 從該節的內容寫起，省略這一行；檔案裡要留著，頂欄才會出現。`pages/13-nav.html` 要練的導覽寫在那一頁自己的 `header`（checkbox 與 `peer`），跟這份全站選單是兩份。
 
 打開 `studiesAdvanced/02-tailwind/src/main.js`。沒有這行 import，HTML 上的 utility 不會進到頁面。
 
