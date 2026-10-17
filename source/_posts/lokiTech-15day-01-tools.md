@@ -399,7 +399,7 @@ VS Code（Visual Studio Code）是 Microsoft 的免費編輯器，課堂用它�
 | repository（repo） | Git 儲存庫：受版本控制的專案目錄 |
 | clone | 將遠端儲存庫複製到本機 |
 | fork | 在 GitHub 上將儲存庫複製到**你的帳號**；之後 clone、push 都對這個 fork，不是老師原庫 |
-| branch | 分支；本學期教材在 `"CLASS_BRANCH"` |
+| branch | 分支；教材在 `new-tech` |
 | pull | 自遠端擷取並合併更新（老師會把新教材推進 `teacher/`） |
 | commit | 建立一次修訂紀錄 |
 
@@ -416,21 +416,22 @@ VS Code（Visual Studio Code）是 Microsoft 的免費編輯器，課堂用它�
 
 登入 GitHub 後：
 
-1. 打開老師倉庫，確認班級 branch 是 `"CLASS_BRANCH"`，按 **Fork**（fork 到自己帳號即可）。
-2. 進入**你的 fork**，按綠色 **Code**，複製 HTTPS 網址。
+1. 打開 [https://github.com/summer10920/studiesAdvanced](https://github.com/summer10920/studiesAdvanced)，確認分支是 `new-tech`，按 **Fork**（fork 到自己帳號即可）。
+2. 進入**你的 fork**，分支仍選 `new-tech`，按綠色 **Code**，複製 HTTPS 網址。
 3. 本機開終端機，進到你要放專案的目錄後執行：
 
 ```bash
-git clone https://github.com/你的帳號/studiesAdvanced.git
+git clone --branch new-tech https://github.com/你的帳號/studiesAdvanced.git
 cd studiesAdvanced
-git checkout "CLASS_BRANCH"
 git pull
 ```
 
 {% note info %}
 **找不到 branch 時**
-先 `git fetch origin` 再 `git checkout "CLASS_BRANCH"`。若 fork 沒帶齊 branch，到 GitHub 的 fork 設定勾同步，或 clone 時加上 `--branch "CLASS_BRANCH"`。
+先 `git fetch origin` 再 `git checkout new-tech`。若 fork 沒帶齊 branch，到 GitHub 的 fork 設定勾同步，或 clone 時加上 `--branch new-tech`。
 {% endnote %}
+
+靜態練習用 **Live Server** 開資料夾裡的 `index.html`。VS Code 選 **檔案 → 開啟資料夾**，可以開整個 `studiesAdvanced`，也可以只開 `01-html-css`。在檔案總管對該節的 `index.html` 右鍵 **Open with Live Server**（狀態列 **Go Live**）。HTML 在 `01-html-css/02-html/`，CSS 在 `01-html-css/03-css/`，每一節一個子資料夾。預覽請用 Chrome。
 
 同一個 fork、同一條班級 branch。外層 `studiesAdvanced` 是 Git 根目錄；老師給的和你寫的用資料夾分開：
 
@@ -454,8 +455,9 @@ git pull
 **跟著做**
 1. Fork 老師倉庫到自己帳號。
 2. Clone **你的** fork（核對網址裡是你的帳號）。
-3. `git checkout "CLASS_BRANCH"` 後 `git pull`。
+3. Clone 時加上 `--branch new-tech`，進資料夾後 `git pull`。
 4. 確認有 `teacher/`、`student/`，以及 `practice`、`tailwind`、`react`、`project` 四個專案資料夾。
+5. 用 Live Server 開 `01-html-css/02-html/` 或 `01-html-css/03-css/` 裡該節資料夾的 `index.html`。
 {% endnote %}
 
 
@@ -501,7 +503,7 @@ git pull
 ### Git Graph
 **Git Graph** 把提交畫成點、把分支畫成線。你剛才 `clone` 下來的歷史會出現在圖上。課堂用這張圖講 branch 與同步；指令與圖是同一件事，對錯時以指令為準。
 
-打開倉庫根目錄後，命令選擇區搜 `Git Graph: View Git Graph`（或側邊 Git Graph 圖示）。確認目前在 `"CLASS_BRANCH"`。
+打開倉庫根目錄後，命令選擇區搜 `Git Graph: View Git Graph`（或側邊 Git Graph 圖示）。確認目前在 `new-tech`。
 
 第一次在這台電腦 **commit 之前**，先設定名字與信箱。這只是寫在提交紀錄上的作者資料，**不必**跟 GitHub 帳號是同一組；登入、`push` 是另一件事。
 
@@ -541,7 +543,7 @@ Git Graph 要開著含 `.git` 的倉庫根（`studiesAdvanced`）才看得到完
 {% note success %}
 **跟著做**
 1. 在倉庫根執行上面三行 `git config`，確認 `--list` 看得到 name 與 email。
-2. 打開 Git Graph，確認分支是 `"CLASS_BRANCH"`。
+2. 打開 Git Graph，確認分支是 `new-tech`。
 3. 之後的節奏：自己的練習 `commit` → `push`；老師有更新則 GitHub **Sync fork** → 本機 `git pull`。
 {% endnote %}
 
@@ -640,7 +642,7 @@ Windows／Linux 用 <kbd>Ctrl</kbd>，Mac 用 <kbd>Command</kbd>（表寫 Ctrl�
 **環境**
 
 - VS Code、Google Chrome、Git、GitHub 帳號可用；預覽與 <kbd>F12</kbd> 用 Chrome
-- 已 **Fork** 老師倉庫並 clone **自己的** fork，目前分支為 `"CLASS_BRANCH"`
+- 已 **Fork** [summer10920/studiesAdvanced](https://github.com/summer10920/studiesAdvanced) 並 clone **自己的** fork，目前分支為 `new-tech`；HTML／CSS 用 Live Server 開 `01-html-css/` 裡該節的 `index.html`
 - 已設定 `user.name`、`user.email`；練習用 `commit`／`push`，老師更新則 GitHub **Sync fork** 再 `git pull`
 - 認得出 `teacher/`（只看、可複製）與 `student/`；四個專案是 `practice`、`tailwind`、`react`、`project`，寫程式一次只開其中一個
 - 已開過倉庫根目錄，建議視窗把建議的 VS Code 套件**全部裝完**（含後面 Tailwind／React 會用到的）
