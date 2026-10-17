@@ -34,7 +34,7 @@ CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：�
 
 樣式表是一組規則：先選到元素，再寫要改的屬性。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。這一節把規則的寫法、選擇器與繼承收在一起。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/`（`01-syntax/`、`02-where/`、`03-selectors-basic/`、`04-selectors-combine/`、`05-selectors-pseudo/`、`06-specificity/`、`07-inherit/`、`08-keywords/`）
+練習檔：`studiesAdvanced/01-html-css-js/03-css/`（`01-syntax/`、`02-where/`、`03-selectors-basic/`、`04-selectors-combine/`、`05-selectors-pseudo/`、`06-specificity/`、`07-inherit/`、`08-keywords/`）
 
 ### 觀念與引入
 
@@ -50,7 +50,7 @@ decl --> used["套用後的外觀"]
 
 一條規則分成「選到誰」和「設什麼」。大括號裡可以有多個宣告，每個宣告以分號結尾。同一條規則裡同一個屬性寫兩次，**原始碼較後面的那次**留下。屬性名稱拼錯時，瀏覽器丟掉**那一個宣告**，同一條規則的其他宣告仍然有效。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/01-syntax/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/01-syntax/`
 
 | 零件 | 例子 | 做什麼 |
 | --- | --- | --- |
@@ -61,7 +61,7 @@ decl --> used["套用後的外觀"]
 
 逗號是分組：`h1, h2` 代表兩條選擇器共用同一組宣告，權重不會因為逗號加總。註解寫 `/* 說明 */`，可以跨行。`<!-- -->` 是 HTML 註解，放進 CSS 不會被當成註解。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/01-syntax/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/01-syntax/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html syntax.html
 <!DOCTYPE html>
@@ -119,7 +119,7 @@ decl --> used["套用後的外觀"]
 
 CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的 `<style>`（頁內）、或寫成獨立的 `.css` 再用 `<link>` 掛上（外部）。課堂這些示範用頁內，是為了貼上一份檔就能開。專題與多頁網站用外部檔：顏色集中在一處，改一次，每一頁一起變，瀏覽器也可以快取那份 CSS。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/02-where/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/02-where/`
 
 | 寫法 | 範本裡的位置 | 什麼時候用 |
 | --- | --- | --- |
@@ -131,7 +131,7 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 `@import url("tour.css");` 必須寫在 CSS 的**最前面**，用來再拉另一份樣式表。它會多一次請求，也比 `link` 更晚才開始下載。課堂用 `link`。建構工具合併檔案時，原始碼裡才會大量出現 `@import`，那是工具的事。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/02-where/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/02-where/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html where.html
 <!DOCTYPE html>
@@ -185,7 +185,7 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 先分清四種基本選擇器，再談組合。class 寫在 HTML 是 `class="tour"`，CSS 多一個點。id 寫在 HTML 是 `id="featured"`，CSS 多一個 `#`。一個元素可以同時有多個 class：`class="tour soldout"`。`.tour.soldout` 中間**沒有空格**，表示兩個 class 都在同一個元素上。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/03-selectors-basic/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/03-selectors-basic/`
 
 | 選擇器 | 寫法 | 打到誰 | 權重欄 |
 | --- | --- | --- | --- |
@@ -196,7 +196,7 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 id 在一份文件裡只給一個元素。要用在很多張卡片上的樣式，寫 class。`#site-header` 這種全頁只有一個的區塊才用 id，而且是因為腳本或錨點需要那個名字，不是為了把權重拉高。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/03-selectors-basic/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/03-selectors-basic/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html selectors-basic.html
 <!DOCTYPE html>
@@ -257,7 +257,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 組合是在基本選擇器之間加上關係。空格、`>`、`+`、`~` 都算進**同一條**選擇器，權重把各段加總。逗號則是拆成多條，不加總。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/04-selectors-combine/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/04-selectors-combine/`
 
 | 組合 | 寫法 | 打到誰 |
 | --- | --- | --- |
@@ -269,7 +269,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 後代選擇器很容易打到後來才嵌進去的元素。能用 class 說清楚的，就少靠深層的空格。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/04-selectors-combine/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/04-selectors-combine/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html selectors-combine.html
 <!DOCTYPE html>
@@ -331,7 +331,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 偽類描述狀態或在父層的位置，偽元素描述元素的一部分或生出來的裝飾。兩者都接在選擇器後面，冒號個數與權重欄不同。見 [MDN：偽類與偽元素](https://developer.mozilla.org/zh-TW/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/05-selectors-pseudo/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/05-selectors-pseudo/`
 
 ##### 狀態與結構偽類
 
@@ -349,7 +349,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 `::before` 與 `::after` 必須寫 `content`（可以是空字串 `""`）才看得到。價格數字仍要留在 HTML 裡，讀屏與複製才有內容。`::placeholder` 只影響提示字，不影響使用者打進去的字。屬性選擇器（例如 `input[type="email"]`）權重也算 class 欄。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/05-selectors-pseudo/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/05-selectors-pseudo/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html selectors-pseudo.html
 <!DOCTYPE html>
@@ -460,7 +460,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 權重（specificity）用來比較哪一條選擇器比較具體。先看有沒有 `!important`，再由左到右比四個欄位，欄與欄不進位；欄位相同才看原始碼順序。見 [MDN：權重](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Specificity)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/06-specificity/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/06-specificity/`
 
 同一個元素、同一個屬性，可能有很多宣告打中。作者樣式（你寫的 CSS）裡，比較順序是：
 
@@ -479,7 +479,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 樣式表裡的 `!important` 贏過**沒有** `!important` 的行內樣式。行內再加上 `!important` 會更難蓋。專題要改顏色時，調整選擇器或原始碼順序。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/06-specificity/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/06-specificity/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html specificity.html
 <!DOCTYPE html>
@@ -571,11 +571,11 @@ miss --> init["不可繼承的用初始值"]
 
 會繼承的多半跟字有關：`color`、`font-family`、`font-size`、`font-weight`、`line-height`、`text-align`、`letter-spacing`。不會繼承的多半跟盒子有關：`margin`、`padding`、`border`、`background`、`width`、`display`。子元素是透明底時，你看到的是父層背景透出來，不是子層繼承了 `background-color`。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/07-inherit/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/07-inherit/`
 
 自己寫了同一個屬性，繼承就停在這一層。`line-height` 若寫成無單位數字，子層會用「自己的字級 × 那個數字」；若寫成 `24px`，子層字變大時行距仍是固定的 24 像素。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/07-inherit/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/07-inherit/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html inherit.html
 <!DOCTYPE html>
@@ -624,7 +624,7 @@ miss --> init["不可繼承的用初始值"]
 
 值也可以寫成關鍵字，強迫這一次要不要跟父層。`initial` 不是「回到我上一條規則」。`color` 的初始值是瀏覽器定義的字色，不是 `body` 上你寫的顏色。`revert` 回到上一層來源，通常是使用者代理樣式（標題會變回瀏覽器預設的大小與粗細）。想一次清掉很多屬性，可以寫 `all: unset;`，再把真正需要的屬性補回去。這是重置手段，不是每個元件的起手式。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/08-keywords/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/08-keywords/`
 
 | 關鍵字 | 示範裡的結果 | 意思 |
 | --- | --- | --- |
@@ -633,7 +633,7 @@ miss --> init["不可繼承的用初始值"]
 | `unset` | 藍字、沒有框 | 可繼承的當成 `inherit`，其餘當成 `initial` |
 | `revert` | 標題回到瀏覽器預設 | 丟掉作者樣式，回到使用者代理那一層 |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/08-keywords/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/08-keywords/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html keywords.html
 <!DOCTYPE html>
@@ -695,7 +695,7 @@ miss --> init["不可繼承的用初始值"]
 
 規則打中之後，值要寫成瀏覽器讀得懂的長度與顏色，再決定字怎麼排、底怎麼畫。字型相關屬性多半會繼承，背景預設不繼承。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/`（`09-units/`、`10-colors/`、`11-type/`、`12-text/`、`13-background/`、`14-selectors-extra/`、`15-layer/`）
+練習檔：`studiesAdvanced/01-html-css-js/03-css/`（`09-units/`、`10-colors/`、`11-type/`、`12-text/`、`13-background/`、`14-selectors-extra/`、`15-layer/`）
 
 ### 單位與顏色
 
@@ -705,7 +705,7 @@ miss --> init["不可繼承的用初始值"]
 
 長度用來寫字級、行寬、間距。內文以 `rem` 為主，`px` 用來寫髮絲邊框與需要對齊像素的線。`em` 會疊乘：父層已經是 1.25 倍、子層又寫 `2em`，子層相對的是放大後的父層，不是根字級。元件裡的字級用 `rem`，比較不會因為多包一層就突然變大。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/09-units/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/09-units/`
 
 | 單位 | 相對誰 | 示範 |
 | --- | --- | --- |
@@ -718,7 +718,7 @@ miss --> init["不可繼承的用初始值"]
 
 `line-height` 建議寫**無單位**數字（例如 `1.6`），它會乘上該元素自己的 `font-size`。行內的 `span` 預設不理會 `width`，所以示範把色條設成 `display: block`，百分之五十才有寬度可畫。`display` 的其餘值在盒子那一節再展開。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/09-units/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/09-units/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html units.html
 <!DOCTYPE html>
@@ -812,7 +812,7 @@ miss --> init["不可繼承的用初始值"]
 
 `color` 是前景（通常是字）。`background-color` 是底。`border-color` 是框。同一套寫法三種屬性都能用。對比要夠：深字配淺底，或淺字配深底。同一個色若再加一半透明，就可能不夠讀。透明度是「讓底下的像素參與混合」，不是另做一種灰色。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/10-colors/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/10-colors/`
 
 | 寫法 | 例子 | 什麼時候用 |
 | --- | --- | --- |
@@ -828,7 +828,7 @@ miss --> init["不可繼承的用初始值"]
 
 舊寫法 `rgb(15, 118, 110)` 與 `rgba(15, 118, 110, 0.5)` 仍然有效。新頁用空格與斜線即可。`hsl(175 80% 26% / 70%)` 同樣可以加 alpha。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/10-colors/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/10-colors/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html colors.html
 <!DOCTYPE html>
@@ -922,7 +922,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `font-family` 是一串**字型堆疊**，逗號分隔，瀏覽器由左到右挑第一個用得了的。有空格的名稱要加引號。最後一個寫**通用家族（generic family）**，系統才有退路。`system-ui` 在 Windows 上多半是 Segoe UI，中文仍要後面的「蘋方」或「微軟正黑體」才穩。不要只寫 `"Microsoft JhengHei"`：macOS 與手機沒有這個家族時，會直接掉到通用家族。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/11-type/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/11-type/`
 
 | 通用家族 | 看起來 | 示範的 class |
 | --- | --- | --- |
@@ -940,7 +940,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `font` 簡寫至少要有字級與字型家族，順序是：`font-style`、`font-weight`、`font-size`、斜線、`line-height`、`font-family`。簡寫會把沒寫到的字型屬性設回初始值。只改一個項目時，寫單獨的 `font-size` 或 `font-weight`。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/11-type/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/11-type/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html type.html
 <!DOCTYPE html>
@@ -1021,7 +1021,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `text-align` 作用在**區塊**上，對齊的是它裡面的行內內容。把 `text-align: center` 寫在 `span` 自己身上通常看不到置中，要寫在包住它的區塊上。橫書由左到右時，`start` 就是靠行首、`end` 就是靠行末。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/12-text/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/12-text/`
 
 | 屬性 | 常用值 | 做什麼 |
 | --- | --- | --- |
@@ -1037,7 +1037,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `text-align: justify` 會把一行兩端撐齊，中文段落常常被拉出大空隙，這門課的內文用 `start`。`white-space: nowrap` 禁止換行，按鈕上的短詞才用。連結若拿掉底線，滑鼠移上去或鍵盤聚焦時仍要有另一種變化，否則看不出它可以點。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/12-text/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/12-text/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html text.html
 <!DOCTYPE html>
@@ -1111,7 +1111,7 @@ Day 3 濟州</p>
 
 背景可以是底色、一張圖，或一層漸層。漸層也算 `background-image`。圖沒蓋到的地方會露出 `background-color`。多層背景用逗號分隔，**先寫的畫在上面**。每一層的 `repeat`、`size`、`position` 也用逗號對應；層數對不齊時，瀏覽器會循環使用你寫的那一串。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/13-background/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/13-background/`
 
 | 屬性 | 常用值 | 做什麼 |
 | --- | --- | --- |
@@ -1126,7 +1126,7 @@ Day 3 濟州</p>
 
 漸層的方向可以是角度或關鍵字。`160deg` 從左下往右上偏；`to bottom` 由上到下。色標可以加上停在哪裡：`#0f766e 42%`。`repeating-linear-gradient` 用來做條紋。放射狀用 `radial-gradient`。這門課的區塊底用線性漸層即可。正式站的照片把示範裡的資料網址換成 `url("images/kyoto.jpg")` 這種相對路徑，屬性相同。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/13-background/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/13-background/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html background.html
 <!DOCTYPE html>
@@ -1228,13 +1228,13 @@ Day 3 濟州</p>
 
 課堂正文只用了 `[type="email"]` 這種「屬性值完全相等」。還可以比對片段，權重仍是 class 欄 +1：`[href]` 有這個屬性即可，`[href^="https"]` 是開頭，`[href$=".pdf"]` 是結尾，`[title*="京都"]` 是中間含有。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/14-selectors-extra/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/14-selectors-extra/`
 
 `:is(h1, h2, h3)` 把分組寫短，權重等於括號裡**最高**的那一個。`:where()` 外觀可以相同，但權重是 **0**，所以很好被後面的普通 class 蓋過。重置樣式時用 `:where()`，就不必跟自己的重置規則搏鬥。`:not(.soldout)` 排除帶該 class 的元素，權重等於括號裡那個選擇器。
 
 `:has()` 選的是「裡面有某子孫的元素」，例如輸入框聚焦時讓外層出現框線。它會讓父層的樣式依賴子層狀態，選擇器一多就難讀，有明確 class 時仍優先寫 class。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/14-selectors-extra/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/14-selectors-extra/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html selectors-extra.html
 <!DOCTYPE html>
@@ -1300,11 +1300,11 @@ Day 3 濟州</p>
 
 自訂屬性（custom properties）以 `--` 開頭，用 `var()` 取用，而且會繼承。品牌色放在 `:root`（等於 `html`），整頁都能讀到。`var(--ink, #134e4a)` 的第二個引數是找不到變數時的備援。區域變數寫在元件上，只影響該元素和子孫。重複出現的色碼可以收成變數，改品牌時只改一處。後面的 CSS 變數那一章會把同一組代幣做成可以換膚的一頁。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/15-layer/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/15-layer/`
 
 `@layer` 把作者樣式分成若干層。一般宣告裡，**較晚宣告的層**蓋過較早的層；完全沒放進層的一般宣告，又蓋過所有層。分層適合「重置在底層、元件在上層」。`!important` 在層裡的優先順序會反過來，選讀階段不要在 `@layer` 裡加 `!important`。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/15-layer/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/15-layer/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html layer.html
 <!DOCTYPE html>
@@ -1405,7 +1405,7 @@ BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器
 
 每個元素都是一顆矩形盒子。先決定盒子多大、怎麼參加排版、座標跟誰比，再決定同一層的小孩沿一個方向排，或同時切成欄與列。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/`（`16-box/`、`17-display/`、`18-position/`、`19-overflow/`、`20-flex/`、`21-grid/`）
+練習檔：`studiesAdvanced/01-html-css-js/03-css/`（`16-box/`、`17-display/`、`18-position/`、`19-overflow/`、`20-flex/`、`21-grid/`）
 
 ### 盒子與定位
 
@@ -1421,7 +1421,7 @@ padding --> content["content 內容"]
 
 盒子模型（box model）把每個元素分成內容、內距、邊框、外距。寬高算到哪一層、四邊怎麼簡寫、垂直外距會不會合併，都在這裡。見 [MDN：盒模型](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/16-box/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/16-box/`
 
 ##### 寬高與四邊簡寫
 
@@ -1449,7 +1449,7 @@ padding --> content["content 內容"]
 | `content-box` | 只有內容 | 總寬變大，會撐破父層 |
 | `border-box` | 內容 + padding + border | 總寬仍是 16rem |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/16-box/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/16-box/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html box.html
 <!DOCTYPE html>
@@ -1600,7 +1600,7 @@ padding --> content["content 內容"]
 
 `display` 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行內、可設寬高的行內，以及三種先不要給人看的寫法，畫面差很多。見 [MDN：display](https://developer.mozilla.org/zh-TW/docs/Web/CSS/display)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/17-display/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/17-display/`
 
 ##### 區塊與行內
 
@@ -1619,7 +1619,7 @@ padding --> content["content 內容"]
 | `inline-block` | 同一行，每顆有自己的寬高 | 採用 | 採用 |
 | `none` | 不出現，位子被補上 | 不建立盒子 | — |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/17-display/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/17-display/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html display.html
 <!DOCTYPE html>
@@ -1770,7 +1770,7 @@ padding --> content["content 內容"]
 
 `position` 決定偏移量跟誰比，`z-index` 決定重疊時誰在上面。徽章、黏性標題與層疊情境是這一節的三個結果。見 [MDN：position](https://developer.mozilla.org/zh-TW/docs/Web/CSS/position)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/18-position/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/18-position/`
 
 ##### 五種定位
 
@@ -1792,7 +1792,7 @@ padding --> content["content 內容"]
 | `fixed` | 視窗 | 釋出 |
 | `sticky` | 滾過門檻後黏住滾動盒 | 在父層範圍內留著 |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/18-position/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/18-position/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html position.html
 <!DOCTYPE html>
@@ -2032,7 +2032,7 @@ padding --> content["content 內容"]
 
 內容比盒子的 padding 邊緣還大時，`overflow` 決定多出來的部分是露出、裁掉，還是出現捲軸。單行省略號是同一組屬性再加上不換行。見 [MDN：overflow](https://developer.mozilla.org/zh-TW/docs/Web/CSS/overflow)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/19-overflow/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/19-overflow/`
 
 ##### 裁切與捲動
 
@@ -2051,7 +2051,7 @@ padding --> content["content 內容"]
 | `auto` | 超過才出現捲軸 |
 | `scroll` | 一律預留捲軸 |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/19-overflow/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/19-overflow/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html overflow.html
 <!DOCTYPE html>
@@ -2172,7 +2172,7 @@ E --> F["格子裡的一排或一欄<br/>再 display: flex"]
 
 Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空間，交叉軸負責對齊，項目要變寬變窄再寫 `flex`。見 [MDN：Flexbox 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/20-flex/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/20-flex/`
 
 ##### 方向、換行與對齊
 
@@ -2214,7 +2214,7 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
 | `space-around` | 每項兩側各一份，項目之間是兩份 |
 | `space-evenly` | 外緣與項目之間都一樣 |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/20-flex/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/20-flex/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html flex.html
 <!DOCTYPE html>
@@ -2468,7 +2468,7 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
 
 Grid 同時指定欄與列，項目落在格子上。格線從 1 起算，剩餘空間用 `fr`，欄數也可以跟著容器寬度變。見 [MDN：Grid 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout)。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/21-grid/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/21-grid/`
 
 ##### 格線與剩餘空間
 
@@ -2497,7 +2497,7 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
 | 卡片裡的圖與「看行程」 | 卡內 Flex 直向 |
 | 圖旁一段文字繞著走 | 選讀的 `float`，不是多欄版面 |
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/21-grid/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/21-grid/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html grid.html
 <!DOCTYPE html>
@@ -2700,7 +2700,7 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
 
 同一份 HTML 先在窄畫面讀得完，再依視窗改結構、把重複的色與間距收成代幣，並讓狀態變化有轉場與少量動畫。畫面和規則對不上時，用開發者工具看最終值。這一節四份檔都是完整 HTML。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/`（`22-rwd/`、`23-vars/`、`24-motion/`、`25-inspect/`）
+練習檔：`studiesAdvanced/01-html-css-js/03-css/`（`22-rwd/`、`23-vars/`、`24-motion/`、`25-inspect/`）
 
 ### RWD 與媒體查詢
 
@@ -2744,7 +2744,7 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 
 `@media print` 裡把導覽、斷點說明、行前欄設成 `display: none`，底色改白、字改黑。列印預覽按 <kbd>Ctrl</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>P</kbd>），看完關掉即可。依賴底色才能看懂的資訊，列印時要改成字或邊框。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/22-rwd/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/22-rwd/`
 
 偏好類特性描述的是人，不是寬度。`prefers-color-scheme: dark` 在系統用深色外觀時成立，下一章只用它覆寫代幣。`prefers-reduced-motion: reduce` 在系統要求減少動態時成立，動畫那一章用它關掉循環。`hover: hover` 表示主要輸入可以懸停，`pointer: fine` 表示有滑鼠一類的細指標。這些查詢和寬度查詢一樣參加層疊。
 
@@ -2753,7 +2753,7 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 查詢看視窗，不看裝置型號。不要用使用者代理字串去猜手機。示範頁若嵌在別的頁面裡，視窗就是那個框的寬，不是整台螢幕的解析度。
 {% endnote %}
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/22-rwd/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/22-rwd/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html rwd.html
 <!DOCTYPE html>
@@ -2946,7 +2946,7 @@ N --> C["這張卡與裡面的按鈕讀到新值"]
 
 代幣放在 `:root`（HTML 文件裡就是 `html`）。`body` 的字色、底色、間距都寫 `var(--ink)` 這種名字。卡片底用 `--card`：系統改成深色時，這顆底與 `--ink` 一起換，淺色字才不會留在白卡片上。間距用 `--space-sm`、`--space-md`，圓角用 `--radius`。`calc(var(--space-md) * 1.5)` 可以拿代幣做算術。乘除時乘號兩側留空格。代幣裡若已經寫了單位（`1rem`），`calc()` 不要再加一次單位。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/23-vars/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/23-vars/`
 
 | 寫法 | 做什麼 |
 | --- | --- |
@@ -2973,7 +2973,7 @@ N --> C["這張卡與裡面的按鈕讀到新值"]
 JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。今天先只在樣式表裡改。重新整理後，面板裡的實驗不會留在檔案裡。
 {% endnote %}
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/23-vars/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/23-vars/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html vars.html
 <!DOCTYPE html>
@@ -3170,7 +3170,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 轉場需要一個新值才會動。動畫用 `@keyframes` 寫腳本，元素一套上 `animation` 就播。這一頁有三個：熱賣標籤循環縮放、載入圓環一直轉、行程卡進場一次。關鍵影格的名字自己取，跟 class 無關。`from` 等於 `0%`，`to` 等於 `100%`。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/24-motion/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/24-motion/`
 
 套到元素上時，持續時間必須寫，否則預設是 `0s`，你看不見過程。簡寫裡第一個時間仍是持續時間，第二個時間才是延遲。
 
@@ -3192,7 +3192,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 無限循環的大面積動畫很耗電，也會讓人忽略真正要點的按鈕。一個狀態用一兩個小元素即可。不要為了據說能加速繪製，就加上廠商前綴。
 {% endnote %}
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/24-motion/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/24-motion/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html motion.html
 <!DOCTYPE html>
@@ -3471,7 +3471,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 命令選單輸入 `Animations`，選 **Show Animations**。打開之後再重新整理 `motion.html`，進場與循環會出現在時間軸上。把時間軸上的圓點拖慢，可以看出 `pulse` 在 50% 放到最大。圓環是無限次，軸上會重複。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/25-inspect/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/25-inspect/`
 
 這個面板用來確認「有沒有在播」。預覽完把模擬與慢動作清掉再重新整理。**Network** 負責檔案沒載入；**Console** 在純 CSS 這一天通常是安靜的，拼錯的屬性不會在那裡報錯，只會出現在 **Styles**。
 
@@ -3480,7 +3480,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 在面板裡改規則不會寫回磁碟。Live Server 重新整理後，實驗就沒了。要留的修改寫進 `<style>`。
 {% endnote %}
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/25-inspect/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/25-inspect/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html inspect.html
 <!DOCTYPE html>
@@ -3547,7 +3547,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 這一節可以整節跳過。外距穿出、邏輯方向、float 繞排、立體翻面、容器查詢，以及把顏色代幣註冊成可補間，都是前面示範的延伸。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/`（`26-float/`、`27-flip/`、`28-read-extra/`）
+練習檔：`studiesAdvanced/01-html-css-js/03-css/`（`26-float/`、`27-flip/`、`28-read-extra/`）
 
 ### 外距穿出與邏輯方向
 
@@ -3579,13 +3579,13 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 多欄不要再用 `float: left` 配百分比寬度。同一件事是 Grid 的 `repeat(3, minmax(0, 1fr))` 加 `gap`。Flex 與 Grid 也不必再寫 `-webkit-` 前綴。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/26-float/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/26-float/`
 
 `inline-flex` 與 `inline-grid` 讓容器坐在文字行裡，裡面仍是 Flex 或 Grid。`grid-auto-flow: dense` 會回填跨格留下的洞，視覺順序會和原始碼不同。`subgrid` 讓子層沿用父層的欄線，卡片標題要跨卡對齊時再查。`display: contents` 會讓元素自己的盒子消失，也影響無障礙樹，課堂不要用來少包一層。
 
 下面這份同時看圖旁繞排，以及兩行以後省略。
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/26-float/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/26-float/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html float.html
 <!DOCTYPE html>
@@ -3648,9 +3648,9 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 平面的 `rotate` 看不出厚度。要翻面，父層給一個視距 `perspective`，卡片轉 Y 軸，背面用 `backface-visibility: hidden` 藏起來。正面與背面疊在同一個格子。`transform-style: preserve-3d` 讓子元素留在同一個 3D 空間，翻過去才看得到背面。背面先轉 180 度，父層再轉 180 度時它才正對你。`tabindex="0"` 讓鍵盤也能聚焦，`:focus-within` 跟 `:hover` 做同一件事。背面的文字若是必要資訊，不要只放在翻面之後。平面位移也不要加 `translateZ(0)` 來「加速」。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/27-flip/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/27-flip/`
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/27-flip/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/27-flip/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html flip.html
 <!DOCTYPE html>
@@ -3738,9 +3738,9 @@ transition: background-color 200ms ease, translate 200ms ease;
 
 一般的自訂屬性是一串符號。你寫 `transition: --brand 300ms` 時，瀏覽器不知道它是顏色，切換會瞬間跳過去。要讓顏色代幣可以補間，用 `@property` 註冊語法、繼承與初始值。`syntax` 寫錯時，整組註冊無效。`initial-value` 在語法要求下一定要有。沒有註冊之前，仍直接轉場 `background-color`，像 `motion.html` 那樣。全站代幣用覆寫 `--brand` 就夠。下面這份把容器查詢與 `@property` 放在同一頁，方便對照。
 
-練習檔：`studiesAdvanced/01-html-css/03-css/28-read-extra/`
+練習檔：`studiesAdvanced/01-html-css-js/03-css/28-read-extra/`
 
-用 Live Server 開 `studiesAdvanced/01-html-css/03-css/28-read-extra/index.html`，樣式在同資料夾的 `style.css`。
+用 Live Server 開 `studiesAdvanced/01-html-css-js/03-css/28-read-extra/index.html`，樣式在同資料夾的 `style.css`。
 
 ```html read-extra.html
 <!DOCTYPE html>

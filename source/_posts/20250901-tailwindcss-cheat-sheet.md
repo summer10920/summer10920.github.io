@@ -2,21 +2,24 @@
 title: '[實用工具] TailwindCSS v4.1 - 公式表'
 categories:
   - 職訓課程
-  - HTML/CSS
+  - 本年度課程
 tag:
   - CSS
   - TailwindCSS
   - 前端框架
   - 原子化 CSS
+  - JS 網頁 AI 開發（假日班）
 date: 2025-09-01 14:26:44
 hidden: false
 ---
 
 ![](/assets/images/banner/tailwind.png)
 
-本篇內容收錄所有完整的公式表供快速參考。以下提供完整的 TailwindCSS 公式表，按照功能分類整理，方便您快速查找和使用。
+本篇內容收錄公式表供快速參考，類別名稱對照 [Tailwind CSS v4 文件](https://tailwindcss.com/docs)。以下按照功能分類整理，方便查找。
 
 <!-- more -->
+
+練習檔：`studiesAdvanced/02-tailwind/`。樣式入口是 `src/style.css`（`@import "tailwindcss"`，Vite 外掛 `@tailwindcss/vite`）。查表可對照 `pages/06-opacity.html`、`pages/08-theme.html`、`pages/15-scale.html`、`pages/17-states.html`、`pages/18-formula.html`、`pages/21-container.html`、`pages/23-container-query.html`。
 
 # Layout
 佈局相關的類別用於控制元素的顯示方式、定位和排列。
@@ -87,11 +90,11 @@ CSS 屬性值有兩種設定方式：
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
   --container-3xs: 16rem;     /* 256px */
   --container-2xs: 18rem;     /* 288px */
-  --container-xs: 20rem;`     /* 320px */
-  --container-sm: 24rem;`     /* 384px */
-  --container-md: 28rem;`     /* 448px */
-  --container-lg: 32rem;`     /* 512px */
-  --container-xl: 36rem;`     /* 576px */
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
   --container-2xl: 42rem;     /* 672px */
   --container-3xl: 48rem;     /* 768px */
   --container-4xl: 56rem;     /* 896px */
@@ -134,17 +137,17 @@ CSS 屬性值有兩種設定方式：
 ### 自訂
 ```css
 @theme {
-  --columns-custom: 4;
+  --container-8xl: 96rem;
 }
 ```
 ```html
-<div class="columns-custom gap-4">
-  <div>自訂欄位 1</div>
-  <div>自訂欄位 2</div>
-  <div>自訂欄位 3</div>
-  <div>自訂欄位 4</div>
+<div class="columns-8xl gap-4">
+  <div>自訂欄寬 1</div>
+  <div>自訂欄寬 2</div>
 </div>
 ```
+
+數字欄數（如 `columns-4`）不必寫進 `@theme`。寬度關鍵字走 `--container-*`，與 `max-w-*`、`basis-*` 共用同一組主題變數。
 
 {% note info %}
 **小技巧：**
@@ -496,7 +499,7 @@ CSS 屬性值有兩種設定方式：
   </div>
   
   <!-- 模態框使用 isolate 創建新的堆疊上下文 -->
-  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center isolate">
+  <div class="absolute inset-0 bg-black/50 flex items-center justify-center isolate">
     <div class="bg-white rounded-lg p-6 shadow-xl max-w-md mx-4">
       <h3 class="text-lg font-bold mb-4">模態框</h3>
       <p class="mb-4">這個模態框使用 isolate 確保正確的層級顯示</p>
@@ -530,9 +533,9 @@ CSS 屬性值有兩種設定方式：
       懸停顯示工具提示
       
       <!-- 工具提示使用 isolate 確保正確顯示 -->
-      <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-800 text-white text-sm px-3 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity isolate">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-800 text-white text-sm px-3 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity isolate">
         這是工具提示內容
-        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+        <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
       </div>
     </button>
   </div>
@@ -546,7 +549,7 @@ CSS 屬性值有兩種設定方式：
   </div>
   
   <!-- 響應式模態框 -->
-  <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center isolate md:bg-opacity-75">
+  <div class="absolute inset-0 bg-black/50 flex items-center justify-center isolate md:bg-black/75">
     <div class="bg-white rounded-lg p-4 md:p-6 shadow-xl max-w-sm md:max-w-md mx-4">
       <h3 class="text-lg font-bold mb-4">響應式模態框</h3>
       <p class="mb-4">在小螢幕上背景透明度較低，大螢幕上較高</p>
@@ -810,7 +813,7 @@ CSS 屬性值有兩種設定方式：
 **小技巧：**
 - `inset-0` 是 `top: 0; right: 0; bottom: 0; left: 0;` 的簡寫，常用於覆蓋整個容器
 - `inset-x-0` 和 `inset-y-0` 分別控制水平和垂直方向的填滿
-- 使用 `top-1/2` 和 `transform -translate-y-1/2` 可以實現垂直置中
+- 使用 `top-1/2` 和 `-translate-y-1/2` 可以實現垂直置中。v4 的位移走 CSS `translate` 屬性，不必再加 `transform`
 - 響應式設計中，可以根據螢幕尺寸調整元素位置
 - 這些屬性需要配合 `position` 屬性使用才能生效
 {% endnote %}
@@ -903,11 +906,11 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
   --container-3xs: 16rem;     /* 256px */
   --container-2xs: 18rem;     /* 288px */
-  --container-xs: 20rem;`     /* 320px */
-  --container-sm: 24rem;`     /* 384px */
-  --container-md: 28rem;`     /* 448px */
-  --container-lg: 32rem;`     /* 512px */
-  --container-xl: 36rem;`     /* 576px */
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
   --container-2xl: 42rem;     /* 672px */
   --container-3xl: 48rem;     /* 768px */
   --container-4xl: 56rem;     /* 896px */
@@ -1048,7 +1051,7 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 {% endnote %}
 
 ## flex-grow
-用於控制 flex 項目在主軸上的伸長比例，決定項目如何分配容器中的剩餘空間。這個屬性對於創建靈活的佈局非常重要。
+用於控制 flex 項目在主軸上的伸長比例，決定項目如何分配容器中的剩餘空間。類別名稱是 `grow`、`grow-0`、`grow-<number>`。v3 的 `flex-grow-*` 已移除。
 
 | 類別名稱                   | CSS 屬性                             | 說明          |
 | -------------------------- | ------------------------------------ | ------------- |
@@ -1082,7 +1085,7 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 {% endnote %}
 
 ## flex-shrink
-用於控制 flex 項目在主軸上的收縮比例，決定項目在空間不足時如何收縮。這個屬性對於防止項目溢出和創建響應式佈局非常重要。
+用於控制 flex 項目在主軸上的收縮比例，決定項目在空間不足時如何收縮。類別名稱是 `shrink`、`shrink-0`、`shrink-<number>`。v3 的 `flex-shrink-*` 已移除。
 
 | 類別名稱                     | CSS 屬性                               | 說明               |
 | ---------------------------- | -------------------------------------- | ------------------ |
@@ -1520,6 +1523,18 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 # Spacing & Sizing
 Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一，能夠快速調整元素的內外距（padding、margin）與寬高尺寸。這些工具類別設計簡潔，支援響應式、邏輯方向（如 LTR/RTL）、任意值與 CSS 變數，讓你能靈活打造現代化、可維護的版面結構。
 
+## 邏輯屬性
+邏輯屬性依書寫方向對應實體邊，LTR 時 start 是左、end 是右；RTL 時對調。同一組間距刻度（`--spacing`）用在物理邊與邏輯邊。文件：[CSS logical properties](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_logical_properties_and_values)。
+
+| 後綴 | 對應 | 例子 |
+| ---- | ---- | ---- |
+| `s` / `e` | inline-start / inline-end | `ms-*` `me-*` `ps-*` `pe-*` `start-*` `end-*` `border-s` `border-e` `rounded-s` `rounded-e` |
+| `x` / `y` | inline / block | `mx-*` `px-*` `inset-x-*` `inset-y-*` `border-x` `border-y` |
+| `ss` `se` `ee` `es` | 邏輯圓角四角 | `rounded-ss-*` `rounded-se-*` `rounded-ee-*` `rounded-es-*` |
+| 捲動 | scroll-margin / scroll-padding | `scroll-ms-*` `scroll-me-*` `scroll-ps-*` `scroll-pe-*` |
+
+方向變體 `ltr:`、`rtl:` 只在同一份版面要同時支援兩種書寫方向時才需要。只做單向版面時，直接用邏輯類別即可。
+
 ## padding
 控制元素內距（padding），支援邏輯方向（inline/block、start/end）、軸向與單邊設定；數值系列由 `--spacing` 主題變數驅動。
 
@@ -1810,11 +1825,11 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
   --container-3xs: 16rem;     /* 256px */
   --container-2xs: 18rem;     /* 288px */
-  --container-xs: 20rem;`     /* 320px */
-  --container-sm: 24rem;`     /* 384px */
-  --container-md: 28rem;`     /* 448px */
-  --container-lg: 32rem;`     /* 512px */
-  --container-xl: 36rem;`     /* 576px */
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
   --container-2xl: 42rem;     /* 672px */
   --container-3xl: 48rem;     /* 768px */
   --container-4xl: 56rem;     /* 896px */
@@ -1885,11 +1900,11 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
   --container-3xs: 16rem;     /* 256px */
   --container-2xs: 18rem;     /* 288px */
-  --container-xs: 20rem;`     /* 320px */
-  --container-sm: 24rem;`     /* 384px */
-  --container-md: 28rem;`     /* 448px */
-  --container-lg: 32rem;`     /* 512px */
-  --container-xl: 36rem;`     /* 576px */
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
   --container-2xl: 42rem;     /* 672px */
   --container-3xl: 48rem;     /* 768px */
   --container-4xl: 56rem;     /* 896px */
@@ -1929,11 +1944,11 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
   --container-3xs: 16rem;     /* 256px */
   --container-2xs: 18rem;     /* 288px */
-  --container-xs: 20rem;`     /* 320px */
-  --container-sm: 24rem;`     /* 384px */
-  --container-md: 28rem;`     /* 448px */
-  --container-lg: 32rem;`     /* 512px */
-  --container-xl: 36rem;`     /* 576px */
+  --container-xs: 20rem;     /* 320px */
+  --container-sm: 24rem;     /* 384px */
+  --container-md: 28rem;     /* 448px */
+  --container-lg: 32rem;     /* 512px */
+  --container-xl: 36rem;     /* 576px */
   --container-2xl: 42rem;     /* 672px */
   --container-3xl: 48rem;     /* 768px */
   --container-4xl: 56rem;     /* 896px */
@@ -2908,6 +2923,7 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 | `-bg-linear-<angle>`            | `background-image: linear-gradient(-<angle> in oklab, var(--tw-gradient-stops));`      | 以負角度（oklab）線性漸層                        |
 | `bg-linear-(<custom-property>)` | `background-image: linear-gradient(var(--tw-gradient-stops, var(<custom-property>)));` | 使用 CSS 變數自訂線性漸層                        |
 | `bg-linear-[<value>]`           | `background-image: linear-gradient(var(--tw-gradient-stops, <value>));`                | 任意自訂線性漸層                                 |
+| `bg-conic`                      | `background-image: conic-gradient(in oklab, var(--tw-gradient-stops));`                | 圓錐漸層（oklab，預設角度）                      |
 | `bg-radial`                     | `background-image: radial-gradient(in oklab, var(--tw-gradient-stops));`               | 輻射漸層（oklab）                                |
 | `bg-radial-(<custom-property>)` | `background-image: radial-gradient(var(--tw-gradient-stops, var(<custom-property>)));` | 使用 CSS 變數自訂輻射漸層                        |
 | `bg-radial-[<value>]`           | `background-image: radial-gradient(var(--tw-gradient-stops, <value>));`                | 任意自訂輻射漸層                                 |
@@ -2931,7 +2947,8 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 使用技巧
 - 可直接使用 `bg-[url('路徑')]` 來設定任意圖片為背景，例如 `bg-[url('/assets/bg.png')]`。
 - from, to 屬於 CSS 關鍵變數，用來控制漸層色位置以及指定色，tailwindcss 會自動判斷哪種屬性用途。
-- var 也是 CSS 關鍵變數，用來控制漸層的顏色中間參數，搭配 from -> via -> to 為三色漸層。
+- via 是中間色。某個狀態要拿掉中間色時用 `via-none`（例如 `dark:via-none`），from／to 不會整段被重設。
+- v3 的 `bg-gradient-to-*` 改為 `bg-linear-to-*`。角度用 `bg-linear-65`，負角度用 `-bg-linear-45`。
 
 ```html
 <div class="bg-[url(/img/mountains.jpg)]"></div>
@@ -2942,7 +2959,8 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 <div class="size-24 rounded-full bg-conic from-blue-600 to-sky-400 to-50%"></div>
 <div class="size-24 rounded-full bg-conic-180 from-indigo-600 via-indigo-50 to-indigo-600"></div>
 <div class="size-24 rounded-full bg-conic/decreasing from-violet-700 via-lime-300 to-violet-700"></div>
-<div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+<div class="bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+<div class="bg-linear-to-r from-red-500 via-orange-400 to-yellow-400 dark:via-none dark:from-blue-500 dark:to-teal-400"></div>
 
 <div class="bg-linear-[25deg,red_5%,yellow_60%,lime_90%,teal]"></div>
 <div class="bg-linear-(--my-gradient)"></div>
@@ -3067,6 +3085,11 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
   --radius-4xl: 2rem;      /* 32px */
 }
 ```
+
+{% note warning %}
+**v4 圓角刻度**
+每個尺寸都有名字。`rounded-xs` 是 2px（v3 的 `rounded-sm`），`rounded-sm` 是 4px（v3 沒寫尺寸的 `rounded`）。沒寫尺寸的 `rounded` 仍可用，外觀等於 `rounded-sm`。
+{% endnote %}
 
 | 類別名稱                         | CSS 屬性值                                                                                                     | 說明                          |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------- |
@@ -3240,7 +3263,7 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 ```
 
 ## border-color
-設定邊框顏色，支援預設色板、透明、當前色與自訂任意值。常用於區塊、按鈕、表單等元件的邊框設計，能快速統一風格或強調重點。
+設定邊框顏色，支援預設色板、透明、當前色與自訂任意值。常用於區塊、按鈕、表單等元件的邊框設計，能快速統一風格或強調重點。v4 只寫 `border` 或 `divide-*`、沒指定顏色時，顏色是 `currentColor`，不再預設 `gray-200`。透明度用修飾符，例如 `border-black/50`；`border-opacity-*` 已移除。
 
 | 類別名稱                     | CSS 屬性                                                                                                | 說明                                                |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
@@ -3251,9 +3274,9 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `border-white`               | `border-color: var(--color-white);`                                                                     | 白色邊框（#fff）                                    |
 | `border-<color>-<step>`      | `border-color: var(--color-<color>-<step>);`                                                            | 指定色彩 <step> 階段的邊框色                        |
 | `border-(<custom-property>)` | `border-color: var(<custom-property>);`                                                                 | 使用 CSS 變數自訂邊框顏色                           |
-| `border-[<value>]`           | `border-color: <value>;`                                                                                | 任意自訂邊框顏色（如 #123456、rgba(..               |
-| `border-x-<color>-<step>`    | `border-left-color: var(--color-<color>-<step>);`<br>`border-right-color: var(--color-<color>-<step>);` | 設定左右邊框顏色                                    |
-| `border-y-<color>-<step>`    | `border-top-color: var(--color-<color>-<step>);`<br>`border-bottom-color: var(--color-<color>-<step>);` | 設定上下邊框顏色                                    |
+| `border-[<value>]`           | `border-color: <value>;`                                                                                | 任意自訂邊框顏色（如 #123456、rgba(...)、oklch 等） |
+| `border-x-<color>-<step>`    | `border-inline-color: var(--color-<color>-<step>);`                                                     | 設定左右（inline）邊框顏色                          |
+| `border-y-<color>-<step>`    | `border-block-color: var(--color-<color>-<step>);`                                                      | 設定上下（block）邊框顏色                           |
 | `border-s-<color>-<step>`    | `border-inline-start-color: var(--color-<color>-<step>);`                                               | 設定起始（Start）邊框顏色（支援 RTL）               |
 | `border-e-<color>-<step>`    | `border-inline-end-color: var(--color-<color>-<step>);`                                                 | 設定結束（End）邊框顏色（支援 RTL）                 |
 | `border-t-<color>-<step>`    | `border-top-color: var(--color-<color>-<step>);`                                                        | 設定上邊框顏色                                      |
@@ -3262,8 +3285,8 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `border-l-<color>-<step>`    | `border-left-color: var(--color-<color>-<step>);`                                                       | 設定左邊框顏色                                      |
 | `border-(<custom-property>)` | `border-color: var(<custom-property>);`                                                                 | 使用 CSS 變數自訂邊框顏色                           |
 | `border-[<value>]`           | `border-color: <value>;`                                                                                | 任意自訂邊框顏色（如 #123456、rgba(...)、oklch 等） |
-| `border-x-[<value>]`         | `border-left-color: <value>;`<br>`border-right-color: <value>;`                                         | 左右邊框自訂顏色                                    |
-| `border-y-[<value>]`         | `border-top-color: <value>;`<br>`border-bottom-color: <value>;`                                         | 上下邊框自訂顏色                                    |
+| `border-x-[<value>]`         | `border-inline-color: <value>;`                                                                         | 左右（inline）邊框自訂顏色                          |
+| `border-y-[<value>]`         | `border-block-color: <value>;`                                                                          | 上下（block）邊框自訂顏色                           |
 | `border-s-[<value>]`         | `border-inline-start-color: <value>;`                                                                   | 起始邊框自訂顏色                                    |
 | `border-e-[<value>]`         | `border-inline-end-color: <value>;`                                                                     | 結束邊框自訂顏色                                    |
 | `border-t-[<value>]`         | `border-top-color: <value>;`                                                                            | 上邊框自訂顏色                                      |
@@ -3411,6 +3434,11 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 <div class="outline-[2vw]"></div>
 <div class="outline-(length:--my-outline-width)"></div>
 ```
+
+{% note warning %}
+**外框預設**
+`outline` 預設寬度是 1px。`outline-2` 會一併把 `outline-style` 設成 `solid`，不必再加一個 `outline`。`outline-none` 是 `outline-style: none`。v3 的 `outline-none`（透明外框、強制色彩模式仍看得到）改名 `outline-hidden`。
+{% endnote %}
 
 ## outline-color
 `outline-color` 用來設定元素外框（outline）的顏色。Tailwind CSS 提供多種 outline 顏色類別，讓你能快速為聚焦狀態或互動元件加上明顯的外框色彩。
@@ -3568,6 +3596,11 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
   --inset-shadow-sm: inset 0 2px 4px #0000000d;
 }
 ```
+
+{% note warning %}
+**v4 陰影刻度與外圈**
+`shadow-xs` 是 v3 的 `shadow-sm`，`shadow-sm` 是 v3 沒寫尺寸的 `shadow`。沒寫尺寸的 `shadow` 仍可用，外觀等於 `shadow-sm`。`ring` 預設是 1px、顏色 `currentColor`；v3 的 `ring` 是 3px、`blue-500`，對齊舊外觀請寫 `ring-3 ring-blue-500`。`ring-opacity-*` 改為 `ring-blue-500/50`。
+{% endnote %}
 
 {% note info %}
 **color & step**
@@ -4159,6 +4192,11 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 }
 ```
 
+{% note warning %}
+**v4 模糊刻度**
+`blur-xs` 是 v3 的 `blur-sm`（4px），`blur-sm` 是 v3 沒寫尺寸的 `blur`（8px）。沒寫尺寸的 `blur` 仍可用，外觀等於 `blur-sm`。`backdrop-blur-*` 使用同一組 `--blur-*`。
+{% endnote %}
+
 ```html
 <img class="blur-sm" src="/img/mountains.jpg" />
 <img class="blur-2xl" src="/img/mountains.jpg" />
@@ -4215,17 +4253,21 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 | `drop-shadow-<color>-<step>`            | `--tw-drop-shadow-color: var(--color-<color>-<step>);` | 陰影指定色 step            |
 
 ```css
-:r {
+:root {
   /* 下方為 Tailwind 的 CSS 變數定義，對應 <size> 用途 */
-  --blur-xs: 4px;
-  --blur-sm: 8px;
-  --blur-md: 12px;
-  --blur-lg: 16px;
-  --blur-xl: 24px;
-  --blur-2xl: 40px;
-  --blur-3xl: 64px;
+  --drop-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.05);
+  --drop-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.15);
+  --drop-shadow-md: 0 3px 3px rgb(0 0 0 / 0.12);
+  --drop-shadow-lg: 0 4px 4px rgb(0 0 0 / 0.15);
+  --drop-shadow-xl: 0 9px 7px rgb(0 0 0 / 0.1);
+  --drop-shadow-2xl: 0 25px 25px rgb(0 0 0 / 0.15);
 }
 ```
+
+{% note warning %}
+**v4 投影刻度**
+`drop-shadow-xs` 是 v3 的 `drop-shadow-sm`，`drop-shadow-sm` 是 v3 沒寫尺寸的 `drop-shadow`。沒寫尺寸的 `drop-shadow` 仍可用，外觀等於 `drop-shadow-sm`。
+{% endnote %}
 
 {% note info %}
 **color & step**
@@ -5022,7 +5064,7 @@ Tailwind CSS 提供多種邊框寬度的工具類別，讓你可以快速設定�
 ```
 
 ## transform
-啟用 CSS 變形功能，Tailwind 預設自動啟用，通常不需手動設定。 
+`rotate-*`、`scale-*`、`translate-*` 分別寫進 CSS 的 `rotate`、`scale`、`translate`，不再合成單一 `transform`。要清掉縮放用 `scale-none`，清掉旋轉用 `rotate-none`，清掉位移用 `translate-none`；`transform-none` 不會一併清掉這三個屬性。轉場若要含縮放，寫 `transition-[opacity,scale]`，不要只寫 `transform`。3D 用 `rotate-x-*`、`rotate-y-*`、`rotate-z-*`、`scale-z-*`、`translate-z-*`，父層加 `transform-3d`（`transform-style: preserve-3d`）與 `perspective-*`。 
 
 | 功能名稱                        | 常用類別範例                                                                                                           | 說明                               |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
@@ -5748,4 +5790,271 @@ SVG（Scalable Vector Graphics，可縮放向量圖形）是一種用於網頁�
 | -------------------------- | ---------------------------- | ------------------------------ |
 | `forced-color-adjust-auto` | `forced-color-adjust: auto;` | 允許瀏覽器自動調整顏色（預設） |
 | `forced-color-adjust-none` | `forced-color-adjust: none;` | 禁止瀏覽器自動調整顏色         |
+
+# 容器查詢
+容器查詢依父層寬度換樣式，斷點跟視窗無關。文件：[container queries](https://tailwindcss.com/docs/responsive-design#container-queries)、[MDN](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。練習檔：`studiesAdvanced/02-tailwind/pages/23-container-query.html`。
+
+## @container
+在要當查詢對象的父層加上 `@container`。子層用 `@sm:`、`@md:` 這類變體。具名容器寫 `@container/main`，子層寫 `@lg/main:`，巢狀時才不會打到外層。
+
+| 類別名稱 | CSS | 說明 |
+| -------- | --- | ---- |
+| `@container` | `container-type: inline-size;` | 建立未具名容器 |
+| `@container/<name>` | `container-type: inline-size;`<br>`container-name: <name>;` | 具名容器 |
+| `@3xs` … `@7xl` | `@container (width >= 16rem)` … `80rem` | 與 `--container-*` 同一組寬度 |
+| `@max-3xs` … `@max-7xl` | `@container (width < …)` | 小於該寬度 |
+| `@min-[<value>]` | `@container (width >= <value>)` | 任意最小寬 |
+| `@max-[<value>]` | `@container (width < <value>)` | 任意最大寬 |
+| `@<size>/<name>` | 只匹配該具名容器 | 例如 `@md/card:flex` |
+
+寬度對照：`@3xs` 16rem、`@2xs` 18rem、`@xs` 20rem、`@sm` 24rem、`@md` 28rem、`@lg` 32rem、`@xl` 36rem、`@2xl` 42rem、`@3xl` 48rem、`@4xl` 56rem、`@5xl` 64rem、`@6xl` 72rem、`@7xl` 80rem。
+
+```html
+<div class="@container">
+  <div class="flex flex-col @md:flex-row @lg:gap-8">
+    <img class="aspect-video @md:aspect-square @md:w-40" src="/img/villas.jpg" alt="" />
+    <p>容器夠寬時改成橫排。</p>
+  </div>
+</div>
+
+<div class="@container/card">
+  <h2 class="text-base @lg/card:text-xl">具名容器</h2>
+</div>
+```
+
+`@container` 和版心用的 `container` 不是同一個東西。v4 沒有內建會自己置中的 `container` 工具，版心要自己用 `@utility` 定義，見下方主題指令。練習檔：`studiesAdvanced/02-tailwind/pages/21-container.html`。
+
+# 變體
+變體寫在工具類別前面，用冒號分開，由左到右套用（v3 是由右到左）。`hover:` 只在主指標裝置支援 hover 時生效（`@media (hover: hover)`）。完整表：[Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。練習檔：`studiesAdvanced/02-tailwind/pages/17-states.html`。
+
+## 常用變體
+| 變體 | 對應 | 說明 |
+| ---- | ---- | ---- |
+| `hover` `focus` `focus-visible` `focus-within` `active` | 偽類 | `hover` 含 `hover: hover` 媒體條件 |
+| `first` `last` `odd` `even` `only` `empty` | 結構 | `nth-[2n+1]`、`nth-last-[…]`、`nth-of-type-[…]` |
+| `disabled` `enabled` `checked` `indeterminate` `required` `optional` `valid` `invalid` `user-valid` `user-invalid` `read-only` `placeholder-shown` | 表單 | |
+| `before` `after` `placeholder` `file` `marker` `selection` `backdrop` `first-line` `first-letter` | 偽元素 | `file` 打到 `::file-selector-button` |
+| `sm` `md` `lg` `xl` `2xl` | `@media (width >= 40/48/64/80/96rem)` | 也有 `max-sm` … `max-2xl`、`min-[…]`、`max-[…]` |
+| `dark` | `@media (prefers-color-scheme: dark)` | 預設跟系統，不是 class |
+| `motion-safe` `motion-reduce` | `prefers-reduced-motion` | |
+| `contrast-more` `contrast-less` `forced-colors` `inverted-colors` | 使用者偏好 | |
+| `pointer-fine` `pointer-coarse` `pointer-none` | `pointer` | 另有 `any-pointer-*` |
+| `portrait` `landscape` `print` `noscript` | 方向、列印、無腳本 | |
+| `open` | `[open]`、`:popover-open`、`:open` | `details`、popover |
+| `aria-checked` 等 | `[aria-checked="true"]` | 內建 busy、checked、disabled、expanded、hidden、pressed、readonly、required、selected；其餘用 `aria-[sort=ascending]:` |
+| `data-[size=large]:` | `[data-size="large"]` | 只寫 `data-open:` 表示屬性存在 |
+| `ltr` `rtl` | `:dir()` 與 `[dir]` | |
+| `supports-[display:grid]:` | `@supports` | |
+| `*` | 直接子元素 `:is(& > *)` | 子元素上的同類別蓋不掉，因為產生順序在後 |
+| `**` | 所有後代 `:is(& *)` | 例如 `**:data-avatar:rounded-full` |
+
+堆疊順序：`*:first:pt-0`，不要寫成 v3 的 `first:*:pt-0`。
+
+## has-*、not-*、in-*
+`has-*` 用 `:has()` 看後代。`not-*` 把條件反過來。`in-*` 看任一祖先的狀態，不必在父層加 `group`。
+
+| 類別名稱 | CSS | 說明 |
+| -------- | --- | ---- |
+| `has-checked:` | `&:has(:checked)` | 後代被勾選 |
+| `has-[img]:` | `&:has(img)` | 後代有該元素；空格寫底線 `has-[>_img]:` |
+| `group-has-[a]:` | 具名或未具名 group 的 `:has()` | 依 group 的後代 |
+| `not-focus:` | `&:not(:focus)` | 可再疊 `hover:` |
+| `not-supports-[display:grid]:` | 不支援該功能 | |
+| `in-focus:` | `:focus &` 這類祖先組合 | 不必加 `group` |
+
+```html
+<label class="has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
+  <input type="radio" class="checked:border-indigo-500" />
+  信用卡
+</label>
+
+<button class="bg-sky-500 hover:bg-sky-600 not-focus:hover:bg-sky-700">只有沒聚焦時 hover 才換色</button>
+
+<div tabindex="0">
+  <p class="opacity-50 in-focus:opacity-100">父層聚焦時變清楚，不用 group</p>
+</div>
+```
+
+## 具名 group 與 peer
+父層狀態用 `group`，兄弟（必須是前面的兄弟）用 `peer`。巢狀時用 `group/item`、`group-hover/item:`，peer 同樣可 `peer/email`、`peer-invalid/email:`。
+
+```html
+<li class="group/item">
+  <a class="group/edit invisible group-hover/item:visible" href="tel:0912000000">
+    <span class="group-hover/edit:underline">撥號</span>
+  </a>
+</li>
+
+<label>
+  <input type="email" class="peer/email" />
+  <p class="invisible peer-invalid/email:visible">請填有效的 email</p>
+</label>
+```
+
+任意 group 選擇器：`group-[.is-published]:block`。`&` 標出 `.group` 的位置：`group-[:nth-of-type(3)_&]:block`。
+
+## inert 與 starting
+`inert:` 套到帶 `inert` 屬性的元素及其後代（`&:is([inert], [inert] *)`），用來把暫時不能操作的區塊變淡。
+
+`starting:` 對應 `@starting-style`，設定元素第一次進入畫面、或從 `display: none` 變成可見時的起點，再交給 `transition` 播到一般狀態。
+
+```html
+<fieldset inert class="inert:opacity-40">
+  <input type="checkbox" /> 這區暫時不能改
+</fieldset>
+
+<div popover id="notice" class="opacity-100 transition-opacity starting:open:opacity-0 open:opacity-100">
+  開啟時由透明過渡到不透明
+</div>
+```
+
+## 任意變體、important、前綴
+任意變體把選擇器寫在中括號。空格用底線。`!` 放在類別最後（v3 寫在前面仍可用，但已不建議）。
+
+| 寫法 | 說明 |
+| ---- | ---- |
+| `[&.is-dragging]:cursor-grabbing` | 自己帶有該 class |
+| `[&_p]:mt-4` | 後代 `p` |
+| `[@supports(display:grid)]:grid` | 任意 at-rule |
+| `flex!` `bg-red-500!` `hover:bg-red-600/50!` | important 在最後 |
+| `tw:flex` `tw:hover:bg-red-600` | `@import "tailwindcss" prefix(tw);` 之後的寫法，前綴在最前面 |
+
+# 任意值與任意屬性
+方括號塞進文件沒有的值或整條 CSS 宣告。底線代表空格。逗號不再被自動換成空格，所以 `grid-cols-[max-content_auto]` 不能寫成 `grid-cols-[max-content,auto]`。文件：[adding custom styles](https://tailwindcss.com/docs/adding-custom-styles)。
+
+| 寫法 | 產生 |
+| ---- | ---- |
+| `w-[32rem]` `top-[117px]` `bg-[#243c5a]` | 任意值 |
+| `grid-cols-[1fr_2fr]` `object-[center_bottom]` | 底線當空格 |
+| `bg-(--brand)` `w-(--sidebar)` | CSS 變數。v3 的 `bg-[--brand]` 改成括號 |
+| `w-(length:--my-width)` `border-(length:--line)` | 型別有歧義時標 `length`、`color`、`image` 等 |
+| `aspect-(--my-aspect-ratio)` | 括號簡寫，等同 `aspect-[var(--my-aspect-ratio)]` |
+| `[mask-type:luminance]` | 任意屬性，屬性與值用冒號 |
+
+```html
+<div class="w-[32rem] bg-[#243c5a] [mask-type:luminance]"></div>
+<div class="grid grid-cols-[max-content_auto] gap-(--card-gap)"></div>
+<img class="object-[center_bottom] aspect-(--poster)" src="/img/villas.jpg" alt="" />
+```
+
+透明度修飾符接在顏色後面：`bg-black/50`、`text-white/80`、`border-sky-500/30`、`ring-blue-500/50`、`shadow-lg/30`。`bg-opacity-*`、`text-opacity-*`、`border-opacity-*`、`divide-opacity-*`、`ring-opacity-*`、`placeholder-opacity-*` 都已移除。
+
+# 主題指令
+v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒有 `darkMode`、`theme()` 點號路徑、`corePlugins`。入口是 `@import "tailwindcss"`，不是 `@tailwind base/components/utilities`。文件：[theme variables](https://tailwindcss.com/docs/theme)。練習檔：`studiesAdvanced/02-tailwind/src/style.css`、`pages/08-theme.html`、`pages/10-dark-toggle.html`。
+
+## @import 與 @theme
+`@theme` 裡的 `--*` 會變成工具類別，也會輸出成 `:root` 上的變數。
+
+| 主題變數 | 類別 |
+| -------- | ---- |
+| `--color-*` | `bg-*` `text-*` `border-*` `fill-*` `stroke-*` `from-*` `shadow-*`（顏色） |
+| `--font-*` | `font-*` |
+| `--text-*` | `text-*`（字級；可加 `--text-tiny--line-height`） |
+| `--font-weight-*` | `font-*` |
+| `--tracking-*` | `tracking-*` |
+| `--leading-*` | `leading-*` |
+| `--breakpoint-*` | `sm:` 這類媒體變體，例如 `--breakpoint-3xl: 120rem` |
+| `--container-*` | `max-w-*` `columns-*` `basis-*` 與 `@sm:` 容器斷點 |
+| `--spacing` | `p-*` `m-*` `w-*` `gap-*` 的一級 |
+| `--radius-*` `--shadow-*` `--blur-*` `--ease-*` `--animate-*` | 對應同名工具 |
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-brand-500: oklch(0.6 0.12 190);
+  --breakpoint-3xl: 120rem;
+  --spacing: 0.25rem;
+}
+```
+
+```html
+<button class="bg-brand-500 3xl:px-8">品牌色</button>
+```
+
+預設 `dark:` 跟系統。要改成祖先有 `.dark` 才生效，覆寫變體，不要在 JS 設定檔寫 `darkMode: "class"`：
+
+```css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+```html
+<html class="dark">
+  <body class="bg-white text-black dark:bg-gray-950 dark:text-white"></body>
+</html>
+```
+
+仍要讀舊的 JS 設定時，在 CSS 寫 `@config "../../tailwind.config.js";`。`corePlugins`、`safelist`、`separator` 不能從那份檔案來。要強制產生某個類別用 `@source inline("underline");`。
+
+## @utility
+自訂工具用 `@utility`，才能跟 `hover:`、`lg:` 一起用。v3 寫在 `@layer utilities` 的 class，v4 不會自動變成變體可用的工具。
+
+版心沒有內建的置中 `container`。要自己定義：
+
+```css
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@utility tab-4 {
+  tab-size: 4;
+}
+```
+
+```html
+<div class="container">
+  <p class="tab-4">版心與自訂工具</p>
+</div>
+```
+
+## @variant 與 @custom-variant
+`@custom-variant` 註冊新變體。`@variant` 在一般 CSS 裡套用已經存在的變體。
+
+```css
+@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
+@custom-variant hocus (&:hover, &:focus);
+
+.card {
+  background: white;
+  @variant dark {
+    background: black;
+  }
+  @variant hocus {
+    outline: 2px solid canvastext;
+  }
+}
+```
+
+```html
+<html data-theme="midnight">
+  <button class="theme-midnight:bg-black hocus:underline">按鈕</button>
+</html>
+```
+
+## theme()
+顏色與長度優先用變數：`var(--color-red-500)`，不要寫 `theme(colors.red.500)`。`@media` 裡還不能用一般自訂屬性時，`theme()` 的參數改成 CSS 變數名稱：
+
+```css
+.note {
+  background-color: var(--color-amber-100);
+}
+
+@media (width >= theme(--breakpoint-xl)) {
+  .note {
+    background-color: var(--color-amber-200);
+  }
+}
+```
+
+另一份 CSS（例如元件的 `<style>`）要用 `@apply` 時，先 `@reference` 主樣式，主題變數才找得到：
+
+```css
+@reference "../style.css";
+
+h1 {
+  @apply text-2xl font-bold text-brand-500;
+}
+```
 
