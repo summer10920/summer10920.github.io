@@ -234,7 +234,7 @@ Utility 的詞彙是全站共用的。`px-5` 在按鈕上是左右 1.25rem，在
 Vite 是這個專案的開發伺服器，也是最後打包用的工具。你寫的 `index.html` 仍是瀏覽器的入口；`src/main.js` 用 `import` 把 CSS 拉進來。開發時 Vite 依原生 ES module 按需要送檔，存檔後替換有改過的模組。正式產出才把檔案收成 `dist/`。說明見 [為什麼用 Vite](https://vite.dev/guide/why.html)。
 
 {% mermaid graph TD %}
-src["index.html 與 pages/*.html"] --> dev["pnpm dev：開發伺服器"]
+src["頁面與原始碼"] --> dev["pnpm dev：開發伺服器"]
 src --> build["pnpm build：產出 dist/"]
 dev --> browser["瀏覽器看 Local 網址"]
 build --> preview["pnpm preview：看打包結果"]
@@ -242,7 +242,7 @@ build --> preview["pnpm preview：看打包結果"]
 
 ### 為什麼要開發伺服器
 
-直接用檔案協定打開 HTML 時，瀏覽器會擋住一部分模組請求，CSS 的 `import` 也不會被 Vite 處理。開發伺服器給你一個 `http://localhost` 開頭的網址，路徑 `/src/main.js`、`/pages/01-compare.html` 都從專案根目錄算。你改 class、存檔，Vite 通知瀏覽器更新，通常不用自己按重新整理。
+直接用檔案協定打開 HTML 時，瀏覽器會擋住一部分模組請求，CSS 的 `import` 也不會被 Vite 處理。開發伺服器給你一個 `http://localhost` 開頭的網址，路徑從專案根目錄算，例如 `/src/main.js`。你改 class、存檔，Vite 通知瀏覽器更新，通常不用自己按重新整理。
 
 `pnpm dev` 對應 `package.json` 裡的 `"dev": "vite"`。關掉那個終端機或按 <kbd>Ctrl</kbd>+<kbd>C</kbd>，網址就會連不上。埠被占用時，Vite 會改印另一個埠，以終端機那一行 Local 為準。
 
@@ -301,7 +301,7 @@ Tailwind CSS v4 的引擎在你存檔時工作：讀原始碼裡的 class、對�
 
 ## 用 pnpm 建立專案
 
-套件管理只用 pnpm。Node.js 用 24，`package.json` 的 `engines.node` 寫著 `>=24`。Vite 負責開發伺服器，也負責把目錄頁和每一節 HTML 收成打包入口。
+套件管理只用 pnpm。Node.js 用 24，`package.json` 的 `engines.node` 寫著 `>=24`。Vite 負責開發伺服器，也負責打包。
 
 ### Node.js 24 與 pnpm
 
@@ -319,57 +319,12 @@ pnpm dev
 ```bash
 pnpm create vite@latest 02-tailwind --template vanilla
 cd 02-tailwind
-pnpm add -D tailwindcss @tailwindcss/vite vite-plugin-html-inject
+pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
 ### 入口與設定
 
-`@tailwindcss/vite` 讓 Vite 在處理 CSS 時跑 Tailwind。`vite-plugin-html-inject` 把選單嵌進 HTML。`build.rollupOptions.input` 的入口是目錄頁，加上 `pages/` 裡每一份副檔名是 `.html` 的檔。新加一頁、檔名仍放在這個資料夾，打包就會把它算進去。
-
-```js 02-tailwind/vite.config.js
-import { readdirSync } from "node:fs";
-import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
-import injectHTML from "vite-plugin-html-inject";
-
-const pages = readdirSync("pages")
-  .filter((name) => name.endsWith(".html"))
-  .sort()
-  .map((name) => `pages/${name}`);
-
-export default defineConfig({
-  plugins: [injectHTML({ replace: { undefined: "false" } }), tailwindcss()],
-  build: {
-    rollupOptions: {
-      input: ["index.html", ...pages],
-    },
-  },
-});
-```
-
-`replace.undefined` 那一行留在設定檔。選單裡沒被這一頁指定的 `{=$…}` 會變成文字 `false`。頁面本身不用為了選單寫 JavaScript。
-
-### 共用選單
-
-class 要先編成 CSS，所以每一節是 Vite 的一個 HTML 入口。目錄的網址是 `/`，各節是 `/pages/…`。選單的 markup 只寫一份。開發與打包時，插件讀每一頁 body 開頭的 `<load>`，把同一份嵌進去。選單上的 class 會跟各頁一起被掃描。
-
-選單是貼在視窗上方的頂欄：`sticky top-0`。同一批連結寫兩次。寬螢幕那份是 `nav`，class 是 `hidden md:flex`，夠寬就橫排換行。窄螢幕那份放進 `<details>` 與 `<summary>`，外層是 `md:hidden`，按「選單」才打開。這樣關掉的 `details` 不會把桌面連結藏起來。目前這一頁的連結帶 `aria-current="page"`，外觀用 `aria-[current=page]:`。深色用 `dark:`。內層有 `container`，左右留白是 `px-4` 與 `sm:px-6`。`container` 的最大寬度留到版心那一節，用 `@utility` 自己定義。
-
-目錄頁的路徑從專案根目錄算：
-
-```html
-<load src="./partials/nav.html" home="page" />
-```
-
-各節多一層，屬性號碼對到這一頁：
-
-```html
-<load src="../partials/nav.html" p01="page" />
-```
-
-`p01` 對上選單裡的 `{=$p01}`，值固定寫 `page`。這一行保持自閉合，插件才認得。下面各節的 HTML 從該節的內容寫起，不重複貼 `<load>`；頁面上仍要留著那一行，頂欄才會出現。導覽那一節自己的 `header`（checkbox 與 `peer`）跟這份全站選單是兩份。
-
-沒有這行 import，HTML 上的 utility 不會進到頁面。
+`@tailwindcss/vite` 讓 Vite 在處理 CSS 時跑 Tailwind。沒有這行 import，HTML 上的 utility 不會進到頁面。
 
 ```js 02-tailwind/src/main.js
 import "./style.css";
