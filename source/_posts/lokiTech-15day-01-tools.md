@@ -400,18 +400,18 @@ VS Code（Visual Studio Code）是 Microsoft 的免費編輯器，課堂用它�
 | clone | 將遠端儲存庫複製到本機 |
 | fork | 在 GitHub 上將儲存庫複製到**你的帳號**；之後 clone、push 都對這個 fork，不是老師原庫 |
 | branch | 分支；教材在 `new-tech` |
-| pull | 自遠端擷取並合併更新（老師會把新教材推進 `teacher/`） |
+| pull | 自遠端擷取並合併更新 |
 | commit | 建立一次修訂紀錄 |
 
 ## 開始 VS Code
-軟體與帳號都好了，這一節用 VS Code 打開教材 repo：fork／clone、裝建議套件（含 **Git Graph**），用分支圖對照 `clone` 與 `pull`，再改開當下專案寫檔。Git 的根永遠是整個 `studiesAdvanced`。
+軟體與帳號都好了，這一節用 VS Code 打開練習 repo：fork／clone、裝建議套件（含 **Git Graph**），用分支圖對照 `clone` 與 `pull`。之後寫檔、看歷史、開終端機，都停在整個 `studiesAdvanced` 根目錄。
 
 ### 取得教材 repo
-講義在這個部落格；要寫、要交的檔在 GitHub 倉庫 [summer10920/studiesAdvanced](https://github.com/summer10920/studiesAdvanced)。你沒有老師原庫的寫入權限，所以先 **Fork** 成自己帳號上的複本，再 clone **那一份**。之後 `push` 才推得上去。
+練習寫在 GitHub 倉庫 [summer10920/studiesAdvanced](https://github.com/summer10920/studiesAdvanced)。這是 15 天系列的練習專案：講義在這個部落格，要交的檔在那個倉庫。你沒有原倉庫的寫入權限，所以先 **Fork** 到自己的帳號，再 clone **那一份**，分支用 `new-tech`。
 
 {% note warning %}
 **注意事項**
-不要直接 clone `summer10920/studiesAdvanced` 再 `git push`，會被拒絕。網址必須是 `https://github.com/你的帳號/studiesAdvanced.git`。fork 裡不要改 `teacher/`，練習只動 `student/`。
+不要直接 clone `summer10920/studiesAdvanced` 再 `git push`，會被拒絕。網址必須是 `https://github.com/你的帳號/studiesAdvanced.git`。
 {% endnote %}
 
 登入 GitHub 後：
@@ -431,64 +431,56 @@ git pull
 先 `git fetch origin` 再 `git checkout new-tech`。若 fork 沒帶齊 branch，到 GitHub 的 fork 設定勾同步，或 clone 時加上 `--branch new-tech`。
 {% endnote %}
 
-靜態練習用 **Live Server** 開 `index.html`。VS Code 選 **檔案 → 開啟資料夾**，可以開整個 `studiesAdvanced`，也可以只開 `01-html-css-js`。在檔案總管對該頁右鍵 **Open with Live Server**（狀態列 **Go Live**）。HTML 開 `01-html-css-js/02-html/index.html`（左邊選單、右邊 iframe，各節在 `pages/`）。CSS 開 `01-html-css-js/03-css/index.html`（選單加 iframe，各節在 `pages/`，該頁樣式是同名 `.css`，外層選單在 `css/site.css`）。預覽請用 Chrome。
+之後整學期都用 VS Code 的 **檔案 → 開啟資料夾**，打開 `studiesAdvanced` 這一層（倉庫根目錄）。不要只開裡面的子資料夾。根目錄的設定、程式碼片段與 Prettier 會自動套上。
 
-同一個 fork、同一條班級 branch。外層 `studiesAdvanced` 是 Git 根目錄；老師給的和你寫的用資料夾分開：
-
-| 資料夾 | 誰在改 | 你怎麼用 |
-| --- | --- | --- |
-| `teacher/` | 老師上課後 `push`（教材、當日進度、範本） | **只看、可複製，不要改、不要 commit** |
-| `student/` | 你 | 練習都放這裡 |
-
-`student/` 底下四個專案各自獨立，寫程式時一次只開其中一個：
-
-| 資料夾 | 階段 | 怎麼跑起來 |
-| --- | --- | --- |
-| `student/practice/` | HTML、CSS、JavaScript 快速練習（還沒有 Node） | **Live Server** 開 `.html` |
-| `student/tailwind/` | Tailwind | **Node**（Vite 開發伺服器） |
-| `student/react/` | React | **Node** |
-| `student/project/` | 專題 | **Node** |
-
-老師更新後：GitHub 你的 fork 按 **Sync fork**，本機在 **`studiesAdvanced` 根目錄**再 `git pull`。練習寫壞了：從 `teacher/` 複製進你正在做的那個 `student/` 專案再改。
+上游有更新時：GitHub 你的 fork 按 **Sync fork**，本機在 **`studiesAdvanced` 根目錄**再 `git pull`。
 
 {% note success %}
 **跟著做**
-1. Fork 老師倉庫到自己帳號。
+1. Fork 原倉庫到自己帳號。
 2. Clone **你的** fork（核對網址裡是你的帳號）。
 3. Clone 時加上 `--branch new-tech`，進資料夾後 `git pull`。
-4. 確認有 `teacher/`、`student/`，以及 `practice`、`tailwind`、`react`、`project` 四個專案資料夾。
-5. HTML 用 Live Server 開 `01-html-css-js/02-html/index.html`，再點左邊選單。CSS 用 Live Server 開 `01-html-css-js/03-css/index.html`，再點選單。
+4. 用 VS Code 開啟 `studiesAdvanced` 根目錄。
 {% endnote %}
 
 
 ### 建議的 VS Code 套件
-**檔案 → 開啟資料夾**，選整個 `studiesAdvanced`（倉庫根目錄）。VS Code 會讀根目錄的 **`.vscode/extensions.json`**（和 `teacher/`、`student/` 同一層），跳出「建議安裝」。**全部安裝**——這份清單已含後面 15 天會用到的編輯器套件，今天裝完就好，後面不必再裝。不要另外搜來路不明的套件。
+**檔案 → 開啟資料夾**，選整個 `studiesAdvanced`（倉庫根目錄）。VS Code 會讀根目錄的 **`.vscode/extensions.json`**，跳出「建議安裝」。必裝的今天裝完；建議的可以同一天裝。不要另外搜來路不明的套件。
 
-倉庫裡的 `.vscode/extensions.json` 只是**工作區的建議清單**，用來在你打開這個資料夾時跳出安裝。套件一旦安裝，就進**使用者環境**（這台電腦上的 VS Code），換開 `practice/`、別的作業都還在，因此**不必**在四個練習專案底下各放一份。
+倉庫裡的 `.vscode/extensions.json` 只是**工作區的建議清單**，用來在你打開這個資料夾時跳出安裝。套件一旦安裝，就進**使用者環境**（這台電腦上的 VS Code），因此不必在子資料夾底下各放一份。
 
 根目錄的 `extensions.json` 只有開根目錄時才會被讀到。有的套件（例如 ESLint、Tailwind IntelliSense）要等後面的專案才會開始作用，今天沒反應是正常的。
 
+**必裝**
+
+這六個負責預覽、存檔排版、class 與元件補完、分支圖，以及把界面改成繁體中文。建議視窗出現時先裝這六個。
+
 | 套件名稱 | 作者 | 用途 | 線上說明 |
 | --- | --- | --- | --- |
-| Prettier | Prettier | 依規則格式化程式碼，可在存檔時自動排版 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) · [Open VSX](https://open-vsx.org/extension/esbenp/prettier-vscode) |
-| ESLint | Microsoft | 依專案的 ESLint 規則，在編輯器標出程式問題 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) · [Open VSX](https://open-vsx.org/extension/dbaeumer/vscode-eslint) |
 | Live Server | Ritwick Dey | 在本機啟動靜態伺服器，於瀏覽器即時預覽網頁 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) · [Open VSX](https://open-vsx.org/extension/ritwickdey/liveserver) |
+| Prettier | Prettier | 依規則格式化程式碼，可在存檔時自動排版 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) · [Open VSX](https://open-vsx.org/extension/esbenp/prettier-vscode) |
 | Tailwind CSS IntelliSense | Tailwind Labs | Tailwind class 自動完成、語法提示與色票 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) · [Open VSX](https://open-vsx.org/extension/bradlc/vscode-tailwindcss) |
-| Path Intellisense | Christian Kohler | 輸入檔案或資料夾路徑時自動補全 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense) · [Open VSX](https://open-vsx.org/extension/christian-kohler/path-intellisense) |
-| Auto Import | Steoates | 使用尚未匯入的符號時，自動補上 `import` | [Marketplace](https://marketplace.visualstudio.com/items?itemName=steoates.autoimport) · [Open VSX](https://open-vsx.org/extension/steoates/autoimport) |
-| Image Preview | Kiss Tamás | 在編輯器行號旁顯示圖片預覽 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-gutter-preview) · [Open VSX](https://open-vsx.org/extension/kisstkondoros/vscode-gutter-preview) |
-| Chinese Lorem | Kevin Yang | 插入繁體中文占位假文 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=KevinYang.ctlorem) · Open VSX 無此套件 |
-| HTMLHint | HTMLHint | 依規則檢查 HTML 標記是否有問題 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=htmlhint.vscode-htmlhint) · [Open VSX](https://open-vsx.org/extension/htmlhint/vscode-htmlhint) |
-| Highlight Matching Tag | Vincas Stonys | 高亮目前游標所在的成對標籤 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=vincaslt.highlight-matching-tag) · [Open VSX](https://open-vsx.org/extension/vincaslt/highlight-matching-tag) |
+| ES7+ React/Redux/React-Native snippets | dsznajder | React 元件與常用語法的程式碼片段 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets) · [Open VSX](https://open-vsx.org/extension/dsznajder/es7-react-js-snippets) |
 | Git Graph | mhutchie | 以圖形檢視 Git 提交歷史與分支 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph) · [Open VSX](https://open-vsx.org/extension/mhutchie/git-graph) |
 | Chinese (Traditional) Language Pack | Microsoft | 將編輯器界面譯為繁體中文 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=MS-CEINTL.vscode-language-pack-zh-hant) · [Open VSX](https://open-vsx.org/extension/MS-CEINTL/vscode-language-pack-zh-hant) |
 
-裝法：建議視窗把列出的套件**一次全部裝完**。裝完若提示 Reload，就重載視窗。線上說明裡 **Marketplace** 是 VS Code 官方市集，**[Open VSX](https://open-vsx.org/)** 是開源登錄（部分編輯器由此安裝）。
+**建議**
+
+這四個用來標程式問題、補路徑、在行號旁看圖，以及在編輯器裡得到程式建議。GitHub Copilot 用免費方案即可。
+
+| 套件名稱 | 作者 | 用途 | 線上說明 |
+| --- | --- | --- | --- |
+| ESLint | Microsoft | 依專案的 ESLint 規則，在編輯器標出程式問題 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) · [Open VSX](https://open-vsx.org/extension/dbaeumer/vscode-eslint) |
+| Path Intellisense | Christian Kohler | 輸入檔案或資料夾路徑時自動補全 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense) · [Open VSX](https://open-vsx.org/extension/christian-kohler/path-intellisense) |
+| Image Preview | Kiss Tamás | 在編輯器行號旁顯示圖片預覽 | [Marketplace](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-gutter-preview) · [Open VSX](https://open-vsx.org/extension/kisstkondoros/vscode-gutter-preview) |
+| GitHub Copilot | GitHub | 依上下文建議程式（課堂用免費方案） | [Marketplace](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) · Open VSX 無此套件 |
+
+裝法：建議視窗把列出的套件裝上。裝完若提示 Reload，就重載視窗。線上說明裡 **Marketplace** 是 VS Code 官方市集，**[Open VSX](https://open-vsx.org/)** 是開源登錄（部分編輯器由此安裝）。
 
 {% note success %}
 **跟著做**
 1. 用 VS Code 開啟整個 `studiesAdvanced`。
-2. 建議視窗出現時，把列出的套件**全部安裝**；需要的話重載視窗。
+2. 建議視窗出現時，先裝必裝的六個；建議的四個可以同一天裝。需要的話重載視窗。
 3. 擴充功能頁核對上表都已 Enabled。
 {% endnote %}
 
@@ -498,7 +490,7 @@ git pull
 - **使用者（User）**：寫在你這台電腦的 VS Code 裡，換開哪個資料夾都還在。主題、字體、縮放常放這裡。
 - **工作區（Workspace）**：寫在目前開啟的資料夾裡的 `.vscode/settings.json`，只對這個資料夾有效，可以跟著 Git 給全班同一套。同一項設定兩邊都有時，**工作區優先**。
 
-教材已提供工作區的 `settings.json`（倉庫根目錄，以及之後你會開啟的各個練習專案）。用 VS Code 打開那個資料夾就會套用，不必再抄到使用者層。若要改成自己的習慣，再查使用者設定即可。
+你開的是倉庫根目錄，所以根目錄的 `.vscode/settings.json` 與 `.prettierrc` 會自動套用：存檔時用 Prettier 排版，縮排與換行全班同一套。不必再抄到使用者層。若要改成自己的習慣，再查使用者設定即可。
 
 ### Git Graph
 **Git Graph** 把提交畫成點、把分支畫成線。你剛才 `clone` 下來的歷史會出現在圖上。課堂用這張圖講 branch 與同步；指令與圖是同一件事，對錯時以指令為準。
@@ -516,8 +508,8 @@ git config --global --list
 之後每次練習告一段落，在 **`studiesAdvanced` 根目錄**：
 
 ```bash
-git add student/
 git status
+git add 你這次改過的檔案
 git commit -m "簡短說明這次改了什麼"
 git push
 ```
@@ -537,7 +529,7 @@ git push
 沒設 `user.name`／`user.email` 時，第一次 `commit` 會失敗或出現「Please tell me who you are」。設一次（`--global`）這台電腦之後都還在。
 
 **小技巧**
-Git Graph 要開著含 `.git` 的倉庫根（`studiesAdvanced`）才看得到完整歷史。只開 `student/practice/` 時圖會不完整或開不起來。
+Git Graph 要開著含 `.git` 的倉庫根（`studiesAdvanced`）才看得到完整歷史。只開子資料夾時圖會不完整或開不起來。
 {% endnote %}
 
 {% note success %}
@@ -547,15 +539,14 @@ Git Graph 要開著含 `.git` 的倉庫根（`studiesAdvanced`）才看得到完
 3. 之後的節奏：自己的練習 `commit` → `push`；老師有更新則 GitHub **Sync fork** → 本機 `git pull`。
 {% endnote %}
 
-### 開哪個資料夾
-套件裝完後，寫練習改開**當下那個專案**，不要再開整個倉庫，也不要把整個 `student/` 當一個專案開，更不要只開單一檔。`git pull`、`git status` 仍在 **`studiesAdvanced` 根目錄**執行；終端機若已進到專案裡，先 `cd` 回到倉庫根。
+### 開啟倉庫根目錄
+寫練習、看 Git、開終端機，都停在同一個視窗：VS Code 開啟的是 `studiesAdvanced` 根目錄。子資料夾是倉庫裡的專案，不要另外開成新視窗。`git pull` 與 `git status` 也在這個根目錄執行。
 
-| 階段 | 開啟這個資料夾 | 怎麼預覽 |
-| --- | --- | --- |
-| HTML／CSS／JS | `student/practice/` | Live Server |
-| Tailwind | `student/tailwind/` | 該專案的 Node 開發伺服器 |
-| React | `student/react/` | 同上 |
-| 專題 | `student/project/` | 同上 |
+{% note info %}
+**小技巧：Live Server 與 pnpm dev**
+靜態頁用 Live Server：在檔案總管對目標的 `index.html` 按右鍵，選 **Open with Live Server**。
+要跑開發伺服器時，在終端機先進入該專案資料夾（例如 `cd 02-tailwind`），再執行 `pnpm dev`。回到倉庫根目錄用 `cd ..`。
+{% endnote %}
 
 ### 認識畫面
 先認得區塊即可，不必背界面名稱。內建 Git 面板可看改了哪些檔；和終端機指令是同一件事，對錯時講義以指令為準。
@@ -583,8 +574,6 @@ VS Code 內建 **Emmet**：在 HTML（或支援的檔）打縮寫再 <kbd>Tab</k
 | `p>lorem` | 一段包在 `<p>` 裡的英文假文 |
 | `ul>li*3>lorem5` | 三個列表項，各有短假文 |
 
-中文假文用已安裝的 **Chinese Lorem**：打 `ctlorem` 再 <kbd>Tab</kbd>。
-
 ### 占位圖
 練習要假圖時，不必裝假圖套件。倉庫根目錄的 `.vscode/placeholder.code-snippets` 是一組**自訂程式碼片段**（snippet）：在 HTML 打 `placehold` 或 `picsum`，再按 <kbd>Tab</kbd>，會自動長出一張占位圖。展開後再按 <kbd>Tab</kbd> 可改寬、高。
 
@@ -595,15 +584,7 @@ VS Code 內建 **Emmet**：在 HTML（或支援的檔）打縮寫再 <kbd>Tab</k
 
 也可以自己把網址寫進 `src`，例如 `https://placehold.co/600x400`。
 
-這份檔若只留在工作區，只對「目前開啟的那個資料夾」有效，改開 `student/practice/` 或後面的 React 專案就沒了。跟設定相反：片段請複製到**使用者**層，這台 VS Code 換資料夾都還在，不必每個專案再放一份。
-
-{% note success %}
-**跟著做**
-1. 開著倉庫根目錄，在檔案總管點開 `.vscode/placeholder.code-snippets`，<kbd>Ctrl</kbd>+<kbd>A</kbd> 全選再複製。
-2. <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>，搜 `Configure User Snippets`（設定使用者程式碼片段）。
-3. 選 **New Global Snippets file...**（新增全域程式碼片段檔案）。不要選 `html.json` 這類單一語言檔。
-4. 檔名輸入 `placeholder` 後 Enter。把新檔裡的範本**全部刪掉**，貼上剛才複製的內容，存檔。
-{% endnote %}
+片段檔在倉庫根目錄的 `.vscode/placeholder.code-snippets`。你開的是這個根目錄，打 `placehold` 或 `picsum` 再按 <kbd>Tab</kbd> 就會展開，不必再複製到使用者片段。展開後再按 <kbd>Tab</kbd>，可改寬、高與 `alt`。
 
 ### 快捷鍵
 Windows／Linux 用 <kbd>Ctrl</kbd>，Mac 用 <kbd>Command</kbd>（表寫 Ctrl）。瀏覽器對照畫面用 Chrome 的 <kbd>F12</kbd>，不是 VS Code 快捷鍵。
@@ -627,30 +608,17 @@ Windows／Linux 用 <kbd>Ctrl</kbd>，Mac 用 <kbd>Command</kbd>（表寫 Ctrl�
 1. 在已開啟的 `studiesAdvanced` 新增或打開一個 `.html`。
 2. 打 `lorem10`、<kbd>Tab</kbd>；打 `ul>li*3`、<kbd>Tab</kbd>。
 3. 打 `placehold`、<kbd>Tab</kbd>，應出現 placehold.co 的 `<img>`。
-4. 打 `ctlorem`、<kbd>Tab</kbd>，應出現中文假文。
+4. 打 `picsum`、<kbd>Tab</kbd>，應出現 picsum.photos 的 `<img>`。
 {% endnote %}
 
 # 本篇重點回顧
 這一章先對齊用詞與環境，還沒寫頁面。「補充觀念」可跳過，不列入下面清單。
 
-**觀念**
-
-- 能說明瀏覽器依網址拿回 HTML，再載入子資源、排版繪製成畫面
-- 能區分網頁與網站、前端與後端
-- 能說明 HTML、CSS、JavaScript 各管什麼，以及 Tailwind、React 分別落在哪一層
-
-**環境**
-
-- VS Code、Google Chrome、Git、GitHub 帳號可用；預覽與 <kbd>F12</kbd> 用 Chrome
-- 已 **Fork** [summer10920/studiesAdvanced](https://github.com/summer10920/studiesAdvanced) 並 clone **自己的** fork，目前分支為 `new-tech`；HTML／CSS 用 Live Server 開 `01-html-css-js/` 裡該節的 `index.html`
-- 已設定 `user.name`、`user.email`；練習用 `commit`／`push`，老師更新則 GitHub **Sync fork** 再 `git pull`
-- 認得出 `teacher/`（只看、可複製）與 `student/`；四個專案是 `practice`、`tailwind`、`react`、`project`，寫程式一次只開其中一個
-- 已開過倉庫根目錄，建議視窗把建議的 VS Code 套件**全部裝完**（含後面 Tailwind／React 會用到的）
-- 知道設定有使用者與工作區兩層；課堂用的是教材提供的工作區 `settings.json`
-- 會用 Emmet（如 `lorem10`、`ul>li*3`）、`placehold`／`picsum`（片段已複製到使用者），以及表上的 VS Code 快捷鍵
-- 知道 HTML／CSS／JS 練習寫在 `student/practice/`
-
-{% note info %}
-**進度對不上時**
-老師會把當日進度推進 `teacher/`。到 GitHub 你的 fork 按 **Sync fork**，本機在 `studiesAdvanced` 根目錄再 `git pull`。自己的練習無法繼續時，從 `teacher/` 複製進正在做的那個 `student/` 專案再改，不要把檔寫回 `teacher/`。
-{% endnote %}
+- 瀏覽器依網址拿回 HTML，再載入樣式、程式與圖片，排版後畫成你看到的畫面。
+- 網頁是單一份文件，網站是同一服務連續送出多頁；前端在瀏覽器，後端在伺服器。
+- HTML 管結構、CSS 管外觀、JavaScript 管行為；Tailwind 與 React 分別建立在 CSS 與 JavaScript 上。
+- 已安裝 VS Code、Google Chrome 與 Git，並有 GitHub 帳號；預覽與 <kbd>F12</kbd> 用 Chrome。
+- 已 fork 並 clone [studiesAdvanced](https://github.com/summer10920/studiesAdvanced) 的 `new-tech`，用 VS Code 開啟倉庫根目錄，設定、片段與 Prettier 會自動套用。
+- 必裝套件已裝好；靜態頁對目標 `index.html` 開 Live Server，要開發伺服器時先 `cd` 進專案資料夾再 `pnpm dev`。
+- 已設定 `user.name` 與 `user.email`；練習用 `commit`／`push`，上游更新則在 GitHub **Sync fork** 再 `git pull`。
+- 會用 Emmet（如 `lorem10`、`ul>li*3`）與根目錄的 `placehold`／`picsum` 片段，以及表上的 VS Code 快捷鍵。

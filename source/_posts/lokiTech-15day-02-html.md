@@ -10,49 +10,22 @@ date: 2026-08-30 10:01:00
 
 ![](assets/images/banner/html5.png)
 
-練習站在 `studiesAdvanced/01-html-css-js/02-html/`：左邊是選單，右邊用 iframe 顯示選到的那一頁。用 VS Code 開 `01-html-css-js/`，Live Server 開 `02-html/index.html`。
-
-選單的 `a` 寫 `target="content"`，iframe 寫 `name="content"`。兩邊字串相同，點連結只把新頁畫進右欄，網址仍停在 `index.html`。第一頁預設載入「檔案一覽」（`pages/01-shell.html`）。
+HTML 用元素描述結構與內容：它不算數、不處理點擊邏輯，也不決定顏色與間距。這篇一次把文件骨架、區塊盒和常用標籤對完。各節附上可獨立開啟的完整檔，再用開發者工具對樹上的標籤名。
 
 <!-- more -->
 
 # 取得素材
-上課開的是開頭那個練習站：VS Code 開 `studiesAdvanced/01-html-css-js/`，Live Server 開 `02-html/index.html`，點左邊選單換右欄。標籤說明對齊 {% post_link lokiTech-html-baseclass-1 %}；你用 F12 對照的，是 `pages/` 裡各節的起點。下面分頁是講義上的完整對照檔。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/index.html`，以及 `pages/01-shell.html`、`pages/02-box.html`、`pages/03-layout.html`、`pages/04-headings.html`、`pages/05-links.html`、`pages/06-text.html`、`pages/07-lists.html`、`pages/08-media.html`、`pages/09-table.html`、`pages/10-form.html`、`pages/11-a11y.html`。用 Live Server 開 `02-html/index.html`，第一頁是選單「檔案一覽」。
-
-每一份練習頁都是完整文件（有 `DOCTYPE`、`html`、`head`、`body`）。不要改 `pages/` 的檔名，左邊選單的路徑才對得起來。
+下面每一份都是可獨立開啟的完整 HTML，含 `DOCTYPE`、`html`、`head`、`body`。先看整頁長什麼樣子，後面各節再把同一份檔拆開講。標籤的詳細說明對齊 {% post_link lokiTech-html-baseclass-1 %}。
 
 {% note info %}
 **為什麼叫 `index.html`**
-網頁伺服器收到「只要這個資料夾、網址沒寫檔名」的請求時，會自動找並回傳 `index.html`。這是常見預設（有的伺服器也可改成別的檔名），所以資料夾入口才習慣叫這個名字：開 `html/` 往往等同開 `html/index.html`。`pages/` 裡的檔不是入口，才用 `1_box.html` 這種明確檔名。
+網頁伺服器收到「只要這個資料夾、網址沒寫檔名」的請求時，會自動找並回傳 `index.html`。這是常見預設（有的伺服器也可改成別的檔名），所以資料夾入口才習慣叫這個名字：開某個資料夾往往等同開裡面的 `index.html`。`pages/` 裡的檔不是入口，檔名直接寫主題，例如 `02-box.html`。
 {% endnote %}
-
-## 檔案一覽
-後面每一節會寫要點左邊哪一項。`index.html` 只負責左邊選單；觀念在 `pages/` 各檔。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/01-shell.html`，用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
-
-| 存檔位置 | 左邊選單 | 這一頁在講什麼 |
-| --- | --- | --- |
-| `index.html` | （外層，網址不變） | 左 `nav`、右 `main`＋iframe（`name="demo"`） |
-| `pages/1_box.html` | 盒子 | block／inline、`div`、`span` |
-| `pages/2_layout.html` | 版面 | `header` `nav` `main` `section` `article` `aside` `footer` |
-| `pages/3_headings.html` | 標題與段落 | `h1`～`h6`、`p` `br` `hr` |
-| `pages/4_links.html` | 連結 | `a`、`href`、路徑、錨點、`mailto`／`tel` |
-| `pages/5_text.html` | 文字 | 語意／外觀、編輯、實體、`details` |
-| `pages/6_lists.html` | 清單 | `ul` `ol` `dl` |
-| `pages/7_media.html` | 多媒體 | `img` `figure` `video` `audio` `iframe` |
-| `pages/8_table.html` | 表格 | 資料表、`scope`、`caption`、合併儲存格 |
-| `pages/9_form.html` | 表單 | `#booking-form` 與常用控制項 |
-
-練習站選單寫的是 `pages/01-shell.html` 這種路徑；檔名改了，左邊點了右邊會空白。下面分頁的完整對照檔用 `pages/1_box.html` 這套檔名，用來對觀念，不是要你另存一份。
 
 {% tabs html素材,1 %}
 <!-- tab index.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
 
-```html index.html
+```html 02-html/index.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -75,15 +48,17 @@ date: 2026-08-30 10:01:00
             <p>洛奇旅行 · 練習頁</p>
             <nav>
               <ul>
-                <li><a href="pages/1_box.html" target="demo">盒子</a></li>
-                <li><a href="pages/2_layout.html" target="demo">版面</a></li>
-                <li><a href="pages/3_headings.html" target="demo">標題與段落</a></li>
-                <li><a href="pages/4_links.html" target="demo">連結</a></li>
-                <li><a href="pages/5_text.html" target="demo">文字</a></li>
-                <li><a href="pages/6_lists.html" target="demo">清單</a></li>
-                <li><a href="pages/7_media.html" target="demo">多媒體</a></li>
-                <li><a href="pages/8_table.html" target="demo">表格</a></li>
-                <li><a href="pages/9_form.html" target="demo">表單</a></li>
+                <li><a href="pages/01-shell.html" target="content">檔案一覽</a></li>
+                <li><a href="pages/02-box.html" target="content">盒子</a></li>
+                <li><a href="pages/03-layout.html" target="content">版面</a></li>
+                <li><a href="pages/04-headings.html" target="content">標題與段落</a></li>
+                <li><a href="pages/05-links.html" target="content">連結</a></li>
+                <li><a href="pages/06-text.html" target="content">文字</a></li>
+                <li><a href="pages/07-lists.html" target="content">清單</a></li>
+                <li><a href="pages/08-media.html" target="content">多媒體</a></li>
+                <li><a href="pages/09-table.html" target="content">表格</a></li>
+                <li><a href="pages/10-form.html" target="content">表單</a></li>
+                <li><a href="pages/11-a11y.html" target="content">無障礙（選讀）</a></li>
               </ul>
             </nav>
           </header>
@@ -91,8 +66,8 @@ date: 2026-08-30 10:01:00
         <td style="padding: 0">
           <main>
             <iframe
-              name="demo"
-              src="pages/1_box.html"
+              name="content"
+              src="pages/01-shell.html"
               title="示範內容"
               style="width: 100%; height: 100vh; border: 0"
             ></iframe>
@@ -104,10 +79,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/1_box.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
+<!-- tab pages/02-box.html -->
 
-```html pages/1_box.html
+```html 02-html/pages/02-box.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -148,10 +122,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/2_layout.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「版面」。
+<!-- tab pages/03-layout.html -->
 
-```html pages/2_layout.html
+```html 02-html/pages/03-layout.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -201,10 +174,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/3_headings.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
+<!-- tab pages/04-headings.html -->
 
-```html pages/3_headings.html
+```html 02-html/pages/04-headings.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -239,10 +211,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/4_links.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「連結」。
+<!-- tab pages/05-links.html -->
 
-```html pages/4_links.html
+```html 02-html/pages/05-links.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -257,8 +228,8 @@ date: 2026-08-30 10:01:00
     <section>
       <h2>同一站：相對路徑</h2>
       <p>同資料夾只要寫檔名。點了會在這個 iframe 裡換頁。</p>
-      <p><a href="3_headings.html">上一頁：標題與段落</a></p>
-      <p><a href="1_box.html">盒子練習頁</a></p>
+      <p><a href="04-headings.html">上一頁：標題與段落</a></p>
+      <p><a href="02-box.html">盒子練習頁</a></p>
     </section>
 
     <section>
@@ -326,10 +297,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/5_text.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「文字」。
+<!-- tab pages/06-text.html -->
 
-```html pages/5_text.html
+```html 02-html/pages/06-text.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -455,10 +425,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/6_lists.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「清單」。
+<!-- tab pages/07-lists.html -->
 
-```html pages/6_lists.html
+```html 02-html/pages/07-lists.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -501,10 +470,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/7_media.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
+<!-- tab pages/08-media.html -->
 
-```html pages/7_media.html
+```html 02-html/pages/08-media.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -542,10 +510,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/8_table.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「表格」。
+<!-- tab pages/09-table.html -->
 
-```html pages/8_table.html
+```html 02-html/pages/09-table.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -775,10 +742,9 @@ date: 2026-08-30 10:01:00
 </html>
 ```
 <!-- endtab -->
-<!-- tab pages/9_form.html -->
-用 Live Server 開 `02-html/index.html` 再點選單「表單」。
+<!-- tab pages/10-form.html -->
 
-```html pages/9_form.html
+```html 02-html/pages/10-form.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -906,33 +872,25 @@ date: 2026-08-30 10:01:00
 <!-- endtab -->
 {% endtabs %}
 
-{% note success %}
-**跟著做**
-1. 用 VS Code 開 `studiesAdvanced/01-html-css-js/`，Live Server 開 `02-html/index.html`。
-2. 點左邊每一項，確認右邊會換頁，網址列仍停在 `index.html`。
-{% endnote %}
-
 ## 為什麼拆成多份 HTML
-若把所有標籤塞進同一頁，上課難停在某一題，複習也不好對照。所以主題拆開。這份範例用 iframe 把多個網頁串在一起，點左邊就換右欄，形成可切換內容的假性網站。這是**課堂導覽**，不是市面產品上的主流現代架構。
+若把所有標籤塞進同一頁，上課難停在某一題，複習也不好對照。所以主題拆成多份 HTML。外層用 iframe 把這些網頁串在一起，點左邊連結就換右欄，看起來像一個網站。這是**課堂導覽**，不是市面產品上的主流現代架構。
 
-`index.html` 用最傳統的寫法：子頁連結加上 `target`，右邊 iframe 的 `name` 用同一個字串，點選單就只換右欄。你打開的練習站寫的是 `content`。下面分頁的完整對照檔寫的是 `demo`。重點是兩個屬性的值要相同，不是特定哪一個單字。早期整頁切割還用過 `frameset`／`frame`，已經淘汰；現在課堂只用 iframe。
+子頁連結加上 `target`，右邊 iframe 的 `name` 用同一個字串，點了就只換右欄。兩個屬性的值要相同。早期整頁切割還用過 `frameset`／`frame`，已經淘汰；現在只用 iframe。
 
-用 Live Server 開 `02-html/index.html` 再點選單「檔案一覽」。
-
-```html
+```html 02-html/index.html
 <!-- index.html（節錄）：target 與 name 必須一樣 -->
-<li><a href="pages/1_box.html" target="demo">盒子</a></li>
+<li><a href="pages/02-box.html" target="content">盒子</a></li>
 <iframe
-  name="demo"
-  src="pages/1_box.html"
+  name="content"
+  src="pages/02-box.html"
   title="示範內容"
   style="width: 100%; height: 100vh; border: 0"
 ></iframe>
 ```
 
-`index.html` 在 `html/`，所以 `href` 寫 `pages/1_box.html`。子頁都在 `pages/`，彼此互連只寫檔名。要看右欄的樹時，Chrome 按 <kbd>F12</kbd>，在 **Elements** 展開 iframe、點裡面的文件再看；不要只停在外層那張切左右欄的 `table`。
+`index.html` 在入口，連到子頁要寫 `pages/02-box.html`。子頁彼此互連只寫檔名。看右欄那份文件時，在 **Elements** 展開 iframe、點裡面的文件；外層那張 `table` 只負責把左右欄切開。
 
-`index.html` 的 `title` 是瀏覽器分頁名稱。點選單後網址仍是 `index.html`，分頁標題通常不變。右欄那份檔自己也有 `title` 與 `h1`，要進 iframe 才看得到。
+`index.html` 的 `title` 是瀏覽器分頁名稱。點選單後網址仍是 `index.html`，分頁標題通常不變。右欄那份檔自己也有 `title` 與 `h1`，要點進 iframe 裡的文件才看得到。
 
 {% note info %}
 **小技巧：Emmet**
@@ -948,18 +906,14 @@ date: 2026-08-30 10:01:00
 
 {% note warning %}
 **課堂用、上線不用**
-點左邊換右欄，只為了這堂課對照標籤、快速複習。專題與之後的正式頁，不要複製這套用 iframe 串多頁的做法。
+用 iframe 把多頁串成左右欄，只適合這堂課對照標籤。專題與正式頁不要複製這套做法。
 {% endnote %}
 
 # 認識區塊盒
-瀏覽器把每個元素畫成一顆**盒子（box）**。先看區塊盒與行內盒怎麼排，再看有名字的語意標籤。沒有這些盒子，後面 CSS 也沒有「區域」可以選。點左邊「盒子」與「版面」，對 `pages/1_box.html`、`pages/2_layout.html`。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/02-box.html`、`pages/03-layout.html`。用 Live Server 開 `02-html/index.html`，再點選單「盒子」或「版面」。
+瀏覽器把每個元素畫成一顆**盒子（box）**。先看區塊盒與行內盒怎麼排，再看有名字的語意標籤。沒有這些盒子，後面 CSS 也沒有「區域」可以選。
 
 ## 區塊與行內
-點左邊「盒子」（載入 `pages/1_box.html`）。盒子可以再裝盒子：外層決定這區佔畫面哪一塊，內層才放內容。這一頁的框線只為了讓你看出邊界，不是正式樣式。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/02-box.html`，用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
+盒子可以再裝盒子：外層決定這區佔畫面哪一塊，內層才放內容。這一頁的框線只為了讓你看出邊界，不是正式樣式。下面先看行內的 `span`，再看區塊的 `div`。
 
 HTML 元素依預設怎麼排，大致分成兩類：
 
@@ -981,10 +935,8 @@ HTML 元素依預設怎麼排，大致分成兩類：
 
 `div` 與 `span` 本身不說明這區是什麼，只負責包一層：要獨佔一行用 `div`，要跟文字排在同一行用 `span`。頁首、主文、章節請用 `header`、`main`、`section`，不要整頁堆 `div` 假裝結構。
 
-用 Live Server 開 `02-html/index.html` 再點選單「盒子」。
-
-```html
-<!-- pages/1_box.html：inline -->
+```html 02-html/pages/02-box.html
+<!-- pages/02-box.html：inline -->
 <h2>inline：span</h2>
 <p>
   這句前後還有字，中間的
@@ -999,8 +951,8 @@ HTML 元素依預設怎麼排，大致分成兩類：
 </p>
 ```
 
-```html
-<!-- pages/1_box.html：block -->
+```html 02-html/pages/02-box.html
+<!-- pages/02-box.html：block -->
 <h2>block：div</h2>
 <div style="border: 1px solid">
   <p>
@@ -1015,13 +967,11 @@ HTML 元素依預設怎麼排，大致分成兩類：
 
 {% note success %}
 **跟著做**
-在右欄 F12 點「甲」那個 `span`，畫面只亮幾個字；點外層 `div`，亮整塊。確認兩個 `span` 同一行、兩個 `div` 上下分開。
+用 <kbd>F12</kbd> 點「甲」那個 `span`，畫面只亮幾個字；點外層 `div`，亮整塊。確認兩個 `span` 同一行、兩個 `div` 上下分開。
 {% endnote %}
 
 ## 語意標籤
-點左邊「版面」（載入 `pages/2_layout.html`）。HTML5 引入語意標籤（semantic tag）：盒子還在，標籤名直接說明這區是什麼。好處是搜尋引擎較好懂、螢幕閱讀器較好讀、之後也比較好維護。這一頁的 `nav` 裡是普通文字清單，**不是在教連結**；可點的 `a` 在「連結」那一頁。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/03-layout.html`，用 Live Server 開 `02-html/index.html` 再點選單「版面」。
+HTML5 的語意標籤（semantic tag）仍是盒子，標籤名直接說明這區是什麼。好處是搜尋引擎較好懂、螢幕閱讀器較好讀、之後也比較好維護。這一頁的 `nav` 裡是普通文字清單，**不是在教連結**；可點的 `a` 在連結那一節。
 
 ![左側整頁都是灰色 div 盒子；右側同樣版面改用 header、nav、main、section、aside、footer 上色區分](assets/images/html-boxes-semantic.png)
 
@@ -1038,10 +988,8 @@ HTML 元素依預設怎麼排，大致分成兩類：
 
 `header`／`footer` 也可以出現在 `article` 裡面，表示「這篇文章自己的頁首／頁尾」，跟整份文件的頁首不是同一層。本頁先認得 `body` 底下那一層。
 
-用 Live Server 開 `02-html/index.html` 再點選單「版面」。
-
-```html
-<!-- pages/2_layout.html：頁首與導覽（示意清單，沒有 a） -->
+```html 02-html/pages/03-layout.html
+<!-- pages/03-layout.html：頁首與導覽（示意清單，沒有 a） -->
 <header>
   <p>頁首 header：這一頁的招牌與選單放這裡。</p>
   <nav>
@@ -1056,8 +1004,8 @@ HTML 元素依預設怎麼排，大致分成兩類：
 </header>
 ```
 
-```html
-<!-- pages/2_layout.html：主文、文章、頁尾（節錄） -->
+```html 02-html/pages/03-layout.html
+<!-- pages/03-layout.html：主文、文章、頁尾（節錄） -->
 <main>
   <h1>語意版面</h1>
   <section>
@@ -1096,13 +1044,11 @@ s2 --> a2["article"]
 
 {% note success %}
 **跟著做**
-F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。展開 `main` 應是 `section`；「文章區塊」裡是兩篇 `article`，不是一串無名 `div`。
+用 <kbd>F12</kbd> 點 `body`：應看到 `header`、`main`、`footer` 並列。展開 `main` 應是 `section`；「文章區塊」裡是兩篇 `article`，不是一串無名 `div`。
 {% endnote %}
 
 # 認識常用元素
-認完區塊盒之後，依類型點左邊選單。**元素（element）**由**標籤（tag）**組成：開始標籤與結束標籤把內文包起來。開始標籤上賦予**屬性（attribute）**（名="值"），元素才獲得具體功能，例如 `a` 的 `href` 才能跳轉、`img` 的 `src` 才有圖。頭尾標籤包覆的 **context** 就是這段**文字流**。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/04-headings.html`、`pages/05-links.html`、`pages/06-text.html`、`pages/07-lists.html`、`pages/08-media.html`、`pages/09-table.html`、`pages/10-form.html`。用 Live Server 開 `02-html/index.html`，再點選單「標題與段落」「連結」「文字」「清單」「多媒體」「表格」或「表單」。
+認完區塊盒之後，依類型看常用元素。**元素（element）**由**標籤（tag）**組成：開始標籤與結束標籤把內文包起來。開始標籤上的**屬性（attribute）**（名="值"）讓元素獲得功能，例如 `a` 的 `href` 才能跳轉、`img` 的 `src` 才有圖。頭尾標籤包覆的 **context** 就是這段**文字流**。
 
 ```html
 <p class="lead" id="intro">這段是文字流。</p>
@@ -1115,9 +1061,7 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 {% endblockquote %}
 
 ## 標題與段落
-點左邊「標題與段落」（載入 `pages/3_headings.html`）。標題排出層級，段落承載正文。可點的連結在下一頁。`h1` 出現在畫面裡；`title` 出現在分頁或書籤（要進 iframe 文件，才看得到這一頁自己的 `title`）。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/04-headings.html`，用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
+標題排出層級，段落承載正文。可點的連結在下一節。`h1` 出現在畫面裡；`title` 出現在分頁或書籤，不畫在頁面正文上。
 
 ### 標題標籤（h1～h6）
 從 `<h1>` 到 `<h6>` 共六層，排出這一頁的標題層級：
@@ -1129,10 +1073,8 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 - **h5**：更細的標題，較少使用
 - **h6**：最細的一層，很少當主結構
 
-用 Live Server 開 `02-html/index.html` 再點選單「標題與段落」。
-
-```html
-<!-- pages/3_headings.html -->
+```html 02-html/pages/04-headings.html
+<!-- pages/04-headings.html -->
 <h1>h1：這一頁的主標題</h1>
 <p>標題排出層級，段落承載正文。一頁通常一個 h1。</p>
 <section>
@@ -1147,13 +1089,13 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 
 標題帶有語意，不只改字級，也影響 SEO 與無障礙。瀏覽器會依層級自動調整字級、粗細和行距，之後可用 CSS 改外觀。不要為了讓字變小就從 `h1` 跳到 `h4`。
 
-`3_headings.html` 的第一個 `section` 把六層都排出來，方便對畫面；第二個 `section` 才進入段落。
+第一個 `section` 把六層都排出來，方便對畫面；第二個 `section` 才進入段落。
 
 ### 段落標籤（p）
 正文用 `p`。瀏覽器會在段與段之間留空隙，文字會依容器寬度自動換行。每個 `p` 都是獨立的區塊元素。
 
-```html
-<!-- pages/3_headings.html -->
+```html 02-html/pages/04-headings.html
+<!-- pages/04-headings.html -->
 <h2>h2：段落</h2>
 <p>正文用 p。瀏覽器會在段與段之間自動留空隙。</p>
 <p>
@@ -1169,8 +1111,8 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 - **hr**：水平線，用來在視覺上隔開主題，不是段落標籤
 - **marquee**：跑馬燈，已過時，不要用
 
-```html
-<!-- pages/3_headings.html -->
+```html 02-html/pages/04-headings.html
+<!-- pages/04-headings.html -->
 <p>
   這是第二段。同一段裡要硬換行才用 br：<br />
   換行後仍屬同一段。
@@ -1179,7 +1121,7 @@ F12 點 iframe 裡的 `body`：應看到 `header`、`main`、`footer` 並列。�
 <p>上面那條是 hr，用來隔開主題，不是段落標籤。</p>
 ```
 
-`3_headings.html` 第二段中間有 `br`（換行後仍屬同一段），下面那條線是 `hr`。
+第二段中間有 `br`（換行後仍屬同一段），下面那條線是 `hr`。
 
 {% note warning %}
 **不要用 marquee**
@@ -1192,24 +1134,20 @@ F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在
 {% endnote %}
 
 ## 連結
-點左邊「連結」（載入 `pages/4_links.html`）。可點的文字用 `a`，去哪裡寫在 `href`。沒有 `href` 就不是真正的連結。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/05-links.html`，用 Live Server 開 `02-html/index.html` 再點選單「連結」。
+可點的文字用 `a`，去哪裡寫在 `href`。沒有 `href` 就不是真正的連結。下面這一段把站內頁、錨點、外站、`mailto` 與 `tel` 放在同一頁。
 
 - **href**：要去的網址、檔案路徑或頁面錨點
-- **target**：開在哪裡（例如 `_blank` 開新分頁；`index.html` 左邊選單的 `target="demo"` 開在右欄 iframe）
+- **target**：開在哪裡。`_blank` 開新分頁；若要開進某個 iframe，值要跟那個 iframe 的 `name` 相同
 - **連結文字**：要能看出去哪，不要只寫「點這裡」
 - **外連新分頁**：加上 `rel="noreferrer"` 較安全
 
 這一頁後半段的京都／大阪文字只是把頁面撐高，讓錨點真的會捲動，不是新觀念。
 
-用 Live Server 開 `02-html/index.html` 再點選單「連結」。
-
-```html
-<!-- pages/4_links.html（節錄） -->
+```html 02-html/pages/05-links.html
+<!-- pages/05-links.html（節錄） -->
 <h1 id="top">連結 a</h1>
-<p><a href="3_headings.html">上一頁：標題與段落</a></p>
-<p><a href="1_box.html">盒子練習頁</a></p>
+<p><a href="04-headings.html">上一頁：標題與段落</a></p>
+<p><a href="02-box.html">盒子練習頁</a></p>
 <p><a href="#contact">跳到本頁的聯絡（會停在畫面上方）</a></p>
 <p><a href="#top">回到頁首</a></p>
 <p>
@@ -1223,7 +1161,7 @@ F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在
 </section>
 ```
 
-內容頁裡的同層連結如果沒寫 `target`，預設就是**目前這個 iframe**（仍是名叫 `demo` 的那一框）。`index.html` 左邊的選單有寫 `target="demo"`，所以從左邊點與從右欄點，外層都還是 `index.html`。
+同層連結如果沒寫 `target`，就在**目前這份文件**裡換頁。外層選單的 `a` 若寫了 `target`，而且值等於 iframe 的 `name`，點了只換框裡的文件，網址仍停在 `index.html`。
 
 ### 絕對路徑與相對路徑
 圖片和連結都要會寫路徑。資源在網路上時，給完整的 `https://…`（絕對路徑）。資源在自己專案裡時，從**目前這個 HTML 所在資料夾**去算（相對路徑）。
@@ -1236,39 +1174,27 @@ F12 檢查這一頁的 `h1`、兩個 `h2`、以及 `br`／`hr`。確認 `br` 在
 - `images/01.jpg`：從目前檔案位置往下找 `images` 裡的檔
 - `./images/01.jpg`：同上，`./` 表示目前這一層
 - `../`：回上一層，例如 `../index.html`
-- `/images/01.jpg`：從網站根目錄開始找。本機雙擊檔與 Live Server 行為可能不同，課堂少用
+- `/images/01.jpg`：從網站根目錄開始找。本機直接開檔與透過伺服器開檔，起點可能不同，課堂少用
 
-本課實際結構：
-
-```
-html/
-├── index.html          ← 外層在這裡，選單寫 pages/1_box.html
-└── pages/
-    ├── 3_headings.html
-    └── 4_links.html    ← 互連只寫 3_headings.html
-```
+從入口 `index.html` 連到子頁，路徑要帶資料夾。同一層的檔案互連只寫檔名。從 `pages/` 回到上一層的入口，寫 `../index.html`。
 
 ```html
-<!-- index.html：從外層往下一層 -->
-<a href="pages/4_links.html" target="demo">連結</a>
+<!-- 入口往下一層 -->
+<a href="pages/05-links.html" target="content">連結</a>
 
-<!-- pages/4_links.html：同一層 -->
-<a href="3_headings.html">上一頁：標題與段落</a>
+<!-- 同一層只寫檔名 -->
+<a href="04-headings.html">上一頁：標題與段落</a>
 ```
-
-教材沒有從 `pages/` 連回 `index.html` 的連結。若要自己寫，起點在 `pages/`，`index.html` 在上一層，會是 `../index.html`。
 
 {% note success %}
 **跟著做**
-1. 點「上一頁：標題與段落」，右欄換成 `3_headings.html`，再用左邊選單回到「連結」。
+1. 點「上一頁：標題與段落」，應換到標題那一頁。
 2. 點「跳到本頁的聯絡」，確認捲到 `#contact`，再點「回到頁首」。
 3. 點 MDN 連結，應開新分頁。
 {% endnote %}
 
 ## 文字效果與實體
-點左邊「文字」（載入 `pages/5_text.html`）。這一頁看「字本身」怎麼標。很多標籤不只改樣子，還帶有意義，有助於 SEO 與無障礙。原則：**先考慮語意，再考慮外觀。**
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/06-text.html`，用 Live Server 開 `02-html/index.html` 再點選單「文字」。
+這一頁看「字本身」怎麼標。很多標籤不只改樣子，還帶有意義，有助於 SEO 與無障礙。原則：**先考慮語意，再考慮外觀。**
 
 ### 語意化強調標籤
 這組除了視覺效果，更重要的是傳達意義。
@@ -1278,10 +1204,8 @@ html/
 - **em**：語氣強調，通常顯示為斜體
 - **mark**：畫重點，通常顯示為黃色背景
 
-用 Live Server 開 `02-html/index.html` 再點選單「文字」。
-
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p><code>strong</code> 是重要，不是單純變粗。例如：<strong>護照請放隨身包，不要托運。</strong></p>
 <p><code>em</code> 是語氣強調。例如：這趟是<em>自由行</em>，集合時間請自己抓準。</p>
 <p><code>mark</code> 是畫重點。例如：今日行程請認準集合點 <mark>京都車站中央口</mark>。</p>
@@ -1293,8 +1217,8 @@ html/
 - **ins**：插入的內容，通常顯示為底線
 - **del**：刪除的內容，通常顯示為刪除線
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p>京都三日遊原價 <del>2000</del> 元，早鳥現價 <ins>1600</ins> 元。</p>
 ```
 
@@ -1308,8 +1232,8 @@ html/
 - **u**：底線（純外觀；很像連結，容易誤導）
 - **s**：刪除線外觀（只是劃掉，沒有「這筆被改過」）
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p><code>b</code> 粗體：飯店叫 <b>洛奇旅舍</b>，只是讓名字醒目。</p>
 <p><code>i</code> 斜體：日文店名 <i>一蘭</i>，常拿來標外文或術語外觀。</p>
 <p><code>u</code> 底線：<u>請勿與連結搞混</u>，底線看起來很像可點的字。</p>
@@ -1322,8 +1246,8 @@ html/
 - **sub**：下標，適用於化學式
 - **sup**：上標，適用於數學式或樓層
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p><code>sub</code> 下標：化學式 H<sub>2</sub>O。</p>
 <p><code>sup</code> 上標：公式 E=mc<sup>2</sup>；樓層也可以寫 2<sup>F</sup> 集合。</p>
 <p><code>small</code> 附註小字：<small>以上價格未含機場接送。</small></p>
@@ -1340,28 +1264,28 @@ html/
 
 JavaScript 或純文字可以直接寫在 `code` 裡。若要顯示 **HTML 標籤本身**，必須用字元實體，否則瀏覽器會把 `<h1>` 解析成真的標題。
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p>按鍵用 <code>kbd</code>：開發者工具按 <kbd>F12</kbd>，儲存常是 <kbd>Ctrl</kbd>+<kbd>S</kbd>。</p>
 <p>變數名用 <code>var</code>：人數 <var>n</var>、單價 <var>price</var>。</p>
 <p>程式或終端機輸出用 <code>samp</code>：畫面出現 <samp>Hello</samp> 代表成功。</p>
 ```
 
-```html
-<!-- pages/5_text.html：要顯示標籤本身，小於號必須實體化 -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html：要顯示標籤本身，小於號必須實體化 -->
 <p>行內一小段用 <code>code</code>，例如標籤寫成 <code>&lt;div&gt;</code>。</p>
 <pre><code>&lt;p&gt;小於號要寫成實體 &amp;lt; 才會當文字顯示。&lt;/p&gt;</code></pre>
 ```
 
-`5_text.html` 的 `pre > code` 就是正確寫法。在講義裡若要顯示「`&lt;` 這六個字」，連 `&` 都要再寫成 `&amp;lt;`。
+`pre > code` 裡的小於號就是正確寫法。在講義裡若要顯示「`&lt;` 這六個字」，連 `&` 都要再寫成 `&amp;lt;`。
 
 ### 引用與引言
 - **q**：短引言，放在段落裡；瀏覽器通常會自動加引號。可用屬性 `cite` 指出處網址。
 - **blockquote**：長引言，通常是縮排區塊。
 - **cite**：作品或來源的**名稱**，通常顯示為斜體。
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <p>一句話放在段落裡用 <code>q</code>，瀏覽器通常會自動加引號：<q cite="https://example.com">行李不超過 7 公斤。</q></p>
 <blockquote>
   <p>自由活動時請在約定時間回到集合點，不要單獨脫隊。</p>
@@ -1370,15 +1294,15 @@ JavaScript 或純文字可以直接寫在 `code` 裡。若要顯示 **HTML 標�
 ```
 
 ### 縮寫、時間、聯絡、摺疊
-這些在 `5_text.html` 都有對應區塊：
+縮寫、時間、聯絡與摺疊各有一個對應寫法：
 
 - **abbr**：縮寫，`title` 寫全名，滑鼠停上看得到。例如 HTML、JR。
 - **time**：日期時間，畫面可以寫「2026 年 8 月 30 日」，機器讀的是 `datetime`。
 - **address**：聯絡資訊（旅行社、住址、信箱），不是拿來把任何地址變成斜體。
 - **details／summary**：點標題才展開，常見於 FAQ，不必先寫 JavaScript。
 
-```html
-<!-- pages/5_text.html -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html -->
 <abbr title="HyperText Markup Language">HTML</abbr>、
 <abbr title="日本鐵路">JR</abbr>
 出發日 <time datetime="2026-08-30">2026 年 8 月 30 日</time>，
@@ -1409,8 +1333,8 @@ HTML 用 `<`、`>` 識別標籤，用 `&` 識別實體，因此這些字不能�
 | ® | 註冊商標 | `&reg;` | `&#174;` | 商標 |
 | ™ | 商標 | `&trade;` | `&#8482;` | 商標 |
 
-```html
-<!-- pages/5_text.html：畫面上要出現這些字，原始碼寫實體 -->
+```html 02-html/pages/06-text.html
+<!-- pages/06-text.html：畫面上要出現這些字，原始碼寫實體 -->
 <p>小於：<code>&amp;lt;</code> → &lt;</p>
 <p>大於：<code>&amp;gt;</code> → &gt;</p>
 <p>和號：<code>&amp;amp;</code> → &amp;</p>
@@ -1434,19 +1358,15 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 {% endnote %}
 
 ## 清單
-點左邊「清單」（載入 `pages/6_lists.html`）。相關項目請用語意清單，不要用一堆 `p` 加符號假裝。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/07-lists.html`，用 Live Server 開 `02-html/index.html` 再點選單「清單」。
+相關項目請用語意清單，不要用一堆 `p` 加符號假裝。沒有先後用 `ul`，有步驟用 `ol`，術語對定義用 `dl`。
 
 ### 無序清單（ul）
 沒有先後順序的項目用 `ul`。瀏覽器會自動為每個項目加上符號（通常是圓點），之後可用 CSS 改。
 
-適用於導覽選單、功能列表。項目必須包在 `li` 裡。`index.html` 左邊與版面頁的選單也是 `ul`；那是「這一區是一串項目」，跟「要不要做成連結」是兩件事。
+適用於導覽選單、功能列表。項目必須包在 `li` 裡。選單用 `ul` 是在說「這一區是一串項目」，跟「要不要做成連結」是兩件事。
 
-用 Live Server 開 `02-html/index.html` 再點選單「清單」。
-
-```html
-<!-- pages/6_lists.html -->
+```html 02-html/pages/07-lists.html
+<!-- pages/07-lists.html -->
 <h2>無序 ul</h2>
 <ul>
   <li>導覽、功能點</li>
@@ -1459,13 +1379,13 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 </ul>
 ```
 
-`index.html` 左邊的選單也是 `ul`，項目裡才包 `a`。版面頁的 `nav` 則是沒有連結的 `li`。
+選單也常是 `ul`，項目裡才包 `a`。版面那一頁的 `nav` 則是沒有連結的 `li`。
 
 ### 有序清單（ol）
 有先後順序的項目用 `ol`，瀏覽器會自動加上序號。適用於步驟、排行榜。預設是阿拉伯數字。
 
-```html
-<!-- pages/6_lists.html -->
+```html 02-html/pages/07-lists.html
+<!-- pages/07-lists.html -->
 <ol>
   <li>貼上這份檔</li>
   <li>F12 對樹</li>
@@ -1478,8 +1398,8 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 ### 巢狀清單
 清單裡面可以再放清單，形成多層分類。可以是無序裡再放有序，也可以相反。內層必須包在某個 `li` 裡面，不能跟 `li` 當兄弟。瀏覽器會自動縮排、換符號。
 
-```html
-<!-- pages/6_lists.html：內層 ul 仍包在外層 li 裡 -->
+```html 02-html/pages/07-lists.html
+<!-- pages/07-lists.html：內層 ul 仍包在外層 li 裡 -->
 <li>
   可巢狀
   <ul>
@@ -1491,8 +1411,8 @@ F12 分別點 `strong`、`b`、`del`、`s`、`abbr`、`blockquote`、`details`�
 ### 描述清單（dl）
 術語對定義用 `dl`，適用於詞彙解釋、FAQ。`dt` 是名稱，`dd` 是說明。一個 `dt` 可以對多個 `dd`；`dd` 裡面也可以再放清單。
 
-```html
-<!-- pages/6_lists.html -->
+```html 02-html/pages/07-lists.html
+<!-- pages/07-lists.html -->
 <dl>
   <dt>alt</dt>
   <dd>圖沒出來或給輔助工具的文字</dd>
@@ -1515,9 +1435,7 @@ F12 點「可巢狀」那個 `li`：裡面還有一個 `ul`。再看 `dl`：`dt`
 {% endnote %}
 
 ## 多媒體
-點左邊「多媒體」（載入 `pages/7_media.html`）。圖片、影片、音訊和嵌入網頁幾乎都是置換元素：畫面上看到的不是標籤包住的文字。教室沒有外網時，圖或影片可能載不進來，F12 仍看得到 `src`。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/08-media.html`，用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
+圖片、影片、音訊和嵌入網頁幾乎都是置換元素：畫面上看到的不是標籤包住的文字。沒有網路時，圖或影片可能載不進來，<kbd>F12</kbd> 仍看得到 `src`。
 
 ### 圖片元素（img）
 最常用的多媒體標籤：
@@ -1527,10 +1445,8 @@ F12 點「可巢狀」那個 `li`：裡面還有一個 `ul`。再看 `dl`：`dt`
 - **title**：滑鼠停著時的提示（可選）
 - **width／height**：尺寸，可先佔位置、減少版面跳動
 
-用 Live Server 開 `02-html/index.html` 再點選單「多媒體」。
-
-```html
-<!-- pages/7_media.html -->
+```html 02-html/pages/08-media.html
+<!-- pages/08-media.html -->
 <figure>
   <img src="https://placehold.co/600x320" width="600" height="320" alt="色塊占位：行程封面示意" />
   <figcaption>figure + figcaption：圖與說明綁在一起</figcaption>
@@ -1553,8 +1469,8 @@ HTML5 提供原生播放，不必再靠 Flash。
 **音訊 audio**
 屬性與影片類似。標籤之間的文字是後備：瀏覽器不支援時才看得到。
 
-```html
-<!-- pages/7_media.html -->
+```html 02-html/pages/08-media.html
+<!-- pages/08-media.html -->
 <video controls width="320">
   <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm" />
   瀏覽器若不支援 video，你會看到這句。
@@ -1575,21 +1491,21 @@ HTML5 提供原生播放，不必再靠 Flash。
 
 - **src**：要嵌入的文件
 - **width／height**：嵌入區域尺寸
-- **name**：為 iframe 命名，可當作超連結的 `target`（`index.html` 右欄就是這樣用）
+- **name**：為 iframe 命名，可當作超連結的 `target`（外層左右欄就是這樣用）
 - **title**：說明這框是什麼
 - **sandbox／loading**：安全限制與延遲載入（進階）
 
-```html
-<!-- index.html：嵌入自己的練習頁 -->
+```html 02-html/index.html
 <iframe
-  name="demo"
-  src="pages/1_box.html"
+  name="content"
+  src="pages/02-box.html"
   title="示範內容"
   style="width: 100%; height: 100vh; border: 0"
 ></iframe>
-<a href="pages/8_table.html" target="demo">表格</a>
+<a href="pages/09-table.html" target="content">表格</a>
+```
 
-<!-- pages/7_media.html：嵌入外站（對方可能拒絕） -->
+```html 02-html/pages/08-media.html
 <iframe title="範例嵌入" src="https://example.com" width="320" height="160"></iframe>
 ```
 
@@ -1608,9 +1524,7 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 {% endnote %}
 
 ## 表格
-點左邊「表格」（載入 `pages/8_table.html`）。資料表用列（row）和欄（column）排出結構化資訊。`index.html` 那張 `table` 是左右欄排版，**不要跟這一頁的資料表混在一起**。`border="1"` 只為了讓格線看得見。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/09-table.html`，用 Live Server 開 `02-html/index.html` 再點選單「表格」。
+資料表用列（row）和欄（column）排出結構化資訊。外層那張 `table` 是左右欄排版，**不要跟這一頁的資料表混在一起**。`border="1"` 只為了讓格線看得見。
 
 ### 表格的基本結構
 - **table**：表格容器
@@ -1618,10 +1532,8 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 - **td**（table data）：資料儲存格，從左到右
 - **th**（table header）：標題儲存格，用來當欄名或列名
 
-用 Live Server 開 `02-html/index.html` 再點選單「表格」。
-
-```html
-<!-- pages/8_table.html：最簡的一列資料（大阪表 tbody） -->
+```html 02-html/pages/09-table.html
+<!-- pages/09-table.html：最簡的一列資料（大阪表 tbody） -->
 <table border="1" style="caption-side: top">
   <caption>表名在上：大阪一日遊</caption>
   <thead>
@@ -1654,14 +1566,14 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 
 被合併掉的位置**不要再寫**多餘的 `th`／`td`，列數才對得起來。能不加就不要加。
 
-```html
-<!-- pages/8_table.html：橫向合併 -->
+```html 02-html/pages/09-table.html
+<!-- pages/09-table.html：橫向合併 -->
 <tr>
   <th scope="row">花蓮山海</th>
   <td colspan="2">三日套裝（天數與售價合併成一格）</td>
 </tr>
 
-<!-- pages/8_table.html：直向合併 -->
+<!-- pages/09-table.html：直向合併 -->
 <tr>
   <th scope="row" rowspan="2">第一天</th>
   <td>上午</td>
@@ -1675,8 +1587,8 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 
 同一頁「團體報名表」把兩種合併一起用：`團名`、`導遊` 用 `rowspan="2"` 佔滿兩列表頭；`人數` 用 `colspan="2"` 橫跨兩欄，第二列再補「成人」「兒童」。
 
-```html
-<!-- pages/8_table.html 表頭兩列 -->
+```html 02-html/pages/09-table.html
+<!-- pages/09-table.html 表頭兩列 -->
 <tr>
   <th scope="col" rowspan="2">團名</th>
   <th scope="col" colspan="2">人數</th>
@@ -1694,8 +1606,8 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 - **tbody**：資料
 - **tfoot**：合計或備註。原始碼寫在 `tbody` 後面，畫面在表底，不要把它當成表名
 
-```html
-<!-- pages/8_table.html 價目表（含兒童列） -->
+```html 02-html/pages/09-table.html
+<!-- pages/09-table.html 價目表（含兒童列） -->
 <table border="1">
   <caption>京都三日遊價目</caption>
   <thead>
@@ -1745,7 +1657,7 @@ F12 檢查兩張 `img` 的 `src`／`alt`，再檢查 `video` 裡的 `source`、�
 - 加上 `caption`、`scope`
 - 外觀交給 CSS
 - 合併後列數要對得起來，不要為了好看把表拼歪
-- 不要用表格排整頁版面（`index.html` 那張左右欄是舊式示範，資料表看這一頁）
+- 不要用表格排整頁版面（左右欄那張 `table` 是舊式示範，資料表看這一頁）
 {% endnote %}
 
 {% note success %}
@@ -1754,9 +1666,7 @@ F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮
 {% endnote %}
 
 ## 表單
-點左邊「表單」（載入 `pages/9_form.html`），檢查 `#booking-form`。表單用來收集文字、選項、檔案，再送到某個位置處理。常見於報名、搜尋、問卷。控制項很多，先把「label 對得起來、radio 同名、三種 button」弄清楚，其餘 `type` 用短範例當速查。
-
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/10-form.html`，用 Live Server 開 `02-html/index.html` 再點選單「表單」。
+表單用來收集文字、選項、檔案，再送到某個位置處理。常見於報名、搜尋、問卷。這一頁的 `#booking-form` 先把「label 對得起來、radio 同名、三種 button」弄清楚，其餘 `type` 用短範例當速查。
 
 本頁 `action="#"`、`method="get"`：送出後仍停在這一頁，位址列出現 `name=王小明` 這類 query 是瀏覽器預設，不是錯誤。
 
@@ -1768,10 +1678,8 @@ F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮
 - **enctype**：有檔案要上傳時用 `post` 加上 `multipart/form-data`
 - **target**：結果要顯示在哪（也可以指向某個 iframe 的 `name`）
 
-用 Live Server 開 `02-html/index.html` 再點選單「表單」。
-
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <form id="booking-form" action="#" method="get">
 ```
 
@@ -1780,8 +1688,8 @@ F12 點第一張表的 `caption`、`thead`、`tbody`、`tfoot`。再點「花蓮
 ### 表單標籤與關聯（label）
 輸入框之前，先把 `label` 對好：點文字會聚焦到欄位，螢幕閱讀器也才知道這欄叫什麼。有兩種關聯方式：
 
-```html
-<!-- pages/9_form.html：for + id -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html：for + id -->
 <label for="guest-name">姓名</label>
 <input id="guest-name" name="name" type="text" required placeholder="王小明" maxlength="20" />
 
@@ -1814,8 +1722,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 
 **文字類**
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <input id="guest-name" name="name" type="text" required placeholder="王小明" maxlength="20" />
 <input id="guest-email" name="email" type="email" autocomplete="email" />
 <input id="guest-pw" name="demoPassword" type="password" />
@@ -1826,8 +1734,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 
 **數值與日期**
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <input id="guest-people" name="people" type="number" min="1" max="10" value="1" />
 <input id="guest-range" name="score" type="range" min="1" max="5" value="3" />
 <input id="guest-date" name="date" type="date" />
@@ -1841,8 +1749,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 
 **其他**
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <input id="guest-color" name="color" value="#2563eb" type="color" />
 <input id="guest-file" name="file" type="file" accept=".png,.jpg,.pdf" />
 <input type="hidden" name="source" value="class" />
@@ -1853,24 +1761,24 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 ### 選擇元素
 **單選 radio**：從多個裡選一個。同一組必須同一個 `name`，靠 `value` 區分；`checked` 設預設。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <label><input type="radio" name="traffic" value="bus" checked /> 巴士</label>
 <label><input type="radio" name="traffic" value="train" /> 火車</label>
 ```
 
 **複選 checkbox**：可多選。本頁加購共用 `name="extra"`，送出時可能出現多筆同名參數。有些後端慣例寫 `name="like[]"`，那不是 HTML 規定。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <label><input type="checkbox" name="extra" value="insurance" /> 保險</label>
 <label><input type="checkbox" name="extra" value="meal" /> 餐食</label>
 ```
 
 **下拉 select**：省空間，適合選項多。`option` 的 `value` 才是送出值，畫面文字可以不同。`optgroup` 的 `label` 是分組名。`selected` 預設項；`multiple`、`size` 可一次顯示多列（本頁未用）。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <select id="tour-select" name="tourId">
   <optgroup label="本島">
     <option value="1">台北城市漫遊</option>
@@ -1884,8 +1792,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 
 **建議清單 datalist**：仍是可打字的文字欄，只是有建議。`input` 的 `list` 對到 `datalist` 的 `id`。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <label for="city-input">城市（datalist）</label>
 <input id="city-input" name="city" type="text" list="city-list" />
 <datalist id="city-list">
@@ -1898,8 +1806,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 ### 文字區域（textarea）
 多行輸入。`rows`、`cols` 控制顯示列數與寬度；也可設 `maxlength`。預設文字寫在開始與結束標籤**之間**，不像 `input` 用 `value`。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <label for="guest-note">備註</label>
 <textarea id="guest-note" name="note" rows="3" cols="30" placeholder="飲食禁忌、接送地"></textarea>
 ```
@@ -1907,8 +1815,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 ### 按鈕元素
 按鈕作用於**它所在的那一份** `form`。寫在 form 外面不會送出。`form` 裡的 `button` 如果沒寫 `type`，預設就是 `submit`，所以一定要寫 `type`。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <button type="submit">送出</button>
 <button type="reset">重設</button>
 <button type="button">不送出（之後才接 JS）</button>
@@ -1919,8 +1827,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 ### 表單組織（fieldset、legend）
 把相關欄位圈成一組，`legend` 是這一組的標題。輔助工具會把 legend 跟欄位一起讀。本頁「報名資料」包住大部分欄位。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <fieldset>
   <legend>報名資料</legend>
 ```
@@ -1928,8 +1836,8 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 ### progress 與 meter
 `progress` 表示進度。`meter` 表示計量，可設 `low`、`high`、`optimum`。它們不是輸入欄，送出表單時通常不會當欄位送走。
 
-```html
-<!-- pages/9_form.html -->
+```html 02-html/pages/10-form.html
+<!-- pages/10-form.html -->
 <progress max="100" value="40">40%</progress>
 <meter min="0" max="100" low="30" high="70" optimum="80" value="60">60</meter>
 ```
@@ -1938,15 +1846,13 @@ HTML5 內建驗證（送出前瀏覽器會擋）：
 **跟著做**
 1. F12 確認 `label[for="guest-name"]` 對到 `#guest-name`，且有 `name="name"`。
 2. 兩個交通 radio 的 `name` 都是 `traffic`。
-3. 填姓名後按送出：iframe 位址應出現 `name=`。按「不送出」不應送出。
+3. 填姓名後按送出：網址應出現 `name=`。按「不送出」不應送出。
 {% endnote %}
 
 # 選讀：無障礙（a11y）
 **無障礙（accessibility）**縮寫成 **a11y**（a 與 y 中間 11 個字母）。目標是：不同身體條件、不同裝置、不同情境下，這頁仍然用得起來。不只是「身障專用」——只靠鍵盤、螢幕閱讀器、弱視、暫時受傷、或滑鼠壞掉，都算。
 
-練習檔：`studiesAdvanced/01-html-css-js/02-html/pages/11-a11y.html`，用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
-
-這章**選讀**，不新增 `pages/` 檔。下面的短範例可另存空檔自己開，或只看程式碼。正式規範之後再查 [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)（Web Content Accessibility Guidelines）。課堂上先把標籤用對，比先背 ARIA 有用。
+這章**選讀**。下面用不佳與較好的短例對照差在哪。正式規範之後再查 [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)（Web Content Accessibility Guidelines）。課堂上先把標籤用對，比先背 ARIA 有用。
 
 輔助工具讀的是**文件樹與語意**，不是你眼睛看到的排版。全是 `div` 的頁面，閱讀器只能唸成一串無名盒子；`header`／`main`／`h1`／`label` 才給得出「這是頁首、這是主文、這欄叫姓名」。
 
@@ -1960,7 +1866,6 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y標題,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <html>
@@ -1974,7 +1879,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ```
 <!-- endtab -->
 <!-- tab 較好 -->
-```html
+```html 02-html/pages/11-a11y.html
 <html lang="zh-Hant">
   <body>
     <header>
@@ -1996,7 +1901,6 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y圖片,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <img src="kyoto.jpg" />
@@ -2004,7 +1908,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ```
 <!-- endtab -->
 <!-- tab 較好 -->
-```html
+```html 02-html/pages/11-a11y.html
 <img src="kyoto.jpg" width="600" height="320" alt="清水寺本堂與參道人潮" />
 <img src="icon-star.png" alt="" />
 ```
@@ -2016,7 +1920,6 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 
 {% tabs a11y表單,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <p>姓名</p>
@@ -2024,7 +1927,7 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ```
 <!-- endtab -->
 <!-- tab 較好 -->
-```html
+```html 02-html/pages/11-a11y.html
 <label for="guest-name">姓名</label>
 <input id="guest-name" name="name" type="text" placeholder="王小明" />
 
@@ -2036,14 +1939,13 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 <!-- endtab -->
 {% endtabs %}
 
-練習檔 `#booking-form` 已用 `for`／`id`。F12 點「姓名」，應連到同一顆 `input`。
+報名表的姓名欄用 `for` 對上 `id`。點「姓名」，焦點應進同一顆 `input`。
 
 ## 連結去別處，按鈕在本頁做事
 `a` 要有 `href`，文字要能看出目的地，不要只寫「點這裡」。在本頁送出、開關、計算，用 `button`。用 `div` 加點擊外觀，鍵盤的 <kbd>Tab</kbd> 預設走不進去，閱讀器也不會當成控制項。
 
 {% tabs a11y按鈕,1 %}
 <!-- tab 不佳 -->
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
 
 ```html
 <div onclick="submit()">送出</div>
@@ -2052,21 +1954,19 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ```
 <!-- endtab -->
 <!-- tab 較好 -->
-```html
+```html 02-html/pages/11-a11y.html
 <button type="submit">送出報名</button>
-<a href="4_links.html">行程詳情</a>
+<a href="05-links.html">行程詳情</a>
 ```
 <!-- endtab -->
 {% endtabs %}
 
-`onclick` 今天不必寫；重點是：**可操作的東西要用本來就可聚焦的元素**。`button` 沒寫 `type`、又放在 `form` 裡，預設會送出，所以練習檔才三種 `type` 都寫明。
+`onclick` 今天不必寫；重點是：**可操作的東西要用本來就可聚焦的元素**。`button` 沒寫 `type`、又放在 `form` 裡，預設會送出，所以表單裡的按鈕要把 `type` 寫明。
 
 ## 資料表要有表頭
 輔助工具讀表格時，會把 `th` 跟資料格綁在一起。只有 `td`、沒有 `caption`／`scope`，就只是一堆格子。`index.html` 那張左右欄 `table` 是排版，不是資料表——正式站不要這樣用，對閱讀器也不友善。
 
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
-
-```html
+```html 02-html/pages/11-a11y.html
 <table>
   <caption>京都三日遊價目</caption>
   <thead>
@@ -2087,8 +1987,6 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ## 鍵盤走得過整頁
 許多人不用滑鼠。連結與按鈕可用 <kbd>Tab</kbd> 移動、<kbd>Enter</kbd>（按鈕也常用 <kbd>Space</kbd>）啟動。若你把焦點外框用 CSS 拿掉，鍵盤使用者會在頁上「消失」。對比不夠（淺灰字配白底）弱視也讀不到——這是 CSS，明天之後再調，但不要一開始就做成看不見的字。
 
-用 Live Server 開 `02-html/index.html` 再點選單「無障礙（選讀）」。
-
 ```html
 <!-- 對比差：看起來「很淡很時尚」，其實讀不到 -->
 <p style="color: #ccc; background: #fff">早鳥截止提醒</p>
@@ -2100,11 +1998,11 @@ Chrome <kbd>F12</kbd> → **Elements** 右側（或 <kbd>Esc</kbd> 打開 Drawer
 ## ARIA 是補充元素說明，不是必要動作
 **ARIA**（Accessible Rich Internet Applications）是一組屬性，用來幫「HTML 本身說不清楚」的複雜元件補語意，例如 `role="dialog"`。亂加 `aria-label`、或跟看得見的文字打架，閱讀器會更亂。能用原生 `button`、`nav`、`label` 就不要先上 ARIA。
 
-iframe 示範站把主文藏在另一份文件，輔助工具較難讀——這也是它不能當正式架構的原因之一。Chrome Lighthouse 有 Accessibility 分數，知道有這項檢查即可。
+把主文放進另一份 iframe 文件，輔助工具較難讀——這也是它不能當正式架構的原因之一。Chrome Lighthouse 有 Accessibility 分數，知道有這項檢查即可。
 
 {% note success %}
 **選讀時可對**
-1. F12 → Accessibility：點練習頁的 `h1`、姓名 `label`、一張 `img`，看 Name／Role。
+1. <kbd>F12</kbd> → Accessibility：點 `h1`、姓名 `label`、一張 `img`，看 Name／Role。
 2. 只按 <kbd>Tab</kbd> 走一遍表單：焦點應進得了欄位與三顆按鈕。
 3. 把某張圖的 `alt` 暫時刪掉，看 Accessibility 面板的名字變成什麼。改完再改回來。
 {% endnote %}
@@ -2115,8 +2013,13 @@ iframe 示範站把主文藏在另一份文件，輔助工具較難讀——這�
 {% endnote %}
 
 # 本篇重點回顧
-這份範例用 iframe 把多個 HTML 串成可切換的假性網站，外層是 `index.html`，主題在 `pages/`。點選單只換右欄，網址仍停在外層；`target` 與 iframe 的 `name` 要相同。正式網站不這樣切，SEO 與 RWD 都會吃虧。
+這一頁用過的觀念收在下面，複習時對標籤即可。
 
-瀏覽器把元素畫成盒子：區塊獨佔一行，行內跟文字排。`div`／`span` 只負責包一層；頁首、主文、頁尾用語意標籤。元素由標籤組成，屬性給功能，頭尾包覆的 context 是文字流。
-
-常用元素依類型對過：標題與段落、連結與路徑、文字與實體、清單、多媒體、表格、表單。選讀的無障礙（a11y）從語意、`lang`、`alt`、`label`、真正的 `a`／`button` 開始。
+- HTML 用元素描述結構：標籤包住文字流，屬性（例如 `href`、`src`）才給出功能。
+- 區塊元素獨佔一行，行內元素跟文字排在同一行；`div` 與 `span` 只負責包一層。
+- 頁首、導覽、主文、章節、文章、側欄、頁尾用 `header`、`nav`、`main`、`section`、`article`、`aside`、`footer`。
+- 標題用 `h1`～`h6` 排出層級，正文用 `p`；同一段硬換行才用 `br`，隔開主題才用 `hr`。
+- 連結靠 `a` 的 `href`：相對路徑、錨點、`mailto`／`tel` 都算；外連新分頁加上 `rel="noreferrer"`。
+- 先選有語意的文字標籤（`strong`、`em`）；要在畫面顯示 `<`、`>`、`&` 必須寫成字元實體。
+- 清單用 `ul`／`ol`／`dl`，資料用 `table`（含 `caption` 與 `th` 的 `scope`），收集輸入用 `form` 與對得上的 `label`。
+- 課堂用 iframe 串多頁只為了對照；正式網站一頁一份文件，搜尋與手機版面才站得住。

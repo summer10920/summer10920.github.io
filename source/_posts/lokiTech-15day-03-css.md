@@ -10,9 +10,7 @@ date: 2026-08-30 10:02:00
 
 ![CSS 層疊樣式表](assets/images/banner/css.png)
 
-CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：顏色、字級、背景、之後還有盒子與欄位。HTML 負責「這一頁有什麼」，CSS 負責「那些東西怎麼呈現」。每一小節先講這個屬性拿來做什麼，再給**一份完整 HTML**（樣式寫在 `<style>`）。把程式碼存成 `.html`，用 Chrome 或 Live Server 打開就能看到效果。
-
-練習站在 `studiesAdvanced/01-html-css-js/03-css/`：寬螢幕左邊是選單，窄螢幕改成上方選單，右邊用 iframe 顯示選到的那一頁。用 VS Code 開 `01-html-css-js/`，Live Server 開 `03-css/index.html`。外層選單的樣式在 `css/site.css`；每一節要改的 HTML 在 `pages/`，樣式在同名的 `.css`（例如 `pages/01-syntax.html` 配 `pages/01-syntax.css`）。第一頁預設載入「規則的零件」。點選單換右欄的寫法，HTML 練習站已經用過：連結的 `target` 與 iframe 的 `name` 都是 `content`。
+CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：顏色、字級、背景，以及盒子與欄位。HTML 負責「這一頁有什麼」，CSS 負責「那些東西怎麼呈現」。每一小節先講這個屬性拿來做什麼，再給一份完整 HTML，樣式寫在 `<style>`。
 
 <!-- more -->
 
@@ -27,18 +25,11 @@ CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：�
 | 選讀：邊界與進階動效 | 外距穿出與邏輯方向、float 繞排、立體翻面、容器查詢、可補間的自訂屬性 | 可整節跳過 |
 | 本篇重點回顧 | 這篇用過的觀念 | 選擇器到除錯面板 |
 
-{% note primary %}
-**素材準備**
-每一份示範都是完整文件。在 `student/practice/css/` 新建一個檔（檔名可自訂），貼上該節的程式碼，存檔後用 Live Server 開。改完要重新整理。Styles 裡被劃掉的宣告代表沒有用上。
-{% endnote %}
-
-## 規則怎麼套上元素
+# 規則怎麼套上元素
 
 樣式表是一組規則：先選到元素，再寫要改的屬性。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。這一節把規則的寫法、選擇器與繼承收在一起。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/01-syntax.html`、`pages/02-where.html`、`pages/03-selectors-basic.html`、`pages/04-selectors-combine.html`、`pages/05-selectors-pseudo.html`、`pages/06-specificity.html`、`pages/07-inherit.html`、`pages/08-keywords.html`。用 Live Server 開 `03-css/index.html`，再點選單換頁。
-
-### 觀念與引入
+## 觀念與引入
 
 瀏覽器先解析 HTML、建立 DOM，再把 CSS 規則套到對得上的元素，最後才排版與繪製。你改的是規則文字，不是在畫面上直接塗色。重新整理之後，瀏覽器會再跑一次這段流程。
 
@@ -48,11 +39,9 @@ sel --> decl["宣告：屬性與值"]
 decl --> used["套用後的外觀"]
 {% endmermaid %}
 
-#### 規則的零件
+### 規則的零件
 
 一條規則分成「選到誰」和「設什麼」。大括號裡可以有多個宣告，每個宣告以分號結尾。同一條規則裡同一個屬性寫兩次，**原始碼較後面的那次**留下。屬性名稱拼錯時，瀏覽器丟掉**那一個宣告**，同一條規則的其他宣告仍然有效。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/01-syntax.html`，用 Live Server 開 `03-css/index.html` 再點選單「規則的零件」。
 
 | 零件 | 例子 | 做什麼 |
 | --- | --- | --- |
@@ -63,8 +52,7 @@ decl --> used["套用後的外觀"]
 
 逗號是分組：`h1, h2` 代表兩條選擇器共用同一組宣告，權重不會因為逗號加總。註解寫 `/* 說明 */`，可以跨行。`<!-- -->` 是 HTML 註解，放進 CSS 不會被當成註解。
 
-
-```html syntax.html
+```html 03-css/pages/01-syntax.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -116,11 +104,9 @@ decl --> used["套用後的外觀"]
 <kbd>F12</kbd> → **Elements**，點一個節點。右側 **Styles** 由上到下是較優先的規則；被劃掉的是沒贏的宣告。**Computed** 是最後用上的值。
 {% endnote %}
 
-#### 三種寫法
+### 三種寫法
 
 CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的 `<style>`（頁內）、或寫成獨立的 `.css` 再用 `<link>` 掛上（外部）。課堂這些示範用頁內，是為了貼上一份檔就能開。專題與多頁網站用外部檔：顏色集中在一處，改一次，每一頁一起變，瀏覽器也可以快取那份 CSS。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/02-where.html`，用 Live Server 開 `03-css/index.html` 再點選單「三種寫法」。
 
 | 寫法 | 範本裡的位置 | 什麼時候用 |
 | --- | --- | --- |
@@ -132,8 +118,7 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 `@import url("tour.css");` 必須寫在 CSS 的**最前面**，用來再拉另一份樣式表。它會多一次請求，也比 `link` 更晚才開始下載。課堂用 `link`。建構工具合併檔案時，原始碼裡才會大量出現 `@import`，那是工具的事。
 
-
-```html where.html
+```html 03-css/pages/02-where.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -177,15 +162,13 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 行內樣式的權重高過樣式表裡的一般宣告，所以專題不要把版面塗在標籤上。`href` 寫錯時，Network 會看到那份 CSS 是 404，Styles 裡則完全沒有你的規則。
 {% endnote %}
 
-### 選擇器與權重
+## 選擇器與權重
 
 選擇器是規則的前半。打不中，後面的宣告就不會出現在那個節點的 Styles 裡。很多條都打中同一個屬性時，再用權重與原始碼順序決定留下哪一條。
 
-#### 元素、class 與 id
+### 元素、class 與 id
 
 先分清四種基本選擇器，再談組合。class 寫在 HTML 是 `class="tour"`，CSS 多一個點。id 寫在 HTML 是 `id="featured"`，CSS 多一個 `#`。一個元素可以同時有多個 class：`class="tour soldout"`。`.tour.soldout` 中間**沒有空格**，表示兩個 class 都在同一個元素上。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/03-selectors-basic.html`，用 Live Server 開 `03-css/index.html` 再點選單「元素、class 與 id」。
 
 | 選擇器 | 寫法 | 打到誰 | 權重欄 |
 | --- | --- | --- | --- |
@@ -196,8 +179,7 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 id 在一份文件裡只給一個元素。要用在很多張卡片上的樣式，寫 class。`#site-header` 這種全頁只有一個的區塊才用 id，而且是因為腳本或錨點需要那個名字，不是為了把權重拉高。
 
-
-```html selectors-basic.html
+```html 03-css/pages/03-selectors-basic.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -252,11 +234,9 @@ id 在一份文件裡只給一個元素。要用在很多張卡片上的樣式�
 Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、或 `link` 路徑錯。先對 HTML 的 `class`／`id` 與 CSS 的拼字，再談權重。
 {% endnote %}
 
-#### 組合關係
+### 組合關係
 
 組合是在基本選擇器之間加上關係。空格、`>`、`+`、`~` 都算進**同一條**選擇器，權重把各段加總。逗號則是拆成多條，不加總。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/04-selectors-combine.html`，用 Live Server 開 `03-css/index.html` 再點選單「組合關係」。
 
 | 組合 | 寫法 | 打到誰 |
 | --- | --- | --- |
@@ -268,8 +248,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 後代選擇器很容易打到後來才嵌進去的元素。能用 class 說清楚的，就少靠深層的空格。
 
-
-```html selectors-combine.html
+```html 03-css/pages/04-selectors-combine.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -325,13 +304,11 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 </html>
 ```
 
-#### 偽類與偽元素
+### 偽類與偽元素
 
 偽類描述狀態或在父層的位置，偽元素描述元素的一部分或生出來的裝飾。兩者都接在選擇器後面，冒號個數與權重欄不同。見 [MDN：偽類與偽元素](https://developer.mozilla.org/zh-TW/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/05-selectors-pseudo.html`，用 Live Server 開 `03-css/index.html` 再點選單「偽類與偽元素」。
-
-##### 狀態與結構偽類
+#### 狀態與結構偽類
 
 **偽類（pseudo-class）**寫單冒號，描述狀態或位置，權重算在 **class 欄**。**偽元素（pseudo-element）**寫雙冒號，描述元素的一部分或生出來的裝飾，權重算在 **元素欄**。
 
@@ -343,12 +320,11 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 - `:first-of-type`：是父層裡該標籤的第一個。
 - `:nth-child(odd)`、`:nth-child(2)`：第奇數個、第 2 個。括號裡也可以寫 `3n+1`。
 
-##### 偽元素與屬性選擇器
+#### 偽元素與屬性選擇器
 
 `::before` 與 `::after` 必須寫 `content`（可以是空字串 `""`）才看得到。價格數字仍要留在 HTML 裡，讀屏與複製才有內容。`::placeholder` 只影響提示字，不影響使用者打進去的字。屬性選擇器（例如 `input[type="email"]`）權重也算 class 欄。
 
-
-```html selectors-pseudo.html
+```html 03-css/pages/05-selectors-pseudo.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -453,11 +429,9 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 不要用 `::before` 填上句子裡唯一的資訊。裝飾拿掉之後，HTML 裡的文字仍要讀得懂。清單用 `:nth-child(odd)` 之前，先確認項目中間沒有插入別的標籤，否則奇偶會位移。
 {% endnote %}
 
-#### 四欄權重
+### 四欄權重
 
 權重（specificity）用來比較哪一條選擇器比較具體。先看有沒有 `!important`，再由左到右比四個欄位，欄與欄不進位；欄位相同才看原始碼順序。見 [MDN：權重](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Specificity)。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/06-specificity.html`，用 Live Server 開 `03-css/index.html` 再點選單「四欄權重」。
 
 同一個元素、同一個屬性，可能有很多宣告打中。作者樣式（你寫的 CSS）裡，比較順序是：
 
@@ -476,8 +450,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 
 樣式表裡的 `!important` 贏過**沒有** `!important` 的行內樣式。行內再加上 `!important` 會更難蓋。專題要改顏色時，調整選擇器或原始碼順序。
 
-
-```html specificity.html
+```html 03-css/pages/06-specificity.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -549,7 +522,7 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 它會讓下一個人只能再寫一個 `!important`。id 寫很多、選擇器拉很長，也是同一類問題。先把 class 取清楚。
 {% endnote %}
 
-### 繼承與層疊
+## 繼承與層疊
 
 **層疊（cascade）**決定很多宣告搶同一個屬性時誰留下：來源、`!important`、權重、原始碼順序。**繼承（inheritance）**是另一件事：這個元素**根本沒有**人寫這個屬性時，要不要沿用父層已經算出來的值。上一節比的是「都有寫」；這一節處理「沒寫」以及你明示要跟父層還是回到初始。見 [MDN：繼承](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Inheritance)。
 
@@ -563,16 +536,13 @@ miss --> init["不可繼承的用初始值"]
 
 使用者代理樣式表（user agent stylesheet）也參與層疊，優先順序低於你寫的作者樣式。連結預設是藍色底線、`h1` 預設比較大，都是它先套的。你的規則寫出來之後才改掉那些預設。
 
-#### 什麼會繼承
+### 什麼會繼承
 
 會繼承的多半跟字有關：`color`、`font-family`、`font-size`、`font-weight`、`line-height`、`text-align`、`letter-spacing`。不會繼承的多半跟盒子有關：`margin`、`padding`、`border`、`background`、`width`、`display`。子元素是透明底時，你看到的是父層背景透出來，不是子層繼承了 `background-color`。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/07-inherit.html`，用 Live Server 開 `03-css/index.html` 再點選單「什麼會繼承」。
-
 自己寫了同一個屬性，繼承就停在這一層。`line-height` 若寫成無單位數字，子層會用「自己的字級 × 那個數字」；若寫成 `24px`，子層字變大時行距仍是固定的 24 像素。
 
-
-```html inherit.html
+```html 03-css/pages/07-inherit.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -615,11 +585,9 @@ miss --> init["不可繼承的用初始值"]
 </html>
 ```
 
-#### 四個關鍵字
+### 四個關鍵字
 
 值也可以寫成關鍵字，強迫這一次要不要跟父層。`initial` 不是「回到我上一條規則」。`color` 的初始值是瀏覽器定義的字色，不是 `body` 上你寫的顏色。`revert` 回到上一層來源，通常是使用者代理樣式（標題會變回瀏覽器預設的大小與粗細）。想一次清掉很多屬性，可以寫 `all: unset;`，再把真正需要的屬性補回去。這是重置手段，不是每個元件的起手式。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/08-keywords.html`，用 Live Server 開 `03-css/index.html` 再點選單「四個關鍵字」。
 
 | 關鍵字 | 示範裡的結果 | 意思 |
 | --- | --- | --- |
@@ -628,8 +596,7 @@ miss --> init["不可繼承的用初始值"]
 | `unset` | 藍字、沒有框 | 可繼承的當成 `inherit`，其餘當成 `initial` |
 | `revert` | 標題回到瀏覽器預設 | 丟掉作者樣式，回到使用者代理那一層 |
 
-
-```html keywords.html
+```html 03-css/pages/08-keywords.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -685,21 +652,17 @@ miss --> init["不可繼承的用初始值"]
 </html>
 ```
 
-## 字、色與背景
+# 字、色與背景
 
 規則打中之後，值要寫成瀏覽器讀得懂的長度與顏色，再決定字怎麼排、底怎麼畫。字型相關屬性多半會繼承，背景預設不繼承。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/09-units.html`、`pages/10-colors.html`、`pages/11-type.html`、`pages/12-text.html`、`pages/13-background.html`、`pages/14-selectors-extra.html`、`pages/15-layer.html`。用 Live Server 開 `03-css/index.html`，再點選單換頁。
-
-### 單位與顏色
+## 單位與顏色
 
 長度與顏色是宣告裡最常出現的兩種值。這一節先把字級、行寬、色票定下來。寬度怎麼跟盒模型一起算，下一節再細算。
 
-#### 長度
+### 長度
 
 長度用來寫字級、行寬、間距。內文以 `rem` 為主，`px` 用來寫髮絲邊框與需要對齊像素的線。`em` 會疊乘：父層已經是 1.25 倍、子層又寫 `2em`，子層相對的是放大後的父層，不是根字級。元件裡的字級用 `rem`，比較不會因為多包一層就突然變大。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/09-units.html`，用 Live Server 開 `03-css/index.html` 再點選單「長度」。
 
 | 單位 | 相對誰 | 示範 |
 | --- | --- | --- |
@@ -712,8 +675,7 @@ miss --> init["不可繼承的用初始值"]
 
 `line-height` 建議寫**無單位**數字（例如 `1.6`），它會乘上該元素自己的 `font-size`。行內的 `span` 預設不理會 `width`，所以示範把色條設成 `display: block`，百分之五十才有寬度可畫。`display` 的其餘值在盒子那一節再展開。
 
-
-```html units.html
+```html 03-css/pages/09-units.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -801,11 +763,9 @@ miss --> init["不可繼承的用初始值"]
 不要用 `4vw` 當全站內文。視窗很窄時字會小到不能讀，很寬時又會過大。`vw` 適合偶爾的標題實驗；正文留在 `rem`。
 {% endnote %}
 
-#### 顏色寫法
+### 顏色寫法
 
 `color` 是前景（通常是字）。`background-color` 是底。`border-color` 是框。同一套寫法三種屬性都能用。對比要夠：深字配淺底，或淺字配深底。同一個色若再加一半透明，就可能不夠讀。透明度是「讓底下的像素參與混合」，不是另做一種灰色。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/10-colors.html`，用 Live Server 開 `03-css/index.html` 再點選單「顏色寫法」。
 
 | 寫法 | 例子 | 什麼時候用 |
 | --- | --- | --- |
@@ -821,8 +781,7 @@ miss --> init["不可繼承的用初始值"]
 
 舊寫法 `rgb(15, 118, 110)` 與 `rgba(15, 118, 110, 0.5)` 仍然有效。新頁用空格與斜線即可。`hsl(175 80% 26% / 70%)` 同樣可以加 alpha。
 
-
-```html colors.html
+```html 03-css/pages/10-colors.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -906,15 +865,13 @@ miss --> init["不可繼承的用初始值"]
 Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低。過低時優先改亮度，不要先把字級放大來彌補。
 {% endnote %}
 
-### 文字與背景
+## 文字與背景
 
 字與背景是畫面上直接看得到的屬性。字型相關屬性大多會繼承，所以設在 `body` 上，內文就跟著走；標題再個別加大、加粗。背景預設不繼承，畫在邊框以內（含內距）。
 
-#### 字型堆疊
+### 字型堆疊
 
 `font-family` 是一串**字型堆疊**，逗號分隔，瀏覽器由左到右挑第一個用得了的。有空格的名稱要加引號。最後一個寫**通用家族（generic family）**，系統才有退路。`system-ui` 在 Windows 上多半是 Segoe UI，中文仍要後面的「蘋方」或「微軟正黑體」才穩。不要只寫 `"Microsoft JhengHei"`：macOS 與手機沒有這個家族時，會直接掉到通用家族。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/11-type.html`，用 Live Server 開 `03-css/index.html` 再點選單「字型堆疊」。
 
 | 通用家族 | 看起來 | 示範的 class |
 | --- | --- | --- |
@@ -932,8 +889,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `font` 簡寫至少要有字級與字型家族，順序是：`font-style`、`font-weight`、`font-size`、斜線、`line-height`、`font-family`。簡寫會把沒寫到的字型屬性設回初始值。只改一個項目時，寫單獨的 `font-size` 或 `font-weight`。
 
-
-```html type.html
+```html 03-css/pages/11-type.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1008,11 +964,9 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 `font` 簡寫沒寫到的項目會回到初始值。原本從 `body` 繼承來的字重或變體，可能在這一層消失。
 {% endnote %}
 
-#### 行內文字
+### 行內文字
 
 `text-align` 作用在**區塊**上，對齊的是它裡面的行內內容。把 `text-align: center` 寫在 `span` 自己身上通常看不到置中，要寫在包住它的區塊上。橫書由左到右時，`start` 就是靠行首、`end` 就是靠行末。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/12-text.html`，用 Live Server 開 `03-css/index.html` 再點選單「行內文字」。
 
 | 屬性 | 常用值 | 做什麼 |
 | --- | --- | --- |
@@ -1028,8 +982,7 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
 
 `text-align: justify` 會把一行兩端撐齊，中文段落常常被拉出大空隙，這門課的內文用 `start`。`white-space: nowrap` 禁止換行，按鈕上的短詞才用。連結若拿掉底線，滑鼠移上去或鍵盤聚焦時仍要有另一種變化，否則看不出它可以點。
 
-
-```html text.html
+```html 03-css/pages/12-text.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1097,11 +1050,9 @@ Day 3 濟州</p>
 </html>
 ```
 
-#### 背景圖層
+### 背景圖層
 
 背景可以是底色、一張圖，或一層漸層。漸層也算 `background-image`。圖沒蓋到的地方會露出 `background-color`。多層背景用逗號分隔，**先寫的畫在上面**。每一層的 `repeat`、`size`、`position` 也用逗號對應；層數對不齊時，瀏覽器會循環使用你寫的那一串。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/13-background.html`，用 Live Server 開 `03-css/index.html` 再點選單「背景圖層」。
 
 | 屬性 | 常用值 | 做什麼 |
 | --- | --- | --- |
@@ -1116,8 +1067,7 @@ Day 3 濟州</p>
 
 漸層的方向可以是角度或關鍵字。`160deg` 從左下往右上偏；`to bottom` 由上到下。色標可以加上停在哪裡：`#0f766e 42%`。`repeating-linear-gradient` 用來做條紋。放射狀用 `radial-gradient`。這門課的區塊底用線性漸層即可。正式站的照片把示範裡的資料網址換成 `url("images/kyoto.jpg")` 這種相對路徑，屬性相同。
 
-
-```html background.html
+```html 03-css/pages/13-background.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1209,22 +1159,19 @@ Day 3 濟州</p>
 把 `background.html` 存好後，在 Chrome 把視窗拉窄再拉寬，看 `cover` 與 `contain` 裁切的差別。F12 點 `.hero`，在 Styles 取消其中一層 `background-image`，確認先寫的那層在上面。
 {% endnote %}
 
-### 選讀：進階選擇器、分層與字型
+## 選讀：進階選擇器、分層與字型
 
 上面的示範已經夠字與背景這一節。屬性選擇器的進階比對、`:is()`／`:where()`／`:has()`、自訂屬性、`@layer`、BEM 命名、自行載入字型檔可以整節跳過。之後維護較大的樣式表時再回來。
 
-#### 屬性比對與 :is()、:where()、:has()
+### 屬性比對與 :is()、:where()、:has()
 
 課堂正文只用了 `[type="email"]` 這種「屬性值完全相等」。還可以比對片段，權重仍是 class 欄 +1：`[href]` 有這個屬性即可，`[href^="https"]` 是開頭，`[href$=".pdf"]` 是結尾，`[title*="京都"]` 是中間含有。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/14-selectors-extra.html`，用 Live Server 開 `03-css/index.html` 再點選單「屬性比對與 :is()、:where()、:has()（選讀）」。
 
 `:is(h1, h2, h3)` 把分組寫短，權重等於括號裡**最高**的那一個。`:where()` 外觀可以相同，但權重是 **0**，所以很好被後面的普通 class 蓋過。重置樣式時用 `:where()`，就不必跟自己的重置規則搏鬥。`:not(.soldout)` 排除帶該 class 的元素，權重等於括號裡那個選擇器。
 
 `:has()` 選的是「裡面有某子孫的元素」，例如輸入框聚焦時讓外層出現框線。它會讓父層的樣式依賴子層狀態，選擇器一多就難讀，有明確 class 時仍優先寫 class。
 
-
-```html selectors-extra.html
+```html 03-css/pages/14-selectors-extra.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1284,16 +1231,13 @@ Day 3 濟州</p>
 </html>
 ```
 
-#### 自訂屬性與 @layer
+### 自訂屬性與 @layer
 
 自訂屬性（custom properties）以 `--` 開頭，用 `var()` 取用，而且會繼承。品牌色放在 `:root`（等於 `html`），整頁都能讀到。`var(--ink, #134e4a)` 的第二個引數是找不到變數時的備援。區域變數寫在元件上，只影響該元素和子孫。重複出現的色碼可以收成變數，改品牌時只改一處。後面的 CSS 變數那一章會把同一組代幣做成可以換膚的一頁。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/15-layer.html`，用 Live Server 開 `03-css/index.html` 再點選單「自訂屬性與 @layer（選讀）」。
-
 `@layer` 把作者樣式分成若干層。一般宣告裡，**較晚宣告的層**蓋過較早的層；完全沒放進層的一般宣告，又蓋過所有層。分層適合「重置在底層、元件在上層」。`!important` 在層裡的優先順序會反過來，選讀階段不要在 `@layer` 裡加 `!important`。
 
-
-```html layer.html
+```html 03-css/pages/15-layer.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1345,11 +1289,11 @@ Day 3 濟州</p>
 </html>
 ```
 
-#### 命名與字型檔
+### 命名與字型檔
 
 Class 怎麼取名、字型檔怎麼掛上，都不增加新的選擇器語法。專題可以繼續用較短的 class，系統字型堆疊也夠用；這裡只留命名習慣與 `@font-face`。
 
-##### BEM 命名
+#### BEM 命名
 
 BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器語法。區塊是元件，元素是區塊的一部分，修飾是狀態或變體。雙底線、雙連字號只是名字的一部分，權重仍各是一個 class。不要再寫 `.tour-card .tour-card__title` 把選擇器拉長，除非同一種元素名會出現在別的區塊。這門課的專題可以沿用較短的 class；團隊若已經用 BEM，讀得懂即可。
 
@@ -1359,11 +1303,11 @@ BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器
 | 元素 | `.tour-card__title` | 這張卡的標題 |
 | 修飾 | `.tour-card--soldout` | 這張卡已額滿 |
 
-##### 載入字型檔
+#### 載入字型檔
 
 系統堆疊不夠用時，才把字型檔放進網站。優先使用你有授權的字型。`woff2` 是網頁用的壓縮格式。`font-display: swap` 的意思是：字型檔還沒到時先用堆疊裡的下一個字，到了再換，避免空白畫面卡住。每個字重各寫一個 `@font-face`（400 與 700 是兩個檔）。有網路時也可以在 `head` 用 `link` 載入公開字型服務，並把該家族放在堆疊最前。不要用 `@import` 去拉字型。課堂電腦若沒有外網，仍要靠系統堆疊能讀。
 
-```css tour.css
+```css 03-css/pages/29-font.css
 @font-face {
   font-family: "Tour Sans";
   src: url("fonts/tour-sans.woff2") format("woff2");
@@ -1388,15 +1332,13 @@ BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器
 }
 ```
 
-## 盒子與欄位排版
+# 盒子與欄位排版
 
 每個元素都是一顆矩形盒子。先決定盒子多大、怎麼參加排版、座標跟誰比，再決定同一層的小孩沿一個方向排，或同時切成欄與列。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/16-box.html`、`pages/17-display.html`、`pages/18-position.html`、`pages/19-overflow.html`、`pages/20-flex.html`、`pages/21-grid.html`。用 Live Server 開 `03-css/index.html`，再點選單換頁。
+## 盒子與定位
 
-### 盒子與定位
-
-字與底色已經會變之後，接下來看盒子本身：內容、內距、邊框、外距疊在一起，再決定它獨佔一行還是跟文字坐在一起、座標跟誰比、畫出邊界時裁掉還是捲動。欄與列的排列留到這一節後面的 Flex 與 Grid。這四份檔仍是完整 HTML，存檔後用 Live Server 打開，按 <kbd>F12</kbd> 對 **Computed** 裡的盒模型圖。
+字與底色已經會變之後，接下來看盒子本身：內容、內距、邊框、外距疊在一起，再決定它獨佔一行還是跟文字坐在一起、座標跟誰比、畫出邊界時裁掉還是捲動。欄與列的排列留到這一節後面的 Flex 與 Grid。按 <kbd>F12</kbd> 對 **Computed** 裡的盒模型圖。
 
 {% mermaid graph TD %}
 margin["margin 外距<br/>透明，露出父層"] --> border["border 邊框"]
@@ -1404,19 +1346,17 @@ border --> padding["padding 內距<br/>背景塗到這裡"]
 padding --> content["content 內容"]
 {% endmermaid %}
 
-#### 盒子模型
+### 盒子模型
 
 盒子模型（box model）把每個元素分成內容、內距、邊框、外距。寬高算到哪一層、四邊怎麼簡寫、垂直外距會不會合併，都在這裡。見 [MDN：盒模型](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/16-box.html`，用 Live Server 開 `03-css/index.html` 再點選單「盒子模型」。
-
-##### 寬高與四邊簡寫
+#### 寬高與四邊簡寫
 
 `width` 與 `height` 量的是哪一層，由 `box-sizing` 決定。預設 `content-box` 只量內容，padding 與 border 再往外加，所以「寫了 100% 又加了內距」會比父層更寬。課堂與專題在樣式表最前面改成 `border-box`：你寫的寬高含內容、padding、border，不含 margin。`*` 要連 `::before`、`::after` 一起寫，偽元素才不會回到預設算法。
 
 簡寫依順時針：一個值四邊相同；兩個值是上下、左右；三個值是上、左右、下；四個值是上、右、下、左。後寫的單邊（`border-left`、`padding-bottom`）蓋過簡寫的那一邊。`padding` 不能是負值；`margin` 可以，元素會往該側移，也可能壓到隔壁。左右 `margin: auto` 會平分剩餘寬度，所以要比父層窄的區塊才能水平置中。寬度已經撐滿時，左右沒有剩餘，`auto` 看起來像 0。上下的 `margin: auto` 在普通區塊流裡不會把盒子推到父層底部，垂直置中用 Flex 或 Grid。
 
-##### 外距合併、輪廓與尺寸
+#### 外距合併、輪廓與尺寸
 
 同一個包含塊裡，上下相鄰的區塊盒，垂直 margin 會併成**較大的那一個**，不會相加。左右不會合併。父層若沒有 padding、沒有 border、也沒有上緣內容，子層的 `margin-top` 會穿出去，父層背景包不住那段空隙。`margin`、`padding`、`border` 都不繼承。
 
@@ -1436,8 +1376,7 @@ padding --> content["content 內容"]
 | `content-box` | 只有內容 | 總寬變大，會撐破父層 |
 | `border-box` | 內容 + padding + border | 總寬仍是 16rem |
 
-
-```html box.html
+```html 03-css/pages/16-box.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1582,19 +1521,17 @@ padding --> content["content 內容"]
 點 `.card`，打開 Computed 的盒模型圖：padding 四邊 `1rem`、border `6px`、margin `1rem`。再點兩條軌道，比較總寬有沒有超出虛線。用 <kbd>Tab</kbd> 移到「看行程」，確認焦點框出現、按鈕寬度不變。
 {% endnote %}
 
-#### display
+### display
 
 `display` 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行內、可設寬高的行內，以及三種先不要給人看的寫法，畫面差很多。見 [MDN：display](https://developer.mozilla.org/zh-TW/docs/Web/CSS/display)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/17-display.html`，用 Live Server 開 `03-css/index.html` 再點選單「display」。
-
-##### 區塊與行內
+#### 區塊與行內
 
 `display` 決定這顆盒子怎麼參加排版，不改變標籤的語意。`div`、`p`、標題與 `section` 預設是 `block`，獨佔一行，寬高與垂直 margin 都算數。`span`、`a`、`strong` 預設是 `inline`，跟文字坐在同一行；左右的 padding、margin、border 會把旁邊的字推開，上下的 padding 與 border 會畫出來，但通常不把行盒撐高，所以可能壓到上一行。行內盒（置換元素如 `img` 除外）不採用你寫的寬高。
 
 `inline-block` 仍跟文字同一行，但可以有自己的寬高與垂直 margin。它和旁邊文字之間的換行會變成一個空白，三個標籤中間那條縫常常是這個空白，不是 margin。穩定的按鈕用 `inline-block`，或交給下一章的 Flex。`vertical-align` 只對行內與 `inline-block` 有意義。圖片底下那條小縫，是它在跟文字基線對齊；改成 `display: block` 或 `vertical-align: middle` 就會消失。整頁的垂直置中不要靠它。
 
-##### 不顯示的三種寫法
+#### 不顯示的三種寫法
 
 `display: none` 不建立盒子，後面的元素補上它的位置，也不接收點擊。`visibility: hidden` 仍佔位，只是看不見。`opacity: 0` 也佔位，而且預設仍能被點到。三種都還在 HTML 裡。暫時不顯示的區塊用 `none`；要留空位避免版面跳動，用 `hidden`。
 
@@ -1605,8 +1542,7 @@ padding --> content["content 內容"]
 | `inline-block` | 同一行，每顆有自己的寬高 | 採用 | 採用 |
 | `none` | 不出現，位子被補上 | 不建立盒子 | — |
 
-
-```html display.html
+```html 03-css/pages/17-display.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -1751,13 +1687,11 @@ padding --> content["content 內容"]
 連結 `a` 預設是 `inline`。做成按鈕時再改 `inline-block`，padding 與寬高才按你寫的走。不確定時看 Computed 的 `display`。
 {% endnote %}
 
-#### 定位與 z-index
+### 定位與 z-index
 
 `position` 決定偏移量跟誰比，`z-index` 決定重疊時誰在上面。徽章、黏性標題與層疊情境是這一節的三個結果。見 [MDN：position](https://developer.mozilla.org/zh-TW/docs/Web/CSS/position)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/18-position.html`，用 Live Server 開 `03-css/index.html` 再點選單「定位與 z-index」。
-
-##### 五種定位
+#### 五種定位
 
 `position` 決定座標跟誰比。預設 `static` 參加正常排版，`top`、`right`、`bottom`、`left` 與 `z-index` 都無效。`relative` 以自己原本的位子為原點，原位仍留著，兄弟不會補上來。`absolute` 對準最近一個 `position` 不是 `static` 的祖先（對的是那個祖先的 padding 邊緣）；都沒有時，對準頁面的初始包含塊，原位釋出。`fixed` 對準視窗。`sticky` 平常像相對，滾過你寫的門檻後黏在滾動盒邊緣，範圍只到它的父層結束。
 
@@ -1765,7 +1699,7 @@ padding --> content["content 內容"]
 
 `sticky` 至少要一個門檻（`top`、`right`、`bottom`、`left`）。它黏的是最近的滾動盒：示範裡白盒設了 `overflow: auto` 與固定高度，標題黏的是白盒上緣，不是整個瀏覽器。祖先若有 `overflow: hidden`，黏性常常失效。父層沒有比滾動盒更高的空間時，也看不到黏住的過程。
 
-##### 層疊情境
+#### 層疊情境
 
 `z-index` 只對已定位的盒子生效（Flex、Grid 的小孩例外，即使 `static` 也能用）。數字愈大愈靠近你，也可以是負數。`auto` 不建立新的層疊情境，後面的兄弟蓋住前面的兄弟。數字只在**同一個層疊情境**裡比。`position` 加上不是 `auto` 的 `z-index` 會開一個新情境；情境與情境之間比的是父親，小孩的數字出不去。專題不要靠 `9999` 去壓過別的元件。
 
@@ -1777,8 +1711,7 @@ padding --> content["content 內容"]
 | `fixed` | 視窗 | 釋出 |
 | `sticky` | 滾過門檻後黏住滾動盒 | 在父層範圍內留著 |
 
-
-```html position.html
+```html 03-css/pages/18-position.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -2012,19 +1945,17 @@ padding --> content["content 內容"]
 整頁的欄、卡片列、置中，用正常排版與下一章的 Flex、Grid。`absolute` 留給徽章、關閉鈕這一類疊在表面的小東西。`fixed` 留給真的要跟著視窗的列。右下「諮詢」是 `fixed`，所以 `body` 留了下緣空隙，最後一行才不會被它蓋住。
 {% endnote %}
 
-#### overflow
+### overflow
 
 內容比盒子的 padding 邊緣還大時，`overflow` 決定多出來的部分是露出、裁掉，還是出現捲軸。單行省略號是同一組屬性再加上不換行。見 [MDN：overflow](https://developer.mozilla.org/zh-TW/docs/Web/CSS/overflow)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/19-overflow.html`，用 Live Server 開 `03-css/index.html` 再點選單「overflow」。
-
-##### 裁切與捲動
+#### 裁切與捲動
 
 內容比盒子的 padding 邊緣還大時，`overflow` 決定多出來的部分。預設 `visible`：畫到外面，不出現捲軸，也不撐大已經寫死的 `width`（高度的 `auto` 仍會跟著內容長）。`hidden` 裁掉，沒有捲軸。`auto` 超過才出現捲軸。`scroll` 一律預留捲軸的位子。
 
 `overflow-x` 與 `overflow-y` 可以分開。其中一軸不是 `visible` 時，另一軸的 `visible` 會被算成 `auto`。只想水平捲、垂直仍露出時，到 Computed 確認最後的值。圓角盒子裡的小孩預設可以畫出圓角，父層加上 `overflow: hidden` 才切得齊。`hidden` 也會讓這一層變成滾動盒，子孫的 `sticky` 可能因此失效。
 
-##### 單行省略
+#### 單行省略
 
 單行要出現省略號，四個條件一起寫：有寬度、`overflow: hidden`、`white-space: nowrap`、`text-overflow: ellipsis`。少一個就會改成換行或直接裁掉。
 
@@ -2035,8 +1966,7 @@ padding --> content["content 內容"]
 | `auto` | 超過才出現捲軸 |
 | `scroll` | 一律預留捲軸 |
 
-
-```html overflow.html
+```html 03-css/pages/19-overflow.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -2139,7 +2069,7 @@ padding --> content["content 內容"]
 把視窗縮到標題那一行放不下，確認結尾是省略號。在 Styles 取消 `.title` 的 `white-space`，它會改回換行。再取消 `.clip` 的 `overflow`，看色帶的直角。
 {% endnote %}
 
-### 欄位排版
+## 欄位排版
 
 一個方向上的排列用 Flex：導覽列、一排按鈕、卡片橫列。兩個方向同時切用 Grid：頁首與側欄、或欄線要對齊的卡片牆。兩者都寫在父層，只排**直接子元素**；孫子仍由它們自己的父層排。項目之間的縫用 `gap`，不加在容器外緣，外緣用 padding。Flex 與 Grid 的項目之間不合併 margin。`float` 不是這一章的欄位手法。
 
@@ -2151,13 +2081,11 @@ C --> E["display: grid"]
 E --> F["格子裡的一排或一欄<br/>再 display: flex"]
 {% endmermaid %}
 
-#### Flexbox
+### Flexbox
 
 Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空間，交叉軸負責對齊，項目要變寬變窄再寫 `flex`。見 [MDN：Flexbox 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/20-flex.html`，用 Live Server 開 `03-css/index.html` 再點選單「Flexbox」。
-
-##### 方向、換行與對齊
+#### 方向、換行與對齊
 
 `display: flex` 讓直接子元素變成彈性項目。主軸是排隊的方向，交叉軸跟它垂直。`flex-direction: row` 在繁中橫排是由左到右，`column` 由上到下。`row-reverse` 與 `column-reverse` 只改視覺起點，原始碼與 <kbd>Tab</kbd> 順序不變，不要用它把第一個連結藏到最後。`flex-flow` 是方向與換行的簡寫；少寫的那個回到預設。
 
@@ -2165,7 +2093,7 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
 
 `justify-content` 分主軸上、項目本身尺寸之外的空間。項目已經 `flex: 1` 把行撐滿時，這些值幾乎看不出差別。`align-items` 管交叉軸，橫排時就是上下；預設 `stretch`，交叉軸尺寸是 `auto` 的項目會被拉到跟那一行一樣高。主軸改成 `column` 之後，兩個屬性對調所管的方向：先問現在哪一邊是主軸。`align-content` 只有在已經換行、而且交叉軸上還有空位時才看得出來。
 
-##### 彈性係數與最小尺寸
+#### 彈性係數與最小尺寸
 
 子項的 `flex` 是 `flex-grow`、`flex-shrink`、`flex-basis` 的簡寫。分配時先用基礎尺寸，再把剩下的空間按 grow 分掉；不夠時按 shrink 縮小。`flex: 1` 從 0 起算再均分，欄寬容易一樣。`flex: auto` 從內容尺寸再一起放大。`flex: none` 不伸也不縮。`fr` 不能寫在 Flex 裡。
 
@@ -2197,8 +2125,7 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
 | `space-around` | 每項兩側各一份，項目之間是兩份 |
 | `space-evenly` | 外緣與項目之間都一樣 |
 
-
-```html flex.html
+```html 03-css/pages/20-flex.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -2446,25 +2373,23 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
 卡片上的 `min-width: 0` 和長代碼是同一件事。沒寫的話，某一張卡裡的長網址可能把整列撐出螢幕。包一層 `div` 之後，裡面的東西對這一層來說只算一項。
 {% endnote %}
 
-#### Grid
+### Grid
 
 Grid 同時指定欄與列，項目落在格子上。格線從 1 起算，剩餘空間用 `fr`，欄數也可以跟著容器寬度變。見 [MDN：Grid 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout)。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/21-grid.html`，用 Live Server 開 `03-css/index.html` 再點選單「Grid」。
-
-##### 格線與剩餘空間
+#### 格線與剩餘空間
 
 `display: grid` 同時指定欄與列。項目預設依原始碼，先填滿一列再換下一列。格線從 1 起算，不是 0。三欄有四條直格線。`grid-column: 1 / 3` 是從第 1 條線到第 3 條線，佔兩欄，終點那條線不包含在內。`-1` 是最後一條線，`1 / -1` 從最左跨到最右。
 
 `fr` 分的是扣掉固定軌道與 `gap` 之後的剩餘空間。`1fr` 的下限其實是 `auto`，一長串不能斷行的字會把欄撐開，要肯縮小就寫 `minmax(0, 1fr)`。沒寫列高時，列數跟著內容，高度是 `auto`。自動多出來的軌道用 `grid-auto-rows`。父層高度是 `auto` 時，列上的 `1fr` 常常只跟內容一樣高，所以頁面骨架要給 `min-height`，中列才有高度可分。
 
-##### 自動欄數與命名區域
+#### 自動欄數與命名區域
 
 `repeat(auto-fit, minmax(12rem, 1fr))` 依容器寬度決定欄數，空欄收成 0，卡片把整行撐滿。`auto-fill` 仍留下空欄，卡片維持較窄。下限不要寫 `1fr`，瀏覽器無法同時未知欄數又讓每欄先拿一份。`grid-auto-flow: column` 改成先往下填。
 
 命名區域用 `grid-template-areas`。每一列是一條引號字串，格數必須相同。`.` 代表這一格先空著。子項用 `grid-area: header` 對上去。`grid-area: 1 / 1 / 3 / 3` 的順序是列起、欄起、列終、欄終，和 `grid-column` 的「先欄」不一樣；對得上名字時用名字。
 
-##### 對齊與和 Flex 分工
+#### 對齊與和 Flex 分工
 
 Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`）管項目在自己那一格裡面，預設 `stretch`。`justify-content` 管的是整組軌道比容器窄時怎麼擺，不是格子裡的空位。`justify-self` 只改一格。
 
@@ -2479,8 +2404,7 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
 | 卡片裡的圖與「看行程」 | 卡內 Flex 直向 |
 | 圖旁一段文字繞著走 | 選讀的 `float`，不是多欄版面 |
 
-
-```html grid.html
+```html 03-css/pages/21-grid.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -2677,22 +2601,20 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
 骨架裡的 `main` 是一格。主文裡的標題與段落不會自動變成格子，除非你在 `main` 上再設一次 `display: grid` 或 `flex`。視窗窄到放不下 8rem 加 9rem 時，頁面骨架會橫向溢出；改成一欄是後面媒體查詢的事。F12 點 Grid 徽章，線應夾住導覽與側欄。
 {% endnote %}
 
-## 響應式、變數與動態
+# 響應式、變數與動態
 
 同一份 HTML 先在窄畫面讀得完，再依視窗改結構、把重複的色與間距收成代幣，並讓狀態變化有轉場與少量動畫。畫面和規則對不上時，用開發者工具看最終值。這一節四份檔都是完整 HTML。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/22-rwd.html`、`pages/23-vars.html`、`pages/24-motion.html`、`pages/25-inspect.html`。用 Live Server 開 `03-css/index.html`，再點選單換頁。
+## RWD 與媒體查詢
 
-### RWD 與媒體查詢
-
-響應式網頁（responsive web design，RWD）是同一份 HTML，依畫面寬度改排版。流動的部分前面已經有了：`max-width`、Flex 的 `wrap`、Grid 的 `auto-fit` 與 `minmax`。那些能自己換行、自己決定欄數。媒體查詢（media query）留給**結構要變**的時候：導覽從橫排改成直排、側欄挪到主文旁邊。下面這份 `rwd.html` 存檔後，把視窗慢慢拉寬就能看到斷點。見 [MDN：使用媒體查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_media_queries/Using_media_queries)。
+響應式網頁（responsive web design，RWD）是同一份 HTML，依畫面寬度改排版。流動的部分前面已經有了：`max-width`、Flex 的 `wrap`、Grid 的 `auto-fit` 與 `minmax`。那些能自己換行、自己決定欄數。媒體查詢（media query）留給**結構要變**的時候：導覽從橫排改成直排、側欄挪到主文旁邊。下面這份把視窗慢慢拉寬就能看到斷點。見 [MDN：使用媒體查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_media_queries/Using_media_queries)。
 
 {% mermaid graph TD %}
 B["預設：單欄、導覽橫排"] --> M["min-width: 32rem<br/>卡片改兩欄"]
 M --> W["min-width: 48rem<br/>導覽變側欄"]
 {% endmermaid %}
 
-#### 流動版面先做完
+### 流動版面先做完
 
 先讓窄畫面就讀得完，再往寬的加規則。這份示範預設是一欄：頁首、導覽、行程、行前提示依原始碼由上到下。導覽用 Flex 橫向換行。卡片欄數放在 `--cols`，預設 `1fr`。圖片若之後加進來，仍給 `max-width: 100%`，避免比父層更寬。
 
@@ -2705,7 +2627,7 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 把視窗慢慢拉寬，在「導覽擠成兩行」或「一行只剩一個字」的地方設斷點。手機 390、平板 768、桌機 1200 只是常見寬度的參考。查詢看的是視窗寬度，把桌機視窗拉窄就該看到窄版。
 {% endnote %}
 
-#### 斷點由窄到寬
+### 斷點由窄到寬
 
 `@media (min-width: 32rem)` 的意思是：視窗寬度**大於等於** 32rem 時，括號裡的規則才加入層疊。查詢裡的 `rem` 相對瀏覽器預設字級（通常 16px），不受你寫在 `html` 上的 `font-size` 影響。32rem 大約是 512px，48rem 大約是 768px。
 
@@ -2721,11 +2643,9 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 
 `max-width` 是「小於等於」。桌面樣式先寫、再用 `max-width` 往回改，中間的寬度容易漏。課堂以 `min-width` 為主。兩個條件都要成立時用 `and`：`@media (min-width: 48rem) and (orientation: landscape)`。只要其中一個成立，用逗號：`@media (max-width: 32rem), print`。`screen`、`print`、`all` 是媒體類型。特性條件前面省略類型時，等於 `all`。`max-device-width` 是舊特性，新頁面用 `width`。
 
-#### 列印與偏好
+### 列印與偏好
 
 `@media print` 裡把導覽、斷點說明、行前欄設成 `display: none`，底色改白、字改黑。列印預覽按 <kbd>Ctrl</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>P</kbd>），看完關掉即可。依賴底色才能看懂的資訊，列印時要改成字或邊框。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/22-rwd.html`，用 Live Server 開 `03-css/index.html` 再點選單「列印與偏好」。
 
 偏好類特性描述的是人，不是寬度。`prefers-color-scheme: dark` 在系統用深色外觀時成立，下一章只用它覆寫代幣。`prefers-reduced-motion: reduce` 在系統要求減少動態時成立，動畫那一章用它關掉循環。`hover: hover` 表示主要輸入可以懸停，`pointer: fine` 表示有滑鼠一類的細指標。這些查詢和寬度查詢一樣參加層疊。
 
@@ -2734,8 +2654,7 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 查詢看視窗，不看裝置型號。不要用使用者代理字串去猜手機。示範頁若嵌在別的頁面裡，視窗就是那個框的寬，不是整台螢幕的解析度。
 {% endnote %}
 
-
-```html rwd.html
+```html 03-css/pages/22-rwd.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -2909,10 +2828,10 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
 
 {% note success %}
 **跟著做**
-存成 `rwd.html` 用 Live Server 打開。慢慢拉寬視窗，或按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）打開裝置工具列，選一顆手機寬度。頁首那句話應從「側欄版面」變成「單欄，導覽橫排」。再拉寬，確認句子與欄數一起變。接著 <kbd>Ctrl</kbd>+<kbd>P</kbd> 看列印預覽：導覽與行前欄不在紙上。
+慢慢拉寬視窗，或按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）打開裝置工具列，選一顆手機寬度。頁首那句話應從「側欄版面」變成「單欄，導覽橫排」。再拉寬，確認句子與欄數一起變。接著 <kbd>Ctrl</kbd>+<kbd>P</kbd> 看列印預覽：導覽與行前欄不在紙上。
 {% endnote %}
 
-### CSS 變數
+## CSS 變數
 
 自訂屬性（custom properties）是你自己命名、可被繼承的 CSS 值，寫法是 `--名字: 值`，取用時寫 `var(--名字)`。前面選讀看過品牌色收成變數；這裡把色、間距、圓角收成一組代幣，改一處就整頁一起變。它們跟預處理器的變數不同：瀏覽器在套用樣式時才算出來，所以會參加繼承與覆寫。見 [MDN：使用 CSS 自訂屬性](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties)。
 
@@ -2922,11 +2841,9 @@ R --> N[".night 再宣告一次 --brand"]
 N --> C["這張卡與裡面的按鈕讀到新值"]
 {% endmermaid %}
 
-#### 宣告、繼承與備援
+### 宣告、繼承與備援
 
 代幣放在 `:root`（HTML 文件裡就是 `html`）。`body` 的字色、底色、間距都寫 `var(--ink)` 這種名字。卡片底用 `--card`：系統改成深色時，這顆底與 `--ink` 一起換，淺色字才不會留在白卡片上。間距用 `--space-sm`、`--space-md`，圓角用 `--radius`。`calc(var(--space-md) * 1.5)` 可以拿代幣做算術。乘除時乘號兩側留空格。代幣裡若已經寫了單位（`1rem`），`calc()` 不要再加一次單位。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/23-vars.html`，用 Live Server 開 `03-css/index.html` 再點選單「宣告、繼承與備援」。
 
 | 寫法 | 做什麼 |
 | --- | --- |
@@ -2953,8 +2870,7 @@ N --> C["這張卡與裡面的按鈕讀到新值"]
 JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。今天先只在樣式表裡改。重新整理後，面板裡的實驗不會留在檔案裡。
 {% endnote %}
 
-
-```html vars.html
+```html 03-css/pages/23-vars.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3079,12 +2995,12 @@ JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。�
 
 {% note success %}
 **跟著做**
-打開 `vars.html`，按 <kbd>F12</kbd> 選中 `<html>`，在 **Styles** 把 `--brand` 改成 `#9f1239`。色塊與第一張卡的按鈕應一起變，夜卡的按鈕仍是杏色，因為它自己又宣告了 `--brand`。點 `.bad`，**Computed** 的 `color` 應是繼承來的深青綠，不是玫瑰紅。
+按 <kbd>F12</kbd> 選中 `<html>`，在 **Styles** 把 `--brand` 改成 `#9f1239`。色塊與第一張卡的按鈕應一起變，夜卡的按鈕仍是杏色，因為它自己又宣告了 `--brand`。點 `.bad`，**Computed** 的 `color` 應是繼承來的深青綠，不是玫瑰紅。
 {% endnote %}
 
-### 轉場與動畫
+## 轉場與動畫
 
-變形（transform）改的是元素畫出來的位置、大小、角度，排版位子不動。轉場（transition）在兩個狀態之間補間，例如移入與移出。動畫（animation）用關鍵影格自己播，可以循環。要動的優先是 `transform` 與 `opacity`。用 `top`、`left`、`width` 做每幀位移，容易拖慢版面計算。下面一份 `motion.html` 把三件事放在同一頁。見 [MDN：使用 CSS 轉場](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_transitions/Using_CSS_transitions)。
+變形（transform）改的是元素畫出來的位置、大小、角度，排版位子不動。轉場（transition）在兩個狀態之間補間，例如移入與移出。動畫（animation）用關鍵影格自己播，可以循環。要動的優先是 `transform` 與 `opacity`。用 `top`、`left`、`width` 做每幀位移，容易拖慢版面計算。下面這份把三件事放在同一頁。見 [MDN：使用 CSS 轉場](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_transitions/Using_CSS_transitions)。
 
 {% mermaid graph LR %}
 T["transform<br/>改畫面，不改佔位"] --> Tr["transition<br/>有人觸發才從 A 到 B"]
@@ -3098,7 +3014,7 @@ T --> A["animation<br/>依 keyframes 自己播"]
 | 循環 | 不會自己循環 | `infinite` 或指定次數 |
 | 這一頁 | 按鈕變色、卡片抬起、四條曲線 | 熱賣縮放、載入圓環、進場一次 |
 
-#### 變形不推動鄰居
+### 變形不推動鄰居
 
 `transform` 接受一串函式，函式之間用空格分開。每一格的虛線框是排版位子：方塊 `translate` 出去、`scale` 變大、`rotate` 轉開，虛線框的寬高與格子之間的 `gap` 都不變。旁邊的文字不會被推開。真的要佔更大的位子，改寬高或 `margin`。
 
@@ -3118,7 +3034,7 @@ T --> A["animation<br/>依 keyframes 自己播"]
 變形後的元素仍佔原來的位子，點擊範圍以變形後的畫面為準。祖先若有 `transform`，子孫的 `position: fixed` 會改以那個祖先為視窗。卡片要加 `transform` 時，不要把全站的固定頁首包在同一層裡面。
 {% endnote %}
 
-#### 轉場連接兩個狀態
+### 轉場連接兩個狀態
 
 有人讓某個屬性從舊值變成新值時，`transition` 把中間的畫面補上。沒有寫進 `transition` 的屬性會瞬間切換。簡寫的順序是：屬性、持續時間、速度曲線、延遲。前兩個最常寫。
 
@@ -3145,11 +3061,9 @@ transition: background-color 200ms ease, translate 200ms ease;
 `transition: all 300ms` 會把之後加上的任何屬性都補間，包含你沒打算動的顏色或尺寸。逐條寫出 `background-color`、`translate`、`opacity`、`box-shadow`。
 {% endnote %}
 
-#### 動畫自己播放
+### 動畫自己播放
 
 轉場需要一個新值才會動。動畫用 `@keyframes` 寫腳本，元素一套上 `animation` 就播。這一頁有三個：熱賣標籤循環縮放、載入圓環一直轉、行程卡進場一次。關鍵影格的名字自己取，跟 class 無關。`from` 等於 `0%`，`to` 等於 `100%`。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/24-motion.html`，用 Live Server 開 `03-css/index.html` 再點選單「動畫自己播放」。
 
 套到元素上時，持續時間必須寫，否則預設是 `0s`，你看不見過程。簡寫裡第一個時間仍是持續時間，第二個時間才是延遲。
 
@@ -3171,8 +3085,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 無限循環的大面積動畫很耗電，也會讓人忽略真正要點的按鈕。一個狀態用一兩個小元素即可。不要為了據說能加速繪製，就加上廠商前綴。
 {% endnote %}
 
-
-```html motion.html
+```html 03-css/pages/24-motion.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3403,16 +3316,16 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
-### 用開發者工具除錯
+## 用開發者工具除錯
 
-樣式沒有出現時，先分清楚是選錯節點、規則沒打中、被另一條蓋過，還是值本身無效。Chrome 按 <kbd>F12</kbd>，主畫面用 **Elements**。下面的 `inspect.html` 故意留了劃掉的宣告、拼錯的屬性，以及贏過 class 的 id，三節都對這一張票，也回頭看 `vars.html`、`motion.html`、`rwd.html`。
+樣式沒有出現時，先分清楚是選錯節點、規則沒打中、被另一條蓋過，還是值本身無效。Chrome 按 <kbd>F12</kbd>，主畫面用 **Elements**。下面這份故意留了劃掉的宣告、拼錯的屬性，以及贏過 class 的 id。三節都對這一張票，也可以回頭看變數、動畫與斷點那幾頁。
 
 {% note primary %}
 **素材準備**
 面板名稱以 Chrome 英文介面為準：**Elements**、**Styles**、**Computed**、**Layout**。改動只活在這一次重新整理之前。確定之後再寫回檔案。
 {% endnote %}
 
-#### Styles 與 Computed
+### Styles 與 Computed
 
 選中 `<article id="featured" class="ticket">`。**Styles** 列出打到它的規則，上面的蓋過下面的。
 
@@ -3423,7 +3336,7 @@ transition: background-color 200ms ease, translate 200ms ease;
 | `#featured { color: #9f1239 }` 沒有刪除線 | id 欄比 class 欄重，字色是玫瑰紅 |
 | `background: var(--paper)` 可展開變數 | 代幣定義在 `:root` |
 
-**Computed** 是算完層疊、繼承、變數之後的最終值。點 `color`，右側會寫這個值從哪一條規則來。`vars.html` 的 `.bad` 要在這裡看：最終字色是繼承來的，不是 `1rem`。
+**Computed** 是算完層疊、繼承、變數之後的最終值。點 `color`，右側會寫這個值從哪一條規則來。變數那頁的 `.bad` 要在這裡看：最終字色是繼承來的，不是 `1rem`。
 
 使用者代理樣式（user agent stylesheet）是瀏覽器預設表。票卡上的標題若比內文粗，而你沒寫 `font-weight`，Computed 會指向這一層。它比你的作者樣式弱。
 
@@ -3432,34 +3345,31 @@ transition: background-color 200ms ease, translate 200ms ease;
 在 **Styles** 取消勾選 `#featured` 的 `color`。票卡字色應落到 `var(--ink)` 的深青綠。勾回去，玫瑰紅回來。接著點 `var(--ink)`，確認它跳到 `:root`。
 {% endnote %}
 
-#### 盒子、狀態與斷點
+### 盒子、狀態與斷點
 
 選中 `.ticket` 時，**Styles** 下方（或 **Computed** 裡）有盒子圖：content、padding、border、margin。這頁是 `border-box`，圖上的寬度 18rem 已經含左右 padding 與左右邊框。margin 是圖最外圈，它在元素外面，不占那 18rem。
 
-**Styles** 面板的 **:hov** 可以強制狀態，不必真的把指標放上去。勾 `:hover` 看 `motion.html` 的按鈕，勾 `:focus-visible` 看外框。`:hover` 規則若寫在 `@media (hover: hover)` 裡面，而這台裝置的查詢不成立，光勾 :hov 也不會套用；桌機滑鼠通常成立。`:hov` 只影響你選的那個節點。
+**Styles** 面板的 **:hov** 可以強制狀態，不必真的把指標放上去。勾 `:hover` 看動畫那頁的按鈕，勾 `:focus-visible` 看外框。`:hover` 規則若寫在 `@media (hover: hover)` 裡面，而這台裝置的查詢不成立，光勾 :hov 也不會套用；桌機滑鼠通常成立。`:hov` 只影響你選的那個節點。
 
 要改整份文件的媒體特性，打開命令選單：<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>），輸入 `Rendering`，選 **Show Rendering**。在裡面可以：
 
-- **Emulate CSS media feature prefers-color-scheme** 設成 `dark`，再看 `vars.html` 的代幣
-- **Emulate CSS media feature prefers-reduced-motion** 設成 `reduce`，`motion.html` 的縮放與圓環應停住
+- **Emulate CSS media feature prefers-color-scheme** 設成 `dark`，再看變數那頁的代幣
+- **Emulate CSS media feature prefers-reduced-motion** 設成 `reduce`，動畫那頁的縮放與圓環應停住
 
-測完改回 No emulation，避免下一頁被忘了的模擬騙過。裝置工具列（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）改的是視窗寬高，用來走 `rwd.html` 的斷點。不確定時看頁首那句話，它跟查詢是同一組條件。Flex 與 Grid 的徽章在上一章用過：節點旁的 **flex** 或 **grid** 會畫出主軸或格線。
+測完改回 No emulation，避免下一頁被忘了的模擬騙過。裝置工具列（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）改的是視窗寬高，用來走斷點那頁。不確定時看頁首那句話，它跟查詢是同一組條件。Flex 與 Grid 的徽章在上一章用過：節點旁的 **flex** 或 **grid** 會畫出主軸或格線。
 
-#### 動畫面板
+### 動畫面板
 
-命令選單輸入 `Animations`，選 **Show Animations**。打開之後再重新整理 `motion.html`，進場與循環會出現在時間軸上。把時間軸上的圓點拖慢，可以看出 `pulse` 在 50% 放到最大。圓環是無限次，軸上會重複。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/25-inspect.html`，用 Live Server 開 `03-css/index.html` 再點選單「動畫面板」。
+命令選單輸入 `Animations`，選 **Show Animations**。打開之後再重新整理動畫那頁，進場與循環會出現在時間軸上。把時間軸上的圓點拖慢，可以看出 `pulse` 在 50% 放到最大。圓環是無限次，軸上會重複。
 
 這個面板用來確認「有沒有在播」。預覽完把模擬與慢動作清掉再重新整理。**Network** 負責檔案沒載入；**Console** 在純 CSS 這一天通常是安靜的，拼錯的屬性不會在那裡報錯，只會出現在 **Styles**。
 
 {% note warning %}
 **注意事項**
-在面板裡改規則不會寫回磁碟。Live Server 重新整理後，實驗就沒了。要留的修改寫進 `<style>`。
+在面板裡改規則不會寫回磁碟。重新整理後，實驗就沒了。要留的修改寫進 `<style>`。
 {% endnote %}
 
-
-```html inspect.html
+```html 03-css/pages/25-inspect.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3520,50 +3430,45 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
-## 選讀：邊界與進階動效
+# 選讀：邊界與進階動效
 
 這一節可以整節跳過。外距穿出、邏輯方向、float 繞排、立體翻面、容器查詢，以及把顏色代幣註冊成可補間，都是前面示範的延伸。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/26-float.html`、`pages/27-flip.html`、`pages/28-read-extra.html`。用 Live Server 開 `03-css/index.html`，再點選單換頁。
-
-### 外距穿出與邏輯方向
+## 外距穿出與邏輯方向
 
 子層外距有時會穿出父層，書寫方向也有另一套屬性名稱。見 [MDN：邏輯屬性與邏輯值](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_logical_properties_and_values)。
 
-#### 外距穿出
+### 外距穿出
 
 子層的 `margin-top` 穿出父層時，父層設 `display: flow-root`，它會成為新的區塊格式化情境，垂直 margin 不再合併，背景包得住。加一點 `padding-top` 或一條透明 `border-top` 也能擋。
 
-#### 邏輯方向
+### 邏輯方向
 
 介面要同時應付由左至右與由右至左時，改寫邏輯屬性：`margin-inline` 是行內方向的兩側，`margin-block` 是區塊方向。`padding`、`border`、`inset` 也有同一套。`inset: 0.6rem 0.6rem auto auto` 等於 `top` 與 `right` 是 `0.6rem`。課堂範本仍寫四個物理方向，讀得到邏輯屬性即可。
 
-#### 層疊情境與多行省略
+### 層疊情境與多行省略
 
 `opacity` 小於 1、`transform`／`filter`／`perspective` 不是 `none`、`isolation: isolate`，也會讓該元素成為新的層疊情境，子孫的 `z-index` 出不去。祖先有 `transform` 時，子孫的 `fixed` 不再相對視窗，而相對那個祖先。對話框若一定要跟著視窗，不要放進留著 `transform` 的卡片裡。
 
 `overflow: clip` 一樣裁切，但這一層不變成滾動盒，子孫的 `sticky` 比較不容易被打斷。多行省略仍常見這組寫法：`display: -webkit-box`、`-webkit-box-orient: vertical`、`-webkit-line-clamp: 2`、`overflow: hidden`。標準的 `line-clamp` 正在普及。這組前綴只用於「兩行以後省略」，其他屬性不要再加廠商前綴。
 
-### float 只留繞排
+## float 只留繞排
 
 `float` 讓後面的文字沿著圖走，不是拿來切多欄的。見 [MDN：float](https://developer.mozilla.org/zh-TW/docs/Web/CSS/float)。
 
-#### 繞排與父層高度
+### 繞排與父層高度
 
 `float: left` 把元素撥到這一行的左側，後面的文字沿著它的右邊走。這仍是圖旁配一段說明的寫法。它會讓元素脫離一般區塊的高度計算，短文時父層背景可能包不住圖。父層加上 `display: flow-root` 即可。舊碼常見 `::after { content: ""; display: block; clear: both; }`，作用同樣是把父層撐開，讀到時改成 `flow-root`。
 
-#### 不要拿來做多欄
+### 不要拿來做多欄
 
 多欄不要再用 `float: left` 配百分比寬度。同一件事是 Grid 的 `repeat(3, minmax(0, 1fr))` 加 `gap`。Flex 與 Grid 也不必再寫 `-webkit-` 前綴。
-
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/26-float.html`，用 Live Server 開 `03-css/index.html` 再點選單「不要拿來做多欄（選讀）」。
 
 `inline-flex` 與 `inline-grid` 讓容器坐在文字行裡，裡面仍是 Flex 或 Grid。`grid-auto-flow: dense` 會回填跨格留下的洞，視覺順序會和原始碼不同。`subgrid` 讓子層沿用父層的欄線，卡片標題要跨卡對齊時再查。`display: contents` 會讓元素自己的盒子消失，也影響無障礙樹，課堂不要用來少包一層。
 
 下面這份同時看圖旁繞排，以及兩行以後省略。
 
-
-```html float.html
+```html 03-css/pages/26-float.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3616,18 +3521,15 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
-### 立體翻面
+## 立體翻面
 
 平面旋轉看不出厚度。翻面要視距、Y 軸，以及把背面藏起來。見 [MDN：perspective](https://developer.mozilla.org/zh-TW/docs/Web/CSS/perspective)。
 
-#### 視距與背面
+### 視距與背面
 
 平面的 `rotate` 看不出厚度。要翻面，父層給一個視距 `perspective`，卡片轉 Y 軸，背面用 `backface-visibility: hidden` 藏起來。正面與背面疊在同一個格子。`transform-style: preserve-3d` 讓子元素留在同一個 3D 空間，翻過去才看得到背面。背面先轉 180 度，父層再轉 180 度時它才正對你。`tabindex="0"` 讓鍵盤也能聚焦，`:focus-within` 跟 `:hover` 做同一件事。背面的文字若是必要資訊，不要只放在翻面之後。平面位移也不要加 `translateZ(0)` 來「加速」。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/27-flip.html`，用 Live Server 開 `03-css/index.html` 再點選單「視距與背面（選讀）」。
-
-
-```html flip.html
+```html 03-css/pages/27-flip.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3693,30 +3595,27 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
-### 容器查詢
+## 容器查詢
 
 媒體查詢看的是視窗。卡片要不要改排，有時該看它所在容器的寬度。見 [MDN：CSS 容器查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。
 
-#### 依容器寬度改排版
+### 依容器寬度改排版
 
-媒體查詢看視窗。同一張卡片放在窄側欄與寬主文時，視窗寬度相同，卡片該不該橫排卻不該相同。容器查詢（container query）看的是祖先的寬度。`container-type: inline-size` 把這一層標成查詢容器。`@container` 裡的規則看這個容器的內容寬度。全站的頁首、側欄仍用視窗查詢。一頁有多個容器時再加 `container-name`，避免查到外面那層。窄欄與寬欄的對照在下一節的 `read-extra.html`。
+媒體查詢看視窗。同一張卡片放在窄側欄與寬主文時，視窗寬度相同，卡片該不該橫排卻不該相同。容器查詢（container query）看的是祖先的寬度。`container-type: inline-size` 把這一層標成查詢容器。`@container` 裡的規則看這個容器的內容寬度。全站的頁首、側欄仍用視窗查詢。一頁有多個容器時再加 `container-name`，避免查到外面那層。窄欄與寬欄的對照在下一節。
 
-#### 動態視窗高度
+### 動態視窗高度
 
 `100vh` 在手機上常把網址列也算進去，區塊會比可見區域高一截。需要跟「此刻看得到的高度」走時，用 `100dvh`（dynamic viewport）。頁首固定、主文至少一屏這種需求才用得到，一般區塊繼續讓內容把高度撐開。
 
-### 把變數註冊成可補間
+## 把變數註冊成可補間
 
 沒有註冊的自訂屬性只是一串符號，顏色切換不會補間。`@property` 用來聲明它的語法。見 [MDN：@property](https://developer.mozilla.org/zh-TW/docs/Web/CSS/@property)。
 
-#### 語法與初始值
+### 語法與初始值
 
-一般的自訂屬性是一串符號。你寫 `transition: --brand 300ms` 時，瀏覽器不知道它是顏色，切換會瞬間跳過去。要讓顏色代幣可以補間，用 `@property` 註冊語法、繼承與初始值。`syntax` 寫錯時，整組註冊無效。`initial-value` 在語法要求下一定要有。沒有註冊之前，仍直接轉場 `background-color`，像 `motion.html` 那樣。全站代幣用覆寫 `--brand` 就夠。下面這份把容器查詢與 `@property` 放在同一頁，方便對照。
+一般的自訂屬性是一串符號。你寫 `transition: --brand 300ms` 時，瀏覽器不知道它是顏色，切換會瞬間跳過去。要讓顏色代幣可以補間，用 `@property` 註冊語法、繼承與初始值。`syntax` 寫錯時，整組註冊無效。`initial-value` 在語法要求下一定要有。沒有註冊之前，仍直接轉場 `background-color`，像轉場那一頁那樣。全站代幣用覆寫 `--brand` 就夠。下面這份把容器查詢與 `@property` 放在同一頁，方便對照。
 
-練習檔：`studiesAdvanced/01-html-css-js/03-css/pages/28-read-extra.html`，用 Live Server 開 `03-css/index.html` 再點選單「語法與初始值（選讀）」。
-
-
-```html read-extra.html
+```html 03-css/pages/28-read-extra.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -3813,38 +3712,15 @@ transition: background-color 200ms ease, translate 200ms ease;
 </html>
 ```
 
-## 本篇重點回顧
+# 本篇重點回顧
 
 下面只收這篇用過的觀念。
 
-### 選擇器到欄位
-
-誰被選到、字與底怎麼畫、盒子佔多大，決定之後才談一個方向或欄與列。
-
-#### 從選擇器到 Grid
-
-選擇器、權重與繼承決定規則打到誰。單位、顏色、文字與背景決定字與底怎麼畫。盒子、`display`、定位與 `z-index` 決定佔多大、跟誰比座標。Flex 排一個方向，Grid 排欄與列。
-
-### 媒體查詢與代幣
-
-窄畫面先能讀，結構要變才寫查詢；重複的色與間距收成會繼承的代幣。
-
-#### 流動與斷點
-
-同一份 HTML 先做流動版面：換行、`fr`、`minmax`、`max-width: 100%`。媒體查詢只改結構。以窄畫面為預設，`min-width` 由小到大往下寫，同時成立時後面蓋過前面。查詢看視窗。`print` 拿掉導覽並改成白底黑字。`clamp()` 用來讓標題在最小與最大之間伸縮。
-
-#### 自訂屬性
-
-自訂屬性以 `--` 宣告、用 `var()` 取用，會繼承。全站代幣放在 `:root`，區塊要換膚就在該元素覆寫同名變數。`var(--name, 備援)` 只在名字沒定義時使用。變數的值型別不合時，那條宣告在計算階段作廢，可繼承的屬性改走繼承，不會退回同一條規則裡前一個色碼。`prefers-color-scheme` 只換代幣。
-
-### 轉場、動畫與除錯
-
-變形不改佔位，轉場連接兩個狀態，動畫自己播。對不上時看開發者工具的最終值。
-
-#### 變形、轉場與關鍵影格
-
-`transform` 不改變排版佔位。常用函式是 `translate`、`scale`、`rotate`，原點用 `transform-origin`。同一條裡右邊的函式先套用。只補間位移時可用獨立屬性 `translate`，避免把 `rotate` 清掉。`transition` 連接兩個狀態，簡寫是屬性、時間、曲線、延遲。逐條列出要動的屬性。懸停效果包在 `(hover: hover) and (pointer: fine)`，鍵盤用 `:focus-visible`。`@keyframes` 加上 `animation` 才會自己播；沒寫持續時間就等於 0 秒。循環用 `infinite`，結束要停在最後一格用 `forwards` 或 `both`。`prefers-reduced-motion: reduce` 時把裝飾動畫關掉。
-
-#### 面板上的最終值
-
-除錯用 Chrome 的 **Elements**。**Styles** 看刪除線與無效宣告，**Computed** 看最終值，盒子圖對 padding 與 border。`:hov` 強制懸停與焦點，**Rendering** 模擬深色與減少動態，裝置工具列走斷點。**Animations** 看關鍵影格有沒有在播。面板裡的修改重新整理就沒了。float 多欄與廠商前綴、立體翻面、容器查詢與 `@property` 在上一節。對得上的時候，畫面與 **Styles** 的最終值是同一件事。
+- 一條規則是選擇器加上宣告；同屬性寫兩次留下較後面的，拼錯的宣告整條丟掉。
+- 元素、class、id 與組合決定打到誰；權重用四欄比，相同時看原始碼順序，逗號分組不會把權重加總。
+- 沒寫的屬性才談繼承；`inherit`、`initial`、`unset`、`revert` 把值交回父層、初始值或瀏覽器預設。
+- 長度以 `rem` 為主，顏色寫出色碼；字用字型堆疊，背景可以疊上顏色與圖片。
+- 盒子分內容、內距、邊框、外距；`display`、定位與 `overflow` 決定怎麼參加排版、跟誰比座標、超出時裁掉還是捲動。
+- Flex 排一個方向，Grid 排欄與列；窄畫面先做能換行的流動版面，結構要變才寫 `min-width` 媒體查詢。
+- 重複的色與間距收成會繼承的自訂屬性；`transform` 不改佔位，`transition` 補兩個狀態，`@keyframes` 自己播。
+- 對不上時看 **Styles** 的刪除線與 **Computed** 的最終值；面板裡的修改重新整理就沒了。

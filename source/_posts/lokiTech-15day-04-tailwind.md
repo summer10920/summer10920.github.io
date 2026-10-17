@@ -15,26 +15,24 @@ Tailwind CSS 把常用的 CSS 宣告做成一粒一粒的 class，稱為 utility
 
 <!-- more -->
 
-預覽以 Chrome 為準。在 `studiesAdvanced/02-tailwind` 執行 `pnpm dev`，用終端機印出的 Local 網址打開。改完存檔，畫面會自己更新。按 <kbd>F12</kbd> 看 **Elements → Styles**，核對的是編成之後的 CSS，不是 class 名字本身。
+預覽以 Chrome 為準。按 <kbd>F12</kbd> 看 **Elements → Styles**，核對的是編成之後的 CSS，不是 class 名字本身。
 
 | 大主題 | 章 | 你會用到的觀念 |
 | --- | --- | --- |
-| 環境 | 為什麼方便、Vite、掃描、專案結構、IntelliSense | utility、打包、JIT、pnpm、Node.js 24 |
+| 環境 | 為什麼方便、Vite、掃描、建立專案、IntelliSense | utility、打包、JIT、pnpm、Node.js 24 |
 | 配色 | 色階、透明度、品牌色、深色模式 | `bg-teal-700/50`、`@theme`、`dark:`、`@custom-variant` |
 | 公式 | 按鈕、卡片、導覽、表單、排版、狀態 | 間距刻度、Flex、Grid、`hover:`、`group` |
 | RWD | 手機優先、斷點、版心、自訂斷點、容器查詢 | `sm:`～`2xl:`、`container`、`@container` |
 | 本篇重點回顧 | 這篇用過的觀念 | 從 class 讀回 CSS |
 
-{% note primary %}
-**素材準備**
-練習專案是 `studiesAdvanced/02-tailwind`。目錄頁是 `index.html`，每一節有自己的 `pages/*.html`。選單只有一份，在 `partials/nav.html`，每一頁用一行 `<load>` 嵌進來。全站樣式在 `src/style.css`（`@import "tailwindcss"`、品牌色、版心）。手動深色只讓 `pages/10-dark-toggle.html` 額外載入 `src/dark-manual.css` 與 `src/dark-toggle.js`。不要裝 Bootstrap，也不要另寫 `tailwind.config.js`。
+{% note warning %}
+**注意事項**
+不要裝 Bootstrap，也不要另寫 `tailwind.config.js`。v4 的主題寫在 CSS 的 `@theme`，深色若要改成手動切換，用 `@custom-variant`，不要改回舊的設定檔寫法。
 {% endnote %}
 
 # 環境
 
 HTML 檔可以直接用瀏覽器開。Tailwind 的 class 要先編成一般 CSS，瀏覽器才知道 `p-4` 是 `padding: 1rem`。Vite 負責這段編譯，也負責本機的開發伺服器。這一章先看 utility 解決了哪三件煩惱，再看專案裡每個檔在做什麼。文件見 [安裝 Tailwind（Vite）](https://tailwindcss.com/docs/installation/using-vite) 與 [用 utility 寫樣式](https://tailwindcss.com/docs/styling-with-utility-classes)。
-
-練習檔：`studiesAdvanced/02-tailwind/`（`index.html`、`partials/nav.html`、`pages/01-compare.html`、`pages/02-naming.html`、`pages/03-size.html`、`pages/04-scan.html`、`package.json`、`vite.config.js`、`src/style.css`、`src/main.js`、`.prettierrc`）
 
 ## 為什麼 Tailwind 方便
 
@@ -59,9 +57,9 @@ css --> vite["Vite 交給瀏覽器"]
 | 改一個間距 | 找到選擇器再改宣告 | 換掉那個 class |
 | 重複出現的卡片 | 共用一個名字 | 每張卡貼同一串 class |
 
-打開 `studiesAdvanced/02-tailwind/pages/01-compare.html`。開發伺服器的路徑是 `/pages/01-compare.html`。左邊的卡片走 `<style>` 裡的 `.trip-card`，右邊同一種版面全部寫在 class 上。
+左邊的卡片走 `<style>` 裡的 `.trip-card`，右邊同一種版面全部寫在 class 上。
 
-```html pages/01-compare.html
+```html 02-tailwind/pages/01-compare.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -143,9 +141,9 @@ css --> vite["Vite 交給瀏覽器"]
 
 Utility 的詞彙是全站共用的。`px-5` 在按鈕上是左右 1.25rem，在別的標籤上也是左右 1.25rem。你不用為「大顆青綠圓角按鈕」再發明一個 class。語意留給標籤：按鈕就是 `button` 或 `a`，行程就是 `article`。class 只負責外觀。
 
-打開 `studiesAdvanced/02-tailwind/pages/02-naming.html`（路徑 `/pages/02-naming.html`）。上半段是越加越長的自訂 class，下半段是拆開的 utility。
+上半段是越加越長的自訂 class，下半段是拆開的 utility。
 
-```html pages/02-naming.html
+```html 02-tailwind/pages/02-naming.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -205,9 +203,9 @@ Utility 的詞彙是全站共用的。`px-5` 在按鈕上是左右 1.25rem，在
 
 如果一開始就把 Tailwind 所有可能的 class 都放進 CSS，檔案會大到不適合正式站。正式的做法是掃描你的原始碼，只把出現過的 class 編成規則。你沒寫過的 `bg-teal-200` 就不會出現在產出裡。開發時看起來「什麼 class 都能用」，是因為編譯器隨時在補你剛打上去的那幾條，不是因為瀏覽器內建了這本字典。
 
-打開 `studiesAdvanced/02-tailwind/pages/03-size.html`（路徑 `/pages/03-size.html`）。這一頁只用標題、一段內文、一個色塊。F12 點標題，Styles 裡會有字級、字重和青綠色。那些屬性來自編譯結果。瀏覽器並不認識 `text-2xl` 這個單字；拿掉 Vite、改用檔案協定直接開這份 HTML，utility 會全部失效。
+這一頁只用標題、一段內文、一個色塊。點標題時，Styles 裡會有字級、字重和青綠色。那些屬性來自編譯結果。瀏覽器並不認識 `text-2xl` 這個單字；拿掉編譯、改用檔案協定直接開這份 HTML，utility 會全部失效。
 
-```html pages/03-size.html
+```html 02-tailwind/pages/03-size.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -229,7 +227,7 @@ Utility 的詞彙是全站共用的。`px-5` 在按鈕上是左右 1.25rem，在
 
 #### 選讀：瀏覽器裡的 Play CDN
 
-有些舊教學讓你在 `head` 貼一段 `cdn.tailwindcss.com` 的 script，class 就能在沒有 Node 的頁面上變色。那段 script 會在瀏覽器裡臨時編譯，並帶上一大包樣式，正式站的體積與快取都不好控，也沒有這個專案的 `@theme`。課堂一律走 Vite。看到教學要你貼那條 script，或要你寫 `tailwind.config = { theme: { extend: ... } }`，把它當成舊路徑，不要放進 `02-tailwind`。
+有些舊教學讓你在 `head` 貼一段 `cdn.tailwindcss.com` 的 script，class 就能在沒有 Node 的頁面上變色。那段 script 會在瀏覽器裡臨時編譯，並帶上一大包樣式，正式站的體積與快取都不好控，也沒有這個專案的 `@theme`。課堂一律走 Vite。看到教學要你貼那條 script，或要你寫 `tailwind.config = { theme: { extend: ... } }`，把它當成舊路徑，不要放進頁面。
 
 ## 什麼是 Vite
 
@@ -246,7 +244,7 @@ build --> preview["pnpm preview：看打包結果"]
 
 直接用檔案協定打開 HTML 時，瀏覽器會擋住一部分模組請求，CSS 的 `import` 也不會被 Vite 處理。開發伺服器給你一個 `http://localhost` 開頭的網址，路徑 `/src/main.js`、`/pages/01-compare.html` 都從專案根目錄算。你改 class、存檔，Vite 通知瀏覽器更新，通常不用自己按重新整理。
 
-終端機要停在 `studiesAdvanced/02-tailwind`。`pnpm dev` 對應 `package.json` 裡的 `"dev": "vite"`。關掉那個終端機或按 <kbd>Ctrl</kbd>+<kbd>C</kbd>，網址就會連不上。埠被占用時，Vite 會改印另一個埠，以終端機那一行 Local 為準。
+`pnpm dev` 對應 `package.json` 裡的 `"dev": "vite"`。關掉那個終端機或按 <kbd>Ctrl</kbd>+<kbd>C</kbd>，網址就會連不上。埠被占用時，Vite 會改印另一個埠，以終端機那一行 Local 為準。
 
 ### 為什麼要打包
 
@@ -269,9 +267,9 @@ Tailwind CSS v4 的引擎在你存檔時工作：讀原始碼裡的 class、對�
 
 ### 只輸出用到的
 
-打開 `studiesAdvanced/02-tailwind/pages/04-scan.html`（路徑 `/pages/04-scan.html`）。第一段的 `bg-teal-700` 是原始碼裡的完整字串，背景是青綠。第二段的背景 class 由一段小 script 把 `rose` 接成 class 名字。原始碼裡沒有那個完整字串，背景就不會變。框線仍在，因為 `border` 是寫死在標籤上的。
+第一段的 `bg-teal-700` 是原始碼裡的完整字串，背景是青綠。第二段的背景 class 由一段小 script 把 `rose` 接成 class 名字。原始碼裡沒有那個完整字串，背景就不會變。框線仍在，因為 `border` 是寫死在標籤上的。
 
-```html pages/04-scan.html
+```html 02-tailwind/pages/04-scan.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -301,23 +299,22 @@ Tailwind CSS v4 的引擎在你存檔時工作：讀原始碼裡的 class、對�
 顏色若會變，就把每一個可能用到的完整 class 寫在原始碼裡，用條件決定套哪一個，例如 `isFull ? "bg-stone-300" : "bg-teal-700"`。兩個分支都是完整字串，掃描才看得到。不要寫 `bg-${name}-700`。
 {% endnote %}
 
-## 用 pnpm 建立專案，以及 02-tailwind 的結構
+## 用 pnpm 建立專案
 
-你 fork 的倉庫裡已經有 `02-tailwind/`。這一節說明它怎麼來、每個檔做什麼，以及你自己要下的指令。套件管理只用 pnpm。Node.js 用 24，`package.json` 的 `engines.node` 寫著 `>=24`。
+套件管理只用 pnpm。Node.js 用 24，`package.json` 的 `engines.node` 寫著 `>=24`。Vite 負責開發伺服器，也負責把目錄頁和每一節 HTML 收成打包入口。
 
 ### Node.js 24 與 pnpm
 
 Node.js 是跑 Vite 與 Tailwind 編譯器的執行環境。終端機輸入 `node -v`，主版本應是 24。pnpm 用來安裝 `package.json` 裡列出的套件，並用 `pnpm-lock.yaml` 讓每個人裝到同一組版本。還沒有 pnpm 時，先執行 `corepack enable`，然後開一個新的終端機，再 `pnpm -v`。
 
 ```bash
-cd studiesAdvanced/02-tailwind
 pnpm install
 pnpm dev
 ```
 
 `pnpm install` 會依 lock 檔下載套件到 `node_modules/`。這個資料夾不要 commit。刪掉之後再下一次 `pnpm install` 就會裝回來。
 
-若要從空白目錄重做一次同一種專案，指令是下面這組。課堂直接用倉庫裡的 `02-tailwind`，不必再 `create` 一次。模板是 `vanilla`，也就是沒有框架的 HTML、CSS 與 JavaScript。
+若要從空白目錄重做一次同一種專案，指令是下面這組。課堂用已經裝好套件的專案即可，不必再 `create` 一次。模板是 `vanilla`，也就是沒有框架的 HTML、CSS 與 JavaScript。
 
 ```bash
 pnpm create vite@latest 02-tailwind --template vanilla
@@ -325,27 +322,11 @@ cd 02-tailwind
 pnpm add -D tailwindcss @tailwindcss/vite vite-plugin-html-inject
 ```
 
-### 專案裡的檔
+### 入口與設定
 
-| 檔案 | 是什麼 |
-| --- | --- |
-| `package.json` | 名稱、`engines`、`scripts`、依賴 |
-| `pnpm-lock.yaml` | 鎖定實際安裝的版本 |
-| `node_modules/` | 下載下來的套件，不 commit |
-| `index.html` | 目錄頁，網址是 `/` |
-| `pages/*.html` | 各節示範。網址是 `/pages/檔名.html` |
-| `partials/nav.html` | 全站選單，只寫一份 |
-| `vite.config.js` | Tailwind 插件、HTML 嵌入、自動收集 `pages/*.html` 入口 |
-| `src/main.js` | `import "./style.css"`，給多數頁面用 |
-| `src/style.css` | `@import "tailwindcss"`、`@theme`、`@utility container` |
-| `src/dark-manual.css` | 只把 `dark` 改成看 class |
-| `src/dark-toggle.js` | 切換按鈕 |
-| `.prettierrc` | 全專案的排版：2 空格、分號、雙引號 |
-| `dist/` | `pnpm build` 的產出，不 commit |
+`@tailwindcss/vite` 讓 Vite 在處理 CSS 時跑 Tailwind。`vite-plugin-html-inject` 把選單嵌進 HTML。`build.rollupOptions.input` 的入口是目錄頁，加上 `pages/` 裡每一份副檔名是 `.html` 的檔。新加一頁、檔名仍放在這個資料夾，打包就會把它算進去。
 
-打開 `studiesAdvanced/02-tailwind/vite.config.js`。`@tailwindcss/vite` 讓 Vite 在處理 CSS 時跑 Tailwind。`vite-plugin-html-inject` 負責把選單嵌進 HTML。`build.rollupOptions.input` 的入口是目錄頁，加上 `pages/` 裡每一份副檔名是 `.html` 的檔。新加一頁、檔名仍放在這個資料夾，`pnpm build` 就會把它算進去。
-
-```js vite.config.js
+```js 02-tailwind/vite.config.js
 import { readdirSync } from "node:fs";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
@@ -370,47 +351,43 @@ export default defineConfig({
 
 ### 共用選單
 
-HTML 與 CSS 那兩份練習在 `studiesAdvanced/01-html-css-js/02-html` 與 `studiesAdvanced/01-html-css-js/03-css`。它們用 Live Server 打開外層的 `index.html`：選單留在外層，點了以後換右邊 iframe 裡的另一份文件。那兩份沒有要編譯的 class，iframe 就把「選單」和「這一節」分成兩個文件。
+class 要先編成 CSS，所以每一節是 Vite 的一個 HTML 入口。目錄的網址是 `/`，各節是 `/pages/…`。選單的 markup 只寫一份。開發與打包時，插件讀每一頁 body 開頭的 `<load>`，把同一份嵌進去。選單上的 class 會跟各頁一起被掃描。
 
-這一份的 class 要先編成 CSS，所以每一節就是 Vite 的一個 HTML 入口。目錄的網址是 `/`，第一節是 `/pages/01-compare.html`。網址列、重新整理、F12 的 Elements 都停在你正在看的那一頁。選單的 markup 只放在 `studiesAdvanced/02-tailwind/partials/nav.html`。`pnpm dev` 與 `pnpm build` 時，插件讀每一頁 body 開頭的 `<load>`，把同一份選單嵌進去，`dist/` 裡也是嵌好的結果。Tailwind 掃的是專案裡的檔，`partials/nav.html` 上的 class 會跟各頁一起進 CSS。
+選單是貼在視窗上方的頂欄：`sticky top-0`。同一批連結寫兩次。寬螢幕那份是 `nav`，class 是 `hidden md:flex`，夠寬就橫排換行。窄螢幕那份放進 `<details>` 與 `<summary>`，外層是 `md:hidden`，按「選單」才打開。這樣關掉的 `details` 不會把桌面連結藏起來。目前這一頁的連結帶 `aria-current="page"`，外觀用 `aria-[current=page]:`。深色用 `dark:`。內層有 `container`，左右留白是 `px-4` 與 `sm:px-6`。`container` 的最大寬度留到版心那一節，用 `@utility` 自己定義。
 
-選單是貼在視窗上方的頂欄：`sticky top-0`。同一批連結寫兩次。寬螢幕那份是 `nav`，class 是 `hidden md:flex`，夠寬就橫排換行。窄螢幕那份放進 `<details>` 與 `<summary>`，外層是 `md:hidden`，按「選單」才打開。這樣關掉的 `details` 不會把桌面連結藏起來。目前這一頁的連結帶 `aria-current="page"`，外觀用 `aria-[current=page]:`。深色用 `dark:`，跟系統那一頁走系統偏好，手動切換那一頁跟著 html 上的 `dark` class。內層有 `container`，左右留白是 `px-4` 與 `sm:px-6`。`container` 的定義仍是 `src/style.css` 裡的 TODO，補上之後這列會收到版心。
+目錄頁的路徑從專案根目錄算：
 
-目錄頁這一行的路徑從專案根目錄算：
-
-```html index.html
+```html
 <load src="./partials/nav.html" home="page" />
 ```
 
-`pages/` 裡多一層，屬性號碼對到檔名。`pages/01-compare.html` 是：
+各節多一層，屬性號碼對到這一頁：
 
-```html pages/01-compare.html
+```html
 <load src="../partials/nav.html" p01="page" />
 ```
 
-`p01` 對上選單裡的 `{=$p01}`，值固定寫 `page`。這一行保持自閉合，插件才認得。後面各節貼出的 HTML 從該節的內容寫起，省略這一行；檔案裡要留著，頂欄才會出現。`pages/13-nav.html` 要練的導覽寫在那一頁自己的 `header`（checkbox 與 `peer`），跟這份全站選單是兩份。
+`p01` 對上選單裡的 `{=$p01}`，值固定寫 `page`。這一行保持自閉合，插件才認得。下面各節的 HTML 從該節的內容寫起，不重複貼 `<load>`；頁面上仍要留著那一行，頂欄才會出現。導覽那一節自己的 `header`（checkbox 與 `peer`）跟這份全站選單是兩份。
 
-打開 `studiesAdvanced/02-tailwind/src/main.js`。沒有這行 import，HTML 上的 utility 不會進到頁面。
+沒有這行 import，HTML 上的 utility 不會進到頁面。
 
-```js src/main.js
+```js 02-tailwind/src/main.js
 import "./style.css";
 ```
 
-每份示範頁的 `body` 結尾都有：
+多數頁面在 `body` 結尾載入它：
 
 ```html
 <script type="module" src="/src/main.js"></script>
 ```
 
-`type="module"` 讓瀏覽器以模組方式載入，Vite 才處理得了裡面的 `import`。路徑以 `/` 開頭，表示專案根目錄，不要寫成 `../src/main.js`。深色切換那一頁改載入 `/src/dark-toggle.js`，那個檔自己會再 import CSS。
-
-class 沒有生效時，依序查：終端機的開發伺服器是否還開著、這份 HTML 有沒有載入 `main.js` 或 `dark-toggle.js`、改的是不是 `src/style.css`、存檔沒有。v4 不靠 `tailwind.config.js` 才會動。
+`type="module"` 讓瀏覽器以模組方式載入，Vite 才處理得了裡面的 `import`。路徑以 `/` 開頭，表示專案根目錄，不要寫成 `../src/main.js`。手動深色那一頁改載入 `/src/dark-toggle.js`，那個檔自己會再 import CSS。v4 不靠 `tailwind.config.js` 才會動。
 
 ### Prettier
 
-排版交給 Prettier，不把 `prettier.semi` 這類鍵寫進個人的使用者設定。打開 `studiesAdvanced/02-tailwind/.prettierrc`。全專案同一套：要分號、雙引號、2 空格。這個資料夾不放 ESLint；規則跟專案走，React 那個專案才會再加。
+排版交給 Prettier，不把 `prettier.semi` 這類鍵寫進個人的使用者設定。全專案同一套：要分號、雙引號、2 空格。這一階段不放 ESLint；規則跟專案的設定檔走，React 那個專案才會再加。
 
-```json .prettierrc
+```json 02-tailwind/.prettierrc
 {
   "semi": true,
   "singleQuote": false,
@@ -420,9 +397,9 @@ class 沒有生效時，依序查：終端機的開發伺服器是否還開著�
 
 ## VS Code IntelliSense
 
-Tailwind CSS IntelliSense 會在你打 class 時列出候補、色票與編成後的 CSS。用 VS Code 打開 `studiesAdvanced` 這個根目錄，依建議安裝這個套件。它讀得到 v4，是因為 `src/style.css` 裡有 `@import "tailwindcss"`。
+Tailwind CSS IntelliSense 會在你打 class 時列出候補、色票與編成後的 CSS。它讀得到 v4，是因為入口 CSS 裡有 `@import "tailwindcss"`。
 
-打開 `studiesAdvanced/02-tailwind/pages/01-compare.html`，游標停在右邊卡片的 `bg-teal-700` 上。懸停應出現背景色的說明；往下打 `bg-` 時應跳出色族。沒有候補時，確認開的是倉庫根目錄、套件已啟用、`style.css` 的 import 還在。候補是輔助，仍然要能把 class 翻回 CSS。
+游標停在 `bg-teal-700` 上時，懸停應出現背景色的說明；往下打 `bg-` 時應跳出色族。沒有候補時，先確認套件已啟用、入口 CSS 的 import 還在。候補是輔助，仍然要能把 class 翻回 CSS。
 
 {% note info %}
 **小技巧：候補裡先看數字**
@@ -432,8 +409,6 @@ Tailwind CSS IntelliSense 會在你打 class 時列出候補、色票與編成�
 # 配色
 
 Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深的色階。你用 `text-`、`bg-`、`border-` 決定這顆顏色塗在字、底還是框上。品牌色不在預設色票裡時，用 `@theme` 加進同一套名字。深色則是在同一顆元素上再寫一組 `dark:`。色票總表見 [Colors](https://tailwindcss.com/docs/colors)，自訂變數見 [Theme variables](https://tailwindcss.com/docs/theme)。
-
-練習檔：`studiesAdvanced/02-tailwind/pages/`（`05-palette.html`、`06-opacity.html`、`07-paint.html`、`08-theme.html`、`09-dark-system.html`、`10-dark-toggle.html`）
 
 ## 預設色票與色階
 
@@ -445,9 +420,9 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 課堂的旅行頁以 `teal` 當主色、`stone` 當中性色。`stone` 帶一點暖灰，大段內文比純黑耐看。警告與刪除才用 `rose` 或 `red`，而且要深字配淺底。
 
-打開 `studiesAdvanced/02-tailwind/pages/05-palette.html`（路徑 `/pages/05-palette.html`）。上一列是 teal 的 11 階，下一列是幾個色族的 500，用來比較色相。
+上一列是 teal 的 11 階，下一列是幾個色族的 500，用來比較色相。
 
-```html pages/05-palette.html
+```html 02-tailwind/pages/05-palette.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -497,9 +472,9 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 常用的刻度是 `/5`、`/10`、`/20`、`/25`、`/30`、`/40`、`/50`、`/60`、`/70`、`/75`、`/80`、`/90`、`/95`。不寫斜線就是完全不透明。整顆元素變淡用 `opacity-50`，那會連子元素的字一起淡。只想讓背景透、字保持清楚時，把斜線加在 `bg-` 上，不要加在外層的 `opacity-`。
 
-打開 `studiesAdvanced/02-tailwind/pages/06-opacity.html`（路徑 `/pages/06-opacity.html`）。頁面底是 `bg-amber-100`，用來讓透明看得到。
+頁面底是 `bg-amber-100`，用來讓透明看得到。
 
-```html pages/06-opacity.html
+```html 02-tailwind/pages/06-opacity.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -528,9 +503,7 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 同一塊訊息用同一個色族：淺底、深字、稍深的框。正文用 `text-stone-600` 或 `text-stone-700`，標題用 `text-stone-900` 或 `text-teal-900`。純黑 `text-black` 在長文裡偏硬，旅行頁的內文留在 stone。
 
-打開 `studiesAdvanced/02-tailwind/pages/07-paint.html`（路徑 `/pages/07-paint.html`）。
-
-```html pages/07-paint.html
+```html 02-tailwind/pages/07-paint.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -560,9 +533,9 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 `@theme` 會和 Tailwind 內建的主題合併。你新增 `brand` 不會刪掉 `teal`。若變數名字和內建的相同，例如你再宣告一次 `--color-teal-700`，那個內建值會被蓋掉。課堂只新增 `brand`，不去覆蓋整份預設色票。
 
-打開 `studiesAdvanced/02-tailwind/src/style.css` 看變數，再打開 `studiesAdvanced/02-tailwind/pages/08-theme.html`（路徑 `/pages/08-theme.html`）。頁面底、標題與按鈕都用 `brand`。
+品牌色寫進 `@theme`。頁面底、標題與按鈕都用 `brand`。斷點兩行可以先放在同一段，版心的 `@utility` 留到後面再補。
 
-```css src/style.css
+```css 02-tailwind/src/style.css
 @import "tailwindcss";
 
 @theme {
@@ -584,7 +557,7 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 斷點兩行留到 RWD 那一章再用。品牌色這一段現在就可以對著頁面看。
 
-```html pages/08-theme.html
+```html 02-tailwind/pages/08-theme.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -652,9 +625,9 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 淺色是沒有前綴的 class，深色是 `dark:`。寬度變體可以再疊在前面，例如 `md:dark:bg-teal-900`，讀的時候先看斷點、再看深色、最後看屬性。這一頁先不疊斷點，只看顏色。
 
-打開 `studiesAdvanced/02-tailwind/pages/09-dark-system.html`（路徑 `/pages/09-dark-system.html`）。這一頁載入的是 `src/main.js`，沒有 `@custom-variant`，所以 `dark:` 仍跟系統。
+這一頁載入的是會 import 全站 CSS 的模組，沒有 `@custom-variant`，所以 `dark:` 仍跟系統。
 
-```html pages/09-dark-system.html
+```html 02-tailwind/pages/09-dark-system.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -689,15 +662,13 @@ Tailwind 的顏色是一組命名好的色族，每一族再分成由淺到深�
 
 `&` 代表正在套用這個 variant 的那個元素。`.dark` 是 html 上的 class。`.dark *` 是它的後代。按鈕只負責在 `document.documentElement`（也就是 `<html>`）上切換這個 class。
 
-這一行若寫進全站的 `src/style.css`，每一頁的 `dark:` 都會改看 class，`pages/09-dark-system.html` 就不再跟系統。所以它放在 `src/dark-manual.css`，只有切換頁的腳本會 import 它。
+這一行若寫進全站的入口 CSS，每一頁的 `dark:` 都會改看 class，跟著系統的那一頁就不再跟系統。所以它放在另一份 CSS，只有切換頁的腳本會 import 它。
 
-打開 `studiesAdvanced/02-tailwind/src/dark-manual.css`、`src/dark-toggle.js`，以及 `studiesAdvanced/02-tailwind/pages/10-dark-toggle.html`（路徑 `/pages/10-dark-toggle.html`）。
-
-```css src/dark-manual.css
+```css 02-tailwind/src/dark-manual.css
 @custom-variant dark (&:where(.dark, .dark *));
 ```
 
-```js src/dark-toggle.js
+```js 02-tailwind/src/dark-toggle.js
 import "./style.css";
 import "./dark-manual.css";
 
@@ -721,7 +692,7 @@ button.addEventListener("click", () => {
 
 第一次打開時，若你還沒按過按鈕，就先跟系統偏好走，並把結果寫成 html 的 class。按按鈕會切換 class，並把 `dark` 或 `light` 存進 `localStorage`，重新整理才不會跳回去。按鈕文字跟當下狀態走：已經是深色時，按鈕寫「切換亮色」。
 
-```html pages/10-dark-toggle.html
+```html 02-tailwind/pages/10-dark-toggle.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -764,9 +735,7 @@ F12 點 `<html>`，手動加上或拿掉 class `dark`，卡片應跟著變。這
 
 Utility 可以疊。一顆按鈕通常是形狀、底色、內距、字重、文字色這幾粒加在一起。你不需要背完整份清單。先記住這一章的幾種版面，其餘用文件與公式表把 class 翻回 CSS。狀態（滑過、聚焦）與斷點都寫在 class 的前綴，稱為 variant。見 [Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。
 
-整份對照表在 [TailwindCSS v4.1 公式表](https://summer10920.github.io/2025/09-01/tailwindcss-cheat-sheet/)。那一頁依版面、Flex、間距、文字、背景、邊框、陰影、轉場分開列。查的時候先對中文小節，再看「類別名稱」與「CSS 屬性」兩欄。官方文件則是一個主題一頁，頁首有 class 的組成方式，頁尾有客製。
-
-練習檔：`studiesAdvanced/02-tailwind/pages/`（`11-button.html`、`12-card.html`、`13-nav.html`、`14-form.html`、`15-scale.html`、`16-layout.html`、`17-states.html`、`18-formula.html`）
+整份對照表在 {% post_link lokiTech-15day-05-tailwind-cheatsheet TailwindCSS v4.1 公式表 %}。那一頁依版面、Flex、間距、文字、背景、邊框、陰影、轉場分開列。查的時候先對中文小節，再看「類別名稱」與「CSS 屬性」兩欄。官方文件則是一個主題一頁，頁首有 class 的組成方式，頁尾有客製。
 
 ## 按鈕
 
@@ -774,9 +743,7 @@ Utility 可以疊。一顆按鈕通常是形狀、底色、內距、字重、文
 
 連結去別的網址或錨點，用 `<a>`。在這一頁做事情，用 `<button type="button">`。不要用 `<div>` 假裝按鈕。`inline-flex items-center` 讓文字在按鈕裡垂直居中；只有文字、沒有圖示時，`inline-block` 也夠。
 
-打開 `studiesAdvanced/02-tailwind/pages/11-button.html`（路徑 `/pages/11-button.html`）。
-
-```html pages/11-button.html
+```html 02-tailwind/pages/11-button.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -815,9 +782,7 @@ Utility 可以疊。一顆按鈕通常是形狀、底色、內距、字重、文
 
 內文用 `space-y-2` 或各自的 `mt-*` 都可以。`space-y-2` 是「直向的子元素之間隔 0.5rem」，第一個子元素上面不會多一塊。價錢用較深的 teal，和說明的 `text-stone-600` 分開。
 
-打開 `studiesAdvanced/02-tailwind/pages/12-card.html`（路徑 `/pages/12-card.html`）。
-
-```html pages/12-card.html
+```html 02-tailwind/pages/12-card.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -848,9 +813,9 @@ Utility 可以疊。一顆按鈕通常是形狀、底色、內距、字重、文
 
 寬度到達 `md`（48rem，約 768px）時，`md:static md:flex md:flex-row` 把導覽放回文件流、改成橫排，`md:hidden` 把「選單」標籤收起來。`md:bg-transparent md:p-0` 清掉手機選單那層底色與內距。
 
-打開 `studiesAdvanced/02-tailwind/pages/13-nav.html`（路徑 `/pages/13-nav.html`）。把視窗拉到約 390px 寬按「選單」，再拉過 768px 看橫排。
+把視窗拉到約 390px 寬按「選單」，再拉過 768px 看橫排。
 
-```html pages/13-nav.html
+```html 02-tailwind/pages/13-nav.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -893,9 +858,9 @@ Utility 可以疊。一顆按鈕通常是形狀、底色、內距、字重、文
 
 核取方塊用 `accent-teal-700` 把系統的強調色改成品牌附近的青。送出鈕是 `type="submit"`。這一頁的 `action` 是 `#`，按下去只停在本頁，不會把資料送到別的伺服器。
 
-打開 `studiesAdvanced/02-tailwind/pages/14-form.html`（路徑 `/pages/14-form.html`）。用 <kbd>Tab</kbd> 走過欄位，環應出現在目前這格。
+用 <kbd>Tab</kbd> 走過欄位，環應出現在目前這格。
 
-```html pages/14-form.html
+```html 02-tailwind/pages/14-form.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -968,9 +933,9 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 | `max-w-sm` / `max-w-6xl` | 24rem / 72rem | 單張卡、整頁版心 |
 | `rounded-lg` / `rounded-2xl` | 0.5rem / 1rem | 按鈕、卡片 |
 
-打開 `studiesAdvanced/02-tailwind/pages/15-scale.html`（路徑 `/pages/15-scale.html`）。方塊的寬高與下面幾行字級是刻度的樣品，不是一張完成的旅行頁。
+方塊的寬高與下面幾行字級是刻度的樣品，不是一張完成的旅行頁。
 
-```html pages/15-scale.html
+```html 02-tailwind/pages/15-scale.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1019,9 +984,9 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 
 多張卡片要等寬、自動換欄，用 Grid。`grid` 打開格線，`grid-cols-1` 是一欄，`sm:grid-cols-2` 與 `lg:grid-cols-3` 在較寬時加欄。`gap-4` 同時管行與列的縫。單張卡裡的標題與內文不必再套 Grid，用一般的區塊往下排即可。
 
-打開 `studiesAdvanced/02-tailwind/pages/16-layout.html`（路徑 `/pages/16-layout.html`）。上半是頁首那種 Flex，下半是會隨寬度加欄的卡片牆。
+上半是頁首那種 Flex，下半是會隨寬度加欄的卡片牆。
 
-```html pages/16-layout.html
+```html 02-tailwind/pages/16-layout.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1080,9 +1045,7 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 
 `peer` / `peer-checked:` 在導覽那一節已經用過。這裡再做一顆「我已閱讀」：勾選後才顯示下一句。`sr-only` 把方塊移出畫面，標籤仍點得到。
 
-打開 `studiesAdvanced/02-tailwind/pages/17-states.html`（路徑 `/pages/17-states.html`）。
-
-```html pages/17-states.html
+```html 02-tailwind/pages/17-states.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1151,7 +1114,7 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 
 `bg`、`text`、`border`、`p`、`m`、`w`、`h`、`gap`、`rounded`、`shadow` 是你會反覆遇到的屬性詞。顏色接色族再接色階。沒有色階的 `white`、`black`、`transparent`、`current` 直接接在屬性後面：`text-white`、`bg-transparent`、`text-current`。
 
-打開 `studiesAdvanced/02-tailwind/pages/18-formula.html`（路徑 `/pages/18-formula.html`）。把按鈕的 class 對照下表。
+把按鈕的 class 對照下表。
 
 | 片段 | 意思 |
 | --- | --- |
@@ -1163,7 +1126,7 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 | `md:px-6` | 48rem 以上左右改 1.5rem |
 | `md:hover:bg-teal-800` | 48rem 以上且滑過，底色再深一階 |
 
-```html pages/18-formula.html
+```html 02-tailwind/pages/18-formula.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1195,17 +1158,15 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 
 `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 已經寫在每一份示範頁的 `head`。沒有它，手機會把頁面縮成桌面寬度的一小條，斷點會全部失真。
 
-練習檔：`studiesAdvanced/02-tailwind/pages/`（`19-mobile.html`、`20-breakpoints.html`、`21-container.html`、`22-custom-breakpoint.html`、`23-container-query.html`）與 `src/style.css`
-
 ## 手機優先
 
 先在窄視窗把字讀完、按鈕點得到，再往寬的方向加欄。沒有前綴的 `grid-cols-1`、`px-4`、`text-3xl` 在 320px 和 1440px 都會在。你後來加上的 `lg:grid-cols-3` 只在夠寬時覆蓋欄數，窄畫面仍是一欄。
 
 若先寫桌面的三欄、再用 `max-lg:` 往回改成一欄，中間的寬度很容易漏。課堂的新頁面用 `min-width` 方向的前綴，也就是 `sm:` 這一族。`max-md:hidden` 這種「小於 md 才隱藏」可以偶發使用，例如某個只在窄螢幕出現的句子，但版面骨架仍從一欄往上加。
 
-打開 `studiesAdvanced/02-tailwind/pages/19-mobile.html`（路徑 `/pages/19-mobile.html`）。這一頁故意不加欄數。把視窗拉寬，卡片仍是一欄，用來確認「沒有前綴就不會自己變多欄」。
+這一頁故意不加欄數。把視窗拉寬，卡片仍是一欄，用來確認「沒有前綴就不會自己變多欄」。
 
-```html pages/19-mobile.html
+```html 02-tailwind/pages/19-mobile.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1248,9 +1209,9 @@ Tailwind 的間距刻度來自 `--spacing: 0.25rem`。數字乘上 0.25rem 就�
 
 rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你設在 `html` 上的字級影響。查詢看的是視窗寬度，不是手機型號。把桌機瀏覽器拉窄，就該看到窄版。
 
-打開 `studiesAdvanced/02-tailwind/pages/20-breakpoints.html`（路徑 `/pages/20-breakpoints.html`）。頂端那條色帶會寫出目前跨過哪一個斷點，下面的清單從一欄加到六欄。慢慢拉寬視窗即可。
+頂端那條色帶會寫出目前跨過哪一個斷點，下面的清單從一欄加到六欄。慢慢拉寬視窗即可。
 
-```html pages/20-breakpoints.html
+```html 02-tailwind/pages/20-breakpoints.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1308,9 +1269,9 @@ rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你�
 
 若你希望有一個叫 `container` 的 class 同時做這三件事，並讓最大寬度跟著斷點變，就在 CSS 裡用 `@utility` 自己定義。這個專案的定義在 `src/style.css`。它從窄到寬加上 `max-width`，並在 40rem 之後把左右內距從 1rem 加到 1.5rem。
 
-打開 `studiesAdvanced/02-tailwind/src/style.css` 的 `@utility container`，再打開 `studiesAdvanced/02-tailwind/pages/21-container.html`（路徑 `/pages/21-container.html`）。上半是 `container`，下半是 `mx-auto max-w-6xl px-4`。灰底是視窗，白底與淡青底是版心。
+上半用 `@utility` 定義的 `container`，下半是 `mx-auto max-w-6xl px-4`。灰底是視窗，白底與淡青底是版心。
 
-```css src/style.css
+```css 02-tailwind/src/style.css
 @utility container {
   width: 100%;
   margin-inline: auto;
@@ -1334,7 +1295,7 @@ rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你�
 }
 ```
 
-```html pages/21-container.html
+```html 02-tailwind/pages/21-container.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1369,9 +1330,9 @@ rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你�
 
 名字會變成 variant 的名字。用 `tablet` 而不是再定義一個含糊的 `sm`，才不會蓋掉內建的 40rem。要拿掉某個內建斷點時才把它設成 `initial`，課堂保留五個預設值。
 
-打開 `studiesAdvanced/02-tailwind/src/style.css` 裡的 `--breakpoint-tablet` 與 `--breakpoint-3xl`，再打開 `studiesAdvanced/02-tailwind/pages/22-custom-breakpoint.html`（路徑 `/pages/22-custom-breakpoint.html`）。
+`--breakpoint-tablet` 與 `--breakpoint-3xl` 寫在同一份 `@theme`。這一頁用 `tablet:` 把兩欄打開，`3xl:` 只多顯示一句。
 
-```html pages/22-custom-breakpoint.html
+```html 02-tailwind/pages/22-custom-breakpoint.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1416,9 +1377,9 @@ rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你�
 | `@lg:` | 32rem |
 | `@xl:` | 36rem |
 
-打開 `studiesAdvanced/02-tailwind/pages/23-container-query.html`（路徑 `/pages/23-container-query.html`）。外框有 `resize-x`，用滑鼠拖右邊。視窗可以維持很寬；排版只跟這個框的寬度走。框還窄時圖在上，拖過大約 28rem 之後圖到左邊。
+外框有 `resize-x`，用滑鼠拖右邊。視窗可以維持很寬；排版只跟這個框的寬度走。框還窄時圖在上，拖過大約 28rem 之後圖到左邊。
 
-```html pages/23-container-query.html
+```html 02-tailwind/pages/23-container-query.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1456,28 +1417,12 @@ rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px），不受你�
 
 # 本篇重點回顧
 
-utility 是已經取好名的 CSS 宣告。Vite 與 Tailwind 在開發伺服器裡把它們編成樣式，正式打包時只留下專案原始碼出現過的完整 class。顏色用色族加色階，品牌色進 `@theme`，深色用 `dark:`。版面從窄的一欄寫起，再用斷點往上加。
+下面只收這篇用過的觀念。
 
-## 環境與顏色
-
-專案用 pnpm 與 Node.js 24 跑 Vite。顏色不是在 HTML 裡寫十六進位，而是色族、色階，以及 `@theme` 裡的品牌名。
-
-### 從 class 到 CSS
-
-`pnpm dev` 跑在 `studiesAdvanced/02-tailwind`。`src/main.js` import `src/style.css`，那份 CSS 以 `@import "tailwindcss"` 開頭。class 必須是原始碼裡的完整字串。IntelliSense 用來候補與核對，F12 的 Styles 用來看最終屬性。
-
-### 色階、品牌色與深色
-
-`text-`、`bg-`、`border-` 決定塗在哪。`/50` 是不透明度。`--color-brand-700` 產生 `bg-brand-700`。預設的 `dark:` 跟 `prefers-color-scheme`。手動切換只在 `pages/10-dark-toggle.html`，靠 `src/dark-manual.css` 的 `@custom-variant` 與按鈕腳本。
-
-## 組合與寬度
-
-按鈕到卡片牆都是同一批 utility 加上狀態前綴。寬度從窄畫面寫起，版心用置中與最大寬度把內容收回來。
-
-### 版面公式
-
-按鈕、卡片、導覽、表單都是同一批間距、圓角、Flex 與 Grid。`hover:`、`focus-visible:`、`group-hover:`、`peer-checked:` 是狀態前綴，`transition` 連接兩個狀態。查不到的 class 去[公式表](https://summer10920.github.io/2025/09-01/tailwindcss-cheat-sheet/)對 CSS 屬性。
-
-### 斷點與版心
-
-沒有前綴的規則服務所有寬度。`sm` 到 `2xl` 是視窗最小寬度。`mx-auto max-w-6xl px-4` 是不取名字的版心；專案裡的 `container` 是 `@utility` 自己定義的。`tablet:` 來自 `--breakpoint-tablet`。`@container` 與 `@md:` 看的是父層寬度，和視窗的 `md:` 不是同一個門檻。
+- 一個 utility 只做一件事；編譯器只認原始碼裡的完整 class 字串，`bg-${color}` 這種接起來的名字不會產生規則。
+- `text-`、`bg-`、`border-` 決定顏色塗在哪，斜線後面是不透明度，色階數字越小越淺。
+- `@theme` 的 `--color-brand-*` 做出 `bg-brand-*` 這類 class，`--breakpoint-*` 做出自訂前綴，不會蓋掉內建的 `teal` 與 `sm:`。
+- 預設的 `dark:` 跟系統的 `prefers-color-scheme`；要改成按鈕切換時，用 `@custom-variant` 讓它改看 html 上的 `dark` class。
+- 按鈕、卡片、導覽與表單是間距、圓角、Flex、Grid 疊出來的，狀態用 `hover:`、`focus-visible:`、`group-hover:`、`peer-checked:`。
+- 沒有前綴的規則在所有寬度都生效；`sm:` 到 `2xl:` 是視窗夠寬才加上去，所以版面從窄的一欄寫起。
+- 版心可以寫 `mx-auto max-w-6xl px-4`，或用 `@utility container` 自己定義；`@container` 看父層寬度，和視窗的 `md:` 不是同一個門檻。
