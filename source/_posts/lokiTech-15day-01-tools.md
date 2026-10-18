@@ -282,6 +282,8 @@ JavaScript 可讀寫 DOM 與 CSSOM，因此腳本執行時機會打斷解析（�
 {% endnote %}
 
 ## 開發者工具對照
+Chrome 按 <kbd>F12</kbd> 打開的開發者工具，把同一頁拆成幾個面板。先對一下中文介面、英文面板名，和課堂會用到的用途，之後才知道要切到哪一頁。
+
 | 面板 | 英文 | 用途 |
 | --- | --- | --- |
 | 元素 | Elements | 檢視並暫時修改 DOM 與套用的 CSS |
@@ -355,7 +357,7 @@ ng["Angular"] -.-> fw
 {% endmermaid %}
 
 # 初始安裝設定
-先把編輯器、瀏覽器、Git 與 GitHub 帳號準備好，再進 VS Code 打開課堂倉庫、裝套件、開始寫。編輯器套件今天一次裝齊，後面幾天不必再裝。課堂用 VS Code 編輯、Chrome 預覽與 DevTools。Node 與 pnpm 等到有 Tailwind 專案時再裝，不是今天。
+先把編輯器、瀏覽器、Git 與 GitHub 帳號準備好，再進 VS Code 打開課堂倉庫、裝套件、開始寫。編輯器套件今天一次裝齊，後面幾天不必再裝。課堂用 VS Code 編輯、Chrome 預覽與 DevTools。Node.js 與 pnpm 留到第 4 天，第一個 Tailwind 專案需要編譯時再裝，今天先不裝。
 
 ## 環境申請安裝
 這一節只做「申請帳號、把軟體裝進這台電腦」：VS Code、Chrome、Git、GitHub。還沒有打開課堂專案。
@@ -543,9 +545,8 @@ Git Graph 要開著含 `.git` 的倉庫根（`studiesAdvanced`）才看得到完
 寫練習、看 Git、開終端機，都停在同一個視窗：VS Code 開啟的是 `studiesAdvanced` 根目錄。子資料夾是倉庫裡的專案，不要另外開成新視窗。`git pull` 與 `git status` 也在這個根目錄執行。
 
 {% note info %}
-**小技巧：Live Server 與 pnpm dev**
+**小技巧：Live Server**
 靜態頁用 Live Server：在檔案總管對目標的 `index.html` 按右鍵，選 **Open with Live Server**。
-要跑開發伺服器時，在終端機先進入該專案資料夾（例如 `cd 02-tailwind`），再執行 `pnpm dev`。回到倉庫根目錄用 `cd ..`。
 {% endnote %}
 
 ### 認識畫面
@@ -619,6 +620,6 @@ Windows／Linux 用 <kbd>Ctrl</kbd>，Mac 用 <kbd>Command</kbd>（表寫 Ctrl�
 - HTML 管結構、CSS 管外觀、JavaScript 管行為；Tailwind 與 React 分別建立在 CSS 與 JavaScript 上。
 - 已安裝 VS Code、Google Chrome 與 Git，並有 GitHub 帳號；預覽與 <kbd>F12</kbd> 用 Chrome。
 - 已 fork 並 clone [studiesAdvanced](https://github.com/summer10920/studiesAdvanced) 的 `new-tech`，用 VS Code 開啟倉庫根目錄，設定、片段與 Prettier 會自動套用。
-- 必裝套件已裝好；靜態頁對目標 `index.html` 開 Live Server，要開發伺服器時先 `cd` 進專案資料夾再 `pnpm dev`。
+- 必裝套件已裝好；靜態頁在檔案總管對目標 `index.html` 按右鍵，選 **Open with Live Server**。
 - 已設定 `user.name` 與 `user.email`；練習用 `commit`／`push`，上游更新則在 GitHub **Sync fork** 再 `git pull`。
 - 會用 Emmet（如 `lorem10`、`ul>li*3`）與根目錄的 `placehold`／`picsum` 片段，以及表上的 VS Code 快捷鍵。

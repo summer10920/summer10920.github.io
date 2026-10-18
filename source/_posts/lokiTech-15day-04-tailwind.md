@@ -15,44 +15,247 @@ Tailwind CSS 把常用的 CSS 宣告做成一粒一粒的 class，稱為 utility
 
 <!-- more -->
 
-刻度、色票與前綴總表在 {% post_link lokiTech-15day-05-tailwind-cheatsheet TailwindCSS v4.1 公式表 %}。這一篇只走觀念，每個題目看一到兩個範例，再自己改一處。預覽以 Chrome 為準。按 <kbd>F12</kbd> 看 **Elements → Styles**，核對的是編成之後的 CSS。
+刻度、色票與前綴總表在 {% post_link lokiTech-15day-05-tailwind-cheatsheet TailwindCSS v4.1 公式表 %}。這一篇先在一台乾淨的電腦裝好 Node、pnpm 與 Vite，再走 Tailwind 的觀念。每個題目看一到兩個範例，再自己改一處。預覽以 Chrome 為準。按 <kbd>F12</kbd> 看 **Elements → Styles**，核對的是編成之後的 CSS。
 
 | 大主題 | 你會用到的觀念 |
 | --- | --- |
-| 認識 Tailwind | utility 命名、掃描、按鈕與卡片 |
-| 前綴 | `hover:`、`focus-visible:`、`dark:`（跟系統） |
-| RWD 與容器 | 手機優先、`sm:`～`2xl:`、`max-*`、版心、自訂斷點、容器查詢 |
-| `@theme` | 品牌色、`--spacing-*` |
-| 寫進樣式表 | `@apply`、任意值 `[]` |
-| 選讀 | `@layer` / `@utility`、手動深色、`!`、`group` / `peer`、Preflight |
+| 建立 Node 開發環境 | nvs、Node 24、pnpm、Vite、手動專案，再進 `02-tailwind` |
+| 認識 Tailwind | utility 命名、掃描、只輸出用到的 class |
+| 基礎排版練習 | 按鈕、卡片 |
+| 變體（前綴） | `hover:`、`focus-visible:`、`active:`、`dark:` |
+| RWD 與容器 | 手機優先、斷點、版心、容器查詢 |
+| 客製化 | `@theme`、`@apply`、任意值、`!` |
+| 選讀 | Play CDN、Preflight、`group`／`peer`、導覽列、手動深色、`@layer` |
 
 {% note warning %}
 **注意事項**
 不要裝 Bootstrap，也不要另寫 `tailwind.config.js`。v4 的主題寫在 CSS 的 `@theme`。
 {% endnote %}
 
-# 認識 Tailwind
+# 建立 Node 開發環境
 
-一個 utility 只做一件事。`p-4` 只管內距，`rounded-xl` 只管圓角，`bg-teal-700` 只管背景色。傳統寫法把這些收進 `.trip-card`，改外觀要先找到選擇器。Utility 把設計系統裡量好的間距、顏色、字級做成固定詞彙，組合發生在標籤上。見 [用 utility 寫樣式](https://tailwindcss.com/docs/styling-with-utility-classes)。
+Tailwind 的 class 要先編成一般 CSS，瀏覽器才知道 `p-4` 是 `padding: 1rem`。編譯、安裝套件、開發伺服器都跑在 **Node.js** 上。這一章假設這台電腦剛還原、還沒裝過 Node：先裝版本切換工具 nvs 與 Node 24，再用 corepack 啟用 pnpm，認識 Vite，在暫存資料夾手動做一個小專案，最後改到課堂的 `02-tailwind`。
 
-讀 class 時先切最後一段。`bg-teal-700` 的屬性是 `bg`（`background-color`），值是色族 `teal` 加色階 `700`。數字越小越淺，`50` 常用來當底，`700` 以上常用來當字或實心按鈕。`text-stone-600` 的 `text` 接色名，所以是 `color`；`text-2xl` 的 `text` 接字級，所以是 `font-size`。`p-4` 的 `4` 乘上預設一級 `--spacing`（`0.25rem`），四邊內距是 `1rem`。`px-4` 只有左右，`py-2` 只有上下。斜線是透明度：`bg-teal-700/50` 是同一顆色的 50%。色階與 `text-` 的兩種意思見 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)、[font-size](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#font-size)、[padding](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#padding)。
+{% note info %}
+**已安裝過可跳過**
+已安裝過 nvs／Node／pnpm 可跳過此步。仍請在新的終端機執行 `node -v` 與 `pnpm -v`，確認是 Node 24，而且找得到 pnpm。
+{% endnote %}
 
-兩個 utility 若改到同一個 CSS 屬性，誰勝出看編成後樣式表裡的順序。`p-4 p-8` 這種重複不要留。
+## 為什麼需要 Node
 
-## 在專案裡編譯
+Node.js 是瀏覽器以外的 JavaScript 執行環境。課堂用它安裝套件、啟動 Vite、把專案編成可以上線的檔案，不是用它寫後端、也不是開資料庫。你不需要先會 Node 的伺服器程式，才能做後面的頁面。
 
-HTML 檔可以直接用瀏覽器開。Tailwind 的 class 要先編成一般 CSS，瀏覽器才知道 `p-4` 是 `padding: 1rem`。這個專案用 Vite 當開發伺服器與打包工具，插件是 `@tailwindcss/vite`，入口 CSS 以 `@import "tailwindcss"` 開頭。見 [安裝 Tailwind（Vite）](https://tailwindcss.com/docs/installation/using-vite)。
+直接到 [nodejs.org](https://nodejs.org/) 下載安裝檔，這台電腦通常只會留下一個版本。舊專案要舊版、新專案要新版時，就得卸載再裝。版本管理工具可以同時留下多個 Node，進不同資料夾時再切換。課堂用 **nvs**（Node Version Switcher）。
 
-套件管理用 pnpm，Node.js 用 24。在專案目錄執行 `pnpm install`，再 `pnpm dev`，用終端機印出的 Local 網址打開。`pnpm build` 產出 `dist/`。直接用檔案協定開 HTML，utility 不會生效。
+## 安裝 nvs 與 Node
+
+nvs 在 Windows、macOS、Linux 用同一組指令安裝與切換 Node。裝好之後新開的終端機才吃得到指令；VS Code 裡已經開著的舊終端機要關掉重開。
+
+{% note info %}
+**已安裝過可跳過**
+已安裝過 nvs 可跳過下一小節。終端機輸入 `nvs`，出現可以選版本的選單即可。
+{% endnote %}
+
+### 安裝 nvs
+
+Windows 用安裝檔。macOS 用官方的終端機指令，因為 nvs 沒有提供 macOS 安裝包。兩種都裝完後，關掉終端機再新開一個，輸入 `nvs` 確認。
+
+到 [nvs 的 Releases](https://github.com/jasongin/nvs/releases) 下載 Windows 安裝檔（`.msi`），執行後一路下一步。裝完請完全關掉 VS Code 再打開，舊的終端機不會更新 PATH。
+
+{% note info %}
+**macOS**
+macOS 請在終端機執行（需要第 1 天裝好的 Git）：
+
+```bash
+export NVS_HOME="$HOME/.nvs"
+git clone https://github.com/jasongin/nvs "$NVS_HOME"
+. "$NVS_HOME/nvs.sh" install
+```
+
+`install` 會把 nvs 寫進你的 shell 設定。關掉終端機再新開一個，輸入 `nvs`。
+{% endnote %}
+
+### 用 nvs 安裝 Node 24
+
+課堂固定 **Node 24**。`nvs add` 把這個版本下載到這台電腦，`nvs use` 只影響目前這個終端機，`nvs link` 讓之後新開的終端機預設也是 24。
+
+{% note info %}
+**已安裝過可跳過**
+已安裝過 Node 24 可跳過此步。`node -v` 顯示 `v24` 開頭即可，不必為了課堂再裝一次。
+{% endnote %}
+
+```bash
+nvs add 24
+nvs use 24
+nvs link 24
+node -v
+```
+
+最後一行應印出 `v24` 開頭的版本號。`nvs ls` 可以列出這台電腦已經有的 Node。
+
+#### .node-version 自動切換
+
+有的專案要 24、有的專案以後可能要別的版本。在專案資料夾放一個文字檔 `.node-version`，裡面只寫一行版本。nvs 的自動切換打開時，你 `cd` 進這個資料夾，終端機裡的 `node` 會改用檔案指定的版本。
+
+```text 02-tailwind/.node-version
+24
+```
+
+課堂的 `02-tailwind` 已經放好這份檔，Windows 與 macOS 內容相同。進到該資料夾時 nvs 會讀它。若 `node -v` 沒有變成 24，執行一次 `nvs auto on`，再離開資料夾、重新進去。自己的暫存專案若也要自動切換，放同一行即可。
+
+## 啟用 pnpm（corepack）
+
+**套件管理器**負責下載專案要的工具（Vite、Tailwind）並記住版本。Node 自己帶的是 **npm**。課堂改用 **pnpm**：磁碟上同一版套件只留一份，而且你沒寫進 `package.json` 的套件不能被拿來 `import`（npm 有時可以，那種沒宣告卻用得到的套件叫幽靈依賴，換一台電腦就會壞）。
+
+pnpm 不要用 `npm install -g pnpm` 安裝。Node 24 附帶 **corepack**，用它啟用 pnpm 即可。
+
+{% note info %}
+**已安裝過可跳過**
+已安裝過 pnpm 可跳過此步。`pnpm -v` 印得出版本號即可。
+{% endnote %}
+
+```bash
+corepack enable
+pnpm -v
+```
+
+若 `pnpm` 仍找不到，或版本很舊，再執行：
+
+```bash
+corepack prepare pnpm@latest --activate
+pnpm -v
+```
+
+Windows 若出現權限不足，用「以系統管理員身分執行」開一次終端機，只跑 `corepack enable`，然後回到 VS Code 的終端機再測 `pnpm -v`。
+
+| | npm | pnpm |
+| --- | --- | --- |
+| 怎麼來的 | 裝 Node 就有 | `corepack enable` 啟用 |
+| 磁碟 | 每個專案各存一份套件 | 同一版本全機共用 |
+| 沒寫進 package.json 的套件 | 有時仍能 import | 不能 import |
+| 安裝／新增開發套件 | `npm install`、`npm install -D 套件` | `pnpm install`、`pnpm add -D 套件` |
+
+指令幾乎一一對應。課堂後面都用 pnpm。`pnpm dev` 等於 `pnpm run dev`。
+
+## 認識 Vite
+
+**Vite**（發音 /vit/）同時是開發伺服器與打包器。開發時它起一個本機網站，瀏覽器依 ES modules 跟它要目前用到的檔，改存檔就更新那一塊，不必先把整個專案黏成一支大檔，所以啟動很快。
+
+上線不能靠這個開發伺服器。`pnpm build` 會把真正用到的模組打包、壓縮，輸出到 `dist/`。打包是為了少發很多次小檔請求，並拿掉沒被用到的程式。Tailwind 的插件在這兩段都會跑：開發時編成你正在看的 CSS，建置時把那份 CSS 放進 `dist/`。直接用檔案總管雙擊 HTML（`file:`）不會經過 Vite，utility 不會生效。
+
+## 手動建立 Vite + Tailwind 專案
+
+先在暫存資料夾把工具鏈走通：Vite 的空白範本、加上 Tailwind、改一個 class、看到畫面、再建出 `dist/`。這個資料夾只是練習安裝，不是課堂交件，做完可以整夾刪掉。
+
+{% note warning %}
+**不要建在練習倉庫裡**
+請在桌面（或任何暫存位置）建立 `my-tailwind`。不要在 `studiesAdvanced` 裡面執行 `pnpm create`。
+{% endnote %}
+
+### 建立專案
+
+開一個新的終端機，先到桌面。Windows 的 VS Code 終端機多半是 PowerShell；macOS 是 zsh。
+
+```bash
+cd $env:USERPROFILE\Desktop
+```
+
+{% note info %}
+**macOS**
+macOS 與 Linux 改成 `cd ~/Desktop`。後面的 `pnpm` 指令兩邊相同。
+{% endnote %}
+
+`create vite` 會下載官方範本。`--template vanilla` 是純 HTML、CSS、JavaScript，先不要選 React。接著進入資料夾、安裝範本列出的套件。
+
+```bash
+pnpm create vite@latest my-tailwind -- --template vanilla
+cd my-tailwind
+pnpm install
+```
+
+### 加入 Tailwind
+
+範本此時還不懂 `bg-teal-700`。下面三步把 Tailwind v4 的 Vite 插件接上，並讓入口 CSS 載入它。官方安裝說明見 [Install Tailwind CSS with Vite](https://tailwindcss.com/docs/installation/using-vite)。
+
+#### 安裝套件
+
+這兩個套件只在開發與建置時用，所以加 `-D`（devDependency）。
+
+```bash
+pnpm add -D tailwindcss @tailwindcss/vite
+```
+
+#### 設定 vite.config.js
+
+在專案根目錄建立 `vite.config.js`。若範本已經有這份檔，就改成下面這樣：`plugins` 裡要有 `tailwindcss()`。
+
+```js
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+});
+```
+
+#### 匯入 tailwindcss
+
+把 `src/style.css` 的內容換成這一行。範本原本的 CSS 會蓋掉你要試的 utility，所以不要留著。
+
+```css
+@import "tailwindcss";
+```
+
+Vanilla 範本的 `src/main.js` 已經會 `import` 這份 CSS，不用再改 JavaScript。打開 `index.html`，在 `<div id="app"></div>` 前面加一顆標題，class 必須是原始碼裡的完整字串：
+
+```html
+<h1 class="text-3xl font-bold text-teal-700">Tailwind 有編譯到</h1>
+```
+
+存檔。`text-3xl` 是字級，`font-bold` 是字重，`text-teal-700` 是深青綠字。
+
+### 啟動與建置
+
+在 `my-tailwind` 目錄啟動開發伺服器。終端機會印出 Local 網址，多半是 `http://localhost:5173/`。用 Chrome 打開，應看到那行青綠大字。
+
+```bash
+pnpm dev
+```
+
+看完在終端機按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉。要產出上線用的檔案再執行：
+
+```bash
+pnpm build
+```
+
+建置結果在 `dist/`。那是打包後的 HTML、CSS 與 JavaScript，不是你正在編輯的 `src/`。之後日常開發仍用 `pnpm dev`，要交靜態檔時才 `pnpm build`。
+
+## 改用 02-tailwind 練習環境
+
+手動那個資料夾確認工具鏈沒問題即可。後面的範例都在 `02-tailwind`：Tailwind 插件、入口 CSS 與 Prettier 已經接好。在 VS Code 新開一個終端機（它會開在倉庫根目錄），再進入專案、安裝、啟動。若目前終端機還停在 `my-tailwind`，先不要沿用那一個。
+
+```bash
+cd 02-tailwind
+pnpm install
+pnpm dev
+```
+
+同樣用終端機印出的 Local 網址開 Chrome。`pnpm build` 會把這個專案輸出到它自己的 `dist/`。`package.json` 裡的 `engines.node` 是 `>=24`；若安裝時抱怨 Node 版本，回到上面用 `node -v` 確認，並確認你在這個資料夾裡（`.node-version` 會讓 nvs 切到 24）。
+
+多數頁面在 `body` 結尾載入入口腳本。`type="module"` 讓 Vite 處理裡面的 `import`。路徑以 `/` 開頭，表示這個專案的根目錄。
 
 ```js 02-tailwind/src/main.js
 import "./style.css";
 ```
 
-多數頁面在 `body` 結尾載入它。`type="module"` 讓 Vite 處理裡面的 `import`。路徑以 `/` 開頭，表示專案根目錄。
-
 ```html
 <script type="module" src="/src/main.js"></script>
+```
+
+入口 CSS 以這一行開頭，後面的 `@theme` 與此同一份檔：
+
+```css 02-tailwind/src/style.css
+@import "tailwindcss";
 ```
 
 排版用專案裡的 Prettier：要分號、雙引號、2 空格。這一階段不放 ESLint。VS Code 的 Tailwind CSS IntelliSense 會在你打 `bg-` 時列出色族；候補仍要能翻回 CSS。
@@ -65,11 +268,33 @@ import "./style.css";
 }
 ```
 
-## 選讀：瀏覽器裡的 Play CDN
+# 認識 Tailwind
 
-有些舊教學讓你在 `head` 貼 `cdn.tailwindcss.com` 的 script。那段 script 在瀏覽器裡臨時編譯，正式站的體積不好控，也沒有這個專案的 `@theme`。課堂走 Vite。看到教學要你寫 `tailwind.config = { theme: { extend: ... } }`，把它當成舊路徑。
+一個 utility 只做一件事，組合發生在標籤上。這一章先讀懂 class 名字，再看編譯器為什麼只輸出原始碼裡出現過的完整字串。按鈕與卡片的排版在下一章。
 
-## 只輸出用到的
+## utility-first 是什麼
+
+傳統寫法把內距、圓角、背景收進 `.trip-card`，改外觀要先找到選擇器。**utility-first**（原子化 CSS）把設計系統裡量好的間距、顏色、字級做成固定詞彙：`p-4` 只管內距，`rounded-xl` 只管圓角，`bg-teal-700` 只管背景色。見 [用 utility 寫樣式](https://tailwindcss.com/docs/styling-with-utility-classes)。
+
+兩個 utility 若改到同一個 CSS 屬性，誰勝出看編成後樣式表裡的順序。`p-4 p-8` 這種重複不要留。
+
+## 讀懂 class 命名
+
+名字多半是「屬性－值」，中間用連字號分開。先看最後一段是顏色、字級還是間距的刻度，再回頭看字首代表哪個 CSS 屬性。總表在公式表，這一節只練怎麼切這個名字。
+
+### 屬性與值
+
+讀 class 時先切最後一段。`bg-teal-700` 的屬性是 `bg`（`background-color`），值是色族 `teal` 加色階 `700`。`text-stone-600` 的 `text` 接色名，所以是 `color`；`text-2xl` 的 `text` 接字級，所以是 `font-size`。同一段字首會因後面接到的值而變成不同屬性。字級見 [font-size](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#font-size)。
+
+### 色階與透明度
+
+每個色族從 `50` 到 `950`。數字越小越淺，`50` 常用來當底，`700` 以上常用來當字或實心按鈕。斜線是這顆色的不透明度：`bg-teal-700/50` 是同一顆青綠的 50%，不是另一個色族。色階見 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)。
+
+### 間距單位
+
+`p-4` 的 `4` 乘上預設一級 `--spacing`（`0.25rem`，瀏覽器字級 16px 時約 4px），四邊內距是 `1rem`。`px-4` 只有左右，`py-2` 只有上下，`m-4` 是外距，`gap-4` 是 flex 或 grid 的縫。數字是刻度，不是像素。寫法見 [padding](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#padding)。
+
+## 只輸出用到的 class
 
 編譯器掃描的是原始碼裡的完整字串，不是瀏覽器執行之後的 DOM。檔案裡出現 `bg-teal-700`，這條規則才會產生。`bg-${color}-700` 接起來的字串，掃描器看不到最後的 class 名字。v4 會自己找模板檔，不用再寫以前的 `content` 陣列。
 
@@ -113,6 +338,18 @@ import "./style.css";
 拿掉 `<script>` 裡的 `classList.add`。第二段的 class 改成含有完整字串 `bg-rose-700`，字色用 `text-white`。
 
 </details>
+
+## 選讀：Play CDN
+
+有些舊教學讓你在 `head` 貼 `cdn.tailwindcss.com` 的 script。那段 script 在瀏覽器裡臨時編譯，正式站的體積不好控，也沒有這個專案的 `@theme`。課堂走 Vite。看到教學要你寫 `tailwind.config = { theme: { extend: ... } }`，把它當成舊路徑。
+
+## 選讀：Preflight 重置了什麼
+
+`@import "tailwindcss"` 會帶入 Preflight。標題和段落的預設外距會被拿掉，所以沒寫 `mt-*` 時，`h1` 會貼著上一塊。盒模型是 `border-box`。圖片預設 `display: block`，最大寬度 100%。按鈕會繼承字型。某一塊突然貼在一起時，先補 `mt-4` 或父層的 `space-y-4`。
+
+# 基礎排版練習
+
+名字讀得懂之後，用同一套詞彙排一顆按鈕和一張卡片。連結去別的網址用 `<a>`，在這一頁做事用 `<button type="button">`。圖、標題、摘要放在同一個 `article` 裡。
 
 ## 按鈕
 
@@ -226,15 +463,19 @@ import "./style.css";
 
 </details>
 
-# 前綴
+# 變體（前綴）
 
 冒號左邊是條件，右邊才是 utility。`hover:bg-teal-800` 讀成：指標移上來，背景才改成 `teal-800`。`md:hover:bg-teal-800` 再加一個條件：視窗到達 `md`，而且指標移上來。建議斷點在前、狀態在後、屬性在最後。同一專案固定這個順序。
 
-這一章先看滑過、鍵盤聚焦和跟著系統的深色。寬度前綴、版心、自訂斷點和容器查詢在下一章。`dark:` 預設看作業系統的外觀，不是一顆按鈕。
+這一章先看滑過、鍵盤聚焦、按下，以及跟著系統的深色。寬度前綴、版心、自訂斷點和容器查詢在下一章。`dark:` 預設看作業系統的外觀，不是一顆按鈕。
 
-## 狀態前綴
+## 狀態變體
 
-`hover:` 在指標移上來時套用。`focus-visible:` 在鍵盤聚焦時套用。`disabled:` 在停用時套用。這些前綴可以接在斷點後面。觸控螢幕沒有可靠的 hover，重要資訊不要只靠滑過才出現。狀態名稱見 [常用變體](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#常用變體)。
+狀態變體寫在 utility 前面，條件成立時後面的 class 才套上。觸控螢幕沒有可靠的 hover，重要資訊不要只靠滑過才出現。整組一起變的寫法放在這節的選讀。
+
+### hover、focus、active
+
+`hover:` 在指標移上來時套用。`focus-visible:` 在鍵盤聚焦時套用（滑鼠點一下通常不會畫這圈）。`active:` 是按下還沒放開的那一下，例如 `active:bg-teal-900`。`disabled:` 在停用時套用。這些前綴可以接在斷點後面。狀態名稱見 [常用變體](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#常用變體)。
 
 按鈕那一顆實心連結已經寫了 `hover:bg-teal-800`。滑過時只改背景，字仍是 `text-white`。`focus-visible:` 那三個 class 一起才有外框的寬度、偏移與顏色。
 
@@ -250,11 +491,133 @@ import "./style.css";
 
 </details>
 
+#### 選讀：group 與 peer
+
+滑過整張卡要帶動裡面的圖和標題時，父層加 `group`，子層用 `group-hover:`。兄弟之間用 `peer`：class 寫在前面的兄弟，`peer-checked:` 寫在後面的兄弟。導覽列用的是同一種 `peer`，放在這一節後面。具名寫法見 [具名 group 與 peer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#具名-group-與-peer)。
+
+`transition` 讓顏色、陰影、縮放在兩個狀態之間補間。`duration-200` 約 200 毫秒，圖片縮放用 `duration-300`。見 [transition-property](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#transition-property)。
+
+```html 02-tailwind/pages/17-states.html
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>狀態與轉場</title>
+  </head>
+  <body class="space-y-8 bg-stone-100 p-6 text-stone-900">
+    <h1 class="text-2xl font-bold">滑過、聚焦、整組一起變</h1>
+    <a
+      class="inline-block rounded-lg bg-teal-700 px-4 py-2 font-medium text-white transition duration-200 hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-900"
+      href="#go"
+    >
+      用鍵盤 Tab 到我
+    </a>
+    <article class="group max-w-sm overflow-hidden rounded-2xl bg-white shadow transition duration-200 hover:shadow-lg">
+      <img
+        class="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
+        src="https://picsum.photos/id/1015/800/500"
+        alt="山景"
+      />
+      <div class="p-4">
+        <h2 class="font-semibold group-hover:text-teal-800">滑過整張卡，標題與圖片一起變</h2>
+        <p class="mt-1 text-sm text-stone-600">group 放在父層，group-hover: 放在子層。</p>
+      </div>
+    </article>
+    <div>
+      <input id="agree" class="peer sr-only" type="checkbox" />
+      <label
+        class="inline-block cursor-pointer rounded border border-stone-300 px-3 py-1 peer-checked:border-teal-700 peer-checked:bg-teal-50"
+        for="agree"
+      >
+        我已閱讀行前說明
+      </label>
+      <p class="mt-2 hidden text-sm text-teal-800 peer-checked:block">勾選後這行才出現。</p>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+`article` 的 `group` 建立一組。圖片的 `group-hover:scale-105` 在滑過這張卡時放大到 1.05 倍；父層的 `overflow-hidden` 讓放大的圖停在圓角裡。標題的 `group-hover:text-teal-800` 在同一時機改字色。卡片自己的 `hover:shadow-lg` 只在指標直接停在卡片上時加深陰影。
+
+核取方塊的 `peer` 給後面的標籤與段落用。標籤的 `peer-checked:bg-teal-50` 在勾選後換底。段落預設 `hidden`，`peer-checked:block` 在勾選後顯示。方塊在標籤前面，`for` 對到 `id`。
+
+{% note success %}
+**換你試試：**
+滑過整張卡時，標題再深一階。字色在 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)，父層寫法在 [具名 group 與 peer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#具名-group-與-peer)。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+標題的 `group-hover:text-teal-800` 改成 `group-hover:text-teal-900`。`group` 仍留在 `article` 上。
+
+</details>
+
+##### 選讀：導覽列
+
+窄螢幕用一顆核取方塊當開關，只做一套 `nav`。`peer` 寫在方塊上，`peer-checked:` 寫在它後面的兄弟上。方塊用 `sr-only` 移出視覺，標籤的 `for` 仍對得到。寬度到達 `md` 時，導覽回到橫排，選單標籤隱藏。
+
+```html 02-tailwind/pages/13-nav.html
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>導覽列</title>
+  </head>
+  <body class="bg-stone-50 text-stone-900">
+    <header class="relative bg-teal-800 text-white">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <a class="text-lg font-bold" href="/">洛奇旅行</a>
+        <input id="nav-toggle" class="peer sr-only" type="checkbox" />
+        <label class="cursor-pointer rounded border border-white/40 px-3 py-1 md:hidden" for="nav-toggle">選單</label>
+        <nav
+          class="absolute left-0 right-0 top-full hidden flex-col gap-3 bg-teal-800 px-4 py-4 peer-checked:flex md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:p-0"
+        >
+          <a class="hover:underline" href="#home">首頁</a>
+          <a class="hover:underline" href="#tours">行程</a>
+          <a class="hover:underline" href="#about">關於</a>
+        </nav>
+      </div>
+    </header>
+    <main class="mx-auto max-w-6xl px-4 py-8">
+      <h1 class="text-2xl font-bold">把視窗拉窄再拉寬</h1>
+      <p class="mt-3 max-w-prose text-stone-600">窄的時候按「選單」。寬到 md 之後，連結回到橫排，按鈕隱藏。</p>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+`nav` 這一串分成窄螢幕與 `md` 以後：
+
+- `absolute left-0 right-0 top-full`：貼在頁首下緣，左右拉滿。
+- `hidden flex-col gap-3`：預設不顯示；一旦變成 flex，就是直向，連結相距 0.75rem。
+- `peer-checked:flex`：前面的方塊被勾選時才顯示。
+- `md:static md:flex md:flex-row`：48rem 以上回到文件流、一直顯示、改成橫排。
+- `md:bg-transparent md:p-0 md:gap-6`：清掉手機選單的底色與內距，連結改隔 1.5rem。
+
+「選單」標籤的 `md:hidden` 是到了 `md` 就隱藏。`border-white/40` 是白框 40% 不透明。
+
+{% note success %}
+**換你試試：**
+橫排改到 `lg` 才出現，比 `md` 再寬一階。對照 [視窗斷點](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#視窗斷點)。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+標籤的 `md:hidden` 改成 `lg:hidden`。`nav` 上每一個 `md:` 改成 `lg:`：`lg:static lg:flex lg:flex-row lg:gap-6 lg:bg-transparent lg:p-0`。`peer-checked:flex` 維持不變。
+
+</details>
+
 ## 深色模式
 
 `dark:` 是變體：條件成立時，後面的 utility 才套上。v4 的預設條件是作業系統的深色外觀，對應 `prefers-color-scheme: dark`。同一顆元素先寫淺色 class，再寫 `dark:` 那一組。見 [Dark mode](https://tailwindcss.com/docs/dark-mode)。
 
-### 預設跟著系統
+### 跟著系統
 
 沒有改寫 `dark` 的定義時，頁面上沒有開關。按 <kbd>F12</kbd>，<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>），執行 **Show Rendering**，把 **prefers-color-scheme** 設成 `dark`。
 
@@ -297,13 +660,99 @@ import "./style.css";
 
 </details>
 
+#### 選讀：手動切換（@custom-variant）
+
+跟著系統的 `dark:` 在前面已經用過。產品要一顆按鈕，讓這一頁的深色和作業系統分開時，才重新定義 `dark`。這一行若寫進全站入口，每一頁都會改看 class，所以它放在另一份 CSS，只有切換頁會載入。
+
+下面這一行只放在切換頁會載入的 CSS。按鈕把 class `dark` 加到 `<html>`，並用 `localStorage` 記住上次的選擇。
+
+```css 02-tailwind/src/dark-manual.css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+`&` 是正在套用這個變體的元素。`.dark` 是 `<html>` 上的 class，`.dark *` 是它的後代。按鈕只負責在 `document.documentElement` 上切換這個 class。
+
+```js 02-tailwind/src/dark-toggle.js
+import "./style.css";
+import "./dark-manual.css";
+
+const root = document.documentElement;
+const button = document.querySelector("#theme-toggle");
+const stored = localStorage.getItem("theme");
+const preferDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+root.classList.toggle("dark", stored ? stored === "dark" : preferDark);
+
+const paint = () => {
+  button.textContent = root.classList.contains("dark") ? "切換亮色" : "切換深色";
+};
+
+paint();
+button.addEventListener("click", () => {
+  root.classList.toggle("dark");
+  localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
+  paint();
+});
+```
+
+還沒按過按鈕時先跟系統偏好，並把結果寫成 `<html>` 的 class。按按鈕會切換 class，把 `dark` 或 `light` 存進 `localStorage`。
+
+```html 02-tailwind/pages/10-dark-toggle.html
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手動切換深色</title>
+  </head>
+  <body class="min-h-screen bg-stone-50 text-stone-900 scheme-light dark:bg-stone-950 dark:text-stone-100 dark:scheme-dark">
+    <header class="flex items-center justify-between border-b border-stone-200 px-6 py-4 dark:border-stone-700">
+      <p class="font-semibold">洛奇旅行</p>
+      <button
+        id="theme-toggle"
+        type="button"
+        class="rounded-lg border border-stone-300 px-3 py-1.5 text-sm dark:border-stone-600"
+      >
+        切換深色
+      </button>
+    </header>
+    <main class="mx-auto max-w-xl px-6 py-8">
+      <h1 class="text-3xl font-bold">按鈕決定這一頁的外觀</h1>
+      <p class="mt-4 text-stone-600 dark:text-stone-300">
+        html 上有 dark 這個 class 時，dark: 才生效。重新整理會記住上次的選擇。
+      </p>
+      <article class="mt-6 rounded-xl bg-white p-5 shadow dark:bg-stone-900">
+        <h2 class="text-lg font-semibold">花蓮山海</h2>
+        <p class="mt-2 text-sm text-stone-600 dark:text-stone-300">兩天一夜。卡片的底也跟著換。</p>
+      </article>
+    </main>
+    <script type="module" src="/src/dark-toggle.js"></script>
+  </body>
+</html>
+```
+
+`dark:bg-stone-950` 在 `<html>` 有 class `dark` 時把頁面底改成近黑。卡片的 `bg-white` 在淺色生效，`dark:bg-stone-900` 在深色生效。頁尾 script 是 `dark-toggle.js`，它會再載入 `dark-manual.css`。
+
+{% note success %}
+**換你試試：**
+深色時卡片加一圈深灰框。邊框色在 [border-color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#border-color)。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+`article` 的 class 補上 `dark:border dark:border-stone-700`。
+
+</details>
+
 # RWD 與容器
 
 窄螢幕先排得下，視窗變寬再加欄、改橫排。整頁的側欄看的是視窗寬度。同一張卡片有時在窄欄、有時在寬欄時，改看包住它的父層。
 
 沒有前綴的 class 在所有寬度都生效，那就是手機那一版。`sm:` 以後是「夠寬才加上」，更寬時仍然成立。版心用最大寬度加水平置中，內文才不會貼著視窗兩邊。
 
-## 手機優先
+## 手機優先與斷點
+
+沒有前綴的 class 在所有寬度都生效，那就是手機那一版。下面先看一份完全不加斷點的頁，再對預設的 `min-width` 斷點、`max-*` 範圍，以及用 `@theme` 自訂的名字。
 
 先寫窄畫面讀得完的樣子，不要先寫桌面再往回修。沒有 `sm:`、`md:` 的欄數、字級、排向，拉寬瀏覽器也不會變。`<meta name="viewport" content="width=device-width, initial-scale=1.0">` 要留在 `head`，手機才不會把頁面縮成桌面寬度的一小條。
 
@@ -351,7 +800,7 @@ import "./style.css";
 
 </details>
 
-## 預設斷點
+### 預設斷點
 
 `sm:`、`md:`、`lg:`、`xl:`、`2xl:` 是 `min-width`。視窗到達那個寬度之後條件成立，再拉更寬仍然成立。同一個屬性寫了好幾個前綴時，較寬的那個蓋過較窄的。門檻見 [視窗斷點](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#視窗斷點)。rem 在媒體查詢裡相對瀏覽器預設字級，通常 16px。
 
@@ -413,7 +862,7 @@ import "./style.css";
 
 </details>
 
-## max-* 範圍變體
+### max-* 範圍變體
 
 `md:` 是「48rem 以上」。`max-md:` 是「小於 48rem」，編成 `@media (width < 48rem)`。正好 48rem 時 `md:` 成立、`max-md:` 不成立，兩段不會重疊。`max-sm:`、`max-lg:`、`max-xl:`、`max-2xl:` 是同一套，門檻仍是 40、64、80、96rem。
 
@@ -458,7 +907,69 @@ import "./style.css";
 
 </details>
 
-## 卡片牆
+### 用 @theme 自訂斷點
+
+預設五個斷點不夠用時，在同一個 `@theme` 加 `--breakpoint-` 開頭的變數。`--breakpoint-tablet: 52rem` 產生前綴 `tablet:`，落在 `md`（48rem）和 `lg`（64rem）之間。名字用 `tablet`，才不會蓋掉內建的 `sm`。品牌色與 `--spacing-18` 留在同一個 `@theme`。什麼時候改用 `inline` 或 `static` 見 [@theme inline 與 static](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#theme-inline-與-static)。
+
+`--breakpoint-3xl: 120rem` 約 1920px，很多筆電視窗拉不滿，所以主要變化放在 `tablet:`。不要用 `initial` 拿掉內建斷點。
+
+```css 02-tailwind/src/style.css
+@theme {
+  --breakpoint-tablet: 52rem;
+  --breakpoint-3xl: 120rem;
+}
+```
+
+```html 02-tailwind/pages/22-custom-breakpoint.html
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>自訂斷點</title>
+  </head>
+  <body class="bg-stone-50 p-6 text-stone-900">
+    <h1 class="text-2xl font-bold">tablet: 設在 52rem</h1>
+    <p class="mt-3 max-w-prose">
+      比 md（48rem）再寬一點才變成兩欄。3xl（120rem）那句只有非常寬的視窗看得到。
+    </p>
+    <div class="mt-6 grid grid-cols-1 gap-4 tablet:grid-cols-2">
+      <article class="rounded-xl bg-white p-4 shadow-sm">
+        <h2 class="font-semibold">左欄</h2>
+        <p class="text-sm text-stone-600">52rem 以前跟右欄上下排。</p>
+      </article>
+      <article class="rounded-xl bg-white p-4 shadow-sm">
+        <h2 class="font-semibold">右欄</h2>
+        <p class="text-sm text-stone-600">過了 tablet 才並排。</p>
+      </article>
+    </div>
+    <p class="mt-6 hidden rounded-lg bg-violet-100 px-4 py-3 text-violet-950 3xl:block">
+      視窗到 3xl 了。一般筆電的視窗拉不滿這條，把瀏覽器縮放調小才容易看到。
+    </p>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+```
+
+`grid-cols-1` 先是一欄。`tablet:grid-cols-2` 在 52rem 以上改兩欄。最後一段 `hidden 3xl:block`：預設不顯示，視窗到 120rem 才變成區塊。自訂前綴一樣是 `min-width`，也有對應的 `max-tablet:`。
+
+{% note success %}
+**換你試試：**
+過了 `tablet` 改成三欄。欄數在 [grid-template-columns](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#grid-template-columns)。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+`tablet:grid-cols-2` 改成 `tablet:grid-cols-3`。
+
+</details>
+
+## 版面實作
+
+斷點會用在兩種版面上：一列怎麼對齊、卡片牆隨寬度加欄，以及整頁最寬停在哪裡。單格的按鈕與卡片前面已經寫過，這裡看它們怎麼排進頁面。
+
+### 卡片牆
 
 Flex 管一列怎麼對齊，Grid 管會隨寬度加欄的卡片。上半是頁首：品牌靠左、連結靠右，放不下就換行。下半預設一欄，`sm` 兩欄，`lg` 三欄。單格怎麼寫見 [常見組合](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#常見組合) 與 [grid-template-columns](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#grid-template-columns)。
 
@@ -517,13 +1028,13 @@ Flex 管一列怎麼對齊，Grid 管會隨寬度加欄的卡片。上半是頁�
 
 </details>
 
-## 版心與 max-w-*
+### 版心與 max-w-*
 
 版心是「這一欄最寬到這裡，多出來的空間分到左右」。`mx-auto` 是左右外距 `auto`，父層比元素寬才看得到置中。所以要先有 `max-w-*` 或寫死的寬度。`px-4` 是左右內距 1rem，視窗比版心窄時，文字仍離邊一點。
 
 不取新名字時，整頁版心是 `mx-auto max-w-6xl px-4`：水平置中、最大 72rem、左右 1rem。閱讀用的一段可以再窄，例如 `mx-auto max-w-3xl`（48rem）或 `max-w-prose`。卡片上的 `max-w-sm` 是 24rem，只限制那張卡，不是斷點 `sm:`（40rem）。
 
-v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 class 同時做這三件事，並讓最大寬度跟著斷點變，用 `@utility container` 自己定義。這個 class 要能接斷點，所以用 `@utility`，不是普通的選擇器。`@layer` 和 `@utility` 的差別放在文末選讀。
+v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 class 同時做這三件事，並讓最大寬度跟著斷點變，用 `@utility container` 自己定義。這個 class 要能接斷點，所以用 `@utility`，不是普通的選擇器。`@layer` 和 `@utility` 的差別放在客製化那一章的選讀。
 
 ```css 02-tailwind/src/style.css
 @utility container {
@@ -584,64 +1095,6 @@ v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 c
 <summary>參考答案</summary>
 
 40rem 那段的 `padding-inline: 1.5rem;` 改成 `padding-inline: 2rem;`。
-
-</details>
-
-## 用 @theme 自訂斷點
-
-預設五個斷點不夠用時，在同一個 `@theme` 加 `--breakpoint-` 開頭的變數。`--breakpoint-tablet: 52rem` 產生前綴 `tablet:`，落在 `md`（48rem）和 `lg`（64rem）之間。名字用 `tablet`，才不會蓋掉內建的 `sm`。品牌色與 `--spacing-18` 留在同一個 `@theme`。什麼時候改用 `inline` 或 `static` 見 [@theme inline 與 static](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#theme-inline-與-static)。
-
-`--breakpoint-3xl: 120rem` 約 1920px，很多筆電視窗拉不滿，所以主要變化放在 `tablet:`。不要用 `initial` 拿掉內建斷點。
-
-```css 02-tailwind/src/style.css
-@theme {
-  --breakpoint-tablet: 52rem;
-  --breakpoint-3xl: 120rem;
-}
-```
-
-```html 02-tailwind/pages/22-custom-breakpoint.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>自訂斷點</title>
-  </head>
-  <body class="bg-stone-50 p-6 text-stone-900">
-    <h1 class="text-2xl font-bold">tablet: 設在 52rem</h1>
-    <p class="mt-3 max-w-prose">
-      比 md（48rem）再寬一點才變成兩欄。3xl（120rem）那句只有非常寬的視窗看得到。
-    </p>
-    <div class="mt-6 grid grid-cols-1 gap-4 tablet:grid-cols-2">
-      <article class="rounded-xl bg-white p-4 shadow-sm">
-        <h2 class="font-semibold">左欄</h2>
-        <p class="text-sm text-stone-600">52rem 以前跟右欄上下排。</p>
-      </article>
-      <article class="rounded-xl bg-white p-4 shadow-sm">
-        <h2 class="font-semibold">右欄</h2>
-        <p class="text-sm text-stone-600">過了 tablet 才並排。</p>
-      </article>
-    </div>
-    <p class="mt-6 hidden rounded-lg bg-violet-100 px-4 py-3 text-violet-950 3xl:block">
-      視窗到 3xl 了。一般筆電的視窗拉不滿這條，把瀏覽器縮放調小才容易看到。
-    </p>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-```
-
-`grid-cols-1` 先是一欄。`tablet:grid-cols-2` 在 52rem 以上改兩欄。最後一段 `hidden 3xl:block`：預設不顯示，視窗到 120rem 才變成區塊。自訂前綴一樣是 `min-width`，也有對應的 `max-tablet:`。
-
-{% note success %}
-**換你試試：**
-過了 `tablet` 改成三欄。欄數在 [grid-template-columns](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#grid-template-columns)。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`tablet:grid-cols-2` 改成 `tablet:grid-cols-3`。
 
 </details>
 
@@ -751,7 +1204,7 @@ v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 c
 
 </details>
 
-## 側欄
+### 側欄實作
 
 整頁的側欄跟著視窗走：窄的時候側欄在上、主文在下，`lg`（64rem）以後變成四欄格子，側欄佔一欄、主文佔三欄。版心仍是 `mx-auto max-w-6xl px-4`。
 
@@ -820,11 +1273,15 @@ v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 c
 
 整頁只有一個寬度來源時，不必再包 `@container`。容器查詢解決的是「視窗很寬，但這個框很窄」。
 
-# 用 @theme 自訂顏色與間距
+# 客製化
+
+預設色票、間距和字型不夠用時，在 CSS 的 `@theme` 加變數，讓新的名字和內建 utility 同一套寫法。重複出現、而且你改不到那顆標籤時，才把一串 class 收進樣式表。
+
+## @theme 自訂設計變數
 
 預設色票沒有你的品牌名時，在 CSS 裡用 `@theme` 宣告變數。`--color-brand-700` 會同時做出 `bg-brand-700`、`text-brand-700`、`border-brand-700`。`--spacing-18: 4.5rem` 會做出 `p-18`、`m-18`、`w-18`、`gap-18`，不會改掉既有的 `p-4`。你新增的名字和內建的合併；課堂只加 `brand` 與需要的間距格，不去覆蓋 `teal`。變數一覽見 [主題指令](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#主題指令) 與 [@theme inline 與 static](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#theme-inline-與-static)。
 
-## 用 @theme 自訂品牌色
+### 品牌色
 
 色階仍用 50 到 950，之後換深淺才和預設色票同一套數字。下面這段加進入口 CSS 的 `@theme`。頁面底、標題與按鈕都用 `brand`。
 
@@ -888,11 +1345,27 @@ v4 沒有舊版那種自帶置中與左右留白的 `container`。若要一個 c
 
 </details>
 
-# 寫進樣式表
+### 間距與字型
 
-多數外觀留在標籤的 class 上。重複的一串才收進 `@apply`。刻度沒有的長度寫在方括號裡。自訂工具、手動深色、`!`、`group` / `peer` 放在文末，可以整節跳過。
+`--spacing-18: 4.5rem` 會做出 `p-18`、`m-18`、`w-18`、`gap-18`，不會改掉既有的 `p-4`。數字 `4` 仍乘預設的 `--spacing`（`0.25rem`）；`18` 這種刻度沒有的格子，才要自己宣告。上一節的 `@theme` 已經留了 `--spacing-18`，和品牌色寫在同一個區塊，不要再開第二個 `@theme`。
 
-## @apply
+`--font-sans` 決定 `font-sans` 用哪一組字型。名字要能在這台電腦或頁面上找到；找不到時，瀏覽器會改用逗號後面的下一個。課堂把繁體中文的無襯線字放在最前，後面仍留系統無襯線字當備援。
+
+```css 02-tailwind/src/style.css
+@theme {
+  /* 與品牌色寫在同一個 @theme，這裡只列出這一節多加的兩行 */
+  --spacing-18: 4.5rem;
+  --font-sans: "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+}
+```
+
+`font-sans` 加在 `body` 上，整頁就改走這組字。沒有另外載入「Noto Sans TC」的字型檔時，畫面上會落到 `ui-sans-serif`，變數本身仍然生效。
+
+## 寫進樣式表
+
+多數外觀留在標籤的 class 上。重複的一串才收進 `@apply`。刻度沒有的長度寫在方括號裡，`!` 也在這一節。接得上斷點的自訂工具放在下面的選讀，可以跳過。
+
+### @apply
 
 同一串 utility 會在很多你改不到的標籤上重複時，才在 CSS 裡用 `@apply` 收成一個 class。按鈕、卡片是你自己寫的 HTML 時，class 留在標籤上。整頁都 `@apply`，名字又會看不出 padding。`@apply` 要看得到主題，所以這份檔用 `@reference` 指向入口 CSS。說明見 [@layer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#layer)。
 
@@ -945,7 +1418,7 @@ import "./apply.css";
 
 </details>
 
-## 任意值
+### 任意值與 ! 覆寫
 
 刻度沒有的長度寫在方括號裡，例如 `w-[22rem]`。底線會被當成空白，`grid-cols-[1fr_2fr]` 是 `1fr 2fr`。能用 `p-4`、`gap-3` 就用刻度，每一頁才不會各長各的。寫法見 [任意值與任意屬性](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意值與任意屬性)。
 
@@ -982,7 +1455,27 @@ import "./apply.css";
 
 </details>
 
-# 選讀：@layer 與 @utility
+同一屬性上兩個 utility 平常看編成後的順序。`!` 寫在 class 最後，把這條宣告標成 important，用來壓過另一個 utility。能拿掉多餘的那條 class 時，不要用 `!`。寫法見 [任意變體、important、前綴](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意變體、important、前綴)。
+
+```html 02-tailwind/pages/26-arbitrary.html
+<p class="text-stone-500 text-teal-800!">這行是青綠，而且要壓過 stone。</p>
+```
+
+`text-stone-500` 與 `text-teal-800!` 都在改 `color`。後面的 `!` 讓青綠色這條變成 important，所以畫面上是青綠字。
+
+{% note success %}
+**換你試試：**
+青綠色再深一階，`!` 仍留在 class 最後。色階在 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+`text-teal-800!` 改成 `text-teal-900!`。`text-stone-500` 留著，才看得出 important 壓過它。
+
+</details>
+
+#### 選讀：@layer 與 @utility
 
 `@layer components` 裡的 class 是普通 CSS，不能寫成 `md:kicker`。`@utility` 註冊的名字才能接 `hover:`、`md:`。版心的 `container` 已在 RWD 那章定義過，這一節只比較接不上前綴的 class，和註冊成工具之後可以寫 `md:chip` 的名字。對照見 [@layer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#layer) 與 [@utility](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#utility)。
 
@@ -1053,244 +1546,15 @@ import "./layer.css";
 
 </details>
 
-# 選讀：手動切換深色
-
-跟著系統的 `dark:` 在前面已經用過。產品要一顆按鈕，讓這一頁的深色和作業系統分開時，才重新定義 `dark`。這一行若寫進全站入口，每一頁都會改看 class，所以它放在另一份 CSS，只有切換頁會載入。
-
-## 用 @custom-variant 改成手動切換
-
-下面這一行只放在切換頁會載入的 CSS。按鈕把 class `dark` 加到 `<html>`，並用 `localStorage` 記住上次的選擇。
-
-```css 02-tailwind/src/dark-manual.css
-@custom-variant dark (&:where(.dark, .dark *));
-```
-
-`&` 是正在套用這個變體的元素。`.dark` 是 `<html>` 上的 class，`.dark *` 是它的後代。按鈕只負責在 `document.documentElement` 上切換這個 class。
-
-```js 02-tailwind/src/dark-toggle.js
-import "./style.css";
-import "./dark-manual.css";
-
-const root = document.documentElement;
-const button = document.querySelector("#theme-toggle");
-const stored = localStorage.getItem("theme");
-const preferDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-root.classList.toggle("dark", stored ? stored === "dark" : preferDark);
-
-const paint = () => {
-  button.textContent = root.classList.contains("dark") ? "切換亮色" : "切換深色";
-};
-
-paint();
-button.addEventListener("click", () => {
-  root.classList.toggle("dark");
-  localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
-  paint();
-});
-```
-
-還沒按過按鈕時先跟系統偏好，並把結果寫成 `<html>` 的 class。按按鈕會切換 class，把 `dark` 或 `light` 存進 `localStorage`。
-
-```html 02-tailwind/pages/10-dark-toggle.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>手動切換深色</title>
-  </head>
-  <body class="min-h-screen bg-stone-50 text-stone-900 scheme-light dark:bg-stone-950 dark:text-stone-100 dark:scheme-dark">
-    <header class="flex items-center justify-between border-b border-stone-200 px-6 py-4 dark:border-stone-700">
-      <p class="font-semibold">洛奇旅行</p>
-      <button
-        id="theme-toggle"
-        type="button"
-        class="rounded-lg border border-stone-300 px-3 py-1.5 text-sm dark:border-stone-600"
-      >
-        切換深色
-      </button>
-    </header>
-    <main class="mx-auto max-w-xl px-6 py-8">
-      <h1 class="text-3xl font-bold">按鈕決定這一頁的外觀</h1>
-      <p class="mt-4 text-stone-600 dark:text-stone-300">
-        html 上有 dark 這個 class 時，dark: 才生效。重新整理會記住上次的選擇。
-      </p>
-      <article class="mt-6 rounded-xl bg-white p-5 shadow dark:bg-stone-900">
-        <h2 class="text-lg font-semibold">花蓮山海</h2>
-        <p class="mt-2 text-sm text-stone-600 dark:text-stone-300">兩天一夜。卡片的底也跟著換。</p>
-      </article>
-    </main>
-    <script type="module" src="/src/dark-toggle.js"></script>
-  </body>
-</html>
-```
-
-`dark:bg-stone-950` 在 `<html>` 有 class `dark` 時把頁面底改成近黑。卡片的 `bg-white` 在淺色生效，`dark:bg-stone-900` 在深色生效。頁尾 script 是 `dark-toggle.js`，它會再載入 `dark-manual.css`。
-
-{% note success %}
-**換你試試：**
-深色時卡片加一圈深灰框。邊框色在 [border-color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#border-color)。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`article` 的 class 補上 `dark:border dark:border-stone-700`。
-
-</details>
-
-# 選讀：important
-
-同一屬性上兩個 utility 平常看編成後的順序。`!` 寫在 class 最後，把這條宣告標成 important，用來壓過另一個 utility。能拿掉多餘的那條 class 時，不要用 `!`。寫法見 [任意變體、important、前綴](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意變體、important、前綴)。
-
-```html 02-tailwind/pages/26-arbitrary.html
-<p class="text-stone-500 text-teal-800!">這行是青綠，而且要壓過 stone。</p>
-```
-
-`text-stone-500` 與 `text-teal-800!` 都在改 `color`。後面的 `!` 讓青綠色這條變成 important，所以畫面上是青綠字。
-
-{% note success %}
-**換你試試：**
-青綠色再深一階，`!` 仍留在 class 最後。色階在 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`text-teal-800!` 改成 `text-teal-900!`。`text-stone-500` 留著，才看得出 important 壓過它。
-
-</details>
-
-# 選讀：group 與 peer
-
-滑過整張卡要帶動裡面的圖和標題時，父層加 `group`，子層用 `group-hover:`。兄弟之間用 `peer`：class 寫在前面的兄弟，`peer-checked:` 寫在後面的兄弟。導覽列用的是同一種 `peer`，放在這一節後面。具名寫法見 [具名 group 與 peer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#具名-group-與-peer)。
-
-`transition` 讓顏色、陰影、縮放在兩個狀態之間補間。`duration-200` 約 200 毫秒，圖片縮放用 `duration-300`。見 [transition-property](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#transition-property)。
-
-```html 02-tailwind/pages/17-states.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>狀態與轉場</title>
-  </head>
-  <body class="space-y-8 bg-stone-100 p-6 text-stone-900">
-    <h1 class="text-2xl font-bold">滑過、聚焦、整組一起變</h1>
-    <a
-      class="inline-block rounded-lg bg-teal-700 px-4 py-2 font-medium text-white transition duration-200 hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-900"
-      href="#go"
-    >
-      用鍵盤 Tab 到我
-    </a>
-    <article class="group max-w-sm overflow-hidden rounded-2xl bg-white shadow transition duration-200 hover:shadow-lg">
-      <img
-        class="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
-        src="https://picsum.photos/id/1015/800/500"
-        alt="山景"
-      />
-      <div class="p-4">
-        <h2 class="font-semibold group-hover:text-teal-800">滑過整張卡，標題與圖片一起變</h2>
-        <p class="mt-1 text-sm text-stone-600">group 放在父層，group-hover: 放在子層。</p>
-      </div>
-    </article>
-    <div>
-      <input id="agree" class="peer sr-only" type="checkbox" />
-      <label
-        class="inline-block cursor-pointer rounded border border-stone-300 px-3 py-1 peer-checked:border-teal-700 peer-checked:bg-teal-50"
-        for="agree"
-      >
-        我已閱讀行前說明
-      </label>
-      <p class="mt-2 hidden text-sm text-teal-800 peer-checked:block">勾選後這行才出現。</p>
-    </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-```
-
-`article` 的 `group` 建立一組。圖片的 `group-hover:scale-105` 在滑過這張卡時放大到 1.05 倍；父層的 `overflow-hidden` 讓放大的圖停在圓角裡。標題的 `group-hover:text-teal-800` 在同一時機改字色。卡片自己的 `hover:shadow-lg` 只在指標直接停在卡片上時加深陰影。
-
-核取方塊的 `peer` 給後面的標籤與段落用。標籤的 `peer-checked:bg-teal-50` 在勾選後換底。段落預設 `hidden`，`peer-checked:block` 在勾選後顯示。方塊在標籤前面，`for` 對到 `id`。
-
-{% note success %}
-**換你試試：**
-滑過整張卡時，標題再深一階。字色在 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)，父層寫法在 [具名 group 與 peer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#具名-group-與-peer)。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標題的 `group-hover:text-teal-800` 改成 `group-hover:text-teal-900`。`group` 仍留在 `article` 上。
-
-</details>
-## 選讀：導覽列
-
-窄螢幕用一顆核取方塊當開關，只做一套 `nav`。`peer` 寫在方塊上，`peer-checked:` 寫在它後面的兄弟上。方塊用 `sr-only` 移出視覺，標籤的 `for` 仍對得到。寬度到達 `md` 時，導覽回到橫排，選單標籤隱藏。
-
-```html 02-tailwind/pages/13-nav.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>導覽列</title>
-  </head>
-  <body class="bg-stone-50 text-stone-900">
-    <header class="relative bg-teal-800 text-white">
-      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <a class="text-lg font-bold" href="/">洛奇旅行</a>
-        <input id="nav-toggle" class="peer sr-only" type="checkbox" />
-        <label class="cursor-pointer rounded border border-white/40 px-3 py-1 md:hidden" for="nav-toggle">選單</label>
-        <nav
-          class="absolute left-0 right-0 top-full hidden flex-col gap-3 bg-teal-800 px-4 py-4 peer-checked:flex md:static md:flex md:flex-row md:gap-6 md:bg-transparent md:p-0"
-        >
-          <a class="hover:underline" href="#home">首頁</a>
-          <a class="hover:underline" href="#tours">行程</a>
-          <a class="hover:underline" href="#about">關於</a>
-        </nav>
-      </div>
-    </header>
-    <main class="mx-auto max-w-6xl px-4 py-8">
-      <h1 class="text-2xl font-bold">把視窗拉窄再拉寬</h1>
-      <p class="mt-3 max-w-prose text-stone-600">窄的時候按「選單」。寬到 md 之後，連結回到橫排，按鈕隱藏。</p>
-    </main>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-```
-
-`nav` 這一串分成窄螢幕與 `md` 以後：
-
-- `absolute left-0 right-0 top-full`：貼在頁首下緣，左右拉滿。
-- `hidden flex-col gap-3`：預設不顯示；一旦變成 flex，就是直向，連結相距 0.75rem。
-- `peer-checked:flex`：前面的方塊被勾選時才顯示。
-- `md:static md:flex md:flex-row`：48rem 以上回到文件流、一直顯示、改成橫排。
-- `md:bg-transparent md:p-0 md:gap-6`：清掉手機選單的底色與內距，連結改隔 1.5rem。
-
-「選單」標籤的 `md:hidden` 是到了 `md` 就隱藏。`border-white/40` 是白框 40% 不透明。
-
-{% note success %}
-**換你試試：**
-橫排改到 `lg` 才出現，比 `md` 再寬一階。對照 [視窗斷點](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#視窗斷點)。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標籤的 `md:hidden` 改成 `lg:hidden`。`nav` 上每一個 `md:` 改成 `lg:`：`lg:static lg:flex lg:flex-row lg:gap-6 lg:bg-transparent lg:p-0`。`peer-checked:flex` 維持不變。
-
-</details>
-
-# 選讀：Preflight 重置了什麼
-
-`@import "tailwindcss"` 會帶入 Preflight。標題和段落的預設外距會被拿掉，所以沒寫 `mt-*` 時，`h1` 會貼著上一塊。盒模型是 `border-box`。圖片預設 `display: block`，最大寬度 100%。按鈕會繼承字型。某一塊突然貼在一起時，先補 `mt-4` 或父層的 `space-y-4`。
-
 # 本篇重點回顧
 
-- utility 是「屬性－值」：`bg-teal-700` 塗背景，`p-4` 是 1rem 內距，編譯器只認原始碼裡的完整 class。
-- 沒有前綴的 class 是手機那一版，所有寬度都在。`sm:` 到 `2xl:` 是 `min-width`，夠寬才加上，更寬仍然成立。`max-md:` 只在小於 48rem 時成立。
+下面只收這篇做過的事。選讀（Play CDN、Preflight、group／peer、導覽列、手動深色、`@layer`）可以整節跳過。
+
+- Node 24 用 nvs 安裝（`nvs add 24`、`nvs use 24`、`nvs link`），pnpm 用 `corepack enable` 啟用；已裝過的可以跳過，用 `node -v` 與 `pnpm -v` 核對。
+- Vite 開發時當本機伺服器，`pnpm build` 才把用到的模組打包進 `dist/`；Tailwind 的 class 要先編成 CSS。
+- utility 是「屬性－值」：`bg-teal-700` 塗背景，`p-4` 是 1rem 內距；編譯器只認原始碼裡的完整 class。
+- `hover:`、`focus-visible:`、`active:` 是狀態，`dark:` 預設跟系統深色，沒有前綴的 class 則在所有寬度都在。
+- `sm:` 到 `2xl:` 是 `min-width`，夠寬才加上，更寬仍然成立。`max-md:` 只在小於 48rem 時成立。
 - 整頁欄數與側欄用視窗斷點。同一張卡會放進不同欄寬時，父層加 `@container`，子層用 `@md:`；巢狀時用具名 `@container/main` 與 `@md/main:`。
-- 版心是 `mx-auto max-w-6xl px-4`，或 `@utility container`。`max-w-sm` 是 24rem，和斷點 `sm:`（40rem）、變體 `max-sm:` 不是同一件事。
-- `@theme` 的 `--color-brand-*` 做出 `bg-brand-*`，`--spacing-18` 做出 `p-18`，`--breakpoint-tablet` 做出 `tablet:`。
-- `dark:` 預設跟系統深色。重複且改不到標籤的一串才用 `@apply`。刻度沒有的長度寫 `w-[22rem]`。
+- 版心是 `mx-auto max-w-6xl px-4`，或 `@utility container`。`max-w-sm`（24rem）和斷點 `sm:`（40rem）、變體 `max-sm:` 不是同一件事。
+- `@theme` 的 `--color-brand-*` 做出 `bg-brand-*`，`--spacing-18` 做出 `p-18`，`--font-sans` 改無襯線字型，`--breakpoint-tablet` 做出 `tablet:`；重複的一串才用 `@apply`，刻度沒有的長度寫 `w-[22rem]`，`!` 放在 class 最後才壓過另一條 utility。
