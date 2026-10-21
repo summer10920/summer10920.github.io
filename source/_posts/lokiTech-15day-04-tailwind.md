@@ -254,6 +254,13 @@ export default defineConfig({
 });
 ```
 
+{% note info %}
+**網路上的 postcss.config.js**
+在 v3 以前，Tailwind 本身是一個 PostCSS 插件（PostCSS 是用 JavaScript 處理 CSS 的工具），所以舊教學會要你多建一份 `postcss.config.js`，再另外安裝 autoprefixer 來補瀏覽器前綴。
+
+v4 改用 Tailwind 自己的編譯引擎，前綴這類處理也內建了。在 Vite 專案裡，它直接當 Vite 插件執行，也就是上面那一行，不需要 PostCSS 設定檔。只有不使用 Vite 的專案，才會改裝 `@tailwindcss/postcss`，把它當 PostCSS 插件使用。看到要你建 `postcss.config.js` 的教學，多半是 v3 的寫法，課堂上不用照做。
+{% endnote %}
+
 ##### 步驟 3：匯入 tailwindcss
 
 把入口樣式表的內容換成這一行。範本原本的 CSS 會蓋掉你要試的 utility，所以不要留著。

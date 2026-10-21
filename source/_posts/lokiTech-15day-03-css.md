@@ -10,28 +10,19 @@ date: 2026-08-30 10:02:00
 
 ![CSS 層疊樣式表](assets/images/banner/css.png)
 
-CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：顏色、字級、背景，以及盒子與欄位。HTML 負責「這一頁有什麼」，CSS 負責「那些東西怎麼呈現」。每一小節先講這個屬性拿來做什麼，再給一份完整 HTML，樣式寫在 `<style>`。
+CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：顏色、字級、背景，以及盒子怎麼排。HTML 負責這一頁有什麼，CSS 負責那些東西怎麼呈現。
 
 <!-- more -->
 
-預覽與除錯以 Chrome 為準，按 <kbd>F12</kbd> 看 **Elements → Styles**。
-
-| 大主題 | 章 | 你會用到的觀念 |
-| --- | --- | --- |
-| 規則怎麼套上元素 | 觀念與引入、選擇器與權重、繼承與層疊 | 規則零件、三種寫法、選擇器、四欄權重、繼承關鍵字 |
-| 字、色與背景 | 單位與顏色、文字與背景、選讀：進階選擇器、分層與字型 | `rem`、顏色、字型堆疊、背景圖層 |
-| 盒子與欄位排版 | 盒子與定位、Flexbox、Grid | 盒模型、`display`、定位、`overflow`、Flex、Grid |
-| 響應式、變數與動態 | RWD 與媒體查詢、CSS 變數、轉場與動畫、開發者工具 | 流動版面、斷點、代幣、`transition`、`@keyframes` |
-| 選讀：邊界與進階動效 | 外距穿出與邏輯方向、float 繞排、立體翻面、容器查詢、可補間的自訂屬性 | 可整節跳過 |
-| 本篇重點回顧 | 這篇用過的觀念 | 選擇器到除錯面板 |
+預覽與除錯以 Chrome 為準。按 <kbd>F12</kbd>，打開 Elements，右側 Styles 看規則有沒有打中，Computed 看最後用上的值。被劃掉的宣告代表沒有留下。
 
 # 規則怎麼套上元素
 
-樣式表是一組規則：先選到元素，再寫要改的屬性。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。這一節把規則的寫法、選擇器與繼承收在一起。
+樣式表是一組規則。瀏覽器先讀 HTML，再把對得上的規則套上去，最後才排版與繪製。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。
 
 ## 觀念與引入
 
-瀏覽器先解析 HTML、建立 DOM，再把 CSS 規則套到對得上的元素，最後才排版與繪製。你改的是規則文字，不是在畫面上直接塗色。重新整理之後，瀏覽器會再跑一次這段流程。
+一條規則先選到元素，再寫要改的屬性。你改的是這份文字，不是在畫面上直接塗色。存檔後重新整理，瀏覽器會再跑一次。
 
 {% mermaid graph LR %}
 html["HTML 元素"] --> sel["選擇器打中誰"]
@@ -41,16 +32,14 @@ decl --> used["套用後的外觀"]
 
 ### 規則的零件
 
-一條規則分成「選到誰」和「設什麼」。大括號裡可以有多個宣告，每個宣告以分號結尾。同一條規則裡同一個屬性寫兩次，**原始碼較後面的那次**留下。屬性名稱拼錯時，瀏覽器丟掉**那一個宣告**，同一條規則的其他宣告仍然有效。
+一條規則分成「選到誰」和「設什麼」。大括號裡可以有很多行，每一行以分號結尾。這一節只用顏色、字級、字重當例子，間距與邊框後面才畫。
 
-| 零件 | 例子 | 做什麼 |
-| --- | --- | --- |
-| 選擇器 | `h1`、`.lead` | 決定這條規則打到哪些元素 |
-| 屬性 | `color`、`font-size` | 決定要改外觀的哪一面 |
-| 值 | `#115e59`、`1.75rem` | 決定改成什麼 |
-| 宣告 | `color: #115e59;` | 一組屬性加值 |
+**觀念**
 
-逗號是分組：`h1, h2` 代表兩條選擇器共用同一組宣告，權重不會因為逗號加總。註解寫 `/* 說明 */`，可以跨行。`<!-- -->` 是 HTML 註解，放進 CSS 不會被當成註解。
+- 選擇器寫在大括號前面，決定打到哪些元素。
+- 每一行宣告是屬性、冒號、值、分號。同一個屬性寫兩次，留下較下面那次。
+- 屬性名稱拼錯時，瀏覽器只丟掉那一行，同一條規則的其他宣告仍然有效。
+- 逗號讓多個選擇器共用同一組宣告。註解包在樣式表的註解符號裡，HTML 的註解寫進來不會被當成註解。
 
 ```html 03-css/pages/01-syntax.html
 <!DOCTYPE html>
@@ -59,64 +48,116 @@ decl --> used["套用後的外觀"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>一條規則</title>
-    <style>
-      /* 選擇器 { 屬性: 值; }  HTML 的 <!-- --> 在這裡無效 */
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      /* 逗號是兩條規則共用宣告，不是把權重加在一起 */
-      h1,
-      h2 {
-        font-weight: 700;
-      }
-
-      h1 {
-        color: #99f6e4; /* 同屬性寫兩次，這條會被下一條蓋掉 */
-        colour: red; /* 拼錯，整條宣告丟掉，標題不會變紅 */
-        color: #115e59;
-        font-size: 1.75rem;
-      }
-
-      .lead {
-        font-size: 1.125rem;
-      }
-    </style>
+    <link rel="stylesheet" href="01-syntax.css" />
   </head>
   <body>
     <h1>一條規則三個零件</h1>
-    <p class="lead">
-      標題應是深青綠，不是紅色。F12 點 h1，Styles 裡 colour 與第一個 color 會被劃掉或標成無效。
-    </p>
-    <h2>次標題跟 h1 共用字重</h2>
-    <p>這段沒有自己的 class，顏色來自 body，字級是瀏覽器預設。</p>
+    <p class="lead">標題應是深青綠，不是紅色。</p>
+    <h2>次標題跟主標題共用字重</h2>
+    <p>這段沒有自己的 class，字級是瀏覽器預設。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/01-syntax.css
+/* 選擇器 { 屬性: 值; }    HTML 註解寫在這裡不會生效 */
+
+h1,
+h2 {
+  font-weight: 700; /* 逗號：兩條選擇器共用，權重不會相加 */
+}
+
+h1 {
+  color: #99f6e4; /* 同屬性寫兩次，這行會被下一行蓋掉 */
+  colour: red; /* 拼錯，只丟掉這一行，標題不會變紅 */
+  color: #115e59;
+  font-size: 1.75rem;
+}
+
+.lead {
+  font-size: 1.125rem;
+}
+```
+
+**解析**
+
+畫面上一顆較大的深青綠標題，下面一行稍大的導言，再一顆粗體次標題，最後是瀏覽器預設大小的段落。次標題沒有自己的顏色，所以不是深青綠。
+
+按 <kbd>F12</kbd> 點標題。Styles 裡第一個顏色和拼錯的那行會被劃掉或標成無效，留下深青綠與字級。導言只有字級，沒有自己的顏色規則。
+
+```css
+h1 {
+  color: #99f6e4; /* 被下面那行蓋掉 */
+  colour: red; /* 無效的屬性名 */
+  color: #115e59; /* 留下這個 */
+}
+```
+
 {% note info %}
-**小技巧：Styles 面板**
-<kbd>F12</kbd> → **Elements**，點一個節點。右側 **Styles** 由上到下是較優先的規則；被劃掉的是沒贏的宣告。**Computed** 是最後用上的值。
+**Styles 面板**
+點一個節點後，Styles 由上到下是較優先的規則。被劃掉的是沒贏的宣告。Computed 是最後算完的值。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+加一顆 h3，文字寫「行前準備」，讓它跟 h1、h2 共用同一組字重。再把 h1 最後留下的顏色改成 `#0f766e`。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+h3 寫進逗號那一組，所以跟前兩顆標題一樣是粗體，但不繼承 h1 的深色與字級。h1 同屬性仍是較下面那行留下，所以標題變成另一階青綠。
+
+```html 03-css/pages/01-syntax.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>一條規則</title>
+    <link rel="stylesheet" href="01-syntax.css" />
+  </head>
+  <body>
+    <h1>一條規則三個零件</h1>
+    <p class="lead">標題應是深青綠，不是紅色。</p>
+    <h2>次標題跟主標題共用字重</h2>
+    <p>這段沒有自己的 class，字級是瀏覽器預設。</p>
+    <h3>行前準備</h3>
+  </body>
+</html>
+```
+
+```css 03-css/pages/01-syntax.css
+h1,
+h2,
+h3 {
+  font-weight: 700;
+}
+
+h1 {
+  color: #99f6e4;
+  colour: red;
+  color: #0f766e;
+  font-size: 1.75rem;
+}
+
+.lead {
+  font-size: 1.125rem;
+}
+```
+
+</details>
 
 ### 三種寫法
 
-CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的 `<style>`（頁內）、或寫成獨立的 `.css` 再用 `<link>` 掛上（外部）。課堂這些示範用頁內，是為了貼上一份檔就能開。專題與多頁網站用外部檔：顏色集中在一處，改一次，每一頁一起變，瀏覽器也可以快取那份 CSS。
+樣式可以寫在標籤上、寫在這一頁的 style 裡，或寫成獨立檔再用 link 掛上。這一頁三種都看得到。多頁網站把共用的規則放進獨立檔，改一次，每一頁一起變。
 
-| 寫法 | 範本裡的位置 | 什麼時候用 |
-| --- | --- | --- |
-| 行內 | 開始標籤的 `style=""` | 暫時試一個元素。難共用，也難搜尋 |
-| 頁內 | `<head>` 裡的 `<style>` | 單頁小示範、本篇每一份練習 |
-| 外部 | `<link rel="stylesheet" href="tour.css">` | 多頁共用。`href` 相對**這份 HTML** |
+**觀念**
 
-`link` 放在 `head`。同一頁有多個 `link` 時，檔案順序會影響「權重相同時誰贏」——較晚連結的檔案算較後面。`style` 屬性裡只能寫宣告，不能寫選擇器，也不能寫 `@media`。
-
-`@import url("tour.css");` 必須寫在 CSS 的**最前面**，用來再拉另一份樣式表。它會多一次請求，也比 `link` 更晚才開始下載。課堂用 `link`。建構工具合併檔案時，原始碼裡才會大量出現 `@import`，那是工具的事。
+- 行內寫在開始標籤的 style 屬性。那裡只能寫宣告，不能寫選擇器。
+- 頁內寫在 head 的 style 標籤，只服務這一頁。
+- 外部檔用 link 掛上，路徑相對這份 HTML。檔案順序較晚的，在權重相同時算較後面。
+- 這一節的獨立檔就是頁面掛上的那份樣式表。
 
 ```html 03-css/pages/02-where.html
 <!DOCTYPE html>
@@ -125,42 +166,92 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CSS 寫在哪</title>
-    <!-- 專題改成外部檔：同資料夾放 tour.css，再把下一行的註解拿掉
-    <link rel="stylesheet" href="tour.css" />
-    -->
+    <link rel="stylesheet" href="02-where.css" />
     <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
       .from-page {
-        color: #b45309;
-      }
-
-      .from-file {
-        color: #115e59;
-        font-weight: 700;
+        color: #b45309; /* 頁內：只在這份 HTML */
       }
     </style>
   </head>
   <body>
     <h1>三種地方都可以寫</h1>
-    <p style="color: #9f1239">這行的顏色寫在開始標籤的 style 屬性（行內）。</p>
-    <p class="from-page">這行的顏色寫在這份 HTML 的 style 標籤（頁內）。</p>
-    <p class="from-file">
-      這行目前也寫在頁內。專題裡把 .from-file 搬進 tour.css，用 link 掛上，畫面相同。
-    </p>
+    <p style="color: #9f1239">這行的顏色寫在開始標籤上。</p>
+    <p class="from-page">這行的顏色寫在這頁的 style。</p>
+    <p class="from-file">這行的顏色寫在外部樣式表。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/02-where.css
+.from-file {
+  color: #115e59;
+  font-weight: 700;
+}
+```
+
+**解析**
+
+三行字顏色不同。第一行玫瑰紅，來自標籤上的 style。第二行琥珀色，來自這一頁的 style 標籤。第三行深青綠而且較粗，來自 link 掛上的檔案。
+
+把 href 改成不存在的檔名，重新整理後第三行會失去深色與粗體，前兩行不受影響。F12 的 Network 會看到那份樣式表失敗。
+
+```css
+.from-file {
+  color: #115e59; /* 只有 link 成功才會出現在 Styles */
+  font-weight: 700;
+}
+```
+
 {% note warning %}
-**注意事項**
-行內樣式的權重高過樣式表裡的一般宣告，所以專題不要把版面塗在標籤上。`href` 寫錯時，Network 會看到那份 CSS 是 404，Styles 裡則完全沒有你的規則。
+**行內樣式很難再改**
+標籤上的 style 比樣式表裡的一般宣告優先。版面與品牌色留在樣式表，不要塗在標籤上。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+拿掉第一行的 style 屬性，改加 class `from-inline`。在外部樣式表給這個 class 顏色 `#9f1239`。畫面第一行仍是玫瑰紅，但顏色改由外部檔負責。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+第一行不再把顏色寫在標籤上，所以之後要改色只要動樣式表。頁內的琥珀色與外部的深青綠維持原樣，三行仍是三種顏色。
+
+```html 03-css/pages/02-where.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS 寫在哪</title>
+    <link rel="stylesheet" href="02-where.css" />
+    <style>
+      .from-page {
+        color: #b45309;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>三種地方都可以寫</h1>
+    <p class="from-inline">這行的顏色寫在開始標籤上。</p>
+    <p class="from-page">這行的顏色寫在這頁的 style。</p>
+    <p class="from-file">這行的顏色寫在外部樣式表。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/02-where.css
+.from-inline {
+  color: #9f1239;
+}
+
+.from-file {
+  color: #115e59;
+  font-weight: 700;
+}
+```
+
+</details>
 
 ## 選擇器與權重
 
@@ -168,16 +259,13 @@ CSS 可以寫在標籤的 `style` 屬性（行內）、寫在該頁 `<head>` 的
 
 ### 元素、class 與 id
 
-先分清四種基本選擇器，再談組合。class 寫在 HTML 是 `class="tour"`，CSS 多一個點。id 寫在 HTML 是 `id="featured"`，CSS 多一個 `#`。一個元素可以同時有多個 class：`class="tour soldout"`。`.tour.soldout` 中間**沒有空格**，表示兩個 class 都在同一個元素上。
+先分清元素、class、id。class 在 HTML 寫在 class 屬性，樣式表多一個點。id 在 HTML 寫在 id 屬性，樣式表多一個 `#`。一個元素可以同時有多個 class，中間用空格分開。
 
-| 選擇器 | 寫法 | 打到誰 | 權重欄 |
-| --- | --- | --- | --- |
-| 通用 | `*` | 所有元素 | 不加分 |
-| 元素（型別） | `p`、`a` | 所有該標籤 | 元素欄 +1 |
-| class | `.tour` | 帶這個 class 的元素，可重複 | class 欄 +1 |
-| id | `#featured` | 該頁這一個 id | id 欄 +1 |
+**觀念**
 
-id 在一份文件裡只給一個元素。要用在很多張卡片上的樣式，寫 class。`#site-header` 這種全頁只有一個的區塊才用 id，而且是因為腳本或錨點需要那個名字，不是為了把權重拉高。
+- 元素選擇器打到所有該標籤。class 可以重複用在很多元素。id 在一份文件裡只給一個元素。
+- 兩個 class 寫在一起、中間沒有空格，表示同一個元素上兩個都要有。
+- 會重複出現的樣式用 class。id 留給全頁只有一個、而且錨點需要的名字，不要拿來把權重拉高。
 
 ```html 03-css/pages/03-selectors-basic.html
 <!DOCTYPE html>
@@ -186,67 +274,134 @@ id 在一份文件裡只給一個元素。要用在很多張卡片上的樣式�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>基本選擇器</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      p {
-        color: #475569;
-      }
-
-      .tour {
-        color: #0f766e;
-      }
-
-      .soldout {
-        text-decoration: line-through;
-      }
-
-      /* 沒有空格：同一個元素同時有這兩個 class */
-      .tour.soldout {
-        color: #64748b;
-      }
-
-      #featured {
-        background: #f0fdfa;
-        padding: 0.75rem 1rem;
-      }
-    </style>
+    <link rel="stylesheet" href="03-selectors-basic.css" />
   </head>
   <body>
     <h1>選擇器決定規則打到誰</h1>
     <p>元素選擇器：這段是石板色。</p>
-    <p class="tour">class：行程用字，深青綠。同一個 class 可以重複。</p>
-    <p class="tour">另一段行程，樣式跟上面那行相同。</p>
+    <p class="tour">class：行程用字。同一個 class 可以再出現一次。</p>
+    <p class="tour">另一段行程，顏色跟上面那行相同。</p>
     <p class="tour soldout">兩個 class 都在：字是灰的，而且有刪除線。</p>
-    <p id="featured">id：全頁這一個，帶淺綠底。不要把同一個 id 複製到第二個元素。</p>
+    <p id="featured">id：全頁這一個，字重較粗。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/03-selectors-basic.css
+p {
+  color: #475569;
+}
+
+.tour {
+  color: #0f766e;
+}
+
+.soldout {
+  text-decoration: line-through;
+}
+
+/* 沒有空格：同一個元素同時有這兩個 class */
+.tour.soldout {
+  color: #64748b;
+}
+
+#featured {
+  font-weight: 700;
+}
+```
+
+**解析**
+
+第一段是石板色，因為只有元素選擇器打中它。兩段帶 tour 的字是深青綠。同時帶 soldout 的那段是灰色加上刪除線：刪除線來自 soldout，灰色來自兩個 class 寫在一起的那條，它比單獨的 tour 更具體，所以顏色不留深青綠。
+
+帶 id 的那段沒有 tour，所以仍是元素選擇器的石板色，另外較粗。不要把同一個 id 複製到第二個元素。
+
+```css
+.tour {
+  color: #0f766e; /* 只有 tour 時留下 */
+}
+.tour.soldout {
+  color: #64748b; /* 兩個 class 都在時，顏色改留這條 */
+}
+```
+
 {% note info %}
-**小技巧：打不中時先看名字**
-Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、或 `link` 路徑錯。先對 HTML 的 `class`／`id` 與 CSS 的拼字，再談權重。
+**打不中時先對名字**
+Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存，或 link 路徑錯。先對 HTML 與樣式表的名字，再談誰蓋過誰。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+新增 class `hot`，顏色設成 `#9f1239`。把第二段行程改成同時有 tour 與 hot。再寫一條中間沒有空格的規則，讓「兩個都在」時顏色留下玫瑰紅，而不是深青綠。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+第二段同時有兩個 class，沒有空格的那條打中它，所以是玫瑰紅。第一段只有 tour，仍是深青綠。售完那段仍走原來的灰色與刪除線。
+
+```html 03-css/pages/03-selectors-basic.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>基本選擇器</title>
+    <link rel="stylesheet" href="03-selectors-basic.css" />
+  </head>
+  <body>
+    <h1>選擇器決定規則打到誰</h1>
+    <p>元素選擇器：這段是石板色。</p>
+    <p class="tour">class：行程用字。同一個 class 可以再出現一次。</p>
+    <p class="tour hot">另一段行程，顏色跟上面那行相同。</p>
+    <p class="tour soldout">兩個 class 都在：字是灰的，而且有刪除線。</p>
+    <p id="featured">id：全頁這一個，字重較粗。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/03-selectors-basic.css
+p {
+  color: #475569;
+}
+
+.tour {
+  color: #0f766e;
+}
+
+.hot {
+  color: #9f1239;
+}
+
+.tour.hot {
+  color: #9f1239;
+}
+
+.soldout {
+  text-decoration: line-through;
+}
+
+.tour.soldout {
+  color: #64748b;
+}
+
+#featured {
+  font-weight: 700;
+}
+```
+
+</details>
 
 ### 組合關係
 
-組合是在基本選擇器之間加上關係。空格、`>`、`+`、`~` 都算進**同一條**選擇器，權重把各段加總。逗號則是拆成多條，不加總。
+組合是在基本選擇器之間加上關係：後代、直接子層、緊鄰的下一個、以及後面的兄弟。這些符號都算在同一條選擇器裡。逗號則是拆成多條。
 
-| 組合 | 寫法 | 打到誰 |
-| --- | --- | --- |
-| 後代 | `article p` | `article` 裡面任何深度的 `p` |
-| 子 | `article > .direct` | 只限直接小孩 |
-| 相鄰兄弟 | `.stops li + li` | 緊接在 `li` 後面的那個 `li` |
-| 一般兄弟 | `h2 ~ p` | 同一個父層裡、`h2` 之後的 `p` |
-| 分組 | `h1, h2` | 兩種元素各算各的 |
+**觀念**
 
-後代選擇器很容易打到後來才嵌進去的元素。能用 class 說清楚的，就少靠深層的空格。
+- 空格是後代：祖先裡面任何深度都算。
+- 大於符號只算直接小孩。
+- 加號只算緊接在後面的那一個兄弟。波浪符號算同一個父層裡、後面的全部兄弟。
+- 後代選擇器很容易打到後來才嵌進去的元素。能用 class 說清楚的，就少靠很深的空格。
 
 ```html 03-css/pages/04-selectors-combine.html
 <!DOCTYPE html>
@@ -255,74 +410,101 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>組合選擇器</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      /* 後代：article 裡面任何一層的 p */
-      article p {
-        border-left: 3px solid #99f6e4;
-        padding-left: 0.75rem;
-      }
-
-      /* 子結合：只限 article 的直接小孩 */
-      article > .direct {
-        font-weight: 700;
-      }
-
-      .stops li + li {
-        margin-top: 0.35rem;
-      }
-
-      h2 ~ p {
-        font-size: 0.95rem;
-      }
-    </style>
+    <link rel="stylesheet" href="04-selectors-combine.css" />
   </head>
   <body>
     <h1>關係寫在選擇器中間</h1>
     <article>
-      <p class="direct">子結合 &gt; ：這段是 article 的直接小孩，所以較粗，也有左邊色條。</p>
+      <p class="direct">這段是 article 的直接小孩，所以較粗，也有深色。</p>
       <div>
-        <p>後代選擇器仍打得到這段（有左邊色條），但 &gt; 打不到，所以不會變粗。</p>
+        <p>後代仍打得到這段，直接子層打不到，所以不會變粗。</p>
       </div>
     </article>
     <h2>相鄰與後面的兄弟</h2>
-    <p>這個 h2 後面、同一個父層裡的段落會稍微縮小。</p>
-    <p>這段也在 h2 後面，同樣縮小。</p>
+    <p>這個標題後面的段落會改成石板色。</p>
+    <p>這段也在標題後面，同樣改色。</p>
     <ul class="stops">
       <li>台北</li>
-      <li>這項起，li + li 才有上距</li>
+      <li>這一項起才有刪除線</li>
       <li>濟州</li>
     </ul>
   </body>
 </html>
 ```
 
+```css 03-css/pages/04-selectors-combine.css
+article p {
+  color: #0f766e; /* 後代：任何深度的 p */
+}
+
+article > .direct {
+  font-weight: 700; /* 只限 article 的直接小孩 */
+}
+
+h2 ~ p {
+  color: #475569; /* 同一個父層裡，h2 之後的 p */
+}
+
+.stops li + li {
+  text-decoration: line-through; /* 緊接在 li 後面的那個 li */
+}
+```
+
+**解析**
+
+article 裡兩段都是深青綠，因為後代選擇器不管中間有沒有多包一層 div。較粗的只有直接小孩那一段。
+
+h2 後面的兩段都變成石板色，波浪符號把它們都算進去。清單第一項沒有刪除線，從第二項開始才有，因為加號要求「緊接在另一個 li 後面」。
+
+```css
+article p {
+  color: #0f766e; /* 孫層也打得到 */
+}
+article > .direct {
+  font-weight: 700; /* 孫層打不到 */
+}
+```
+
+{% note success %}
+**換你試試：**
+標題後面只有緊鄰的第一段要變成石板色，再下一段恢復預設。把波浪符號改成加號。清單維持原樣。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+加號只打緊接在 h2 後面的那一個 p，所以只有第一段是石板色。再下一段不再被這條打中，顏色回到瀏覽器預設。清單的加號沒有改。
+
+```css 03-css/pages/04-selectors-combine.css
+article p {
+  color: #0f766e;
+}
+
+article > .direct {
+  font-weight: 700;
+}
+
+h2 + p {
+  color: #475569;
+}
+
+.stops li + li {
+  text-decoration: line-through;
+}
+```
+
+</details>
+
 ### 偽類與偽元素
 
-偽類描述狀態或在父層的位置，偽元素描述元素的一部分或生出來的裝飾。兩者都接在選擇器後面，冒號個數與權重欄不同。見 [MDN：偽類與偽元素](https://developer.mozilla.org/zh-TW/docs/Learn_web_development/Core/Styling_basics/Pseudo_classes_and_elements)。
+偽類描述狀態或在父層的第幾個，偽元素描述元素生出來的一個裝飾片段。兩者都接在選擇器後面。這一節仍只用已經見過的顏色、字重、刪除線，加上這裡才出現的 content。
 
-#### 狀態與結構偽類
+**觀念**
 
-**偽類（pseudo-class）**寫單冒號，描述狀態或位置，權重算在 **class 欄**。**偽元素（pseudo-element）**寫雙冒號，描述元素的一部分或生出來的裝飾，權重算在 **元素欄**。
-
-連結四態要照這個順序寫，口訣是 LoVe／HAte：`:link`、`:visited`、`:hover`、`:active`。順序錯了，前面的同權重規則會蓋掉後面的狀態。`:visited` 因隱私限制，現代瀏覽器幾乎只讓你改顏色。`:hover` 是指標放在上面。`:focus-visible` 是鍵盤把焦點帶進來時才畫出的框；滑鼠點一下不必長出粗框。
-
-結構偽類看的是「在父層的第幾個小孩」：
-
-- `:first-child`、`:last-child`：是父層的第一個或最後一個小孩。
-- `:first-of-type`：是父層裡該標籤的第一個。
-- `:nth-child(odd)`、`:nth-child(2)`：第奇數個、第 2 個。括號裡也可以寫 `3n+1`。
-
-#### 偽元素與屬性選擇器
-
-`::before` 與 `::after` 必須寫 `content`（可以是空字串 `""`）才看得到。價格數字仍要留在 HTML 裡，讀屏與複製才有內容。`::placeholder` 只影響提示字，不影響使用者打進去的字。屬性選擇器（例如 `input[type="email"]`）權重也算 class 欄。
+- 偽類寫一個冒號，權重算在 class 那一欄。偽元素寫兩個冒號，權重算在元素那一欄。
+- 連結四態要照固定順序寫，否則同權重時前面的規則會蓋掉後面的狀態。指標放上去、鍵盤把焦點帶進來，是其中兩種狀態。
+- 結構偽類看的是在父層的第幾個小孩。第一個小孩若是標題，段落的 first-child 就打不中；first-of-type 才是「該標籤的第一個」。
+- before 必須寫 content 才看得到。價格數字仍留在 HTML，裝飾只是前面多出來的字。
 
 ```html 03-css/pages/05-selectors-pseudo.html
 <!DOCTYPE html>
@@ -331,88 +513,20 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>偽類與偽元素</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      a:link {
-        color: #0f766e;
-      }
-
-      a:visited {
-        color: #6d28d9;
-      }
-
-      a:hover {
-        color: #9f1239;
-      }
-
-      a:active {
-        color: #b45309;
-      }
-
-      a:focus-visible {
-        outline: 2px solid #115e59;
-        outline-offset: 2px;
-      }
-
-      .days li:nth-child(odd) {
-        background: #f0fdfa;
-      }
-
-      .days li:nth-child(2) {
-        font-weight: 700;
-      }
-
-      /* 第一個小孩是 h2，所以 p:first-child 打不到 */
-      .pitfall p:first-child {
-        color: #9f1239;
-      }
-
-      .pitfall p:first-of-type {
-        color: #0f766e;
-      }
-
-      .price::before {
-        content: "NT$ ";
-      }
-
-      input[type="email"] {
-        border: 2px solid #0f766e;
-        padding: 0.35rem 0.5rem;
-      }
-
-      input[type="text"] {
-        border: 2px solid #cbd5e1;
-        padding: 0.35rem 0.5rem;
-      }
-
-      input::placeholder {
-        color: #94a3b8;
-      }
-
-      input:disabled {
-        background: #f1f5f9;
-      }
-    </style>
+    <link rel="stylesheet" href="05-selectors-pseudo.css" />
   </head>
   <body>
     <h1>狀態、位置、裝飾</h1>
     <p><a href="#days">把滑鼠放上來，再用 Tab 走進來</a></p>
     <ul class="days" id="days">
-      <li>奇數項有底色</li>
+      <li>奇數項</li>
       <li>第二項較粗</li>
-      <li>奇數項有底色</li>
+      <li>奇數項</li>
       <li>第四項</li>
     </ul>
     <section class="pitfall">
       <h2>不是第一個小孩</h2>
-      <p>這段是深青綠。p:first-child 打不到，因為第一個小孩是 h2。p:first-of-type 打得到。</p>
+      <p>這段是深青綠。第一個小孩是標題，所以段落不是第一個小孩。</p>
     </section>
     <p class="price">12800</p>
     <p>
@@ -424,31 +538,143 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
 </html>
 ```
 
+```css 03-css/pages/05-selectors-pseudo.css
+/* 順序：link、visited、hover、active。顛倒時，後面的狀態會被蓋掉 */
+a:link {
+  color: #0f766e;
+}
+a:visited {
+  color: #6d28d9;
+}
+a:hover {
+  color: #9f1239;
+}
+a:active {
+  color: #b45309;
+}
+a:focus-visible {
+  color: #115e59;
+}
+
+.days li:nth-child(odd) {
+  color: #0f766e;
+}
+.days li:nth-child(2) {
+  font-weight: 700;
+}
+
+.pitfall p:first-child {
+  color: #9f1239; /* 打不中：第一個小孩是 h2 */
+}
+.pitfall p:first-of-type {
+  color: #0f766e;
+}
+
+.price::before {
+  content: "NT$ ";
+}
+
+input[type="email"] {
+  color: #0f766e;
+}
+input::placeholder {
+  color: #94a3b8;
+}
+input:disabled {
+  color: #94a3b8;
+}
+```
+
+**解析**
+
+連結預設是深青綠。滑鼠放上去變成玫瑰紅，按住時變成琥珀色。用 <kbd>Tab</kbd> 走進來時，字變成另一階深青綠。曾點過的連結可能變成紫色，現代瀏覽器幾乎只讓這個狀態改顏色。
+
+清單的第 1、3 項是深青綠，第 2 項較粗。標題下面那段不是玫瑰紅，因為它不是父層的第一個小孩；它是第一個段落，所以留下深青綠。價格前面多出 NT$，HTML 裡仍只有數字。信箱欄的字是深青綠，提示字與停用欄是淺灰。
+
+```css
+.pitfall p:first-child {
+  color: #9f1239; /* 第一個小孩是 h2，這條沒打中 */
+}
+.price::before {
+  content: "NT$ "; /* 沒寫 content 就不會出現 */
+}
+```
+
 {% note warning %}
-**注意事項**
-不要用 `::before` 填上句子裡唯一的資訊。裝飾拿掉之後，HTML 裡的文字仍要讀得懂。清單用 `:nth-child(odd)` 之前，先確認項目中間沒有插入別的標籤，否則奇偶會位移。
+**裝飾不能是唯一的資訊**
+before 拿掉之後，HTML 裡的文字仍要讀得懂。清單用奇數項上色之前，先確認項目中間沒有插進別的標籤，否則奇偶會位移。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+奇數項改成偶數項才是深青綠。價格前面的裝飾改成「約 NT$」。連結四態的順序不要調換。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+nth-child 的括號改成 even 之後，第 2、4 項是深青綠，第 1、3 項回到預設。第 2 項仍較粗。價格前面的字變成「約 NT$」，數字還在 HTML 裡。
+
+```css 03-css/pages/05-selectors-pseudo.css
+a:link {
+  color: #0f766e;
+}
+a:visited {
+  color: #6d28d9;
+}
+a:hover {
+  color: #9f1239;
+}
+a:active {
+  color: #b45309;
+}
+a:focus-visible {
+  color: #115e59;
+}
+
+.days li:nth-child(even) {
+  color: #0f766e;
+}
+.days li:nth-child(2) {
+  font-weight: 700;
+}
+
+.pitfall p:first-child {
+  color: #9f1239;
+}
+.pitfall p:first-of-type {
+  color: #0f766e;
+}
+
+.price::before {
+  content: "約 NT$ ";
+}
+
+input[type="email"] {
+  color: #0f766e;
+}
+input::placeholder {
+  color: #94a3b8;
+}
+input:disabled {
+  color: #94a3b8;
+}
+```
+
+</details>
 
 ### 四欄權重
 
-權重（specificity）用來比較哪一條選擇器比較具體。先看有沒有 `!important`，再由左到右比四個欄位，欄與欄不進位；欄位相同才看原始碼順序。見 [MDN：權重](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Specificity)。
+權重（specificity）用來比較哪一條選擇器比較具體。先看有沒有 important，再由左到右比四欄，欄與欄不進位。四欄也相同時，原始碼較後面的贏。
 
-同一個元素、同一個屬性，可能有很多宣告打中。作者樣式（你寫的 CSS）裡，比較順序是：
+**觀念**
 
-1. 這條宣告有沒有 `!important`。有的贏過沒有的。
-2. 都沒有（或都有）時，比權重。四個欄位由左到右比，**某一欄較大就贏，不會進位**。
-3. 權重也相同時，原始碼較後面的贏。後連結的樣式表算較後面。
+比較同一個元素、同一個屬性時，順序是：
 
-| 欄位 | 誰加分 | 下面示範留下的顏色 |
-| --- | --- | --- |
-| 行內 | 標籤上的 `style=""` | 玫瑰紅，贏過樣式表裡的一般宣告 |
-| id | `#one` | 深青綠，贏過 `.note` |
-| class | class、屬性選擇器、偽類 | 琥珀色，贏過 `p` |
-| 元素 | 元素、偽元素 | 石板色 |
-
-`p.note#one` 是把欄位**加在同一條**上：1 個 id、1 個 class、1 個元素。十個 class 加起來仍是 class 欄的數字，比不過 id 欄的 1。不要把權重記成「class 是 10 分、湊滿 10 個就等於一個 id」——欄與欄之間不進位。舊說法「id＝100、class＝10、元素＝1」只在數目很小的時候碰巧像十進位。
-
-樣式表裡的 `!important` 贏過**沒有** `!important` 的行內樣式。行內再加上 `!important` 會更難蓋。專題要改顏色時，調整選擇器或原始碼順序。
+- 有 important 的贏過沒有的。
+- 再比四欄，由左到右：行內樣式、id、class（含屬性選擇器與偽類）、元素（含偽元素）。某一欄較大就贏，不會進位。
+- 十個 class 加起來仍是 class 那一欄的數字，比不過 id 那一欄的 1。
+- 權重相同時，寫在較下面的贏。後連結的樣式表算較後面。
 
 ```html 03-css/pages/06-specificity.html
 <!DOCTYPE html>
@@ -457,90 +683,158 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存、
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>權重</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      /* (行內, id, class, 元素) = (0, 0, 0, 1) */
-      p {
-        color: #475569;
-      }
-
-      /* (0, 0, 1, 0) */
-      .note {
-        color: #b45309;
-      }
-
-      /* (0, 1, 0, 0)  id 欄比 class 欄優先 */
-      #one {
-        color: #0f766e;
-      }
-
-      /* 權重相同。較早的 color 會被劃掉 */
-      .chip {
-        color: #0369a1;
-        border: 2px solid #99f6e4;
-        padding: 0.5rem 0.75rem;
-      }
-
-      .chip {
-        color: #115e59;
-        border-radius: 0.75rem;
-      }
-
-      .force {
-        color: #94a3b8;
-      }
-
-      .force {
-        color: #9f1239 !important;
-      }
-    </style>
+    <link rel="stylesheet" href="06-specificity.css" />
   </head>
   <body>
     <h1>誰贏</h1>
     <p>只有元素選擇器：石板色。</p>
-    <p class="note">加上 class：琥珀色。class 欄贏過元素欄。</p>
-    <p id="one" class="note">同時有 id 與 class：深青綠。id 欄贏過 class 欄。</p>
-    <p id="two" class="note" style="color: #9f1239">
-      行內 style：玫瑰紅，贏過樣式表裡的一般宣告。
-    </p>
-    <p class="chip">
-      同權重的 .chip 寫了兩次。F12 應看到第一個 color 被劃掉，留下深青綠、圓角，以及第一條的框。
-    </p>
-    <p class="force">這段用了 !important。一般的灰色 color 會被劃掉。練習不要把它當預設。</p>
+    <p class="note">加上 class：琥珀色。</p>
+    <p id="one" class="note">同時有 id 與 class：深青綠。</p>
+    <p id="two" class="note" style="color: #9f1239">行內樣式：玫瑰紅。</p>
+    <p class="chip">同權重寫了兩次，留下較下面的深青綠。</p>
+    <p class="force">這段用了 important，留下玫瑰紅。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/06-specificity.css
+/* 四欄由左到右，不進位：行內、id、class、元素 */
+
+p {
+  color: #475569; /* 元素欄 */
+}
+
+.note {
+  color: #b45309; /* class 欄，贏過元素 */
+}
+
+#one {
+  color: #0f766e; /* id 欄，贏過 class */
+}
+
+.chip {
+  color: #0369a1;
+}
+
+.chip {
+  color: #115e59; /* 權重相同，較下面的贏 */
+}
+
+.force {
+  color: #94a3b8;
+}
+
+.force {
+  color: #9f1239 !important;
+}
+```
+
+**解析**
+
+第一段只有元素選擇器，是石板色。帶 note 的變成琥珀色。同時有 id 的那段是深青綠，因為 id 那一欄比 class 那一欄優先，就算它也帶著 note。
+
+再下一段的玫瑰紅寫在標籤上，贏過樣式表裡的一般宣告。chip 兩條權重相同，F12 會看到第一個顏色被劃掉，留下深青綠。force 的灰色也被劃掉，因為下一條帶了 important。
+
+```css
+#one {
+  color: #0f766e; /* id 欄有 1，class 欄有 1 仍輸 */
+}
+.chip {
+  color: #115e59; /* 跟上一條 .chip 同權重，位置較下 */
+}
+```
+
 {% note danger %}
-**不要用 !important 解權重**
-它會讓下一個人只能再寫一個 `!important`。id 寫很多、選擇器拉很長，也是同一類問題。先把 class 取清楚。
+**不要用 important 解權重**
+下一個人只能再寫一個 important 才能蓋掉。id 寫很多、選擇器拉很長，也是同一類問題。先把 class 取清楚，再調整順序。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+拿掉 force 的 important。改成給那段一個 id `sale`，用 id 選擇器把顏色設成 `#9f1239`。玫瑰紅仍要留下，而且不靠 important。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+id 那一欄比 class 那一欄優先，所以 sale 的玫瑰紅蓋過 force 的灰色。畫面上這段仍是玫瑰紅，Styles 裡不會再看到 important。
+
+```html 03-css/pages/06-specificity.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>權重</title>
+    <link rel="stylesheet" href="06-specificity.css" />
+  </head>
+  <body>
+    <h1>誰贏</h1>
+    <p>只有元素選擇器：石板色。</p>
+    <p class="note">加上 class：琥珀色。</p>
+    <p id="one" class="note">同時有 id 與 class：深青綠。</p>
+    <p id="two" class="note" style="color: #9f1239">行內樣式：玫瑰紅。</p>
+    <p class="chip">同權重寫了兩次，留下較下面的深青綠。</p>
+    <p id="sale" class="force">這段用了 important，留下玫瑰紅。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/06-specificity.css
+p {
+  color: #475569;
+}
+
+.note {
+  color: #b45309;
+}
+
+#one {
+  color: #0f766e;
+}
+
+.chip {
+  color: #0369a1;
+}
+
+.chip {
+  color: #115e59;
+}
+
+.force {
+  color: #94a3b8;
+}
+
+#sale {
+  color: #9f1239;
+}
+```
+
+</details>
 
 ## 繼承與層疊
 
-**層疊（cascade）**決定很多宣告搶同一個屬性時誰留下：來源、`!important`、權重、原始碼順序。**繼承（inheritance）**是另一件事：這個元素**根本沒有**人寫這個屬性時，要不要沿用父層已經算出來的值。上一節比的是「都有寫」；這一節處理「沒寫」以及你明示要跟父層還是回到初始。見 [MDN：繼承](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascade/Inheritance)。
+層疊（cascade）決定很多宣告搶同一個屬性時誰留下：來源、important、權重、原始碼順序。繼承（inheritance）是另一件事：這個元素根本沒有人寫這個屬性時，要不要沿用父層已經算出來的值。
 
 {% mermaid graph TD %}
-hit["這個元素有人寫了該屬性"] --> imp["先看 !important"]
+hit["這個元素有人寫了該屬性"] --> imp["先看 important"]
 imp --> spec["再比四欄權重"]
 spec --> order["再看誰寫在後面"]
 miss["沒有人寫這個屬性"] --> inh["可繼承的跟父層"]
 miss --> init["不可繼承的用初始值"]
 {% endmermaid %}
 
-使用者代理樣式表（user agent stylesheet）也參與層疊，優先順序低於你寫的作者樣式。連結預設是藍色底線、`h1` 預設比較大，都是它先套的。你的規則寫出來之後才改掉那些預設。
+瀏覽器自己也有一份樣式表，優先順序低於你寫的規則。連結預設有底線、標題預設比較大，都是它先套的。你的規則寫出來之後才改掉那些預設。
 
 ### 什麼會繼承
 
-會繼承的多半跟字有關：`color`、`font-family`、`font-size`、`font-weight`、`line-height`、`text-align`、`letter-spacing`。不會繼承的多半跟盒子有關：`margin`、`padding`、`border`、`background`、`width`、`display`。子元素是透明底時，你看到的是父層背景透出來，不是子層繼承了 `background-color`。
+沒有人寫的屬性，才會談到跟不跟父層。跟字有關的多半會跟，跟盒子有關的多半不會。自己寫了同一個屬性，繼承就停在這一層。
 
-自己寫了同一個屬性，繼承就停在這一層。`line-height` 若寫成無單位數字，子層會用「自己的字級 × 那個數字」；若寫成 `24px`，子層字變大時行距仍是固定的 24 像素。
+**觀念**
+
+- 會繼承的例如顏色、字型、字級、字重、行高、對齊。
+- 不會繼承的例如外距、內距、邊框、背景、寬度。子層是透明底時，你看到的是父層背景透出來，不是子層繼承了背景。
+- 行高若寫成沒有單位的數字，子層會用自己的字級去乘。寫成固定像素時，子層字變大，行高仍是那個像素。
 
 ```html 03-css/pages/07-inherit.html
 <!DOCTYPE html>
@@ -549,52 +843,73 @@ miss --> init["不可繼承的用初始值"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>繼承</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .story {
-        color: #7c2d12;
-        margin-left: 2rem;
-        border: 4px solid #7c2d12;
-        padding: 0.75rem 1rem;
-        background: #fff7ed;
-      }
-
-      .price {
-        color: #115e59;
-      }
-    </style>
+    <link rel="stylesheet" href="07-inherit.css" />
   </head>
   <body>
     <h1>沒寫的屬性會不會跟父層</h1>
     <article class="story">
       <h2>繼承</h2>
-      <p>
-        這段沒寫 color，所以跟 article 的磚紅。左邊外距是 article 的盒子在縮排，p 自己並沒有 margin-left。框與底色也不會繼承到這段。
-      </p>
-      <p class="price">這段自己寫了 color，不再跟父層，字是深青綠。</p>
+      <p>這段沒寫顏色，所以跟 article 的磚紅。底色是父層透出來的，不是這段自己的背景。</p>
+      <p class="price">這段自己寫了顏色，不再跟父層。</p>
     </article>
-    <p>article 外面的這段回到 body 的深青綠，也沒有左邊那 2rem。</p>
+    <p>article 外面這段不跟那塊磚紅。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/07-inherit.css
+.story {
+  color: #7c2d12;
+  background: #fff7ed;
+}
+
+.price {
+  color: #115e59;
+}
+```
+
+**解析**
+
+article 裡的標題和第一段都是磚紅色，它們沒有自己的顏色規則，所以跟父層。淺底只塗在 article 上，段落沒有自己的背景，你看到的是父層的底透出來。
+
+帶 price 的那段自己寫了顏色，繼承停住，字是深青綠，底仍是父層透出來的淺色。article 外面那段不在這個父層裡，顏色回到瀏覽器預設。
+
+```css
+.story {
+  color: #7c2d12; /* 子層沒寫 color 就跟這個 */
+  background: #fff7ed; /* 背景不繼承，只是從下面透出來 */
+}
+```
+
+{% note success %}
+**換你試試：**
+拿掉 price 自己的顏色，讓那段也跟父層的磚紅。article 的底色不要改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍只在父層，段落自己還是沒有背景。
+
+```css 03-css/pages/07-inherit.css
+.story {
+  color: #7c2d12;
+  background: #fff7ed;
+}
+```
+
+</details>
+
 ### 四個關鍵字
 
-值也可以寫成關鍵字，強迫這一次要不要跟父層。`initial` 不是「回到我上一條規則」。`color` 的初始值是瀏覽器定義的字色，不是 `body` 上你寫的顏色。`revert` 回到上一層來源，通常是使用者代理樣式（標題會變回瀏覽器預設的大小與粗細）。想一次清掉很多屬性，可以寫 `all: unset;`，再把真正需要的屬性補回去。這是重置手段，不是每個元件的起手式。
+值也可以寫成關鍵字，強迫這一次要跟父層，或回到這個屬性自己的起點。initial 不是「回到我上一條規則」。
 
-| 關鍵字 | 示範裡的結果 | 意思 |
-| --- | --- | --- |
-| `inherit` | 藍字，而且有藍框 | 跟父層的計算結果，連平常不繼承的屬性也跟 |
-| `initial` | 回到屬性自身的初始值 | `color` 回到初始字色；`border` 回到沒有框 |
-| `unset` | 藍字、沒有框 | 可繼承的當成 `inherit`，其餘當成 `initial` |
-| `revert` | 標題回到瀏覽器預設 | 丟掉作者樣式，回到使用者代理那一層 |
+**觀念**
+
+- inherit：跟父層算出來的值。連平常不繼承的屬性也跟。
+- initial：回到這個屬性自己的初始值。顏色會回到瀏覽器定義的字色，不是你寫在 body 上的顏色。
+- unset：會繼承的當成 inherit，不會繼承的當成 initial。
+- revert：丟掉你寫的作者樣式，回到瀏覽器那一層。標題會變回預設的大小與粗細。
 
 ```html 03-css/pages/08-keywords.html
 <!DOCTYPE html>
@@ -603,77 +918,117 @@ miss --> init["不可繼承的用初始值"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>繼承關鍵字</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .keywords {
-        color: #1d4ed8;
-        border: 4px solid #1d4ed8;
-        padding: 0.75rem 1rem;
-      }
-
-      .in {
-        color: inherit;
-        border: inherit;
-      }
-
-      .init {
-        color: initial;
-        border: initial;
-      }
-
-      .un {
-        color: unset;
-        border: unset;
-      }
-
-      .back h2 {
-        font-size: revert;
-        font-weight: revert;
-      }
-    </style>
+    <link rel="stylesheet" href="08-keywords.css" />
   </head>
   <body>
     <h1>明示跟父層，或回到初始</h1>
     <div class="keywords">
-      <p class="in">inherit：字跟父層的藍，框也強制跟父層（框平常不繼承）。</p>
-      <p class="init">initial：字回到屬性初始值，框也回到初始（通常沒有框）。</p>
-      <p class="un">unset：color 會繼承（藍字），border 不可繼承所以回到初始（沒有框）。</p>
+      <p class="in">inherit：字跟父層的藍。</p>
+      <p class="init">initial：字回到屬性初始值。</p>
+      <p class="un">unset：顏色會繼承，所以仍是藍字。</p>
     </div>
     <section class="back">
-      <h2>這顆 h2 用了 revert，字級與字重回到瀏覽器預設。</h2>
+      <h2>這顆標題用了 revert，字級與字重回到瀏覽器預設。</h2>
     </section>
   </body>
 </html>
 ```
 
+```css 03-css/pages/08-keywords.css
+.keywords {
+  color: #1d4ed8;
+}
+
+.in {
+  color: inherit;
+}
+
+.init {
+  color: initial;
+}
+
+.un {
+  color: unset;
+}
+
+.back h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  font-size: revert;
+  font-weight: revert;
+}
+```
+
+**解析**
+
+父層是藍字。inherit 那段仍是藍的。initial 那段回到瀏覽器的初始字色，不是藍。unset 對顏色來說等於繼承，所以還是藍的。
+
+下面那顆標題先被設成較小、較細，接著 revert 把這兩項交回瀏覽器，標題又變大、變粗。F12 點它，會看到你寫的字級被 revert 蓋過。
+
+```css
+.init {
+  color: initial; /* 不是回到父層的藍 */
+}
+.back h2 {
+  font-size: revert; /* 回到瀏覽器預設的標題大小 */
+}
+```
+
+{% note success %}
+**換你試試：**
+讓 initial 那段改跟父層，把關鍵字從 initial 換成 inherit。revert 那顆標題不要動。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大小與粗細維持瀏覽器預設。
+
+```css 03-css/pages/08-keywords.css
+.keywords {
+  color: #1d4ed8;
+}
+
+.in {
+  color: inherit;
+}
+
+.init {
+  color: inherit;
+}
+
+.un {
+  color: unset;
+}
+
+.back h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  font-size: revert;
+  font-weight: revert;
+}
+```
+
+</details>
+
 # 字、色與背景
 
-規則打中之後，值要寫成瀏覽器讀得懂的長度與顏色，再決定字怎麼排、底怎麼畫。字型相關屬性多半會繼承，背景預設不繼承。
+規則打中之後，值要寫成瀏覽器讀得懂的長度與顏色，再決定字怎麼排、底怎麼畫。跟字有關的屬性多半會繼承，背景預設不繼承。
 
 ## 單位與顏色
 
-長度與顏色是宣告裡最常出現的兩種值。這一節先把字級、行寬、色票定下來。寬度怎麼跟盒模型一起算，下一節再細算。
+長度與顏色是宣告裡最常出現的兩種值。這一節先把字級、行寬、色票定下來。寬高怎麼跟邊框一起算，盒子那一節再細算。
 
 ### 長度
 
-長度用來寫字級、行寬、間距。內文以 `rem` 為主，`px` 用來寫髮絲邊框與需要對齊像素的線。`em` 會疊乘：父層已經是 1.25 倍、子層又寫 `2em`，子層相對的是放大後的父層，不是根字級。元件裡的字級用 `rem`，比較不會因為多包一層就突然變大。
+長度用來寫字級與寬度。內文以 rem 為主。em 會跟著父層疊乘，元件裡的字級用 rem，比較不會因為多包一層就突然變大。
 
-| 單位 | 相對誰 | 示範 |
-| --- | --- | --- |
-| `px` | CSS 像素 | 這頁把根字級設成 `16px`，只為了讓 Computed 好對 |
-| `em` | 用在 `font-size` 上時相對**父層**字級 | 父 `1.25em`、子 `2em` → 子約 40px |
-| `rem` | **根元素**（`html`）的字級 | 子 `2rem` → 約 32px |
-| `%` | 視屬性而定，寬度通常相對包含區塊 | 16rem 軌道的一半 |
-| `ch` | 該字型裡「0」的寬度 | 行寬最寬 `36ch` |
-| `vw`、`vh` | 視窗寬或高的 1% | `4vw` 的標題跟著視窗縮放 |
+**觀念**
 
-`line-height` 建議寫**無單位**數字（例如 `1.6`），它會乘上該元素自己的 `font-size`。行內的 `span` 預設不理會 `width`，所以示範把色條設成 `display: block`，百分之五十才有寬度可畫。`display` 的其餘值在盒子那一節再展開。
+- px 是 CSS 像素。髮絲線才常用它。這一頁把根字級設成 16px，只為了讓 Computed 的數字好對。
+- em 用在字級上時，相對父層的字級。父層已經放大，子層再寫 em，乘的是放大後的父層。
+- rem 相對根元素的字級，不受中間那層影響。
+- 百分比的寬度相對包含區塊。ch 大約是該字型裡「0」的寬度，用來收行寬。vw 是視窗寬度的百分之一。
 
 ```html 03-css/pages/09-units.html
 <!DOCTYPE html>
@@ -682,104 +1037,157 @@ miss --> init["不可繼承的用初始值"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>單位</title>
-    <style>
-      html {
-        font-size: 16px;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .em-box {
-        font-size: 1.25em;
-        background: #f0fdfa;
-        padding: 0.75rem;
-      }
-
-      .em-child {
-        font-size: 2em;
-      }
-
-      .rem-box {
-        font-size: 1.25rem;
-        background: #ecfeff;
-        padding: 0.75rem;
-      }
-
-      .rem-child {
-        font-size: 2rem;
-      }
-
-      .meter {
-        width: 16rem;
-        background: #ccfbf1;
-      }
-
-      .half {
-        display: block;
-        width: 50%;
-        background: #115e59;
-        color: #fff;
-      }
-
-      .measure {
-        max-width: 36ch;
-      }
-
-      .vw-title {
-        font-size: 4vw;
-      }
-    </style>
+    <link rel="stylesheet" href="09-units.css" />
   </head>
   <body>
     <h1>單位</h1>
-    <p>這頁把根字級設成 16px，只為了讓 Computed 的數字好對。正式頁常不鎖死像素。</p>
+    <p>這頁把根字級設成 16px，只為了讓 Computed 好對。</p>
     <div class="em-box">
-      父層 1.25em（約 20px）
+      父層 1.25em
       <p class="em-child">子層 2em，相對父層，約 40px。</p>
     </div>
     <div class="rem-box">
-      父層 1.25rem（約 20px）
-      <p class="rem-child">子層 2rem，相對根元素，約 32px。不受父層 1.25rem 疊乘。</p>
+      父層 1.25rem
+      <p class="rem-child">子層 2rem，相對根元素，約 32px。</p>
     </div>
     <div class="meter">
-      <span class="half">父層 16rem 的 50%</span>
+      <div class="half">父層一半寬</div>
     </div>
-    <p class="measure">
-      這段最寬約 36 個「0」的寬度（ch）。中文不會剛好 36 個字，但行寬會收在閱讀舒適的範圍。
-    </p>
-    <p class="vw-title">4vw 會跟著視窗寬度變</p>
+    <p class="measure">這段最寬約 36 個 0 的寬度。中文不會剛好 36 個字，行寬仍收得住。</p>
+    <p class="vw-title">這行會跟著視窗寬度變</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/09-units.css
+html {
+  font-size: 16px;
+}
+
+.em-box {
+  font-size: 1.25em;
+  background: #f0fdfa;
+}
+
+.em-child {
+  font-size: 2em; /* 1.25 × 2 × 16px */
+}
+
+.rem-box {
+  font-size: 1.25rem;
+  background: #ecfeff;
+}
+
+.rem-child {
+  font-size: 2rem; /* 2 × 16px，不乘父層 */
+}
+
+.meter {
+  width: 16rem;
+  background: #ccfbf1;
+}
+
+.half {
+  width: 50%;
+  background: #115e59;
+  color: #fff;
+}
+
+.measure {
+  max-width: 36ch;
+}
+
+.vw-title {
+  font-size: 4vw;
+}
+```
+
+**解析**
+
+兩塊淺底的父層字級看起來接近，都是根字級的 1.25 倍。em 那塊的子層明顯更大，因為 2em 乘的是已經放大的父層。rem 那塊的子層是根字級的 2 倍，約 32px，不受父層 1.25rem 影響。
+
+深青綠條是淺底軌道的一半。36ch 那段不會跟著視窗無限變寬。最下面一行在你拉動視窗寬度時，字會跟著變大變小。
+
+```css
+.em-child {
+  font-size: 2em; /* 相對父層 */
+}
+.rem-child {
+  font-size: 2rem; /* 相對 html */
+}
+```
+
 {% note warning %}
-**注意事項**
-不要用 `4vw` 當全站內文。視窗很窄時字會小到不能讀，很寬時又會過大。`vw` 適合偶爾的標題實驗；正文留在 `rem`。
+**不要用 vw 當全站內文**
+視窗很窄時字會小到不能讀，很寬時又過大。vw 只適合偶爾的標題實驗，正文留在 rem。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+把 em 那塊的子層從 2em 改成 2rem。它應該變得跟下面那塊的子層一樣大，不再疊乘。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+子層改跟根字級走之後，兩塊的子層都約 32px。父層仍是 1.25em 與 1.25rem，看起來仍接近，但 em 子層不再變成約 40px。
+
+```css 03-css/pages/09-units.css
+html {
+  font-size: 16px;
+}
+
+.em-box {
+  font-size: 1.25em;
+  background: #f0fdfa;
+}
+
+.em-child {
+  font-size: 2rem;
+}
+
+.rem-box {
+  font-size: 1.25rem;
+  background: #ecfeff;
+}
+
+.rem-child {
+  font-size: 2rem;
+}
+
+.meter {
+  width: 16rem;
+  background: #ccfbf1;
+}
+
+.half {
+  width: 50%;
+  background: #115e59;
+  color: #fff;
+}
+
+.measure {
+  max-width: 36ch;
+}
+
+.vw-title {
+  font-size: 4vw;
+}
+```
+
+</details>
 
 ### 顏色寫法
 
-`color` 是前景（通常是字）。`background-color` 是底。`border-color` 是框。同一套寫法三種屬性都能用。對比要夠：深字配淺底，或淺字配深底。同一個色若再加一半透明，就可能不夠讀。透明度是「讓底下的像素參與混合」，不是另做一種灰色。
+同一套顏色可以寫成名稱、十六進位、rgb 或 hsl。color 是字的顏色，background-color 是底。透明度是讓底下的像素參與混合，不是另做一種灰色。
 
-| 寫法 | 例子 | 什麼時候用 |
-| --- | --- | --- |
-| 名稱 | `teal` | 草稿。正式頁少靠名稱，不好對品牌色 |
-| HEX 六碼 | `#0f766e` | 最常見。兩兩一組是紅、綠、藍，`00`～`ff` |
-| HEX 三碼 | `#fff` | 只有在兩兩重複時等於 `#ffffff` |
-| HEX 八碼 | `#0f766e99` | 末兩碼是透明度 |
-| `rgb()` | `rgb(15 118 110)` | 與 HEX 同一套光。現代寫法用空格 |
-| 帶透明度 | `rgb(15 118 110 / 50%)` | `/` 後面是 alpha。`0` 全透明，`100%` 不透明 |
-| `hsl()` | `hsl(175 80% 26%)` | 色相、飽和度、亮度。調深淺時改第三個數 |
-| `transparent` | `transparent` | 全透明 |
-| `currentColor` | `border-color: currentColor` | 跟該元素當下的 `color` 走 |
+**觀念**
 
-舊寫法 `rgb(15, 118, 110)` 與 `rgba(15, 118, 110, 0.5)` 仍然有效。新頁用空格與斜線即可。`hsl(175 80% 26% / 70%)` 同樣可以加 alpha。
+- 名稱適合草稿。正式頁用色碼，才對得上品牌色。
+- 六碼十六進位兩兩一組，是紅、綠、藍。三碼只有在兩兩重複時才等於六碼。
+- rgb 用空格分隔。斜線後面是透明度，0 全透明，100% 不透明。
+- hsl 是色相、飽和度、亮度。要調深淺時，改第三個數。
+- currentColor 跟這個元素當下的文字顏色走。
 
 ```html 03-css/pages/10-colors.html
 <!DOCTYPE html>
@@ -788,106 +1196,134 @@ miss --> init["不可繼承的用初始值"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>顏色</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .named {
-        color: teal;
-      }
-
-      .hex {
-        color: #0f766e;
-      }
-
-      .hex8 {
-        color: #0f766e99;
-      }
-
-      .rgb {
-        color: rgb(15 118 110);
-      }
-
-      .mix {
-        color: rgb(15 118 110 / 50%);
-      }
-
-      .hsl {
-        color: hsl(175 80% 26%);
-      }
-
-      .tag {
-        color: #9f1239;
-        border: 2px solid currentColor;
-        padding: 0.25rem 0.5rem;
-      }
-
-      .stripe {
-        background: repeating-linear-gradient(
-          45deg,
-          #134e4a 0 8px,
-          #042f2e 8px 16px
-        );
-        padding: 1rem;
-      }
-
-      .frost {
-        background: rgb(240 253 250 / 70%);
-        padding: 0.75rem;
-      }
-    </style>
+    <link rel="stylesheet" href="10-colors.css" />
   </head>
   <body>
     <h1>同一套顏色，很多種寫法</h1>
     <ul>
       <li class="named">名稱 teal</li>
-      <li class="hex">HEX #0f766e</li>
-      <li class="hex8">HEX 八碼 #0f766e99（末兩碼是透明度）</li>
-      <li class="rgb">rgb(15 118 110)</li>
-      <li class="mix">rgb(15 118 110 / 50%)</li>
-      <li class="hsl">hsl(175 80% 26%)</li>
+      <li class="hex">六碼色票</li>
+      <li class="rgb">rgb 空格寫法</li>
+      <li class="mix">同一色，一半透明</li>
+      <li class="hsl">hsl，亮度在第三個數</li>
     </ul>
-    <p><span class="tag">框色用 currentColor，跟字同一色</span></p>
+    <p class="tag">這行的底跟字同一色</p>
     <div class="stripe">
-      <p class="frost">底色有透明度時，底下的斜紋會透出來。</p>
+      <p class="frost">半透明的底會透出底下的斜紋。</p>
     </div>
   </body>
 </html>
 ```
 
+```css 03-css/pages/10-colors.css
+.named {
+  color: teal;
+}
+.hex {
+  color: #0f766e;
+}
+.rgb {
+  color: rgb(15 118 110);
+}
+.mix {
+  color: rgb(15 118 110 / 50%);
+}
+.hsl {
+  color: hsl(175 80% 26%);
+}
+
+.tag {
+  color: #9f1239;
+  background: currentColor;
+}
+
+.stripe {
+  background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
+}
+
+.frost {
+  background: rgb(240 253 250 / 70%);
+}
+```
+
+**解析**
+
+清單前三項都接近同一種青綠：名稱、六碼、rgb 是三種寫法。一半透明的那項會淡，因為底下的頁面底色混進來了。hsl 那項仍是深青綠。
+
+玫瑰紅那行的背景用 currentColor，所以底和字是同一色，字會融進底裡，這是故意讓你看見「底跟著字走」。斜紋上面的段落有一層 70% 的淺色，斜紋還透得出來。
+
+```css
+.mix {
+  color: rgb(15 118 110 / 50%); /* 斜線後面才是透明度 */
+}
+.frost {
+  background: rgb(240 253 250 / 70%); /* 底下的斜紋會參與混合 */
+}
+```
+
 {% note info %}
-**小技巧：吸色**
-Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低。過低時優先改亮度，不要先把字級放大來彌補。
+**對比不夠時先改亮度**
+Styles 裡的色塊可以打開調色盤，也會提示對比是否過低。過低時先把字變深或底變淺。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+把一半透明的那項改成不透明，斜線後面寫 100%。再把 frost 的 70% 改成 100%，斜紋不該再透出來。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+兩處透明度都變成不透明之後，清單那項回到實心青綠，斜紋上的段落變成實心淺底，蓋住下面的紋。currentColor 那行沒有改。
+
+```css 03-css/pages/10-colors.css
+.named {
+  color: teal;
+}
+.hex {
+  color: #0f766e;
+}
+.rgb {
+  color: rgb(15 118 110);
+}
+.mix {
+  color: rgb(15 118 110 / 100%);
+}
+.hsl {
+  color: hsl(175 80% 26%);
+}
+
+.tag {
+  color: #9f1239;
+  background: currentColor;
+}
+
+.stripe {
+  background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
+}
+
+.frost {
+  background: rgb(240 253 250 / 100%);
+}
+```
+
+</details>
 
 ## 文字與背景
 
-字與背景是畫面上直接看得到的屬性。字型相關屬性大多會繼承，所以設在 `body` 上，內文就跟著走；標題再個別加大、加粗。背景預設不繼承，畫在邊框以內（含內距）。
+字與背景是畫面上直接看得到的屬性。字型相關的大多會繼承，所以設在 body 上，內文就跟著走。背景預設不繼承，畫在文字後面。
 
 ### 字型堆疊
 
-`font-family` 是一串**字型堆疊**，逗號分隔，瀏覽器由左到右挑第一個用得了的。有空格的名稱要加引號。最後一個寫**通用家族（generic family）**，系統才有退路。`system-ui` 在 Windows 上多半是 Segoe UI，中文仍要後面的「蘋方」或「微軟正黑體」才穩。不要只寫 `"Microsoft JhengHei"`：macOS 與手機沒有這個家族時，會直接掉到通用家族。
+font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個用得了的。有空格的名稱要加引號。最後一個寫通用家族，系統才有退路。
 
-| 通用家族 | 看起來 | 示範的 class |
-| --- | --- | --- |
-| `sans-serif` | 無襯線，螢幕內文常用 | `body` 的最後退路 |
-| `serif` | 襯線，類似明體、宋體 | `.serif` |
-| `monospace` | 等寬，程式與代碼 | `.mono` |
-| `system-ui` | 各作業系統的介面字 | 堆疊的第一個 |
+**觀念**
 
-| 屬性 | 常用值 | 說明 |
-| --- | --- | --- |
-| `font-size` | `1rem`、`0.875rem`、`2rem` | 字級。標題用 `rem` |
-| `font-weight` | `400`、`700` | `400` 等於 `normal`，`700` 等於 `bold`。該字型要真的有這個字重 |
-| `font-style` | `normal`、`italic` | 斜體。中文很多字型沒有斜體，瀏覽器只是把字歪掉 |
-| `line-height` | `1.6`、`1.2` | 無單位。標題可稍緊，內文留 1.5～1.7 |
-
-`font` 簡寫至少要有字級與字型家族，順序是：`font-style`、`font-weight`、`font-size`、斜線、`line-height`、`font-family`。簡寫會把沒寫到的字型屬性設回初始值。只改一個項目時，寫單獨的 `font-size` 或 `font-weight`。
+- system-ui 是各作業系統的介面字。中文仍要後面的蘋方或微軟正黑體，否則有的系統沒有前面的家族時，中文會掉到通用家族。
+- sans-serif 是無襯線，serif 是襯線，monospace 是等寬。
+- 字重 400 是一般，700 是粗體。該字型要真的有這個字重。
+- 行高建議寫沒有單位的數字，它會乘上該元素自己的字級。
+- font 簡寫至少要有字級與字型。沒寫到的字型屬性會回到初始值，所以只改一項時寫單獨的屬性。
 
 ```html 03-css/pages/11-type.html
 <!DOCTYPE html>
@@ -896,91 +1332,139 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>字型</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.6;
-      }
-
-      .serif {
-        font-family: "Iowan Old Style", "Palatino Linotype", Palatino, serif;
-      }
-
-      .mono {
-        font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
-      }
-
-      .w700 {
-        font-weight: 700;
-      }
-
-      .sm {
-        font-size: 0.875rem;
-      }
-
-      .lg {
-        font-size: 1.25rem;
-      }
-
-      .tight {
-        line-height: 1;
-        max-width: 24rem;
-        background: #f0fdfa;
-      }
-
-      .loose {
-        line-height: 1.8;
-        max-width: 24rem;
-        background: #ecfeff;
-      }
-
-      .banner-title {
-        font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-      }
-    </style>
+    <link rel="stylesheet" href="11-type.css" />
   </head>
   <body>
     <h1>字型堆疊</h1>
-    <p class="banner-title">這行用 font 簡寫：粗體、1.5rem、行高 1.3。</p>
-    <p>內文用無襯線堆疊。字重 400 是一般，<span class="w700">700 是粗體</span>。</p>
-    <p class="serif">這段改走襯線通用家族 serif，中文會落到系統有的明體或宋體。</p>
+    <p class="banner">這行用簡寫：粗體、較大字、行高 1.3。</p>
+    <p>內文用無襯線。<span class="strong">這幾個字是粗體。</span></p>
+    <p class="serif">這段改走襯線，中文會落到系統有的明體或宋體。</p>
     <p class="mono">行程代碼 TPE-001 用等寬字較好對。</p>
-    <p class="sm">0.875rem 當註記。</p>
-    <p class="lg">1.25rem 當導言。</p>
-    <p class="tight">行高 1：行與行貼得很近。兩行以上就不好讀。洛奇旅行的行程說明至少要留出行距。</p>
-    <p class="loose">行高 1.8：同一段文字鬆很多。內文常用無單位的 1.5 到 1.7。</p>
+    <p class="tight">行高 1：行與行貼得很近。兩行以上就不好讀。洛奇旅行的說明至少要留出行距。</p>
+    <p class="loose">行高 1.8：同一段文字鬆很多。內文常用 1.5 到 1.7。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/11-type.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.banner {
+  font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.serif {
+  font-family: Palatino, "Palatino Linotype", serif;
+}
+
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.tight {
+  line-height: 1;
+  max-width: 24rem;
+  background: #f0fdfa;
+}
+
+.loose {
+  line-height: 1.8;
+  max-width: 24rem;
+  background: #ecfeff;
+}
+```
+
+**解析**
+
+內文是系統無襯線，行高 1.6。簡寫那行較大、較粗、行距較緊。粗體只包住 span 那幾個字。襯線那段筆畫末端會不一樣，等寬那段的英文與數字每個字同寬。
+
+兩段淺底裡是同一段意思的長短對照：行高 1 的行與行幾乎貼住，1.8 的則鬆開。簡寫那行若少寫字型家族，整條會無效。
+
+```css
+.banner {
+  /* 字重、字級、斜線、行高、字型。少寫的字型屬性會被設回初始值 */
+  font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+```
+
 {% note warning %}
-**注意事項**
-`font` 簡寫沒寫到的項目會回到初始值。原本從 `body` 繼承來的字重或變體，可能在這一層消失。
+**簡寫會清掉沒寫的項目**
+原本從 body 繼承來的字重，可能在寫了 font 簡寫的這一層消失。只想加大時，寫 font-size 就好。
 {% endnote %}
+
+{% note success %}
+**換你試試：**
+把 banner 的簡寫拆開，改成單獨的字重 700、字級 1.5rem、行高 1.3。不要在這顆 class 上再寫 font-family，讓它繼續跟 body 的堆疊。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+拆開之後，這行仍是粗體、較大、行高 1.3，字型跟 body 走。因為沒有用簡寫，其他字型屬性不會被掃回初始值。
+
+```css 03-css/pages/11-type.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.banner {
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.serif {
+  font-family: Palatino, "Palatino Linotype", serif;
+}
+
+.mono {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.tight {
+  line-height: 1;
+  max-width: 24rem;
+  background: #f0fdfa;
+}
+
+.loose {
+  line-height: 1.8;
+  max-width: 24rem;
+  background: #ecfeff;
+}
+```
+
+</details>
 
 ### 行內文字
 
-`text-align` 作用在**區塊**上，對齊的是它裡面的行內內容。把 `text-align: center` 寫在 `span` 自己身上通常看不到置中，要寫在包住它的區塊上。橫書由左到右時，`start` 就是靠行首、`end` 就是靠行末。
+對齊、底線、字距作用在文字上。text-align 要寫在區塊上，對齊的是它裡面的行。寫在行內元素自己身上，通常看不到置中。
 
-| 屬性 | 常用值 | 做什麼 |
-| --- | --- | --- |
-| `text-align` | `start`、`center`、`end` | 行內內容靠行首、置中、靠行末 |
-| `text-decoration-line` | `underline`、`line-through`、`none` | 底線、刪除線、拿掉連結預設底線 |
-| `text-decoration-color` | 顏色 | 線的顏色，可以和字不同 |
-| `text-decoration-thickness` | `2px` | 線的粗細 |
-| `text-underline-offset` | `0.2em` | 底線離字元遠一點，中文較不壓到筆畫 |
-| `text-transform` | `uppercase`、`lowercase` | 拉丁字母大小寫。不改變 HTML 裡的文字 |
-| `letter-spacing` | `0.08em` | 字距。中文大標題可微調，內文不要拉很開 |
-| `white-space` | `pre-wrap`、`nowrap` | `pre-wrap` 保留換行並在太長時折行 |
-| `text-shadow` | `0 2px 0 rgb(0 0 0 / 35%)` | 水平偏移、垂直偏移、模糊、顏色 |
+**觀念**
 
-`text-align: justify` 會把一行兩端撐齊，中文段落常常被拉出大空隙，這門課的內文用 `start`。`white-space: nowrap` 禁止換行，按鈕上的短詞才用。連結若拿掉底線，滑鼠移上去或鍵盤聚焦時仍要有另一種變化，否則看不出它可以點。
+- start 靠行首，center 置中，end 靠行末。橫書由左到右時，行首就是左邊。
+- 底線可以只改顏色、粗細，以及離筆畫多遠。連結若拿掉底線，滑鼠或鍵盤聚焦時仍要有另一種變化。
+- uppercase 只改畫面上的拉丁字母，不改 HTML 裡的文字。
+- letter-spacing 是字距。white-space 設成 pre-wrap 時，原始碼裡的換行會留下來，太長仍會折行。
+- text-shadow 依序是水平偏移、垂直偏移、模糊、顏色。
 
 ```html 03-css/pages/12-text.html
 <!DOCTYPE html>
@@ -989,83 +1473,143 @@ Chrome Styles 裡的色塊可以打開調色盤，也會顯示對比是否過低
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>文字</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .display {
-        font-size: 2rem;
-        font-weight: 700;
-        line-height: 1.2;
-        background: #115e59;
-        color: #f0fdfa;
-        text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
-        padding: 0.75rem 1rem;
-      }
-
-      .center {
-        text-align: center;
-      }
-
-      .end {
-        text-align: end;
-      }
-
-      .jump {
-        text-decoration-line: underline;
-        text-decoration-color: #99f6e4;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 0.2em;
-      }
-
-      .code {
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.875rem;
-      }
-
-      .schedule {
-        white-space: pre-wrap;
-        font-family: ui-monospace, Consolas, monospace;
-        background: #f8fafc;
-        padding: 0.75rem 1rem;
-      }
-    </style>
+    <link rel="stylesheet" href="12-text.css" />
   </head>
   <body>
     <h1 class="display">洛奇旅行</h1>
-    <p class="center">這段置中（text-align: center）。</p>
-    <p class="end">這段靠行末（text-align: end）。</p>
+    <p class="center">這段置中。</p>
+    <p class="end">這段靠行末。</p>
     <p>連結可以只調底線：<a class="jump" href="#top">看行程</a></p>
     <p class="code">tpe-kt-03</p>
-    <p class="schedule">Day 1 台北
-Day 2 京都
-Day 3 濟州</p>
+    <p class="schedule">
+      Day 1 台北
+      Day 2 京都
+      Day 3 濟州
+    </p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/12-text.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.display {
+  font-size: 2rem;
+  color: #f0fdfa;
+  background: #115e59;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
+}
+
+.center {
+  text-align: center;
+}
+
+.end {
+  text-align: end;
+}
+
+.jump {
+  text-decoration-line: underline;
+  text-decoration-color: #0f766e;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+.code {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.schedule {
+  white-space: pre-wrap;
+  font-family: ui-monospace, Consolas, monospace;
+  background: #f8fafc;
+}
+```
+
+**解析**
+
+標題是深底淺字，字下面有一道淡影。下一段在版面中間，再下一段貼著行末。連結的底線是深青綠、比預設粗，而且離筆畫遠一點，中文比較不會壓到字。
+
+代碼那段在畫面上變成大寫，字與字之間鬆開，HTML 裡仍是小寫。行程那段保留原始碼的換行，所以三天分成三行；若拿掉 pre-wrap，換行會被收成空白。
+
+```css
+.center {
+  text-align: center; /* 寫在這顆區塊，裡面的字才置中 */
+}
+.schedule {
+  white-space: pre-wrap; /* 留下換行，太長仍折行 */
+}
+```
+
+{% note success %}
+**換你試試：**
+置中那段改成靠行末。連結底線的粗細改成 4px。代碼的字距不要改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+原本置中的那段改靠行末，畫面上連續兩段都貼著右邊。連結底線變粗，顏色與距離維持原樣。代碼仍是大寫、字距不變。
+
+```css 03-css/pages/12-text.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.display {
+  font-size: 2rem;
+  color: #f0fdfa;
+  background: #115e59;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
+}
+
+.center {
+  text-align: end;
+}
+
+.end {
+  text-align: end;
+}
+
+.jump {
+  text-decoration-line: underline;
+  text-decoration-color: #0f766e;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 0.2em;
+}
+
+.code {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.schedule {
+  white-space: pre-wrap;
+  font-family: ui-monospace, Consolas, monospace;
+  background: #f8fafc;
+}
+```
+
+</details>
+
 ### 背景圖層
 
-背景可以是底色、一張圖，或一層漸層。漸層也算 `background-image`。圖沒蓋到的地方會露出 `background-color`。多層背景用逗號分隔，**先寫的畫在上面**。每一層的 `repeat`、`size`、`position` 也用逗號對應；層數對不齊時，瀏覽器會循環使用你寫的那一串。
+背景可以是底色、一張圖，或一層漸層。漸層也算背景圖。圖沒蓋到的地方會露出底色。多層時，先寫的畫在上面。
 
-| 屬性 | 常用值 | 做什麼 |
-| --- | --- | --- |
-| `background-color` | `#f0fdfa` | 底色 |
-| `background-image` | `url(...)`、`linear-gradient(...)` | 圖或漸層 |
-| `background-repeat` | `repeat`、`no-repeat` | 預設是重複平鋪 |
-| `background-position` | `center`、`top left` | 圖的對齊點 |
-| `background-size` | `cover`、`contain` | `cover` 蓋滿並裁切；`contain` 整張放進盒子 |
-| `background-attachment` | `scroll`、`fixed` | 預設跟內容滾。`fixed` 在手機上常常不理想 |
+**觀念**
 
-簡寫 `background` 可以一次寫完。`background-size` 要跟在位置後面並用斜線分開，例如 `center / cover`。簡寫沒寫到的項目會回到初始值：你若先設好 `cover`，下一行又寫 `background: #f0fdfa;`，圖層會被清掉，只剩底色。只改顏色時寫 `background-color`。
-
-漸層的方向可以是角度或關鍵字。`160deg` 從左下往右上偏；`to bottom` 由上到下。色標可以加上停在哪裡：`#0f766e 42%`。`repeating-linear-gradient` 用來做條紋。放射狀用 `radial-gradient`。這門課的區塊底用線性漸層即可。正式站的照片把示範裡的資料網址換成 `url("images/kyoto.jpg")` 這種相對路徑，屬性相同。
+- background-color 是底色。background-image 是圖或漸層。
+- 預設會重複平鋪。no-repeat 只放一張。
+- cover 把圖放大到蓋滿盒子，多的會被裁。contain 整張放進盒子，旁邊可能露出底色。
+- 簡寫 background 沒寫到的項目會回到初始值。只改底色時寫 background-color，才不會把圖層清掉。
+- 漸層的方向可以寫角度。repeating-linear-gradient 用來做條紋。
 
 ```html 03-css/pages/13-background.html
 <!DOCTYPE html>
@@ -1074,102 +1618,164 @@ Day 3 濟州</p>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>背景</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .swatch,
-      .shade,
-      .photo,
-      .hero,
-      .tile {
-        min-height: 6rem;
-        margin: 0.75rem 0;
-        padding: 0.75rem 1rem;
-      }
-
-      .swatch {
-        background-color: #f0fdfa;
-      }
-
-      .shade {
-        background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
-        color: #042f2e;
-      }
-
-      .photo {
-        background-color: #042f2e;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Crect width='240' height='120' fill='%23042f2e'/%3E%3Ccircle cx='180' cy='36' r='22' fill='%23fde68a'/%3E%3Crect x='0' y='78' width='240' height='42' fill='%23115e59'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        color: #f0fdfa;
-      }
-
-      .cover {
-        background-size: cover;
-        background-position: center;
-      }
-
-      .contain {
-        background-size: contain;
-        background-position: center;
-      }
-
-      .tile {
-        min-height: 5rem;
-        background-color: #115e59;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='2' cy='2' r='2' fill='%2399f6e4'/%3E%3C/svg%3E");
-        background-repeat: repeat;
-        color: #f0fdfa;
-      }
-
-      /* 先寫的那一層畫在上面 */
-      .hero {
-        color: #f0fdfa;
-        background-color: #115e59;
-        background-image:
-          linear-gradient(rgb(15 23 42 / 45%), rgb(15 23 42 / 10%)),
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%2399f6e4'/%3E%3C/svg%3E");
-        background-repeat: no-repeat, repeat;
-        background-size: auto, 20px 20px;
-        background-position: center, top left;
-      }
-    </style>
+    <link rel="stylesheet" href="13-background.css" />
   </head>
   <body>
     <h1>背景</h1>
-    <div class="swatch">只有 background-color。</div>
-    <div class="shade">linear-gradient 也是一種 background-image。</div>
-    <div class="photo cover">cover：圖縮放到蓋滿盒子，多的會被裁掉。</div>
-    <div class="photo contain">contain：整張圖都看得到，盒子可能露出底色。</div>
-    <div class="tile">小圓點重複平鋪。底色在圖的透明處露出來。</div>
-    <div class="hero">
-      兩層背景：漸層寫在前面，所以蓋在圓點上面。圓點之間仍看得到底色。
-    </div>
+    <div class="swatch">只有底色。</div>
+    <div class="shade">線性漸層也是一層背景圖。</div>
+    <div class="photo cover">cover：蓋滿，多的被裁掉。<br /><br /><br /></div>
+    <div class="photo contain">contain：整張都在，旁邊露出底色。<br /><br /><br /></div>
+    <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
   </body>
 </html>
 ```
 
+```css 03-css/pages/13-background.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.swatch {
+  background-color: #f0fdfa;
+}
+
+.shade {
+  background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
+}
+
+.photo {
+  color: #f0fdfa;
+  background-color: #042f2e;
+  background-image: url("https://picsum.photos/id/1015/800/500");
+  background-repeat: no-repeat;
+}
+
+.cover {
+  background-size: cover;
+  background-position: center;
+}
+
+.contain {
+  background-size: contain;
+  background-position: center;
+}
+
+.hero {
+  color: #f0fdfa;
+  background-color: #115e59;
+  background-image:
+    linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
+    radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
+  background-size: auto, 16px 16px;
+}
+```
+
+**解析**
+
+第一塊是淺青底。第二塊沒有底色屬性，顏色來自漸層，由深青綠過渡到淺色。兩塊照片共用同一張圖與深色底：cover 那塊圖被裁到蓋滿，contain 那塊看得到整張，左右或上下露出深色底。
+
+最後一塊有兩層圖。漸層寫在逗號前面，所以壓在圓點上，字比較讀得清楚。圓點是第二層，格子之間仍看得到底色。把視窗拉寬再拉窄，cover 與 contain 裁切的差別會更明顯。
+
+```css
+.hero {
+  /* 先寫的圖層在上面 */
+  background-image:
+    linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
+    radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
+}
+```
+
 {% note success %}
-**跟著做**
-把 `background.html` 存好後，在 Chrome 把視窗拉窄再拉寬，看 `cover` 與 `contain` 裁切的差別。F12 點 `.hero`，在 Styles 取消其中一層 `background-image`，確認先寫的那層在上面。
+**換你試試：**
+把 cover 那塊改成 contain，contain 那塊改成 cover。兩塊的說明文字也對調，讓文字跟實際裁切一致。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+class 對調之後，第一張照片改成整張放進盒子，第二張改成蓋滿並裁切。說明文字跟著換，才不會看文跟看圖相反。
+
+```html 03-css/pages/13-background.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>背景</title>
+    <link rel="stylesheet" href="13-background.css" />
+  </head>
+  <body>
+    <h1>背景</h1>
+    <div class="swatch">只有底色。</div>
+    <div class="shade">線性漸層也是一層背景圖。</div>
+    <div class="photo contain">contain：整張都在，旁邊露出底色。<br /><br /><br /></div>
+    <div class="photo cover">cover：蓋滿，多的被裁掉。<br /><br /><br /></div>
+    <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
+  </body>
+</html>
+```
+
+```css 03-css/pages/13-background.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.swatch {
+  background-color: #f0fdfa;
+}
+
+.shade {
+  background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
+}
+
+.photo {
+  color: #f0fdfa;
+  background-color: #042f2e;
+  background-image: url("https://picsum.photos/id/1015/800/500");
+  background-repeat: no-repeat;
+}
+
+.cover {
+  background-size: cover;
+  background-position: center;
+}
+
+.contain {
+  background-size: contain;
+  background-position: center;
+}
+
+.hero {
+  color: #f0fdfa;
+  background-color: #115e59;
+  background-image:
+    linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
+    radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
+  background-size: auto, 16px 16px;
+}
+```
+
+</details>
 
 ## 選讀：進階選擇器、分層與字型
 
-上面的示範已經夠字與背景這一節。屬性選擇器的進階比對、`:is()`／`:where()`／`:has()`、自訂屬性、`@layer`、BEM 命名、自行載入字型檔可以整節跳過。之後維護較大的樣式表時再回來。
+上面的選擇器與字型已經夠用。屬性片段、一組選擇器的合併、父層是否含有某個後代、樣式分層、命名習慣，以及自行載入字型檔，可以整節跳過。
 
-### 屬性比對與 :is()、:where()、:has()
+### 選讀：屬性比對與 :is()、:where()、:has()
 
-課堂正文只用了 `[type="email"]` 這種「屬性值完全相等」。還可以比對片段，權重仍是 class 欄 +1：`[href]` 有這個屬性即可，`[href^="https"]` 是開頭，`[href$=".pdf"]` 是結尾，`[title*="京都"]` 是中間含有。
+前面只用過屬性值完全相等。還可以比對開頭、結尾、中間有沒有那段字。is 把好幾條合成一條，權重取括號裡最具體的那條。where 語法相同，權重是 0。has 看的是這個元素裡面有沒有某個後代。
 
-`:is(h1, h2, h3)` 把分組寫短，權重等於括號裡**最高**的那一個。`:where()` 外觀可以相同，但權重是 **0**，所以很好被後面的普通 class 蓋過。重置樣式時用 `:where()`，就不必跟自己的重置規則搏鬥。`:not(.soldout)` 排除帶該 class 的元素，權重等於括號裡那個選擇器。
+**觀念**
 
-`:has()` 選的是「裡面有某子孫的元素」，例如輸入框聚焦時讓外層出現框線。它會讓父層的樣式依賴子層狀態，選擇器一多就難讀，有明確 class 時仍優先寫 class。
+- 開頭、結尾、包含，權重仍算 class 那一欄。
+- is 適合「這三個標題共用同一組宣告」。權重不會因為包進 is 就變低。
+- where 適合重置，幾乎不會蓋過程式裡後來寫的 class。
+- has 不需要腳本。例如卡片裡的核取方塊被勾起時，整張卡片換底色。
 
 ```html 03-css/pages/14-selectors-extra.html
 <!DOCTYPE html>
@@ -1177,65 +1783,63 @@ Day 3 濟州</p>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：進階選擇器</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      :where(h1, h2) {
-        font-weight: 400;
-      }
-
-      h1 {
-        font-weight: 700;
-      }
-
-      :is(h1, h2) {
-        color: #115e59;
-      }
-
-      a[href$=".pdf"]::after {
-        content: "（PDF）";
-      }
-
-      .card:not(.soldout) {
-        background: #f0fdfa;
-        padding: 0.75rem 1rem;
-      }
-
-      .field {
-        margin-top: 0.75rem;
-        padding: 0.75rem;
-      }
-
-      .field:has(input:focus-visible) {
-        outline: 2px solid #0f766e;
-      }
-    </style>
+    <title>進階選擇器</title>
+    <link rel="stylesheet" href="14-selectors-extra.css" />
   </head>
   <body>
-    <h1>進階選擇器</h1>
-    <h2>:where 的字重是 0，所以 h1 自己的 700 仍在；:is 把兩個標題改成深青綠。</h2>
-    <p><a href="kyoto.pdf">京都行程</a></p>
-    <p class="card">這張沒有 soldout，所以有淺綠底。</p>
-    <p class="card soldout">這張被 :not 排除，沒有底色。</p>
-    <div class="field">
-      <label>Email <input type="email" /></label>
-    </div>
+    <h1>屬性、is、where、has</h1>
+    <p><a href="https://example.com">站外</a></p>
+    <p><a href="guide.pdf">行程 PDF</a></p>
+    <article class="card">
+      <h2>含早餐</h2>
+      <label><input type="checkbox" /> 這張卡片被勾起時換底色</label>
+    </article>
   </body>
 </html>
 ```
 
-### 自訂屬性與 @layer
+```css 03-css/pages/14-selectors-extra.css
+a[href^="https"] {
+  color: #0f766e;
+}
 
-自訂屬性（custom properties）以 `--` 開頭，用 `var()` 取用，而且會繼承。品牌色放在 `:root`（等於 `html`），整頁都能讀到。`var(--ink, #134e4a)` 的第二個引數是找不到變數時的備援。區域變數寫在元件上，只影響該元素和子孫。重複出現的色碼可以收成變數，改品牌時只改一處。後面的 CSS 變數那一章會把同一組代幣做成可以換膚的一頁。
+a[href$=".pdf"] {
+  color: #9f1239;
+}
 
-`@layer` 把作者樣式分成若干層。一般宣告裡，**較晚宣告的層**蓋過較早的層；完全沒放進層的一般宣告，又蓋過所有層。分層適合「重置在底層、元件在上層」。`!important` 在層裡的優先順序會反過來，選讀階段不要在 `@layer` 裡加 `!important`。
+:where(h1, h2) {
+  font-weight: 600;
+}
+
+.card:has(:checked) {
+  background: #f0fdfa;
+}
+```
+
+**解析**
+
+以 https 開頭的連結是深青綠，以 .pdf 結尾的是玫瑰紅。兩個標題被 where 設成較粗，這條權重是 0，之後若有同元素的字重規則會輕易蓋過它。
+
+核取方塊勾起來之後，整張卡片出現淺青底。沒勾時，has 打不中，背景就是透明。
+
+```css
+a[href^="https"] {
+  color: #0f766e; /* 開頭 */
+}
+.card:has(:checked) {
+  background: #f0fdfa; /* 裡面有被勾起的控制項 */
+}
+```
+
+### 選讀：自訂屬性與 @layer
+
+自訂屬性後面的變數那一節會正式用。這裡先看層（layer）：你可以把樣式分成幾層，層與層的順序事先定好。同一屬性、權重也相同時，較晚的層贏，不必把選擇器拉長。
+
+**觀念**
+
+- layer 的名字在第一次出現時排順序。後面再寫的同一層，仍算那一層。
+- 沒有放進任何層的規則，贏過所有層。
+- 這一節只讓兩層搶同一個顏色，方便在 Styles 裡看到誰被劃掉。
 
 ```html 03-css/pages/15-layer.html
 <!DOCTYPE html>
@@ -1243,138 +1847,127 @@ Day 3 濟州</p>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：變數與分層</title>
-    <style>
-      :root {
-        --ink: #134e4a;
-        --paper: #f0fdfa;
-        --brand: #115e59;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: var(--ink);
-        background: var(--paper);
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .card {
-        --ink: #7c2d12;
-        color: var(--ink, #134e4a);
-        padding: 0.75rem 1rem;
-      }
-
-      @layer base, components;
-
-      @layer base {
-        a {
-          color: var(--brand);
-        }
-      }
-
-      @layer components {
-        a {
-          color: #9f1239;
-        }
-      }
-    </style>
+    <title>分層</title>
+    <link rel="stylesheet" href="15-layer.css" />
   </head>
   <body>
-    <h1>變數會繼承，分層決定誰蓋誰</h1>
-    <p class="card">這張卡把自己的 --ink 改成磚紅，只有這張和裡面的字受影響。</p>
-    <p><a href="#top">這條連結在 components 層，所以是玫瑰紅，不是 brand 的深青綠。</a></p>
+    <h1>兩層搶同一個顏色</h1>
+    <p class="lead">這段應是深青綠。重置層寫在較前面。</p>
   </body>
 </html>
 ```
 
-### 命名與字型檔
+```css 03-css/pages/15-layer.css
+@layer reset, theme;
 
-Class 怎麼取名、字型檔怎麼掛上，都不增加新的選擇器語法。專題可以繼續用較短的 class，系統字型堆疊也夠用；這裡只留命名習慣與 `@font-face`。
+@layer reset {
+  .lead {
+    color: #9f1239;
+  }
+}
 
-#### BEM 命名
+@layer theme {
+  .lead {
+    color: #0f766e;
+  }
+}
+```
 
-BEM（Block Element Modifier）是 class 的命名習慣，不是新的選擇器語法。區塊是元件，元素是區塊的一部分，修飾是狀態或變體。雙底線、雙連字號只是名字的一部分，權重仍各是一個 class。不要再寫 `.tour-card .tour-card__title` 把選擇器拉長，除非同一種元素名會出現在別的區塊。這門課的專題可以沿用較短的 class；團隊若已經用 BEM，讀得懂即可。
+**解析**
 
-| 角色 | class | 意思 |
-| --- | --- | --- |
-| 區塊 | `.tour-card` | 一張行程卡 |
-| 元素 | `.tour-card__title` | 這張卡的標題 |
-| 修飾 | `.tour-card--soldout` | 這張卡已額滿 |
+兩條都是同一個 class，權重相同。theme 在 layer 那一行排得比較晚，所以留下深青綠，reset 的玫瑰紅被劃掉。若把 layer 那一行的名字對調，留下的顏色會反過來。沒有放進層的第三條若再寫同一個顏色，會贏過這兩層。
 
-#### 載入字型檔
+```css
+@layer reset, theme; /* 愈右邊的層愈優先 */
+```
 
-系統堆疊不夠用時，才把字型檔放進網站。優先使用你有授權的字型。`woff2` 是網頁用的壓縮格式。`font-display: swap` 的意思是：字型檔還沒到時先用堆疊裡的下一個字，到了再換，避免空白畫面卡住。每個字重各寫一個 `@font-face`（400 與 700 是兩個檔）。有網路時也可以在 `head` 用 `link` 載入公開字型服務，並把該家族放在堆疊最前。不要用 `@import` 去拉字型。課堂電腦若沒有外網，仍要靠系統堆疊能讀。
+### 選讀：命名與字型檔
+
+class 名字要讓人看得出區塊與零件。BEM 是一種習慣：區塊、元素用兩個底線接在區塊後面，狀態用兩個連字號。它不是語法，瀏覽器不會因為你這樣命名就改變權重。
+
+字型檔用 font-face 註冊一個家族名稱，再放進 font-family。檔案找不到時，逗號後面的下一個家族會接上。
+
+**觀念**
+
+- 區塊是元件，例如卡片。元素是它裡面的零件，例如標題。狀態是改裝，例如售完。
+- font-face 的 font-family 是你取的名字，src 指向檔案。課堂不附字型檔，所以畫面會落到後面的系統字。
+- 只寫微軟正黑體時，沒有這個家族的系統會直接掉到通用家族。堆疊仍要留退路。
+
+```html 03-css/pages/29-font.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>命名與字型檔</title>
+    <link rel="stylesheet" href="29-font.css" />
+  </head>
+  <body>
+    <article class="card">
+      <h1 class="card__title">京都三日</h1>
+      <p class="card__price">NT$12,800</p>
+      <p class="card__price card__price--soldout">NT$12,800</p>
+    </article>
+  </body>
+</html>
+```
 
 ```css 03-css/pages/29-font.css
 @font-face {
-  font-family: "Tour Sans";
-  src: url("fonts/tour-sans.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+  font-family: "Tour";
+  src: url("tour.woff2") format("woff2");
 }
 
-.tour-card {
-  color: #134e4a;
-  background: #f0fdfa;
-  font-family: "Tour Sans", system-ui, "PingFang TC", "Microsoft JhengHei",
-    sans-serif;
+.card__title {
+  font-family: "Tour", system-ui, "PingFang TC", sans-serif;
 }
 
-.tour-card__title {
-  font-size: 1.25rem;
+.card__price {
+  color: #0f766e;
 }
 
-.tour-card--soldout {
+.card__price--soldout {
   color: #64748b;
+  text-decoration: line-through;
+}
+```
+
+**解析**
+
+標題使用 Tour 這個家族。檔案不在旁邊時，字會落到 system-ui。兩行價格裡，售完那行是灰色加刪除線，一般價格是深青綠。名字裡的底線與連字號只是給人讀的，權重仍是各算一個 class。
+
+```css
+.card__price--soldout {
+  color: #64748b; /* 狀態，不是另一種子選擇器 */
 }
 ```
 
 # 盒子與欄位排版
 
-每個元素都是一顆矩形盒子。先決定盒子多大、怎麼參加排版、座標跟誰比，再決定同一層的小孩沿一個方向排，或同時切成欄與列。
+每個元素都是一顆矩形盒子。先決定它多大、怎麼參加排版、座標跟誰比，再決定同一層的小孩沿一個方向排，或同時切成欄與列。
 
 ## 盒子與定位
 
-字與底色已經會變之後，接下來看盒子本身：內容、內距、邊框、外距疊在一起，再決定它獨佔一行還是跟文字坐在一起、座標跟誰比、畫出邊界時裁掉還是捲動。欄與列的排列留到這一節後面的 Flex 與 Grid。按 <kbd>F12</kbd> 對 **Computed** 裡的盒模型圖。
+字與底色已經會變之後，接著看盒子本身：內容、內距、邊框、外距，再決定它獨佔一行還是跟文字坐在一起。按 <kbd>F12</kbd>，在 Computed 裡可以看到盒模型的四層。
 
 {% mermaid graph TD %}
-margin["margin 外距<br/>透明，露出父層"] --> border["border 邊框"]
-border --> padding["padding 內距<br/>背景塗到這裡"]
+margin["margin 外距，透明"] --> border["border 邊框"]
+border --> padding["padding 內距，背景塗到這裡"]
 padding --> content["content 內容"]
 {% endmermaid %}
 
 ### 盒子模型
 
-盒子模型（box model）把每個元素分成內容、內距、邊框、外距。寬高算到哪一層、四邊怎麼簡寫、垂直外距會不會合併，都在這裡。見 [MDN：盒模型](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_box_model/Introduction_to_the_CSS_box_model)。
+盒子模型（box model）把元素分成內容、內距、邊框、外距。你寫的寬高算到哪一層，由 box-sizing 決定。
 
-#### 寬高與四邊簡寫
+**觀念**
 
-`width` 與 `height` 量的是哪一層，由 `box-sizing` 決定。預設 `content-box` 只量內容，padding 與 border 再往外加，所以「寫了 100% 又加了內距」會比父層更寬。課堂與專題在樣式表最前面改成 `border-box`：你寫的寬高含內容、padding、border，不含 margin。`*` 要連 `::before`、`::after` 一起寫，偽元素才不會回到預設算法。
-
-簡寫依順時針：一個值四邊相同；兩個值是上下、左右；三個值是上、左右、下；四個值是上、右、下、左。後寫的單邊（`border-left`、`padding-bottom`）蓋過簡寫的那一邊。`padding` 不能是負值；`margin` 可以，元素會往該側移，也可能壓到隔壁。左右 `margin: auto` 會平分剩餘寬度，所以要比父層窄的區塊才能水平置中。寬度已經撐滿時，左右沒有剩餘，`auto` 看起來像 0。上下的 `margin: auto` 在普通區塊流裡不會把盒子推到父層底部，垂直置中用 Flex 或 Grid。
-
-#### 外距合併、輪廓與尺寸
-
-同一個包含塊裡，上下相鄰的區塊盒，垂直 margin 會併成**較大的那一個**，不會相加。左右不會合併。父層若沒有 padding、沒有 border、也沒有上緣內容，子層的 `margin-top` 會穿出去，父層背景包不住那段空隙。`margin`、`padding`、`border` 都不繼承。
-
-`border` 要有樣式才看得到；寬度與顏色寫了、樣式仍是 `none`，畫面還是沒有線。`border-radius` 只改角。`outline` 畫在邊框外側，不佔寬高，鍵盤焦點用它，並加上 `:focus-visible`，滑鼠點擊就不必長出這條線。只寫 `outline: none` 會讓鍵盤使用者看不到現在停在哪裡。
-
-`width: auto` 的區塊會撐滿那一行可用的寬（再扣掉自己的 margin）。`height: auto` 跟著內容長高。百分比高度要父層自己有明確高度才算得出來。圖片加上 `max-width: 100%`，才不會比父層更寬。`width: min(100%, 22rem)` 是窄於 22rem 時跟父層一樣寬，更寬時停在 22rem。
-
-| 層 | 佔不佔空間 | 背景 |
-| --- | --- | --- |
-| 內容 | 由文字與寬高決定 | 與 padding 連成一片 |
-| padding | 算進邊框以內 | 看得到 |
-| border | 算進邊框以內 | 自己的顏色 |
-| margin | 把兄弟推開 | 透明，露出父層 |
-
-| `box-sizing` | `width: 16rem` 量到哪 | 再加上 padding、border |
-| --- | --- | --- |
-| `content-box` | 只有內容 | 總寬變大，會撐破父層 |
-| `border-box` | 內容 + padding + border | 總寬仍是 16rem |
+- 預設 content-box 的寬度只量內容。內距和邊框再往外加，所以寫了 100% 又加了內距，會比父層更寬。
+- border-box 的寬度含內容、內距、邊框，不含外距。課堂從這裡起，樣式表開頭就改成 border-box，偽元素也要一起改。
+- 簡寫依順時針。一個值四邊相同；兩個值是上下、左右；四個值是上、右、下、左。
+- 內距不能是負值。外距可以是 auto。左右 auto 會平分剩餘寬度，所以要比父層窄才水平置中。
+- 上下相鄰的區塊，垂直外距會併成較大的那一個，不會相加。左右不會合併。
+- outline 畫在邊框外側，不佔寬高。鍵盤焦點用它，並配上 focus-visible。
 
 ```html 03-css/pages/16-box.html
 <!DOCTYPE html>
@@ -1383,164 +1976,207 @@ padding --> content["content 內容"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>盒子模型</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 2rem 0 0.5rem;
-        font-size: 1.1rem;
-      }
-
-      /* 父層淺青。卡片的 margin 透明，所以空隙露出這層底色 */
-      .stage {
-        background: #ccfbf1;
-        padding: 0.25rem;
-      }
-
-      .card {
-        width: min(100%, 22rem);
-        margin: 1rem auto;
-        padding: 1rem;
-        border: 6px solid #0f766e;
-        border-radius: 0.75rem;
-        background: #f0fdfa;
-      }
-
-      .card .content {
-        background: #cffafe;
-      }
-
-      .track {
-        width: 16rem;
-        max-width: 100%;
-        margin-bottom: 0.75rem;
-        border: 1px dashed #0f766e;
-      }
-
-      .track .kid {
-        width: 100%;
-        padding: 0.5rem 1rem;
-        border: 4px solid #115e59;
-        background: #f0fdfa;
-      }
-
-      /* 這一張改回預設算法，讓虛線包不住 */
-      .content-box .kid {
-        box-sizing: content-box;
-      }
-
-      .collapse p {
-        margin-top: 0.5rem;
-        margin-bottom: 2rem;
-        background: #f0fdfa;
-      }
-
-      .collapse p + p {
-        margin-top: 0.5rem;
-        margin-bottom: 0;
-      }
-
-      .ticket {
-        width: min(100%, 22rem);
-        margin: 1rem auto;
-        padding: 0.25rem 1rem 1.25rem;
-        border-left: 6px solid #115e59;
-        background: #fff;
-      }
-
-      .chip {
-        display: inline-block;
-        margin-right: 0.5rem;
-        padding: 0.15rem 0.75rem;
-        border-radius: 999px;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .go {
-        padding: 0.4rem 0.9rem;
-        border: 1px solid #0f766e;
-        border-radius: 0.4rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .go:focus-visible {
-        outline: 3px solid #9f1239;
-        outline-offset: 3px;
-      }
-    </style>
+    <link rel="stylesheet" href="16-box.css" />
   </head>
   <body>
     <h1>盒子四層</h1>
     <div class="stage">
       <article class="card">
-        <p class="content">淺藍是內容。淺綠底含 padding。粗框是 border。框外淺青是 margin，沒有卡片自己的底色。</p>
+        <p class="content">淺藍是內容。卡片的淺綠含內距。粗框是邊框。框外淺青是外距。</p>
       </article>
     </div>
-
-    <h2>border-box 與 content-box</h2>
-    <div class="track">
-      <div class="kid">border-box：100% 含左右 padding 與邊框，對齊虛線。</div>
-    </div>
-    <div class="track content-box">
-      <div class="kid">content-box：100% 只量內容，padding 與邊框再往外加，虛線包不住。</div>
-    </div>
-
+    <h2>兩種算法</h2>
+    <div class="track"><div class="kid">border-box：對齊虛線。</div></div>
+    <div class="track content-box"><div class="kid">content-box：虛線包不住。</div></div>
     <h2>垂直外距合併</h2>
     <div class="collapse">
-      <p>這段 margin-bottom 是 2rem。</p>
-      <p>下段 margin-top 只有 0.5rem。兩段之間是較大的 2rem，不是 2.5rem。</p>
+      <p>這段下外距是 2rem。</p>
+      <p>上外距只有 0.5rem。中間是較大的 2rem。</p>
     </div>
-
-    <h2>水平置中、圓角、焦點框</h2>
-    <article class="ticket">
-      <h3>京都三日</h3>
-      <p>這張比父層窄，左右 margin 是 auto，所以在頁面上居中。</p>
-      <span class="chip">清水寺</span><span class="chip">嵐山</span>
-      <p><a class="go" href="#top">看行程</a>（用 Tab 移到這裡，玫瑰色 outline 不改變按鈕尺寸）</p>
-    </article>
+    <p><a class="go" href="#top">看行程</a>（用 Tab 移來，焦點框不改變按鈕尺寸）</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/16-box.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.stage {
+  background: #ccfbf1;
+}
+
+.card {
+  width: min(100%, 22rem);
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 6px solid #0f766e;
+  border-radius: 0.75rem;
+  background: #f0fdfa;
+}
+
+.content {
+  background: #cffafe;
+}
+
+.track {
+  width: 16rem;
+  max-width: 100%;
+  margin-bottom: 0.75rem;
+  border: 1px dashed #0f766e;
+}
+
+.kid {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 4px solid #115e59;
+  background: #f0fdfa;
+}
+
+.content-box .kid {
+  box-sizing: content-box;
+}
+
+.collapse p {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  background: #f0fdfa;
+}
+
+.collapse p + p {
+  margin-bottom: 0;
+}
+
+.go {
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.4rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.go:focus-visible {
+  outline: 3px solid #9f1239;
+  outline-offset: 3px;
+}
+```
+
+**解析**
+
+卡片比版面窄，左右外距是 auto，所以居中。淺綠底含內距，淺藍只在文字那一塊。框外的淺青是父層的底，因為外距是透明的。
+
+第一條軌道裡，小孩的寬度含內距與邊框，所以對齊虛線。第二條改回 content-box，100% 只量內容，內距與邊框再往外長，虛線包不住。
+
+兩段之間的空隙是 2rem，不是 2.5rem。用 <kbd>Tab</kbd> 移到「看行程」，玫瑰色焦點框出現，按鈕本身的寬高不變。
+
+```css
+.card {
+  width: min(100%, 22rem); /* 窄於 22rem 時跟父層一樣寬 */
+  margin: 1rem auto; /* 左右 auto 才水平置中 */
+  box-sizing: border-box; /* 寬度含內距與邊框 */
+}
+```
+
 {% note success %}
-**跟著做**
-點 `.card`，打開 Computed 的盒模型圖：padding 四邊 `1rem`、border `6px`、margin `1rem`。再點兩條軌道，比較總寬有沒有超出虛線。用 <kbd>Tab</kbd> 移到「看行程」，確認焦點框出現、按鈕寬度不變。
+**換你試試：**
+第二條軌道的小孩也改回 border-box，讓虛線包得住。卡片的圓角從 0.75rem 加大到 1.5rem。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+拿掉 content-box 那條之後，兩條軌道都用開頭的 border-box，小孩不再撐破虛線。卡片四角更圓，寬度與外距沒有改。
+
+```css 03-css/pages/16-box.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.6;
+}
+
+.stage {
+  background: #ccfbf1;
+}
+
+.card {
+  width: min(100%, 22rem);
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 6px solid #0f766e;
+  border-radius: 1.5rem;
+  background: #f0fdfa;
+}
+
+.content {
+  background: #cffafe;
+}
+
+.track {
+  width: 16rem;
+  max-width: 100%;
+  margin-bottom: 0.75rem;
+  border: 1px dashed #0f766e;
+}
+
+.kid {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 4px solid #115e59;
+  background: #f0fdfa;
+}
+
+.collapse p {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  background: #f0fdfa;
+}
+
+.collapse p + p {
+  margin-bottom: 0;
+}
+
+.go {
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.4rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.go:focus-visible {
+  outline: 3px solid #9f1239;
+  outline-offset: 3px;
+}
+```
+
+</details>
 
 ### display
 
-`display` 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行內、可設寬高的行內，以及三種先不要給人看的寫法，畫面差很多。見 [MDN：display](https://developer.mozilla.org/zh-TW/docs/Web/CSS/display)。
+display 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行內、可設寬高的行內，以及三種先不要給人看的寫法，畫面差很多。
 
-#### 區塊與行內
+**觀念**
 
-`display` 決定這顆盒子怎麼參加排版，不改變標籤的語意。`div`、`p`、標題與 `section` 預設是 `block`，獨佔一行，寬高與垂直 margin 都算數。`span`、`a`、`strong` 預設是 `inline`，跟文字坐在同一行；左右的 padding、margin、border 會把旁邊的字推開，上下的 padding 與 border 會畫出來，但通常不把行盒撐高，所以可能壓到上一行。行內盒（置換元素如 `img` 除外）不採用你寫的寬高。
-
-`inline-block` 仍跟文字同一行，但可以有自己的寬高與垂直 margin。它和旁邊文字之間的換行會變成一個空白，三個標籤中間那條縫常常是這個空白，不是 margin。穩定的按鈕用 `inline-block`，或交給下一章的 Flex。`vertical-align` 只對行內與 `inline-block` 有意義。圖片底下那條小縫，是它在跟文字基線對齊；改成 `display: block` 或 `vertical-align: middle` 就會消失。整頁的垂直置中不要靠它。
-
-#### 不顯示的三種寫法
-
-`display: none` 不建立盒子，後面的元素補上它的位置，也不接收點擊。`visibility: hidden` 仍佔位，只是看不見。`opacity: 0` 也佔位，而且預設仍能被點到。三種都還在 HTML 裡。暫時不顯示的區塊用 `none`；要留空位避免版面跳動，用 `hidden`。
-
-| 值 | 畫面上 | 寬高 | 垂直 margin |
-| --- | --- | --- | --- |
-| `block` | 獨佔一行，寬度撐滿 | 採用 | 採用，可能合併 |
-| `inline` | 跟前後文字同一行 | 不採用 | 不採用 |
-| `inline-block` | 同一行，每顆有自己的寬高 | 採用 | 採用 |
-| `none` | 不出現，位子被補上 | 不建立盒子 | — |
+- block 獨佔一行，寬高與垂直外距都算數。div、段落、標題預設就是這樣。
+- inline 跟文字坐在同一行。左右的內距會把旁邊的字推開；上下的內距會畫出來，但通常不把行撐高。行內盒不採用你寫的寬高。
+- inline-block 仍跟文字同一行，但可以有自己的寬高。標籤之間的換行會變成一個空白。
+- none 不建立盒子，後面的元素補上它的位置。visibility 設成 hidden 仍佔位，只是看不見。opacity 設成 0 也佔位，而且仍點得到。
+- 圖片若跟文字基線對齊，底下會有一條縫。改成 block，或垂直對齊設成 middle，縫會消失。
 
 ```html 03-css/pages/17-display.html
 <!DOCTYPE html>
@@ -1549,167 +2185,205 @@ padding --> content["content 內容"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>display</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .block {
-        margin-bottom: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        background: #f0fdfa;
-        border-left: 4px solid #0f766e;
-      }
-
-      .line .item {
-        padding: 0.35rem 0.5rem;
-        border: 2px solid #0f766e;
-        background: #ccfbf1;
-      }
-
-      .days .day {
-        display: inline-block;
-        width: 4.5rem;
-        margin-right: 0.25rem;
-        padding: 0.35rem 0;
-        background: #115e59;
-        color: #f0fdfa;
-        text-align: center;
-      }
-
-      .cell {
-        display: inline-block;
-        width: 2.5rem;
-        margin: 0 0.35rem 0.5rem 0;
-        padding: 0.35rem 0;
-        background: #115e59;
-        color: #f0fdfa;
-        text-align: center;
-      }
-
-      .gone {
-        display: none;
-      }
-
-      .hold {
-        visibility: hidden;
-      }
-
-      .ghost {
-        opacity: 0;
-      }
-
-      .photo {
-        width: 4.5rem;
-        height: 3rem;
-        background: #0f766e;
-      }
-
-      .photo.block {
-        display: block;
-        margin-bottom: 0;
-        border-left: 0;
-      }
-
-      .photo.middle {
-        vertical-align: middle;
-      }
-    </style>
+    <link rel="stylesheet" href="17-display.css" />
   </head>
   <body>
     <h1>盒子怎麼參加排版</h1>
-
     <h2>block</h2>
-    <div class="block">第一張區塊，獨佔一行。</div>
-    <div class="block">第二張從下一行開始，中間是垂直 margin。</div>
-
+    <div class="block">第一張獨佔一行。</div>
+    <div class="block">第二張從下一行開始。</div>
     <h2>inline</h2>
-    <p class="line">
-      行程有<span class="item">甲</span>與<span class="item">乙</span>兩站。上下邊框會畫出來，但不把這一行撐高。
-    </p>
-
+    <p class="line">行程有<span class="item">甲</span>與<span class="item">乙</span>兩站。</p>
     <h2>inline-block</h2>
-    <p class="days">
+    <p>
       <span class="day">三日</span>
       <span class="day">四日</span>
       <span class="day">五日</span>
     </p>
-    <p>三個標籤之間的縫，有一部分是原始碼換行造成的空白。</p>
-
     <h2>三種隱藏</h2>
-    <p>
-      <span class="cell">1</span><span class="cell gone">2</span><span class="cell">3</span>
-    </p>
-    <p>上一列是 display: none，「2」不佔位，1 緊接著 3。</p>
-    <p>
-      <span class="cell">1</span><span class="cell hold">2</span><span class="cell">3</span>
-    </p>
-    <p>這一列是 visibility: hidden，中間仍空一格。</p>
-    <p>
-      <span class="cell">1</span><span class="cell ghost">2</span><span class="cell">3</span>
-    </p>
-    <p>這一列是 opacity: 0，位子還在，滑鼠仍點得到那一格。</p>
-
+    <p><span class="cell">1</span><span class="cell gone">2</span><span class="cell">3</span></p>
+    <p><span class="cell">1</span><span class="cell hold">2</span><span class="cell">3</span></p>
+    <p><span class="cell">1</span><span class="cell ghost">2</span><span class="cell">3</span></p>
     <h2>圖片底縫</h2>
-    <p>
-      <img class="photo" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
-      行內圖片跟基線對齊，底下有一條縫。
-    </p>
-    <p>
-      <img class="photo middle" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
-      vertical-align: middle 把縫收掉。
-    </p>
-    <p>
-      <img class="photo block" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" />
-      display: block 也沒有那條縫，圖片自己佔一行。
-    </p>
+    <p><img class="photo" alt="" src="https://picsum.photos/id/1015/120/80" /> 行內圖片底下有一條縫。</p>
+    <p><img class="photo block" alt="" src="https://picsum.photos/id/1015/120/80" /> 改成 block 就沒有縫。</p>
   </body>
 </html>
 ```
 
-{% note info %}
-**小技巧：先看預設**
-連結 `a` 預設是 `inline`。做成按鈕時再改 `inline-block`，padding 與寬高才按你寫的走。不確定時看 Computed 的 `display`。
+```css 03-css/pages/17-display.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.block {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f0fdfa;
+}
+
+.item {
+  padding: 0.35rem 0.5rem;
+  border: 2px solid #0f766e;
+  background: #ccfbf1;
+}
+
+.day {
+  display: inline-block;
+  width: 4.5rem;
+  padding: 0.35rem 0;
+  background: #115e59;
+  color: #f0fdfa;
+  text-align: center;
+}
+
+.cell {
+  display: inline-block;
+  width: 2.5rem;
+  margin-right: 0.35rem;
+  padding: 0.35rem 0;
+  background: #115e59;
+  color: #f0fdfa;
+  text-align: center;
+}
+
+.gone {
+  display: none;
+}
+
+.hold {
+  visibility: hidden;
+}
+
+.ghost {
+  opacity: 0;
+}
+
+.photo {
+  width: 4.5rem;
+  height: 3rem;
+}
+
+.photo.block {
+  display: block;
+}
+```
+
+**解析**
+
+兩張 block 各佔一行，中間有下外距。甲和乙跟句子坐在同一行，上下邊框會畫出來，但不把這一行撐得更高。三日、四日、五日有固定寬度，所以不是純行內；它們中間的縫有一部分來自原始碼換行。
+
+三列隱藏裡，第一列的 2 消失，1 緊接著 3。第二列中間仍空一格。第三列看起來也空一格，但那一格仍在，滑鼠點得到。最後，第一張圖跟文字基線對齊，底下有縫；改成 block 的那張自己佔一行，縫消失。
+
+```css
+.gone {
+  display: none; /* 不佔位 */
+}
+.hold {
+  visibility: hidden; /* 佔位，看不見 */
+}
+.ghost {
+  opacity: 0; /* 佔位，仍點得到 */
+}
+```
+
+{% note success %}
+**換你試試：**
+第一列的 2 改成仍佔位、只是看不見。把 gone 的 display 拿掉，改成 visibility: hidden。第二列不要改。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+第一列的 2 現在跟第二列一樣留著空位。它不再用 none，所以 1 和 3 不會靠在一起。第三列仍是透明但點得到。
+
+```css 03-css/pages/17-display.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.block {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f0fdfa;
+}
+
+.item {
+  padding: 0.35rem 0.5rem;
+  border: 2px solid #0f766e;
+  background: #ccfbf1;
+}
+
+.day {
+  display: inline-block;
+  width: 4.5rem;
+  padding: 0.35rem 0;
+  background: #115e59;
+  color: #f0fdfa;
+  text-align: center;
+}
+
+.cell {
+  display: inline-block;
+  width: 2.5rem;
+  margin-right: 0.35rem;
+  padding: 0.35rem 0;
+  background: #115e59;
+  color: #f0fdfa;
+  text-align: center;
+}
+
+.gone {
+  visibility: hidden;
+}
+
+.hold {
+  visibility: hidden;
+}
+
+.ghost {
+  opacity: 0;
+}
+
+.photo {
+  width: 4.5rem;
+  height: 3rem;
+}
+
+.photo.block {
+  display: block;
+}
+```
+
+</details>
 
 ### 定位與 z-index
 
-`position` 決定偏移量跟誰比，`z-index` 決定重疊時誰在上面。徽章、黏性標題與層疊情境是這一節的三個結果。見 [MDN：position](https://developer.mozilla.org/zh-TW/docs/Web/CSS/position)。
+position 決定偏移量跟誰比。預設 static 參加正常排版，寫了 top 或 z-index 也不生效。z-index 決定重疊時誰在上面，數字只在同一個層疊情境裡比。
 
-#### 五種定位
+**觀念**
 
-`position` 決定座標跟誰比。預設 `static` 參加正常排版，`top`、`right`、`bottom`、`left` 與 `z-index` 都無效。`relative` 以自己原本的位子為原點，原位仍留著，兄弟不會補上來。`absolute` 對準最近一個 `position` 不是 `static` 的祖先（對的是那個祖先的 padding 邊緣）；都沒有時，對準頁面的初始包含塊，原位釋出。`fixed` 對準視窗。`sticky` 平常像相對，滾過你寫的門檻後黏在滾動盒邊緣，範圍只到它的父層結束。
-
-徽章的寫法是：卡片 `position: relative`，徽章 `position: absolute` 再寫 `top` 與 `right`。少了卡片上的 `relative`，徽章會貼到整頁。`absolute` 與 `fixed` 離開文字流之後可以設寬高，就算標籤原本是 `inline`。偏移的百分比，水平看包含塊的寬，垂直看包含塊的高。
-
-`sticky` 至少要一個門檻（`top`、`right`、`bottom`、`left`）。它黏的是最近的滾動盒：示範裡白盒設了 `overflow: auto` 與固定高度，標題黏的是白盒上緣，不是整個瀏覽器。祖先若有 `overflow: hidden`，黏性常常失效。父層沒有比滾動盒更高的空間時，也看不到黏住的過程。
-
-#### 層疊情境
-
-`z-index` 只對已定位的盒子生效（Flex、Grid 的小孩例外，即使 `static` 也能用）。數字愈大愈靠近你，也可以是負數。`auto` 不建立新的層疊情境，後面的兄弟蓋住前面的兄弟。數字只在**同一個層疊情境**裡比。`position` 加上不是 `auto` 的 `z-index` 會開一個新情境；情境與情境之間比的是父親，小孩的數字出不去。專題不要靠 `9999` 去壓過別的元件。
-
-| 值 | 參考點 | 原來的位子 |
-| --- | --- | --- |
-| `static` | 正常排版 | 留著 |
-| `relative` | 自己原本的位子 | 留著，只是視覺上挪開 |
-| `absolute` | 最近的已定位祖先 | 釋出，兄弟會補上 |
-| `fixed` | 視窗 | 釋出 |
-| `sticky` | 滾過門檻後黏住滾動盒 | 在父層範圍內留著 |
+- relative 以自己原本的位子為原點，原位仍留著，兄弟不會補上來。
+- absolute 對準最近一個不是 static 的祖先，原位釋出。都沒有這樣的祖先時，對準整頁。徽章的寫法是：卡片 relative，徽章 absolute。
+- fixed 對準視窗，捲動時它還在同一個螢幕位置。
+- sticky 平常像相對，滾過你寫的 top 之後黏在捲動盒邊緣，範圍只到父層結束。祖先若把溢出藏起來，黏性常常失效。
+- z-index 愈大愈靠近你。父層若自己開了新的層疊情境，小孩的數字出不去，比的是父親。
 
 ```html 03-css/pages/18-position.html
 <!DOCTYPE html>
@@ -1717,254 +2391,241 @@ padding --> content["content 內容"]
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>定位與層級</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem 1.5rem 5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .shift {
-        position: relative;
-        top: 0.75rem;
-        left: 1rem;
-        width: min(100%, 18rem);
-        padding: 0.4rem 0.75rem;
-        background: #f0fdfa;
-        border: 1px dashed #0f766e;
-      }
-
-      .next {
-        width: min(100%, 18rem);
-        margin-top: 0.4rem;
-        padding: 0.4rem 0.75rem;
-        background: #ccfbf1;
-      }
-
-      .tour {
-        position: relative;
-        width: min(100%, 22rem);
-        margin-top: 1.5rem;
-        padding: 1.25rem 1rem 1rem;
-        background: #f0fdfa;
-        border-radius: 0.75rem;
-      }
-
-      .badge {
-        position: absolute;
-        top: 0.6rem;
-        right: 0.6rem;
-        padding: 0.1rem 0.55rem;
-        border-radius: 999px;
-        background: #9f1239;
-        color: #fff;
-        font-size: 0.85rem;
-      }
-
-      .scroller {
-        height: 12rem;
-        overflow: auto;
-        background: #fff;
-        border: 1px solid #99f6e4;
-      }
-
-      .day h3 {
-        position: sticky;
-        top: 0;
-        margin: 0;
-        padding: 0.35rem 0.75rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .day p {
-        margin: 0;
-        padding: 0.75rem;
-      }
-
-      .ask {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        padding: 0.45rem 0.9rem;
-        border-radius: 999px;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .pile {
-        position: relative;
-        height: 8rem;
-        margin-top: 0.5rem;
-      }
-
-      .sheet {
-        position: absolute;
-        width: 9rem;
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-      }
-
-      .sheet.a {
-        top: 0;
-        left: 0;
-        z-index: 1;
-        background: #ccfbf1;
-      }
-
-      .sheet.b {
-        top: 1.2rem;
-        left: 2rem;
-        z-index: 2;
-        background: #fde68a;
-      }
-
-      .sheet.c {
-        top: 2.4rem;
-        left: 4rem;
-        z-index: 3;
-        background: #fecdd3;
-      }
-
-      .contexts {
-        position: relative;
-        height: 7rem;
-        margin-top: 0.5rem;
-      }
-
-      .ctx {
-        position: absolute;
-        width: 11rem;
-        height: 5.5rem;
-        padding: 0.4rem;
-      }
-
-      .ctx-a {
-        top: 0;
-        left: 0;
-        z-index: 1;
-        background: #ccfbf1;
-      }
-
-      .ctx-b {
-        top: 1.2rem;
-        left: 6rem;
-        z-index: 2;
-        background: #fecdd3;
-      }
-
-      .kid {
-        position: absolute;
-        right: 0.4rem;
-        bottom: 0.4rem;
-        padding: 0.25rem 0.45rem;
-      }
-
-      .ctx-a .kid {
-        z-index: 50;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .ctx-b .kid {
-        z-index: 1;
-        background: #9f1239;
-        color: #fff;
-      }
-    </style>
+    <title>定位</title>
+    <link rel="stylesheet" href="18-position.css" />
   </head>
   <body>
-    <h1>定位</h1>
-
-    <h2>relative 留著原位</h2>
-    <div class="shift">這張往下 0.75rem、往右 1rem。</div>
-    <div class="next">下一張仍從「沒挪開時」的下方開始排，中間留下空位。</div>
-
-    <h2>父層 relative、徽章 absolute</h2>
-    <article class="tour">
+    <h1>座標跟誰比</h1>
+    <article class="card">
       <span class="badge">熱門</span>
-      <h3>奈良一日</h3>
-      <p>徽章對的是這張卡的 padding 邊緣，不佔標題那一行。</p>
+      <h2>京都三日</h2>
+      <p>徽章對準這張卡片，不是整頁。</p>
     </article>
-
-    <h2>sticky 黏在滾動盒</h2>
-    <div class="scroller">
-      <section class="day">
-        <h3>第一天・京都</h3>
-        <p>往下滾，標題黏在白盒上緣。這一段結束後，標題會跟著走。</p>
-        <p>父層要比滾動盒更高，才看得到黏住的過程。</p>
-      </section>
-      <section class="day">
-        <h3>第二天・大阪</h3>
-        <p>下一天的標題再黏上來。黏的是這個白盒，不是整個瀏覽器。</p>
-        <p>再留一段高度，讓你能把第二天也滾過門檻。</p>
-      </section>
-    </div>
-
-    <h2>z-index 在同一層裡比</h2>
     <div class="pile">
-      <div class="sheet a">1</div>
-      <div class="sheet b">2</div>
-      <div class="sheet c">3 在最上面</div>
+      <span class="layer low">下層</span>
+      <span class="layer high">上層</span>
     </div>
-
-    <h2>情境之間比父親</h2>
-    <div class="contexts">
-      <div class="ctx ctx-a">
-        父親 A，z-index 1
-        <span class="kid">小孩 50</span>
-      </div>
-      <div class="ctx ctx-b">
-        父親 B，z-index 2
-        <span class="kid">小孩 1</span>
-      </div>
+    <div class="scroller">
+      <p class="sticky">這行會黏在這個盒子的上緣</p>
+      <p>往下捲這塊白盒，標題黏住，直到盒子捲完。</p>
+      <p>父層結束後，黏性也結束。</p>
     </div>
-    <p>玫瑰紅小孩蓋住深綠小孩：B 整包在 A 之上，A 的 50 出不去。</p>
-
-    <a class="ask" href="#top">諮詢</a>
+    <p class="pin">固定在視窗右下</p>
   </body>
 </html>
 ```
 
-{% note warning %}
-**注意事項**
-整頁的欄、卡片列、置中，用正常排版與下一章的 Flex、Grid。`absolute` 留給徽章、關閉鈕這一類疊在表面的小東西。`fixed` 留給真的要跟著視窗的列。右下「諮詢」是 `fixed`，所以 `body` 留了下緣空隙，最後一行才不會被它蓋住。
+```css 03-css/pages/18-position.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem 1.5rem 5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  position: relative;
+  width: min(100%, 22rem);
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  padding: 0.15rem 0.5rem;
+  background: #9f1239;
+  color: #fff;
+}
+
+.pile {
+  position: relative;
+  height: 4.5rem;
+  margin-top: 1rem;
+}
+
+.layer {
+  position: absolute;
+  width: 5rem;
+  padding: 0.75rem 0;
+  text-align: center;
+  color: #fff;
+}
+
+.low {
+  top: 0.6rem;
+  left: 1.5rem;
+  z-index: 1;
+  background: #0f766e;
+}
+
+.high {
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: #9f1239;
+}
+
+.scroller {
+  overflow: auto;
+  height: 7rem;
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #99f6e4;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  margin: 0;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.pin {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  background: #0f766e;
+  color: #fff;
+}
+```
+
+**解析**
+
+「熱門」脫離文字流，貼在卡片右上。卡片若拿掉 relative，徽章會去找更外層的頁面。卡片裡的標題與段落會補上徽章原來的位子，所以文字不會被空出一個 span 的寬度。
+
+下面兩塊重疊的色塊都是絕對定位。上層的 z-index 是 2，所以玫瑰紅蓋住深青綠的一角。若把兩個數字對調，深青綠會蓋到上面來。
+
+白盒自己可以捲。捲動時，深青綠那行黏在盒子上緣，而不是瀏覽器最上面；盒子捲完它就一起走。右下角那塊對準視窗，捲動整頁時它還在。這裡的 overflow 只為了做出可捲的盒子，下一節再談裁切與捲軸。
+
+```css
+.card {
+  position: relative; /* 成為徽章的對準對象 */
+}
+.badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+```
+
+{% note success %}
+**換你試試：**
+徽章改貼到卡片左下。top 與 right 拿掉，改寫 bottom 與 left，各 0.5rem。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+對準對象仍是卡片。徽章從右上移到左下，文字流不受影響。黏性標題與右下角固定塊維持原樣。
+
+```css 03-css/pages/18-position.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem 1.5rem 5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  position: relative;
+  width: min(100%, 22rem);
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.badge {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  z-index: 1;
+  padding: 0.15rem 0.5rem;
+  background: #9f1239;
+  color: #fff;
+}
+
+.pile {
+  position: relative;
+  height: 4.5rem;
+  margin-top: 1rem;
+}
+
+.layer {
+  position: absolute;
+  width: 5rem;
+  padding: 0.75rem 0;
+  text-align: center;
+  color: #fff;
+}
+
+.low {
+  top: 0.6rem;
+  left: 1.5rem;
+  z-index: 1;
+  background: #0f766e;
+}
+
+.high {
+  top: 0;
+  left: 0;
+  z-index: 2;
+  background: #9f1239;
+}
+
+.scroller {
+  overflow: auto;
+  height: 7rem;
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #99f6e4;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  margin: 0;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.pin {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  background: #0f766e;
+  color: #fff;
+}
+```
+
+</details>
 
 ### overflow
 
-內容比盒子的 padding 邊緣還大時，`overflow` 決定多出來的部分是露出、裁掉，還是出現捲軸。單行省略號是同一組屬性再加上不換行。見 [MDN：overflow](https://developer.mozilla.org/zh-TW/docs/Web/CSS/overflow)。
+內容比盒子高或寬時，overflow 決定是露出、裁掉，還是出現捲軸。單行省略是「不准換行、超出就藏、尾端改成省略號」三件事一起。
 
-#### 裁切與捲動
+**觀念**
 
-內容比盒子的 padding 邊緣還大時，`overflow` 決定多出來的部分。預設 `visible`：畫到外面，不出現捲軸，也不撐大已經寫死的 `width`（高度的 `auto` 仍會跟著內容長）。`hidden` 裁掉，沒有捲軸。`auto` 超過才出現捲軸。`scroll` 一律預留捲軸的位子。
-
-`overflow-x` 與 `overflow-y` 可以分開。其中一軸不是 `visible` 時，另一軸的 `visible` 會被算成 `auto`。只想水平捲、垂直仍露出時，到 Computed 確認最後的值。圓角盒子裡的小孩預設可以畫出圓角，父層加上 `overflow: hidden` 才切得齊。`hidden` 也會讓這一層變成滾動盒，子孫的 `sticky` 可能因此失效。
-
-#### 單行省略
-
-單行要出現省略號，四個條件一起寫：有寬度、`overflow: hidden`、`white-space: nowrap`、`text-overflow: ellipsis`。少一個就會改成換行或直接裁掉。
-
-| 值 | 行為 |
-| --- | --- |
-| `visible` | 畫到外面，沒有捲軸 |
-| `hidden` | 裁掉，沒有捲軸 |
-| `auto` | 超過才出現捲軸 |
-| `scroll` | 一律預留捲軸 |
+- visible 是預設，多出來的畫在盒子外面。
+- hidden 裁掉，不出現捲軸。auto 在需要時才出現捲軸。
+- 單行省略要同時寫不准換行、溢出隱藏、文字溢出用省略號。只寫其中一個，尾端不會變成省略號。
+- 父層有 hidden 時，裡面的 sticky 常常黏不住。
 
 ```html 03-css/pages/19-overflow.html
 <!DOCTYPE html>
@@ -1973,157 +2634,134 @@ padding --> content["content 內容"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>overflow</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .frame {
-        width: min(100%, 16rem);
-        margin-bottom: 0.75rem;
-        background: #ccfbf1;
-      }
-
-      .spill {
-        width: 22rem;
-        padding: 0.5rem 0.75rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .clip {
-        width: min(100%, 16rem);
-        overflow: hidden;
-        border-radius: 1rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .clip .band {
-        padding: 0.75rem 1rem;
-        background: #0f766e;
-      }
-
-      .scroll-box {
-        width: min(100%, 18rem);
-        height: 6.5rem;
-        overflow: auto;
-        padding: 0.5rem 0.75rem;
-        background: #f0fdfa;
-        border: 1px solid #0f766e;
-      }
-
-      .title {
-        width: min(100%, 16rem);
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        padding: 0.35rem 0.6rem;
-        background: #fff7ed;
-      }
-    </style>
+    <link rel="stylesheet" href="19-overflow.css" />
   </head>
   <body>
-    <h1>溢出</h1>
-
-    <h2>visible</h2>
-    <div class="frame">
-      <div class="spill">這條比淺青框更寬，多出來的部分直接畫到外面，沒有捲軸。</div>
+    <h1>超出盒子時</h1>
+    <div class="box clip">
+      <p>這段比盒子高。hidden 會裁掉下面的句子，不出現捲軸。洛奇旅行的說明在這裡被切掉。</p>
     </div>
-
-    <h2>hidden 與圓角</h2>
-    <div class="clip">
-      <div class="band">深綠帶被圓角切齊。拿掉父層的 overflow: hidden，色帶的角會凸出去。</div>
+    <div class="box scroll">
+      <p>這段同樣比較高。auto 在裝不下時出現捲軸，句子可以捲出來讀完。洛奇旅行的說明在這裡還在。</p>
     </div>
-
-    <h2>auto</h2>
-    <div class="scroll-box">
-      <p>白盒高度只有 6.5rem。內容超過才出現捲軸。</p>
-      <p>伏見稻荷的千本鳥居沿山道往上，走完約兩小時。</p>
-      <p>再留一段，讓你確定捲軸是因為裝不下，不是預先佔位。</p>
-    </div>
-
-    <h2>單行省略</h2>
-    <p class="title">京都・清水寺・二年坂三年坂・八坂之塔・這一行放不下就以省略號結尾</p>
+    <p class="one-line">這一行很長時不要換行，尾端改成省略號。京都、大阪、濟州、花蓮都排在同一行。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/19-overflow.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.box {
+  width: min(100%, 18rem);
+  height: 4.5rem;
+  margin-bottom: 1rem;
+  background: #f0fdfa;
+}
+
+.clip {
+  overflow: hidden;
+}
+
+.scroll {
+  overflow: auto;
+}
+
+.one-line {
+  width: min(100%, 18rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+
+**解析**
+
+兩塊淺底一樣高。第一塊下面的字被切掉，沒有捲軸。第二塊右邊或下面出現捲軸，可以把被擋住的句子捲出來。
+
+最後一段維持一行。盒子不夠寬時，尾端是省略號，而不是換到下一行。把 nowrap 拿掉，省略號通常也不會出現，因為文字已經折行，沒有水平方向的溢出。
+
+```css
+.one-line {
+  white-space: nowrap; /* 不准換行 */
+  overflow: hidden; /* 超出的裁掉 */
+  text-overflow: ellipsis; /* 尾端改成省略號 */
+}
+```
+
 {% note success %}
-**跟著做**
-把視窗縮到標題那一行放不下，確認結尾是省略號。在 Styles 取消 `.title` 的 `white-space`，它會改回換行。再取消 `.clip` 的 `overflow`，看色帶的直角。
+**換你試試：**
+第一塊從裁切改成需要時才捲。把 hidden 換成 auto。單行省略那段不要改。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+兩塊現在都會在裝不下時出現捲軸，第一塊不再直接把句子切掉。單行那段仍是一行加省略號。
+
+```css 03-css/pages/19-overflow.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.box {
+  width: min(100%, 18rem);
+  height: 4.5rem;
+  margin-bottom: 1rem;
+  background: #f0fdfa;
+}
+
+.clip {
+  overflow: auto;
+}
+
+.scroll {
+  overflow: auto;
+}
+
+.one-line {
+  width: min(100%, 18rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+```
+
+</details>
 
 ## 欄位排版
 
-一個方向上的排列用 Flex：導覽列、一排按鈕、卡片橫列。兩個方向同時切用 Grid：頁首與側欄、或欄線要對齊的卡片牆。兩者都寫在父層，只排**直接子元素**；孫子仍由它們自己的父層排。項目之間的縫用 `gap`，不加在容器外緣，外緣用 padding。Flex 與 Grid 的項目之間不合併 margin。`float` 不是這一章的欄位手法。
-
-{% mermaid graph TD %}
-A["這一層要排什麼"] --> B["沿一個方向"]
-A --> C["行與列一起定"]
-B --> D["display: flex"]
-C --> E["display: grid"]
-E --> F["格子裡的一排或一欄<br/>再 display: flex"]
-{% endmermaid %}
+同一層的小孩要排成一列或一欄時用 Flex。要同時控制欄與列時用 Grid。兩者都是寫在父層的 display，間距用 gap，不要再靠外距硬湊縫。
 
 ### Flexbox
 
-Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空間，交叉軸負責對齊，項目要變寬變窄再寫 `flex`。見 [MDN：Flexbox 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox)。
+Flex 沿一個方向排。主軸是這個方向，交叉軸是垂直於它的那個方向。換行之後，每一行仍沿主軸排。
 
-#### 方向、換行與對齊
+**觀念**
 
-`display: flex` 讓直接子元素變成彈性項目。主軸是排隊的方向，交叉軸跟它垂直。`flex-direction: row` 在繁中橫排是由左到右，`column` 由上到下。`row-reverse` 與 `column-reverse` 只改視覺起點，原始碼與 <kbd>Tab</kbd> 順序不變，不要用它把第一個連結藏到最後。`flex-flow` 是方向與換行的簡寫；少寫的那個回到預設。
-
-預設 `nowrap`：空間不夠就縮小（`flex-shrink` 預設是 1）。`wrap` 不夠時換行。換行之後每一行仍是一條彈性行。`gap` 一個值表示行與列相同。項目上不要再用左右 margin 當欄距，否則換行時行首行尾會多一截；`margin` 留給「把這一項推開」，例如 `margin-left: auto` 或卡片裡的 `margin-top: auto`。
-
-`justify-content` 分主軸上、項目本身尺寸之外的空間。項目已經 `flex: 1` 把行撐滿時，這些值幾乎看不出差別。`align-items` 管交叉軸，橫排時就是上下；預設 `stretch`，交叉軸尺寸是 `auto` 的項目會被拉到跟那一行一樣高。主軸改成 `column` 之後，兩個屬性對調所管的方向：先問現在哪一邊是主軸。`align-content` 只有在已經換行、而且交叉軸上還有空位時才看得出來。
-
-#### 彈性係數與最小尺寸
-
-子項的 `flex` 是 `flex-grow`、`flex-shrink`、`flex-basis` 的簡寫。分配時先用基礎尺寸，再把剩下的空間按 grow 分掉；不夠時按 shrink 縮小。`flex: 1` 從 0 起算再均分，欄寬容易一樣。`flex: auto` 從內容尺寸再一起放大。`flex: none` 不伸也不縮。`fr` 不能寫在 Flex 裡。
-
-彈性項目的 `min-width` 預設是 `auto`，不會縮到比內容的最小寬度更窄。一長串沒有空白的字會把整行撐破。要讓縮小生效，寫 `min-width: 0`（直向主軸被高度撐破時是 `min-height: 0`）。`order` 只改視覺順序，不改 <kbd>Tab</kbd>。主軸上要單獨推開某一項，用該側的 `margin: auto`；彈性項目沒有 `justify-self`。
-
-| 寫在父層 | 做什麼 |
-| --- | --- |
-| `flex-direction` | 主軸方向，預設 `row` |
-| `flex-wrap` | 不夠時換不換行，預設 `nowrap` |
-| `justify-content` | 主軸上怎麼分剩餘空間 |
-| `align-items` | 單行裡，交叉軸怎麼對 |
-| `align-content` | 換行之後，行與行怎麼分 |
-| `gap` | 項目之間的縫，不含外緣 |
-
-| `flex` 簡寫 | 展開 | 畫面上 |
-| --- | --- | --- |
-| `initial`（預設） | `0 1 auto` | 依內容，不搶剩餘空間 |
-| `1` | `1 1 0%` | 基礎先當 0，再按份數均分 |
-| `auto` | `1 1 auto` | 從內容尺寸開始再放大 |
-| `none` | `0 0 auto` | 不放大也不縮小 |
-| `2` | `2 1 0%` | 分剩餘空間時拿 2 份 |
-
-| `justify-content` | 主軸上 |
-| --- | --- |
-| `flex-start` | 靠起點。預設 |
-| `flex-end` | 靠終點 |
-| `center` | 整組擺在中間 |
-| `space-between` | 兩端貼齊，中間空隙相等 |
-| `space-around` | 每項兩側各一份，項目之間是兩份 |
-| `space-evenly` | 外緣與項目之間都一樣 |
+- 預設是橫排、不換行。column 改成直排。wrap 才允許換行。
+- justify-content 管主軸上怎麼分配剩餘空間。align-items 管交叉軸怎麼對齊。
+- gap 是項目之間的縫，不會加在最外側。
+- flex 三個數字依序是放大、縮小、基本尺寸。1 1 12rem 表示可以長、可以縮，理想寬度約 12rem。
+- 項目預設 min-width 是 auto，內容很長時可能不肯縮小。需要硬縮時把最小寬度設成 0。
 
 ```html 03-css/pages/20-flex.html
 <!DOCTYPE html>
@@ -2132,277 +2770,167 @@ Flexbox 把直接子元素排成一列或一行。主軸負責排隊與剩餘空
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flex</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .box {
-        padding: 0.45rem 0.6rem;
-        background: #f0fdfa;
-        border: 1px solid #0f766e;
-      }
-
-      .row,
-      .col {
-        display: flex;
-        gap: 0.4rem;
-        margin-bottom: 0.45rem;
-      }
-
-      .col {
-        flex-direction: column;
-        width: 8rem;
-      }
-
-      .pair {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
-      }
-
-      .rail {
-        width: min(100%, 22rem);
-        margin-bottom: 0.45rem;
-        background: #ccfbf1;
-      }
-
-      .rail.nowrap {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 0.4rem;
-        overflow: auto;
-      }
-
-      .rail.wrap {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-      }
-
-      .stop {
-        flex: 0 0 8rem;
-        padding: 0.4rem 0.5rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.6rem 0.9rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .bar nav {
-        display: flex;
-        gap: 0.75rem;
-      }
-
-      .bar a {
-        color: #f0fdfa;
-      }
-
-      .shares {
-        display: flex;
-        gap: 0.4rem;
-        margin: 0.75rem 0;
-      }
-
-      .shares span {
-        padding: 0.35rem 0.6rem;
-        background: #f0fdfa;
-      }
-
-      .shares .grow {
-        flex: 1;
-      }
-
-      .shares .grow2 {
-        flex: 2;
-        background: #fde68a;
-      }
-
-      .code {
-        display: flex;
-        gap: 0.4rem;
-        width: min(100%, 24rem);
-      }
-
-      .code span {
-        flex: 1;
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding: 0.35rem 0.5rem;
-        background: #f0fdfa;
-      }
-
-      .code .stuck {
-        min-width: auto;
-      }
-
-      .trips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-
-      .trip {
-        display: flex;
-        flex: 1 1 12rem;
-        flex-direction: column;
-        min-width: 0;
-        padding: 0.75rem 0.9rem;
-        background: #f0fdfa;
-        border-radius: 0.75rem;
-      }
-
-      .trip .go {
-        margin-top: auto;
-        color: #115e59;
-      }
-
-      .page {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 10rem;
-        margin-top: 0.75rem;
-        background: #ccfbf1;
-      }
-
-      .page div {
-        padding: 0.35rem 0.7rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-    </style>
+    <link rel="stylesheet" href="20-flex.css" />
   </head>
   <body>
-    <h1>Flex 排一個方向</h1>
-
-    <h2>主軸</h2>
-    <div class="pair">
-      <div class="row">
-        <span class="box">1</span><span class="box">2</span><span class="box">3</span>
-      </div>
-      <div class="col">
-        <span class="box">1</span><span class="box">2</span><span class="box">3</span>
-      </div>
-    </div>
-    <p>左邊 row 的主軸是水平。右邊 column 的主軸是垂直，align-items 改管左右。</p>
-
-    <h2>換行</h2>
-    <div class="rail nowrap">
-      <span class="stop">清水寺</span><span class="stop">伏見稻荷</span><span class="stop">嵐山</span><span class="stop">金閣寺</span>
-    </div>
-    <div class="rail wrap">
-      <span class="stop">清水寺</span><span class="stop">伏見稻荷</span><span class="stop">嵐山</span><span class="stop">金閣寺</span>
-    </div>
-    <p>每顆 flex: 0 0 8rem。上條 nowrap 出現捲軸，下條 wrap 折成兩行，縫是 gap。</p>
-
-    <h2>兩端對齊的導覽</h2>
+    <h1>沿一個方向排</h1>
     <header class="bar">
-      <strong>行程本</strong>
+      <strong>洛奇旅行</strong>
       <nav>
         <a href="#tours">行程</a>
         <a href="#about">關於</a>
       </nav>
     </header>
-    <p>外層 space-between 管品牌與 nav。nav 自己再是一層 Flex，用 gap 排連結。</p>
-
-    <h2>份數與縮小</h2>
-    <div class="shares">
-      <span class="grow">1 份</span>
-      <span class="grow2">2 份</span>
-      <span class="grow">1 份</span>
-    </div>
-    <div class="code">
-      <span>京都</span>
-      <span class="stuck">KYOTO-KIYOMIZU-STATION-WALKING-ROUTE-2026</span>
-      <span>大阪</span>
-    </div>
-    <p>中間那顆 min-width 仍是 auto，長字把整行撐開。把 .stuck 的 min-width 改成 0，左右才讓得出位置，省略號也才出現。</p>
-
-    <h2>卡片列，連結沉底</h2>
     <div class="trips">
       <article class="trip">
-        <h3>京都三日</h3>
-        <p>介紹只有一句。</p>
-        <a class="go" href="#kyoto">看行程</a>
+        <h2>京都三日</h2>
+        <p>清水寺與嵐山。</p>
+        <a href="#kyoto">看行程</a>
       </article>
       <article class="trip">
-        <h3>大阪二日</h3>
-        <p>這張介紹比較長，所以連結要靠 margin-top: auto 才跟左邊對齊在底部。同一行的卡片被 stretch 拉成一樣高。</p>
-        <a class="go" href="#osaka">看行程</a>
+        <h2>大阪美食</h2>
+        <p>這張字比較多，用來把連結推到卡片底部。</p>
+        <a href="#osaka">看行程</a>
       </article>
-    </div>
-
-    <h2>直向主軸，上下撐開</h2>
-    <div class="page">
-      <div>頁首</div>
-      <div>主文</div>
-      <div>頁尾</div>
     </div>
   </body>
 </html>
 ```
 
-{% note warning %}
-**注意事項**
-卡片上的 `min-width: 0` 和長代碼是同一件事。沒寫的話，某一張卡裡的長網址可能把整列撐出螢幕。包一層 `div` 之後，裡面的東西對這一層來說只算一項。
+```css 03-css/pages/20-flex.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.bar a {
+  color: inherit;
+}
+
+.trips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.trip {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 14rem;
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.trip a {
+  margin-top: auto;
+}
+```
+
+**解析**
+
+頂部那條把品牌名與連結分到兩端，垂直方向置中。連結的顏色跟父層，所以是淺色。
+
+兩張卡片橫排，中間有 1rem 的縫。視窗不夠放兩張 14rem 時會換行，因為允許 wrap。每張卡片自己是直向的 Flex，連結的上外距是 auto，所以被推到卡片底部，兩張的連結對齊。
+
+```css
+.trips {
+  display: flex;
+  flex-wrap: wrap; /* 放不下才換行 */
+  gap: 1rem;
+}
+.trip {
+  flex: 1 1 14rem; /* 可長、可縮、理想 14rem */
+}
+```
+
+{% note success %}
+**換你試試：**
+卡片容器改成不准換行。把 wrap 改成 nowrap，再把視窗拉窄，看兩張卡片擠在同一行而不是掉到下一行。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+不准換行之後，兩張卡片始終在同一行，變窄時會跟著縮小。頂部列與卡片內部的直向排列沒有改。
+
+```css 03-css/pages/20-flex.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.bar a {
+  color: inherit;
+}
+
+.trips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.trip {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 14rem;
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.trip a {
+  margin-top: auto;
+}
+```
+
+</details>
 
 ### Grid
 
-Grid 同時指定欄與列，項目落在格子上。格線從 1 起算，剩餘空間用 `fr`，欄數也可以跟著容器寬度變。見 [MDN：Grid 基本概念](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_grid_layout/Basic_concepts_of_grid_layout)。
+Grid 同時切欄與列。父層決定有幾欄，小孩預設各佔一格。一個小孩要跨欄時，再寫它自己佔幾欄。
 
-#### 格線與剩餘空間
+**觀念**
 
-`display: grid` 同時指定欄與列。項目預設依原始碼，先填滿一列再換下一列。格線從 1 起算，不是 0。三欄有四條直格線。`grid-column: 1 / 3` 是從第 1 條線到第 3 條線，佔兩欄，終點那條線不包含在內。`-1` 是最後一條線，`1 / -1` 從最左跨到最右。
-
-`fr` 分的是扣掉固定軌道與 `gap` 之後的剩餘空間。`1fr` 的下限其實是 `auto`，一長串不能斷行的字會把欄撐開，要肯縮小就寫 `minmax(0, 1fr)`。沒寫列高時，列數跟著內容，高度是 `auto`。自動多出來的軌道用 `grid-auto-rows`。父層高度是 `auto` 時，列上的 `1fr` 常常只跟內容一樣高，所以頁面骨架要給 `min-height`，中列才有高度可分。
-
-#### 自動欄數與命名區域
-
-`repeat(auto-fit, minmax(12rem, 1fr))` 依容器寬度決定欄數，空欄收成 0，卡片把整行撐滿。`auto-fill` 仍留下空欄，卡片維持較窄。下限不要寫 `1fr`，瀏覽器無法同時未知欄數又讓每欄先拿一份。`grid-auto-flow: column` 改成先往下填。
-
-命名區域用 `grid-template-areas`。每一列是一條引號字串，格數必須相同。`.` 代表這一格先空著。子項用 `grid-area: header` 對上去。`grid-area: 1 / 1 / 3 / 3` 的順序是列起、欄起、列終、欄終，和 `grid-column` 的「先欄」不一樣；對得上名字時用名字。
-
-#### 對齊與和 Flex 分工
-
-Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`）管項目在自己那一格裡面，預設 `stretch`。`justify-content` 管的是整組軌道比容器窄時怎麼擺，不是格子裡的空位。`justify-self` 只改一格。
-
-卡片牆若重點是自動幾欄、欄線對齊，外層用 Grid。卡的內部仍是一個方向，所以卡自己 `display: flex`、`flex-direction: column`，連結 `margin-top: auto`。
-
-| 畫面 | 用哪個 |
-| --- | --- |
-| 品牌在左、連結在右 | Flex，`space-between` |
-| 一排按鈕、中間等距 | Flex 加 `gap` |
-| 頁首、側欄、主文、頁尾 | Grid 加 `grid-template-areas` |
-| 行程卡自動 2～4 欄 | Grid，`auto-fit` 與 `minmax` |
-| 卡片裡的圖與「看行程」 | 卡內 Flex 直向 |
-| 圖旁一段文字繞著走 | 選讀的 `float`，不是多欄版面 |
+- grid-template-columns 決定每一欄多寬。1fr 是分剩餘空間的一份。
+- repeat 與 auto-fit、minmax 可以依寬度自動決定欄數：每欄至少某個寬度，剩下的空間再平均分。
+- gap 同時是欄距與列距。也可以分開寫欄距與列距。
+- 跨欄用 grid-column。對齊用 justify-items 與 align-items，作用在格子裡的內容。
+- Flex 負責一條軸上的一列或一欄。雙向、要對齊欄線時用 Grid。
 
 ```html 03-css/pages/21-grid.html
 <!DOCTYPE html>
@@ -2411,248 +2939,134 @@ Grid 有兩層對齊。`justify-items` 與 `align-items`（簡寫 `place-items`�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Grid</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .cell {
-        padding: 0.45rem 0.6rem;
-        background: #f0fdfa;
-        border: 1px solid #99f6e4;
-      }
-
-      .tracks {
-        display: grid;
-        grid-template-columns: 6rem 1fr 2fr;
-        gap: 0.4rem;
-      }
-
-      .tracks .wide {
-        background: #fde68a;
-      }
-
-      .safe {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 0.4rem;
-        width: min(100%, 24rem);
-        margin-top: 0.45rem;
-      }
-
-      .safe .cell {
-        overflow-wrap: anywhere;
-      }
-
-      .shell {
-        display: grid;
-        grid-template-columns: 8rem minmax(0, 1fr) 9rem;
-        grid-template-rows: auto 1fr auto;
-        grid-template-areas:
-          "header header header"
-          "nav main aside"
-          "footer footer footer";
-        gap: 0.45rem;
-        min-height: 16rem;
-      }
-
-      .shell header {
-        grid-area: header;
-      }
-
-      .shell nav {
-        grid-area: nav;
-      }
-
-      .shell main {
-        grid-area: main;
-      }
-
-      .shell aside {
-        grid-area: aside;
-      }
-
-      .shell footer {
-        grid-area: footer;
-      }
-
-      .shell > * {
-        padding: 0.45rem 0.65rem;
-        background: #f0fdfa;
-      }
-
-      .shell header,
-      .shell footer {
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-        gap: 0.75rem;
-      }
-
-      .card {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        padding: 0.75rem 0.9rem;
-        background: #f0fdfa;
-        border-radius: 0.75rem;
-      }
-
-      .card .go {
-        margin-top: auto;
-        color: #115e59;
-      }
-
-      .align {
-        display: grid;
-        grid-template-columns: 6rem 6rem;
-        grid-auto-rows: 4.5rem;
-        gap: 0.4rem;
-        justify-content: center;
-        margin-top: 0.75rem;
-      }
-
-      .align .cell {
-        background: #ccfbf1;
-      }
-
-      .align .pin {
-        place-self: end;
-        width: 3rem;
-        height: 2rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-    </style>
+    <link rel="stylesheet" href="21-grid.css" />
   </head>
   <body>
-    <h1>Grid 同時切欄與列</h1>
-
-    <h2>軌道</h2>
-    <div class="tracks">
-      <div class="cell">6rem</div>
-      <div class="cell">1fr</div>
-      <div class="cell wide">2fr</div>
-    </div>
-    <div class="safe">
-      <div class="cell">KYOTO-KIYOMIZU-STATION-WALKING-ROUTE-2026</div>
-      <div class="cell">minmax(0, 1fr) 讓長字在欄內斷行，欄寬不被撐破。</div>
-    </div>
-
-    <h2>命名區域</h2>
-    <div class="shell">
-      <header>頁首跨三欄</header>
-      <nav>導覽</nav>
-      <main>主文。中欄是 minmax(0, 1fr)。</main>
-      <aside>本季</aside>
-      <footer>頁尾跨三欄</footer>
-    </div>
-
-    <h2>自動欄數，卡內再用 Flex</h2>
-    <div class="cards">
-      <article class="card">
-        <h3>京都</h3>
-        <p>一句介紹。</p>
-        <a class="go" href="#kyoto">看行程</a>
+    <h1>欄與列一起排</h1>
+    <div class="trips">
+      <article class="feature">
+        <h2>京都三日</h2>
+        <p>這一張跨兩欄。</p>
       </article>
-      <article class="card">
-        <h3>大阪</h3>
-        <p>介紹長一點時，連結仍貼著卡片底部。把視窗拉寬、拉窄，看欄數跟著變。</p>
-        <a class="go" href="#osaka">看行程</a>
+      <article>
+        <h2>大阪</h2>
+        <p>一格。</p>
       </article>
-      <article class="card">
-        <h3>奈良</h3>
-        <p>鹿。</p>
-        <a class="go" href="#nara">看行程</a>
+      <article>
+        <h2>濟州</h2>
+        <p>一格。</p>
       </article>
     </div>
-
-    <h2>格子裡對齊，軌道群置中</h2>
-    <div class="align">
-      <div class="cell">拉滿</div>
-      <div class="cell pin">靠終點</div>
-    </div>
-    <p>兩欄各 6rem，justify-content: center 把整組移到中間。右下那格 place-self: end，只改自己。</p>
   </body>
 </html>
 ```
 
-{% note info %}
-**小技巧：只看直接子元素**
-骨架裡的 `main` 是一格。主文裡的標題與段落不會自動變成格子，除非你在 `main` 上再設一次 `display: grid` 或 `flex`。視窗窄到放不下 8rem 加 9rem 時，頁面骨架會橫向溢出；改成一欄是後面媒體查詢的事。F12 點 Grid 徽章，線應夾住導覽與側欄。
+```css 03-css/pages/21-grid.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.trips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.trips article {
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.feature {
+  grid-column: span 2;
+  background: #ccfbf1;
+}
+```
+
+**解析**
+
+窄視窗時可能只有一欄，每張卡片上下排。拉寬之後，欄數變多，每一欄至少約 12rem，剩餘空間平均分。第一張跨兩欄，所以在兩欄以上的時候比旁邊的卡片寬；若目前只有一欄，跨兩欄沒有第二欄可跨，它仍佔滿那一欄。
+
+縫是 gap，不是卡片自己的外距，所以最外側不會多一圈。這種「幾欄、誰跨欄」用 Grid。上一節的導覽列只有一個方向，用 Flex 就夠。
+
+```css
+.trips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+.feature {
+  grid-column: span 2;
+}
+```
+
+{% note success %}
+**換你試試：**
+把每欄的最小寬度從 12rem 改成 20rem。拉窄視窗時應更快變成一欄。跨兩欄的那張不要拿掉。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+最小寬度變大之後，同一個視窗寬度能放下的欄數變少，卡片更早改成上下排。第一張仍寫著跨兩欄，在兩欄都存在時才會比較寬。
+
+```css 03-css/pages/21-grid.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.trips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1rem;
+}
+
+.trips article {
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.feature {
+  grid-column: span 2;
+  background: #ccfbf1;
+}
+```
+
+</details>
 
 # 響應式、變數與動態
 
-同一份 HTML 先在窄畫面讀得完，再依視窗改結構、把重複的色與間距收成代幣，並讓狀態變化有轉場與少量動畫。畫面和規則對不上時，用開發者工具看最終值。這一節四份檔都是完整 HTML。
+窄畫面先排得下，再在變寬時改欄數。重複的顏色收成變數。變形不推動鄰居，轉場把兩個狀態接起來，動畫則自己播放。
 
 ## RWD 與媒體查詢
 
-響應式網頁（responsive web design，RWD）是同一份 HTML，依畫面寬度改排版。流動的部分前面已經有了：`max-width`、Flex 的 `wrap`、Grid 的 `auto-fit` 與 `minmax`。那些能自己換行、自己決定欄數。媒體查詢（media query）留給**結構要變**的時候：導覽從橫排改成直排、側欄挪到主文旁邊。下面這份把視窗慢慢拉寬就能看到斷點。見 [MDN：使用媒體查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_media_queries/Using_media_queries)。
-
-{% mermaid graph TD %}
-B["預設：單欄、導覽橫排"] --> M["min-width: 32rem<br/>卡片改兩欄"]
-M --> W["min-width: 48rem<br/>導覽變側欄"]
-{% endmermaid %}
+響應式網頁設計（Responsive Web Design）是同一份文件適應不同寬度。先用會縮、會換行的欄，結構真的要變時才寫媒體查詢。查詢寫最小寬度、由窄到寬，窄畫面的規則就是預設，不必再寫一個最大寬度把手機單獨立出來。
 
 ### 流動版面先做完
 
-先讓窄畫面就讀得完，再往寬的加規則。這份示範預設是一欄：頁首、導覽、行程、行前提示依原始碼由上到下。導覽用 Flex 橫向換行。卡片欄數放在 `--cols`，預設 `1fr`。圖片若之後加進來，仍給 `max-width: 100%`，避免比父層更寬。
+圖片不要比父層寬，版心不要無限變寬，卡片用自動欄數。這些在任何寬度都成立，所以還不需要媒體查詢。
 
-能用 `repeat(auto-fit, minmax(12rem, 1fr))` 解決的卡片牆，不必再為每個寬度各寫一條查詢。上一章的卡片牆就是這種。查詢是欄數算法不夠用、或導覽與主文的**位置關係**要改時才加。
+**觀念**
 
-字級繼續用 `rem`。`4vw` 會在窄視窗小到不能讀。內文不要改跟視窗寬度跑。標題若要略為伸縮，用 `clamp(最小, 偏好, 最大)`，斷點不要拿來只改 1px 的字級。文件的 `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 讓手機用裝置寬度當視窗。拿掉之後，手機常把整頁縮成一小條。
-
-{% note info %}
-**小技巧：斷點跟著內容**
-把視窗慢慢拉寬，在「導覽擠成兩行」或「一行只剩一個字」的地方設斷點。手機 390、平板 768、桌機 1200 只是常見寬度的參考。查詢看的是視窗寬度，把桌機視窗拉窄就該看到窄版。
-{% endnote %}
-
-### 斷點由窄到寬
-
-`@media (min-width: 32rem)` 的意思是：視窗寬度**大於等於** 32rem 時，括號裡的規則才加入層疊。查詢裡的 `rem` 相對瀏覽器預設字級（通常 16px），不受你寫在 `html` 上的 `font-size` 影響。32rem 大約是 512px，48rem 大約是 768px。
-
-| 視窗 | 頁首那句話 | 發生的事 |
-| --- | --- | --- |
-| 小於 32rem | 單欄，導覽橫排 | 只有預設樣式 |
-| 32rem 以上 | 卡片兩欄 | `--cols` 改成 `1fr 1fr` |
-| 48rem 以上 | 側欄版面 | 兩欄骨架，導覽改直向，行前區到右側 |
-
-兩段 `min-width` 在寬視窗會**同時成立**。選擇器權重一樣時，寫在後面的那段蓋過前面。所以 48rem 那段的 `.now::after` 會蓋過 32rem 那段。斷點由小到大往下寫，寬畫面的規則放後面。
-
-側欄用的是上一章的區域名字。窄畫面不要套這組名字，區塊就照原始碼堆疊。原始碼把 `<aside>` 放在主文後面，窄螢幕先讀行程、再讀行前。這個順序留給閱讀。不要為了讓側欄在手機上排到中間，就去改原始碼順序或使用 `order`。
-
-`max-width` 是「小於等於」。桌面樣式先寫、再用 `max-width` 往回改，中間的寬度容易漏。課堂以 `min-width` 為主。兩個條件都要成立時用 `and`：`@media (min-width: 48rem) and (orientation: landscape)`。只要其中一個成立，用逗號：`@media (max-width: 32rem), print`。`screen`、`print`、`all` 是媒體類型。特性條件前面省略類型時，等於 `all`。`max-device-width` 是舊特性，新頁面用 `width`。
-
-### 列印與偏好
-
-`@media print` 裡把導覽、斷點說明、行前欄設成 `display: none`，底色改白、字改黑。列印預覽按 <kbd>Ctrl</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>P</kbd>），看完關掉即可。依賴底色才能看懂的資訊，列印時要改成字或邊框。
-
-偏好類特性描述的是人，不是寬度。`prefers-color-scheme: dark` 在系統用深色外觀時成立，下一章只用它覆寫代幣。`prefers-reduced-motion: reduce` 在系統要求減少動態時成立，動畫那一章用它關掉循環。`hover: hover` 表示主要輸入可以懸停，`pointer: fine` 表示有滑鼠一類的細指標。這些查詢和寬度查詢一樣參加層疊。
-
-{% note warning %}
-**注意事項**
-查詢看視窗，不看裝置型號。不要用使用者代理字串去猜手機。示範頁若嵌在別的頁面裡，視窗就是那個框的寬，不是整台螢幕的解析度。
-{% endnote %}
+- 圖片設最大寬度 100%，並改成 block，才不會溢出，也不會留下行內圖片的底縫。
+- 版心用最大寬度加上左右 auto，寬螢幕時文字不會拉成一整行。
+- 卡片欄用上一節的 auto-fit。窄的時候自然是一欄。
 
 ```html 03-css/pages/22-rwd.html
 <!DOCTYPE html>
@@ -2660,215 +3074,350 @@ M --> W["min-width: 48rem<br/>導覽變側欄"]
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RWD</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
+    <title>流動版面</title>
+    <link rel="stylesheet" href="22-rwd.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>洛奇旅行</h1>
+      <img src="https://picsum.photos/id/1016/1200/500" alt="海岸" />
+      <div class="cards">
+        <article class="card">
+          <h2>台北城市漫遊</h2>
+          <p>窄的時候一欄，拉寬後自動變多欄。</p>
+        </article>
+        <article class="card">
+          <h2>花蓮山海</h2>
+          <p>這裡還沒有媒體查詢。</p>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>
+```
 
-      :root {
-        --cols: 1fr;
-      }
+```css 03-css/pages/22-rwd.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-      body {
-        margin: 0;
-        color: #134e4a;
-        background: #f8fffe;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-      .layout {
-        padding: 1rem;
-      }
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 
-      header h1 {
-        margin: 0;
-        font-size: clamp(1.4rem, 1rem + 2vw, 2rem);
-      }
+.wrap {
+  max-width: 60rem;
+  margin-right: auto;
+  margin-left: auto;
+}
 
-      .now {
-        margin: 0.25rem 0 0;
-        color: #0f766e;
-      }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
 
-      .now::after {
-        content: "單欄，導覽橫排";
-      }
+.card {
+  padding: 1rem;
+  background: #f0fdfa;
+}
+```
 
-      nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin: 1rem 0;
-      }
+**解析**
 
-      nav a {
-        padding: 0.35rem 0.7rem;
-        color: #f0fdfa;
-        background: #0f766e;
-        text-decoration: none;
-      }
+照片再寬也不會撐出版心，高度隨比例縮小。版心在寬螢幕停在 60rem，左右留白靠 auto。兩張卡片在窄視窗上下排，拉寬到放得下兩個 14rem 時並排，中間是 gap。這份樣式沒有 @media，拉視窗就會變，因為欄數是算出來的。
 
-      .cards {
-        display: grid;
-        grid-template-columns: var(--cols);
-        gap: 0.75rem;
-      }
+```css
+img {
+  max-width: 100%; /* 不比父層寬 */
+  height: auto; /* 高度跟比例走 */
+}
+.cards {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+```
 
-      .card,
-      aside {
-        padding: 0.75rem 1rem;
-        background: #f0fdfa;
-      }
 
-      .card img {
-        max-width: 100%;
-        height: auto;
-      }
+{% note success %}
+**換你試試：**
+把每欄最小寬度從 14rem 改成 18rem。拉窄視窗時，兩張卡片應更早改成上下排。照片與版心不要改。
+{% endnote %}
 
-      @media (min-width: 32rem) {
-        :root {
-          --cols: 1fr 1fr;
-        }
+<details>
+<summary>參考答案</summary>
 
-        .now::after {
-          content: "卡片兩欄";
-        }
-      }
+最小寬度變大之後，同一個視窗更早放不進兩欄，卡片改成上下排。照片仍不會比版心寬，版心仍停在 60rem。
 
-      @media (min-width: 48rem) {
-        .layout {
-          display: grid;
-          grid-template-columns: 11rem minmax(0, 1fr);
-          grid-template-areas:
-            "head head"
-            "nav main"
-            "nav side";
-          gap: 1rem;
-          align-items: start;
-        }
+```css 03-css/pages/22-rwd.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-        header {
-          grid-area: head;
-        }
+body {
+  margin: 1.5rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-        nav {
-          grid-area: nav;
-          flex-direction: column;
-          margin: 0;
-        }
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 
-        main {
-          grid-area: main;
-        }
+.wrap {
+  max-width: 60rem;
+  margin-right: auto;
+  margin-left: auto;
+}
 
-        aside {
-          grid-area: side;
-        }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1rem;
+}
 
-        .now::after {
-          content: "側欄版面";
-        }
-      }
+.card {
+  padding: 1rem;
+  background: #f0fdfa;
+}
+```
 
-      @media print {
-        nav,
-        aside,
-        .now {
-          display: none;
-        }
+</details>
 
-        body {
-          color: #000;
-          background: #fff;
-        }
+### 斷點由窄到寬
 
-        .card {
-          border: 1px solid #000;
-          background: #fff;
-        }
-      }
-    </style>
+流動版面解決「會縮」的部分。導覽要從直排改成橫排、側欄要在夠寬時才出現在旁邊，這種結構變化才寫媒體查詢。條件寫最小寬度，窄畫面的規則放在查詢外面。
+
+**觀念**
+
+- 先寫窄畫面看得懂的排法，再寫 `@media (min-width: …)` 覆蓋。
+- 由小到大加第二個斷點。較寬的查詢寫在後面，才蓋得過較窄的那條。
+- 斷點是布局要變的地方，不是先記一組手機、平板、桌機的數字。
+
+```html 03-css/pages/30-css-breakpoint.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>斷點</title>
+    <link rel="stylesheet" href="30-css-breakpoint.css" />
   </head>
   <body>
     <div class="layout">
       <header>
-        <h1>京都三日</h1>
-        <p class="now">現在的版面：</p>
+        <h1>洛奇旅行</h1>
+        <nav>
+          <a href="#tours">行程</a>
+          <a href="#tips">須知</a>
+        </nav>
       </header>
-      <nav>
-        <a href="#tours">行程</a>
-        <a href="#tips">行前</a>
-        <a href="#book">報名</a>
-      </nav>
       <main id="tours">
-        <div class="cards">
-          <article class="card">
-            <h2>清水寺</h2>
-            <p>清晨上山。窄畫面時這張卡獨佔一行。</p>
-          </article>
-          <article class="card">
-            <h2>嵐山</h2>
-            <p>渡月橋與竹林。32rem 以上與左卡並排。</p>
-          </article>
-        </div>
+        <h2>行程</h2>
+        <p>窄的時候導覽在標題下面，一項一行。</p>
       </main>
       <aside id="tips">
-        <h2>行前</h2>
-        <p>48rem 以上這欄貼在右側。列印時整欄拿掉。</p>
+        <h2>須知</h2>
+        <p>夠寬時這欄才排到旁邊。</p>
       </aside>
     </div>
   </body>
 </html>
 ```
 
+```css 03-css/pages/30-css-breakpoint.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+nav a {
+  display: block;
+}
+
+@media (min-width: 40rem) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 14rem;
+    gap: 1rem;
+  }
+
+  header {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  nav a {
+    display: inline-block;
+    margin-left: 0.75rem;
+  }
+}
+```
+
+**解析**
+
+視窗窄於 40rem 時，標題、連結、主文、側欄由上往下排，連結各佔一行。拉過 40rem 之後，標題與導覽變成兩端對齊的一列，主文與側欄並排，側欄固定約 14rem。header 跨滿兩欄，所以不會被擠進側欄那一格。
+
+```css
+@media (min-width: 40rem) {
+  .layout {
+    grid-template-columns: 1fr 14rem; /* 主文彈性，側欄約 14rem */
+  }
+  nav a {
+    display: inline-block; /* 蓋過外面的 block */
+  }
+}
+```
+
 {% note success %}
-**跟著做**
-慢慢拉寬視窗，或按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）打開裝置工具列，選一顆手機寬度。頁首那句話應從「側欄版面」變成「單欄，導覽橫排」。再拉寬，確認句子與欄數一起變。接著 <kbd>Ctrl</kbd>+<kbd>P</kbd> 看列印預覽：導覽與行前欄不在紙上。
+**換你試試：**
+再加一個 64rem 的斷點，讓側欄變成 18rem。40rem 那條留著，新的查詢寫在它下面。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+64rem 寫在後面，所以更寬的視窗會再用這條蓋過欄寬。介於 40rem 與 64rem 時，側欄仍是 14rem。窄於 40rem 時，兩條查詢都不成立，版面維持直排。
+
+```css 03-css/pages/30-css-breakpoint.css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1rem;
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+nav a {
+  display: block;
+}
+
+@media (min-width: 40rem) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 14rem;
+    gap: 1rem;
+  }
+
+  header {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  nav a {
+    display: inline-block;
+    margin-left: 0.75rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: 1fr 18rem;
+  }
+}
+```
+
+</details>
+
+### 選讀：列印與偏好
+
+同一份媒體查詢也可以服務列印，以及系統的深色偏好。畫面斷點仍是上一節的主線，這兩種可以之後再加。
+
+**觀念**
+
+- print 在列印或列印預覽時成立。導覽、純裝飾可以在這時候拿掉。
+- prefers-color-scheme 跟作業系統的深色或淺色設定。不要只靠它當唯一的對比方案，系統設成淺色的人仍要讀得清楚。
+
+```html 03-css/pages/31-css-print.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>列印與偏好</title>
+    <link rel="stylesheet" href="31-css-print.css" />
+  </head>
+  <body>
+    <nav class="noprint"><a href="#tours">行程</a></nav>
+    <h1>洛奇旅行</h1>
+    <p>列印預覽時，上面的導覽會消失。系統若是深色，這一頁會換成深底淺字。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/31-css-print.css
+body {
+  color: #134e4a;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #042f2e;
+    color: #f0fdfa;
+  }
+}
+
+@media print {
+  .noprint {
+    display: none;
+  }
+}
+```
+
+**解析**
+
+螢幕上仍看得到導覽。開啟列印預覽時，導覽不佔位置。系統是深色時，底變成深青、字變成淺色；系統是淺色時，這條查詢不成立，維持深字。
+
+```css
+@media print {
+  .noprint {
+    display: none; /* 只在列印時成立 */
+  }
+}
+```
 
 ## CSS 變數
 
-自訂屬性（custom properties）是你自己命名、可被繼承的 CSS 值，寫法是 `--名字: 值`，取用時寫 `var(--名字)`。前面選讀看過品牌色收成變數；這裡把色、間距、圓角收成一組代幣，改一處就整頁一起變。它們跟預處理器的變數不同：瀏覽器在套用樣式時才算出來，所以會參加繼承與覆寫。見 [MDN：使用 CSS 自訂屬性](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_cascading_variables/Using_CSS_custom_properties)。
-
-{% mermaid graph TD %}
-R[":root 的 --brand"] --> B["一般卡片繼承"]
-R --> N[".night 再宣告一次 --brand"]
-N --> C["這張卡與裡面的按鈕讀到新值"]
-{% endmermaid %}
+重複出現的顏色與間距可以收成自訂屬性。名字自己取，前面加兩條減號。用的時候寫 var。變數會繼承，子層可以覆寫同一個名字。
 
 ### 宣告、繼承與備援
 
-代幣放在 `:root`（HTML 文件裡就是 `html`）。`body` 的字色、底色、間距都寫 `var(--ink)` 這種名字。卡片底用 `--card`：系統改成深色時，這顆底與 `--ink` 一起換，淺色字才不會留在白卡片上。間距用 `--space-sm`、`--space-md`，圓角用 `--radius`。`calc(var(--space-md) * 1.5)` 可以拿代幣做算術。乘除時乘號兩側留空格。代幣裡若已經寫了單位（`1rem`），`calc()` 不要再加一次單位。
+變數多半寫在 `:root`，整頁都能讀到。某個元件要換色時，在那個元件上再宣告同名變數，子層會跟這層的新值。
 
-| 寫法 | 做什麼 |
-| --- | --- |
-| `--brand: #0f766e` | 宣告。名字區分大小寫，`--Brand` 是另一個 |
-| `var(--brand)` | 取用。可以放進任何屬性值，也能放進 `calc()` |
-| `var(--tag-bg, #ffedd5)` | 第二個引數是備援，只有變數**沒有定義**時才用 |
-| `:root { }` | 全站代幣放這裡，子層都能繼承 |
+**觀念**
 
-自訂屬性會繼承。子元素沒有自己的 `--ink` 時，用的是祖先那一個。`.night` 在卡片上重新宣告 `--ink`、`--paper`、`--brand`，這張卡和裡面的連結讀到新值，外面的頁面不受影響。要做「這一個區塊換膚」，覆寫代幣比把每條 `color` 重寫一遍短。
-
-`var(--tag-bg, #ffedd5)` 的備援只在「這個名字完全沒被宣告」時出現。變數有宣告、但值是空的或型別不合，備援**不會**上場。名字用用途，例如 `--ink`、`--space-md`。`--blue` 這種名字在換膚時會說謊：深色模式下那顆「藍」可能已經不是藍。
-
-自訂屬性存的是一串符號，瀏覽器先不檢查它是不是顏色或長度。等到放進某個屬性才檢查。下面 `.bad` 寫了兩次 `color`：先是玫瑰紅，再是 `var(--space-md)`。`--space-md` 有定義，所以備援用不上；它的值是 `1rem`，不能當顏色。層疊已經選了第二條，計算時這條作廢，字色改走繼承，也就是 `body` 的 `--ink`。同一條規則裡寫在前面的玫瑰紅不會回來。
-
-系統偏好深色時，`@media (prefers-color-scheme: dark)` 只覆寫 `:root` 的代幣，元件不用各寫一套深色規則。淺色系統的課堂電腦看不出這段，開發者工具那一章可以用面板模擬。
-
-{% note warning %}
-**注意事項**
-`var()` 只能當值，不能當屬性名稱。`var(--which): 1rem` 整條無效。也不要把整條規則放進變數裡。長度與顏色不要共用一個名字。
-{% endnote %}
-
-{% note info %}
-**小技巧：之後用腳本改同一顆名字**
-JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。今天先只在樣式表裡改。重新整理後，面板裡的實驗不會留在檔案裡。
-{% endnote %}
+- `var(--brand)` 讀這個名字。括號裡的第二個參數是找不到時的備援，有找到就不用。
+- 變數存的是你寫的那串文字，繼承的是這串文字，不是每個屬性自己的繼承規則。
+- 名稱要看得出用途。不要用 `--a` 這種看不出是顏色還是間距的名字。
 
 ```html 03-css/pages/23-vars.html
 <!DOCTYPE html>
@@ -2876,214 +3425,123 @@ JavaScript 那天可以寫 `element.style.setProperty("--brand", "#9f1239")`。�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS 變數</title>
-    <style>
-      :root {
-        --ink: #134e4a;
-        --paper: #f8fffe;
-        --card: #f0fdfa;
-        --brand: #0f766e;
-        --brand-ink: #f0fdfa;
-        --space-sm: 0.5rem;
-        --space-md: 1rem;
-        --radius: 0.75rem;
-      }
-
-      body {
-        margin: var(--space-md);
-        color: var(--ink);
-        background: var(--paper);
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .swatches {
-        display: flex;
-        gap: var(--space-sm);
-      }
-
-      .swatches span {
-        width: 4rem;
-        height: 2.5rem;
-        border-radius: var(--radius);
-      }
-
-      .brand {
-        background: var(--brand);
-      }
-
-      .ink {
-        background: var(--ink);
-      }
-
-      .paper {
-        background: var(--card);
-        border: 1px solid var(--brand);
-      }
-
-      .card {
-        max-width: 24rem;
-        margin-top: var(--space-md);
-        padding: calc(var(--space-md) * 1.5);
-        color: var(--ink);
-        background: var(--card);
-        border-radius: var(--radius);
-      }
-
-      .card a {
-        display: inline-block;
-        margin-top: var(--space-sm);
-        padding: 0.35rem 0.8rem;
-        color: var(--brand-ink);
-        background: var(--brand);
-        border-radius: var(--radius);
-        text-decoration: none;
-      }
-
-      .tag {
-        display: inline-block;
-        padding: 0.1rem 0.45rem;
-        background: var(--tag-bg, #ffedd5);
-        border-radius: var(--radius);
-      }
-
-      .night {
-        --ink: #ffedd5;
-        --card: #431407;
-        --brand: #fdba74;
-        --brand-ink: #431407;
-      }
-
-      .bad {
-        color: #9f1239;
-        color: var(--space-md);
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --ink: #f0fdfa;
-          --paper: #042f2e;
-          --card: #134e4a;
-          --brand: #5eead4;
-          --brand-ink: #042f2e;
-        }
-      }
-    </style>
+    <title>變數</title>
+    <link rel="stylesheet" href="23-vars.css" />
   </head>
   <body>
-    <h1>代幣改一處，整頁跟著換</h1>
-    <div class="swatches">
-      <span class="brand"></span>
-      <span class="ink"></span>
-      <span class="paper"></span>
-    </div>
     <article class="card">
-      <h2>清水寺 <span class="tag">清晨</span></h2>
-      <p>按鈕與字色都讀 :root。杏色標籤用的是備援，因為 --tag-bg 沒有宣告。</p>
-      <a href="#book">報名</a>
+      <h1>京都三日</h1>
+      <p class="price">NT$12,800</p>
     </article>
-    <article class="card night">
-      <h2>夜訪</h2>
-      <p>這張覆寫了 --ink 與 --brand，外面的色塊不受影響。</p>
-      <a href="#book">夜場</a>
+    <article class="card sale">
+      <h2>大阪美食</h2>
+      <p class="price">NT$9,600</p>
     </article>
-    <p class="bad">這段後一次 color 是長度，不能當顏色，所以回到繼承的字色。</p>
+    <p class="missing">這段的顏色名稱不存在，所以用備援。</p>
   </body>
 </html>
 ```
 
+```css 03-css/pages/23-vars.css
+:root {
+  --brand: #0f766e;
+  --gap: 1rem;
+}
+
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  margin-bottom: var(--gap);
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.price {
+  color: var(--brand);
+}
+
+.sale {
+  --brand: #9f1239;
+}
+
+.missing {
+  color: var(--missing, #475569);
+}
+```
+
+**解析**
+
+兩張卡片的價格都用同一個變數。第一張是深青綠，因為讀到根上的值。第二張包在 sale 裡，這層把同一個名字改成玫瑰紅，所以只有這張的價格變色，第一張不受影響。
+
+最後一段點了一個沒宣告的名字，第二個參數生效，字是石板色。若拿掉備援，這行顏色會被當成無效。
+
+```css
+.sale {
+  --brand: #9f1239; /* 子層覆寫，只影響這張卡片裡面 */
+}
+.missing {
+  color: var(--missing, #475569); /* 逗號後面是找不到時才用 */
+}
+```
+
 {% note success %}
-**跟著做**
-按 <kbd>F12</kbd> 選中 `<html>`，在 **Styles** 把 `--brand` 改成 `#9f1239`。色塊與第一張卡的按鈕應一起變，夜卡的按鈕仍是杏色，因為它自己又宣告了 `--brand`。點 `.bad`，**Computed** 的 `color` 應是繼承來的深青綠，不是玫瑰紅。
+**換你試試：**
+在根上把品牌色改成 `#115e59`。sale 那張仍要維持玫瑰紅，不要改它的覆寫。
 {% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+根上的值一改，第一張價格跟著變。sale 自己有同名變數，不跟根上的新值，所以仍是玫瑰紅。備援那段沒有這個名字，不受影響。
+
+```css 03-css/pages/23-vars.css
+:root {
+  --brand: #115e59;
+  --gap: 1rem;
+}
+
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  margin-bottom: var(--gap);
+  padding: 1rem;
+  background: #f0fdfa;
+}
+
+.price {
+  color: var(--brand);
+}
+
+.sale {
+  --brand: #9f1239;
+}
+
+.missing {
+  color: var(--missing, #475569);
+}
+```
+
+</details>
 
 ## 轉場與動畫
 
-變形（transform）改的是元素畫出來的位置、大小、角度，排版位子不動。轉場（transition）在兩個狀態之間補間，例如移入與移出。動畫（animation）用關鍵影格自己播，可以循環。要動的優先是 `transform` 與 `opacity`。用 `top`、`left`、`width` 做每幀位移，容易拖慢版面計算。下面這份把三件事放在同一頁。見 [MDN：使用 CSS 轉場](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_transitions/Using_CSS_transitions)。
-
-{% mermaid graph LR %}
-T["transform<br/>改畫面，不改佔位"] --> Tr["transition<br/>有人觸發才從 A 到 B"]
-T --> A["animation<br/>依 keyframes 自己播"]
-{% endmermaid %}
-
-| | 轉場 | 動畫 |
-| --- | --- | --- |
-| 何時動 | 屬性值變了才動，例如 `:hover`、`:focus-visible` | 套上就播，不必等指標 |
-| 狀態 | 起點與終點兩個 | `@keyframes` 可多段 |
-| 循環 | 不會自己循環 | `infinite` 或指定次數 |
-| 這一頁 | 按鈕變色、卡片抬起、四條曲線 | 熱賣縮放、載入圓環、進場一次 |
+變形改變的是畫出來的樣子，盒子原來佔的位子還在。轉場負責兩個狀態之間怎麼過渡。動畫則用關鍵影格自己播，不必等人去點或移上去。
 
 ### 變形不推動鄰居
 
-`transform` 接受一串函式，函式之間用空格分開。每一格的虛線框是排版位子：方塊 `translate` 出去、`scale` 變大、`rotate` 轉開，虛線框的寬高與格子之間的 `gap` 都不變。旁邊的文字不會被推開。真的要佔更大的位子，改寬高或 `margin`。
+transform 可以平移、縮放、旋轉。它不重新計算左右鄰居的位置，所以適合做成滑過時的抬起，而不會把整列擠歪。
 
-| 函式 | 效果 | 這一頁的值 |
-| --- | --- | --- |
-| `translate(x, y)` | 平移。百分比相對**自己**的寬高 | `translate(1rem, 0.4rem)` |
-| `scale(n)` | 縮放。`1` 是原寸 | `scale(1.15)` |
-| `rotate(角度)` | 旋轉。單位用 `deg` | `rotate(18deg)` |
-| `skewX`／`skewY` | 傾斜。按鈕與卡片很少需要 | 這頁沒有用 |
+**觀念**
 
-`transform-origin` 是旋轉與縮放的基準點，預設是中心。`.hinge` 把原點放在 `left bottom`，方塊像以左下角為軸轉開。同一條 `transform` 裡，**右邊的函式先套用**。`.combo` 寫的是 `translateX(0.4rem) rotate(12deg)`，所以先轉 12 度，再沿水平方向平移。把兩個函式對調，平移的方向會跟著已旋轉的軸走。`matrix()` 是把平移、縮放、旋轉壓成六個數字，給工具產生即可。立體翻面放在選讀。廠商前綴不用加。
-
-抬起的卡片另外用了獨立屬性 `rotate` 與 `translate`，沒有寫進 `transform` 那一條。獨立屬性互不覆蓋：移入只改 `translate`，原本的 `rotate: -1deg` 還在。若把角度與位移都塞進同一個 `transform`，移入那一條必須把 `rotate` 再寫一次，否則角度會被清掉。`translate`、`rotate`、`scale` 的套用順序固定，與你在規則裡書寫的先後無關。
-
-{% note warning %}
-**注意事項**
-變形後的元素仍佔原來的位子，點擊範圍以變形後的畫面為準。祖先若有 `transform`，子孫的 `position: fixed` 會改以那個祖先為視窗。卡片要加 `transform` 時，不要把全站的固定頁首包在同一層裡面。
-{% endnote %}
-
-### 轉場連接兩個狀態
-
-有人讓某個屬性從舊值變成新值時，`transition` 把中間的畫面補上。沒有寫進 `transition` 的屬性會瞬間切換。簡寫的順序是：屬性、持續時間、速度曲線、延遲。前兩個最常寫。
-
-```css
-transition: background-color 200ms ease, translate 200ms ease;
-```
-
-逗號分隔多個屬性。時間寫兩個時，第一個是持續時間，第二個是延遲：`200ms ease 80ms` 表示等 80 毫秒再花 200 毫秒走完。只寫一個時間，那個就是持續時間，延遲是 0。
-
-| 曲線 | 走路的方式 |
-| --- | --- |
-| `ease` | 慢、快、再慢。預設，多數介面夠用 |
-| `linear` | 等速 |
-| `ease-in` | 先慢後快 |
-| `ease-out` | 先快後慢，東西停下來時比較順 |
-| `cubic-bezier()` | 用四個數字自訂曲線 |
-
-四條軌道的位移距離與 800ms 相同，只有曲線不同。指標移入軌道，圓點一起出發。介面回饋用 150～300ms 就夠；長過半秒會像在等它。
-
-`:hover` 只描述指標移入。觸控螢幕常常沒有「移出」，效果會卡住。這頁把移入規則包在 `@media (hover: hover) and (pointer: fine)` 裡：有滑鼠一類的細指標時才抬起。鍵盤改看 `:focus-visible`，按鈕用 `outline`。
-
-{% note info %}
-**小技巧：不要寫 all**
-`transition: all 300ms` 會把之後加上的任何屬性都補間，包含你沒打算動的顏色或尺寸。逐條寫出 `background-color`、`translate`、`opacity`、`box-shadow`。
-{% endnote %}
-
-### 動畫自己播放
-
-轉場需要一個新值才會動。動畫用 `@keyframes` 寫腳本，元素一套上 `animation` 就播。這一頁有三個：熱賣標籤循環縮放、載入圓環一直轉、行程卡進場一次。關鍵影格的名字自己取，跟 class 無關。`from` 等於 `0%`，`to` 等於 `100%`。
-
-套到元素上時，持續時間必須寫，否則預設是 `0s`，你看不見過程。簡寫裡第一個時間仍是持續時間，第二個時間才是延遲。
-
-| 屬性 | 這一頁怎麼用 |
-| --- | --- |
-| `animation-name` | `pulse`、`spin`、`enter`，要和 `@keyframes` 同名 |
-| `animation-duration` | 圓環 `0.7s`，進場 `0.7s`，標籤 `1.6s` |
-| `animation-timing-function` | 標籤 `ease-in-out`，圓環 `linear` |
-| `animation-iteration-count` | 標籤與圓環是 `infinite`，進場省略就是 `1` 次 |
-| `animation-fill-mode` | 進場用 `both`：延遲期間先套第一格，結束停在最後一格 |
-| `animation-play-state` | 指標停在圓環上時設 `paused` |
-
-熱賣那條的簡寫是 `animation: pulse 1.6s ease-in-out infinite`。`fill-mode: both` 讓卡片在動畫開始前就是透明並稍微下移，結束後留在不透明的位置。預設 `none` 會在播完的瞬間跳回元素自己的樣式。`@keyframes spin` 只寫了終點的 `rotate(360deg)`，起點用元素當下的角度。圓環用邊框顏色做出缺口；`role="img"` 與 `aria-label` 讓它有名字。純裝飾的動畫不要拿去傳達「必讀」的訊息。
-
-系統開啟「減少動態」時，`@media (prefers-reduced-motion: reduce)` 把這三個 `animation` 設成 `none`。循環的縮放與旋轉最應該讓步。開發者工具可以模擬這個偏好，不用改作業系統。
-
-{% note warning %}
-**注意事項**
-無限循環的大面積動畫很耗電，也會讓人忽略真正要點的按鈕。一個狀態用一兩個小元素即可。不要為了據說能加速繪製，就加上廠商前綴。
-{% endnote %}
+- translate 是平移，scale 是縮放，rotate 是旋轉。寫在同一個 transform 裡時，由右往左套。
+- 變形的原點預設是盒子中心。transform-origin 可以改到某一角。
+- 位子仍留給原來的矩形。旁邊的元素不會因為你把它畫到別處就補上來。
 
 ```html 03-css/pages/24-motion.html
 <!DOCTYPE html>
@@ -3091,283 +3549,308 @@ transition: background-color 200ms ease, translate 200ms ease;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>轉場與動畫</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      h2 {
-        margin: 1.75rem 0 0.4rem;
-        font-size: 1.1rem;
-      }
-
-      .slots,
-      .tracks {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-      }
-
-      .slot {
-        width: 6.5rem;
-        height: 5rem;
-        border: 1px dashed #0f766e;
-      }
-
-      .box {
-        width: 4rem;
-        height: 3rem;
-        background: #0f766e;
-        color: #f0fdfa;
-        font-size: 0.85rem;
-      }
-
-      .move {
-        transform: translate(1rem, 0.4rem);
-      }
-
-      .big {
-        transform: scale(1.15);
-      }
-
-      .turn {
-        transform: rotate(18deg);
-      }
-
-      .hinge {
-        transform: rotate(18deg);
-        transform-origin: left bottom;
-      }
-
-      .combo {
-        transform: translateX(0.4rem) rotate(12deg);
-      }
-
-      .go {
-        padding: 0.5rem 1rem;
-        color: #f0fdfa;
-        background: #0f766e;
-        border: 0;
-        border-radius: 0.4rem;
-        transition: background-color 200ms ease, translate 200ms ease;
-      }
-
-      .go:focus-visible {
-        outline: 2px solid #0f766e;
-        outline-offset: 3px;
-      }
-
-      .lift {
-        max-width: 18rem;
-        margin-top: 0.75rem;
-        padding: 0.75rem 1rem;
-        background: #f0fdfa;
-        border-radius: 0.75rem;
-        rotate: -1deg;
-        transition: translate 200ms ease, box-shadow 200ms ease;
-      }
-
-      .track {
-        width: 16rem;
-        padding: 0.35rem 0;
-      }
-
-      .dot {
-        width: 0.9rem;
-        height: 0.9rem;
-        background: #0f766e;
-        border-radius: 50%;
-        transition: translate 800ms ease;
-      }
-
-      .linear {
-        transition-timing-function: linear;
-      }
-
-      .ease-in {
-        transition-timing-function: ease-in;
-      }
-
-      .ease-out {
-        transition-timing-function: ease-out;
-      }
-
-      @media (hover: hover) and (pointer: fine) {
-        .go:hover {
-          background: #115e59;
-          translate: 0 -2px;
-        }
-
-        .lift:hover {
-          translate: 0 -0.35rem;
-          box-shadow: 0 0.6rem 1rem rgb(15 118 110 / 0.2);
-        }
-
-        .track:hover .dot {
-          translate: 12rem 0;
-        }
-
-        .spin:hover {
-          animation-play-state: paused;
-        }
-      }
-
-      .hot {
-        display: inline-block;
-        margin-right: 0.5rem;
-        padding: 0.15rem 0.5rem;
-        color: #fff7ed;
-        background: #c2410c;
-        border-radius: 999px;
-        animation: pulse 1.6s ease-in-out infinite;
-      }
-
-      .spin {
-        display: inline-block;
-        width: 1.6rem;
-        height: 1.6rem;
-        vertical-align: middle;
-        border: 3px solid #99f6e4;
-        border-top-color: #0f766e;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-      }
-
-      .enter {
-        max-width: 18rem;
-        margin-top: 0.75rem;
-        padding: 0.75rem 1rem;
-        background: #f0fdfa;
-        animation: enter 0.7s ease both;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-
-        50% {
-          transform: scale(1.08);
-        }
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      @keyframes enter {
-        from {
-          opacity: 0;
-          translate: 0 0.75rem;
-        }
-
-        to {
-          opacity: 1;
-          translate: 0 0;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .hot,
-        .spin,
-        .enter {
-          animation: none;
-        }
-      }
-    </style>
+    <title>變形</title>
+    <link rel="stylesheet" href="24-motion.css" />
   </head>
   <body>
-    <h1>變形、轉場、動畫</h1>
-    <h2>變形：虛線是佔位</h2>
-    <div class="slots">
-      <div class="slot"><div class="box move">平移</div></div>
-      <div class="slot"><div class="box big">放大</div></div>
-      <div class="slot"><div class="box turn">旋轉</div></div>
-      <div class="slot"><div class="box hinge">左下</div></div>
-      <div class="slot"><div class="box combo">先轉再移</div></div>
+    <h1>變形不推動鄰居</h1>
+    <div class="row">
+      <span class="box">原位</span>
+      <span class="box move">往右</span>
+      <span class="box big">放大</span>
+      <span class="box turn">旋轉</span>
     </div>
-    <h2>轉場：移入才走</h2>
-    <button class="go" type="button">報名</button>
-    <article class="lift">
-      <h3>嵐山午後</h3>
-      <p>這張卡一直斜 1 度。移入只改 translate，角度還在。</p>
-    </article>
-    <div class="tracks">
-      <div class="track">ease<div class="dot"></div></div>
-      <div class="track">linear<div class="dot linear"></div></div>
-      <div class="track">ease-in<div class="dot ease-in"></div></div>
-      <div class="track">ease-out<div class="dot ease-out"></div></div>
-    </div>
-    <h2>動畫：自己播</h2>
-    <p><span class="hot">熱賣</span><span class="spin" role="img" aria-label="載入中"></span></p>
-    <article class="enter">
-      <h3>伏見稻荷</h3>
-      <p>進場一次。重新整理再看。系統若要求減少動態，這三個都會停住。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/24-motion.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.box {
+  width: 4rem;
+  padding: 0.75rem 0;
+  background: #f0fdfa;
+  text-align: center;
+}
+
+.move {
+  transform: translateX(1rem);
+}
+
+.big {
+  transform: scale(1.25);
+}
+
+.turn {
+  transform: rotate(8deg);
+}
+```
+
+**解析**
+
+四格仍排在原來的 Flex 位子上，縫沒有因為變形被撐開。往右那格畫到自己位子的右邊，可能蓋住下一格，但下一格的盒子沒有被推走。放大那格從中心變大，旋轉那格也繞著中心轉。若改用 margin 去推，後面的格子會真的移位。
+
+```css
+.move {
+  transform: translateX(1rem); /* 只改畫出來的位置 */
+}
+```
+
+{% note success %}
+**換你試試：**
+往右那格改成往上 0.75rem。用 translateY，負值才是往上。其他兩格不要改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+translateY 的負值往上畫，格子佔的位子仍在原列，左右鄰居不會補進它空出來的視覺位置。放大與旋轉維持原樣。
+
+```css 03-css/pages/24-motion.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.box {
+  width: 4rem;
+  padding: 0.75rem 0;
+  background: #f0fdfa;
+  text-align: center;
+}
+
+.move {
+  transform: translateY(-0.75rem);
+}
+
+.big {
+  transform: scale(1.25);
+}
+
+.turn {
+  transform: rotate(8deg);
+}
+```
+
+</details>
+
+### 轉場連接兩個狀態
+
+transition 寫在元素平常的狀態上，告訴瀏覽器：這個屬性從舊值走到新值時，用多久、用哪一種速度。滑鼠移開時，它會走回原來的值。
+
+**觀念**
+
+- 至少寫要過渡的屬性與時間。時間用秒或毫秒。
+- ease 兩頭較慢，linear 等速。只寫時間時，速度用預設的 ease。
+- 適合過渡的是顏色、透明度、變形。不要拿版面的寬高去做大段動畫，容易讓周圍重新排。
+- 想讓人看得完，時間多半落在 0.2 到 0.4 秒。
+
+```html 03-css/pages/32-css-transition.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>轉場</title>
+    <link rel="stylesheet" href="32-css-transition.css" />
+  </head>
+  <body>
+    <h1>兩個狀態之間</h1>
+    <article class="card">
+      <h2>抬起的卡片</h2>
+      <p>滑鼠放上來時往上移，移開時回到原位。</p>
     </article>
   </body>
 </html>
 ```
 
+```css 03-css/pages/32-css-transition.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  width: min(100%, 20rem);
+  padding: 1rem;
+  background: #f0fdfa;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-0.35rem);
+}
+```
+
+**解析**
+
+卡片平常在原位。滑鼠放上去時，它在 0.3 秒內移到上面一點，而不是瞬間跳過去。移開後，同一條 transition 把變形走回沒有位移的狀態。transition 要寫在會一直在的那條規則上；只寫在 hover 裡時，移開的那一段常常沒有過渡。
+
+```css
+.card {
+  transition: transform 0.3s ease; /* 屬性、時間、速度 */
+}
+.card:hover {
+  transform: translateY(-0.35rem); /* 終點 */
+}
+```
+
+{% note success %}
+**換你試試：**
+時間改成 1s，速度改成 linear。滑鼠放上去時應等速、而且明顯比較慢。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+終點仍是往上 0.35rem。改變的是過程：整整一秒、沒有兩頭的加減速。移開時也用同一秒走回來。
+
+```css 03-css/pages/32-css-transition.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.card {
+  width: min(100%, 20rem);
+  padding: 1rem;
+  background: #f0fdfa;
+  transition: transform 1s linear;
+}
+
+.card:hover {
+  transform: translateY(-0.35rem);
+}
+```
+
+</details>
+
+### 動畫自己播放
+
+@keyframes 列出幾個時間點的樣子。animation 再把這段影格接到元素上，並決定播一次還是重複、播多久。它不需要 hover 才開始。
+
+**觀念**
+
+- from 與 to 是起點和終點。也可以寫百分比。
+- animation 依序常寫：影格名稱、一次多久、速度、延遲、次數、方向。
+- infinite 會一直播。alternate 會正向播完再反向播回來。
+- 只想播一次時，不要寫 infinite。播完會停在最後一個影格，除非你另外寫 animation-fill-mode。
+
+```html 03-css/pages/33-css-keyframes.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>動畫</title>
+    <link rel="stylesheet" href="33-css-keyframes.css" />
+  </head>
+  <body>
+    <h1>自己播放</h1>
+    <p class="badge">報名中</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/33-css-keyframes.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #115e59;
+  color: #f0fdfa;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+```
+
+**解析**
+
+徽章載入後就開始在 1 倍與 1.08 倍之間放大縮小，不用把滑鼠放上去。alternate 讓它放大後縮回來，不會在終點突然跳回起點。infinite 表示不會停。旁邊沒有別的元素被這個縮放推開。
+
+```css
+.badge {
+  /* 名稱、時間、速度、次數、正反方向 */
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+```
+
+{% note success %}
+**換你試試：**
+拿掉 infinite，讓徽章只走一個來回就停。alternate 留著，時間不要改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+次數改成 1 之後，徽章放大再縮回一次就停在起點。alternate 仍負責這一回是正向再反向。頁面重新整理才會再播。
+
+```css 03-css/pages/33-css-keyframes.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #115e59;
+  color: #f0fdfa;
+  animation: pulse 1s ease-in-out 1 alternate;
+}
+```
+
+</details>
+
 ## 用開發者工具除錯
 
-樣式沒有出現時，先分清楚是選錯節點、規則沒打中、被另一條蓋過，還是值本身無效。Chrome 按 <kbd>F12</kbd>，主畫面用 **Elements**。下面這份故意留了劃掉的宣告、拼錯的屬性，以及贏過 class 的 id。三節都對這一張票，也可以回頭看變數、動畫與斷點那幾頁。
-
-{% note primary %}
-**素材準備**
-面板名稱以 Chrome 英文介面為準：**Elements**、**Styles**、**Computed**、**Layout**。改動只活在這一次重新整理之前。確定之後再寫回檔案。
-{% endnote %}
+規則沒有出現在畫面上時，先看有沒有打中，再看誰把它劃掉，最後看 Computed 的結果。面板裡直接改的值只活到重新整理之前。
 
 ### Styles 與 Computed
 
-選中 `<article id="featured" class="ticket">`。**Styles** 列出打到它的規則，上面的蓋過下面的。
+Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。Computed 是層疊與繼承都算完之後的值，包含你沒寫、但瀏覽器補上的項目。
 
-| 你看到的 | 原因 |
-| --- | --- |
-| `.ticket` 裡第一個 `color: #94a3b8` 有刪除線 | 同規則後面又寫了 `color` |
-| `colour: red` 旁邊有警告、被劃掉 | 屬性名稱拼錯，整條宣告丟掉 |
-| `#featured { color: #9f1239 }` 沒有刪除線 | id 欄比 class 欄重，字色是玫瑰紅 |
-| `background: var(--paper)` 可展開變數 | 代幣定義在 `:root` |
+**觀念**
 
-**Computed** 是算完層疊、繼承、變數之後的最終值。點 `color`，右側會寫這個值從哪一條規則來。變數那頁的 `.bad` 要在這裡看：最終字色是繼承來的，不是 `1rem`。
-
-使用者代理樣式（user agent stylesheet）是瀏覽器預設表。票卡上的標題若比內文粗，而你沒寫 `font-weight`，Computed 會指向這一層。它比你的作者樣式弱。
-
-{% note success %}
-**跟著做**
-在 **Styles** 取消勾選 `#featured` 的 `color`。票卡字色應落到 `var(--ink)` 的深青綠。勾回去，玫瑰紅回來。接著點 `var(--ink)`，確認它跳到 `:root`。
-{% endnote %}
-
-### 盒子、狀態與斷點
-
-選中 `.ticket` 時，**Styles** 下方（或 **Computed** 裡）有盒子圖：content、padding、border、margin。這頁是 `border-box`，圖上的寬度 18rem 已經含左右 padding 與左右邊框。margin 是圖最外圈，它在元素外面，不占那 18rem。
-
-**Styles** 面板的 **:hov** 可以強制狀態，不必真的把指標放上去。勾 `:hover` 看動畫那頁的按鈕，勾 `:focus-visible` 看外框。`:hover` 規則若寫在 `@media (hover: hover)` 裡面，而這台裝置的查詢不成立，光勾 :hov 也不會套用；桌機滑鼠通常成立。`:hov` 只影響你選的那個節點。
-
-要改整份文件的媒體特性，打開命令選單：<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>（macOS 為 <kbd>Command</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>），輸入 `Rendering`，選 **Show Rendering**。在裡面可以：
-
-- **Emulate CSS media feature prefers-color-scheme** 設成 `dark`，再看變數那頁的代幣
-- **Emulate CSS media feature prefers-reduced-motion** 設成 `reduce`，動畫那頁的縮放與圓環應停住
-
-測完改回 No emulation，避免下一頁被忘了的模擬騙過。裝置工具列（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>）改的是視窗寬高，用來走斷點那頁。不確定時看頁首那句話，它跟查詢是同一組條件。Flex 與 Grid 的徽章在上一章用過：節點旁的 **flex** 或 **grid** 會畫出主軸或格線。
-
-### 動畫面板
-
-命令選單輸入 `Animations`，選 **Show Animations**。打開之後再重新整理動畫那頁，進場與循環會出現在時間軸上。把時間軸上的圓點拖慢，可以看出 `pulse` 在 50% 放到最大。圓環是無限次，軸上會重複。
-
-這個面板用來確認「有沒有在播」。預覽完把模擬與慢動作清掉再重新整理。**Network** 負責檔案沒載入；**Console** 在純 CSS 這一天通常是安靜的，拼錯的屬性不會在那裡報錯，只會出現在 **Styles**。
-
-{% note warning %}
-**注意事項**
-在面板裡改規則不會寫回磁碟。重新整理後，實驗就沒了。要留的修改寫進 `<style>`。
-{% endnote %}
+- 完全找不到你的選擇器：名字、路徑或存檔有問題，還不是權重問題。
+- 找得到但被劃掉：有另一條更優先，或同一條裡較下面的宣告蓋過它。
+- Computed 裡可以反查這個值是哪一條規則來的。
+- 在面板打字只是暫時預覽。要留下，必須改檔案再重新整理。
 
 ```html 03-css/pages/25-inspect.html
 <!DOCTYPE html>
@@ -3375,98 +3858,459 @@ transition: background-color 200ms ease, translate 200ms ease;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>對樣式</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      :root {
-        --ink: #134e4a;
-        --paper: #f0fdfa;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: var(--ink);
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .ticket {
-        width: 18rem;
-        margin: 1.5rem 0;
-        padding: 1rem;
-        color: #94a3b8;
-        colour: red;
-        color: var(--ink);
-        background: var(--paper);
-        border: 2px solid #0f766e;
-      }
-
-      #featured {
-        color: #9f1239;
-      }
-
-      .price {
-        font-weight: 700;
-      }
-    </style>
+    <title>Styles</title>
+    <link rel="stylesheet" href="25-inspect.css" />
   </head>
   <body>
-    <h1>這一張票用來對面板</h1>
-    <p>
-      選中下面的 article。Styles 裡應看到被劃掉的灰色 color、無效的 colour，以及贏過 class 的 id 顏色。盒子圖的寬度含 padding 與邊框。
-    </p>
-    <article id="featured" class="ticket">
-      <h2>京都一日</h2>
-      <p>含清水寺與嵐山。id 的字色蓋過 class。</p>
-      <p class="price">NT$ 2,400</p>
+    <h1>誰留下</h1>
+    <p class="note">這段應是深青綠。較上面的琥珀色會被劃掉。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/25-inspect.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.note {
+  color: #b45309;
+}
+
+.note {
+  color: #0f766e;
+}
+```
+
+**解析**
+
+點這段文字。Styles 裡第一個顏色有刪除線，第二個深青綠沒有。Computed 的 color 是深青綠。在面板把深青綠改成別的顏色，畫面會立刻變，重新整理後又回到檔案裡的深青綠。
+
+```css
+.note {
+  color: #b45309; /* Styles 裡被劃掉 */
+}
+.note {
+  color: #0f766e; /* Computed 留下這個 */
+}
+```
+
+{% note success %}
+**換你試試：**
+在檔案裡把留下的顏色改成 `#9f1239`，存檔後重新整理。面板上若還有你手改的顏色，重新整理後不該留下。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+檔案較下面那條改成玫瑰紅之後，重新整理會留下玫瑰紅，琥珀色仍被劃掉。只在面板改、沒有寫進檔案的值，重新整理就消失。
+
+```css 03-css/pages/25-inspect.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.note {
+  color: #b45309;
+}
+
+.note {
+  color: #9f1239;
+}
+```
+
+</details>
+
+### 盒子、狀態與斷點
+
+Computed 的盒模型圖會標出內容、內距、邊框、外距。Styles 可以強迫打開某個狀態。裝置工具列可以改視窗寬度，看媒體查詢有沒有成立。
+
+**觀念**
+
+- 點盒模型圖的某一層，可以直接看出是哪一條規則寫的。
+- Styles 面板的 `:hov` 可以暫時打開 hover 或 focus，不必真的把滑鼠放上去。
+- 裝置工具列改變的是視窗寬度。查詢寫的是 min-width 時，拉過那個寬度，查詢裡的規則才出現在 Styles。
+
+```html 03-css/pages/34-css-devtools-box.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>盒子與斷點</title>
+    <link rel="stylesheet" href="34-css-devtools-box.css" />
+  </head>
+  <body>
+    <a class="go" href="#top">看行程</a>
+    <p class="wide">視窗寬於 40rem 時，這段才變成深青綠。</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/34-css-devtools-box.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.go {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.go:hover {
+  background: #0f766e;
+}
+
+@media (min-width: 40rem) {
+  .wide {
+    color: #0f766e;
+  }
+}
+```
+
+**解析**
+
+點「看行程」，盒模型圖會看到上下 0.5rem、左右 1rem 的內距。打開 `:hov` 的 hover，背景會換成另一階青綠，就算滑鼠沒有放在上面。
+
+把視窗拉到比 40rem 窄，那段說明不是深青綠，Styles 裡的媒體查詢會標成不成立。拉寬之後，顏色規則才生效。
+
+```css
+.go {
+  padding: 0.5rem 1rem; /* 盒模型圖的內距 */
+}
+@media (min-width: 40rem) {
+  .wide {
+    color: #0f766e; /* 視窗不夠寬時，這條不成立 */
+  }
+}
+```
+
+{% note success %}
+**換你試試：**
+把連結的左右內距從 1rem 改成 2rem，存檔重新整理。盒模型圖左右應變寬，hover 的顏色不要改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+左右內距變大之後，按鈕變寬，盒模型圖的左右數字跟著變。上下仍是 0.5rem。hover 仍是另一階青綠，斷點仍是 40rem。
+
+```css 03-css/pages/34-css-devtools-box.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.go {
+  display: inline-block;
+  padding: 0.5rem 2rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+
+.go:hover {
+  background: #0f766e;
+}
+
+@media (min-width: 40rem) {
+  .wide {
+    color: #0f766e;
+  }
+}
+```
+
+</details>
+
+### 動畫面板
+
+Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間。這是在看過程，不是在改檔案。
+
+**觀念**
+
+- 有 animation 或進行中的 transition 時，面板才有項目。
+- 暫停後拖曳時間軸，可以停在某一格看變形。
+- 面板把時間拉長只影響這一次預覽。重新整理後，仍是檔案裡寫的秒數。
+
+```html 03-css/pages/35-css-devtools-anim.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>動畫面板</title>
+    <link rel="stylesheet" href="35-css-devtools-anim.css" />
+  </head>
+  <body>
+    <h1>打開動畫面板</h1>
+    <p class="badge">報名中</p>
+  </body>
+</html>
+```
+
+```css 03-css/pages/35-css-devtools-anim.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #115e59;
+  color: #f0fdfa;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+```
+
+**解析**
+
+按 <kbd>F12</kbd>，打開 Animations。徽章的 pulse 會出現在清單裡。暫停後，徽章停在當下的大小；拖時間軸，可以看到它放大與縮回。重新整理後又從檔案的 1 秒循環開始。
+
+```css
+.badge {
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+```
+
+{% note success %}
+**換你試試：**
+把檔案裡的 1s 改成 3s，存檔重新整理。面板上這一條的長度應變成三秒，而不是你剛剛在面板拖出來的位置。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+時間改在檔案裡，重新整理後每一輪是三秒。alternate 與 infinite 沒有改，所以仍會來回、不會自己停。
+
+```css 03-css/pages/35-css-devtools-anim.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #115e59;
+  color: #f0fdfa;
+  animation: pulse 3s ease-in-out infinite alternate;
+}
+```
+
+</details>
+
+# 選讀：邊界與進階動效
+
+這一章可以整章跳過。外距穿出、邏輯方向、多行省略、繞排、立體翻面、容器查詢，以及可補間的變數，都是前面示範的延伸。
+
+## 選讀：外距穿出與邏輯方向
+
+垂直外距有時會跑出父層，書寫方向也有另一套屬性名稱。版面仍以盒子那一節的物理方向為主，這裡只認得發生了什麼。
+
+### 選讀：外距穿出
+
+父層若沒有上內距、上邊框，也沒有上緣內容，子層的上外距會和父層合併，背景像是包不住那段空隙。父層改成 flow-root 就會成為新的區塊格式化情境，外距不再穿出去。
+
+**觀念**
+
+- 穿出去時，空隙出現在父層外面，父層的背景從子層的內容才開始。
+- flow-root、一點上內距，或一條上邊框，都可以把外距擋在裡面。
+- 這是垂直外距合併的一種，左右外距不會這樣穿出。
+
+```html 03-css/pages/40-css-margin-out.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>外距穿出</title>
+    <link rel="stylesheet" href="40-css-margin-out.css" />
+  </head>
+  <body>
+    <div class="open">
+      <p>這段的上外距會穿出淺青底。</p>
+    </div>
+    <div class="held">
+      <p>這段的上外距留在淺青底裡面。</p>
+    </div>
+  </body>
+</html>
+```
+
+```css 03-css/pages/40-css-margin-out.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.open,
+.held {
+  background: #ccfbf1;
+  margin-bottom: 1.5rem;
+}
+
+.open p,
+.held p {
+  margin-top: 2rem;
+  background: #fff;
+}
+
+.held {
+  display: flow-root;
+}
+```
+
+**解析**
+
+第一塊的淺青底緊貼著白底段落，2rem 的空隙跑到淺青底的上面。第二塊加了 flow-root，同樣的 2rem 出現在淺青底內部，白底段落被往下推，父層背景包得住。
+
+```css
+.held {
+  display: flow-root; /* 子層的上外距不再和父層合併 */
+}
+```
+
+### 選讀：邏輯方向
+
+介面要同時應付由左至右與由右至左時，用邏輯方向：inline 是字前進的方向，block 是一段接著一段的方向。橫書時，inline 的起點在左，block 的起點在上。
+
+**觀念**
+
+- margin-inline 是字向的兩側。橫書時就是左右。
+- padding-inline-start 與 border-inline-start 跟「行首」那一側，由右至左時會換到另一邊。
+- 課堂範本仍寫上、右、下、左。讀得到邏輯屬性即可。
+
+```html 03-css/pages/41-css-logical.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>邏輯方向</title>
+    <link rel="stylesheet" href="41-css-logical.css" />
+  </head>
+  <body>
+    <article class="card">
+      <h1>行首有一條邊</h1>
+      <p>橫書時，這條邊在左邊。方向改成由右至左時，它會跟著行首走到右邊。</p>
     </article>
   </body>
 </html>
 ```
 
-# 選讀：邊界與進階動效
+```css 03-css/pages/41-css-logical.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-這一節可以整節跳過。外距穿出、邏輯方向、float 繞排、立體翻面、容器查詢，以及把顏色代幣註冊成可補間，都是前面示範的延伸。
+.card {
+  margin-inline: auto;
+  padding-inline-start: 1rem;
+  border-inline-start: 6px solid #0f766e;
+  max-width: 24rem;
+}
+```
 
-## 外距穿出與邏輯方向
+**解析**
 
-子層外距有時會穿出父層，書寫方向也有另一套屬性名稱。見 [MDN：邏輯屬性與邏輯值](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_logical_properties_and_values)。
+卡片比版面窄，字向兩側的外距是 auto，所以居中。行首內距與行首邊框在橫書時位於左邊。把 html 的 dir 設成 rtl 之後，同一條邊會出現在右邊，不必改樣式。
 
-### 外距穿出
+```css
+.card {
+  border-inline-start: 6px solid #0f766e; /* 跟著行首，不寫死左邊 */
+}
+```
 
-子層的 `margin-top` 穿出父層時，父層設 `display: flow-root`，它會成為新的區塊格式化情境，垂直 margin 不再合併，背景包得住。加一點 `padding-top` 或一條透明 `border-top` 也能擋。
+### 選讀：層疊情境與多行省略
 
-### 邏輯方向
+opacity 小於 1、transform 不是 none，也會讓該元素變成新的層疊情境。子孫的 z-index 出不去，比的是這層父親。多行省略仍常見一組帶前綴的寫法，只用在「兩行以後省略」。
 
-介面要同時應付由左至右與由右至左時，改寫邏輯屬性：`margin-inline` 是行內方向的兩側，`margin-block` 是區塊方向。`padding`、`border`、`inset` 也有同一套。`inset: 0.6rem 0.6rem auto auto` 等於 `top` 與 `right` 是 `0.6rem`。課堂範本仍寫四個物理方向，讀得到邏輯屬性即可。
+**觀念**
 
-### 層疊情境與多行省略
+- 父層只要有變形，裡面再大的 z-index 也壓不過父層外面的兄弟。
+- 祖先有 transform 時，子孫的 fixed 可能改成相對那個祖先，而不再是視窗。
+- 多行省略同時要有行數限制與 overflow: hidden。標準的 line-clamp 正在普及，課堂認得這組即可。
 
-`opacity` 小於 1、`transform`／`filter`／`perspective` 不是 `none`、`isolation: isolate`，也會讓該元素成為新的層疊情境，子孫的 `z-index` 出不去。祖先有 `transform` 時，子孫的 `fixed` 不再相對視窗，而相對那個祖先。對話框若一定要跟著視窗，不要放進留著 `transform` 的卡片裡。
+```html 03-css/pages/42-css-clamp.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>省略</title>
+    <link rel="stylesheet" href="42-css-clamp.css" />
+  </head>
+  <body>
+    <p class="clip">
+      洛奇旅行的行程說明若超過兩行，多出來的句子會被省略。京都、大阪、濟州與花蓮都寫在同一段裡，第三行不該再出現。
+    </p>
+  </body>
+</html>
+```
 
-`overflow: clip` 一樣裁切，但這一層不變成滾動盒，子孫的 `sticky` 比較不容易被打斷。多行省略仍常見這組寫法：`display: -webkit-box`、`-webkit-box-orient: vertical`、`-webkit-line-clamp: 2`、`overflow: hidden`。標準的 `line-clamp` 正在普及。這組前綴只用於「兩行以後省略」，其他屬性不要再加廠商前綴。
+```css 03-css/pages/42-css-clamp.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-## float 只留繞排
+.clip {
+  width: min(100%, 16rem);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+```
 
-`float` 讓後面的文字沿著圖走，不是拿來切多欄的。見 [MDN：float](https://developer.mozilla.org/zh-TW/docs/Web/CSS/float)。
+**解析**
 
-### 繞排與父層高度
+段落寬度被收住之後，第三行不再畫出來，尾端是省略號。拿掉 overflow 或行數限制，省略就不會成立。這組前綴不要抄到其他屬性上。
 
-`float: left` 把元素撥到這一行的左側，後面的文字沿著它的右邊走。這仍是圖旁配一段說明的寫法。它會讓元素脫離一般區塊的高度計算，短文時父層背景可能包不住圖。父層加上 `display: flow-root` 即可。舊碼常見 `::after { content: ""; display: block; clear: both; }`，作用同樣是把父層撐開，讀到時改成 `flow-root`。
+```css
+.clip {
+  -webkit-line-clamp: 2; /* 只留兩行 */
+  overflow: hidden;
+}
+```
 
-### 不要拿來做多欄
+## 選讀：float 只留繞排
 
-多欄不要再用 `float: left` 配百分比寬度。同一件事是 Grid 的 `repeat(3, minmax(0, 1fr))` 加 `gap`。Flex 與 Grid 也不必再寫 `-webkit-` 前綴。
+float 讓後面的文字沿著圖走。多欄用 Grid。舊頁面若還用浮動切欄，讀得到原因即可，新的版面不要再這樣排。
 
-`inline-flex` 與 `inline-grid` 讓容器坐在文字行裡，裡面仍是 Flex 或 Grid。`grid-auto-flow: dense` 會回填跨格留下的洞，視覺順序會和原始碼不同。`subgrid` 讓子層沿用父層的欄線，卡片標題要跨卡對齊時再查。`display: contents` 會讓元素自己的盒子消失，也影響無障礙樹，課堂不要用來少包一層。
+### 選讀：繞排與父層高度
 
-下面這份同時看圖旁繞排，以及兩行以後省略。
+float: left 把元素撥到這一行的左側，後面的文字沿著它的右邊走。它不计入父層的一般高度，短文時父層背景可能包不住圖。父層加上 flow-root 即可。
+
+**觀念**
+
+- 繞排適合圖旁配一段說明。
+- 父層要包住浮動的圖，用 flow-root，不必再為了撐高去加一個空的清除元素。
+- 下一段若要接在整則故事後面，不要讓它勾進浮動的旁邊。flow-root 會一併處理這件事。
 
 ```html 03-css/pages/26-float.html
 <!DOCTYPE html>
@@ -3474,60 +4318,120 @@ transition: background-color 200ms ease, translate 200ms ease;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：繞排與裁切</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .story {
-        display: flow-root;
-        max-width: 28rem;
-        margin-bottom: 1rem;
-        background: #f0fdfa;
-      }
-
-      .shot {
-        float: left;
-        width: 7rem;
-        height: 5rem;
-        margin: 0 1rem 0.5rem 0;
-        background: #0f766e;
-        color: #f0fdfa;
-      }
-
-      .blurb {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
-        max-width: 28rem;
-      }
-    </style>
+    <title>繞排</title>
+    <link rel="stylesheet" href="26-float.css" />
   </head>
   <body>
     <div class="story">
-      <div class="shot">清水寺</div>
-      <p>圖在左側，說明沿著右邊往下排。父層的 flow-root 讓淺青底包得住這張圖。拿掉 flow-root，短文時底色會變矮。</p>
+      <img src="https://picsum.photos/id/1018/160/120" alt="海岸" width="160" height="120" />
+      <p>這段文字沿著照片的右邊走。父層的淺青底要包住照片，不能只剩文字那麼高。</p>
     </div>
-    <p class="blurb">
-      這段超過兩行就省略。第一行介紹二年坂，第二行接到三年坂與八坂之塔，後面的行程明細不會再露出來。
-    </p>
+    <p>下一段接在整則故事的下面。</p>
   </body>
 </html>
 ```
 
-## 立體翻面
+```css 03-css/pages/26-float.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-平面旋轉看不出厚度。翻面要視距、Y 軸，以及把背面藏起來。見 [MDN：perspective](https://developer.mozilla.org/zh-TW/docs/Web/CSS/perspective)。
+.story {
+  display: flow-root;
+  background: #f0fdfa;
+}
 
-### 視距與背面
+.story img {
+  float: left;
+  margin: 0 0.75rem 0.5rem 0;
+}
+```
 
-平面的 `rotate` 看不出厚度。要翻面，父層給一個視距 `perspective`，卡片轉 Y 軸，背面用 `backface-visibility: hidden` 藏起來。正面與背面疊在同一個格子。`transform-style: preserve-3d` 讓子元素留在同一個 3D 空間，翻過去才看得到背面。背面先轉 180 度，父層再轉 180 度時它才正對你。`tabindex="0"` 讓鍵盤也能聚焦，`:focus-within` 跟 `:hover` 做同一件事。背面的文字若是必要資訊，不要只放在翻面之後。平面位移也不要加 `translateZ(0)` 來「加速」。
+**解析**
+
+照片靠左，段落從它右邊開始，空間不夠時才繞到照片下面。淺青底包住整張照片。拿掉 flow-root 時，父層高度可能只跟文字一樣高，照片會凸出底色，下一段也可能爬到照片旁邊。
+
+```css
+.story img {
+  float: left; /* 只負責讓文字繞過來 */
+}
+.story {
+  display: flow-root; /* 父層高度包住浮動的圖 */
+}
+```
+
+### 選讀：不要拿來做多欄
+
+多欄不要再用浮動配百分比寬度。同一件事是 Grid 的自動欄數加上 gap。浮動切出來的欄在最後一行常常對不齊，也容易和繞排混在一起。
+
+**觀念**
+
+- 欄寬、欄距、換行交給 Grid。
+- inline-flex 與 inline-grid 讓容器坐在文字行裡，裡面仍是 Flex 或 Grid。
+- display: contents 會讓元素自己的盒子消失，也影響無障礙樹，課堂不要用來少包一層。
+
+```html 03-css/pages/36-css-no-float.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>不要用 float 切欄</title>
+    <link rel="stylesheet" href="36-css-no-float.css" />
+  </head>
+  <body>
+    <div class="trips">
+      <article>京都</article>
+      <article>大阪</article>
+      <article>濟州</article>
+    </div>
+  </body>
+</html>
+```
+
+```css 03-css/pages/36-css-no-float.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.trips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+.trips article {
+  padding: 0.75rem;
+  background: #f0fdfa;
+}
+```
+
+**解析**
+
+三張卡片依寬度自動決定欄數，縫是 gap。這裡沒有 float，最後一行不會因為百分比寬度留下一條對不齊的欄。同一組卡片若改成左浮動加三分之一寬，視窗變窄時容易溢出或留下奇怪的空隙。
+
+```css
+.trips {
+  display: grid; /* 多欄用這個，不用 float */
+  gap: 0.75rem;
+}
+```
+
+## 選讀：立體翻面
+
+卡片可以沿垂直軸轉半圈，讓背面轉到前面。這需要視距、保留 3D，以及把背面藏起來。一般版面用不到，知道組法即可。
+
+### 選讀：視距與背面
+
+父層寫 perspective，子層的旋轉才有遠近。卡片本身要 preserve-3d，正面與背面才在同一個立體空間裡。背面用 backface-visibility 藏起來，否則兩面會疊在一起。
+
+**觀念**
+
+- 視距愈小，透視愈誇張。
+- 背面先轉 180 度放好。滑鼠放上來時，整張卡片再轉 180 度，背面才朝向你。
+- 轉場寫在卡片上，翻面才不會瞬間跳過去。
 
 ```html 03-css/pages/27-flip.html
 <!DOCTYPE html>
@@ -3535,85 +4439,94 @@ transition: background-color 200ms ease, translate 200ms ease;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：翻面</title>
-    <style>
-      body {
-        margin: 2rem;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-      }
-
-      .scene {
-        width: 14rem;
-        height: 8rem;
-        perspective: 40rem;
-      }
-
-      .card {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        transition: transform 500ms ease;
-        transform-style: preserve-3d;
-      }
-
-      .scene:hover .card,
-      .scene:focus-within .card {
-        transform: rotateY(180deg);
-      }
-
-      .face {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.75rem;
-        backface-visibility: hidden;
-      }
-
-      .front {
-        background: #0f766e;
-        color: #f0fdfa;
-      }
-
-      .back {
-        background: #134e4a;
-        color: #f0fdfa;
-        transform: rotateY(180deg);
-      }
-    </style>
+    <title>翻面</title>
+    <link rel="stylesheet" href="27-flip.css" />
   </head>
   <body>
-    <div class="scene" tabindex="0">
+    <div class="scene">
       <div class="card">
-        <div class="face front">京都</div>
-        <div class="face back">清水寺清晨</div>
+        <p class="face front">正面</p>
+        <p class="face back">背面</p>
       </div>
     </div>
   </body>
 </html>
 ```
 
-## 容器查詢
+```css 03-css/pages/27-flip.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
 
-媒體查詢看的是視窗。卡片要不要改排，有時該看它所在容器的寬度。見 [MDN：CSS 容器查詢](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。
+.scene {
+  width: 10rem;
+  height: 6rem;
+  perspective: 40rem;
+}
 
-### 依容器寬度改排版
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
 
-媒體查詢看視窗。同一張卡片放在窄側欄與寬主文時，視窗寬度相同，卡片該不該橫排卻不該相同。容器查詢（container query）看的是祖先的寬度。`container-type: inline-size` 把這一層標成查詢容器。`@container` 裡的規則看這個容器的內容寬度。全站的頁首、側欄仍用視窗查詢。一頁有多個容器時再加 `container-name`，避免查到外面那層。窄欄與寬欄的對照在下一節。
+.scene:hover .card {
+  transform: rotateY(180deg);
+}
 
-### 動態視窗高度
+.face {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  text-align: center;
+  line-height: 6rem;
+  backface-visibility: hidden;
+}
 
-`100vh` 在手機上常把網址列也算進去，區塊會比可見區域高一截。需要跟「此刻看得到的高度」走時，用 `100dvh`（dynamic viewport）。頁首固定、主文至少一屏這種需求才用得到，一般區塊繼續讓內容把高度撐開。
+.front {
+  background: #115e59;
+  color: #f0fdfa;
+}
 
-## 把變數註冊成可補間
+.back {
+  background: #9f1239;
+  color: #fff;
+  transform: rotateY(180deg);
+}
+```
 
-沒有註冊的自訂屬性只是一串符號，顏色切換不會補間。`@property` 用來聲明它的語法。見 [MDN：@property](https://developer.mozilla.org/zh-TW/docs/Web/CSS/@property)。
+**解析**
 
-### 語法與初始值
+平常只看得到深青綠的正面。滑鼠放在場景上，卡片在 0.6 秒內轉半圈，玫瑰紅的背面轉到前面。背面事先轉了 180 度，所以翻過來時字是正的。拿掉 preserve-3d 或 backface-visibility，兩面會疊在一起或看不出翻面。
 
-一般的自訂屬性是一串符號。你寫 `transition: --brand 300ms` 時，瀏覽器不知道它是顏色，切換會瞬間跳過去。要讓顏色代幣可以補間，用 `@property` 註冊語法、繼承與初始值。`syntax` 寫錯時，整組註冊無效。`initial-value` 在語法要求下一定要有。沒有註冊之前，仍直接轉場 `background-color`，像轉場那一頁那樣。全站代幣用覆寫 `--brand` 就夠。下面這份把容器查詢與 `@property` 放在同一頁，方便對照。
+```css
+.scene {
+  perspective: 40rem; /* 視距 */
+}
+.face {
+  backface-visibility: hidden; /* 轉到背後時不畫 */
+}
+```
+
+## 選讀：容器查詢
+
+媒體查詢看的是視窗。側欄佔掉一部分之後，主文自己可能還很窄。容器查詢改看某個祖先盒子的寬度。動態視窗高度則是另一件事：手機瀏覽器的工具列會改變可見高度。
+
+### 選讀：依容器寬度改排版
+
+先在父層建立容器，子層的查詢才有對象。沒有寫名字時，對到最近的那層容器。
+
+**觀念**
+
+- container-type 設成 inline-size，表示用這個盒子的寬度當查詢依據。
+- `@container (min-width: …)` 寫在子層的規則外。門檻比的是容器，不是視窗。
+- 視窗已經很寬、卡片自己仍很窄時，不該因為視窗斷點就改成橫排。
 
 ```html 03-css/pages/28-read-extra.html
 <!DOCTYPE html>
@@ -3621,106 +4534,191 @@ transition: background-color 200ms ease, translate 200ms ease;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：容器與可補間變數</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "Segoe UI", "PingFang TC", "Microsoft JhengHei",
-          sans-serif;
-        line-height: 1.6;
-      }
-
-      .board {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: start;
-      }
-
-      .slot {
-        container-type: inline-size;
-        padding: 0.5rem;
-        background: #f0fdfa;
-      }
-
-      .narrow {
-        width: 14rem;
-      }
-
-      .wide {
-        width: 28rem;
-      }
-
-      .card {
-        display: grid;
-        gap: 0.5rem;
-      }
-
-      .photo {
-        min-height: 4rem;
-        background: #0f766e;
-      }
-
-      @container (min-width: 22rem) {
-        .card {
-          grid-template-columns: 6rem 1fr;
-        }
-      }
-
-      @property --brand {
-        syntax: "<color>";
-        inherits: true;
-        initial-value: #0f766e;
-      }
-
-      .go {
-        margin-top: 1rem;
-        padding: 0.45rem 0.9rem;
-        color: #f0fdfa;
-        background: var(--brand);
-        border: 0;
-        border-radius: 0.4rem;
-        transition: --brand 300ms ease;
-      }
-
-      .theme:hover .go,
-      .theme:focus-within .go {
-        --brand: #9f1239;
-      }
-    </style>
+    <title>容器查詢</title>
+    <link rel="stylesheet" href="28-read-extra.css" />
   </head>
   <body>
-    <div class="board">
-      <div class="slot narrow">
-        <article class="card">
-          <div class="photo"></div>
-          <p>這格 14rem，低於 22rem，圖在上。</p>
-        </article>
-      </div>
-      <div class="slot wide">
-        <article class="card">
-          <div class="photo"></div>
-          <p>這格 28rem，容器查詢成立，圖改到左側。兩格的視窗寬度相同。</p>
-        </article>
-      </div>
-    </div>
-    <div class="theme">
-      <button class="go" type="button">指標移入，品牌色補間</button>
+    <div class="slot">
+      <article class="card">
+        <img src="https://picsum.photos/id/1016/640/360" alt="湖" />
+        <p>這個框還窄時，圖在上面。框自己夠寬才改成並排。</p>
+      </article>
     </div>
   </body>
 </html>
 ```
 
+```css 03-css/pages/28-read-extra.css
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.slot {
+  container-type: inline-size;
+  width: min(100%, 22rem);
+  border: 1px solid #99f6e4;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+}
+
+@container (min-width: 24rem) {
+  .card {
+    flex-direction: row;
+  }
+
+  .card img {
+    width: 8rem;
+  }
+}
+```
+
+**解析**
+
+外框目前最寬 22rem，比 24rem 小，所以圖在文字上面，就算瀏覽器視窗很寬也一樣。把外框的寬度改到超過 24rem，卡片才改成橫排，圖片變成固定寬。查詢看的是 slot，不是視窗。
+
+```css
+.slot {
+  container-type: inline-size; /* 子層的 @container 看這裡的寬 */
+}
+```
+
+### 選讀：動態視窗高度
+
+vh 是視窗高度的百分之一，在手機上常常把瀏覽器工具列也算進去，內容會被擋到或高出一截。dvh 跟著目前看得到的視窗高度。
+
+**觀念**
+
+- 100vh 是最大視窗高度的算法，工具列收合前後可能不一致。
+- 100dvh 是動態可見高度。做整屏的第一屏時優先考慮它。
+- 這一頁在桌機上兩者常常一樣高。差別主要出現在手機會縮放工具列的瀏覽器。
+
+```html 03-css/pages/39-css-dvh.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>動態視窗高度</title>
+    <link rel="stylesheet" href="39-css-dvh.css" />
+  </head>
+  <body>
+    <section class="hero">
+      <h1>這一屏用 dvh</h1>
+      <p>手機工具列展開或收合時，高度跟著可見範圍，而不是固定的 vh。</p>
+    </section>
+  </body>
+</html>
+```
+
+```css 03-css/pages/39-css-dvh.css
+body {
+  margin: 0;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.hero {
+  min-height: 100dvh;
+  padding: 1.5rem;
+  background: #115e59;
+  color: #f0fdfa;
+}
+```
+
+**解析**
+
+這一屏至少跟目前看得到的視窗一樣高，底色鋪滿。若改成 100vh，在手機會出現工具列的瀏覽器裡，底部可能被工具列蓋住，或在工具列收合後底下多出一截空白。
+
+```css
+.hero {
+  min-height: 100dvh; /* 可見視窗的高度，不是把工具列算死 */
+}
+```
+
+## 選讀：把變數註冊成可補間
+
+一般自訂屬性存的是一串文字，轉場不知道要怎麼從一個顏色走到另一個顏色。用 @property 註冊類型與初始值之後，這個變數才可以補間。
+
+### 選讀：語法與初始值
+
+syntax 告訴瀏覽器這是角度、顏色或長度。inherits 決定子層要不要繼承。initial-value 是還沒寫值時的起點，註冊之後這個值是必要的。
+
+**觀念**
+
+- 沒有註冊時，對變數做 transition，畫面多半會瞬間跳到終點。
+- 註冊成角度之後，漸層的方向才會在兩端之間轉動。
+- 這是進階寫法。前面的品牌色變數不需要先註冊也能用。
+
+```html 03-css/pages/38-css-property.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>可補間的變數</title>
+    <link rel="stylesheet" href="38-css-property.css" />
+  </head>
+  <body>
+    <div class="swatch">滑鼠放上來，漸層的角度會轉過去。</div>
+  </body>
+</html>
+```
+
+```css 03-css/pages/38-css-property.css
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+body {
+  margin: 1.5rem;
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.swatch {
+  --angle: 0deg;
+  width: min(100%, 16rem);
+  padding: 2rem 1rem;
+  background: linear-gradient(var(--angle), #115e59, #99f6e4);
+  transition: --angle 0.6s linear;
+}
+
+.swatch:hover {
+  --angle: 90deg;
+}
+```
+
+**解析**
+
+平常漸層從 0 度畫起。滑鼠放上去時，角度在 0.6 秒內走到 90 度，顏色的方向會轉，而不是整塊瞬間換掉。拿掉 @property 再做同一個過渡，角度多半會跳過去，因為瀏覽器不知道這串文字是角度。
+
+```css
+@property --angle {
+  syntax: "<angle>"; /* 沒有類型就不能補間 */
+  inherits: false;
+  initial-value: 0deg;
+}
+```
+
 # 本篇重點回顧
 
-下面只收這篇用過的觀念。
+下面只收這篇用過的觀念。選讀可以整節跳過。
 
-- 一條規則是選擇器加上宣告；同屬性寫兩次留下較後面的，拼錯的宣告整條丟掉。
-- 元素、class、id 與組合決定打到誰；權重用四欄比，相同時看原始碼順序，逗號分組不會把權重加總。
-- 沒寫的屬性才談繼承；`inherit`、`initial`、`unset`、`revert` 把值交回父層、初始值或瀏覽器預設。
-- 長度以 `rem` 為主，顏色寫出色碼；字用字型堆疊，背景可以疊上顏色與圖片。
-- 盒子分內容、內距、邊框、外距；`display`、定位與 `overflow` 決定怎麼參加排版、跟誰比座標、超出時裁掉還是捲動。
-- Flex 排一個方向，Grid 排欄與列；窄畫面先做能換行的流動版面，結構要變才寫 `min-width` 媒體查詢。
-- 重複的色與間距收成會繼承的自訂屬性；`transform` 不改佔位，`transition` 補兩個狀態，`@keyframes` 自己播。
-- 對不上時看 **Styles** 的刪除線與 **Computed** 的最終值；面板裡的修改重新整理就沒了。
+- 一條規則是選擇器加上宣告；同屬性寫兩次留下較下面的，拼錯的那一行丟掉。
+- 元素、class、id 與組合決定打到誰；權重四欄由左到右比，不進位，相同時看誰寫在後面。
+- 沒寫的屬性才談繼承；inherit、initial、unset、revert 決定跟父層、回到初始，或回到瀏覽器預設。
+- 內文長度以 rem 為主，顏色寫出色碼；字用字型堆疊，背景可以疊底色與圖層。
+- 盒子分內容、內距、邊框、外距；寬度要用 border-box。display、定位與 overflow 決定怎麼排、跟誰比座標、超出時怎麼辦。
+- Flex 排一個方向，Grid 排欄與列；窄畫面先做會縮的版面，結構要變才寫最小寬度的媒體查詢。
+- 重複的色與間距收成會繼承的變數；transform 不改佔位，transition 連接兩個狀態，keyframes 自己播。
+- 對不上時看 Styles 的刪除線與 Computed 的最終值；面板裡的修改重新整理就沒了。
