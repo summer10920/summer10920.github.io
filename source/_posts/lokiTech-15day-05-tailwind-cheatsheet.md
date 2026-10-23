@@ -6104,3 +6104,77 @@ h1 {
 }
 ```
 
+上網查這篇的說法時，用括號裡的英文當關鍵字。
+
+# 專有名詞中英對照
+
+## Layout、Flex & Grid
+
+- 佈局（layout）
+- 定位（positioning）
+- 寬高比例（aspect ratio）
+- 任意值（arbitrary value）
+- CSS 變數（custom property）
+- 多欄佈局（multi-column layout）
+- 主題變數（theme variable）
+- 響應式設計（responsive design）
+- 邊框（border）
+- 陰影（box shadow）
+- 盒模型（box model）
+- 內邊距（padding）
+- 區塊格式化上下文（block formatting context）
+- 彈性佈局（Flexbox）
+- 網格佈局（grid layout）
+- 螢幕閱讀器（screen reader）
+- 浮動（float）
+- 無障礙設計（accessibility）
+- 文檔流（document flow）
+- 書寫方向（writing direction）
+- 模態框（modal）
+- 下拉選單（drop-down menu）
+- 工具提示（tooltip）
+- 工具類別（utility）
+- 堆疊順序（stacking order）
+- 透明度（opacity）
+
+## Spacing & Sizing
+
+- 間距（spacing）
+- 內外距（padding and margin）
+- 邏輯方向（logical properties）
+
+## Background、Effects
+
+- 色階（color scale）
+- 漸層（gradient）
+- 線性漸層（linear gradient）
+- 圓錐漸層（conic gradient）
+- 輻射漸層（radial gradient）
+- 插值模式（interpolation mode）
+- 混合模式（blend mode）
+- 遮罩（mask）
+
+## 無障礙設計（Accessibility）、容器查詢
+
+- 斷點（breakpoint）
+- 版心（content width）
+- 強制色彩模式（forced colors）
+- 高對比模式（high contrast）
+- 容器查詢（container query）
+- 具名容器（named container）
+- 未具名容器（unnamed container）
+
+## 變體
+
+- 變體（variant）
+- 偽元素（pseudo-element）
+- 前綴（prefix）
+- 偽類（pseudo-class）
+- 視窗斷點（viewport breakpoint）
+- 媒體查詢（media query）
+- 任意變體（arbitrary variant）
+
+## 任意值與任意屬性、主題指令
+
+- 任意屬性（arbitrary property）
+- 媒體變體（media variant）

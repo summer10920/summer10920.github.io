@@ -43,6 +43,11 @@
       margin-bottom: 3rem;
     }
 
+    li > p {
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+    }
+
     .mermaid {
       background: transparent;
     }
