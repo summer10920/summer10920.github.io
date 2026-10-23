@@ -19,7 +19,7 @@ JavaScript 是瀏覽器內建、負責行為的程式語言：資料變了，接
 
 # 認識 JavaScript
 
-JavaScript 是瀏覽器用來描述行為的程式語言。這一章先說明它是什麼：和 HTML、CSS 怎麼分工、ECMAScript 與現代寫法、以及在瀏覽器與 Node.js 的執行環境。接著先看內嵌 script，再改用外部檔，用 Console 與 `console.log` 看結果，並認識註解。選讀看 alert、confirm 與 prompt。
+JavaScript 是瀏覽器用來描述行為的程式語言。這一章先說明它是什麼：和 HTML、CSS 怎麼分工、ECMAScript 與現代寫法、以及在瀏覽器與 Node.js 的執行環境。接著先看內嵌 script，再看外部檔與 src。外部檔是實務做法；為了閱讀方便，課堂 demo 把程式寫在同一份 HTML。然後用 Console 與 `console.log` 看結果，並認識註解。選讀看 alert、confirm 與 prompt。
 
 ## JavaScript 是什麼
 
@@ -51,11 +51,11 @@ JavaScript 是瀏覽器內建的程式語言，瀏覽器讀到 script 就由上�
 
 ## 撰寫與執行 JavaScript
 
-這一節先看內嵌 script，再改用外部檔，並核對 src 的相對路徑。接著是 Console 與 `console.log`、註解。選讀看 alert、confirm 與 prompt。結果都看 DevTools 的 Console。
+這一節先看內嵌 script，再看外部檔，並核對 src 的相對路徑。外部檔是實務做法。為了閱讀方便，後面的課堂 demo 把程式寫在同一份 HTML。接著是 Console 與 `console.log`、註解。選讀看 alert、confirm 與 prompt。結果都看 DevTools 的 Console。
 
 ### 內嵌 script
 
-程式可以直接寫在 HTML 的 script 標籤中間，不必另開檔案。這一節看它怎麼跟著頁面由上往下執行，以及為什麼課堂接下來改用外部檔。
+程式可以直接寫在 HTML 的 script 標籤中間，不必另開檔案。這一節看它怎麼跟著頁面由上往下執行。外部檔留給多頁要共用的時候；課堂 demo 為了好讀，仍寫在同一份 HTML。
 
 **觀念**
 
@@ -63,7 +63,7 @@ JavaScript 是瀏覽器內建的程式語言，瀏覽器讀到 script 就由上�
 
 - 執行順序就是這些 script 在頁面裡的位置，由上往下各跑一次。
 
-- 多個頁面沒辦法共用這段程式，HTML 也會被程式碼弄得很長。下一節改介紹外部檔。課堂練習一律把程式放在外部檔。
+- 多個頁面沒辦法共用這段程式，HTML 也會被程式碼弄得很長。下一節介紹外部檔，那是多頁共用時的實務做法。為了閱讀方便，課堂 demo 把程式寫在同一份 HTML 裡。
 
 ```html 04-js/pages/01-js-inline.html
 <!DOCTYPE html>
@@ -142,6 +142,8 @@ JavaScript 是瀏覽器內建的程式語言，瀏覽器讀到 script 就由上�
 
 內嵌只服務一頁，所以實務上改用外部檔。程式放在獨立的 `.js`，HTML 用 script 的 src 指到它。同一份邏輯可以掛到多頁，HTML 也不會被程式碼撐得很長。
 
+這一節的練習仍分成 HTML 與 js 兩個檔，才能改 src、看載入失敗。Console 那一節沿用同一頁。從註解開始，課堂 demo 把程式寫在同一份 HTML 的 script，對照時不用切檔。多頁要共用時，仍用這裡的外部檔。選讀的模組因為要 import 別的檔，也維持分開。
+
 #### 載入與執行順序
 
 瀏覽器讀到帶有 src 的 script，會先把檔案載入再執行。寫在這個標籤後面的 HTML 會等它跑完。多支外部檔也是依照它們在頁面裡的位置，由上往下各跑一次。
@@ -152,7 +154,7 @@ run --> log["console.log 印出值"]
 log --> panel["DevTools 的 Console"]
 {% endmermaid %}
 
-這一篇把 script 放在 body 最後，頁面上的說明先被讀到，程式再跑。還沒拆成模組之前，這些檔案的變數在同一層，同名會互相影響。作用域怎麼切開，留在選讀的模組。
+這一篇把 script 放在 body 最後，頁面上的說明先被讀到，程式再跑。還沒拆成模組之前，同一頁 script 裡的變數在同一層，同名會互相影響。作用域怎麼切開，留在選讀的模組。
 
 #### src 的相對路徑
 
@@ -234,7 +236,7 @@ log --> panel["DevTools 的 Console"]
 
 ### Console 與 console.log
 
-還沒有寫 `.js` 檔時，可以先在 Console 直接算一行。打開第 02 天的任一頁，按 <kbd>F12</kbd> 切到 Console，輸入下面這一行再按 Enter，下一行是 `15900`。這一行沒有存進檔案，重新整理就消失；後面的練習改寫進外部檔，結果仍看同一塊 Console。
+還沒把程式寫進頁面時，可以先在 Console 直接算一行。打開第 02 天的任一頁，按 <kbd>F12</kbd> 切到 Console，輸入下面這一行再按 Enter，下一行是 `15900`。這一行沒有存進檔案，重新整理就消失；後面的練習改寫進同一份 HTML 的 script，結果仍看同一塊 Console。
 
 ```js
 12800 + 3100
@@ -251,7 +253,7 @@ log --> panel["DevTools 的 Console"]
 **觀念**
 
 
-- script 的 src 是相對這份 HTML 的路徑。檔名打錯時，Console 會出現載入失敗，後面的程式不會跑。
+- 這一頁仍用 src 載入同資料夾的 js，路徑相對這份 HTML。檔名打錯時，Console 會出現載入失敗，後面的程式不會跑。
 
 - 每一句執行完要有分號。字串用引號包起來，引號本身不是印出的內容。
 
@@ -352,22 +354,20 @@ console.log('開賣日 4/12');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="03-js-comment.js"></script>
+    <script>
+      // 這一梯先賣三條國內與日本行程
+      console.log('洛奇旅行');
+
+      /*
+      下一行先不跑。
+      確認欄位後再打開。
+      */
+      // console.log('草稿：名額尚未決定');
+
+      console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/03-js-comment.js
-// 這一梯先賣三條國內與日本行程
-console.log('洛奇旅行');
-
-/*
-下一行先不跑。
-確認欄位後再打開。
-*/
-// console.log('草稿：名額尚未決定');
-
-console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
 ```
 
 **解析**
@@ -406,23 +406,21 @@ console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="03-js-comment.js"></script>
+    <script>
+      // 這一梯先賣三條國內與日本行程
+      console.log('洛奇旅行');
+
+      /*
+      下一行先不跑。
+      確認欄位後再打開。
+      */
+      console.log('草稿：名額尚未決定');
+
+      console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
+      // 價格單位是新台幣
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/03-js-comment.js
-// 這一梯先賣三條國內與日本行程
-console.log('洛奇旅行');
-
-/*
-下一行先不跑。
-確認欄位後再打開。
-*/
-console.log('草稿：名額尚未決定');
-
-console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
-// 價格單位是新台幣
 ```
 
 </details>
@@ -453,21 +451,19 @@ console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
   </head>
   <body>
     <p>結果在 DevTools 的 Console。每個視窗都要按掉，後面的程式才會繼續。</p>
-    <script src="04-js-dialog.js"></script>
+    <script>
+      console.log('alert 之前');
+      console.log(alert('只顯示訊息'));
+      console.log('alert 之後');
+      console.log('confirm 之前');
+      console.log(confirm('要繼續嗎'));
+      console.log('confirm 之後');
+      console.log('prompt 之前');
+      console.log(prompt('請輸入名字'));
+      console.log('prompt 之後');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/04-js-dialog.js
-console.log('alert 之前');
-console.log(alert('只顯示訊息'));
-console.log('alert 之後');
-console.log('confirm 之前');
-console.log(confirm('要繼續嗎'));
-console.log('confirm 之後');
-console.log('prompt 之前');
-console.log(prompt('請輸入名字'));
-console.log('prompt 之後');
 ```
 
 **解析**
@@ -516,24 +512,22 @@ prompt 之後
   </head>
   <body>
     <p>結果在 DevTools 的 Console。每個視窗都要按掉，後面的程式才會繼續。</p>
-    <script src="04-js-dialog.js"></script>
+    <script>
+      console.log('alert 之前');
+      console.log(alert('只顯示訊息'));
+      console.log('alert 之後');
+      console.log('confirm 之前');
+      console.log(confirm('要繼續嗎'));
+      console.log('confirm 之後');
+      console.log('prompt 之前');
+      console.log(prompt('請輸入名字'));
+      console.log('prompt 之後');
+      console.log('第二次之前');
+      console.log(confirm('再問一次'));
+      console.log('第二次之後');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/04-js-dialog.js
-console.log('alert 之前');
-console.log(alert('只顯示訊息'));
-console.log('alert 之後');
-console.log('confirm 之前');
-console.log(confirm('要繼續嗎'));
-console.log('confirm 之後');
-console.log('prompt 之前');
-console.log(prompt('請輸入名字'));
-console.log('prompt 之後');
-console.log('第二次之前');
-console.log(confirm('再問一次'));
-console.log('第二次之後');
 ```
 
 </details>
@@ -591,24 +585,22 @@ const TAX_RATE = 0.05;
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="05-js-name.js"></script>
+    <script>
+      let tourTitle = '台北城市漫遊';
+      let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
+      let tourDays = 3;
+      let pricePerPerson = 12800;
+
+      console.log(tourTitle);
+      console.log(tourDays);
+      console.log(pricePerPerson);
+      console.log(tourTitle, TourTitle);
+
+      // let 3days = 3;
+      // let return = '不能用保留字';
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/05-js-name.js
-let tourTitle = '台北城市漫遊';
-let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
-let tourDays = 3;
-let pricePerPerson = 12800;
-
-console.log(tourTitle);
-console.log(tourDays);
-console.log(pricePerPerson);
-console.log(tourTitle, TourTitle);
-
-// let 3days = 3;
-// let return = '不能用保留字';
 ```
 
 **解析**
@@ -666,28 +658,26 @@ let returnDate = '2026-12-24'; // ✓ 包含保留字的長名字可以
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="05-js-name.js"></script>
+    <script>
+      let tourTitle = '台北城市漫遊';
+      let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
+      let tourDays = 3;
+      let pricePerPerson = 12800;
+      let placeName = '花蓮';
+      let onSale = true;
+
+      console.log(tourTitle);
+      console.log(tourDays);
+      console.log(pricePerPerson);
+      console.log(tourTitle, TourTitle);
+      console.log(placeName);
+      console.log(onSale);
+
+      // let 3days = 3;
+      // let return = '不能用保留字';
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/05-js-name.js
-let tourTitle = '台北城市漫遊';
-let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
-let tourDays = 3;
-let pricePerPerson = 12800;
-let placeName = '花蓮';
-let onSale = true;
-
-console.log(tourTitle);
-console.log(tourDays);
-console.log(pricePerPerson);
-console.log(tourTitle, TourTitle);
-console.log(placeName);
-console.log(onSale);
-
-// let 3days = 3;
-// let return = '不能用保留字';
 ```
 
 </details>
@@ -719,22 +709,20 @@ console.log(onSale);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="06-js-let.js"></script>
+    <script>
+      let price = 12800;
+      const days = 3;
+      const title = '台北城市漫遊';
+
+      price = 13900;
+
+      console.log(title);
+      console.log(days);
+      console.log(price);
+      // days = 4;
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/06-js-let.js
-let price = 12800;
-const days = 3;
-const title = '台北城市漫遊';
-
-price = 13900;
-
-console.log(title);
-console.log(days);
-console.log(price);
-// days = 4;
 ```
 
 **解析**
@@ -777,25 +765,23 @@ console.log(price);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="06-js-let.js"></script>
+    <script>
+      let price = 12800;
+      const days = 3;
+      const title = '台北城市漫遊';
+      let seats = 8;
+
+      price = 14200;
+      seats = 6;
+
+      console.log(title);
+      console.log(days);
+      console.log(price);
+      console.log(seats);
+      // days = 4;
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/06-js-let.js
-let price = 12800;
-const days = 3;
-const title = '台北城市漫遊';
-let seats = 8;
-
-price = 14200;
-seats = 6;
-
-console.log(title);
-console.log(days);
-console.log(price);
-console.log(seats);
-// days = 4;
 ```
 
 </details>
@@ -848,23 +834,21 @@ var days = 5; // 可重複宣告，5 蓋掉 3
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="07-js-scope.js"></script>
+    <script>
+      const place = '台北';
+
+      {
+        const place = '花蓮';
+        const days = 3;
+        console.log(place);
+        console.log(days);
+      }
+
+      console.log(place);
+      // console.log(days);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/07-js-scope.js
-const place = '台北';
-
-{
-  const place = '花蓮';
-  const days = 3;
-  console.log(place);
-  console.log(days);
-}
-
-console.log(place);
-// console.log(days);
 ```
 
 **解析**
@@ -904,27 +888,25 @@ console.log(place);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="07-js-scope.js"></script>
+    <script>
+      const place = '台北';
+
+      {
+        const place = '花蓮';
+        const days = 3;
+        const title = '花蓮山海三日';
+        console.log(place);
+        console.log(days);
+        console.log(title);
+      }
+
+      const title = '台北城市漫遊';
+      console.log(place);
+      console.log(title);
+      // console.log(days);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/07-js-scope.js
-const place = '台北';
-
-{
-  const place = '花蓮';
-  const days = 3;
-  const title = '花蓮山海三日';
-  console.log(place);
-  console.log(days);
-  console.log(title);
-}
-
-const title = '台北城市漫遊';
-console.log(place);
-console.log(title);
-// console.log(days);
 ```
 
 </details>
@@ -964,22 +946,20 @@ JavaScript 宣告時不必先寫種類，值放進去的那一刻種類就定了
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="08-js-types.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+      const days = 3;
+      const price = 12800;
+      const onSale = true;
+
+      console.log(typeof title);
+      console.log(typeof days);
+      console.log(typeof price);
+      console.log(typeof onSale);
+      console.log(title);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/08-js-types.js
-const title = '台北城市漫遊';
-const days = 3;
-const price = 12800;
-const onSale = true;
-
-console.log(typeof title);
-console.log(typeof days);
-console.log(typeof price);
-console.log(typeof onSale);
-console.log(title);
 ```
 
 **解析**
@@ -1027,28 +1007,26 @@ boolean
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="08-js-types.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+      const days = 3;
+      const price = 12800;
+      const onSale = true;
+      const place = '花蓮';
+      const full = false;
+
+      console.log(typeof title);
+      console.log(typeof days);
+      console.log(typeof price);
+      console.log(typeof onSale);
+      console.log(title);
+      console.log(typeof place);
+      console.log(place);
+      console.log(typeof full);
+      console.log(full);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/08-js-types.js
-const title = '台北城市漫遊';
-const days = 3;
-const price = 12800;
-const onSale = true;
-const place = '花蓮';
-const full = false;
-
-console.log(typeof title);
-console.log(typeof days);
-console.log(typeof price);
-console.log(typeof onSale);
-console.log(title);
-console.log(typeof place);
-console.log(place);
-console.log(typeof full);
-console.log(full);
 ```
 
 </details>
@@ -1081,36 +1059,34 @@ JavaScript 內建了一批可以直接呼叫的函式，例如 Number、String �
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="09-js-convert.js"></script>
+    <script>
+      const daysText = '3';
+      const priceText = '12800';
+
+      // 原字串與種類；Number 後才是數字。售價轉數字，12800 再轉回字串
+      console.log(daysText, typeof daysText);
+      console.log(Number(daysText), typeof Number(daysText));
+      console.log(Number(priceText), String(12800), typeof String(12800));
+      // 「3天」是 NaN，空字串是 0。0 是 false，文字 '0' 是 true
+      console.log(Number('3天'), Number(''));
+      console.log(Boolean(0), Boolean('0'));
+      // 加號接成字串 51；先轉成數字再加才是 6
+      const joined = '5' + 1;
+      console.log(joined, typeof joined);
+      console.log(Number('5') + 1);
+      // parseInt 從左邊讀，遇到小數點或單位就停。Number 則整段都要合法
+      console.log(Number('3.8'), parseInt('3.8', 10));
+      console.log(Number('12px'), parseInt('12px', 10));
+      // 空字串：Number 得到 0，parseInt 沒有數字可讀，得到 NaN
+      console.log(Number(''), parseInt('', 10));
+      // 第二個參數固定寫 10。16 把 ff 讀成 255；寫 10 時 f 不是數字，得到 NaN
+      // 省略這個參數時，早期環境看到 0 開頭可能當成八進位
+      console.log(parseInt('ff', 16), parseInt('ff', 10));
+      // Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
+      console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/09-js-convert.js
-const daysText = '3';
-const priceText = '12800';
-
-// 原字串與種類；Number 後才是數字。售價轉數字，12800 再轉回字串
-console.log(daysText, typeof daysText);
-console.log(Number(daysText), typeof Number(daysText));
-console.log(Number(priceText), String(12800), typeof String(12800));
-// 「3天」是 NaN，空字串是 0。0 是 false，文字 '0' 是 true
-console.log(Number('3天'), Number(''));
-console.log(Boolean(0), Boolean('0'));
-// 加號接成字串 51；先轉成數字再加才是 6
-const joined = '5' + 1;
-console.log(joined, typeof joined);
-console.log(Number('5') + 1);
-// parseInt 從左邊讀，遇到小數點或單位就停。Number 則整段都要合法
-console.log(Number('3.8'), parseInt('3.8', 10));
-console.log(Number('12px'), parseInt('12px', 10));
-// 空字串：Number 得到 0，parseInt 沒有數字可讀，得到 NaN
-console.log(Number(''), parseInt('', 10));
-// 第二個參數固定寫 10。16 把 ff 讀成 255；寫 10 時 f 不是數字，得到 NaN
-// 省略這個參數時，早期環境看到 0 開頭可能當成八進位
-console.log(parseInt('ff', 16), parseInt('ff', 10));
-// Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
-console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
 ```
 
 **解析**
@@ -1164,43 +1140,41 @@ true false true
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="09-js-convert.js"></script>
+    <script>
+      const daysText = '3';
+      const priceText = '12800';
+
+      // 原字串與種類；Number 後才是數字。售價轉數字，12800 再轉回字串
+      console.log(daysText, typeof daysText);
+      console.log(Number(daysText), typeof Number(daysText));
+      console.log(Number(priceText), String(12800), typeof String(12800));
+      // 「3天」是 NaN，空字串是 0。0 是 false，文字 '0' 是 true
+      console.log(Number('3天'), Number(''));
+      console.log(Boolean(0), Boolean('0'));
+      // 加號接成字串 51；先轉成數字再加才是 6
+      const joined = '5' + 1;
+      console.log(joined, typeof joined);
+      console.log(Number('5') + 1);
+      // parseInt 從左邊讀，遇到小數點或單位就停。Number 則整段都要合法
+      console.log(Number('3.8'), parseInt('3.8', 10));
+      console.log(Number('12px'), parseInt('12px', 10));
+      // 空字串：Number 得到 0，parseInt 沒有數字可讀，得到 NaN
+      console.log(Number(''), parseInt('', 10));
+      // 第二個參數固定寫 10。16 把 ff 讀成 255；寫 10 時 f 不是數字，得到 NaN
+      // 省略這個參數時，早期環境看到 0 開頭可能當成八進位
+      console.log(parseInt('ff', 16), parseInt('ff', 10));
+      // Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
+      console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
+
+      const total = Number('5') * 8600;
+      const label = String(total);
+      console.log(total, typeof label);
+      console.log(parseInt('20人', 10));
+      console.log(Number('20人'));
+      console.log(parseInt('08', 10));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/09-js-convert.js
-const daysText = '3';
-const priceText = '12800';
-
-// 原字串與種類；Number 後才是數字。售價轉數字，12800 再轉回字串
-console.log(daysText, typeof daysText);
-console.log(Number(daysText), typeof Number(daysText));
-console.log(Number(priceText), String(12800), typeof String(12800));
-// 「3天」是 NaN，空字串是 0。0 是 false，文字 '0' 是 true
-console.log(Number('3天'), Number(''));
-console.log(Boolean(0), Boolean('0'));
-// 加號接成字串 51；先轉成數字再加才是 6
-const joined = '5' + 1;
-console.log(joined, typeof joined);
-console.log(Number('5') + 1);
-// parseInt 從左邊讀，遇到小數點或單位就停。Number 則整段都要合法
-console.log(Number('3.8'), parseInt('3.8', 10));
-console.log(Number('12px'), parseInt('12px', 10));
-// 空字串：Number 得到 0，parseInt 沒有數字可讀，得到 NaN
-console.log(Number(''), parseInt('', 10));
-// 第二個參數固定寫 10。16 把 ff 讀成 255；寫 10 時 f 不是數字，得到 NaN
-// 省略這個參數時，早期環境看到 0 開頭可能當成八進位
-console.log(parseInt('ff', 16), parseInt('ff', 10));
-// Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
-console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
-
-const total = Number('5') * 8600;
-const label = String(total);
-console.log(total, typeof label);
-console.log(parseInt('20人', 10));
-console.log(Number('20人'));
-console.log(parseInt('08', 10));
 ```
 
 </details>
@@ -1237,29 +1211,27 @@ console.log(parseInt('08', 10));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="10-js-special.js"></script>
+    <script>
+      let guide;
+      const backup = null;
+      const broken = Number('abc');
+
+      // 有宣告但還沒給值，讀到 undefined
+      console.log(guide);
+      // null 是刻意設的空位。用 === null 判斷，不要用 typeof
+      console.log(backup);
+      console.log(backup === null);
+      // typeof null 是 object，這是早期留下的結果
+      console.log(typeof backup);
+      // 轉成數字失敗得到 NaN，種類仍是 number
+      console.log(broken);
+      console.log(typeof broken);
+      // Number.isNaN 才認得出 NaN。NaN === NaN 是 false
+      console.log(Number.isNaN(broken));
+      console.log(broken === broken);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/10-js-special.js
-let guide;
-const backup = null;
-const broken = Number('abc');
-
-// 有宣告但還沒給值，讀到 undefined
-console.log(guide);
-// null 是刻意設的空位。用 === null 判斷，不要用 typeof
-console.log(backup);
-console.log(backup === null);
-// typeof null 是 object，這是早期留下的結果
-console.log(typeof backup);
-// 轉成數字失敗得到 NaN，種類仍是 number
-console.log(broken);
-console.log(typeof broken);
-// Number.isNaN 才認得出 NaN。NaN === NaN 是 false
-console.log(Number.isNaN(broken));
-console.log(broken === broken);
 ```
 
 **解析**
@@ -1309,33 +1281,31 @@ false
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="10-js-special.js"></script>
+    <script>
+      let guide;
+      const backup = null;
+      const broken = Number('abc');
+      let note;
+      const seats = Number('滿');
+
+      // 有宣告但還沒給值，讀到 undefined
+      console.log(guide);
+      // null 是刻意設的空位。用 === null 判斷，不要用 typeof
+      console.log(backup);
+      console.log(backup === null);
+      // typeof null 是 object，這是早期留下的結果
+      console.log(typeof backup);
+      // 轉成數字失敗得到 NaN，種類仍是 number
+      console.log(broken);
+      console.log(typeof broken);
+      // Number.isNaN 才認得出 NaN。NaN === NaN 是 false
+      console.log(Number.isNaN(broken));
+      console.log(broken === broken);
+      console.log(note === undefined);
+      console.log(Number.isNaN(seats));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/10-js-special.js
-let guide;
-const backup = null;
-const broken = Number('abc');
-let note;
-const seats = Number('滿');
-
-// 有宣告但還沒給值，讀到 undefined
-console.log(guide);
-// null 是刻意設的空位。用 === null 判斷，不要用 typeof
-console.log(backup);
-console.log(backup === null);
-// typeof null 是 object，這是早期留下的結果
-console.log(typeof backup);
-// 轉成數字失敗得到 NaN，種類仍是 number
-console.log(broken);
-console.log(typeof broken);
-// Number.isNaN 才認得出 NaN。NaN === NaN 是 false
-console.log(Number.isNaN(broken));
-console.log(broken === broken);
-console.log(note === undefined);
-console.log(Number.isNaN(seats));
 ```
 
 </details>
@@ -1372,27 +1342,25 @@ console.log(Number.isNaN(seats));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="11-js-string-basic.js"></script>
+    <script>
+      const single = '台北';
+      const double = "it's JS";
+      const plain = `城市`;
+      const title = '台北城市漫遊';
+
+      console.log(single);
+      console.log(double);
+      console.log(plain);
+      console.log(title.length);
+      console.log(title[0]);
+      console.log(title[2]);
+
+      const upper = 'taipei'.toUpperCase();
+      console.log(upper);
+      console.log('taipei');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/11-js-string-basic.js
-const single = '台北';
-const double = "it's JS";
-const plain = `城市`;
-const title = '台北城市漫遊';
-
-console.log(single);
-console.log(double);
-console.log(plain);
-console.log(title.length);
-console.log(title[0]);
-console.log(title[2]);
-
-const upper = 'taipei'.toUpperCase();
-console.log(upper);
-console.log('taipei');
 ```
 
 **解析**
@@ -1442,32 +1410,30 @@ taipei
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="11-js-string-basic.js"></script>
+    <script>
+      const single = '台北';
+      const double = "it's JS";
+      const plain = `城市`;
+      const title = '台北城市漫遊';
+
+      console.log(single);
+      console.log(double);
+      console.log(plain);
+      console.log(title.length);
+      console.log(title[0]);
+      console.log(title[2]);
+
+      const upper = 'taipei'.toUpperCase();
+      console.log(upper);
+      console.log('taipei');
+
+      console.log('花蓮山海'.length);
+      console.log('花蓮山海'[1]);
+      console.log('JS'.toLowerCase());
+      console.log('JS');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/11-js-string-basic.js
-const single = '台北';
-const double = "it's JS";
-const plain = `城市`;
-const title = '台北城市漫遊';
-
-console.log(single);
-console.log(double);
-console.log(plain);
-console.log(title.length);
-console.log(title[0]);
-console.log(title[2]);
-
-const upper = 'taipei'.toUpperCase();
-console.log(upper);
-console.log('taipei');
-
-console.log('花蓮山海'.length);
-console.log('花蓮山海'[1]);
-console.log('JS'.toLowerCase());
-console.log('JS');
 ```
 
 </details>
@@ -1495,20 +1461,18 @@ console.log('JS');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="12-js-template.js"></script>
+    <script>
+      const id = 1;
+      const title = '台北城市漫遊';
+      const place = '台北';
+      const days = 3;
+      const price = 12800;
+
+      const line = `${place}・${title}・${days} 天・NT${price}`;
+      console.log(line);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/12-js-template.js
-const id = 1;
-const title = '台北城市漫遊';
-const place = '台北';
-const days = 3;
-const price = 12800;
-
-const line = `${place}・${title}・${days} 天・NT$${price}`;
-console.log(line);
 ```
 
 **解析**
@@ -1545,22 +1509,20 @@ console.log(line);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="12-js-template.js"></script>
+    <script>
+      const id = 1;
+      const title = '台北城市漫遊';
+      const place = '台北';
+      const days = 3;
+      const price = 12800;
+
+      const line = `${place}・${title}・${days} 天・NT${price}`;
+      const code = `編號 ${id}・${place}`;
+      console.log(line);
+      console.log(code);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/12-js-template.js
-const id = 1;
-const title = '台北城市漫遊';
-const place = '台北';
-const days = 3;
-const price = 12800;
-
-const line = `${place}・${title}・${days} 天・NT$${price}`;
-const code = `編號 ${id}・${place}`;
-console.log(line);
-console.log(code);
 ```
 
 </details>
@@ -1599,34 +1561,32 @@ console.log(code);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="13-js-prototype.js"></script>
+    <script>
+      const word = 'abc';
+
+      // 得到 ABC。word 仍是 abc。這支函式就是字串原型上的那一支
+      console.log(word.toUpperCase());
+      console.log(word);
+      console.log(word.toUpperCase === String.prototype.toUpperCase);
+      // length 是屬性，讀到 3，不用括號
+      console.log(word.length);
+
+      const amount = 42;
+      // toFixed(0) 印出 42，回傳的是字串，而且等於數字原型上的函式
+      console.log(amount.toFixed(0));
+      console.log(amount.toFixed === Number.prototype.toFixed);
+
+      const missing = null;
+      // 可選串連在 null 停住，得到 undefined。拿掉下一行註解會丟出 TypeError
+      console.log(missing?.toUpperCase());
+      // console.log(missing.toUpperCase());
+
+      // 在 Console 展開 [[Prototype]]，對照字串原型上的方法名稱
+      console.dir(word);
+      console.log(String.prototype);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/13-js-prototype.js
-const word = 'abc';
-
-// 得到 ABC。word 仍是 abc。這支函式就是字串原型上的那一支
-console.log(word.toUpperCase());
-console.log(word);
-console.log(word.toUpperCase === String.prototype.toUpperCase);
-// length 是屬性，讀到 3，不用括號
-console.log(word.length);
-
-const amount = 42;
-// toFixed(0) 印出 42，回傳的是字串，而且等於數字原型上的函式
-console.log(amount.toFixed(0));
-console.log(amount.toFixed === Number.prototype.toFixed);
-
-const missing = null;
-// 可選串連在 null 停住，得到 undefined。拿掉下一行註解會丟出 TypeError
-console.log(missing?.toUpperCase());
-// console.log(missing.toUpperCase());
-
-// 在 Console 展開 [[Prototype]]，對照字串原型上的方法名稱
-console.dir(word);
-console.log(String.prototype);
 ```
 
 **解析**
@@ -1673,38 +1633,36 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="13-js-prototype.js"></script>
+    <script>
+      const word = 'abc';
+
+      // 得到 ABC。word 仍是 abc。這支函式就是字串原型上的那一支
+      console.log(word.toUpperCase());
+      console.log(word);
+      console.log(word.toUpperCase === String.prototype.toUpperCase);
+      // length 是屬性，讀到 3，不用括號
+      console.log(word.length);
+
+      const amount = 42;
+      // toFixed(0) 印出 42，回傳的是字串，而且等於數字原型上的函式
+      console.log(amount.toFixed(0));
+      console.log(amount.toFixed === Number.prototype.toFixed);
+
+      const missing = null;
+      // 可選串連在 null 停住，得到 undefined。拿掉下一行註解會丟出 TypeError
+      console.log(missing?.toUpperCase());
+      // console.log(missing.toUpperCase());
+
+      // 在 Console 展開 [[Prototype]]，對照字串原型上的方法名稱
+      console.dir(word);
+      console.log(String.prototype);
+
+      // 得到 js。字面值仍是 JS
+      console.log('JS'.toLowerCase());
+      console.log('JS');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/13-js-prototype.js
-const word = 'abc';
-
-// 得到 ABC。word 仍是 abc。這支函式就是字串原型上的那一支
-console.log(word.toUpperCase());
-console.log(word);
-console.log(word.toUpperCase === String.prototype.toUpperCase);
-// length 是屬性，讀到 3，不用括號
-console.log(word.length);
-
-const amount = 42;
-// toFixed(0) 印出 42，回傳的是字串，而且等於數字原型上的函式
-console.log(amount.toFixed(0));
-console.log(amount.toFixed === Number.prototype.toFixed);
-
-const missing = null;
-// 可選串連在 null 停住，得到 undefined。拿掉下一行註解會丟出 TypeError
-console.log(missing?.toUpperCase());
-// console.log(missing.toUpperCase());
-
-// 在 Console 展開 [[Prototype]]，對照字串原型上的方法名稱
-console.dir(word);
-console.log(String.prototype);
-
-// 得到 js。字面值仍是 JS
-console.log('JS'.toLowerCase());
-console.log('JS');
 ```
 
 </details>
@@ -1733,28 +1691,26 @@ console.log('JS');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="14-js-string.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+
+      // 「城市」有出現，true；「花蓮」沒有，false
+      console.log(title.includes('城市'));
+      console.log(title.includes('花蓮'));
+      // 開頭是「台北」所以 true，不是「城市」所以 false
+      console.log(title.startsWith('台北'));
+      console.log(title.startsWith('城市'));
+      // 結尾是「漫遊」所以 true，不是「台北」所以 false
+      console.log(title.endsWith('漫遊'));
+      console.log(title.endsWith('台北'));
+      // 「城市」在索引 2；沒有「花蓮」得到 -1
+      console.log(title.indexOf('城市'));
+      console.log(title.indexOf('花蓮'));
+      // 原字串沒有被改
+      console.log(title);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/14-js-string.js
-const title = '台北城市漫遊';
-
-// 「城市」有出現，true；「花蓮」沒有，false
-console.log(title.includes('城市'));
-console.log(title.includes('花蓮'));
-// 開頭是「台北」所以 true，不是「城市」所以 false
-console.log(title.startsWith('台北'));
-console.log(title.startsWith('城市'));
-// 結尾是「漫遊」所以 true，不是「台北」所以 false
-console.log(title.endsWith('漫遊'));
-console.log(title.endsWith('台北'));
-// 「城市」在索引 2；沒有「花蓮」得到 -1
-console.log(title.indexOf('城市'));
-console.log(title.indexOf('花蓮'));
-// 原字串沒有被改
-console.log(title);
 ```
 
 **解析**
@@ -1800,34 +1756,32 @@ false
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="14-js-string.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+
+      // 「城市」有出現，true；「花蓮」沒有，false
+      console.log(title.includes('城市'));
+      console.log(title.includes('花蓮'));
+      // 開頭是「台北」所以 true，不是「城市」所以 false
+      console.log(title.startsWith('台北'));
+      console.log(title.startsWith('城市'));
+      // 結尾是「漫遊」所以 true，不是「台北」所以 false
+      console.log(title.endsWith('漫遊'));
+      console.log(title.endsWith('台北'));
+      // 「城市」在索引 2；沒有「花蓮」得到 -1
+      console.log(title.indexOf('城市'));
+      console.log(title.indexOf('花蓮'));
+      // 原字串沒有被改
+      console.log(title);
+
+      // 包含、開頭、結尾都是 true。「山」的索引是 2
+      console.log('花蓮山海'.includes('山海'));
+      console.log('花蓮山海'.startsWith('花蓮'));
+      console.log('花蓮山海'.endsWith('山海'));
+      console.log('花蓮山海'.indexOf('山'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/14-js-string.js
-const title = '台北城市漫遊';
-
-// 「城市」有出現，true；「花蓮」沒有，false
-console.log(title.includes('城市'));
-console.log(title.includes('花蓮'));
-// 開頭是「台北」所以 true，不是「城市」所以 false
-console.log(title.startsWith('台北'));
-console.log(title.startsWith('城市'));
-// 結尾是「漫遊」所以 true，不是「台北」所以 false
-console.log(title.endsWith('漫遊'));
-console.log(title.endsWith('台北'));
-// 「城市」在索引 2；沒有「花蓮」得到 -1
-console.log(title.indexOf('城市'));
-console.log(title.indexOf('花蓮'));
-// 原字串沒有被改
-console.log(title);
-
-// 包含、開頭、結尾都是 true。「山」的索引是 2
-console.log('花蓮山海'.includes('山海'));
-console.log('花蓮山海'.startsWith('花蓮'));
-console.log('花蓮山海'.endsWith('山海'));
-console.log('花蓮山海'.indexOf('山'));
 ```
 
 </details>
@@ -1862,36 +1816,34 @@ console.log('花蓮山海'.indexOf('山'));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="15-js-pad.js"></script>
+    <script>
+      const rawTitle = '  台北城市漫遊  ';
+      const title = rawTitle.trim();
+      const code = '7';
+      const city = 'taipei';
+
+      // 去掉兩端空白。帶空白的長度仍是 10，去掉之後是 6
+      console.log(title);
+      console.log(rawTitle.length);
+      console.log(title.length);
+      // 結束索引不包含，前兩個字是「花蓮」
+      console.log('花蓮山海三日'.slice(0, 2));
+      // 0 是「花」，-1 是「蓮」，索引 5 超出範圍，得到 undefined
+      console.log('花蓮'.at(0));
+      console.log('花蓮'.at(-1));
+      console.log('花蓮'.at(5));
+      // 得到 TAIPEI。city 仍是小寫
+      console.log(city.toUpperCase());
+      console.log(city);
+      // 補到長度 3，得到 007。code 仍是 7
+      console.log(code.padStart(3, '0'));
+      console.log(code);
+      // 兩處「散步」都換成「五日」。依「・」拆成三個元素
+      console.log('京都散步與散步'.replaceAll('散步', '五日'));
+      console.log('台北・花蓮・京都'.split('・'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/15-js-pad.js
-const rawTitle = '  台北城市漫遊  ';
-const title = rawTitle.trim();
-const code = '7';
-const city = 'taipei';
-
-// 去掉兩端空白。帶空白的長度仍是 10，去掉之後是 6
-console.log(title);
-console.log(rawTitle.length);
-console.log(title.length);
-// 結束索引不包含，前兩個字是「花蓮」
-console.log('花蓮山海三日'.slice(0, 2));
-// 0 是「花」，-1 是「蓮」，索引 5 超出範圍，得到 undefined
-console.log('花蓮'.at(0));
-console.log('花蓮'.at(-1));
-console.log('花蓮'.at(5));
-// 得到 TAIPEI。city 仍是小寫
-console.log(city.toUpperCase());
-console.log(city);
-// 補到長度 3，得到 007。code 仍是 7
-console.log(code.padStart(3, '0'));
-console.log(code);
-// 兩處「散步」都換成「五日」。依「・」拆成三個元素
-console.log('京都散步與散步'.replaceAll('散步', '五日'));
-console.log('台北・花蓮・京都'.split('・'));
 ```
 
 **解析**
@@ -1947,44 +1899,42 @@ taipei
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="15-js-pad.js"></script>
+    <script>
+      const rawTitle = '  台北城市漫遊  ';
+      const title = rawTitle.trim();
+      const code = '7';
+      const city = 'taipei';
+
+      // 去掉兩端空白。帶空白的長度仍是 10，去掉之後是 6
+      console.log(title);
+      console.log(rawTitle.length);
+      console.log(title.length);
+      // 結束索引不包含，前兩個字是「花蓮」
+      console.log('花蓮山海三日'.slice(0, 2));
+      // 0 是「花」，-1 是「蓮」，索引 5 超出範圍，得到 undefined
+      console.log('花蓮'.at(0));
+      console.log('花蓮'.at(-1));
+      console.log('花蓮'.at(5));
+      // 得到 TAIPEI。city 仍是小寫
+      console.log(city.toUpperCase());
+      console.log(city);
+      // 補到長度 3，得到 007。code 仍是 7
+      console.log(code.padStart(3, '0'));
+      console.log(code);
+      // 兩處「散步」都換成「五日」。依「・」拆成三個元素
+      console.log('京都散步與散步'.replaceAll('散步', '五日'));
+      console.log('台北・花蓮・京都'.split('・'));
+
+      // 前兩字是「台北」。補成 0042。最後一個字是「葉」
+      console.log('台北城市漫遊'.slice(0, 2));
+      console.log('42'.padStart(4, '0'));
+      console.log('京都紅葉'.at(-1));
+      // 換成「京都紅葉五日」。拆成兩個「三日」
+      console.log('京都紅葉散步'.replaceAll('散步', '五日'));
+      console.log('三日・三日'.split('・'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/15-js-pad.js
-const rawTitle = '  台北城市漫遊  ';
-const title = rawTitle.trim();
-const code = '7';
-const city = 'taipei';
-
-// 去掉兩端空白。帶空白的長度仍是 10，去掉之後是 6
-console.log(title);
-console.log(rawTitle.length);
-console.log(title.length);
-// 結束索引不包含，前兩個字是「花蓮」
-console.log('花蓮山海三日'.slice(0, 2));
-// 0 是「花」，-1 是「蓮」，索引 5 超出範圍，得到 undefined
-console.log('花蓮'.at(0));
-console.log('花蓮'.at(-1));
-console.log('花蓮'.at(5));
-// 得到 TAIPEI。city 仍是小寫
-console.log(city.toUpperCase());
-console.log(city);
-// 補到長度 3，得到 007。code 仍是 7
-console.log(code.padStart(3, '0'));
-console.log(code);
-// 兩處「散步」都換成「五日」。依「・」拆成三個元素
-console.log('京都散步與散步'.replaceAll('散步', '五日'));
-console.log('台北・花蓮・京都'.split('・'));
-
-// 前兩字是「台北」。補成 0042。最後一個字是「葉」
-console.log('台北城市漫遊'.slice(0, 2));
-console.log('42'.padStart(4, '0'));
-console.log('京都紅葉'.at(-1));
-// 換成「京都紅葉五日」。拆成兩個「三日」
-console.log('京都紅葉散步'.replaceAll('散步', '五日'));
-console.log('三日・三日'.split('・'));
 ```
 
 </details>
@@ -2030,22 +1980,20 @@ console.log('三日・三日'.split('・'));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="16-js-arith.js"></script>
+    <script>
+      let price = 15900;
+      const days = 3;
+      const perDay = price / days;
+
+      console.log(perDay);
+      console.log(days % 2);
+      console.log(2 ** 3);
+
+      price += 1100;
+      console.log(price);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/16-js-arith.js
-let price = 15900;
-const days = 3;
-const perDay = price / days;
-
-console.log(perDay);
-console.log(days % 2);
-console.log(2 ** 3);
-
-price += 1100;
-console.log(price);
 ```
 
 **解析**
@@ -2096,28 +2044,26 @@ JavaScript 的數字是二進位浮點數。`0.1 + 0.2` 加出來不是剛好的
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="16-js-arith.js"></script>
+    <script>
+      let price = 15900;
+      const days = 3;
+      const perDay = price / days;
+
+      console.log(perDay);
+      console.log(days % 2);
+      console.log(2 ** 3);
+
+      price += 1100;
+      console.log(price);
+
+      let seats = 8;
+      seats -= 2;
+      const twoPeople = price * 2;
+      console.log(seats);
+      console.log(twoPeople);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/16-js-arith.js
-let price = 15900;
-const days = 3;
-const perDay = price / days;
-
-console.log(perDay);
-console.log(days % 2);
-console.log(2 ** 3);
-
-price += 1100;
-console.log(price);
-
-let seats = 8;
-seats -= 2;
-const twoPeople = price * 2;
-console.log(seats);
-console.log(twoPeople);
 ```
 
 </details>
@@ -2147,21 +2093,19 @@ console.log(twoPeople);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="17-js-compare.js"></script>
+    <script>
+      const days = 3;
+      const daysText = '3';
+
+      console.log(days === 3);
+      console.log(days === daysText);
+      console.log(days == daysText);
+      console.log(days !== daysText);
+      console.log('10' > '9');
+      console.log(Number('10') > Number('9'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/17-js-compare.js
-const days = 3;
-const daysText = '3';
-
-console.log(days === 3);
-console.log(days === daysText);
-console.log(days == daysText);
-console.log(days !== daysText);
-console.log('10' > '9');
-console.log(Number('10') > Number('9'));
 ```
 
 **解析**
@@ -2209,26 +2153,24 @@ true
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="17-js-compare.js"></script>
+    <script>
+      const days = 3;
+      const daysText = '3';
+
+      console.log(days === 3);
+      console.log(days === daysText);
+      console.log(days == daysText);
+      console.log(days !== daysText);
+      console.log('10' > '9');
+      console.log(Number('10') > Number('9'));
+
+      const price = 15900;
+      const limit = 20000;
+      console.log(price < limit);
+      console.log(price === '15900');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/17-js-compare.js
-const days = 3;
-const daysText = '3';
-
-console.log(days === 3);
-console.log(days === daysText);
-console.log(days == daysText);
-console.log(days !== daysText);
-console.log('10' > '9');
-console.log(Number('10') > Number('9'));
-
-const price = 15900;
-const limit = 20000;
-console.log(price < limit);
-console.log(price === '15900');
 ```
 
 </details>
@@ -2258,51 +2200,49 @@ console.log(price === '15900');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="18-js-logic.js"></script>
+    <script>
+      const days = 3;
+      const price = 12800;
+      const shortTrip = days <= 3;
+      const underBudget = price < 20000;
+
+      console.log(shortTrip && underBudget);
+      console.log(days === 5 || underBudget);
+      console.log(!shortTrip);
+
+      const soldOut = false;
+      const seatsLeft = 0;
+      let tourNote = '';
+      const backupGuide = null;
+      let guideName;
+      const badDays = Number('三天');
+      const place = '花蓮';
+
+      console.log(soldOut); // falsy：false
+      console.log(seatsLeft); // falsy：0
+      console.log(tourNote.length); // falsy：空字串，長度是 0
+      console.log(backupGuide); // falsy：null
+      console.log(guideName); // falsy：undefined，只宣告還沒賦值
+      console.log(badDays); // falsy：NaN
+      console.log(place); // truthy：有內容的字串
+      console.log(days); // truthy：非 0 的數字
+
+      console.log(place && price); // 左邊有內容，交出右邊的價格
+      console.log((tourNote && price) === ''); // 左邊是空字串，交出左邊
+      console.log(soldOut || place); // 左邊不成立，交出右邊
+      console.log(place || '未定地點'); // 左邊已有內容，不再看右邊
+
+      const isLoggedIn = true;
+      isLoggedIn && console.log('顯示會員價');
+
+      const guest = false;
+      guest && console.log('這行不會出現');
+
+      const note = tourNote || '尚無備註';
+      console.log(note);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/18-js-logic.js
-const days = 3;
-const price = 12800;
-const shortTrip = days <= 3;
-const underBudget = price < 20000;
-
-console.log(shortTrip && underBudget);
-console.log(days === 5 || underBudget);
-console.log(!shortTrip);
-
-const soldOut = false;
-const seatsLeft = 0;
-let tourNote = '';
-const backupGuide = null;
-let guideName;
-const badDays = Number('三天');
-const place = '花蓮';
-
-console.log(soldOut); // falsy：false
-console.log(seatsLeft); // falsy：0
-console.log(tourNote.length); // falsy：空字串，長度是 0
-console.log(backupGuide); // falsy：null
-console.log(guideName); // falsy：undefined，只宣告還沒賦值
-console.log(badDays); // falsy：NaN
-console.log(place); // truthy：有內容的字串
-console.log(days); // truthy：非 0 的數字
-
-console.log(place && price); // 左邊有內容，交出右邊的價格
-console.log((tourNote && price) === ''); // 左邊是空字串，交出左邊
-console.log(soldOut || place); // 左邊不成立，交出右邊
-console.log(place || '未定地點'); // 左邊已有內容，不再看右邊
-
-const isLoggedIn = true;
-isLoggedIn && console.log('顯示會員價');
-
-const guest = false;
-guest && console.log('這行不會出現');
-
-const note = tourNote || '尚無備註';
-console.log(note);
 ```
 
 **解析**
@@ -2375,60 +2315,58 @@ rainy 成立，`&&` 交出右邊的字串「請帶雨具」。
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="18-js-logic.js"></script>
+    <script>
+      const days = 3;
+      const price = 12800;
+      const shortTrip = days <= 3;
+      const underBudget = price < 20000;
+
+      console.log(shortTrip && underBudget);
+      console.log(days === 5 || underBudget);
+      console.log(!shortTrip);
+
+      const soldOut = false;
+      const seatsLeft = 0;
+      let tourNote = '';
+      const backupGuide = null;
+      let guideName;
+      const badDays = Number('三天');
+      const place = '花蓮';
+
+      console.log(soldOut); // falsy：false
+      console.log(seatsLeft); // falsy：0
+      console.log(tourNote.length); // falsy：空字串，長度是 0
+      console.log(backupGuide); // falsy：null
+      console.log(guideName); // falsy：undefined，只宣告還沒賦值
+      console.log(badDays); // falsy：NaN
+      console.log(place); // truthy：有內容的字串
+      console.log(days); // truthy：非 0 的數字
+
+      console.log(place && price); // 左邊有內容，交出右邊的價格
+      console.log((tourNote && price) === ''); // 左邊是空字串，交出左邊
+      console.log(soldOut || place); // 左邊不成立，交出右邊
+      console.log(place || '未定地點'); // 左邊已有內容，不再看右邊
+
+      const isLoggedIn = true;
+      isLoggedIn && console.log('顯示會員價');
+
+      const guest = false;
+      guest && console.log('這行不會出現');
+
+      const note = tourNote || '尚無備註';
+      console.log(note);
+
+      const member = false;
+      member && console.log('顯示會員價');
+
+      const breakfast = '含早餐';
+      console.log(breakfast || '尚無備註');
+
+      const rainy = true;
+      console.log(rainy && '請帶雨具');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/18-js-logic.js
-const days = 3;
-const price = 12800;
-const shortTrip = days <= 3;
-const underBudget = price < 20000;
-
-console.log(shortTrip && underBudget);
-console.log(days === 5 || underBudget);
-console.log(!shortTrip);
-
-const soldOut = false;
-const seatsLeft = 0;
-let tourNote = '';
-const backupGuide = null;
-let guideName;
-const badDays = Number('三天');
-const place = '花蓮';
-
-console.log(soldOut); // falsy：false
-console.log(seatsLeft); // falsy：0
-console.log(tourNote.length); // falsy：空字串，長度是 0
-console.log(backupGuide); // falsy：null
-console.log(guideName); // falsy：undefined，只宣告還沒賦值
-console.log(badDays); // falsy：NaN
-console.log(place); // truthy：有內容的字串
-console.log(days); // truthy：非 0 的數字
-
-console.log(place && price); // 左邊有內容，交出右邊的價格
-console.log((tourNote && price) === ''); // 左邊是空字串，交出左邊
-console.log(soldOut || place); // 左邊不成立，交出右邊
-console.log(place || '未定地點'); // 左邊已有內容，不再看右邊
-
-const isLoggedIn = true;
-isLoggedIn && console.log('顯示會員價');
-
-const guest = false;
-guest && console.log('這行不會出現');
-
-const note = tourNote || '尚無備註';
-console.log(note);
-
-const member = false;
-member && console.log('顯示會員價');
-
-const breakfast = '含早餐';
-console.log(breakfast || '尚無備註');
-
-const rainy = true;
-console.log(rainy && '請帶雨具');
 ```
 
 </details>
@@ -2458,32 +2396,30 @@ console.log(rainy && '請帶雨具');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="19-js-nullish.js"></script>
+    <script>
+      let tourSeats = 0;
+      let missingSeats;
+      let tourNote = '';
+
+      const seatsByOr = tourSeats || 10;
+      const seats = tourSeats ?? 10;
+      const fallbackSeats = missingSeats ?? 10;
+
+      console.log(seatsByOr); // 0 是 falsy，|| 改用 10
+      console.log(seats); // ?? 留下 0
+      console.log(fallbackSeats); // undefined 才改用 10
+
+      const noteByOr = tourNote || '尚無備註';
+      const noteByNullish = tourNote ?? '尚無備註';
+      console.log(noteByOr); // 空字串是 falsy，|| 改用預設句
+      console.log(noteByNullish.length); // ?? 留下空字串，長度是 0
+
+      const price = 12800;
+      const label = price < 20000 ? '三萬內' : '三萬以上';
+      console.log(label);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/19-js-nullish.js
-let tourSeats = 0;
-let missingSeats;
-let tourNote = '';
-
-const seatsByOr = tourSeats || 10;
-const seats = tourSeats ?? 10;
-const fallbackSeats = missingSeats ?? 10;
-
-console.log(seatsByOr); // 0 是 falsy，|| 改用 10
-console.log(seats); // ?? 留下 0
-console.log(fallbackSeats); // undefined 才改用 10
-
-const noteByOr = tourNote || '尚無備註';
-const noteByNullish = tourNote ?? '尚無備註';
-console.log(noteByOr); // 空字串是 falsy，|| 改用預設句
-console.log(noteByNullish.length); // ?? 留下空字串，長度是 0
-
-const price = 12800;
-const label = price < 20000 ? '三萬內' : '三萬以上';
-console.log(label);
 ```
 
 **解析**
@@ -2533,39 +2469,37 @@ null 對兩種運算子都算空值，所以兩行都是 10。這和上面的 0 
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="19-js-nullish.js"></script>
+    <script>
+      let tourSeats = 0;
+      let missingSeats;
+      let tourNote = '';
+
+      const seatsByOr = tourSeats || 10;
+      const seats = tourSeats ?? 10;
+      const fallbackSeats = missingSeats ?? 10;
+
+      console.log(seatsByOr); // 0 是 falsy，|| 改用 10
+      console.log(seats); // ?? 留下 0
+      console.log(fallbackSeats); // undefined 才改用 10
+
+      const noteByOr = tourNote || '尚無備註';
+      const noteByNullish = tourNote ?? '尚無備註';
+      console.log(noteByOr); // 空字串是 falsy，|| 改用預設句
+      console.log(noteByNullish.length); // ?? 留下空字串，長度是 0
+
+      const price = 12800;
+      const label = price < 20000 ? '三萬內' : '三萬以上';
+      console.log(label);
+
+      let cancelledSeats = null;
+      console.log(cancelledSeats || 10);
+      console.log(cancelledSeats ?? 10);
+
+      const band = price < 15000 ? '輕裝' : '標準';
+      console.log(band);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/19-js-nullish.js
-let tourSeats = 0;
-let missingSeats;
-let tourNote = '';
-
-const seatsByOr = tourSeats || 10;
-const seats = tourSeats ?? 10;
-const fallbackSeats = missingSeats ?? 10;
-
-console.log(seatsByOr); // 0 是 falsy，|| 改用 10
-console.log(seats); // ?? 留下 0
-console.log(fallbackSeats); // undefined 才改用 10
-
-const noteByOr = tourNote || '尚無備註';
-const noteByNullish = tourNote ?? '尚無備註';
-console.log(noteByOr); // 空字串是 falsy，|| 改用預設句
-console.log(noteByNullish.length); // ?? 留下空字串，長度是 0
-
-const price = 12800;
-const label = price < 20000 ? '三萬內' : '三萬以上';
-console.log(label);
-
-let cancelledSeats = null;
-console.log(cancelledSeats || 10);
-console.log(cancelledSeats ?? 10);
-
-const band = price < 15000 ? '輕裝' : '標準';
-console.log(band);
 ```
 
 </details>
@@ -2597,24 +2531,22 @@ console.log(band);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="20-js-if.js"></script>
+    <script>
+      const price = 15900;
+      let band;
+
+      if (price < 15000) {
+        band = '輕裝';
+      } else if (price < 30000) {
+        band = '標準';
+      } else {
+        band = '深度';
+      }
+
+      console.log(band);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/20-js-if.js
-const price = 15900;
-let band;
-
-if (price < 15000) {
-  band = '輕裝';
-} else if (price < 30000) {
-  band = '標準';
-} else {
-  band = '深度';
-}
-
-console.log(band);
 ```
 
 **解析**
@@ -2665,36 +2597,34 @@ if (isStandard) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="20-js-if.js"></script>
+    <script>
+      const price = 15900;
+      let band;
+
+      if (price < 15000) {
+        band = '輕裝';
+      } else if (price < 30000) {
+        band = '標準';
+      } else {
+        band = '深度';
+      }
+
+      console.log(band);
+
+      const days = 5;
+      let lengthLabel;
+      if (days === 1) {
+        lengthLabel = '一日遊';
+      } else if (days === 3) {
+        lengthLabel = '短途';
+      } else {
+        lengthLabel = '多日';
+      }
+      console.log(lengthLabel);
+      // days 改成 3 時會印出「短途」
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/20-js-if.js
-const price = 15900;
-let band;
-
-if (price < 15000) {
-  band = '輕裝';
-} else if (price < 30000) {
-  band = '標準';
-} else {
-  band = '深度';
-}
-
-console.log(band);
-
-const days = 5;
-let lengthLabel;
-if (days === 1) {
-  lengthLabel = '一日遊';
-} else if (days === 3) {
-  lengthLabel = '短途';
-} else {
-  lengthLabel = '多日';
-}
-console.log(lengthLabel);
-// days 改成 3 時會印出「短途」
 ```
 
 </details>
@@ -2724,30 +2654,28 @@ console.log(lengthLabel);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="21-js-switch.js"></script>
+    <script>
+      const place = '花蓮';
+      let region;
+
+      switch (place) {
+        case '台北':
+          region = '北部';
+          break;
+        case '花蓮':
+          region = '東部';
+          break;
+        case '台南':
+          region = '南部';
+          break;
+        default:
+          region = '其他';
+      }
+
+      console.log(region);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/21-js-switch.js
-const place = '花蓮';
-let region;
-
-switch (place) {
-  case '台北':
-    region = '北部';
-    break;
-  case '花蓮':
-    region = '東部';
-    break;
-  case '台南':
-    region = '南部';
-    break;
-  default:
-    region = '其他';
-}
-
-console.log(region);
 ```
 
 **解析**
@@ -2784,33 +2712,31 @@ console.log(region);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="21-js-switch.js"></script>
+    <script>
+      const place = '京都';
+      let region;
+
+      switch (place) {
+        case '台北':
+          region = '北部';
+          break;
+        case '花蓮':
+          region = '東部';
+          break;
+        case '台南':
+          region = '南部';
+          break;
+        case '京都':
+          region = '日本';
+          break;
+        default:
+          region = '其他';
+      }
+
+      console.log(region);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/21-js-switch.js
-const place = '京都';
-let region;
-
-switch (place) {
-  case '台北':
-    region = '北部';
-    break;
-  case '花蓮':
-    region = '東部';
-    break;
-  case '台南':
-    region = '南部';
-    break;
-  case '京都':
-    region = '日本';
-    break;
-  default:
-    region = '其他';
-}
-
-console.log(region);
 ```
 
 </details>
@@ -2829,32 +2755,30 @@ console.log(region);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="22-js-switch-group.js"></script>
+    <script>
+      const day = '週六';
+      let ticket;
+
+      switch (day) {
+        case '週六':
+        case '週日':
+          ticket = '假日票';
+          break;
+        case '週一':
+        case '週二':
+        case '週三':
+        case '週四':
+        case '週五':
+          ticket = '平日票';
+          break;
+        default:
+          ticket = '日期有誤';
+      }
+
+      console.log(ticket);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/22-js-switch-group.js
-const day = '週六';
-let ticket;
-
-switch (day) {
-  case '週六':
-  case '週日':
-    ticket = '假日票';
-    break;
-  case '週一':
-  case '週二':
-  case '週三':
-  case '週四':
-  case '週五':
-    ticket = '平日票';
-    break;
-  default:
-    ticket = '日期有誤';
-}
-
-console.log(ticket);
 ```
 
 **解析**
@@ -2884,28 +2808,41 @@ console.log(ticket);
 
 在「週日」下面再疊一個 `case '國定假日':`，同樣不寫程式也不寫 `break`，就會掉進假日票那段。
 
-```js 04-js/pages/22-js-switch-group.js
-const day = '國定假日';
-let ticket;
+```html 04-js/pages/22-js-switch-group.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>switch 合併 case</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const day = '國定假日';
+      let ticket;
 
-switch (day) {
-  case '週六':
-  case '週日':
-  case '國定假日':
-    ticket = '假日票';
-    break;
-  case '週一':
-  case '週二':
-  case '週三':
-  case '週四':
-  case '週五':
-    ticket = '平日票';
-    break;
-  default:
-    ticket = '日期有誤';
-}
+      switch (day) {
+        case '週六':
+        case '週日':
+        case '國定假日':
+          ticket = '假日票';
+          break;
+        case '週一':
+        case '週二':
+        case '週三':
+        case '週四':
+        case '週五':
+          ticket = '平日票';
+          break;
+        default:
+          ticket = '日期有誤';
+      }
 
-console.log(ticket);
+      console.log(ticket);
+    </script>
+  </body>
+</html>
 ```
 
 </details>
@@ -2939,17 +2876,15 @@ console.log(ticket);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="23-js-for.js"></script>
+    <script>
+      const days = 3;
+
+      for (let day = 1; day <= days; day += 1) {
+        console.log(day);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/23-js-for.js
-const days = 3;
-
-for (let day = 1; day <= days; day += 1) {
-  console.log(day);
-}
 ```
 
 **解析**
@@ -2996,17 +2931,15 @@ for...in 走的是鍵。陣列的鍵是 `'0'`、`'1'` 這種字串，不要拿�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="23-js-for.js"></script>
+    <script>
+      const days = 5;
+
+      for (let day = 1; day <= days; day += 1) {
+        console.log('第' + day + '天');
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/23-js-for.js
-const days = 5;
-
-for (let day = 1; day <= days; day += 1) {
-  console.log('第' + day + '天');
-}
 ```
 
 </details>
@@ -3038,30 +2971,28 @@ for (let day = 1; day <= days; day += 1) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="24-js-while.js"></script>
+    <script>
+      let seats = 3;
+
+      while (seats > 0) {
+        console.log(seats);
+        seats -= 1;
+      }
+
+      console.log('額滿');
+
+      for (let day = 1; day <= 5; day += 1) {
+        if (day === 2) {
+          continue;
+        }
+        if (day === 4) {
+          break;
+        }
+        console.log(day);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/24-js-while.js
-let seats = 3;
-
-while (seats > 0) {
-  console.log(seats);
-  seats -= 1;
-}
-
-console.log('額滿');
-
-for (let day = 1; day <= 5; day += 1) {
-  if (day === 2) {
-    continue;
-  }
-  if (day === 4) {
-    break;
-  }
-  console.log(day);
-}
 ```
 
 **解析**
@@ -3104,30 +3035,28 @@ for (let day = 1; day <= 5; day += 1) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="24-js-while.js"></script>
+    <script>
+      let seats = 2;
+
+      while (seats > 0) {
+        console.log(seats);
+        seats -= 1;
+      }
+
+      console.log('額滿');
+
+      for (let day = 1; day <= 5; day += 1) {
+        if (day === 1) {
+          continue;
+        }
+        if (day === 3) {
+          break;
+        }
+        console.log(day);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/24-js-while.js
-let seats = 2;
-
-while (seats > 0) {
-  console.log(seats);
-  seats -= 1;
-}
-
-console.log('額滿');
-
-for (let day = 1; day <= 5; day += 1) {
-  if (day === 1) {
-    continue;
-  }
-  if (day === 3) {
-    break;
-  }
-  console.log(day);
-}
 ```
 
 </details>
@@ -3154,27 +3083,25 @@ for (let day = 1; day <= 5; day += 1) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="25-js-do.js"></script>
+    <script>
+      let count = 0;
+
+      console.log('while 先檢查');
+      while (count > 0) {
+        count += 1;
+        console.log(count);
+      }
+
+      let tries = 0;
+
+      console.log('do 先執行');
+      do {
+        tries += 1;
+        console.log(tries);
+      } while (tries < 1);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/25-js-do.js
-let count = 0;
-
-console.log('while 先檢查');
-while (count > 0) {
-  count += 1;
-  console.log(count);
-}
-
-let tries = 0;
-
-console.log('do 先執行');
-do {
-  tries += 1;
-  console.log(tries);
-} while (tries < 1);
 ```
 
 **解析**
@@ -3209,27 +3136,25 @@ do 先執行
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="25-js-do.js"></script>
+    <script>
+      let count = 0;
+
+      console.log('while 先檢查');
+      while (count > 0) {
+        count += 1;
+        console.log(count);
+      }
+
+      let tries = 0;
+
+      console.log('do 先執行');
+      do {
+        tries += 1;
+        console.log(tries);
+      } while (tries < 3);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/25-js-do.js
-let count = 0;
-
-console.log('while 先檢查');
-while (count > 0) {
-  count += 1;
-  console.log(count);
-}
-
-let tries = 0;
-
-console.log('do 先執行');
-do {
-  tries += 1;
-  console.log(tries);
-} while (tries < 3);
 ```
 
 </details>
@@ -3256,17 +3181,15 @@ do {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="26-js-nested.js"></script>
+    <script>
+      for (let row = 1; row <= 2; row += 1) {
+        for (let col = 1; col <= 3; col += 1) {
+          console.log(row + '×' + col + '=' + (row * col));
+        }
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/26-js-nested.js
-for (let row = 1; row <= 2; row += 1) {
-  for (let col = 1; col <= 3; col += 1) {
-    console.log(row + '×' + col + '=' + (row * col));
-  }
-}
 ```
 
 **解析**
@@ -3310,17 +3233,15 @@ for (let row = 1; row <= 2; row += 1) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="26-js-nested.js"></script>
+    <script>
+      for (let row = 1; row <= 3; row += 1) {
+        for (let col = 1; col <= 2; col += 1) {
+          console.log(row + '×' + col + '=' + (row * col));
+        }
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/26-js-nested.js
-for (let row = 1; row <= 3; row += 1) {
-  for (let col = 1; col <= 2; col += 1) {
-    console.log(row + '×' + col + '=' + (row * col));
-  }
-}
 ```
 
 </details>
@@ -3355,19 +3276,17 @@ for (let row = 1; row <= 3; row += 1) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="27-js-function.js"></script>
+    <script>
+      function sayHello() {
+        console.log('Hello');
+      }
+
+      sayHello();
+      sayHello();
+      sayHello();
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/27-js-function.js
-function sayHello() {
-  console.log('Hello');
-}
-
-sayHello();
-sayHello();
-sayHello();
 ```
 
 **解析**
@@ -3402,25 +3321,23 @@ sayThanks 寫在 sayHello 後面，兩次呼叫放在最後。Hello 仍是三行
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="27-js-function.js"></script>
+    <script>
+      function sayHello() {
+        console.log('Hello');
+      }
+
+      function sayThanks() {
+        console.log('Thanks');
+      }
+
+      sayHello();
+      sayHello();
+      sayHello();
+      sayThanks();
+      sayThanks();
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/27-js-function.js
-function sayHello() {
-  console.log('Hello');
-}
-
-function sayThanks() {
-  console.log('Thanks');
-}
-
-sayHello();
-sayHello();
-sayHello();
-sayThanks();
-sayThanks();
 ```
 
 </details>
@@ -3471,31 +3388,29 @@ sayThanks();
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="28-js-params.js"></script>
+    <script>
+      function printPair(left, right) {
+        console.log(left);
+        console.log(right);
+      }
+
+      printPair(10, 20);
+      printPair(10);
+      printPair(10, 20, 30);
+
+      function bump(value) {
+        value = value + 1;
+        console.log(value);
+      }
+
+      let value = 5;
+      bump(value);
+      console.log(value);
+
+      // console.log(left);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/28-js-params.js
-function printPair(left, right) {
-  console.log(left);
-  console.log(right);
-}
-
-printPair(10, 20);
-printPair(10);
-printPair(10, 20, 30);
-
-function bump(value) {
-  value = value + 1;
-  console.log(value);
-}
-
-let value = 5;
-bump(value);
-console.log(value);
-
-// console.log(left);
 ```
 
 **解析**
@@ -3537,31 +3452,29 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="28-js-params.js"></script>
+    <script>
+      function printPair(left, right) {
+        console.log(left);
+        console.log(right);
+      }
+
+      printPair(10, 20);
+      printPair(10);
+      printPair(10, 20, 30);
+
+      function bump(value) {
+        value = value + 1;
+        console.log(value);
+      }
+
+      let value = 9;
+      bump(value);
+      console.log(value);
+
+      // console.log(left);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/28-js-params.js
-function printPair(left, right) {
-  console.log(left);
-  console.log(right);
-}
-
-printPair(10, 20);
-printPair(10);
-printPair(10, 20, 30);
-
-function bump(value) {
-  value = value + 1;
-  console.log(value);
-}
-
-let value = 9;
-bump(value);
-console.log(value);
-
-// console.log(left);
 ```
 
 </details>
@@ -3595,35 +3508,33 @@ console.log(value);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="29-js-return.js"></script>
+    <script>
+      function getTotal(price, count) {
+        return price * count;
+      }
+
+      function printTotal(price, count) {
+        console.log(price * count);
+      }
+
+      const total = getTotal(80, 3);
+      console.log(total);
+
+      const line = `合計 ${getTotal(80, 2)}`;
+      console.log(line);
+
+      console.log(getTotal(getTotal(10, 2), 4));
+
+      console.log(printTotal(80, 3));
+
+      function blank() {
+        return;
+      }
+
+      console.log(blank());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/29-js-return.js
-function getTotal(price, count) {
-  return price * count;
-}
-
-function printTotal(price, count) {
-  console.log(price * count);
-}
-
-const total = getTotal(80, 3);
-console.log(total);
-
-const line = `合計 ${getTotal(80, 2)}`;
-console.log(line);
-
-console.log(getTotal(getTotal(10, 2), 4));
-
-console.log(printTotal(80, 3));
-
-function blank() {
-  return;
-}
-
-console.log(blank());
 ```
 
 **解析**
@@ -3665,47 +3576,45 @@ getDouble(6) 交回 12，模板字串接成「兩倍是 12」。printOnly 先印
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="29-js-return.js"></script>
+    <script>
+      function getTotal(price, count) {
+        return price * count;
+      }
+
+      function printTotal(price, count) {
+        console.log(price * count);
+      }
+
+      const total = getTotal(80, 3);
+      console.log(total);
+
+      const line = `合計 ${getTotal(80, 2)}`;
+      console.log(line);
+
+      console.log(getTotal(getTotal(10, 2), 4));
+
+      console.log(printTotal(80, 3));
+
+      function blank() {
+        return;
+      }
+
+      console.log(blank());
+
+      function getDouble(n) {
+        return n * 2;
+      }
+
+      console.log(`兩倍是 ${getDouble(6)}`);
+
+      function printOnly(n) {
+        console.log(n);
+      }
+
+      console.log(printOnly(6));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/29-js-return.js
-function getTotal(price, count) {
-  return price * count;
-}
-
-function printTotal(price, count) {
-  console.log(price * count);
-}
-
-const total = getTotal(80, 3);
-console.log(total);
-
-const line = `合計 ${getTotal(80, 2)}`;
-console.log(line);
-
-console.log(getTotal(getTotal(10, 2), 4));
-
-console.log(printTotal(80, 3));
-
-function blank() {
-  return;
-}
-
-console.log(blank());
-
-function getDouble(n) {
-  return n * 2;
-}
-
-console.log(`兩倍是 ${getDouble(6)}`);
-
-function printOnly(n) {
-  console.log(n);
-}
-
-console.log(printOnly(6));
 ```
 
 </details>
@@ -3736,49 +3645,47 @@ console.log(printOnly(6));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="30-js-guard.js"></script>
+    <script>
+      // 沒有檢查：參數不合理時，除法照樣算出結果
+      function averageRaw(total, count) {
+        return total / count;
+      }
+
+      console.log(averageRaw(240, 3)); // 80
+      console.log(averageRaw(240, 0)); // Infinity
+      console.log(averageRaw(0, 0)); // NaN
+
+      // 提早 return：先擋掉無效輸入，再做正常計算
+      function average(total, count) {
+        if (count <= 0) {
+          console.log('人數必須大於 0');
+          return null;
+        }
+        if (total < 0) {
+          console.log('分數總和不能是負數');
+          return null;
+        }
+        return total / count;
+      }
+
+      console.log(average(240, 3)); // 80
+      console.log(average(240, 0)); // 先印原因，再印 null
+      console.log(average(-10, 2)); // 先印原因，再印 null
+
+      // 不需要回傳值：用 return; 單純終止動作
+      function printScore(name, score) {
+        if (score < 0 || score > 100) {
+          console.log(name + ' 的分數無效');
+          return;
+        }
+        console.log(name + ' 考了 ' + score + ' 分');
+      }
+
+      printScore('Amy', 88);
+      printScore('Ben', 120);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/30-js-guard.js
-// 沒有檢查：參數不合理時，除法照樣算出結果
-function averageRaw(total, count) {
-  return total / count;
-}
-
-console.log(averageRaw(240, 3)); // 80
-console.log(averageRaw(240, 0)); // Infinity
-console.log(averageRaw(0, 0)); // NaN
-
-// 提早 return：先擋掉無效輸入，再做正常計算
-function average(total, count) {
-  if (count <= 0) {
-    console.log('人數必須大於 0');
-    return null;
-  }
-  if (total < 0) {
-    console.log('分數總和不能是負數');
-    return null;
-  }
-  return total / count;
-}
-
-console.log(average(240, 3)); // 80
-console.log(average(240, 0)); // 先印原因，再印 null
-console.log(average(-10, 2)); // 先印原因，再印 null
-
-// 不需要回傳值：用 return; 單純終止動作
-function printScore(name, score) {
-  if (score < 0 || score > 100) {
-    console.log(name + ' 的分數無效');
-    return;
-  }
-  console.log(name + ' 考了 ' + score + ' 分');
-}
-
-printScore('Amy', 88);
-printScore('Ben', 120);
 ```
 
 **解析**
@@ -3812,46 +3719,59 @@ Ben 的分數無效
 
 新的檢查一樣放在除法之前，printScore 不受影響。500 大於 3 乘以 100 的 300，所以印出原因並回傳 `null`，除法不會執行。原本的三次呼叫結果不變。
 
-```js 04-js/pages/30-js-guard.js
-function averageRaw(total, count) {
-  return total / count;
-}
+```html 04-js/pages/30-js-guard.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>提早 return</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      function averageRaw(total, count) {
+        return total / count;
+      }
 
-console.log(averageRaw(240, 3)); // 80
-console.log(averageRaw(240, 0)); // Infinity
-console.log(averageRaw(0, 0)); // NaN
+      console.log(averageRaw(240, 3)); // 80
+      console.log(averageRaw(240, 0)); // Infinity
+      console.log(averageRaw(0, 0)); // NaN
 
-function average(total, count) {
-  if (count <= 0) {
-    console.log('人數必須大於 0');
-    return null;
-  }
-  if (total < 0) {
-    console.log('分數總和不能是負數');
-    return null;
-  }
-  if (total > count * 100) {
-    console.log('總和超過上限');
-    return null;
-  }
-  return total / count;
-}
+      function average(total, count) {
+        if (count <= 0) {
+          console.log('人數必須大於 0');
+          return null;
+        }
+        if (total < 0) {
+          console.log('分數總和不能是負數');
+          return null;
+        }
+        if (total > count * 100) {
+          console.log('總和超過上限');
+          return null;
+        }
+        return total / count;
+      }
 
-console.log(average(240, 3)); // 80
-console.log(average(240, 0)); // null
-console.log(average(-10, 2)); // null
-console.log(average(500, 3)); // null
+      console.log(average(240, 3)); // 80
+      console.log(average(240, 0)); // null
+      console.log(average(-10, 2)); // null
+      console.log(average(500, 3)); // null
 
-function printScore(name, score) {
-  if (score < 0 || score > 100) {
-    console.log(name + ' 的分數無效');
-    return;
-  }
-  console.log(name + ' 考了 ' + score + ' 分');
-}
+      function printScore(name, score) {
+        if (score < 0 || score > 100) {
+          console.log(name + ' 的分數無效');
+          return;
+        }
+        console.log(name + ' 考了 ' + score + ' 分');
+      }
 
-printScore('Amy', 88);
-printScore('Ben', 120);
+      printScore('Amy', 88);
+      printScore('Ben', 120);
+    </script>
+  </body>
+</html>
 ```
 
 </details>
@@ -3885,35 +3805,33 @@ printScore('Ben', 120);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="31-js-default-param.js"></script>
+    <script>
+      function showCount(count = 1) {
+        console.log(count);
+      }
+
+      showCount();
+      showCount(3);
+      showCount(0);
+      showCount(undefined);
+      showCount(null);
+
+      function countByOr(count) {
+        count = count || 1;
+        console.log(count);
+      }
+
+      countByOr(0);
+
+      function countByNullish(count) {
+        console.log(count ?? 1);
+      }
+
+      countByNullish(0);
+      countByNullish(null);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/31-js-default-param.js
-function showCount(count = 1) {
-  console.log(count);
-}
-
-showCount();
-showCount(3);
-showCount(0);
-showCount(undefined);
-showCount(null);
-
-function countByOr(count) {
-  count = count || 1;
-  console.log(count);
-}
-
-countByOr(0);
-
-function countByNullish(count) {
-  console.log(count ?? 1);
-}
-
-countByNullish(0);
-countByNullish(null);
 ```
 
 **解析**
@@ -3957,43 +3875,41 @@ null
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="31-js-default-param.js"></script>
+    <script>
+      function showCount(count = 1) {
+        console.log(count);
+      }
+
+      showCount();
+      showCount(3);
+      showCount(0);
+      showCount(undefined);
+      showCount(null);
+
+      function countByOr(count) {
+        count = count || 1;
+        console.log(count);
+      }
+
+      countByOr(0);
+
+      function countByNullish(count) {
+        console.log(count ?? 1);
+      }
+
+      countByNullish(0);
+      countByNullish(null);
+
+      function showCurrency(currency = 'TWD') {
+        console.log(currency);
+      }
+
+      showCurrency();
+      showCurrency('USD');
+      showCurrency(null);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/31-js-default-param.js
-function showCount(count = 1) {
-  console.log(count);
-}
-
-showCount();
-showCount(3);
-showCount(0);
-showCount(undefined);
-showCount(null);
-
-function countByOr(count) {
-  count = count || 1;
-  console.log(count);
-}
-
-countByOr(0);
-
-function countByNullish(count) {
-  console.log(count ?? 1);
-}
-
-countByNullish(0);
-countByNullish(null);
-
-function showCurrency(currency = 'TWD') {
-  console.log(currency);
-}
-
-showCurrency();
-showCurrency('USD');
-showCurrency(null);
 ```
 
 </details>
@@ -4020,23 +3936,21 @@ showCurrency(null);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="32-js-rest.js"></script>
+    <script>
+      function sumAll(...numbers) {
+        let total = 0;
+        for (let i = 0; i < numbers.length; i += 1) {
+          total += numbers[i];
+        }
+        return total;
+      }
+
+      console.log(sumAll(10, 20, 30));
+      console.log(sumAll(5));
+      console.log(sumAll());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/32-js-rest.js
-function sumAll(...numbers) {
-  let total = 0;
-  for (let i = 0; i < numbers.length; i += 1) {
-    total += numbers[i];
-  }
-  return total;
-}
-
-console.log(sumAll(10, 20, 30));
-console.log(sumAll(5));
-console.log(sumAll());
 ```
 
 **解析**
@@ -4072,30 +3986,28 @@ console.log(sumAll());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="32-js-rest.js"></script>
+    <script>
+      function sumAll(...numbers) {
+        let total = 0;
+        for (let i = 0; i < numbers.length; i += 1) {
+          total += numbers[i];
+        }
+        return total;
+      }
+
+      console.log(sumAll(10, 20, 30));
+      console.log(sumAll(5));
+      console.log(sumAll());
+
+      function countAll(...numbers) {
+        return numbers.length;
+      }
+
+      console.log(countAll(8, 8, 8));
+      console.log(countAll());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/32-js-rest.js
-function sumAll(...numbers) {
-  let total = 0;
-  for (let i = 0; i < numbers.length; i += 1) {
-    total += numbers[i];
-  }
-  return total;
-}
-
-console.log(sumAll(10, 20, 30));
-console.log(sumAll(5));
-console.log(sumAll());
-
-function countAll(...numbers) {
-  return numbers.length;
-}
-
-console.log(countAll(8, 8, 8));
-console.log(countAll());
 ```
 
 </details>
@@ -4133,25 +4045,23 @@ console.log(countAll());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="33-js-anonymous.js"></script>
+    <script>
+      console.log(sumDeclared(2, 3));
+
+      function sumDeclared(a, b) {
+        return a + b;
+      }
+
+      // console.log(add(2, 3));
+
+      const add = function (a, b) {
+        return a + b;
+      };
+
+      console.log(add(2, 3));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/33-js-anonymous.js
-console.log(sumDeclared(2, 3));
-
-function sumDeclared(a, b) {
-  return a + b;
-}
-
-// console.log(add(2, 3));
-
-const add = function (a, b) {
-  return a + b;
-};
-
-console.log(add(2, 3));
 ```
 
 **解析**
@@ -4186,31 +4096,29 @@ multiply 和 add 一樣，是賦值之後才能呼叫的匿名函式。4 乘 5 �
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="33-js-anonymous.js"></script>
+    <script>
+      console.log(sumDeclared(2, 3));
+
+      function sumDeclared(a, b) {
+        return a + b;
+      }
+
+      // console.log(add(2, 3));
+
+      const add = function (a, b) {
+        return a + b;
+      };
+
+      console.log(add(2, 3));
+
+      const multiply = function (a, b) {
+        return a * b;
+      };
+
+      console.log(multiply(4, 5));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/33-js-anonymous.js
-console.log(sumDeclared(2, 3));
-
-function sumDeclared(a, b) {
-  return a + b;
-}
-
-// console.log(add(2, 3));
-
-const add = function (a, b) {
-  return a + b;
-};
-
-console.log(add(2, 3));
-
-const multiply = function (a, b) {
-  return a * b;
-};
-
-console.log(multiply(4, 5));
 ```
 
 </details>
@@ -4243,47 +4151,45 @@ console.log(multiply(4, 5));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="34-js-arrow.js"></script>
+    <script>
+      // 1. 匿名函式表達式
+      const double1 = function (n) {
+        return n * 2;
+      };
+
+      // 2. 拿掉 function，加上 =>
+      const double2 = (n) => {
+        return n * 2;
+      };
+
+      // 3. 只有一行 return：省略大括號與 return（隱式回傳）
+      const double3 = (n) => n * 2;
+      // 只有一個參數時語法上可以寫成 n => n * 2，Prettier 會自動補回括號
+
+      // 沒有參數：小括號不能省略
+      const sayHi = () => 'Hi';
+
+      // 兩個以上參數：一定要有小括號
+      const add = (a, b) => a + b;
+
+      // 寫了大括號卻忘了 return
+      const forgotten = (n) => {
+        n * 2;
+      };
+
+      // 隱式回傳物件：外面再包一層小括號
+      const pair = (left, right) => ({ left: left, right: right });
+
+      console.log(double1(4));
+      console.log(double2(4));
+      console.log(double3(4));
+      console.log(sayHi());
+      console.log(add(2, 3));
+      console.log(forgotten(4));
+      console.log(pair(2, 3));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/34-js-arrow.js
-// 1. 匿名函式表達式
-const double1 = function (n) {
-  return n * 2;
-};
-
-// 2. 拿掉 function，加上 =>
-const double2 = (n) => {
-  return n * 2;
-};
-
-// 3. 只有一行 return：省略大括號與 return（隱式回傳）
-const double3 = (n) => n * 2;
-// 只有一個參數時語法上可以寫成 n => n * 2，Prettier 會自動補回括號
-
-// 沒有參數：小括號不能省略
-const sayHi = () => 'Hi';
-
-// 兩個以上參數：一定要有小括號
-const add = (a, b) => a + b;
-
-// 寫了大括號卻忘了 return
-const forgotten = (n) => {
-  n * 2;
-};
-
-// 隱式回傳物件：外面再包一層小括號
-const pair = (left, right) => ({ left: left, right: right });
-
-console.log(double1(4));
-console.log(double2(4));
-console.log(double3(4));
-console.log(sayHi());
-console.log(add(2, 3));
-console.log(forgotten(4));
-console.log(pair(2, 3));
 ```
 
 **解析**
@@ -4321,37 +4227,50 @@ const square = function (n) {
 
 拿掉 function 並加上 `=>`，再因為大括號裡只有一行 return，把大括號和 return 一起省略。參數只有一個，依課堂慣例保留小括號。
 
-```js 04-js/pages/34-js-arrow.js
-const double1 = function (n) {
-  return n * 2;
-};
+```html 04-js/pages/34-js-arrow.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>箭頭函式</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const double1 = function (n) {
+        return n * 2;
+      };
 
-const double2 = (n) => {
-  return n * 2;
-};
+      const double2 = (n) => {
+        return n * 2;
+      };
 
-const double3 = (n) => n * 2;
+      const double3 = (n) => n * 2;
 
-const sayHi = () => 'Hi';
+      const sayHi = () => 'Hi';
 
-const add = (a, b) => a + b;
+      const add = (a, b) => a + b;
 
-const forgotten = (n) => {
-  n * 2;
-};
+      const forgotten = (n) => {
+        n * 2;
+      };
 
-const pair = (left, right) => ({ left: left, right: right });
+      const pair = (left, right) => ({ left: left, right: right });
 
-console.log(double1(4));
-console.log(double2(4));
-console.log(double3(4));
-console.log(sayHi());
-console.log(add(2, 3));
-console.log(forgotten(4));
-console.log(pair(2, 3));
+      console.log(double1(4));
+      console.log(double2(4));
+      console.log(double3(4));
+      console.log(sayHi());
+      console.log(add(2, 3));
+      console.log(forgotten(4));
+      console.log(pair(2, 3));
 
-const square = (n) => n * n;
-console.log(square(5));
+      const square = (n) => n * n;
+      console.log(square(5));
+    </script>
+  </body>
+</html>
 ```
 
 </details>
@@ -4385,28 +4304,26 @@ console.log(square(5));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="35-js-callback.js"></script>
+    <script>
+      function calc(a, b, operation) {
+        const result = operation(a, b);
+        console.log(result);
+      }
+
+      function add(a, b) {
+        return a + b;
+      }
+
+      calc(10, 4, add);
+
+      calc(10, 4, function (a, b) {
+        return a * b;
+      });
+
+      calc(10, 4, (a, b) => a - b);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/35-js-callback.js
-function calc(a, b, operation) {
-  const result = operation(a, b);
-  console.log(result);
-}
-
-function add(a, b) {
-  return a + b;
-}
-
-calc(10, 4, add);
-
-calc(10, 4, function (a, b) {
-  return a * b;
-});
-
-calc(10, 4, (a, b) => a - b);
 ```
 
 **解析**
@@ -4449,30 +4366,28 @@ calc(10, 4, (a, b) => a - b);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="35-js-callback.js"></script>
+    <script>
+      function calc(a, b, operation) {
+        const result = operation(a, b);
+        console.log(result);
+      }
+
+      function add(a, b) {
+        return a + b;
+      }
+
+      calc(10, 4, add);
+
+      calc(10, 4, function (a, b) {
+        return a * b;
+      });
+
+      calc(10, 4, (a, b) => a - b);
+
+      calc(10, 4, (a, b) => a / b);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/35-js-callback.js
-function calc(a, b, operation) {
-  const result = operation(a, b);
-  console.log(result);
-}
-
-function add(a, b) {
-  return a + b;
-}
-
-calc(10, 4, add);
-
-calc(10, 4, function (a, b) {
-  return a * b;
-});
-
-calc(10, 4, (a, b) => a - b);
-
-calc(10, 4, (a, b) => a / b);
 ```
 
 </details>
@@ -4491,7 +4406,7 @@ calc(10, 4, (a, b) => a / b);
 
 - 外面若不能直接碰到那個變數，就只能透過交出來的函式讀寫。這就是把狀態封在函式裡，外面改不到內部的 count。
 
-下圖對照下方範例 `36-js-closure.js` 的程式。`const first = createCounter()` 執行一次函式，裡面的 `let count = 0` 與兩支函式一起被做出來，再由 return 的物件交給 first。second 是另一次呼叫，拿到的是另一份 count。
+下圖對照下方 `36-js-closure.html` 裡的 script。`const first = createCounter()` 執行一次函式，裡面的 let count = 0 與兩支函式一起被做出來，再由 return 的物件交給 first。second 是另一次呼叫，拿到的是另一份 count。
 
 {% mermaid graph LR %}
   subgraph run1["const first = createCounter()"]
@@ -4525,39 +4440,37 @@ calc(10, 4, (a, b) => a / b);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="36-js-closure.js"></script>
+    <script>
+      function createCounter() {
+        let count = 0;
+
+        function increment() {
+          count += 1;
+          return count;
+        }
+
+        function getCount() {
+          return count;
+        }
+
+        return {
+          increment: increment,
+          getCount: getCount,
+        };
+      }
+
+      const first = createCounter();
+      console.log(first.increment());
+      console.log(first.increment());
+      console.log(first.getCount());
+      console.log(first.count);
+
+      const second = createCounter();
+      console.log(second.getCount());
+      console.log(first.getCount());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/36-js-closure.js
-function createCounter() {
-  let count = 0;
-
-  function increment() {
-    count += 1;
-    return count;
-  }
-
-  function getCount() {
-    return count;
-  }
-
-  return {
-    increment: increment,
-    getCount: getCount,
-  };
-}
-
-const first = createCounter();
-console.log(first.increment());
-console.log(first.increment());
-console.log(first.getCount());
-console.log(first.count);
-
-const second = createCounter();
-console.log(second.getCount());
-console.log(first.getCount());
 ```
 
 ```text
@@ -4598,45 +4511,43 @@ first 的 count 已是 2，再加一次是 3。新的那一份從 0 開始，inc
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="36-js-closure.js"></script>
+    <script>
+      function createCounter() {
+        let count = 0;
+
+        function increment() {
+          count += 1;
+          return count;
+        }
+
+        function getCount() {
+          return count;
+        }
+
+        return {
+          increment: increment,
+          getCount: getCount,
+        };
+      }
+
+      const first = createCounter();
+      console.log(first.increment());
+      console.log(first.increment());
+      console.log(first.getCount());
+      console.log(first.count);
+
+      const second = createCounter();
+      console.log(second.getCount());
+      console.log(first.getCount());
+
+      console.log(first.increment());
+
+      const third = createCounter();
+      console.log(third.increment());
+      console.log(first.getCount());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/36-js-closure.js
-function createCounter() {
-  let count = 0;
-
-  function increment() {
-    count += 1;
-    return count;
-  }
-
-  function getCount() {
-    return count;
-  }
-
-  return {
-    increment: increment,
-    getCount: getCount,
-  };
-}
-
-const first = createCounter();
-console.log(first.increment());
-console.log(first.increment());
-console.log(first.getCount());
-console.log(first.count);
-
-const second = createCounter();
-console.log(second.getCount());
-console.log(first.getCount());
-
-console.log(first.increment());
-
-const third = createCounter();
-console.log(third.increment());
-console.log(first.getCount());
 ```
 
 </details>
@@ -4679,23 +4590,21 @@ console.log(first.getCount());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="37-js-array.js"></script>
+    <script>
+      const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
+
+      console.log(titles.length);
+      console.log(titles[0]);
+      console.log(titles.at(-1));
+      console.log(Array.isArray(titles));
+      console.log(typeof titles);
+
+      for (const title of titles) {
+        console.log(title);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/37-js-array.js
-const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
-
-console.log(titles.length);
-console.log(titles[0]);
-console.log(titles.at(-1));
-console.log(Array.isArray(titles));
-console.log(typeof titles);
-
-for (const title of titles) {
-  console.log(title);
-}
 ```
 
 **解析**
@@ -4742,29 +4651,27 @@ object
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="37-js-array.js"></script>
+    <script>
+      const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
+
+      console.log(titles.length);
+      console.log(titles[0]);
+      console.log(titles.at(-1));
+      console.log(Array.isArray(titles));
+      console.log(typeof titles);
+
+      for (const title of titles) {
+        console.log(title);
+      }
+
+      console.log(titles.at(-2));
+
+      for (let index = 0; index < titles.length; index += 1) {
+        console.log(index + ': ' + titles[index]);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/37-js-array.js
-const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
-
-console.log(titles.length);
-console.log(titles[0]);
-console.log(titles.at(-1));
-console.log(Array.isArray(titles));
-console.log(typeof titles);
-
-for (const title of titles) {
-  console.log(title);
-}
-
-console.log(titles.at(-2));
-
-for (let index = 0; index < titles.length; index += 1) {
-  console.log(index + ': ' + titles[index]);
-}
 ```
 
 </details>
@@ -4791,20 +4698,18 @@ push、pop、unshift、shift、`splice` 都改原來那個陣列。它們的回�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="38-js-mutate.js"></script>
+    <script>
+      const titles = ['台北', '花蓮', '京都'];
+
+      console.log(titles.push('台南'));
+      console.log(titles.pop());
+      console.log(titles.unshift('高雄'));
+      console.log(titles.shift());
+      console.log(titles.splice(1, 1, '台東'));
+      console.log(titles);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/38-js-mutate.js
-const titles = ['台北', '花蓮', '京都'];
-
-console.log(titles.push('台南'));
-console.log(titles.pop());
-console.log(titles.unshift('高雄'));
-console.log(titles.shift());
-console.log(titles.splice(1, 1, '台東'));
-console.log(titles);
 ```
 
 **解析**
@@ -4850,23 +4755,21 @@ push 回傳的是長度，是數字。若寫成 `titles.push('台南').map(...)`
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="38-js-mutate.js"></script>
+    <script>
+      const titles = ['台北', '花蓮', '京都'];
+
+      console.log(titles.push('台南'));
+      console.log(titles.pop());
+      console.log(titles.unshift('高雄'));
+      console.log(titles.shift());
+      console.log(titles.splice(1, 1, '台東'));
+      console.log(titles);
+
+      console.log(titles.splice(0, 2));
+      console.log(titles);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/38-js-mutate.js
-const titles = ['台北', '花蓮', '京都'];
-
-console.log(titles.push('台南'));
-console.log(titles.pop());
-console.log(titles.unshift('高雄'));
-console.log(titles.shift());
-console.log(titles.splice(1, 1, '台東'));
-console.log(titles);
-
-console.log(titles.splice(0, 2));
-console.log(titles);
 ```
 
 </details>
@@ -4895,27 +4798,25 @@ console.log(titles);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="39-js-const-ref.js"></script>
+    <script>
+      const fruits = ['apple', 'banana', 'cherry'];
+
+      fruits[0] = 'kiwi';
+      fruits.push('mango');
+      console.log(fruits);
+
+      function replaceFirst(list) {
+        list[0] = 'pear';
+      }
+
+      replaceFirst(fruits);
+      console.log(fruits[0]);
+      console.log(fruits);
+
+      // fruits = [];
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/39-js-const-ref.js
-const fruits = ['apple', 'banana', 'cherry'];
-
-fruits[0] = 'kiwi';
-fruits.push('mango');
-console.log(fruits);
-
-function replaceFirst(list) {
-  list[0] = 'pear';
-}
-
-replaceFirst(fruits);
-console.log(fruits[0]);
-console.log(fruits);
-
-// fruits = [];
 ```
 
 **解析**
@@ -4958,32 +4859,30 @@ pear
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="39-js-const-ref.js"></script>
+    <script>
+      const fruits = ['apple', 'banana', 'cherry'];
+
+      fruits[0] = 'kiwi';
+      fruits.push('mango');
+      console.log(fruits);
+
+      function replaceFirst(list) {
+        list[0] = 'pear';
+      }
+
+      replaceFirst(fruits);
+      console.log(fruits[0]);
+      console.log(fruits);
+
+      // fruits = [];
+
+      fruits[2] = 'lime';
+      fruits.pop();
+      console.log(fruits.length);
+      console.log(fruits);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/39-js-const-ref.js
-const fruits = ['apple', 'banana', 'cherry'];
-
-fruits[0] = 'kiwi';
-fruits.push('mango');
-console.log(fruits);
-
-function replaceFirst(list) {
-  list[0] = 'pear';
-}
-
-replaceFirst(fruits);
-console.log(fruits[0]);
-console.log(fruits);
-
-// fruits = [];
-
-fruits[2] = 'lime';
-fruits.pop();
-console.log(fruits.length);
-console.log(fruits);
 ```
 
 </details>
@@ -5025,30 +4924,28 @@ console.log(fruits);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="40-js-search.js"></script>
+    <script>
+      const scores = [88, 92, 76, 92];
+
+      // 92 在陣列裡，true；第一次出現在索引 1
+      console.log(scores.includes(92));
+      console.log(scores.indexOf(92));
+      // 小於 80 的第一個值是 76，索引是 2
+      console.log(scores.find((score) => score < 80));
+      console.log(scores.findIndex((score) => score < 80));
+      // 有分數大於等於 90，true；每一格都大於等於 60，true
+      console.log(scores.some((score) => score >= 90));
+      console.log(scores.every((score) => score >= 60));
+      // 原陣列沒有被改
+      console.log(scores);
+
+      const mixed = [1, NaN];
+      // includes 找得到 NaN；indexOf 得到 -1
+      console.log(mixed.includes(NaN));
+      console.log(mixed.indexOf(NaN));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/40-js-search.js
-const scores = [88, 92, 76, 92];
-
-// 92 在陣列裡，true；第一次出現在索引 1
-console.log(scores.includes(92));
-console.log(scores.indexOf(92));
-// 小於 80 的第一個值是 76，索引是 2
-console.log(scores.find((score) => score < 80));
-console.log(scores.findIndex((score) => score < 80));
-// 有分數大於等於 90，true；每一格都大於等於 60，true
-console.log(scores.some((score) => score >= 90));
-console.log(scores.every((score) => score >= 60));
-// 原陣列沒有被改
-console.log(scores);
-
-const mixed = [1, NaN];
-// includes 找得到 NaN；indexOf 得到 -1
-console.log(mixed.includes(NaN));
-console.log(mixed.indexOf(NaN));
 ```
 
 **解析**
@@ -5096,34 +4993,32 @@ true
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="40-js-search.js"></script>
+    <script>
+      const scores = [88, 92, 76, 92];
+
+      // 92 在陣列裡，true；第一次出現在索引 1
+      console.log(scores.includes(92));
+      console.log(scores.indexOf(92));
+      // 小於 80 的第一個值是 76，索引是 2
+      console.log(scores.find((score) => score < 80));
+      console.log(scores.findIndex((score) => score < 80));
+      // 有分數大於等於 90，true；每一格都大於等於 60，true
+      console.log(scores.some((score) => score >= 90));
+      console.log(scores.every((score) => score >= 60));
+      // 原陣列沒有被改
+      console.log(scores);
+
+      const mixed = [1, NaN];
+      // includes 找得到 NaN；indexOf 得到 -1
+      console.log(mixed.includes(NaN));
+      console.log(mixed.indexOf(NaN));
+
+      console.log(scores.findIndex((score) => score === 92));
+      console.log(scores.every((score) => score >= 90));
+      console.log(scores.includes(76));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/40-js-search.js
-const scores = [88, 92, 76, 92];
-
-// 92 在陣列裡，true；第一次出現在索引 1
-console.log(scores.includes(92));
-console.log(scores.indexOf(92));
-// 小於 80 的第一個值是 76，索引是 2
-console.log(scores.find((score) => score < 80));
-console.log(scores.findIndex((score) => score < 80));
-// 有分數大於等於 90，true；每一格都大於等於 60，true
-console.log(scores.some((score) => score >= 90));
-console.log(scores.every((score) => score >= 60));
-// 原陣列沒有被改
-console.log(scores);
-
-const mixed = [1, NaN];
-// includes 找得到 NaN；indexOf 得到 -1
-console.log(mixed.includes(NaN));
-console.log(mixed.indexOf(NaN));
-
-console.log(scores.findIndex((score) => score === 92));
-console.log(scores.every((score) => score >= 90));
-console.log(scores.includes(76));
 ```
 
 </details>
@@ -5149,24 +5044,22 @@ console.log(scores.includes(76));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="41-js-map.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800];
+
+      // 三行依序是索引 0、1、2，價格是原數字，長度都是 3
+      prices.forEach((price, index, array) => {
+        console.log(index, price, array.length);
+      });
+
+      // 兩倍的新陣列。原陣列仍是三個原價。forEach 的回傳值是 undefined
+      const doubled = prices.map((price) => price * 2);
+      console.log(doubled);
+      console.log(prices);
+      console.log(prices.forEach((price) => price));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/41-js-map.js
-const prices = [12800, 15900, 42800];
-
-// 三行依序是索引 0、1、2，價格是原數字，長度都是 3
-prices.forEach((price, index, array) => {
-  console.log(index, price, array.length);
-});
-
-// 兩倍的新陣列。原陣列仍是三個原價。forEach 的回傳值是 undefined
-const doubled = prices.map((price) => price * 2);
-console.log(doubled);
-console.log(prices);
-console.log(prices.forEach((price) => price));
 ```
 
 **解析**
@@ -5209,28 +5102,26 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="41-js-map.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800];
+
+      // 三行依序是索引 0、1、2，價格是原數字，長度都是 3
+      prices.forEach((price, index, array) => {
+        console.log(index, price, array.length);
+      });
+
+      // 兩倍的新陣列。原陣列仍是三個原價。forEach 的回傳值是 undefined
+      const doubled = prices.map((price) => price * 2);
+      console.log(doubled);
+      console.log(prices);
+      console.log(prices.forEach((price) => price));
+
+      const raised = prices.map((price) => price + 1000);
+      console.log(raised);
+      console.log(prices[0]);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/41-js-map.js
-const prices = [12800, 15900, 42800];
-
-// 三行依序是索引 0、1、2，價格是原數字，長度都是 3
-prices.forEach((price, index, array) => {
-  console.log(index, price, array.length);
-});
-
-// 兩倍的新陣列。原陣列仍是三個原價。forEach 的回傳值是 undefined
-const doubled = prices.map((price) => price * 2);
-console.log(doubled);
-console.log(prices);
-console.log(prices.forEach((price) => price));
-
-const raised = prices.map((price) => price + 1000);
-console.log(raised);
-console.log(prices[0]);
 ```
 
 </details>
@@ -5239,7 +5130,7 @@ console.log(prices[0]);
 
 這一類把陣列收成另一份結果，而且不改原陣列。`filter` 留下符合的格子，`reduce` 收成一個值。
 
-練習檔先用 for 與 push 把條件寫對，完成的寫法在同名的 `.js.final`。
+練習檔先用 for 與 push 把條件寫對，完成的寫法在同名的 `.html.final`。
 
 **觀念**
 
@@ -5261,20 +5152,18 @@ console.log(prices[0]);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="42-js-filter.js"></script>
+    <script>
+      const scores = [88, 92, 76, 95, 61];
+
+      // 留下大於等於 80 的新陣列。原陣列仍是五格
+      const passed = scores.filter((score) => score >= 80);
+
+      console.log(passed);
+      console.log(scores);
+      console.log(scores.length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/42-js-filter.js
-const scores = [88, 92, 76, 95, 61];
-
-// 留下大於等於 80 的新陣列。原陣列仍是五格
-const passed = scores.filter((score) => score >= 80);
-
-console.log(passed);
-console.log(scores);
-console.log(scores.length);
 ```
 
 **解析**
@@ -5308,23 +5197,21 @@ console.log(scores.length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="42-js-filter.js"></script>
+    <script>
+      const scores = [88, 92, 76, 95, 61];
+
+      // 留下大於等於 80 的新陣列。原陣列仍是五格
+      const passed = scores.filter((score) => score >= 80);
+
+      console.log(passed);
+      console.log(scores);
+      console.log(scores.length);
+
+      const failed = scores.filter((score) => score < 80);
+      console.log(failed);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/42-js-filter.js
-const scores = [88, 92, 76, 95, 61];
-
-// 留下大於等於 80 的新陣列。原陣列仍是五格
-const passed = scores.filter((score) => score >= 80);
-
-console.log(passed);
-console.log(scores);
-console.log(scores.length);
-
-const failed = scores.filter((score) => score < 80);
-console.log(failed);
 ```
 
 </details>
@@ -5341,21 +5228,19 @@ console.log(failed);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="43-js-reduce.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800];
+
+      // 從 0 依序相加，得到 71500。原陣列長度仍是 3
+      const total = prices.reduce((sum, price) => {
+        return sum + price;
+      }, 0);
+
+      console.log(total);
+      console.log(prices.length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/43-js-reduce.js
-const prices = [12800, 15900, 42800];
-
-// 從 0 依序相加，得到 71500。原陣列長度仍是 3
-const total = prices.reduce((sum, price) => {
-  return sum + price;
-}, 0);
-
-console.log(total);
-console.log(prices.length);
 ```
 
 **解析**
@@ -5393,21 +5278,19 @@ console.log(prices.length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="43-js-reduce.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800, 6800];
+
+      // 四個數字從 0 相加，得到 78300。長度仍是 4
+      const total = prices.reduce((sum, price) => {
+        return sum + price;
+      }, 0);
+
+      console.log(total);
+      console.log(prices.length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/43-js-reduce.js
-const prices = [12800, 15900, 42800, 6800];
-
-// 四個數字從 0 相加，得到 78300。長度仍是 4
-const total = prices.reduce((sum, price) => {
-  return sum + price;
-}, 0);
-
-console.log(total);
-console.log(prices.length);
 ```
 
 </details>
@@ -5444,32 +5327,30 @@ console.log(prices.length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="44-js-sort.js"></script>
+    <script>
+      const scores = [20, 3, 100];
+      const places = ['花蓮', '台北', '京都'];
+
+      // 先複製再排序。不給比較函式時依字串變成 100、20、3
+      const asText = scores.slice().sort();
+      // 數字比較才是 3、20、100。原陣列仍是 20、3、100
+      const ranked = scores.slice().sort((a, b) => a - b);
+      // 地名依 zh-Hant 比較，順序是台北、京都、花蓮
+      const byLocale = places.slice().sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+
+      console.log(asText);
+      console.log(ranked);
+      console.log(scores);
+      console.log(byLocale);
+      // concat 是四個地名的新陣列，join 是一個字串
+      console.log(places.concat(['台南']));
+      console.log(places.join('、'));
+      // toReversed 倒過來，原陣列仍是 20、3、100
+      console.log(scores.toReversed());
+      console.log(scores);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/44-js-sort.js
-const scores = [20, 3, 100];
-const places = ['花蓮', '台北', '京都'];
-
-// 先複製再排序。不給比較函式時依字串變成 100、20、3
-const asText = scores.slice().sort();
-// 數字比較才是 3、20、100。原陣列仍是 20、3、100
-const ranked = scores.slice().sort((a, b) => a - b);
-// 地名依 zh-Hant 比較，順序是台北、京都、花蓮
-const byLocale = places.slice().sort((a, b) => a.localeCompare(b, 'zh-Hant'));
-
-console.log(asText);
-console.log(ranked);
-console.log(scores);
-console.log(byLocale);
-// concat 是四個地名的新陣列，join 是一個字串
-console.log(places.concat(['台南']));
-console.log(places.join('、'));
-// toReversed 倒過來，原陣列仍是 20、3、100
-console.log(scores.toReversed());
-console.log(scores);
 ```
 
 **解析**
@@ -5518,36 +5399,34 @@ console.log(scores);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="44-js-sort.js"></script>
+    <script>
+      const scores = [20, 3, 100];
+      const places = ['花蓮', '台北', '京都'];
+
+      // 先複製再排序。不給比較函式時依字串變成 100、20、3
+      const asText = scores.slice().sort();
+      // 數字比較才是 3、20、100。原陣列仍是 20、3、100
+      const ranked = scores.slice().sort((a, b) => a - b);
+      // 地名依 zh-Hant 比較，順序是台北、京都、花蓮
+      const byLocale = places.slice().sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+
+      console.log(asText);
+      console.log(ranked);
+      console.log(scores);
+      console.log(byLocale);
+      // concat 是四個地名的新陣列，join 是一個字串
+      console.log(places.concat(['台南']));
+      console.log(places.join('、'));
+      // toReversed 倒過來，原陣列仍是 20、3、100
+      console.log(scores.toReversed());
+      console.log(scores);
+
+      const byNumber = scores.toSorted((a, b) => a - b);
+      console.log(byNumber);
+      console.log(scores[0]);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/44-js-sort.js
-const scores = [20, 3, 100];
-const places = ['花蓮', '台北', '京都'];
-
-// 先複製再排序。不給比較函式時依字串變成 100、20、3
-const asText = scores.slice().sort();
-// 數字比較才是 3、20、100。原陣列仍是 20、3、100
-const ranked = scores.slice().sort((a, b) => a - b);
-// 地名依 zh-Hant 比較，順序是台北、京都、花蓮
-const byLocale = places.slice().sort((a, b) => a.localeCompare(b, 'zh-Hant'));
-
-console.log(asText);
-console.log(ranked);
-console.log(scores);
-console.log(byLocale);
-// concat 是四個地名的新陣列，join 是一個字串
-console.log(places.concat(['台南']));
-console.log(places.join('、'));
-// toReversed 倒過來，原陣列仍是 20、3、100
-console.log(scores.toReversed());
-console.log(scores);
-
-const byNumber = scores.toSorted((a, b) => a - b);
-console.log(byNumber);
-console.log(scores[0]);
 ```
 
 </details>
@@ -5576,25 +5455,23 @@ console.log(scores[0]);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="45-js-chain.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800, 6800];
+
+      // 留下小於 20000 的三個價格，各乘 2，從 0 加總得到 71000
+      const total = prices
+        .filter((price) => price < 20000)
+        .map((price) => price * 2)
+        .reduce((sum, price) => sum + price, 0);
+
+      console.log(total);
+      console.log(prices);
+
+      // forEach 回傳 undefined，接著呼叫 map 會中斷
+      // prices.filter((price) => price < 20000).forEach((price) => price).map((price) => price);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/45-js-chain.js
-const prices = [12800, 15900, 42800, 6800];
-
-// 留下小於 20000 的三個價格，各乘 2，從 0 加總得到 71000
-const total = prices
-  .filter((price) => price < 20000)
-  .map((price) => price * 2)
-  .reduce((sum, price) => sum + price, 0);
-
-console.log(total);
-console.log(prices);
-
-// forEach 回傳 undefined，接著呼叫 map 會中斷
-// prices.filter((price) => price < 20000).forEach((price) => price).map((price) => price);
 ```
 
 **解析**
@@ -5628,28 +5505,26 @@ console.log(prices);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="45-js-chain.js"></script>
+    <script>
+      const prices = [12800, 15900, 42800, 6800];
+
+      // 留下小於 20000 的三個價格，各乘 2，從 0 加總得到 71000
+      const total = prices
+        .filter((price) => price < 20000)
+        .map((price) => price * 2)
+        .reduce((sum, price) => sum + price, 0);
+
+      console.log(total);
+      console.log(prices);
+
+      // 只留下 42800，從 0 加總，得到 42800
+      const high = prices
+        .filter((price) => price >= 20000)
+        .reduce((sum, price) => sum + price, 0);
+      console.log(high);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/45-js-chain.js
-const prices = [12800, 15900, 42800, 6800];
-
-// 留下小於 20000 的三個價格，各乘 2，從 0 加總得到 71000
-const total = prices
-  .filter((price) => price < 20000)
-  .map((price) => price * 2)
-  .reduce((sum, price) => sum + price, 0);
-
-console.log(total);
-console.log(prices);
-
-// 只留下 42800，從 0 加總，得到 42800
-const high = prices
-  .filter((price) => price >= 20000)
-  .reduce((sum, price) => sum + price, 0);
-console.log(high);
 ```
 
 </details>
@@ -5676,23 +5551,21 @@ console.log(high);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="46-js-set.js"></script>
+    <script>
+      const places = ['台北', '花蓮', '台北', '京都'];
+      const unique = new Set(places);
+
+      console.log(unique.size);
+      console.log(unique.has('花蓮'));
+
+      unique.add('台南');
+      console.log(unique.size);
+      unique.add('台北');
+      console.log(unique.size);
+      console.log(Array.from(unique));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/46-js-set.js
-const places = ['台北', '花蓮', '台北', '京都'];
-const unique = new Set(places);
-
-console.log(unique.size);
-console.log(unique.has('花蓮'));
-
-unique.add('台南');
-console.log(unique.size);
-unique.add('台北');
-console.log(unique.size);
-console.log(Array.from(unique));
 ```
 
 **解析**
@@ -5736,27 +5609,25 @@ Set 只用在「這個值出現過沒有」。需要 map 或 filter 時，先用
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="46-js-set.js"></script>
+    <script>
+      const places = ['台北', '花蓮', '台北', '京都'];
+      const unique = new Set(places);
+
+      console.log(unique.size);
+      console.log(unique.has('花蓮'));
+
+      unique.add('台南');
+      console.log(unique.size);
+      unique.add('台北');
+      console.log(unique.size);
+      console.log(Array.from(unique));
+
+      console.log(unique.has('京都'));
+      unique.add('京都');
+      console.log(unique.size);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/46-js-set.js
-const places = ['台北', '花蓮', '台北', '京都'];
-const unique = new Set(places);
-
-console.log(unique.size);
-console.log(unique.has('花蓮'));
-
-unique.add('台南');
-console.log(unique.size);
-unique.add('台北');
-console.log(unique.size);
-console.log(Array.from(unique));
-
-console.log(unique.has('京都'));
-unique.add('京都');
-console.log(unique.size);
 ```
 
 </details>
@@ -5793,28 +5664,26 @@ console.log(unique.size);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="47-js-object.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+      const field = 'place';
+
+      const tour = {
+        id: 1,
+        title,
+        place: '台北',
+        days: 3,
+        price: 12800,
+        [field + 'Code']: 'TPE',
+      };
+
+      console.log(tour.title);
+      console.log(tour['place']);
+      console.log(tour.placeCode);
+      console.log(tour.guide);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/47-js-object.js
-const title = '台北城市漫遊';
-const field = 'place';
-
-const tour = {
-  id: 1,
-  title,
-  place: '台北',
-  days: 3,
-  price: 12800,
-  [field + 'Code']: 'TPE',
-};
-
-console.log(tour.title);
-console.log(tour['place']);
-console.log(tour.placeCode);
-console.log(tour.guide);
 ```
 
 **解析**
@@ -5856,40 +5725,38 @@ key 在變數裡，或字串裡有減號、空白，點記法寫不出來，用�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="47-js-object.js"></script>
+    <script>
+      const title = '台北城市漫遊';
+      const field = 'place';
+
+      const tour = {
+        id: 1,
+        title,
+        place: '台北',
+        days: 3,
+        price: 12800,
+        [field + 'Code']: 'TPE',
+      };
+
+      console.log(tour.title);
+      console.log(tour['place']);
+      console.log(tour.placeCode);
+      console.log(tour.guide);
+
+      const place = '花蓮';
+      const hualien = {
+        id: 2,
+        title: '花蓮山海三日',
+        place,
+        days: 3,
+        price: 15900,
+      };
+
+      console.log(hualien.title);
+      console.log(hualien['price']);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/47-js-object.js
-const title = '台北城市漫遊';
-const field = 'place';
-
-const tour = {
-  id: 1,
-  title,
-  place: '台北',
-  days: 3,
-  price: 12800,
-  [field + 'Code']: 'TPE',
-};
-
-console.log(tour.title);
-console.log(tour['place']);
-console.log(tour.placeCode);
-console.log(tour.guide);
-
-const place = '花蓮';
-const hualien = {
-  id: 2,
-  title: '花蓮山海三日',
-  place,
-  days: 3,
-  price: 15900,
-};
-
-console.log(hualien.title);
-console.log(hualien['price']);
 ```
 
 </details>
@@ -5916,32 +5783,30 @@ console.log(hualien['price']);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="48-js-object-update.js"></script>
+    <script>
+      const tour = {
+        id: 1,
+        title: '台北城市漫遊',
+        days: 3,
+        price: 12800,
+      };
+
+      tour.price = 13900;
+      tour.seats = 8;
+      console.log(tour.price);
+      console.log('seats' in tour);
+      console.log(Object.hasOwn(tour, 'seats'));
+      console.log(Object.hasOwn(tour, 'toString'));
+      console.log('toString' in tour);
+
+      delete tour.seats;
+      console.log(Object.hasOwn(tour, 'seats'));
+      console.log(tour.days);
+
+      // tour = { id: 2 };
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/48-js-object-update.js
-const tour = {
-  id: 1,
-  title: '台北城市漫遊',
-  days: 3,
-  price: 12800,
-};
-
-tour.price = 13900;
-tour.seats = 8;
-console.log(tour.price);
-console.log('seats' in tour);
-console.log(Object.hasOwn(tour, 'seats'));
-console.log(Object.hasOwn(tour, 'toString'));
-console.log('toString' in tour);
-
-delete tour.seats;
-console.log(Object.hasOwn(tour, 'seats'));
-console.log(tour.days);
-
-// tour = { id: 2 };
 ```
 
 **解析**
@@ -5986,38 +5851,36 @@ days 改成 4。place 新增後又被刪掉，hasOwn 是 false。前面的 seats
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="48-js-object-update.js"></script>
+    <script>
+      const tour = {
+        id: 1,
+        title: '台北城市漫遊',
+        days: 3,
+        price: 12800,
+      };
+
+      tour.price = 13900;
+      tour.seats = 8;
+      console.log(tour.price);
+      console.log('seats' in tour);
+      console.log(Object.hasOwn(tour, 'seats'));
+      console.log(Object.hasOwn(tour, 'toString'));
+      console.log('toString' in tour);
+
+      delete tour.seats;
+      console.log(Object.hasOwn(tour, 'seats'));
+      console.log(tour.days);
+
+      // tour = { id: 2 };
+
+      tour.days = 4;
+      tour.place = '台北';
+      console.log(tour.days);
+      delete tour.place;
+      console.log(Object.hasOwn(tour, 'place'));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/48-js-object-update.js
-const tour = {
-  id: 1,
-  title: '台北城市漫遊',
-  days: 3,
-  price: 12800,
-};
-
-tour.price = 13900;
-tour.seats = 8;
-console.log(tour.price);
-console.log('seats' in tour);
-console.log(Object.hasOwn(tour, 'seats'));
-console.log(Object.hasOwn(tour, 'toString'));
-console.log('toString' in tour);
-
-delete tour.seats;
-console.log(Object.hasOwn(tour, 'seats'));
-console.log(tour.days);
-
-// tour = { id: 2 };
-
-tour.days = 4;
-tour.place = '台北';
-console.log(tour.days);
-delete tour.place;
-console.log(Object.hasOwn(tour, 'place'));
 ```
 
 </details>
@@ -6046,21 +5909,19 @@ console.log(Object.hasOwn(tour, 'place'));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="49-js-method.js"></script>
+    <script>
+      const tour = {
+        title: '花蓮山海三日',
+        days: 3,
+        label() {
+          return this.title + '・' + this.days + ' 天';
+        },
+      };
+
+      console.log(tour.label());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/49-js-method.js
-const tour = {
-  title: '花蓮山海三日',
-  days: 3,
-  label() {
-    return this.title + '・' + this.days + ' 天';
-  },
-};
-
-console.log(tour.label());
 ```
 
 **解析**
@@ -6092,25 +5953,23 @@ console.log(tour.label());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="49-js-method.js"></script>
+    <script>
+      const tour = {
+        title: '花蓮山海三日',
+        days: 3,
+        label() {
+          return this.title + '・' + this.days + ' 天';
+        },
+        nights() {
+          return this.days - 1;
+        },
+      };
+
+      console.log(tour.label());
+      console.log(tour.nights());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/49-js-method.js
-const tour = {
-  title: '花蓮山海三日',
-  days: 3,
-  label() {
-    return this.title + '・' + this.days + ' 天';
-  },
-  nights() {
-    return this.days - 1;
-  },
-};
-
-console.log(tour.label());
-console.log(tour.nights());
 ```
 
 </details>
@@ -6137,20 +5996,18 @@ console.log(tour.nights());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="50-js-optional.js"></script>
+    <script>
+      const tour = { title: '台北城市漫遊', guide: { name: '林' } };
+      const other = { title: '花蓮山海三日' };
+
+      console.log(tour.guide?.name);
+      console.log(other.guide?.name);
+      console.log(other.guide?.name ?? '未定');
+
+      // console.log(other.guide.name);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/50-js-optional.js
-const tour = { title: '台北城市漫遊', guide: { name: '林' } };
-const other = { title: '花蓮山海三日' };
-
-console.log(tour.guide?.name);
-console.log(other.guide?.name);
-console.log(other.guide?.name ?? '未定');
-
-// console.log(other.guide.name);
 ```
 
 **解析**
@@ -6185,21 +6042,19 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="50-js-optional.js"></script>
+    <script>
+      const tour = { title: '台北城市漫遊', guide: { name: '林' } };
+      const other = { title: '花蓮山海三日' };
+
+      console.log(tour.guide?.name);
+      console.log(other.guide?.name);
+      console.log(other.guide?.name ?? '未定');
+
+      const withGuide = { title: '花蓮山海三日', guide: { name: '陳' } };
+      console.log(withGuide.guide?.name);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/50-js-optional.js
-const tour = { title: '台北城市漫遊', guide: { name: '林' } };
-const other = { title: '花蓮山海三日' };
-
-console.log(tour.guide?.name);
-console.log(other.guide?.name);
-console.log(other.guide?.name ?? '未定');
-
-const withGuide = { title: '花蓮山海三日', guide: { name: '陳' } };
-console.log(withGuide.guide?.name);
 ```
 
 </details>
@@ -6230,19 +6085,17 @@ console.log(withGuide.guide?.name);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="51-js-keys.js"></script>
+    <script>
+      const tour = { id: 1, title: '台北城市漫遊', days: 3 };
+
+      console.log(Object.keys(tour));
+      console.log(Object.values(tour));
+      console.log(Object.entries(tour));
+      console.log(tour.keys);
+      console.log(typeof tour.toString);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/51-js-keys.js
-const tour = { id: 1, title: '台北城市漫遊', days: 3 };
-
-console.log(Object.keys(tour));
-console.log(Object.values(tour));
-console.log(Object.entries(tour));
-console.log(tour.keys);
-console.log(typeof tour.toString);
 ```
 
 **解析**
@@ -6285,22 +6138,20 @@ function
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="51-js-keys.js"></script>
+    <script>
+      const tour = { id: 1, title: '台北城市漫遊', days: 3 };
+
+      console.log(Object.keys(tour));
+      console.log(Object.values(tour));
+      console.log(Object.entries(tour));
+      console.log(tour.keys);
+      console.log(typeof tour.toString);
+
+      tour.price = 12800;
+      console.log(Object.keys(tour).length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/51-js-keys.js
-const tour = { id: 1, title: '台北城市漫遊', days: 3 };
-
-console.log(Object.keys(tour));
-console.log(Object.values(tour));
-console.log(Object.entries(tour));
-console.log(tour.keys);
-console.log(typeof tour.toString);
-
-tour.price = 12800;
-console.log(Object.keys(tour).length);
 ```
 
 </details>
@@ -6327,17 +6178,15 @@ console.log(Object.keys(tour).length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="52-js-entries.js"></script>
+    <script>
+      const tour = { id: 1, title: '台北城市漫遊', days: 3 };
+
+      for (const pair of Object.entries(tour)) {
+        console.log(pair[0], pair[1]);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/52-js-entries.js
-const tour = { id: 1, title: '台北城市漫遊', days: 3 };
-
-for (const pair of Object.entries(tour)) {
-  console.log(pair[0], pair[1]);
-}
 ```
 
 **解析**
@@ -6384,17 +6233,15 @@ for (const key in tour) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="52-js-entries.js"></script>
+    <script>
+      const tour = { id: 1, title: '台北城市漫遊', days: 3, price: 12800 };
+
+      for (const pair of Object.entries(tour)) {
+        console.log(pair[0], pair[1]);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/52-js-entries.js
-const tour = { id: 1, title: '台北城市漫遊', days: 3, price: 12800 };
-
-for (const pair of Object.entries(tour)) {
-  console.log(pair[0], pair[1]);
-}
 ```
 
 </details>
@@ -6421,19 +6268,17 @@ for (const pair of Object.entries(tour)) {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="53-js-map.js"></script>
+    <script>
+      const prices = new Map();
+      prices.set(1, 12800);
+      prices.set(2, 15900);
+
+      console.log(prices.get(1));
+      console.log(prices.get('1'));
+      console.log(prices.size);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/53-js-map.js
-const prices = new Map();
-prices.set(1, 12800);
-prices.set(2, 15900);
-
-console.log(prices.get(1));
-console.log(prices.get('1'));
-console.log(prices.size);
 ```
 
 **解析**
@@ -6468,20 +6313,18 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="53-js-map.js"></script>
+    <script>
+      const prices = new Map();
+      prices.set(1, 12800);
+      prices.set(2, 15900);
+      prices.set(3, 42800);
+
+      console.log(prices.get(1));
+      console.log(prices.get('1'));
+      console.log(prices.size);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/53-js-map.js
-const prices = new Map();
-prices.set(1, 12800);
-prices.set(2, 15900);
-prices.set(3, 42800);
-
-console.log(prices.get(1));
-console.log(prices.get('1'));
-console.log(prices.size);
 ```
 
 </details>
@@ -6511,24 +6354,22 @@ console.log(prices.size);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="54-js-this.js"></script>
+    <script>
+      const tour = {
+        title: '花蓮山海三日',
+        days: 3,
+        label() {
+          return this.title + '・' + this.days + ' 天';
+        },
+      };
+
+      console.log(tour.label());
+
+      const copied = tour.label;
+      console.log(copied());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/54-js-this.js
-const tour = {
-  title: '花蓮山海三日',
-  days: 3,
-  label() {
-    return this.title + '・' + this.days + ' 天';
-  },
-};
-
-console.log(tour.label());
-
-const copied = tour.label;
-console.log(copied());
 ```
 
 **解析**
@@ -6567,29 +6408,27 @@ undefined・undefined 天
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="54-js-this.js"></script>
+    <script>
+      const tour = {
+        title: '花蓮山海三日',
+        days: 3,
+        price: 15900,
+        label() {
+          return this.title + '・' + this.days + ' 天';
+        },
+        quote(people) {
+          return this.price * people;
+        },
+      };
+
+      console.log(tour.label());
+      console.log(tour.quote(2));
+
+      const copied = tour.label;
+      console.log(copied());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/54-js-this.js
-const tour = {
-  title: '花蓮山海三日',
-  days: 3,
-  price: 15900,
-  label() {
-    return this.title + '・' + this.days + ' 天';
-  },
-  quote(people) {
-    return this.price * people;
-  },
-};
-
-console.log(tour.label());
-console.log(tour.quote(2));
-
-const copied = tour.label;
-console.log(copied());
 ```
 
 </details>
@@ -6620,33 +6459,31 @@ console.log(copied());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="55-js-tours.js"></script>
+    <script>
+      const tours = [
+        { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
+        { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
+        { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
+      ];
+
+      const filterByDays = (list, days) => {
+        return list.filter((tour) => tour.days === days);
+      };
+
+      const titlesOf = (list) => {
+        return list.map((tour) => tour.title);
+      };
+
+      const findById = (list, id) => {
+        return list.find((tour) => tour.id === id);
+      };
+
+      console.log(titlesOf(filterByDays(tours, 3)));
+      console.log(findById(tours, 1));
+      console.log(tours.length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/55-js-tours.js
-const tours = [
-  { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
-  { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-  { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-];
-
-const filterByDays = (list, days) => {
-  return list.filter((tour) => tour.days === days);
-};
-
-const titlesOf = (list) => {
-  return list.map((tour) => tour.title);
-};
-
-const findById = (list, id) => {
-  return list.find((tour) => tour.id === id);
-};
-
-console.log(titlesOf(filterByDays(tours, 3)));
-console.log(findById(tours, 1));
-console.log(tours.length);
 ```
 
 **解析**
@@ -6682,39 +6519,37 @@ console.log(tours.length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="55-js-tours.js"></script>
+    <script>
+      const tours = [
+        { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
+        { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
+        { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
+        { id: 4, title: '台南古蹟一日', place: '台南', days: 1, price: 6800 },
+      ];
+
+      const filterByDays = (list, days) => {
+        return list.filter((tour) => tour.days === days);
+      };
+
+      const titlesOf = (list) => {
+        return list.map((tour) => tour.title);
+      };
+
+      const findById = (list, id) => {
+        return list.find((tour) => tour.id === id);
+      };
+
+      const totalPrice = (list) => {
+        return list.reduce((sum, tour) => sum + tour.price, 0);
+      };
+
+      console.log(titlesOf(filterByDays(tours, 3)));
+      console.log(findById(tours, 1));
+      console.log(tours.length);
+      console.log(totalPrice(tours));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/55-js-tours.js
-const tours = [
-  { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
-  { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-  { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-  { id: 4, title: '台南古蹟一日', place: '台南', days: 1, price: 6800 },
-];
-
-const filterByDays = (list, days) => {
-  return list.filter((tour) => tour.days === days);
-};
-
-const titlesOf = (list) => {
-  return list.map((tour) => tour.title);
-};
-
-const findById = (list, id) => {
-  return list.find((tour) => tour.id === id);
-};
-
-const totalPrice = (list) => {
-  return list.reduce((sum, tour) => sum + tour.price, 0);
-};
-
-console.log(titlesOf(filterByDays(tours, 3)));
-console.log(findById(tours, 1));
-console.log(tours.length);
-console.log(totalPrice(tours));
 ```
 
 </details>
@@ -6754,18 +6589,16 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="56-js-math.js"></script>
+    <script>
+      console.log(Math.PI);
+      console.log(Math.E);
+      console.log(Math.abs(-10));
+      console.log(Math.pow(2, 3));
+      console.log(2 ** 3);
+      console.log(Math.sqrt(16));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/56-js-math.js
-console.log(Math.PI);
-console.log(Math.E);
-console.log(Math.abs(-10));
-console.log(Math.pow(2, 3));
-console.log(2 ** 3);
-console.log(Math.sqrt(16));
 ```
 
 **解析**
@@ -6804,21 +6637,19 @@ console.log(Math.sqrt(16));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="56-js-math.js"></script>
+    <script>
+      console.log(Math.PI);
+      console.log(Math.E);
+      console.log(Math.abs(-10));
+      console.log(Math.pow(2, 3));
+      console.log(2 ** 3);
+      console.log(Math.sqrt(16));
+
+      console.log(Math.abs(-3.5));
+      console.log(Math.sqrt(9));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/56-js-math.js
-console.log(Math.PI);
-console.log(Math.E);
-console.log(Math.abs(-10));
-console.log(Math.pow(2, 3));
-console.log(2 ** 3);
-console.log(Math.sqrt(16));
-
-console.log(Math.abs(-3.5));
-console.log(Math.sqrt(9));
 ```
 
 </details>
@@ -6847,18 +6678,16 @@ console.log(Math.sqrt(9));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="57-js-round.js"></script>
+    <script>
+      console.log(Math.round(2.7));
+      console.log(Math.floor(2.7));
+      console.log(Math.ceil(2.1));
+      console.log(Math.trunc(2.9));
+      console.log(Math.floor(-2.3));
+      console.log(Math.trunc(-2.3));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/57-js-round.js
-console.log(Math.round(2.7));
-console.log(Math.floor(2.7));
-console.log(Math.ceil(2.1));
-console.log(Math.trunc(2.9));
-console.log(Math.floor(-2.3));
-console.log(Math.trunc(-2.3));
 ```
 
 **解析**
@@ -6896,20 +6725,18 @@ console.log(Math.trunc(-2.3));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="57-js-round.js"></script>
+    <script>
+      console.log(Math.round(2.7));
+      console.log(Math.floor(2.7));
+      console.log(Math.ceil(2.1));
+      console.log(Math.trunc(2.9));
+      console.log(Math.floor(-2.3));
+      console.log(Math.trunc(-2.3));
+
+      console.log(Math.ceil(-2.3));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/57-js-round.js
-console.log(Math.round(2.7));
-console.log(Math.floor(2.7));
-console.log(Math.ceil(2.1));
-console.log(Math.trunc(2.9));
-console.log(Math.floor(-2.3));
-console.log(Math.trunc(-2.3));
-
-console.log(Math.ceil(-2.3));
 ```
 
 </details>
@@ -6940,21 +6767,19 @@ console.log(Math.ceil(-2.3));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="58-js-random.js"></script>
+    <script>
+      console.log(Math.max(1, 5, 3));
+      console.log(Math.min(1, 5, 3));
+      console.log(Math.random());
+
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      console.log(getRandomInt(1, 10));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/58-js-random.js
-console.log(Math.max(1, 5, 3));
-console.log(Math.min(1, 5, 3));
-console.log(Math.random());
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-console.log(getRandomInt(1, 10));
 ```
 
 **解析**
@@ -6992,22 +6817,20 @@ console.log(getRandomInt(1, 10));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="58-js-random.js"></script>
+    <script>
+      console.log(Math.max(1, 5, 3));
+      console.log(Math.min(1, 5, 3));
+      console.log(Math.random());
+
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      console.log(getRandomInt(1, 10));
+      console.log(getRandomInt(20, 25));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/58-js-random.js
-console.log(Math.max(1, 5, 3));
-console.log(Math.min(1, 5, 3));
-console.log(Math.random());
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-console.log(getRandomInt(1, 10));
-console.log(getRandomInt(20, 25));
 ```
 
 </details>
@@ -7032,25 +6855,23 @@ console.log(getRandomInt(20, 25));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="59-js-lotto.js"></script>
+    <script>
+      function getLottoNumbers() {
+        const numbers = new Set();
+        while (numbers.size < 6) {
+          const n = Math.floor(Math.random() * 46) + 1;
+          numbers.add(n);
+        }
+        return Array.from(numbers).sort((a, b) => a - b);
+      }
+
+      const picked = getLottoNumbers();
+      console.log(picked);
+      console.log(picked.length);
+      console.log(new Set(picked).size);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/59-js-lotto.js
-function getLottoNumbers() {
-  const numbers = new Set();
-  while (numbers.size < 6) {
-    const n = Math.floor(Math.random() * 46) + 1;
-    numbers.add(n);
-  }
-  return Array.from(numbers).sort((a, b) => a - b);
-}
-
-const picked = getLottoNumbers();
-console.log(picked);
-console.log(picked.length);
-console.log(new Set(picked).size);
 ```
 
 **解析**
@@ -7087,44 +6908,42 @@ console.log(new Set(picked).size);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="59-js-lotto.js"></script>
+    <script>
+      function getLottoNumbers() {
+        const numbers = new Set();
+        while (numbers.size < 6) {
+          const n = Math.floor(Math.random() * 46) + 1;
+          numbers.add(n);
+        }
+        return Array.from(numbers).sort((a, b) => a - b);
+      }
+
+      function getLottoByDraw() {
+        const pool = [];
+        for (let n = 1; n <= 46; n += 1) {
+          pool.push(n);
+        }
+        const selected = [];
+        for (let i = 0; i < 6; i += 1) {
+          const idx = Math.floor(Math.random() * pool.length);
+          selected.push(pool[idx]);
+          pool.splice(idx, 1);
+        }
+        return selected.sort((a, b) => a - b);
+      }
+
+      const picked = getLottoNumbers();
+      console.log(picked);
+      console.log(picked.length);
+      console.log(new Set(picked).size);
+
+      const drawn = getLottoByDraw();
+      console.log(drawn);
+      console.log(drawn.length);
+      console.log(new Set(drawn).size);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/59-js-lotto.js
-function getLottoNumbers() {
-  const numbers = new Set();
-  while (numbers.size < 6) {
-    const n = Math.floor(Math.random() * 46) + 1;
-    numbers.add(n);
-  }
-  return Array.from(numbers).sort((a, b) => a - b);
-}
-
-function getLottoByDraw() {
-  const pool = [];
-  for (let n = 1; n <= 46; n += 1) {
-    pool.push(n);
-  }
-  const selected = [];
-  for (let i = 0; i < 6; i += 1) {
-    const idx = Math.floor(Math.random() * pool.length);
-    selected.push(pool[idx]);
-    pool.splice(idx, 1);
-  }
-  return selected.sort((a, b) => a - b);
-}
-
-const picked = getLottoNumbers();
-console.log(picked);
-console.log(picked.length);
-console.log(new Set(picked).size);
-
-const drawn = getLottoByDraw();
-console.log(drawn);
-console.log(drawn.length);
-console.log(new Set(drawn).size);
 ```
 
 </details>
@@ -7161,26 +6980,24 @@ UTC 是協調世界時，全世界共用的基準時間。各地的鐘面是在�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="60-js-utc.js"></script>
+    <script>
+      const point = new Date('2026-08-01T12:00:00+08:00');
+      console.log(point.toString());
+      console.log(point.toLocaleString());
+      console.log(point.toISOString());
+      console.log(point.getHours(), point.getUTCHours());
+
+      const dateOnly = new Date('2026-08-01');
+      console.log(dateOnly.toISOString(), dateOnly.getHours());
+
+      const localNoon = new Date('2026-08-01T12:00:00');
+      console.log(localNoon.getHours(), localNoon.toISOString());
+
+      const utcNoon = new Date('2026-08-01T12:00:00Z');
+      console.log(utcNoon.getHours(), utcNoon.toISOString());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/60-js-utc.js
-const point = new Date('2026-08-01T12:00:00+08:00');
-console.log(point.toString());
-console.log(point.toLocaleString());
-console.log(point.toISOString());
-console.log(point.getHours(), point.getUTCHours());
-
-const dateOnly = new Date('2026-08-01');
-console.log(dateOnly.toISOString(), dateOnly.getHours());
-
-const localNoon = new Date('2026-08-01T12:00:00');
-console.log(localNoon.getHours(), localNoon.toISOString());
-
-const utcNoon = new Date('2026-08-01T12:00:00Z');
-console.log(utcNoon.getHours(), utcNoon.toISOString());
 ```
 
 **解析**
@@ -7222,29 +7039,27 @@ UTC 午夜在台灣是早上 8 點，所以 `getHours` 是 8。前面同一個�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="60-js-utc.js"></script>
+    <script>
+      const point = new Date('2026-08-01T12:00:00+08:00');
+      console.log(point.toString());
+      console.log(point.toLocaleString());
+      console.log(point.toISOString());
+      console.log(point.getHours(), point.getUTCHours());
+
+      const dateOnly = new Date('2026-08-01');
+      console.log(dateOnly.toISOString(), dateOnly.getHours());
+
+      const localNoon = new Date('2026-08-01T12:00:00');
+      console.log(localNoon.getHours(), localNoon.toISOString());
+
+      const utcNoon = new Date('2026-08-01T12:00:00Z');
+      console.log(utcNoon.getHours(), utcNoon.toISOString());
+
+      const utcMidnight = new Date('2026-08-01T00:00:00Z');
+      console.log(utcMidnight.getHours());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/60-js-utc.js
-const point = new Date('2026-08-01T12:00:00+08:00');
-console.log(point.toString());
-console.log(point.toLocaleString());
-console.log(point.toISOString());
-console.log(point.getHours(), point.getUTCHours());
-
-const dateOnly = new Date('2026-08-01');
-console.log(dateOnly.toISOString(), dateOnly.getHours());
-
-const localNoon = new Date('2026-08-01T12:00:00');
-console.log(localNoon.getHours(), localNoon.toISOString());
-
-const utcNoon = new Date('2026-08-01T12:00:00Z');
-console.log(utcNoon.getHours(), utcNoon.toISOString());
-
-const utcMidnight = new Date('2026-08-01T00:00:00Z');
-console.log(utcMidnight.getHours());
 ```
 
 </details>
@@ -7273,28 +7088,26 @@ console.log(utcMidnight.getHours());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="61-js-timestamp.js"></script>
+    <script>
+      const epoch = new Date(0);
+      console.log(epoch.toISOString());
+      console.log(epoch.toString());
+
+      const point = new Date('2026-08-01T00:00:00Z');
+      console.log(point.getTime());
+      console.log(Date.now());
+
+      const unixSeconds = 1785542400;
+      console.log(new Date(unixSeconds * 1000).toISOString());
+      console.log(Math.floor(point.getTime() / 1000));
+
+      const start = new Date(2026, 7, 1);
+      const end = new Date(2026, 7, 2);
+      console.log(end - start);
+      console.log(end.getTime() - start.getTime());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/61-js-timestamp.js
-const epoch = new Date(0);
-console.log(epoch.toISOString());
-console.log(epoch.toString());
-
-const point = new Date('2026-08-01T00:00:00Z');
-console.log(point.getTime());
-console.log(Date.now());
-
-const unixSeconds = 1785542400;
-console.log(new Date(unixSeconds * 1000).toISOString());
-console.log(Math.floor(point.getTime() / 1000));
-
-const start = new Date(2026, 7, 1);
-const end = new Date(2026, 7, 2);
-console.log(end - start);
-console.log(end.getTime() - start.getTime());
 ```
 
 **解析**
@@ -7337,30 +7150,28 @@ Thu Jan 01 1970 08:00:00 GMT+0800 (台北標準時間)
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="61-js-timestamp.js"></script>
+    <script>
+      const epoch = new Date(0);
+      console.log(epoch.toISOString());
+      console.log(epoch.toString());
+
+      const point = new Date('2026-08-01T00:00:00Z');
+      console.log(point.getTime());
+      console.log(Date.now());
+
+      const unixSeconds = 1785542400;
+      console.log(new Date(unixSeconds * 1000).toISOString());
+      console.log(Math.floor(point.getTime() / 1000));
+
+      const start = new Date(2026, 7, 1);
+      const end = new Date(2026, 7, 2);
+      console.log(end - start);
+      console.log(end.getTime() - start.getTime());
+
+      console.log(new Date(86400000).toISOString());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/61-js-timestamp.js
-const epoch = new Date(0);
-console.log(epoch.toISOString());
-console.log(epoch.toString());
-
-const point = new Date('2026-08-01T00:00:00Z');
-console.log(point.getTime());
-console.log(Date.now());
-
-const unixSeconds = 1785542400;
-console.log(new Date(unixSeconds * 1000).toISOString());
-console.log(Math.floor(point.getTime() / 1000));
-
-const start = new Date(2026, 7, 1);
-const end = new Date(2026, 7, 2);
-console.log(end - start);
-console.log(end.getTime() - start.getTime());
-
-console.log(new Date(86400000).toISOString());
 ```
 
 </details>
@@ -7391,17 +7202,15 @@ console.log(new Date(86400000).toISOString());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="62-js-date-call.js"></script>
+    <script>
+      console.log(typeof new Date());
+      console.log(typeof Date());
+      console.log(typeof Date().getFullYear);
+      console.log(typeof new Date().getFullYear);
+      console.log(typeof Date.now());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/62-js-date-call.js
-console.log(typeof new Date());
-console.log(typeof Date());
-console.log(typeof Date().getFullYear);
-console.log(typeof new Date().getFullYear);
-console.log(typeof Date.now());
 ```
 
 **解析**
@@ -7438,19 +7247,17 @@ number
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="62-js-date-call.js"></script>
+    <script>
+      console.log(typeof new Date());
+      console.log(typeof Date());
+      console.log(typeof Date().getFullYear);
+      console.log(typeof new Date().getFullYear);
+      console.log(typeof Date.now());
+
+      console.log(typeof Date.now);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/62-js-date-call.js
-console.log(typeof new Date());
-console.log(typeof Date());
-console.log(typeof Date().getFullYear);
-console.log(typeof new Date().getFullYear);
-console.log(typeof Date.now());
-
-console.log(typeof Date.now);
 ```
 
 </details>
@@ -7479,24 +7286,22 @@ console.log(typeof Date.now);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="63-js-date.js"></script>
+    <script>
+      const now = new Date();
+      const birthday = new Date(1990, 4, 15, 8, 30, 0);
+      const isoDate = new Date('2026-08-01T12:00:00');
+
+      console.log(now.getFullYear());
+      console.log(
+        birthday.getMonth() + 1,
+        birthday.getDate(),
+        birthday.getHours(),
+        birthday.getMinutes()
+      );
+      console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/63-js-date.js
-const now = new Date();
-const birthday = new Date(1990, 4, 15, 8, 30, 0);
-const isoDate = new Date('2026-08-01T12:00:00');
-
-console.log(now.getFullYear());
-console.log(
-  birthday.getMonth() + 1,
-  birthday.getDate(),
-  birthday.getHours(),
-  birthday.getMinutes()
-);
-console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
 ```
 
 **解析**
@@ -7533,27 +7338,25 @@ console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="63-js-date.js"></script>
+    <script>
+      const now = new Date();
+      const birthday = new Date(1990, 4, 15, 8, 30, 0);
+      const isoDate = new Date('2026-08-01T12:00:00');
+
+      console.log(now.getFullYear());
+      console.log(
+        birthday.getMonth() + 1,
+        birthday.getDate(),
+        birthday.getHours(),
+        birthday.getMinutes()
+      );
+      console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
+
+      const yearEnd = new Date(2026, 11, 31, 23, 59, 59);
+      console.log(yearEnd.getMonth() + 1, yearEnd.getDate(), yearEnd.getHours());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/63-js-date.js
-const now = new Date();
-const birthday = new Date(1990, 4, 15, 8, 30, 0);
-const isoDate = new Date('2026-08-01T12:00:00');
-
-console.log(now.getFullYear());
-console.log(
-  birthday.getMonth() + 1,
-  birthday.getDate(),
-  birthday.getHours(),
-  birthday.getMinutes()
-);
-console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
-
-const yearEnd = new Date(2026, 11, 31, 23, 59, 59);
-console.log(yearEnd.getMonth() + 1, yearEnd.getDate(), yearEnd.getHours());
 ```
 
 </details>
@@ -7582,20 +7385,18 @@ console.log(yearEnd.getMonth() + 1, yearEnd.getDate(), yearEnd.getHours());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="64-js-date-get.js"></script>
+    <script>
+      const point = new Date(2026, 7, 1, 14, 30, 45);
+
+      console.log(point.getFullYear());
+      console.log(point.getMonth() + 1);
+      console.log(point.getDate());
+      console.log(point.getDay());
+      console.log(point.getHours(), point.getMinutes(), point.getSeconds());
+      console.log(point.getTime());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/64-js-date-get.js
-const point = new Date(2026, 7, 1, 14, 30, 45);
-
-console.log(point.getFullYear());
-console.log(point.getMonth() + 1);
-console.log(point.getDate());
-console.log(point.getDay());
-console.log(point.getHours(), point.getMinutes(), point.getSeconds());
-console.log(point.getTime());
 ```
 
 **解析**
@@ -7636,23 +7437,21 @@ console.log(point.getTime());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="64-js-date-get.js"></script>
+    <script>
+      const point = new Date(2026, 7, 1, 14, 30, 45);
+
+      console.log(point.getFullYear());
+      console.log(point.getMonth() + 1);
+      console.log(point.getDate());
+      console.log(point.getDay());
+      console.log(point.getHours(), point.getMinutes(), point.getSeconds());
+      console.log(point.getTime());
+
+      const nextDay = new Date(2026, 7, 2);
+      console.log(nextDay.getDay());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/64-js-date-get.js
-const point = new Date(2026, 7, 1, 14, 30, 45);
-
-console.log(point.getFullYear());
-console.log(point.getMonth() + 1);
-console.log(point.getDate());
-console.log(point.getDay());
-console.log(point.getHours(), point.getMinutes(), point.getSeconds());
-console.log(point.getTime());
-
-const nextDay = new Date(2026, 7, 2);
-console.log(nextDay.getDay());
 ```
 
 </details>
@@ -7681,49 +7480,47 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="65-js-date-set.js"></script>
+    <script>
+      const date = new Date(2026, 0, 15, 10, 20, 30);
+      console.log(date.getDate(), date.getHours(), date.getMinutes());
+
+      date.setFullYear(2027);
+      date.setMonth(5);
+      date.setDate(20);
+      console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
+
+      date.setHours(14, 30, 45);
+      date.setMinutes(5);
+      date.setSeconds(8);
+      date.setMilliseconds(250);
+      console.log(
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+        date.getMilliseconds()
+      );
+
+      const mark = new Date(2026, 0, 1, 0, 0, 0);
+      date.setTime(mark.getTime());
+      console.log(date.getMonth() + 1, date.getDate(), date.getHours());
+
+      const base = new Date(2026, 6, 15, 10, 0, 0);
+      const tomorrow = new Date(base);
+      tomorrow.setDate(base.getDate() + 1);
+      const nextMonth = new Date(base);
+      nextMonth.setMonth(base.getMonth() + 1);
+      const nextHour = new Date(base);
+      nextHour.setHours(base.getHours() + 1);
+      console.log(base.getDate(), tomorrow.getDate());
+      console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
+      console.log(base.getHours(), nextHour.getHours());
+
+      const overflow = new Date(2026, 0, 1);
+      overflow.setDate(32);
+      console.log(overflow.getMonth() + 1, overflow.getDate());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/65-js-date-set.js
-const date = new Date(2026, 0, 15, 10, 20, 30);
-console.log(date.getDate(), date.getHours(), date.getMinutes());
-
-date.setFullYear(2027);
-date.setMonth(5);
-date.setDate(20);
-console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
-
-date.setHours(14, 30, 45);
-date.setMinutes(5);
-date.setSeconds(8);
-date.setMilliseconds(250);
-console.log(
-  date.getHours(),
-  date.getMinutes(),
-  date.getSeconds(),
-  date.getMilliseconds()
-);
-
-const mark = new Date(2026, 0, 1, 0, 0, 0);
-date.setTime(mark.getTime());
-console.log(date.getMonth() + 1, date.getDate(), date.getHours());
-
-const base = new Date(2026, 6, 15, 10, 0, 0);
-const tomorrow = new Date(base);
-tomorrow.setDate(base.getDate() + 1);
-const nextMonth = new Date(base);
-nextMonth.setMonth(base.getMonth() + 1);
-const nextHour = new Date(base);
-nextHour.setHours(base.getHours() + 1);
-console.log(base.getDate(), tomorrow.getDate());
-console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
-console.log(base.getHours(), nextHour.getHours());
-
-const overflow = new Date(2026, 0, 1);
-overflow.setDate(32);
-console.log(overflow.getMonth() + 1, overflow.getDate());
 ```
 
 **解析**
@@ -7766,53 +7563,51 @@ console.log(overflow.getMonth() + 1, overflow.getDate());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="65-js-date-set.js"></script>
+    <script>
+      const date = new Date(2026, 0, 15, 10, 20, 30);
+      console.log(date.getDate(), date.getHours(), date.getMinutes());
+
+      date.setFullYear(2027);
+      date.setMonth(5);
+      date.setDate(20);
+      console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
+
+      date.setHours(14, 30, 45);
+      date.setMinutes(5);
+      date.setSeconds(8);
+      date.setMilliseconds(250);
+      console.log(
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+        date.getMilliseconds()
+      );
+
+      const mark = new Date(2026, 0, 1, 0, 0, 0);
+      date.setTime(mark.getTime());
+      console.log(date.getMonth() + 1, date.getDate(), date.getHours());
+
+      const base = new Date(2026, 6, 15, 10, 0, 0);
+      const tomorrow = new Date(base);
+      tomorrow.setDate(base.getDate() + 1);
+      const nextMonth = new Date(base);
+      nextMonth.setMonth(base.getMonth() + 1);
+      const nextHour = new Date(base);
+      nextHour.setHours(base.getHours() + 1);
+      console.log(base.getDate(), tomorrow.getDate());
+      console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
+      console.log(base.getHours(), nextHour.getHours());
+
+      const overflow = new Date(2026, 0, 1);
+      overflow.setDate(32);
+      console.log(overflow.getMonth() + 1, overflow.getDate());
+
+      const roll = new Date(2026, 0, 15, 10, 0, 0);
+      roll.setHours(24);
+      console.log(roll.getDate(), roll.getHours());
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/65-js-date-set.js
-const date = new Date(2026, 0, 15, 10, 20, 30);
-console.log(date.getDate(), date.getHours(), date.getMinutes());
-
-date.setFullYear(2027);
-date.setMonth(5);
-date.setDate(20);
-console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
-
-date.setHours(14, 30, 45);
-date.setMinutes(5);
-date.setSeconds(8);
-date.setMilliseconds(250);
-console.log(
-  date.getHours(),
-  date.getMinutes(),
-  date.getSeconds(),
-  date.getMilliseconds()
-);
-
-const mark = new Date(2026, 0, 1, 0, 0, 0);
-date.setTime(mark.getTime());
-console.log(date.getMonth() + 1, date.getDate(), date.getHours());
-
-const base = new Date(2026, 6, 15, 10, 0, 0);
-const tomorrow = new Date(base);
-tomorrow.setDate(base.getDate() + 1);
-const nextMonth = new Date(base);
-nextMonth.setMonth(base.getMonth() + 1);
-const nextHour = new Date(base);
-nextHour.setHours(base.getHours() + 1);
-console.log(base.getDate(), tomorrow.getDate());
-console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
-console.log(base.getHours(), nextHour.getHours());
-
-const overflow = new Date(2026, 0, 1);
-overflow.setDate(32);
-console.log(overflow.getMonth() + 1, overflow.getDate());
-
-const roll = new Date(2026, 0, 15, 10, 0, 0);
-roll.setHours(24);
-console.log(roll.getDate(), roll.getHours());
 ```
 
 </details>
@@ -7841,22 +7636,20 @@ console.log(roll.getDate(), roll.getHours());
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="66-js-date-format.js"></script>
+    <script>
+      const point = new Date(2026, 7, 1, 14, 30, 45);
+      console.log(point.toLocaleString());
+      console.log(point.toLocaleDateString('zh-TW'));
+      console.log(point.toLocaleTimeString());
+
+      const start = new Date(2026, 7, 1);
+      const end = new Date(2026, 7, 10);
+      const ms = end - start;
+      console.log(ms);
+      console.log(ms / (1000 * 60 * 60 * 24));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/66-js-date-format.js
-const point = new Date(2026, 7, 1, 14, 30, 45);
-console.log(point.toLocaleString());
-console.log(point.toLocaleDateString('zh-TW'));
-console.log(point.toLocaleTimeString());
-
-const start = new Date(2026, 7, 1);
-const end = new Date(2026, 7, 10);
-const ms = end - start;
-console.log(ms);
-console.log(ms / (1000 * 60 * 60 * 24));
 ```
 
 **解析**
@@ -7895,25 +7688,23 @@ console.log(ms / (1000 * 60 * 60 * 24));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="66-js-date-format.js"></script>
+    <script>
+      const point = new Date(2026, 7, 1, 14, 30, 45);
+      console.log(point.toLocaleString());
+      console.log(point.toLocaleDateString('zh-TW'));
+      console.log(point.toLocaleTimeString());
+
+      const start = new Date(2026, 7, 1);
+      const end = new Date(2026, 7, 10);
+      const ms = end - start;
+      console.log(ms);
+      console.log(ms / (1000 * 60 * 60 * 24));
+
+      const later = new Date(2026, 7, 16);
+      console.log((later - start) / (1000 * 60 * 60 * 24));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/66-js-date-format.js
-const point = new Date(2026, 7, 1, 14, 30, 45);
-console.log(point.toLocaleString());
-console.log(point.toLocaleDateString('zh-TW'));
-console.log(point.toLocaleTimeString());
-
-const start = new Date(2026, 7, 1);
-const end = new Date(2026, 7, 10);
-const ms = end - start;
-console.log(ms);
-console.log(ms / (1000 * 60 * 60 * 24));
-
-const later = new Date(2026, 7, 16);
-console.log((later - start) / (1000 * 60 * 60 * 24));
 ```
 
 </details>
@@ -7938,24 +7729,22 @@ console.log((later - start) / (1000 * 60 * 60 * 24));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="67-js-countdown.js"></script>
+    <script>
+      function getCountdownToNewYear() {
+        const now = new Date();
+        const target = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+        const diff = Math.max(0, target - now);
+        const sec = Math.floor(diff / 1000) % 60;
+        const min = Math.floor(diff / (1000 * 60)) % 60;
+        const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
+        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+        console.log(`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
+      }
+
+      getCountdownToNewYear();
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/67-js-countdown.js
-function getCountdownToNewYear() {
-  const now = new Date();
-  const target = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-  const diff = Math.max(0, target - now);
-  const sec = Math.floor(diff / 1000) % 60;
-  const min = Math.floor(diff / (1000 * 60)) % 60;
-  const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
-  const day = Math.floor(diff / (1000 * 60 * 60 * 24));
-  console.log(`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
-}
-
-getCountdownToNewYear();
 ```
 
 **解析**
@@ -7990,36 +7779,34 @@ getCountdownToNewYear();
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="67-js-countdown.js"></script>
+    <script>
+      function getCountdownToNewYear() {
+        const now = new Date();
+        const target = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+        const diff = Math.max(0, target - now);
+        const sec = Math.floor(diff / 1000) % 60;
+        const min = Math.floor(diff / (1000 * 60)) % 60;
+        const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
+        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+        console.log(`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
+      }
+
+      function getCountdownToJune() {
+        const now = new Date();
+        const target = new Date(now.getFullYear(), 5, 1, 0, 0, 0);
+        const diff = Math.max(0, target - now);
+        const sec = Math.floor(diff / 1000) % 60;
+        const min = Math.floor(diff / (1000 * 60)) % 60;
+        const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
+        const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+        console.log(`距離今年 6 月 1 日還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
+      }
+
+      getCountdownToNewYear();
+      getCountdownToJune();
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/67-js-countdown.js
-function getCountdownToNewYear() {
-  const now = new Date();
-  const target = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-  const diff = Math.max(0, target - now);
-  const sec = Math.floor(diff / 1000) % 60;
-  const min = Math.floor(diff / (1000 * 60)) % 60;
-  const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
-  const day = Math.floor(diff / (1000 * 60 * 60 * 24));
-  console.log(`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
-}
-
-function getCountdownToJune() {
-  const now = new Date();
-  const target = new Date(now.getFullYear(), 5, 1, 0, 0, 0);
-  const diff = Math.max(0, target - now);
-  const sec = Math.floor(diff / 1000) % 60;
-  const min = Math.floor(diff / (1000 * 60)) % 60;
-  const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
-  const day = Math.floor(diff / (1000 * 60 * 60 * 24));
-  console.log(`距離今年 6 月 1 日還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
-}
-
-getCountdownToNewYear();
-getCountdownToJune();
 ```
 
 </details>
@@ -8054,21 +7841,19 @@ getCountdownToJune();
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="68-js-array-destructure.js"></script>
+    <script>
+      const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
+
+      const [first, second] = titles;
+      console.log(first);
+      console.log(second);
+
+      const [, , third] = titles;
+      console.log(third);
+      console.log(titles.length);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/68-js-array-destructure.js
-const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
-
-const [first, second] = titles;
-console.log(first);
-console.log(second);
-
-const [, , third] = titles;
-console.log(third);
-console.log(titles.length);
 ```
 
 **解析**
@@ -8104,26 +7889,24 @@ console.log(titles.length);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="68-js-array-destructure.js"></script>
+    <script>
+      const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
+
+      const [first, second] = titles;
+      console.log(first);
+      console.log(second);
+
+      const [, , third] = titles;
+      console.log(third);
+      console.log(titles.length);
+
+      const places = ['台北', '花蓮', '京都'];
+      const [, city, last] = places;
+      console.log(city);
+      console.log(last);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/68-js-array-destructure.js
-const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
-
-const [first, second] = titles;
-console.log(first);
-console.log(second);
-
-const [, , third] = titles;
-console.log(third);
-console.log(titles.length);
-
-const places = ['台北', '花蓮', '京都'];
-const [, city, last] = places;
-console.log(city);
-console.log(last);
 ```
 
 </details>
@@ -8150,26 +7933,24 @@ console.log(last);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="69-js-destructure.js"></script>
+    <script>
+      const tours = [
+        { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
+        { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
+        { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
+      ];
+
+      const { title, place, days } = tours[0];
+      const { price, days: kyotoDays, guide = '未定' } = tours[2];
+
+      console.log(title);
+      console.log(place + ' ' + days + ' 天');
+      console.log(kyotoDays);
+      console.log(price);
+      console.log(guide);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/69-js-destructure.js
-const tours = [
-  { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
-  { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-  { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-];
-
-const { title, place, days } = tours[0];
-const { price, days: kyotoDays, guide = '未定' } = tours[2];
-
-console.log(title);
-console.log(place + ' ' + days + ' 天');
-console.log(kyotoDays);
-console.log(price);
-console.log(guide);
 ```
 
 **解析**
@@ -8211,29 +7992,27 @@ console.log(guide);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="69-js-destructure.js"></script>
+    <script>
+      const tours = [
+        { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
+        { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
+        { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
+      ];
+
+      const { title, place, days } = tours[0];
+      const { price, days: kyotoDays, guide = '未定' } = tours[2];
+
+      console.log(title);
+      console.log(place + ' ' + days + ' 天');
+      console.log(kyotoDays);
+      console.log(price);
+      console.log(guide);
+
+      const { place: city } = tours[1];
+      console.log(city);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/69-js-destructure.js
-const tours = [
-  { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
-  { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-  { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-];
-
-const { title, place, days } = tours[0];
-const { price, days: kyotoDays, guide = '未定' } = tours[2];
-
-console.log(title);
-console.log(place + ' ' + days + ' 天');
-console.log(kyotoDays);
-console.log(price);
-console.log(guide);
-
-const { place: city } = tours[1];
-console.log(city);
 ```
 
 </details>
@@ -8260,20 +8039,18 @@ console.log(city);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="70-js-param-destructure.js"></script>
+    <script>
+      const tour = { title: '台北城市漫遊', price: 12800, days: 3 };
+
+      function label({ title, price }) {
+        return `${title}・NT${price}`;
+      }
+
+      console.log(label(tour));
+      console.log(tour.days);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/70-js-param-destructure.js
-const tour = { title: '台北城市漫遊', price: 12800, days: 3 };
-
-function label({ title, price }) {
-  return `${title}・NT$${price}`;
-}
-
-console.log(label(tour));
-console.log(tour.days);
 ```
 
 **解析**
@@ -8306,26 +8083,24 @@ console.log(tour.days);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="70-js-param-destructure.js"></script>
+    <script>
+      const tour = { title: '台北城市漫遊', price: 12800, days: 3 };
+
+      function label({ title, price }) {
+        return `${title}・NT${price}`;
+      }
+
+      console.log(label(tour));
+      console.log(tour.days);
+
+      function brief({ title, days, guide = '未定' }) {
+        return `${title}・${days} 天・${guide}`;
+      }
+
+      console.log(brief(tour));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/70-js-param-destructure.js
-const tour = { title: '台北城市漫遊', price: 12800, days: 3 };
-
-function label({ title, price }) {
-  return `${title}・NT$${price}`;
-}
-
-console.log(label(tour));
-console.log(tour.days);
-
-function brief({ title, days, guide = '未定' }) {
-  return `${title}・${days} 天・${guide}`;
-}
-
-console.log(brief(tour));
 ```
 
 </details>
@@ -8354,23 +8129,21 @@ console.log(brief(tour));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="71-js-array-spread.js"></script>
+    <script>
+      const places = ['台北', '花蓮', '京都'];
+
+      const more = [...places, '台南'];
+      console.log(places.length);
+      console.log(more);
+      console.log(more.length);
+
+      const copy = [...places];
+      copy.push('高雄');
+      console.log(places);
+      console.log(copy);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/71-js-array-spread.js
-const places = ['台北', '花蓮', '京都'];
-
-const more = [...places, '台南'];
-console.log(places.length);
-console.log(more);
-console.log(more.length);
-
-const copy = [...places];
-copy.push('高雄');
-console.log(places);
-console.log(copy);
 ```
 
 **解析**
@@ -8406,27 +8179,25 @@ console.log(copy);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="71-js-array-spread.js"></script>
+    <script>
+      const places = ['台北', '花蓮', '京都'];
+
+      const more = [...places, '台南'];
+      console.log(places.length);
+      console.log(more);
+      console.log(more.length);
+
+      const copy = [...places];
+      copy.push('高雄');
+      console.log(places);
+      console.log(copy);
+
+      const withKaohsiung = ['高雄', ...places];
+      console.log(withKaohsiung.length);
+      console.log(places[0]);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/71-js-array-spread.js
-const places = ['台北', '花蓮', '京都'];
-
-const more = [...places, '台南'];
-console.log(places.length);
-console.log(more);
-console.log(more.length);
-
-const copy = [...places];
-copy.push('高雄');
-console.log(places);
-console.log(copy);
-
-const withKaohsiung = ['高雄', ...places];
-console.log(withKaohsiung.length);
-console.log(places[0]);
 ```
 
 </details>
@@ -8453,28 +8224,26 @@ console.log(places[0]);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="72-js-spread.js"></script>
+    <script>
+      const tour = {
+        title: '台北城市漫遊',
+        days: 3,
+        price: 12800,
+        tags: ['城市'],
+      };
+
+      const discounted = { ...tour, price: 11800 };
+
+      console.log(tour.price);
+      console.log(discounted.price);
+      console.log(discounted.title);
+
+      discounted.tags.push('步行');
+      console.log(tour.tags);
+      console.log(discounted.tags);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/72-js-spread.js
-const tour = {
-  title: '台北城市漫遊',
-  days: 3,
-  price: 12800,
-  tags: ['城市'],
-};
-
-const discounted = { ...tour, price: 11800 };
-
-console.log(tour.price);
-console.log(discounted.price);
-console.log(discounted.title);
-
-discounted.tags.push('步行');
-console.log(tour.tags);
-console.log(discounted.tags);
 ```
 
 **解析**
@@ -8521,32 +8290,30 @@ deep.tags.push('夜');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="72-js-spread.js"></script>
+    <script>
+      const tour = {
+        title: '台北城市漫遊',
+        days: 3,
+        price: 12800,
+        tags: ['城市'],
+      };
+
+      const discounted = { ...tour, price: 11800 };
+
+      console.log(tour.price);
+      console.log(discounted.price);
+      console.log(discounted.title);
+
+      discounted.tags.push('步行');
+      console.log(tour.tags);
+      console.log(discounted.tags);
+
+      const longer = { ...tour, days: 4, price: 18900 };
+      console.log(longer.days);
+      console.log(tour.days);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/72-js-spread.js
-const tour = {
-  title: '台北城市漫遊',
-  days: 3,
-  price: 12800,
-  tags: ['城市'],
-};
-
-const discounted = { ...tour, price: 11800 };
-
-console.log(tour.price);
-console.log(discounted.price);
-console.log(discounted.title);
-
-discounted.tags.push('步行');
-console.log(tour.tags);
-console.log(discounted.tags);
-
-const longer = { ...tour, days: 4, price: 18900 };
-console.log(longer.days);
-console.log(tour.days);
 ```
 
 </details>
@@ -8571,20 +8338,18 @@ console.log(tour.days);
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="73-js-spread-call.js"></script>
+    <script>
+      function total(a, b, c) {
+        return a + b + c;
+      }
+
+      const prices = [12800, 15900, 42800];
+
+      console.log(total(...prices));
+      console.log(total(prices[0], prices[1], prices[2]));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/73-js-spread-call.js
-function total(a, b, c) {
-  return a + b + c;
-}
-
-const prices = [12800, 15900, 42800];
-
-console.log(total(...prices));
-console.log(total(prices[0], prices[1], prices[2]));
 ```
 
 **解析**
@@ -8622,26 +8387,24 @@ console.log(total(prices[0], prices[1], prices[2]));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="73-js-spread-call.js"></script>
+    <script>
+      function total(a, b, c) {
+        return a + b + c;
+      }
+
+      const prices = [12800, 15900, 42800];
+
+      console.log(total(...prices));
+      console.log(total(prices[0], prices[1], prices[2]));
+
+      function joinPlaces(a, b) {
+        return a + '、' + b;
+      }
+
+      console.log(joinPlaces(...['花蓮', '京都']));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/73-js-spread-call.js
-function total(a, b, c) {
-  return a + b + c;
-}
-
-const prices = [12800, 15900, 42800];
-
-console.log(total(...prices));
-console.log(total(prices[0], prices[1], prices[2]));
-
-function joinPlaces(a, b) {
-  return a + '、' + b;
-}
-
-console.log(joinPlaces(...['花蓮', '京都']));
 ```
 
 </details>
@@ -8678,39 +8441,37 @@ console.log(joinPlaces(...['花蓮', '京都']));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="74-js-error-type.js"></script>
+    <script>
+      // SyntaxError：括號沒配對時整份腳本無法執行，所以這行保持註解
+      // console.log('hi'
+
+      try {
+        console.log(notDeclared);
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      try {
+        const score = 80;
+        console.log(score.toUpperCase());
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      try {
+        const scores = new Array(-1);
+        console.log(scores);
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('三種錯誤都接住了');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/74-js-error-type.js
-// SyntaxError：括號沒配對時整份腳本無法執行，所以這行保持註解
-// console.log('hi'
-
-try {
-  console.log(notDeclared);
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-try {
-  const score = 80;
-  console.log(score.toUpperCase());
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-try {
-  const scores = new Array(-1);
-  console.log(scores);
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('三種錯誤都接住了');
 ```
 
 ```text
@@ -8750,47 +8511,45 @@ Invalid array length
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="74-js-error-type.js"></script>
+    <script>
+      // SyntaxError：括號沒配對時整份腳本無法執行，所以這行保持註解
+      // console.log('hi'
+
+      try {
+        console.log(notDeclared);
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      try {
+        const score = 80;
+        console.log(score.toUpperCase());
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      try {
+        const scores = new Array(-1);
+        console.log(scores);
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('三種錯誤都接住了');
+
+      try {
+        const empty = null;
+        console.log(empty.toFixed(0));
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/74-js-error-type.js
-// SyntaxError：括號沒配對時整份腳本無法執行，所以這行保持註解
-// console.log('hi'
-
-try {
-  console.log(notDeclared);
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-try {
-  const score = 80;
-  console.log(score.toUpperCase());
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-try {
-  const scores = new Array(-1);
-  console.log(scores);
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('三種錯誤都接住了');
-
-try {
-  const empty = null;
-  console.log(empty.toFixed(0));
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
 ```
 
 </details>
@@ -8817,28 +8576,26 @@ try {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="75-js-error-message.js"></script>
+    <script>
+      function formatScore(score) {
+        return score.toFixed(0);
+      }
+
+      function label(score) {
+        return formatScore(score);
+      }
+
+      try {
+        console.log(label(null));
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('程式繼續');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/75-js-error-message.js
-function formatScore(score) {
-  return score.toFixed(0);
-}
-
-function label(score) {
-  return formatScore(score);
-}
-
-try {
-  console.log(label(null));
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('程式繼續');
 ```
 
 ```text
@@ -8873,28 +8630,26 @@ Cannot read properties of null (reading 'toFixed')
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="75-js-error-message.js"></script>
+    <script>
+      function formatScore(score) {
+        return score.toFixed(0);
+      }
+
+      function label(score) {
+        return formatScore(score);
+      }
+
+      try {
+        console.log(label(80));
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('程式繼續');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/75-js-error-message.js
-function formatScore(score) {
-  return score.toFixed(0);
-}
-
-function label(score) {
-  return formatScore(score);
-}
-
-try {
-  console.log(label(80));
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('程式繼續');
 ```
 
 </details>
@@ -8923,41 +8678,39 @@ console.log('程式繼續');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="76-js-debug.js"></script>
+    <script>
+      const DEBUG = true;
+
+      function debugLog(message) {
+        if (DEBUG) {
+          console.log('[DEBUG]', message);
+        }
+      }
+
+      function sumScores(scores) {
+        debugLog('開始加總');
+        console.time('加總');
+        let total = 0;
+        for (let i = 0; i < scores.length; i++) {
+          total += scores[i];
+          console.log(`第 ${i} 個：${scores[i]}，目前 ${total}`);
+        }
+        console.timeEnd('加總');
+        // debugger：DevTools 打開時會在這裡暫停，故註解
+        return total;
+      }
+
+      const rows = [
+        { name: '小明', score: 85 },
+        { name: '小華', score: 92 },
+        { name: '小李', score: 78 },
+      ];
+
+      console.table(rows);
+      console.log(sumScores([10, 20, 30]));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/76-js-debug.js
-const DEBUG = true;
-
-function debugLog(message) {
-  if (DEBUG) {
-    console.log('[DEBUG]', message);
-  }
-}
-
-function sumScores(scores) {
-  debugLog('開始加總');
-  console.time('加總');
-  let total = 0;
-  for (let i = 0; i < scores.length; i++) {
-    total += scores[i];
-    console.log(`第 ${i} 個：${scores[i]}，目前 ${total}`);
-  }
-  console.timeEnd('加總');
-  // debugger：DevTools 打開時會在這裡暫停，故註解
-  return total;
-}
-
-const rows = [
-  { name: '小明', score: 85 },
-  { name: '小華', score: 92 },
-  { name: '小李', score: 78 },
-];
-
-console.table(rows);
-console.log(sumScores([10, 20, 30]));
 ```
 
 ```text
@@ -9003,41 +8756,39 @@ DEBUG 為 false 時，`[DEBUG] 開始加總` 不會出現。表格、每一圈�
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="76-js-debug.js"></script>
+    <script>
+      const DEBUG = false;
+
+      function debugLog(message) {
+        if (DEBUG) {
+          console.log('[DEBUG]', message);
+        }
+      }
+
+      function sumScores(scores) {
+        debugLog('開始加總');
+        console.time('加總');
+        let total = 0;
+        for (let i = 0; i < scores.length; i++) {
+          total += scores[i];
+          console.log(`第 ${i} 個：${scores[i]}，目前 ${total}`);
+        }
+        console.timeEnd('加總');
+        // debugger：DevTools 打開時會在這裡暫停，故註解
+        return total;
+      }
+
+      const rows = [
+        { name: '小明', score: 85 },
+        { name: '小華', score: 92 },
+        { name: '小李', score: 78 },
+      ];
+
+      console.table(rows);
+      console.log(sumScores([10, 20, 30]));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/76-js-debug.js
-const DEBUG = false;
-
-function debugLog(message) {
-  if (DEBUG) {
-    console.log('[DEBUG]', message);
-  }
-}
-
-function sumScores(scores) {
-  debugLog('開始加總');
-  console.time('加總');
-  let total = 0;
-  for (let i = 0; i < scores.length; i++) {
-    total += scores[i];
-    console.log(`第 ${i} 個：${scores[i]}，目前 ${total}`);
-  }
-  console.timeEnd('加總');
-  // debugger：DevTools 打開時會在這裡暫停，故註解
-  return total;
-}
-
-const rows = [
-  { name: '小明', score: 85 },
-  { name: '小華', score: 92 },
-  { name: '小李', score: 78 },
-];
-
-console.table(rows);
-console.log(sumScores([10, 20, 30]));
 ```
 
 </details>
@@ -9068,24 +8819,22 @@ console.log(sumScores([10, 20, 30]));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="77-js-try.js"></script>
+    <script>
+      function readName(record) {
+        try {
+          return record.name.toUpperCase();
+        } catch (error) {
+          console.error(error.message);
+          return '無法讀取';
+        }
+      }
+
+      console.log(readName({ name: 'amy' }));
+      console.log(readName(null));
+      console.log('程式繼續');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/77-js-try.js
-function readName(record) {
-  try {
-    return record.name.toUpperCase();
-  } catch (error) {
-    console.error(error.message);
-    return '無法讀取';
-  }
-}
-
-console.log(readName({ name: 'amy' }));
-console.log(readName(null));
-console.log('程式繼續');
 ```
 
 ```text
@@ -9121,25 +8870,23 @@ Cannot read properties of null (reading 'name')
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="77-js-try.js"></script>
+    <script>
+      function readName(record) {
+        try {
+          return record.name.toUpperCase();
+        } catch (error) {
+          console.error(error.message);
+          return '無法讀取';
+        }
+      }
+
+      console.log(readName({ name: 'amy' }));
+      console.log(readName(null));
+      console.log(readName({ name: 3 }));
+      console.log('程式繼續');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/77-js-try.js
-function readName(record) {
-  try {
-    return record.name.toUpperCase();
-  } catch (error) {
-    console.error(error.message);
-    return '無法讀取';
-  }
-}
-
-console.log(readName({ name: 'amy' }));
-console.log(readName(null));
-console.log(readName({ name: 3 }));
-console.log('程式繼續');
 ```
 
 </details>
@@ -9164,25 +8911,23 @@ console.log('程式繼續');
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="78-js-finally.js"></script>
+    <script>
+      function readScore(record) {
+        try {
+          return record.score;
+        } catch (error) {
+          console.log(error.name);
+          return null;
+        } finally {
+          console.log('讀取結束');
+        }
+      }
+
+      console.log(readScore({ score: 90 }));
+      console.log(readScore(null));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/78-js-finally.js
-function readScore(record) {
-  try {
-    return record.score;
-  } catch (error) {
-    console.log(error.name);
-    return null;
-  } finally {
-    console.log('讀取結束');
-  }
-}
-
-console.log(readScore({ score: 90 }));
-console.log(readScore(null));
 ```
 
 ```text
@@ -9219,26 +8964,24 @@ null
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="78-js-finally.js"></script>
+    <script>
+      function readScore(record) {
+        try {
+          return record.score;
+        } catch (error) {
+          console.log(error.name);
+          return null;
+        } finally {
+          console.log('讀取結束');
+          console.log('已收尾');
+        }
+      }
+
+      console.log(readScore({ score: 90 }));
+      console.log(readScore(null));
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/78-js-finally.js
-function readScore(record) {
-  try {
-    return record.score;
-  } catch (error) {
-    console.log(error.name);
-    return null;
-  } finally {
-    console.log('讀取結束');
-    console.log('已收尾');
-  }
-}
-
-console.log(readScore({ score: 90 }));
-console.log(readScore(null));
 ```
 
 </details>
@@ -9267,37 +9010,35 @@ console.log(readScore(null));
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="79-js-throw.js"></script>
+    <script>
+      function divide(a, b) {
+        if (b === 0) {
+          throw new Error('除數不能為 0');
+        }
+        return a / b;
+      }
+
+      try {
+        console.log(divide(10, 2));
+        console.log(divide(10, 0));
+        console.log('這行不會印');
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('程式繼續');
+
+      try {
+        throw '不是 Error 物件';
+      } catch (error) {
+        console.log(typeof error);
+        console.log(error.name);
+        console.log(error.message);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/79-js-throw.js
-function divide(a, b) {
-  if (b === 0) {
-    throw new Error('除數不能為 0');
-  }
-  return a / b;
-}
-
-try {
-  console.log(divide(10, 2));
-  console.log(divide(10, 0));
-  console.log('這行不會印');
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('程式繼續');
-
-try {
-  throw '不是 Error 物件';
-} catch (error) {
-  console.log(typeof error);
-  console.log(error.name);
-  console.log(error.message);
-}
 ```
 
 ```text
@@ -9336,47 +9077,45 @@ undefined
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="79-js-throw.js"></script>
+    <script>
+      function divide(a, b) {
+        if (b === 0) {
+          throw new Error('除數不能為 0');
+        }
+        if (b < 0) {
+          throw new Error('除數不能為負');
+        }
+        return a / b;
+      }
+
+      try {
+        console.log(divide(10, 2));
+        console.log(divide(10, 0));
+        console.log('這行不會印');
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('程式繼續');
+
+      try {
+        throw '不是 Error 物件';
+      } catch (error) {
+        console.log(typeof error);
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      try {
+        console.log(divide(10, -1));
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/79-js-throw.js
-function divide(a, b) {
-  if (b === 0) {
-    throw new Error('除數不能為 0');
-  }
-  if (b < 0) {
-    throw new Error('除數不能為負');
-  }
-  return a / b;
-}
-
-try {
-  console.log(divide(10, 2));
-  console.log(divide(10, 0));
-  console.log('這行不會印');
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
-
-console.log('程式繼續');
-
-try {
-  throw '不是 Error 物件';
-} catch (error) {
-  console.log(typeof error);
-  console.log(error.name);
-  console.log(error.message);
-}
-
-try {
-  console.log(divide(10, -1));
-} catch (error) {
-  console.log(error.name);
-  console.log(error.message);
-}
 ```
 
 </details>
@@ -9401,48 +9140,46 @@ try {
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="80-js-custom-error.js"></script>
+    <script>
+      class ValidationError extends Error {
+        constructor(message) {
+          super(message);
+          this.name = 'ValidationError';
+        }
+      }
+
+      function checkUser(user) {
+        if (!user) {
+          throw new ValidationError('資料不能為空');
+        }
+        if (!user.name) {
+          throw new ValidationError('名稱不能為空');
+        }
+        if (user.age < 0) {
+          throw new Error('年齡不能為負數');
+        }
+        return user.name + ' 通過';
+      }
+
+      function run(user) {
+        try {
+          console.log(checkUser(user));
+        } catch (error) {
+          if (error instanceof ValidationError) {
+            console.log('驗證', error.name, error.message);
+          } else {
+            console.log('其他', error.name, error.message);
+          }
+        }
+      }
+
+      run({ name: 'Amy', age: 25 });
+      run(null);
+      run({ age: 25 });
+      run({ name: 'Amy', age: -1 });
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/80-js-custom-error.js
-class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-function checkUser(user) {
-  if (!user) {
-    throw new ValidationError('資料不能為空');
-  }
-  if (!user.name) {
-    throw new ValidationError('名稱不能為空');
-  }
-  if (user.age < 0) {
-    throw new Error('年齡不能為負數');
-  }
-  return user.name + ' 通過';
-}
-
-function run(user) {
-  try {
-    console.log(checkUser(user));
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      console.log('驗證', error.name, error.message);
-    } else {
-      console.log('其他', error.name, error.message);
-    }
-  }
-}
-
-run({ name: 'Amy', age: 25 });
-run(null);
-run({ age: 25 });
-run({ name: 'Amy', age: -1 });
 ```
 
 ```text
@@ -9478,49 +9215,47 @@ Amy 通過
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="80-js-custom-error.js"></script>
+    <script>
+      class ValidationError extends Error {
+        constructor(message) {
+          super(message);
+          this.name = 'ValidationError';
+        }
+      }
+
+      function checkUser(user) {
+        if (!user) {
+          throw new ValidationError('資料不能為空');
+        }
+        if (!user.name) {
+          throw new ValidationError('名稱不能為空');
+        }
+        if (user.age < 0) {
+          throw new Error('年齡不能為負數');
+        }
+        return user.name + ' 通過';
+      }
+
+      function run(user) {
+        try {
+          console.log(checkUser(user));
+        } catch (error) {
+          if (error instanceof ValidationError) {
+            console.log('驗證', error.name, error.message);
+          } else {
+            console.log('其他', error.name, error.message);
+          }
+        }
+      }
+
+      run({ name: 'Amy', age: 25 });
+      run(null);
+      run({ age: 25 });
+      run({ name: 'Amy', age: -1 });
+      run({ age: 20 });
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/80-js-custom-error.js
-class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-function checkUser(user) {
-  if (!user) {
-    throw new ValidationError('資料不能為空');
-  }
-  if (!user.name) {
-    throw new ValidationError('名稱不能為空');
-  }
-  if (user.age < 0) {
-    throw new Error('年齡不能為負數');
-  }
-  return user.name + ' 通過';
-}
-
-function run(user) {
-  try {
-    console.log(checkUser(user));
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      console.log('驗證', error.name, error.message);
-    } else {
-      console.log('其他', error.name, error.message);
-    }
-  }
-}
-
-run({ name: 'Amy', age: 25 });
-run(null);
-run({ age: 25 });
-run({ name: 'Amy', age: -1 });
-run({ age: 20 });
 ```
 
 </details>
@@ -9545,39 +9280,37 @@ run({ age: 20 });
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="81-js-validate.js"></script>
+    <script>
+      function validateEmail(email) {
+        if (typeof email !== 'string') {
+          throw new TypeError('電子郵件必須是字串');
+        }
+        if (email.length === 0) {
+          throw new Error('電子郵件不能為空');
+        }
+        if (!email.includes('@')) {
+          throw new Error('電子郵件格式不正確');
+        }
+        return true;
+      }
+
+      function processEmail(email) {
+        try {
+          validateEmail(email);
+          console.log('驗證成功', email);
+        } catch (error) {
+          console.log(error.name);
+          console.log(error.message);
+        }
+      }
+
+      processEmail('user@example.com');
+      processEmail('');
+      processEmail('invalid-email');
+      processEmail(123);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/81-js-validate.js
-function validateEmail(email) {
-  if (typeof email !== 'string') {
-    throw new TypeError('電子郵件必須是字串');
-  }
-  if (email.length === 0) {
-    throw new Error('電子郵件不能為空');
-  }
-  if (!email.includes('@')) {
-    throw new Error('電子郵件格式不正確');
-  }
-  return true;
-}
-
-function processEmail(email) {
-  try {
-    validateEmail(email);
-    console.log('驗證成功', email);
-  } catch (error) {
-    console.log(error.name);
-    console.log(error.message);
-  }
-}
-
-processEmail('user@example.com');
-processEmail('');
-processEmail('invalid-email');
-processEmail(123);
 ```
 
 ```text
@@ -9616,41 +9349,39 @@ TypeError
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="81-js-validate.js"></script>
+    <script>
+      function validateEmail(email) {
+        if (typeof email !== 'string') {
+          throw new TypeError('電子郵件必須是字串');
+        }
+        if (email.length === 0) {
+          throw new Error('電子郵件不能為空');
+        }
+        if (!email.includes('@')) {
+          throw new Error('電子郵件格式不正確');
+        }
+        return true;
+      }
+
+      function processEmail(email) {
+        try {
+          validateEmail(email);
+          console.log('驗證成功', email);
+        } catch (error) {
+          console.log(error.name);
+          console.log(error.message);
+        }
+      }
+
+      processEmail('user@example.com');
+      processEmail('');
+      processEmail('invalid-email');
+      processEmail(123);
+      processEmail('a@b');
+      processEmail(null);
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/81-js-validate.js
-function validateEmail(email) {
-  if (typeof email !== 'string') {
-    throw new TypeError('電子郵件必須是字串');
-  }
-  if (email.length === 0) {
-    throw new Error('電子郵件不能為空');
-  }
-  if (!email.includes('@')) {
-    throw new Error('電子郵件格式不正確');
-  }
-  return true;
-}
-
-function processEmail(email) {
-  try {
-    validateEmail(email);
-    console.log('驗證成功', email);
-  } catch (error) {
-    console.log(error.name);
-    console.log(error.message);
-  }
-}
-
-processEmail('user@example.com');
-processEmail('');
-processEmail('invalid-email');
-processEmail(123);
-processEmail('a@b');
-processEmail(null);
 ```
 
 </details>
@@ -9924,7 +9655,7 @@ console.log(formatDays(3));
 
 下面整理這篇的重點。標題帶「選讀」的章節（閉包、Set、Map、this、解構與展開，以及 ES Module）可以整節跳過，等需要時再回來查。
 
-- JavaScript 負責網頁的行為，標準叫 ECMAScript，本課採用 ES6 之後的現代寫法並在 Console 看結果；程式寫在頁面的 script 裡只服務這一頁，要共用就放到外部檔，src 用相對這份 HTML 的路徑。
+- JavaScript 負責網頁的行為，標準叫 ECMAScript，本課採用 ES6 之後的現代寫法並在 Console 看結果。課堂 demo 把程式寫在同一份 HTML 的 script；要多頁共用才放到外部檔，src 用相對這份 HTML 的路徑。模組要 import 別的檔，所以仍拆開。
 - 會重新賦值的變數用 `let`，其餘一律用 `const`；const 鎖住的是變數指向哪個值，所以陣列和物件的內容仍然可以改。
 - 型別轉換用內建函式 Number、String、Boolean，要從帶單位的字串取出開頭整數時用 parseInt 並指定進位 10。
 - 每種型別都有內建原型，用 `.` 就能呼叫原型上的方法；字串方法一律回傳新字串，不會改動原值。

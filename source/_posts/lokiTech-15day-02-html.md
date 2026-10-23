@@ -804,6 +804,11 @@ s2 --> asideNode["aside"]
 <!-- target="_blank" 開新分頁；rel="noreferrer" 不把目前網址帶給對方 -->
 ```
 
+{% note info %}
+**開新分頁時的 rel**
+rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個值。noopener 讓新分頁拿不到原來這頁的控制權，避免外站偷偷把原頁換成假網站。noreferrer 不把目前網址告訴對方，同時也包含 noopener 的效果，所以這裡只寫 noreferrer 就夠了。現在的瀏覽器遇到 `target="_blank"` 已經預設套用 noopener，但很多網站和舊教學仍會寫成 `rel="noopener noreferrer"`，看到時知道是同一件事即可。
+{% endnote %}
+
 {% note success %}
 **換你試試：**
 在五顆連結上面加一顆「回到頁首」，連到這頁大標的 id。外連那顆保持開新分頁。

@@ -21,6 +21,312 @@ hidden: false
 
 練習檔：`studiesAdvanced/02-tailwind/`。樣式入口是 `src/style.css`（`@import "tailwindcss"`，Vite 外掛 `@tailwindcss/vite`）。查表可對照 `pages/06-opacity.html`、`pages/08-theme.html`、`pages/15-scale.html`、`pages/17-states.html`、`pages/18-formula.html`、`pages/21-container.html`、`pages/23-container-query.html`。
 
+# Core concepts
+核心概念（Core concepts）收錄 Tailwind 的基本用法：容器查詢、變體、任意值與主題指令。後面各章的工具類別，都可以搭配這些寫法使用。
+
+## 容器查詢
+容器查詢依父層寬度換樣式，斷點跟視窗無關。文件：[container queries](https://tailwindcss.com/docs/responsive-design#container-queries)、[MDN](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。練習檔：`studiesAdvanced/02-tailwind/pages/23-container-query.html`。
+
+### @container
+在要當查詢對象的父層加上 `@container`。子層用 `@sm:`、`@md:` 這類變體。具名容器寫 `@container/main`，子層寫 `@lg/main:`，巢狀時才不會打到外層。
+
+| 類別名稱 | CSS | 說明 |
+| -------- | --- | ---- |
+| `@container` | `container-type: inline-size;` | 建立未具名容器 |
+| `@container/<name>` | `container-type: inline-size;`<br>`container-name: <name>;` | 具名容器 |
+| `@3xs` … `@7xl` | `@container (width >= 16rem)` … `80rem` | 與 `--container-*` 同一組寬度 |
+| `@max-3xs` … `@max-7xl` | `@container (width < …)` | 小於該寬度 |
+| `@min-[<value>]` | `@container (width >= <value>)` | 任意最小寬 |
+| `@max-[<value>]` | `@container (width < <value>)` | 任意最大寬 |
+| `@<size>/<name>` | 只匹配該具名容器 | 例如 `@md/card:flex` |
+
+寬度對照：`@3xs` 16rem、`@2xs` 18rem、`@xs` 20rem、`@sm` 24rem、`@md` 28rem、`@lg` 32rem、`@xl` 36rem、`@2xl` 42rem、`@3xl` 48rem、`@4xl` 56rem、`@5xl` 64rem、`@6xl` 72rem、`@7xl` 80rem。
+
+```html
+<div class="@container">
+  <div class="flex flex-col @md:flex-row @lg:gap-8">
+    <img class="aspect-video @md:aspect-square @md:w-40" src="/img/villas.jpg" alt="" />
+    <p>容器夠寬時改成橫排。</p>
+  </div>
+</div>
+
+<div class="@container/card">
+  <h2 class="text-base @lg/card:text-xl">具名容器</h2>
+</div>
+```
+
+`@container` 和版心用的 `container` 不是同一個東西。v4 沒有內建會自己置中的 `container` 工具，版心要自己用 `@utility` 定義，見下方主題指令。練習檔：`studiesAdvanced/02-tailwind/pages/21-container.html`。
+
+## 變體
+變體寫在工具類別前面，用冒號分開，由左到右套用（v3 是由右到左）。`hover:` 只在主指標裝置支援 hover 時生效（`@media (hover: hover)`）。完整表：[Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。練習檔：`studiesAdvanced/02-tailwind/pages/17-states.html`。
+
+### 常用變體
+| 變體 | 對應 | 說明 |
+| ---- | ---- | ---- |
+| `hover` `focus` `focus-visible` `focus-within` `active` | 偽類 | `hover` 含 `hover: hover` 媒體條件 |
+| `first` `last` `odd` `even` `only` `empty` | 結構 | `nth-[2n+1]`、`nth-last-[…]`、`nth-of-type-[…]` |
+| `disabled` `enabled` `checked` `indeterminate` `required` `optional` `valid` `invalid` `user-valid` `user-invalid` `read-only` `placeholder-shown` | 表單 | |
+| `before` `after` `placeholder` `file` `marker` `selection` `backdrop` `first-line` `first-letter` | 偽元素 | `file` 打到 `::file-selector-button` |
+| `sm` `md` `lg` `xl` `2xl` | `@media (width >= 40/48/64/80/96rem)` | 也有 `max-sm` … `max-2xl`、`min-[…]`、`max-[…]` |
+| `dark` | `@media (prefers-color-scheme: dark)` | 預設跟系統，不是 class |
+| `motion-safe` `motion-reduce` | `prefers-reduced-motion` | |
+| `contrast-more` `contrast-less` `forced-colors` `inverted-colors` | 使用者偏好 | |
+| `pointer-fine` `pointer-coarse` `pointer-none` | `pointer` | 另有 `any-pointer-*` |
+| `portrait` `landscape` `print` `noscript` | 方向、列印、無腳本 | |
+| `open` | `[open]`、`:popover-open`、`:open` | `details`、popover |
+| `aria-checked` 等 | `[aria-checked="true"]` | 內建 busy、checked、disabled、expanded、hidden、pressed、readonly、required、selected；其餘用 `aria-[sort=ascending]:` |
+| `data-[size=large]:` | `[data-size="large"]` | 只寫 `data-open:` 表示屬性存在 |
+| `ltr` `rtl` | `:dir()` 與 `[dir]` | |
+| `supports-[display:grid]:` | `@supports` | |
+| `*` | 直接子元素 `:is(& > *)` | 子元素上的同類別蓋不掉，因為產生順序在後 |
+| `**` | 所有後代 `:is(& *)` | 例如 `**:data-avatar:rounded-full` |
+
+#### 視窗斷點
+沒有前綴的類別在所有寬度都生效。`sm:` 到 `2xl:` 是 `min-width`：視窗到達那個寬度之後成立，更寬時仍然成立。同一個屬性寫了多個前綴時，較寬的那個覆蓋較窄的。rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px）。
+
+| 前綴 | 最小寬度 | 大約像素 | 編成的查詢 |
+| --- | --- | --- | --- |
+| （沒有） | 0 | 手機直向 | 沒有媒體查詢 |
+| `sm:` | 40rem | 640px | `@media (width >= 40rem)` |
+| `md:` | 48rem | 768px | `@media (width >= 48rem)` |
+| `lg:` | 64rem | 1024px | `@media (width >= 64rem)` |
+| `xl:` | 80rem | 1280px | `@media (width >= 80rem)` |
+| `2xl:` | 96rem | 1536px | `@media (width >= 96rem)` |
+
+`max-md:hidden` 這類是「小於該斷點才成立」。自訂門檻用 `@theme` 的 `--breakpoint-*`，見 [主題指令](#import-與-theme)。
+
+堆疊順序：`*:first:pt-0`，不要寫成 v3 的 `first:*:pt-0`。
+
+### has-*、not-*、in-*
+`has-*` 用 `:has()` 看後代。`not-*` 把條件反過來。`in-*` 看任一祖先的狀態，不必在父層加 `group`。
+
+| 類別名稱 | CSS | 說明 |
+| -------- | --- | ---- |
+| `has-checked:` | `&:has(:checked)` | 後代被勾選 |
+| `has-[img]:` | `&:has(img)` | 後代有該元素；空格寫底線 `has-[>_img]:` |
+| `group-has-[a]:` | 具名或未具名 group 的 `:has()` | 依 group 的後代 |
+| `not-focus:` | `&:not(:focus)` | 可再疊 `hover:` |
+| `not-supports-[display:grid]:` | 不支援該功能 | |
+| `in-focus:` | `:focus &` 這類祖先組合 | 不必加 `group` |
+
+```html
+<label class="has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
+  <input type="radio" class="checked:border-indigo-500" />
+  信用卡
+</label>
+
+<button class="bg-sky-500 hover:bg-sky-600 not-focus:hover:bg-sky-700">只有沒聚焦時 hover 才換色</button>
+
+<div tabindex="0">
+  <p class="opacity-50 in-focus:opacity-100">父層聚焦時變清楚，不用 group</p>
+</div>
+```
+
+### 具名 group 與 peer
+父層狀態用 `group`，兄弟（必須是前面的兄弟）用 `peer`。巢狀時用 `group/item`、`group-hover/item:`，peer 同樣可 `peer/email`、`peer-invalid/email:`。
+
+```html
+<li class="group/item">
+  <a class="group/edit invisible group-hover/item:visible" href="tel:0912000000">
+    <span class="group-hover/edit:underline">撥號</span>
+  </a>
+</li>
+
+<label>
+  <input type="email" class="peer/email" />
+  <p class="invisible peer-invalid/email:visible">請填有效的 email</p>
+</label>
+```
+
+任意 group 選擇器：`group-[.is-published]:block`。`&` 標出 `.group` 的位置：`group-[:nth-of-type(3)_&]:block`。
+
+### inert 與 starting
+`inert:` 套到帶 `inert` 屬性的元素及其後代（`&:is([inert], [inert] *)`），用來把暫時不能操作的區塊變淡。
+
+`starting:` 對應 `@starting-style`，設定元素第一次進入畫面、或從 `display: none` 變成可見時的起點，再交給 `transition` 播到一般狀態。
+
+```html
+<fieldset inert class="inert:opacity-40">
+  <input type="checkbox" /> 這區暫時不能改
+</fieldset>
+
+<div popover id="notice" class="opacity-100 transition-opacity starting:open:opacity-0 open:opacity-100">
+  開啟時由透明過渡到不透明
+</div>
+```
+
+### 任意變體、important、前綴
+任意變體把選擇器寫在中括號。空格用底線。`!` 放在類別最後（v3 寫在前面仍可用，但已不建議）。
+
+| 寫法 | 說明 |
+| ---- | ---- |
+| `[&.is-dragging]:cursor-grabbing` | 自己帶有該 class |
+| `[&_p]:mt-4` | 後代 `p` |
+| `[@supports(display:grid)]:grid` | 任意 at-rule |
+| `flex!` `bg-red-500!` `hover:bg-red-600/50!` | important 在最後 |
+| `tw:flex` `tw:hover:bg-red-600` | `@import "tailwindcss" prefix(tw);` 之後的寫法，前綴在最前面 |
+
+## 任意值與任意屬性
+方括號塞進文件沒有的值或整條 CSS 宣告。底線代表空格。逗號不再被自動換成空格，所以 `grid-cols-[max-content_auto]` 不能寫成 `grid-cols-[max-content,auto]`。文件：[adding custom styles](https://tailwindcss.com/docs/adding-custom-styles)。
+
+| 寫法 | 產生 |
+| ---- | ---- |
+| `w-[32rem]` `top-[117px]` `bg-[#243c5a]` | 任意值 |
+| `grid-cols-[1fr_2fr]` `object-[center_bottom]` | 底線當空格 |
+| `bg-(--brand)` `w-(--sidebar)` | CSS 變數。v3 的 `bg-[--brand]` 改成括號 |
+| `w-(length:--my-width)` `border-(length:--line)` | 型別有歧義時標 `length`、`color`、`image` 等 |
+| `aspect-(--my-aspect-ratio)` | 括號簡寫，等同 `aspect-[var(--my-aspect-ratio)]` |
+| `[mask-type:luminance]` | 任意屬性，屬性與值用冒號 |
+
+```html
+<div class="w-[32rem] bg-[#243c5a] [mask-type:luminance]"></div>
+<div class="grid grid-cols-[max-content_auto] gap-(--card-gap)"></div>
+<img class="object-[center_bottom] aspect-(--poster)" src="/img/villas.jpg" alt="" />
+```
+
+透明度修飾符接在顏色後面：`bg-black/50`、`text-white/80`、`border-sky-500/30`、`ring-blue-500/50`、`shadow-lg/30`。`bg-opacity-*`、`text-opacity-*`、`border-opacity-*`、`divide-opacity-*`、`ring-opacity-*`、`placeholder-opacity-*` 都已移除。
+
+## 主題指令
+v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒有 `darkMode`、`theme()` 點號路徑、`corePlugins`。入口是 `@import "tailwindcss"`，不是 `@tailwind base/components/utilities`。文件：[theme variables](https://tailwindcss.com/docs/theme)。練習檔：`studiesAdvanced/02-tailwind/src/style.css`、`pages/08-theme.html`、`pages/10-dark-toggle.html`。
+
+### @import 與 @theme
+`@theme` 裡的 `--*` 會變成工具類別，也會輸出成 `:root` 上的變數。
+
+| 主題變數 | 類別 |
+| -------- | ---- |
+| `--color-*` | `bg-*` `text-*` `border-*` `fill-*` `stroke-*` `from-*` `shadow-*`（顏色） |
+| `--font-*` | `font-*` |
+| `--text-*` | `text-*`（字級；可加 `--text-tiny--line-height`） |
+| `--font-weight-*` | `font-*` |
+| `--tracking-*` | `tracking-*` |
+| `--leading-*` | `leading-*` |
+| `--breakpoint-*` | `sm:` 這類媒體變體，例如 `--breakpoint-3xl: 120rem` |
+| `--container-*` | `max-w-*` `columns-*` `basis-*` 與 `@sm:` 容器斷點 |
+| `--spacing` | `p-*` `m-*` `w-*` `gap-*` 的一級 |
+| `--radius-*` `--shadow-*` `--blur-*` `--ease-*` `--animate-*` | 對應同名工具 |
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-brand-500: oklch(0.6 0.12 190);
+  --breakpoint-3xl: 120rem;
+  --spacing: 0.25rem;
+}
+```
+
+```html
+<button class="bg-brand-500 3xl:px-8">品牌色</button>
+```
+
+#### @theme inline 與 static
+
+| 寫法 | 什麼時候用 |
+| --- | --- |
+| `@theme` | 新增品牌色、間距、自訂斷點。沒用到的 class 不會輸出 |
+| `@theme inline` | utility 要直接寫入另一個變數的值，而不是執行時再讀那顆變數 |
+| `@theme static` | 某個值必須留在 CSS 裡，即使原始碼沒寫到那個 class。檔案會變大 |
+
+`--color-*: initial;` 會清掉全部預設顏色，只留下你接著宣告的那些。`--spacing` 是整份間距刻度的一級（預設 `0.25rem`，`p-4` = 1rem）。單一格用 `--spacing-18: 4.5rem`，之後才有 `p-18`、`m-18`、`gap-18`。
+
+預設 `dark:` 跟系統。要改成祖先有 `.dark` 才生效，覆寫變體，不要在 JS 設定檔寫 `darkMode: "class"`：
+
+```css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+```html
+<html class="dark">
+  <body class="bg-white text-black dark:bg-gray-950 dark:text-white"></body>
+</html>
+```
+
+仍要讀舊的 JS 設定時，在 CSS 寫 `@config "../../tailwind.config.js";`。`corePlugins`、`safelist`、`separator` 不能從那份檔案來。要強制產生某個類別用 `@source inline("underline");`。
+
+### @utility
+自訂工具用 `@utility`，才能跟 `hover:`、`lg:` 一起用。v3 寫在 `@layer utilities` 的 class，v4 不會自動變成變體可用的工具。
+
+### @layer
+`@layer` 把一般 CSS 放進 `base`、`components`、`utilities` 其中一層。放在 `@layer components` 的 `.kicker` 是普通 class，不能寫成 `md:kicker`。要讓前綴接得上，改用 `@utility`。`@apply` 是在手寫規則裡展開 utility；標籤你改得到時，class 留在 HTML 上。
+
+| 寫法 | 什麼時候用 |
+| --- | --- |
+| 標籤上的 utility | 這一顆元件的外觀就在 class 裡看完 |
+| `@layer components` | 固定的元件 class，不需要 `md:`、`hover:` 接在它前面 |
+| `@utility` | 自訂 class 要跟斷點、狀態前綴一起用 |
+| `@apply` | 同一串 utility 重複很多次，而且改不到每一個標籤。不要整頁都收進去 |
+
+版心沒有內建的置中 `container`。要自己定義：
+
+```css
+@utility container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@utility tab-4 {
+  tab-size: 4;
+}
+```
+
+```html
+<div class="container">
+  <p class="tab-4">版心與自訂工具</p>
+</div>
+```
+
+### @variant 與 @custom-variant
+`@custom-variant` 註冊新變體。`@variant` 在一般 CSS 裡套用已經存在的變體。
+
+```css
+@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
+@custom-variant hocus (&:hover, &:focus);
+
+.card {
+  background: white;
+  @variant dark {
+    background: black;
+  }
+  @variant hocus {
+    outline: 2px solid canvastext;
+  }
+}
+```
+
+```html
+<html data-theme="midnight">
+  <button class="theme-midnight:bg-black hocus:underline">按鈕</button>
+</html>
+```
+
+### theme()
+顏色與長度優先用變數：`var(--color-red-500)`，不要寫 `theme(colors.red.500)`。`@media` 裡還不能用一般自訂屬性時，`theme()` 的參數改成 CSS 變數名稱：
+
+```css
+.note {
+  background-color: var(--color-amber-100);
+}
+
+@media (width >= theme(--breakpoint-xl)) {
+  .note {
+    background-color: var(--color-amber-200);
+  }
+}
+```
+
+另一份 CSS（例如元件的 `<style>`）要用 `@apply` 時，先 `@reference` 主樣式，主題變數才找得到：
+
+```css
+@reference "../style.css";
+
+h1 {
+  @apply text-2xl font-bold text-brand-500;
+}
+```
+
+上網查這篇的說法時，用括號裡的英文當關鍵字。
+
 # Layout
 佈局相關的類別用於控制元素的顯示方式、定位和排列。
 
@@ -818,7 +1124,7 @@ CSS 屬性值有兩種設定方式：
 - 這些屬性需要配合 `position` 屬性使用才能生效
 {% endnote %}
 
-## 自訂
+### 自訂
 `*-<number>` 這些工具類別都是由 `--spacing` 主題變數驅動的，您可以在自己的主題中自訂這個變數：
 
 ```css
@@ -885,10 +1191,10 @@ CSS 屬性值有兩種設定方式：
 - 響應式設計中，可以根據螢幕尺寸調整元素的層級
 {% endnote %}
 
-# Flex & Grid
+# Flexbox & Grid
 Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的佈局能力。Flex 適合一維佈局（單行或單列），而 Grid 則適合二維佈局（行列組合）。以下將詳細介紹這兩種佈局系統的相關類別。
 
-### 常見組合
+## 常見組合
 單格的類別見後面各節。下面是課堂上會直接疊在一起的寫法。
 
 | 你想做的事 | class |
@@ -1532,8 +1838,8 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 </div>
 ```
 
-# Spacing & Sizing
-Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一，能夠快速調整元素的內外距（padding、margin）與寬高尺寸。這些工具類別設計簡潔，支援響應式、邏輯方向（如 LTR/RTL）、任意值與 CSS 變數，讓你能靈活打造現代化、可維護的版面結構。
+# Spacing
+Spacing（間距）是 TailwindCSS 中最常用的功能之一，用來快速調整元素的內距（padding）與外距（margin），數值都由 `--spacing` 主題變數換算。
 
 ## 邏輯屬性
 邏輯屬性依書寫方向對應實體邊，LTR 時 start 是左、end 是右；RTL 時對調。同一組間距刻度（`--spacing`）用在物理邊與邏輯邊。文件：[CSS logical properties](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_logical_properties_and_values)。
@@ -1807,6 +2113,9 @@ Spacing & Sizing（間距與尺寸）是 TailwindCSS 中最常用的功能之一
   <div>03</div>
 </div>
 ```
+
+# Sizing
+Sizing（尺寸）類別用來設定元素的寬高，以及最小、最大寬高。
 
 ## width
 設定元素寬度。包含 spacing 級距、百分比、視口、內容基礎與任意值；並支援 CSS 變數。
@@ -2817,7 +3126,7 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 <p class="content-(--my-content)"></p>
 ```
 
-# Background
+# Backgrounds
 背景相關類別用於設定元素的背景屬性，包括顏色、圖片、位置、重複方式、尺寸等。這些類別讓你能快速調整背景效果，常見於版面設計、區塊強調、按鈕樣式等情境。
 
 ## background-attachment
@@ -3063,7 +3372,7 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 <div class="bg-size-(--my-image-size)"></div>
 ```
 
-# Border
+# Borders
 邊框（Border）相關類別用於設定元素的邊框寬度、顏色、圓角、樣式等。這些類別讓你能快速打造卡片、按鈕、區塊等元件的外觀，常見於版面分隔、強調重點、提升視覺層次等情境。
 
 ## border-radius
@@ -5792,7 +6101,7 @@ SVG（Scalable Vector Graphics，可縮放向量圖形）是一種用於網頁�
 - 你也可以搭配 Tailwind CSS 的色彩工具類別（如 `text-blue-500`）一起使用，讓 SVG 圖示顏色與文字一致。
 {% endnote %}
 
-# 無障礙設計（Accessibility）
+# Accessibility
 提供讓網站內容更容易被所有使用者（包含身心障礙者）存取的工具類別，協助提升網頁可用性與包容性。
 
 ## forced-color-adjust
@@ -5803,312 +6112,26 @@ SVG（Scalable Vector Graphics，可縮放向量圖形）是一種用於網頁�
 | `forced-color-adjust-auto` | `forced-color-adjust: auto;` | 允許瀏覽器自動調整顏色（預設） |
 | `forced-color-adjust-none` | `forced-color-adjust: none;` | 禁止瀏覽器自動調整顏色         |
 
-# 容器查詢
-容器查詢依父層寬度換樣式，斷點跟視窗無關。文件：[container queries](https://tailwindcss.com/docs/responsive-design#container-queries)、[MDN](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。練習檔：`studiesAdvanced/02-tailwind/pages/23-container-query.html`。
-
-## @container
-在要當查詢對象的父層加上 `@container`。子層用 `@sm:`、`@md:` 這類變體。具名容器寫 `@container/main`，子層寫 `@lg/main:`，巢狀時才不會打到外層。
-
-| 類別名稱 | CSS | 說明 |
-| -------- | --- | ---- |
-| `@container` | `container-type: inline-size;` | 建立未具名容器 |
-| `@container/<name>` | `container-type: inline-size;`<br>`container-name: <name>;` | 具名容器 |
-| `@3xs` … `@7xl` | `@container (width >= 16rem)` … `80rem` | 與 `--container-*` 同一組寬度 |
-| `@max-3xs` … `@max-7xl` | `@container (width < …)` | 小於該寬度 |
-| `@min-[<value>]` | `@container (width >= <value>)` | 任意最小寬 |
-| `@max-[<value>]` | `@container (width < <value>)` | 任意最大寬 |
-| `@<size>/<name>` | 只匹配該具名容器 | 例如 `@md/card:flex` |
-
-寬度對照：`@3xs` 16rem、`@2xs` 18rem、`@xs` 20rem、`@sm` 24rem、`@md` 28rem、`@lg` 32rem、`@xl` 36rem、`@2xl` 42rem、`@3xl` 48rem、`@4xl` 56rem、`@5xl` 64rem、`@6xl` 72rem、`@7xl` 80rem。
-
-```html
-<div class="@container">
-  <div class="flex flex-col @md:flex-row @lg:gap-8">
-    <img class="aspect-video @md:aspect-square @md:w-40" src="/img/villas.jpg" alt="" />
-    <p>容器夠寬時改成橫排。</p>
-  </div>
-</div>
-
-<div class="@container/card">
-  <h2 class="text-base @lg/card:text-xl">具名容器</h2>
-</div>
-```
-
-`@container` 和版心用的 `container` 不是同一個東西。v4 沒有內建會自己置中的 `container` 工具，版心要自己用 `@utility` 定義，見下方主題指令。練習檔：`studiesAdvanced/02-tailwind/pages/21-container.html`。
-
-# 變體
-變體寫在工具類別前面，用冒號分開，由左到右套用（v3 是由右到左）。`hover:` 只在主指標裝置支援 hover 時生效（`@media (hover: hover)`）。完整表：[Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。練習檔：`studiesAdvanced/02-tailwind/pages/17-states.html`。
-
-## 常用變體
-| 變體 | 對應 | 說明 |
-| ---- | ---- | ---- |
-| `hover` `focus` `focus-visible` `focus-within` `active` | 偽類 | `hover` 含 `hover: hover` 媒體條件 |
-| `first` `last` `odd` `even` `only` `empty` | 結構 | `nth-[2n+1]`、`nth-last-[…]`、`nth-of-type-[…]` |
-| `disabled` `enabled` `checked` `indeterminate` `required` `optional` `valid` `invalid` `user-valid` `user-invalid` `read-only` `placeholder-shown` | 表單 | |
-| `before` `after` `placeholder` `file` `marker` `selection` `backdrop` `first-line` `first-letter` | 偽元素 | `file` 打到 `::file-selector-button` |
-| `sm` `md` `lg` `xl` `2xl` | `@media (width >= 40/48/64/80/96rem)` | 也有 `max-sm` … `max-2xl`、`min-[…]`、`max-[…]` |
-| `dark` | `@media (prefers-color-scheme: dark)` | 預設跟系統，不是 class |
-| `motion-safe` `motion-reduce` | `prefers-reduced-motion` | |
-| `contrast-more` `contrast-less` `forced-colors` `inverted-colors` | 使用者偏好 | |
-| `pointer-fine` `pointer-coarse` `pointer-none` | `pointer` | 另有 `any-pointer-*` |
-| `portrait` `landscape` `print` `noscript` | 方向、列印、無腳本 | |
-| `open` | `[open]`、`:popover-open`、`:open` | `details`、popover |
-| `aria-checked` 等 | `[aria-checked="true"]` | 內建 busy、checked、disabled、expanded、hidden、pressed、readonly、required、selected；其餘用 `aria-[sort=ascending]:` |
-| `data-[size=large]:` | `[data-size="large"]` | 只寫 `data-open:` 表示屬性存在 |
-| `ltr` `rtl` | `:dir()` 與 `[dir]` | |
-| `supports-[display:grid]:` | `@supports` | |
-| `*` | 直接子元素 `:is(& > *)` | 子元素上的同類別蓋不掉，因為產生順序在後 |
-| `**` | 所有後代 `:is(& *)` | 例如 `**:data-avatar:rounded-full` |
-
-### 視窗斷點
-沒有前綴的類別在所有寬度都生效。`sm:` 到 `2xl:` 是 `min-width`：視窗到達那個寬度之後成立，更寬時仍然成立。同一個屬性寫了多個前綴時，較寬的那個覆蓋較窄的。rem 在媒體查詢裡相對瀏覽器預設字級（通常 16px）。
-
-| 前綴 | 最小寬度 | 大約像素 | 編成的查詢 |
-| --- | --- | --- | --- |
-| （沒有） | 0 | 手機直向 | 沒有媒體查詢 |
-| `sm:` | 40rem | 640px | `@media (width >= 40rem)` |
-| `md:` | 48rem | 768px | `@media (width >= 48rem)` |
-| `lg:` | 64rem | 1024px | `@media (width >= 64rem)` |
-| `xl:` | 80rem | 1280px | `@media (width >= 80rem)` |
-| `2xl:` | 96rem | 1536px | `@media (width >= 96rem)` |
-
-`max-md:hidden` 這類是「小於該斷點才成立」。自訂門檻用 `@theme` 的 `--breakpoint-*`，見 [主題指令](#import-與-theme)。
-
-堆疊順序：`*:first:pt-0`，不要寫成 v3 的 `first:*:pt-0`。
-
-## has-*、not-*、in-*
-`has-*` 用 `:has()` 看後代。`not-*` 把條件反過來。`in-*` 看任一祖先的狀態，不必在父層加 `group`。
-
-| 類別名稱 | CSS | 說明 |
-| -------- | --- | ---- |
-| `has-checked:` | `&:has(:checked)` | 後代被勾選 |
-| `has-[img]:` | `&:has(img)` | 後代有該元素；空格寫底線 `has-[>_img]:` |
-| `group-has-[a]:` | 具名或未具名 group 的 `:has()` | 依 group 的後代 |
-| `not-focus:` | `&:not(:focus)` | 可再疊 `hover:` |
-| `not-supports-[display:grid]:` | 不支援該功能 | |
-| `in-focus:` | `:focus &` 這類祖先組合 | 不必加 `group` |
-
-```html
-<label class="has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
-  <input type="radio" class="checked:border-indigo-500" />
-  信用卡
-</label>
-
-<button class="bg-sky-500 hover:bg-sky-600 not-focus:hover:bg-sky-700">只有沒聚焦時 hover 才換色</button>
-
-<div tabindex="0">
-  <p class="opacity-50 in-focus:opacity-100">父層聚焦時變清楚，不用 group</p>
-</div>
-```
-
-## 具名 group 與 peer
-父層狀態用 `group`，兄弟（必須是前面的兄弟）用 `peer`。巢狀時用 `group/item`、`group-hover/item:`，peer 同樣可 `peer/email`、`peer-invalid/email:`。
-
-```html
-<li class="group/item">
-  <a class="group/edit invisible group-hover/item:visible" href="tel:0912000000">
-    <span class="group-hover/edit:underline">撥號</span>
-  </a>
-</li>
-
-<label>
-  <input type="email" class="peer/email" />
-  <p class="invisible peer-invalid/email:visible">請填有效的 email</p>
-</label>
-```
-
-任意 group 選擇器：`group-[.is-published]:block`。`&` 標出 `.group` 的位置：`group-[:nth-of-type(3)_&]:block`。
-
-## inert 與 starting
-`inert:` 套到帶 `inert` 屬性的元素及其後代（`&:is([inert], [inert] *)`），用來把暫時不能操作的區塊變淡。
-
-`starting:` 對應 `@starting-style`，設定元素第一次進入畫面、或從 `display: none` 變成可見時的起點，再交給 `transition` 播到一般狀態。
-
-```html
-<fieldset inert class="inert:opacity-40">
-  <input type="checkbox" /> 這區暫時不能改
-</fieldset>
-
-<div popover id="notice" class="opacity-100 transition-opacity starting:open:opacity-0 open:opacity-100">
-  開啟時由透明過渡到不透明
-</div>
-```
-
-## 任意變體、important、前綴
-任意變體把選擇器寫在中括號。空格用底線。`!` 放在類別最後（v3 寫在前面仍可用，但已不建議）。
-
-| 寫法 | 說明 |
-| ---- | ---- |
-| `[&.is-dragging]:cursor-grabbing` | 自己帶有該 class |
-| `[&_p]:mt-4` | 後代 `p` |
-| `[@supports(display:grid)]:grid` | 任意 at-rule |
-| `flex!` `bg-red-500!` `hover:bg-red-600/50!` | important 在最後 |
-| `tw:flex` `tw:hover:bg-red-600` | `@import "tailwindcss" prefix(tw);` 之後的寫法，前綴在最前面 |
-
-# 任意值與任意屬性
-方括號塞進文件沒有的值或整條 CSS 宣告。底線代表空格。逗號不再被自動換成空格，所以 `grid-cols-[max-content_auto]` 不能寫成 `grid-cols-[max-content,auto]`。文件：[adding custom styles](https://tailwindcss.com/docs/adding-custom-styles)。
-
-| 寫法 | 產生 |
-| ---- | ---- |
-| `w-[32rem]` `top-[117px]` `bg-[#243c5a]` | 任意值 |
-| `grid-cols-[1fr_2fr]` `object-[center_bottom]` | 底線當空格 |
-| `bg-(--brand)` `w-(--sidebar)` | CSS 變數。v3 的 `bg-[--brand]` 改成括號 |
-| `w-(length:--my-width)` `border-(length:--line)` | 型別有歧義時標 `length`、`color`、`image` 等 |
-| `aspect-(--my-aspect-ratio)` | 括號簡寫，等同 `aspect-[var(--my-aspect-ratio)]` |
-| `[mask-type:luminance]` | 任意屬性，屬性與值用冒號 |
-
-```html
-<div class="w-[32rem] bg-[#243c5a] [mask-type:luminance]"></div>
-<div class="grid grid-cols-[max-content_auto] gap-(--card-gap)"></div>
-<img class="object-[center_bottom] aspect-(--poster)" src="/img/villas.jpg" alt="" />
-```
-
-透明度修飾符接在顏色後面：`bg-black/50`、`text-white/80`、`border-sky-500/30`、`ring-blue-500/50`、`shadow-lg/30`。`bg-opacity-*`、`text-opacity-*`、`border-opacity-*`、`divide-opacity-*`、`ring-opacity-*`、`placeholder-opacity-*` 都已移除。
-
-# 主題指令
-v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒有 `darkMode`、`theme()` 點號路徑、`corePlugins`。入口是 `@import "tailwindcss"`，不是 `@tailwind base/components/utilities`。文件：[theme variables](https://tailwindcss.com/docs/theme)。練習檔：`studiesAdvanced/02-tailwind/src/style.css`、`pages/08-theme.html`、`pages/10-dark-toggle.html`。
-
-## @import 與 @theme
-`@theme` 裡的 `--*` 會變成工具類別，也會輸出成 `:root` 上的變數。
-
-| 主題變數 | 類別 |
-| -------- | ---- |
-| `--color-*` | `bg-*` `text-*` `border-*` `fill-*` `stroke-*` `from-*` `shadow-*`（顏色） |
-| `--font-*` | `font-*` |
-| `--text-*` | `text-*`（字級；可加 `--text-tiny--line-height`） |
-| `--font-weight-*` | `font-*` |
-| `--tracking-*` | `tracking-*` |
-| `--leading-*` | `leading-*` |
-| `--breakpoint-*` | `sm:` 這類媒體變體，例如 `--breakpoint-3xl: 120rem` |
-| `--container-*` | `max-w-*` `columns-*` `basis-*` 與 `@sm:` 容器斷點 |
-| `--spacing` | `p-*` `m-*` `w-*` `gap-*` 的一級 |
-| `--radius-*` `--shadow-*` `--blur-*` `--ease-*` `--animate-*` | 對應同名工具 |
-
-```css
-@import "tailwindcss";
-
-@theme {
-  --color-brand-500: oklch(0.6 0.12 190);
-  --breakpoint-3xl: 120rem;
-  --spacing: 0.25rem;
-}
-```
-
-```html
-<button class="bg-brand-500 3xl:px-8">品牌色</button>
-```
-
-### @theme inline 與 static
-
-| 寫法 | 什麼時候用 |
-| --- | --- |
-| `@theme` | 新增品牌色、間距、自訂斷點。沒用到的 class 不會輸出 |
-| `@theme inline` | utility 要直接寫入另一個變數的值，而不是執行時再讀那顆變數 |
-| `@theme static` | 某個值必須留在 CSS 裡，即使原始碼沒寫到那個 class。檔案會變大 |
-
-`--color-*: initial;` 會清掉全部預設顏色，只留下你接著宣告的那些。`--spacing` 是整份間距刻度的一級（預設 `0.25rem`，`p-4` = 1rem）。單一格用 `--spacing-18: 4.5rem`，之後才有 `p-18`、`m-18`、`gap-18`。
-
-預設 `dark:` 跟系統。要改成祖先有 `.dark` 才生效，覆寫變體，不要在 JS 設定檔寫 `darkMode: "class"`：
-
-```css
-@custom-variant dark (&:where(.dark, .dark *));
-```
-
-```html
-<html class="dark">
-  <body class="bg-white text-black dark:bg-gray-950 dark:text-white"></body>
-</html>
-```
-
-仍要讀舊的 JS 設定時，在 CSS 寫 `@config "../../tailwind.config.js";`。`corePlugins`、`safelist`、`separator` 不能從那份檔案來。要強制產生某個類別用 `@source inline("underline");`。
-
-## @utility
-自訂工具用 `@utility`，才能跟 `hover:`、`lg:` 一起用。v3 寫在 `@layer utilities` 的 class，v4 不會自動變成變體可用的工具。
-
-### @layer
-`@layer` 把一般 CSS 放進 `base`、`components`、`utilities` 其中一層。放在 `@layer components` 的 `.kicker` 是普通 class，不能寫成 `md:kicker`。要讓前綴接得上，改用 `@utility`。`@apply` 是在手寫規則裡展開 utility；標籤你改得到時，class 留在 HTML 上。
-
-| 寫法 | 什麼時候用 |
-| --- | --- |
-| 標籤上的 utility | 這一顆元件的外觀就在 class 裡看完 |
-| `@layer components` | 固定的元件 class，不需要 `md:`、`hover:` 接在它前面 |
-| `@utility` | 自訂 class 要跟斷點、狀態前綴一起用 |
-| `@apply` | 同一串 utility 重複很多次，而且改不到每一個標籤。不要整頁都收進去 |
-
-版心沒有內建的置中 `container`。要自己定義：
-
-```css
-@utility container {
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 1rem;
-}
-
-@utility tab-4 {
-  tab-size: 4;
-}
-```
-
-```html
-<div class="container">
-  <p class="tab-4">版心與自訂工具</p>
-</div>
-```
-
-## @variant 與 @custom-variant
-`@custom-variant` 註冊新變體。`@variant` 在一般 CSS 裡套用已經存在的變體。
-
-```css
-@custom-variant theme-midnight (&:where([data-theme="midnight"] *));
-@custom-variant hocus (&:hover, &:focus);
-
-.card {
-  background: white;
-  @variant dark {
-    background: black;
-  }
-  @variant hocus {
-    outline: 2px solid canvastext;
-  }
-}
-```
-
-```html
-<html data-theme="midnight">
-  <button class="theme-midnight:bg-black hocus:underline">按鈕</button>
-</html>
-```
-
-## theme()
-顏色與長度優先用變數：`var(--color-red-500)`，不要寫 `theme(colors.red.500)`。`@media` 裡還不能用一般自訂屬性時，`theme()` 的參數改成 CSS 變數名稱：
-
-```css
-.note {
-  background-color: var(--color-amber-100);
-}
-
-@media (width >= theme(--breakpoint-xl)) {
-  .note {
-    background-color: var(--color-amber-200);
-  }
-}
-```
-
-另一份 CSS（例如元件的 `<style>`）要用 `@apply` 時，先 `@reference` 主樣式，主題變數才找得到：
-
-```css
-@reference "../style.css";
-
-h1 {
-  @apply text-2xl font-bold text-brand-500;
-}
-```
-
-上網查這篇的說法時，用括號裡的英文當關鍵字。
-
 # 專有名詞中英對照
 
-## Layout、Flex & Grid
+## Core concepts
+
+- 斷點（breakpoint）
+- 版心（content width）
+- 容器查詢（container query）
+- 具名容器（named container）
+- 未具名容器（unnamed container）
+- 變體（variant）
+- 偽元素（pseudo-element）
+- 前綴（prefix）
+- 偽類（pseudo-class）
+- 視窗斷點（viewport breakpoint）
+- 媒體查詢（media query）
+- 任意變體（arbitrary variant）
+- 任意屬性（arbitrary property）
+- 媒體變體（media variant）
+
+## Layout、Flexbox & Grid
 
 - 佈局（layout）
 - 定位（positioning）
@@ -6137,13 +6160,13 @@ h1 {
 - 堆疊順序（stacking order）
 - 透明度（opacity）
 
-## Spacing & Sizing
+## Spacing、Sizing
 
 - 間距（spacing）
 - 內外距（padding and margin）
 - 邏輯方向（logical properties）
 
-## Background、Effects
+## Backgrounds、Effects、Accessibility
 
 - 色階（color scale）
 - 漸層（gradient）
@@ -6153,28 +6176,5 @@ h1 {
 - 插值模式（interpolation mode）
 - 混合模式（blend mode）
 - 遮罩（mask）
-
-## 無障礙設計（Accessibility）、容器查詢
-
-- 斷點（breakpoint）
-- 版心（content width）
 - 強制色彩模式（forced colors）
 - 高對比模式（high contrast）
-- 容器查詢（container query）
-- 具名容器（named container）
-- 未具名容器（unnamed container）
-
-## 變體
-
-- 變體（variant）
-- 偽元素（pseudo-element）
-- 前綴（prefix）
-- 偽類（pseudo-class）
-- 視窗斷點（viewport breakpoint）
-- 媒體查詢（media query）
-- 任意變體（arbitrary variant）
-
-## 任意值與任意屬性、主題指令
-
-- 任意屬性（arbitrary property）
-- 媒體變體（media variant）

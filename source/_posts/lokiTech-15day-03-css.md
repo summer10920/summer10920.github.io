@@ -20,6 +20,8 @@ CSS（Cascading Style Sheets，層疊樣式表）決定頁面長什麼樣子：�
 
 樣式表是一組規則。瀏覽器先讀 HTML，再把對得上的規則套上去，最後才排版與繪製。很多條搶同一個屬性時，靠權重與層疊決定留下哪一條；沒有人寫的屬性，才談繼承。
 
+外部檔是實務做法。為了閱讀方便，課堂 demo 把樣式寫在同一份 HTML 的 `style` 裡。只有「三種寫法」仍用外部樣式表，用來練習 `link` 的路徑。
+
 ## 觀念與引入
 
 一條規則先選到元素，再寫要改的屬性；你改的是這份文字，不是在畫面上直接塗色。存檔後重新整理，瀏覽器才會再跑一次。
@@ -48,7 +50,25 @@ decl --> used["套用後的外觀"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>一條規則</title>
-    <link rel="stylesheet" href="01-syntax.css" />
+    <style>
+      /* 選擇器 { 屬性: 值; }    HTML 註解寫在這裡不會生效 */
+
+      h1,
+      h2 {
+        font-weight: 700; /* 逗號：兩條選擇器共用，權重不會相加 */
+      }
+
+      h1 {
+        color: #99f6e4; /* 同屬性寫兩次，這行會被下一行蓋掉 */
+        colour: red; /* 拼錯，只丟掉這一行，標題不會變紅 */
+        color: #115e59;
+        font-size: 1.75rem;
+      }
+
+      .lead {
+        font-size: 1.125rem;
+      }
+    </style>
   </head>
   <body>
     <h1>一條規則三個零件</h1>
@@ -57,26 +77,6 @@ decl --> used["套用後的外觀"]
     <p>這段沒有自己的 class，字級是瀏覽器預設。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/01-syntax.css
-/* 選擇器 { 屬性: 值; }    HTML 註解寫在這裡不會生效 */
-
-h1,
-h2 {
-  font-weight: 700; /* 逗號：兩條選擇器共用，權重不會相加 */
-}
-
-h1 {
-  color: #99f6e4; /* 同屬性寫兩次，這行會被下一行蓋掉 */
-  colour: red; /* 拼錯，只丟掉這一行，標題不會變紅 */
-  color: #115e59;
-  font-size: 1.75rem;
-}
-
-.lead {
-  font-size: 1.125rem;
-}
 ```
 
 **解析**
@@ -117,7 +117,24 @@ h3 寫進逗號那一組，所以跟前兩顆標題一樣是粗體，但不繼�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>一條規則</title>
-    <link rel="stylesheet" href="01-syntax.css" />
+    <style>
+      h1,
+      h2,
+      h3 {
+        font-weight: 700;
+      }
+
+      h1 {
+        color: #99f6e4;
+        colour: red;
+        color: #0f766e;
+        font-size: 1.75rem;
+      }
+
+      .lead {
+        font-size: 1.125rem;
+      }
+    </style>
   </head>
   <body>
     <h1>一條規則三個零件</h1>
@@ -127,25 +144,6 @@ h3 寫進逗號那一組，所以跟前兩顆標題一樣是粗體，但不繼�
     <h3>行前準備</h3>
   </body>
 </html>
-```
-
-```css 03-css/pages/01-syntax.css
-h1,
-h2,
-h3 {
-  font-weight: 700;
-}
-
-h1 {
-  color: #99f6e4;
-  colour: red;
-  color: #0f766e;
-  font-size: 1.75rem;
-}
-
-.lead {
-  font-size: 1.125rem;
-}
 ```
 
 </details>
@@ -279,7 +277,28 @@ h1 {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>基本選擇器</title>
-    <link rel="stylesheet" href="03-selectors-basic.css" />
+    <style>
+      p {
+        color: #475569;
+      }
+
+      .tour {
+        color: #0f766e;
+      }
+
+      .soldout {
+        text-decoration: line-through;
+      }
+
+      /* 沒有空格：同一個元素同時有這兩個 class */
+      .tour.soldout {
+        color: #64748b;
+      }
+
+      #featured {
+        font-weight: 700;
+      }
+    </style>
   </head>
   <body>
     <h1>選擇器決定規則打到誰</h1>
@@ -290,29 +309,6 @@ h1 {
     <p id="featured">id：全頁這一個，字重較粗。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/03-selectors-basic.css
-p {
-  color: #475569;
-}
-
-.tour {
-  color: #0f766e;
-}
-
-.soldout {
-  text-decoration: line-through;
-}
-
-/* 沒有空格：同一個元素同時有這兩個 class */
-.tour.soldout {
-  color: #64748b;
-}
-
-#featured {
-  font-weight: 700;
-}
 ```
 
 **解析**
@@ -334,7 +330,7 @@ p {
 
 {% note info %}
 **打不中時先對名字**
-Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存，或 link 路徑錯。先對 HTML 與樣式表的名字，再談誰蓋過誰。
+Styles 裡完全沒有你寫的那條，多半是 class 拼字，或 `style` 沒存檔。先對 HTML 的 class 與選擇器，再談誰蓋過誰。
 {% endnote %}
 
 {% note success %}
@@ -354,7 +350,35 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存，
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>基本選擇器</title>
-    <link rel="stylesheet" href="03-selectors-basic.css" />
+    <style>
+      p {
+        color: #475569;
+      }
+
+      .tour {
+        color: #0f766e;
+      }
+
+      .hot {
+        color: #9f1239;
+      }
+
+      .tour.hot {
+        color: #9f1239;
+      }
+
+      .soldout {
+        text-decoration: line-through;
+      }
+
+      .tour.soldout {
+        color: #64748b;
+      }
+
+      #featured {
+        font-weight: 700;
+      }
+    </style>
   </head>
   <body>
     <h1>選擇器決定規則打到誰</h1>
@@ -365,36 +389,6 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字、檔案沒存，
     <p id="featured">id：全頁這一個，字重較粗。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/03-selectors-basic.css
-p {
-  color: #475569;
-}
-
-.tour {
-  color: #0f766e;
-}
-
-.hot {
-  color: #9f1239;
-}
-
-.tour.hot {
-  color: #9f1239;
-}
-
-.soldout {
-  text-decoration: line-through;
-}
-
-.tour.soldout {
-  color: #64748b;
-}
-
-#featured {
-  font-weight: 700;
-}
 ```
 
 </details>
@@ -417,7 +411,23 @@ p {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>組合選擇器</title>
-    <link rel="stylesheet" href="04-selectors-combine.css" />
+    <style>
+      article p {
+        color: #0f766e; /* 後代：任何深度的 p */
+      }
+
+      article > .direct {
+        font-weight: 700; /* 只限 article 的直接小孩 */
+      }
+
+      h2 ~ p {
+        color: #475569; /* 同一個父層裡，h2 之後的 p */
+      }
+
+      .stops li + li {
+        text-decoration: line-through; /* 緊接在 li 後面的那個 li */
+      }
+    </style>
   </head>
   <body>
     <h1>關係寫在選擇器中間</h1>
@@ -437,24 +447,6 @@ p {
     </ul>
   </body>
 </html>
-```
-
-```css 03-css/pages/04-selectors-combine.css
-article p {
-  color: #0f766e; /* 後代：任何深度的 p */
-}
-
-article > .direct {
-  font-weight: 700; /* 只限 article 的直接小孩 */
-}
-
-h2 ~ p {
-  color: #475569; /* 同一個父層裡，h2 之後的 p */
-}
-
-.stops li + li {
-  text-decoration: line-through; /* 緊接在 li 後面的那個 li */
-}
 ```
 
 **解析**
@@ -483,22 +475,49 @@ article > .direct {
 
 加號只打緊接在 h2 後面的那一個 p，所以只有第一段是石板色。再下一段不再被這條打中，顏色回到瀏覽器預設。清單的加號沒有改。
 
-```css 03-css/pages/04-selectors-combine.css
-article p {
-  color: #0f766e;
-}
+```html 03-css/pages/04-selectors-combine.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>組合選擇器</title>
+    <style>
+      article p {
+        color: #0f766e;
+      }
 
-article > .direct {
-  font-weight: 700;
-}
+      article > .direct {
+        font-weight: 700;
+      }
 
-h2 + p {
-  color: #475569;
-}
+      h2 + p {
+        color: #475569;
+      }
 
-.stops li + li {
-  text-decoration: line-through;
-}
+      .stops li + li {
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>關係寫在選擇器中間</h1>
+    <article>
+      <p class="direct">這段是 article 的直接小孩，所以較粗，也有深色。</p>
+      <div>
+        <p>後代仍打得到這段，直接子層打不到，所以不會變粗。</p>
+      </div>
+    </article>
+    <h2>相鄰與後面的兄弟</h2>
+    <p>這個標題後面的段落會改成石板色。</p>
+    <p>這段也在標題後面，同樣改色。</p>
+    <ul class="stops">
+      <li>台北</li>
+      <li>這一項起才有刪除線</li>
+      <li>濟州</li>
+    </ul>
+  </body>
+</html>
 ```
 
 </details>
@@ -521,7 +540,52 @@ h2 + p {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>偽類與偽元素</title>
-    <link rel="stylesheet" href="05-selectors-pseudo.css" />
+    <style>
+      /* 順序：link、visited、hover、active。顛倒時，後面的狀態會被蓋掉 */
+      a:link {
+        color: #0f766e;
+      }
+      a:visited {
+        color: #6d28d9;
+      }
+      a:hover {
+        color: #9f1239;
+      }
+      a:active {
+        color: #b45309;
+      }
+      a:focus-visible {
+        color: #115e59;
+      }
+
+      .days li:nth-child(odd) {
+        color: #0f766e;
+      }
+      .days li:nth-child(2) {
+        font-weight: 700;
+      }
+
+      .pitfall p:first-child {
+        color: #9f1239; /* 打不中：第一個小孩是 h2 */
+      }
+      .pitfall p:first-of-type {
+        color: #0f766e;
+      }
+
+      .price::before {
+        content: "NT$ ";
+      }
+
+      input[type="email"] {
+        color: #0f766e;
+      }
+      input::placeholder {
+        color: #94a3b8;
+      }
+      input:disabled {
+        color: #94a3b8;
+      }
+    </style>
   </head>
   <body>
     <h1>狀態、位置、裝飾</h1>
@@ -544,53 +608,6 @@ h2 + p {
     </p>
   </body>
 </html>
-```
-
-```css 03-css/pages/05-selectors-pseudo.css
-/* 順序：link、visited、hover、active。顛倒時，後面的狀態會被蓋掉 */
-a:link {
-  color: #0f766e;
-}
-a:visited {
-  color: #6d28d9;
-}
-a:hover {
-  color: #9f1239;
-}
-a:active {
-  color: #b45309;
-}
-a:focus-visible {
-  color: #115e59;
-}
-
-.days li:nth-child(odd) {
-  color: #0f766e;
-}
-.days li:nth-child(2) {
-  font-weight: 700;
-}
-
-.pitfall p:first-child {
-  color: #9f1239; /* 打不中：第一個小孩是 h2 */
-}
-.pitfall p:first-of-type {
-  color: #0f766e;
-}
-
-.price::before {
-  content: "NT$ ";
-}
-
-input[type="email"] {
-  color: #0f766e;
-}
-input::placeholder {
-  color: #94a3b8;
-}
-input:disabled {
-  color: #94a3b8;
-}
 ```
 
 **解析**
@@ -629,50 +646,80 @@ before 拿掉之後，HTML 裡的文字仍要讀得懂。清單若用奇數項�
 
 nth-child 的括號改成 even 之後，第 2、4 項是深青綠，第 1、3 項回到預設。第 2 項仍較粗。價格前面的字變成「約 NT$」，數字還在 HTML 裡。
 
-```css 03-css/pages/05-selectors-pseudo.css
-a:link {
-  color: #0f766e;
-}
-a:visited {
-  color: #6d28d9;
-}
-a:hover {
-  color: #9f1239;
-}
-a:active {
-  color: #b45309;
-}
-a:focus-visible {
-  color: #115e59;
-}
+```html 03-css/pages/05-selectors-pseudo.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>偽類與偽元素</title>
+    <style>
+      a:link {
+        color: #0f766e;
+      }
+      a:visited {
+        color: #6d28d9;
+      }
+      a:hover {
+        color: #9f1239;
+      }
+      a:active {
+        color: #b45309;
+      }
+      a:focus-visible {
+        color: #115e59;
+      }
 
-.days li:nth-child(even) {
-  color: #0f766e;
-}
-.days li:nth-child(2) {
-  font-weight: 700;
-}
+      .days li:nth-child(even) {
+        color: #0f766e;
+      }
+      .days li:nth-child(2) {
+        font-weight: 700;
+      }
 
-.pitfall p:first-child {
-  color: #9f1239;
-}
-.pitfall p:first-of-type {
-  color: #0f766e;
-}
+      .pitfall p:first-child {
+        color: #9f1239;
+      }
+      .pitfall p:first-of-type {
+        color: #0f766e;
+      }
 
-.price::before {
-  content: "約 NT$ ";
-}
+      .price::before {
+        content: "約 NT$ ";
+      }
 
-input[type="email"] {
-  color: #0f766e;
-}
-input::placeholder {
-  color: #94a3b8;
-}
-input:disabled {
-  color: #94a3b8;
-}
+      input[type="email"] {
+        color: #0f766e;
+      }
+      input::placeholder {
+        color: #94a3b8;
+      }
+      input:disabled {
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>狀態、位置、裝飾</h1>
+    <p><a href="#days">把滑鼠放上來，再用 Tab 走進來</a></p>
+    <ul class="days" id="days">
+      <li>奇數項</li>
+      <li>第二項較粗</li>
+      <li>奇數項</li>
+      <li>第四項</li>
+    </ul>
+    <section class="pitfall">
+      <h2>不是第一個小孩</h2>
+      <p>這段是深青綠。第一個小孩是標題，所以段落不是第一個小孩。</p>
+    </section>
+    <p class="price">12800</p>
+    <p>
+      <input type="email" placeholder="you@example.com" />
+      <input type="text" placeholder="姓名" />
+      <input type="text" value="已額滿" disabled />
+    </p>
+  </body>
+</html>
 ```
 
 </details>
@@ -688,7 +735,7 @@ input:disabled {
 - 有 important 的贏過沒有的。
 - 再比四欄，由左到右：行內樣式、id、class（含屬性選擇器與偽類）、元素（含偽元素）。某一欄較大就贏，不會進位。
 - 十個 class 加起來仍是 class 那一欄的數字，比不過 id 那一欄的 1。
-- 權重相同時，寫在較下面的贏。後連結的樣式表算較後面。
+- 權重相同時，寫在較下面的贏。同一份 `style` 裡是這樣；外部樣式表則是較晚掛上的檔案算較後面。
 
 ```html 03-css/pages/06-specificity.html
 <!DOCTYPE html>
@@ -697,7 +744,37 @@ input:disabled {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>權重</title>
-    <link rel="stylesheet" href="06-specificity.css" />
+    <style>
+      /* 四欄由左到右，不進位：行內、id、class、元素 */
+
+      p {
+        color: #475569; /* 元素欄 */
+      }
+
+      .note {
+        color: #b45309; /* class 欄，贏過元素 */
+      }
+
+      #one {
+        color: #0f766e; /* id 欄，贏過 class */
+      }
+
+      .chip {
+        color: #0369a1;
+      }
+
+      .chip {
+        color: #115e59; /* 權重相同，較下面的贏 */
+      }
+
+      .force {
+        color: #94a3b8;
+      }
+
+      .force {
+        color: #9f1239 !important;
+      }
+    </style>
   </head>
   <body>
     <h1>誰贏</h1>
@@ -709,38 +786,6 @@ input:disabled {
     <p class="force">這段用了 important，留下玫瑰紅。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/06-specificity.css
-/* 四欄由左到右，不進位：行內、id、class、元素 */
-
-p {
-  color: #475569; /* 元素欄 */
-}
-
-.note {
-  color: #b45309; /* class 欄，贏過元素 */
-}
-
-#one {
-  color: #0f766e; /* id 欄，贏過 class */
-}
-
-.chip {
-  color: #0369a1;
-}
-
-.chip {
-  color: #115e59; /* 權重相同，較下面的贏 */
-}
-
-.force {
-  color: #94a3b8;
-}
-
-.force {
-  color: #9f1239 !important;
-}
 ```
 
 **解析**
@@ -783,7 +828,35 @@ id 那一欄比 class 那一欄優先，所以 sale 的玫瑰紅蓋過 force 的
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>權重</title>
-    <link rel="stylesheet" href="06-specificity.css" />
+    <style>
+      p {
+        color: #475569;
+      }
+
+      .note {
+        color: #b45309;
+      }
+
+      #one {
+        color: #0f766e;
+      }
+
+      .chip {
+        color: #0369a1;
+      }
+
+      .chip {
+        color: #115e59;
+      }
+
+      .force {
+        color: #94a3b8;
+      }
+
+      #sale {
+        color: #9f1239;
+      }
+    </style>
   </head>
   <body>
     <h1>誰贏</h1>
@@ -795,36 +868,6 @@ id 那一欄比 class 那一欄優先，所以 sale 的玫瑰紅蓋過 force 的
     <p id="sale" class="force">這段用了 important，留下玫瑰紅。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/06-specificity.css
-p {
-  color: #475569;
-}
-
-.note {
-  color: #b45309;
-}
-
-#one {
-  color: #0f766e;
-}
-
-.chip {
-  color: #0369a1;
-}
-
-.chip {
-  color: #115e59;
-}
-
-.force {
-  color: #94a3b8;
-}
-
-#sale {
-  color: #9f1239;
-}
 ```
 
 </details>
@@ -860,7 +903,16 @@ miss --> init["不可繼承的用初始值"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>繼承</title>
-    <link rel="stylesheet" href="07-inherit.css" />
+    <style>
+      .story {
+        color: #7c2d12;
+        background: #fff7ed;
+      }
+
+      .price {
+        color: #115e59;
+      }
+    </style>
   </head>
   <body>
     <h1>沒寫的屬性會不會跟父層</h1>
@@ -872,17 +924,6 @@ miss --> init["不可繼承的用初始值"]
     <p>article 外面這段不跟那塊磚紅。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/07-inherit.css
-.story {
-  color: #7c2d12;
-  background: #fff7ed;
-}
-
-.price {
-  color: #115e59;
-}
 ```
 
 **解析**
@@ -909,11 +950,30 @@ miss --> init["不可繼承的用初始值"]
 
 price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍只在父層，段落自己還是沒有背景。
 
-```css 03-css/pages/07-inherit.css
-.story {
-  color: #7c2d12;
-  background: #fff7ed;
-}
+```html 03-css/pages/07-inherit.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>繼承</title>
+    <style>
+      .story {
+        color: #7c2d12;
+        background: #fff7ed;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>沒寫的屬性會不會跟父層</h1>
+    <article class="story">
+      <h2>繼承</h2>
+      <p>這段沒寫顏色，所以跟 article 的磚紅。底色是父層透出來的，不是這段自己的背景。</p>
+      <p class="price">這段自己寫了顏色，不再跟父層。</p>
+    </article>
+    <p>article 外面這段不跟那塊磚紅。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -936,7 +996,30 @@ price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>繼承關鍵字</title>
-    <link rel="stylesheet" href="08-keywords.css" />
+    <style>
+      .keywords {
+        color: #1d4ed8;
+      }
+
+      .in {
+        color: inherit;
+      }
+
+      .init {
+        color: initial;
+      }
+
+      .un {
+        color: unset;
+      }
+
+      .back h2 {
+        font-size: 1rem;
+        font-weight: 400;
+        font-size: revert;
+        font-weight: revert;
+      }
+    </style>
   </head>
   <body>
     <h1>明示跟父層，或回到初始</h1>
@@ -950,31 +1033,6 @@ price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍�
     </section>
   </body>
 </html>
-```
-
-```css 03-css/pages/08-keywords.css
-.keywords {
-  color: #1d4ed8;
-}
-
-.in {
-  color: inherit;
-}
-
-.init {
-  color: initial;
-}
-
-.un {
-  color: unset;
-}
-
-.back h2 {
-  font-size: 1rem;
-  font-weight: 400;
-  font-size: revert;
-  font-weight: revert;
-}
 ```
 
 **解析**
@@ -1005,29 +1063,50 @@ price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍�
 
 initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大小與粗細維持瀏覽器預設。
 
-```css 03-css/pages/08-keywords.css
-.keywords {
-  color: #1d4ed8;
-}
+```html 03-css/pages/08-keywords.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>繼承關鍵字</title>
+    <style>
+      .keywords {
+        color: #1d4ed8;
+      }
 
-.in {
-  color: inherit;
-}
+      .in {
+        color: inherit;
+      }
 
-.init {
-  color: inherit;
-}
+      .init {
+        color: inherit;
+      }
 
-.un {
-  color: unset;
-}
+      .un {
+        color: unset;
+      }
 
-.back h2 {
-  font-size: 1rem;
-  font-weight: 400;
-  font-size: revert;
-  font-weight: revert;
-}
+      .back h2 {
+        font-size: 1rem;
+        font-weight: 400;
+        font-size: revert;
+        font-weight: revert;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>明示跟父層，或回到初始</h1>
+    <div class="keywords">
+      <p class="in">inherit：字跟父層的藍。</p>
+      <p class="init">initial：字回到屬性初始值。</p>
+      <p class="un">unset：顏色會繼承，所以仍是藍字。</p>
+    </div>
+    <section class="back">
+      <h2>這顆標題用了 revert，字級與字重回到瀏覽器預設。</h2>
+    </section>
+  </body>
+</html>
 ```
 
 </details>
@@ -1058,7 +1137,48 @@ initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>單位</title>
-    <link rel="stylesheet" href="09-units.css" />
+    <style>
+      html {
+        font-size: 16px;
+      }
+
+      .em-box {
+        font-size: 1.25em;
+        background: #f0fdfa;
+      }
+
+      .em-child {
+        font-size: 2em; /* 1.25 × 2 × 16px */
+      }
+
+      .rem-box {
+        font-size: 1.25rem;
+        background: #ecfeff;
+      }
+
+      .rem-child {
+        font-size: 2rem; /* 2 × 16px，不乘父層 */
+      }
+
+      .meter {
+        width: 16rem;
+        background: #ccfbf1;
+      }
+
+      .half {
+        width: 50%;
+        background: #115e59;
+        color: #fff;
+      }
+
+      .measure {
+        max-width: 36ch;
+      }
+
+      .vw-title {
+        font-size: 4vw;
+      }
+    </style>
   </head>
   <body>
     <h1>單位</h1>
@@ -1078,49 +1198,6 @@ initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大�
     <p class="vw-title">這行會跟著視窗寬度變</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/09-units.css
-html {
-  font-size: 16px;
-}
-
-.em-box {
-  font-size: 1.25em;
-  background: #f0fdfa;
-}
-
-.em-child {
-  font-size: 2em; /* 1.25 × 2 × 16px */
-}
-
-.rem-box {
-  font-size: 1.25rem;
-  background: #ecfeff;
-}
-
-.rem-child {
-  font-size: 2rem; /* 2 × 16px，不乘父層 */
-}
-
-.meter {
-  width: 16rem;
-  background: #ccfbf1;
-}
-
-.half {
-  width: 50%;
-  background: #115e59;
-  color: #fff;
-}
-
-.measure {
-  max-width: 36ch;
-}
-
-.vw-title {
-  font-size: 4vw;
-}
 ```
 
 **解析**
@@ -1156,47 +1233,74 @@ html {
 
 子層改跟根字級走之後，兩塊的子層都約 32px。父層仍是 1.25em 與 1.25rem，看起來仍接近，但 em 子層不再變成約 40px。
 
-```css 03-css/pages/09-units.css
-html {
-  font-size: 16px;
-}
+```html 03-css/pages/09-units.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>單位</title>
+    <style>
+      html {
+        font-size: 16px;
+      }
 
-.em-box {
-  font-size: 1.25em;
-  background: #f0fdfa;
-}
+      .em-box {
+        font-size: 1.25em;
+        background: #f0fdfa;
+      }
 
-.em-child {
-  font-size: 2rem;
-}
+      .em-child {
+        font-size: 2rem;
+      }
 
-.rem-box {
-  font-size: 1.25rem;
-  background: #ecfeff;
-}
+      .rem-box {
+        font-size: 1.25rem;
+        background: #ecfeff;
+      }
 
-.rem-child {
-  font-size: 2rem;
-}
+      .rem-child {
+        font-size: 2rem;
+      }
 
-.meter {
-  width: 16rem;
-  background: #ccfbf1;
-}
+      .meter {
+        width: 16rem;
+        background: #ccfbf1;
+      }
 
-.half {
-  width: 50%;
-  background: #115e59;
-  color: #fff;
-}
+      .half {
+        width: 50%;
+        background: #115e59;
+        color: #fff;
+      }
 
-.measure {
-  max-width: 36ch;
-}
+      .measure {
+        max-width: 36ch;
+      }
 
-.vw-title {
-  font-size: 4vw;
-}
+      .vw-title {
+        font-size: 4vw;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>單位</h1>
+    <p>這頁把根字級設成 16px，只為了讓 Computed 好對。</p>
+    <div class="em-box">
+      父層 1.25em
+      <p class="em-child">子層 2em，相對父層，約 40px。</p>
+    </div>
+    <div class="rem-box">
+      父層 1.25rem
+      <p class="rem-child">子層 2rem，相對根元素，約 32px。</p>
+    </div>
+    <div class="meter">
+      <div class="half">父層一半寬</div>
+    </div>
+    <p class="measure">這段最寬約 36 個 0 的寬度。中文不會剛好 36 個字，行寬仍收得住。</p>
+    <p class="vw-title">這行會跟著視窗寬度變</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -1220,7 +1324,36 @@ html {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>顏色</title>
-    <link rel="stylesheet" href="10-colors.css" />
+    <style>
+      .named {
+        color: teal;
+      }
+      .hex {
+        color: #0f766e;
+      }
+      .rgb {
+        color: rgb(15 118 110);
+      }
+      .mix {
+        color: rgb(15 118 110 / 50%);
+      }
+      .hsl {
+        color: hsl(175 80% 26%);
+      }
+
+      .tag {
+        color: #9f1239;
+        background: currentColor;
+      }
+
+      .stripe {
+        background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
+      }
+
+      .frost {
+        background: rgb(240 253 250 / 70%);
+      }
+    </style>
   </head>
   <body>
     <h1>同一套顏色，很多種寫法</h1>
@@ -1237,37 +1370,6 @@ html {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/10-colors.css
-.named {
-  color: teal;
-}
-.hex {
-  color: #0f766e;
-}
-.rgb {
-  color: rgb(15 118 110);
-}
-.mix {
-  color: rgb(15 118 110 / 50%);
-}
-.hsl {
-  color: hsl(175 80% 26%);
-}
-
-.tag {
-  color: #9f1239;
-  background: currentColor;
-}
-
-.stripe {
-  background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
-}
-
-.frost {
-  background: rgb(240 253 250 / 70%);
-}
 ```
 
 **解析**
@@ -1302,35 +1404,59 @@ Styles 裡的色塊可以打開調色盤，也會提示對比是否過低。過�
 
 兩處透明度都變成不透明之後，清單那項回到實心青綠，斜紋上的段落變成實心淺底，蓋住下面的紋。currentColor 那行沒有改。
 
-```css 03-css/pages/10-colors.css
-.named {
-  color: teal;
-}
-.hex {
-  color: #0f766e;
-}
-.rgb {
-  color: rgb(15 118 110);
-}
-.mix {
-  color: rgb(15 118 110 / 100%);
-}
-.hsl {
-  color: hsl(175 80% 26%);
-}
+```html 03-css/pages/10-colors.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>顏色</title>
+    <style>
+      .named {
+        color: teal;
+      }
+      .hex {
+        color: #0f766e;
+      }
+      .rgb {
+        color: rgb(15 118 110);
+      }
+      .mix {
+        color: rgb(15 118 110 / 100%);
+      }
+      .hsl {
+        color: hsl(175 80% 26%);
+      }
 
-.tag {
-  color: #9f1239;
-  background: currentColor;
-}
+      .tag {
+        color: #9f1239;
+        background: currentColor;
+      }
 
-.stripe {
-  background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
-}
+      .stripe {
+        background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
+      }
 
-.frost {
-  background: rgb(240 253 250 / 100%);
-}
+      .frost {
+        background: rgb(240 253 250 / 100%);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>同一套顏色，很多種寫法</h1>
+    <ul>
+      <li class="named">名稱 teal</li>
+      <li class="hex">六碼色票</li>
+      <li class="rgb">rgb 空格寫法</li>
+      <li class="mix">同一色，一半透明</li>
+      <li class="hsl">hsl，亮度在第三個數</li>
+    </ul>
+    <p class="tag">這行的底跟字同一色</p>
+    <div class="stripe">
+      <p class="frost">半透明的底會透出底下的斜紋。</p>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -1358,7 +1484,43 @@ font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>字型</title>
-    <link rel="stylesheet" href="11-type.css" />
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.6;
+      }
+
+      .banner {
+        font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .strong {
+        font-weight: 700;
+      }
+
+      .serif {
+        font-family: Palatino, "Palatino Linotype", serif;
+      }
+
+      .mono {
+        font-family: ui-monospace, Consolas, monospace;
+      }
+
+      .tight {
+        line-height: 1;
+        max-width: 24rem;
+        background: #f0fdfa;
+      }
+
+      .loose {
+        line-height: 1.8;
+        max-width: 24rem;
+        background: #ecfeff;
+      }
+    </style>
   </head>
   <body>
     <h1>字型堆疊</h1>
@@ -1370,44 +1532,6 @@ font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個�
     <p class="loose">行高 1.8：同一段文字鬆很多。內文常用 1.5 到 1.7。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/11-type.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.6;
-}
-
-.banner {
-  font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.strong {
-  font-weight: 700;
-}
-
-.serif {
-  font-family: Palatino, "Palatino Linotype", serif;
-}
-
-.mono {
-  font-family: ui-monospace, Consolas, monospace;
-}
-
-.tight {
-  line-height: 1;
-  max-width: 24rem;
-  background: #f0fdfa;
-}
-
-.loose {
-  line-height: 1.8;
-  max-width: 24rem;
-  background: #ecfeff;
-}
 ```
 
 **解析**
@@ -1441,44 +1565,63 @@ body {
 
 拆開之後，這行仍是粗體、較大、行高 1.3，字型跟 body 走。因為沒有用簡寫，其他字型屬性不會被掃回初始值。
 
-```css 03-css/pages/11-type.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.6;
-}
+```html 03-css/pages/11-type.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>字型</title>
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.6;
+      }
 
-.banner {
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1.3;
-}
+      .banner {
+        font-weight: 700;
+        font-size: 1.5rem;
+        line-height: 1.3;
+      }
 
-.strong {
-  font-weight: 700;
-}
+      .strong {
+        font-weight: 700;
+      }
 
-.serif {
-  font-family: Palatino, "Palatino Linotype", serif;
-}
+      .serif {
+        font-family: Palatino, "Palatino Linotype", serif;
+      }
 
-.mono {
-  font-family: ui-monospace, Consolas, monospace;
-}
+      .mono {
+        font-family: ui-monospace, Consolas, monospace;
+      }
 
-.tight {
-  line-height: 1;
-  max-width: 24rem;
-  background: #f0fdfa;
-}
+      .tight {
+        line-height: 1;
+        max-width: 24rem;
+        background: #f0fdfa;
+      }
 
-.loose {
-  line-height: 1.8;
-  max-width: 24rem;
-  background: #ecfeff;
-}
+      .loose {
+        line-height: 1.8;
+        max-width: 24rem;
+        background: #ecfeff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>字型堆疊</h1>
+    <p class="banner">這行用簡寫：粗體、較大字、行高 1.3。</p>
+    <p>內文用無襯線。<span class="strong">這幾個字是粗體。</span></p>
+    <p class="serif">這段改走襯線，中文會落到系統有的明體或宋體。</p>
+    <p class="mono">行程代碼 TPE-001 用等寬字較好對。</p>
+    <p class="tight">行高 1：行與行貼得很近。兩行以上就不好讀。洛奇旅行的說明至少要留出行距。</p>
+    <p class="loose">行高 1.8：同一段文字鬆很多。內文常用 1.5 到 1.7。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -1502,7 +1645,46 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>文字</title>
-    <link rel="stylesheet" href="12-text.css" />
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
+
+      .display {
+        font-size: 2rem;
+        color: #f0fdfa;
+        background: #115e59;
+        text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .end {
+        text-align: end;
+      }
+
+      .jump {
+        text-decoration-line: underline;
+        text-decoration-color: #0f766e;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.2em;
+      }
+
+      .code {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .schedule {
+        white-space: pre-wrap;
+        font-family: ui-monospace, Consolas, monospace;
+        background: #f8fafc;
+      }
+    </style>
   </head>
   <body>
     <h1 class="display">洛奇旅行</h1>
@@ -1517,47 +1699,6 @@ body {
     </p>
   </body>
 </html>
-```
-
-```css 03-css/pages/12-text.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
-
-.display {
-  font-size: 2rem;
-  color: #f0fdfa;
-  background: #115e59;
-  text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
-}
-
-.center {
-  text-align: center;
-}
-
-.end {
-  text-align: end;
-}
-
-.jump {
-  text-decoration-line: underline;
-  text-decoration-color: #0f766e;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.2em;
-}
-
-.code {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.schedule {
-  white-space: pre-wrap;
-  font-family: ui-monospace, Consolas, monospace;
-  background: #f8fafc;
-}
 ```
 
 **解析**
@@ -1588,45 +1729,67 @@ body {
 
 原本置中的那段改靠行末，畫面上連續兩段都貼著右邊。連結底線變粗，顏色與距離維持原樣。代碼仍是大寫、字距不變。
 
-```css 03-css/pages/12-text.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
+```html 03-css/pages/12-text.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文字</title>
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
 
-.display {
-  font-size: 2rem;
-  color: #f0fdfa;
-  background: #115e59;
-  text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
-}
+      .display {
+        font-size: 2rem;
+        color: #f0fdfa;
+        background: #115e59;
+        text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
+      }
 
-.center {
-  text-align: end;
-}
+      .center {
+        text-align: end;
+      }
 
-.end {
-  text-align: end;
-}
+      .end {
+        text-align: end;
+      }
 
-.jump {
-  text-decoration-line: underline;
-  text-decoration-color: #0f766e;
-  text-decoration-thickness: 4px;
-  text-underline-offset: 0.2em;
-}
+      .jump {
+        text-decoration-line: underline;
+        text-decoration-color: #0f766e;
+        text-decoration-thickness: 4px;
+        text-underline-offset: 0.2em;
+      }
 
-.code {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
+      .code {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
 
-.schedule {
-  white-space: pre-wrap;
-  font-family: ui-monospace, Consolas, monospace;
-  background: #f8fafc;
-}
+      .schedule {
+        white-space: pre-wrap;
+        font-family: ui-monospace, Consolas, monospace;
+        background: #f8fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="display">洛奇旅行</h1>
+    <p class="center">這段置中。</p>
+    <p class="end">這段靠行末。</p>
+    <p>連結可以只調底線：<a class="jump" href="#top">看行程</a></p>
+    <p class="code">tpe-kt-03</p>
+    <p class="schedule">
+      Day 1 台北
+      Day 2 京都
+      Day 3 濟州
+    </p>
+  </body>
+</html>
 ```
 
 </details>
@@ -1650,7 +1813,47 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>背景</title>
-    <link rel="stylesheet" href="13-background.css" />
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
+
+      .swatch {
+        background-color: #f0fdfa;
+      }
+
+      .shade {
+        background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
+      }
+
+      .photo {
+        color: #f0fdfa;
+        background-color: #042f2e;
+        background-image: url("https://picsum.photos/id/1015/800/500");
+        background-repeat: no-repeat;
+      }
+
+      .cover {
+        background-size: cover;
+        background-position: center;
+      }
+
+      .contain {
+        background-size: contain;
+        background-position: center;
+      }
+
+      .hero {
+        color: #f0fdfa;
+        background-color: #115e59;
+        background-image:
+          linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
+          radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
+        background-size: auto, 16px 16px;
+      }
+    </style>
   </head>
   <body>
     <h1>背景</h1>
@@ -1661,48 +1864,6 @@ body {
     <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
   </body>
 </html>
-```
-
-```css 03-css/pages/13-background.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
-
-.swatch {
-  background-color: #f0fdfa;
-}
-
-.shade {
-  background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
-}
-
-.photo {
-  color: #f0fdfa;
-  background-color: #042f2e;
-  background-image: url("https://picsum.photos/id/1015/800/500");
-  background-repeat: no-repeat;
-}
-
-.cover {
-  background-size: cover;
-  background-position: center;
-}
-
-.contain {
-  background-size: contain;
-  background-position: center;
-}
-
-.hero {
-  color: #f0fdfa;
-  background-color: #115e59;
-  background-image:
-    linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
-    radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
-  background-size: auto, 16px 16px;
-}
 ```
 
 **解析**
@@ -1741,7 +1902,47 @@ class 對調之後，第一張照片改成整張放進盒子，第二張改成�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>背景</title>
-    <link rel="stylesheet" href="13-background.css" />
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
+
+      .swatch {
+        background-color: #f0fdfa;
+      }
+
+      .shade {
+        background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
+      }
+
+      .photo {
+        color: #f0fdfa;
+        background-color: #042f2e;
+        background-image: url("https://picsum.photos/id/1015/800/500");
+        background-repeat: no-repeat;
+      }
+
+      .cover {
+        background-size: cover;
+        background-position: center;
+      }
+
+      .contain {
+        background-size: contain;
+        background-position: center;
+      }
+
+      .hero {
+        color: #f0fdfa;
+        background-color: #115e59;
+        background-image:
+          linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
+          radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
+        background-size: auto, 16px 16px;
+      }
+    </style>
   </head>
   <body>
     <h1>背景</h1>
@@ -1752,48 +1953,6 @@ class 對調之後，第一張照片改成整張放進盒子，第二張改成�
     <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
   </body>
 </html>
-```
-
-```css 03-css/pages/13-background.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
-
-.swatch {
-  background-color: #f0fdfa;
-}
-
-.shade {
-  background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
-}
-
-.photo {
-  color: #f0fdfa;
-  background-color: #042f2e;
-  background-image: url("https://picsum.photos/id/1015/800/500");
-  background-repeat: no-repeat;
-}
-
-.cover {
-  background-size: cover;
-  background-position: center;
-}
-
-.contain {
-  background-size: contain;
-  background-position: center;
-}
-
-.hero {
-  color: #f0fdfa;
-  background-color: #115e59;
-  background-image:
-    linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
-    radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
-  background-size: auto, 16px 16px;
-}
 ```
 
 </details>
@@ -1824,7 +1983,23 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>進階選擇器</title>
-    <link rel="stylesheet" href="14-selectors-extra.css" />
+    <style>
+      a[href^="https"] {
+        color: #0f766e;
+      }
+
+      a[href$=".pdf"] {
+        color: #9f1239;
+      }
+
+      :where(h1, h2) {
+        font-weight: 600;
+      }
+
+      .card:has(:checked) {
+        background: #f0fdfa;
+      }
+    </style>
   </head>
   <body>
     <h1>屬性、is、where、has</h1>
@@ -1836,24 +2011,6 @@ body {
     </article>
   </body>
 </html>
-```
-
-```css 03-css/pages/14-selectors-extra.css
-a[href^="https"] {
-  color: #0f766e;
-}
-
-a[href$=".pdf"] {
-  color: #9f1239;
-}
-
-:where(h1, h2) {
-  font-weight: 600;
-}
-
-.card:has(:checked) {
-  background: #f0fdfa;
-}
 ```
 
 **解析**
@@ -1889,29 +2046,27 @@ a[href^="https"] {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>分層</title>
-    <link rel="stylesheet" href="15-layer.css" />
+    <style>
+      @layer reset, theme;
+
+      @layer reset {
+        .lead {
+          color: #9f1239;
+        }
+      }
+
+      @layer theme {
+        .lead {
+          color: #0f766e;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>兩層搶同一個顏色</h1>
     <p class="lead">這段應是深青綠。重置層寫在較前面。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/15-layer.css
-@layer reset, theme;
-
-@layer reset {
-  .lead {
-    color: #9f1239;
-  }
-}
-
-@layer theme {
-  .lead {
-    color: #0f766e;
-  }
-}
 ```
 
 **解析**
@@ -1944,7 +2099,25 @@ class 名字要讓人看得出區塊與零件。BEM 是一種習慣：區塊、�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>命名與字型檔</title>
-    <link rel="stylesheet" href="29-font.css" />
+    <style>
+      @font-face {
+        font-family: "Tour";
+        src: url("tour.woff2") format("woff2");
+      }
+
+      .card__title {
+        font-family: "Tour", system-ui, "PingFang TC", sans-serif;
+      }
+
+      .card__price {
+        color: #0f766e;
+      }
+
+      .card__price--soldout {
+        color: #64748b;
+        text-decoration: line-through;
+      }
+    </style>
   </head>
   <body>
     <article class="card">
@@ -1954,26 +2127,6 @@ class 名字要讓人看得出區塊與零件。BEM 是一種習慣：區塊、�
     </article>
   </body>
 </html>
-```
-
-```css 03-css/pages/29-font.css
-@font-face {
-  font-family: "Tour";
-  src: url("tour.woff2") format("woff2");
-}
-
-.card__title {
-  font-family: "Tour", system-ui, "PingFang TC", sans-serif;
-}
-
-.card__price {
-  color: #0f766e;
-}
-
-.card__price--soldout {
-  color: #64748b;
-  text-decoration: line-through;
-}
 ```
 
 **解析**
@@ -2010,7 +2163,7 @@ padding --> content["content 內容"]
 **觀念**
 
 - 預設 content-box 的寬度只量內容。內距和邊框再往外加，所以寫了 100% 又加了內距，會比父層更寬。
-- border-box 的寬度含內容、內距、邊框，不含外距。課堂從這裡起，樣式表開頭就改成 border-box，偽元素也要一起改。
+- border-box 的寬度含內容、內距、邊框，不含外距。課堂從這裡起，`style` 開頭就改成 border-box，偽元素也要一起改。
 - 簡寫依順時針。一個值四邊相同；兩個值是上下、左右；四個值是上、右、下、左。
 - 內距不能是負值。外距可以是 auto。左右 auto 會平分剩餘寬度，所以要比父層窄才水平置中。
 - 上下相鄰的區塊，垂直外距會併成較大的那一個，不會相加。左右不會合併。
@@ -2023,7 +2176,77 @@ padding --> content["content 內容"]
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>盒子模型</title>
-    <link rel="stylesheet" href="16-box.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
+
+      .stage {
+        background: #ccfbf1;
+      }
+
+      .card {
+        width: min(100%, 22rem);
+        margin: 1rem auto;
+        padding: 1rem;
+        border: 6px solid #0f766e;
+        border-radius: 0.75rem;
+        background: #f0fdfa;
+      }
+
+      .content {
+        background: #cffafe;
+      }
+
+      .track {
+        width: 16rem;
+        max-width: 100%;
+        margin-bottom: 0.75rem;
+        border: 1px dashed #0f766e;
+      }
+
+      .kid {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 4px solid #115e59;
+        background: #f0fdfa;
+      }
+
+      .content-box .kid {
+        box-sizing: content-box;
+      }
+
+      .collapse p {
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+        background: #f0fdfa;
+      }
+
+      .collapse p + p {
+        margin-bottom: 0;
+      }
+
+      .go {
+        padding: 0.4rem 0.9rem;
+        border-radius: 0.4rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
+
+      .go:focus-visible {
+        outline: 3px solid #9f1239;
+        outline-offset: 3px;
+      }
+    </style>
   </head>
   <body>
     <h1>盒子四層</h1>
@@ -2043,78 +2266,6 @@ padding --> content["content 內容"]
     <p><a class="go" href="#top">看行程</a>（用 Tab 移來，焦點框不改變按鈕尺寸）</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/16-box.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
-
-.stage {
-  background: #ccfbf1;
-}
-
-.card {
-  width: min(100%, 22rem);
-  margin: 1rem auto;
-  padding: 1rem;
-  border: 6px solid #0f766e;
-  border-radius: 0.75rem;
-  background: #f0fdfa;
-}
-
-.content {
-  background: #cffafe;
-}
-
-.track {
-  width: 16rem;
-  max-width: 100%;
-  margin-bottom: 0.75rem;
-  border: 1px dashed #0f766e;
-}
-
-.kid {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 4px solid #115e59;
-  background: #f0fdfa;
-}
-
-.content-box .kid {
-  box-sizing: content-box;
-}
-
-.collapse p {
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-  background: #f0fdfa;
-}
-
-.collapse p + p {
-  margin-bottom: 0;
-}
-
-.go {
-  padding: 0.4rem 0.9rem;
-  border-radius: 0.4rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
-
-.go:focus-visible {
-  outline: 3px solid #9f1239;
-  outline-offset: 3px;
-}
 ```
 
 **解析**
@@ -2145,72 +2296,99 @@ body {
 
 拿掉 content-box 那條之後，兩條軌道都用開頭的 border-box，小孩不再撐破虛線。卡片四角更圓，寬度與外距沒有改。
 
-```css 03-css/pages/16-box.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/16-box.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>盒子模型</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  line-height: 1.6;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+        line-height: 1.6;
+      }
 
-.stage {
-  background: #ccfbf1;
-}
+      .stage {
+        background: #ccfbf1;
+      }
 
-.card {
-  width: min(100%, 22rem);
-  margin: 1rem auto;
-  padding: 1rem;
-  border: 6px solid #0f766e;
-  border-radius: 1.5rem;
-  background: #f0fdfa;
-}
+      .card {
+        width: min(100%, 22rem);
+        margin: 1rem auto;
+        padding: 1rem;
+        border: 6px solid #0f766e;
+        border-radius: 1.5rem;
+        background: #f0fdfa;
+      }
 
-.content {
-  background: #cffafe;
-}
+      .content {
+        background: #cffafe;
+      }
 
-.track {
-  width: 16rem;
-  max-width: 100%;
-  margin-bottom: 0.75rem;
-  border: 1px dashed #0f766e;
-}
+      .track {
+        width: 16rem;
+        max-width: 100%;
+        margin-bottom: 0.75rem;
+        border: 1px dashed #0f766e;
+      }
 
-.kid {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 4px solid #115e59;
-  background: #f0fdfa;
-}
+      .kid {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: 4px solid #115e59;
+        background: #f0fdfa;
+      }
 
-.collapse p {
-  margin-top: 0.5rem;
-  margin-bottom: 2rem;
-  background: #f0fdfa;
-}
+      .collapse p {
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+        background: #f0fdfa;
+      }
 
-.collapse p + p {
-  margin-bottom: 0;
-}
+      .collapse p + p {
+        margin-bottom: 0;
+      }
 
-.go {
-  padding: 0.4rem 0.9rem;
-  border-radius: 0.4rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
+      .go {
+        padding: 0.4rem 0.9rem;
+        border-radius: 0.4rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
 
-.go:focus-visible {
-  outline: 3px solid #9f1239;
-  outline-offset: 3px;
-}
+      .go:focus-visible {
+        outline: 3px solid #9f1239;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>盒子四層</h1>
+    <div class="stage">
+      <article class="card">
+        <p class="content">淺藍是內容。卡片的淺綠含內距。粗框是邊框。框外淺青是外距。</p>
+      </article>
+    </div>
+    <h2>兩種算法</h2>
+    <div class="track"><div class="kid">border-box：對齊虛線。</div></div>
+    <div class="track content-box"><div class="kid">content-box：虛線包不住。</div></div>
+    <h2>垂直外距合併</h2>
+    <div class="collapse">
+      <p>這段下外距是 2rem。</p>
+      <p>上外距只有 0.5rem。中間是較大的 2rem。</p>
+    </div>
+    <p><a class="go" href="#top">看行程</a>（用 Tab 移來，焦點框不改變按鈕尺寸）</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -2234,7 +2412,71 @@ display 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>display</title>
-    <link rel="stylesheet" href="17-display.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .block {
+        margin-bottom: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: #f0fdfa;
+      }
+
+      .item {
+        padding: 0.35rem 0.5rem;
+        border: 2px solid #0f766e;
+        background: #ccfbf1;
+      }
+
+      .day {
+        display: inline-block;
+        width: 4.5rem;
+        padding: 0.35rem 0;
+        background: #115e59;
+        color: #f0fdfa;
+        text-align: center;
+      }
+
+      .cell {
+        display: inline-block;
+        width: 2.5rem;
+        margin-right: 0.35rem;
+        padding: 0.35rem 0;
+        background: #115e59;
+        color: #f0fdfa;
+        text-align: center;
+      }
+
+      .gone {
+        display: none;
+      }
+
+      .hold {
+        visibility: hidden;
+      }
+
+      .ghost {
+        opacity: 0;
+      }
+
+      .photo {
+        width: 4.5rem;
+        height: 3rem;
+      }
+
+      .photo.block {
+        display: block;
+      }
+    </style>
   </head>
   <body>
     <h1>盒子怎麼參加排版</h1>
@@ -2258,72 +2500,6 @@ display 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行
     <p><img class="photo block" alt="" src="https://picsum.photos/id/1015/120/80" /> 改成 block 就沒有縫。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/17-display.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.block {
-  margin-bottom: 0.5rem;
-  padding: 0.4rem 0.75rem;
-  background: #f0fdfa;
-}
-
-.item {
-  padding: 0.35rem 0.5rem;
-  border: 2px solid #0f766e;
-  background: #ccfbf1;
-}
-
-.day {
-  display: inline-block;
-  width: 4.5rem;
-  padding: 0.35rem 0;
-  background: #115e59;
-  color: #f0fdfa;
-  text-align: center;
-}
-
-.cell {
-  display: inline-block;
-  width: 2.5rem;
-  margin-right: 0.35rem;
-  padding: 0.35rem 0;
-  background: #115e59;
-  color: #f0fdfa;
-  text-align: center;
-}
-
-.gone {
-  display: none;
-}
-
-.hold {
-  visibility: hidden;
-}
-
-.ghost {
-  opacity: 0;
-}
-
-.photo {
-  width: 4.5rem;
-  height: 3rem;
-}
-
-.photo.block {
-  display: block;
-}
 ```
 
 **解析**
@@ -2360,70 +2536,101 @@ body {
 
 第一列的 2 現在跟第二列一樣留著空位。它不再用 none，所以 1 和 3 不會靠在一起。第三列仍是透明但點得到。
 
-```css 03-css/pages/17-display.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/17-display.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>display</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.block {
-  margin-bottom: 0.5rem;
-  padding: 0.4rem 0.75rem;
-  background: #f0fdfa;
-}
+      .block {
+        margin-bottom: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        background: #f0fdfa;
+      }
 
-.item {
-  padding: 0.35rem 0.5rem;
-  border: 2px solid #0f766e;
-  background: #ccfbf1;
-}
+      .item {
+        padding: 0.35rem 0.5rem;
+        border: 2px solid #0f766e;
+        background: #ccfbf1;
+      }
 
-.day {
-  display: inline-block;
-  width: 4.5rem;
-  padding: 0.35rem 0;
-  background: #115e59;
-  color: #f0fdfa;
-  text-align: center;
-}
+      .day {
+        display: inline-block;
+        width: 4.5rem;
+        padding: 0.35rem 0;
+        background: #115e59;
+        color: #f0fdfa;
+        text-align: center;
+      }
 
-.cell {
-  display: inline-block;
-  width: 2.5rem;
-  margin-right: 0.35rem;
-  padding: 0.35rem 0;
-  background: #115e59;
-  color: #f0fdfa;
-  text-align: center;
-}
+      .cell {
+        display: inline-block;
+        width: 2.5rem;
+        margin-right: 0.35rem;
+        padding: 0.35rem 0;
+        background: #115e59;
+        color: #f0fdfa;
+        text-align: center;
+      }
 
-.gone {
-  visibility: hidden;
-}
+      .gone {
+        visibility: hidden;
+      }
 
-.hold {
-  visibility: hidden;
-}
+      .hold {
+        visibility: hidden;
+      }
 
-.ghost {
-  opacity: 0;
-}
+      .ghost {
+        opacity: 0;
+      }
 
-.photo {
-  width: 4.5rem;
-  height: 3rem;
-}
+      .photo {
+        width: 4.5rem;
+        height: 3rem;
+      }
 
-.photo.block {
-  display: block;
-}
+      .photo.block {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>盒子怎麼參加排版</h1>
+    <h2>block</h2>
+    <div class="block">第一張獨佔一行。</div>
+    <div class="block">第二張從下一行開始。</div>
+    <h2>inline</h2>
+    <p class="line">行程有<span class="item">甲</span>與<span class="item">乙</span>兩站。</p>
+    <h2>inline-block</h2>
+    <p>
+      <span class="day">三日</span>
+      <span class="day">四日</span>
+      <span class="day">五日</span>
+    </p>
+    <h2>三種隱藏</h2>
+    <p><span class="cell">1</span><span class="cell gone">2</span><span class="cell">3</span></p>
+    <p><span class="cell">1</span><span class="cell hold">2</span><span class="cell">3</span></p>
+    <p><span class="cell">1</span><span class="cell ghost">2</span><span class="cell">3</span></p>
+    <h2>圖片底縫</h2>
+    <p><img class="photo" alt="" src="https://picsum.photos/id/1015/120/80" /> 行內圖片底下有一條縫。</p>
+    <p><img class="photo block" alt="" src="https://picsum.photos/id/1015/120/80" /> 改成 block 就沒有縫。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -2447,7 +2654,90 @@ position 決定偏移量跟誰比。預設 static 參加正常排版，寫了 to
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>定位</title>
-    <link rel="stylesheet" href="18-position.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem 1.5rem 5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .card {
+        position: relative;
+        width: min(100%, 22rem);
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+
+      .badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 1;
+        padding: 0.15rem 0.5rem;
+        background: #9f1239;
+        color: #fff;
+      }
+
+      .pile {
+        position: relative;
+        height: 4.5rem;
+        margin-top: 1rem;
+      }
+
+      .layer {
+        position: absolute;
+        width: 5rem;
+        padding: 0.75rem 0;
+        text-align: center;
+        color: #fff;
+      }
+
+      .low {
+        top: 0.6rem;
+        left: 1.5rem;
+        z-index: 1;
+        background: #0f766e;
+      }
+
+      .high {
+        top: 0;
+        left: 0;
+        z-index: 2;
+        background: #9f1239;
+      }
+
+      .scroller {
+        overflow: auto;
+        height: 7rem;
+        margin-top: 1rem;
+        background: #fff;
+        border: 1px solid #99f6e4;
+      }
+
+      .sticky {
+        position: sticky;
+        top: 0;
+        margin: 0;
+        background: #115e59;
+        color: #f0fdfa;
+      }
+
+      .pin {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        margin: 0;
+        padding: 0.4rem 0.7rem;
+        background: #0f766e;
+        color: #fff;
+      }
+    </style>
   </head>
   <body>
     <h1>座標跟誰比</h1>
@@ -2468,91 +2758,6 @@ position 決定偏移量跟誰比。預設 static 參加正常排版，寫了 to
     <p class="pin">固定在視窗右下</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/18-position.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem 1.5rem 5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.card {
-  position: relative;
-  width: min(100%, 22rem);
-  padding: 1rem;
-  background: #f0fdfa;
-}
-
-.badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
-  padding: 0.15rem 0.5rem;
-  background: #9f1239;
-  color: #fff;
-}
-
-.pile {
-  position: relative;
-  height: 4.5rem;
-  margin-top: 1rem;
-}
-
-.layer {
-  position: absolute;
-  width: 5rem;
-  padding: 0.75rem 0;
-  text-align: center;
-  color: #fff;
-}
-
-.low {
-  top: 0.6rem;
-  left: 1.5rem;
-  z-index: 1;
-  background: #0f766e;
-}
-
-.high {
-  top: 0;
-  left: 0;
-  z-index: 2;
-  background: #9f1239;
-}
-
-.scroller {
-  overflow: auto;
-  height: 7rem;
-  margin-top: 1rem;
-  background: #fff;
-  border: 1px solid #99f6e4;
-}
-
-.sticky {
-  position: sticky;
-  top: 0;
-  margin: 0;
-  background: #115e59;
-  color: #f0fdfa;
-}
-
-.pin {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  margin: 0;
-  padding: 0.4rem 0.7rem;
-  background: #0f766e;
-  color: #fff;
-}
 ```
 
 **解析**
@@ -2590,89 +2795,117 @@ body {
 
 對準對象仍是卡片。徽章從右上移到左下，文字流不受影響。黏性標題與右下角固定塊維持原樣。
 
-```css 03-css/pages/18-position.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/18-position.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>定位</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem 1.5rem 5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem 1.5rem 5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.card {
-  position: relative;
-  width: min(100%, 22rem);
-  padding: 1rem;
-  background: #f0fdfa;
-}
+      .card {
+        position: relative;
+        width: min(100%, 22rem);
+        padding: 1rem;
+        background: #f0fdfa;
+      }
 
-.badge {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  z-index: 1;
-  padding: 0.15rem 0.5rem;
-  background: #9f1239;
-  color: #fff;
-}
+      .badge {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 0.5rem;
+        z-index: 1;
+        padding: 0.15rem 0.5rem;
+        background: #9f1239;
+        color: #fff;
+      }
 
-.pile {
-  position: relative;
-  height: 4.5rem;
-  margin-top: 1rem;
-}
+      .pile {
+        position: relative;
+        height: 4.5rem;
+        margin-top: 1rem;
+      }
 
-.layer {
-  position: absolute;
-  width: 5rem;
-  padding: 0.75rem 0;
-  text-align: center;
-  color: #fff;
-}
+      .layer {
+        position: absolute;
+        width: 5rem;
+        padding: 0.75rem 0;
+        text-align: center;
+        color: #fff;
+      }
 
-.low {
-  top: 0.6rem;
-  left: 1.5rem;
-  z-index: 1;
-  background: #0f766e;
-}
+      .low {
+        top: 0.6rem;
+        left: 1.5rem;
+        z-index: 1;
+        background: #0f766e;
+      }
 
-.high {
-  top: 0;
-  left: 0;
-  z-index: 2;
-  background: #9f1239;
-}
+      .high {
+        top: 0;
+        left: 0;
+        z-index: 2;
+        background: #9f1239;
+      }
 
-.scroller {
-  overflow: auto;
-  height: 7rem;
-  margin-top: 1rem;
-  background: #fff;
-  border: 1px solid #99f6e4;
-}
+      .scroller {
+        overflow: auto;
+        height: 7rem;
+        margin-top: 1rem;
+        background: #fff;
+        border: 1px solid #99f6e4;
+      }
 
-.sticky {
-  position: sticky;
-  top: 0;
-  margin: 0;
-  background: #115e59;
-  color: #f0fdfa;
-}
+      .sticky {
+        position: sticky;
+        top: 0;
+        margin: 0;
+        background: #115e59;
+        color: #f0fdfa;
+      }
 
-.pin {
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  margin: 0;
-  padding: 0.4rem 0.7rem;
-  background: #0f766e;
-  color: #fff;
-}
+      .pin {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        margin: 0;
+        padding: 0.4rem 0.7rem;
+        background: #0f766e;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>座標跟誰比</h1>
+    <article class="card">
+      <span class="badge">熱門</span>
+      <h2>京都三日</h2>
+      <p>徽章對準這張卡片，不是整頁。</p>
+    </article>
+    <div class="pile">
+      <span class="layer low">下層</span>
+      <span class="layer high">上層</span>
+    </div>
+    <div class="scroller">
+      <p class="sticky">這行會黏在這個盒子的上緣</p>
+      <p>往下捲這塊白盒，標題黏住，直到盒子捲完。</p>
+      <p>父層結束後，黏性也結束。</p>
+    </div>
+    <p class="pin">固定在視窗右下</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -2695,7 +2928,41 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>overflow</title>
-    <link rel="stylesheet" href="19-overflow.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .box {
+        width: min(100%, 18rem);
+        height: 4.5rem;
+        margin-bottom: 1rem;
+        background: #f0fdfa;
+      }
+
+      .clip {
+        overflow: hidden;
+      }
+
+      .scroll {
+        overflow: auto;
+      }
+
+      .one-line {
+        width: min(100%, 18rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
   </head>
   <body>
     <h1>超出盒子時</h1>
@@ -2708,42 +2975,6 @@ body {
     <p class="one-line">這一行很長時不要換行，尾端改成省略號。京都、大阪、濟州、花蓮都排在同一行。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/19-overflow.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.box {
-  width: min(100%, 18rem);
-  height: 4.5rem;
-  margin-bottom: 1rem;
-  background: #f0fdfa;
-}
-
-.clip {
-  overflow: hidden;
-}
-
-.scroll {
-  overflow: auto;
-}
-
-.one-line {
-  width: min(100%, 18rem);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 ```
 
 **解析**
@@ -2773,40 +3004,60 @@ body {
 
 兩塊現在都會在裝不下時出現捲軸，第一塊不再直接把句子切掉。單行那段仍是一行加省略號。
 
-```css 03-css/pages/19-overflow.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/19-overflow.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>overflow</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.box {
-  width: min(100%, 18rem);
-  height: 4.5rem;
-  margin-bottom: 1rem;
-  background: #f0fdfa;
-}
+      .box {
+        width: min(100%, 18rem);
+        height: 4.5rem;
+        margin-bottom: 1rem;
+        background: #f0fdfa;
+      }
 
-.clip {
-  overflow: auto;
-}
+      .clip {
+        overflow: auto;
+      }
 
-.scroll {
-  overflow: auto;
-}
+      .scroll {
+        overflow: auto;
+      }
 
-.one-line {
-  width: min(100%, 18rem);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+      .one-line {
+        width: min(100%, 18rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>超出盒子時</h1>
+    <div class="box clip">
+      <p>這段比盒子高。hidden 會裁掉下面的句子，不出現捲軸。洛奇旅行的說明在這裡被切掉。</p>
+    </div>
+    <div class="box scroll">
+      <p>這段同樣比較高。auto 在裝不下時出現捲軸，句子可以捲出來讀完。洛奇旅行的說明在這裡還在。</p>
+    </div>
+    <p class="one-line">這一行很長時不要換行，尾端改成省略號。京都、大阪、濟州、花蓮都排在同一行。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -2834,7 +3085,52 @@ Flex 沿一個方向排：主軸是這個方向，交叉軸是垂直於它的那
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flex</title>
-    <link rel="stylesheet" href="20-flex.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
+
+      .bar a {
+        color: inherit;
+      }
+
+      .trips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .trip {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 14rem;
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+
+      .trip a {
+        margin-top: auto;
+      }
+    </style>
   </head>
   <body>
     <h1>沿一個方向排</h1>
@@ -2859,53 +3155,6 @@ Flex 沿一個方向排：主軸是這個方向，交叉軸是垂直於它的那
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/20-flex.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
-
-.bar a {
-  color: inherit;
-}
-
-.trips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.trip {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 14rem;
-  padding: 1rem;
-  background: #f0fdfa;
-}
-
-.trip a {
-  margin-top: auto;
-}
 ```
 
 **解析**
@@ -2937,51 +3186,83 @@ body {
 
 不准換行之後，兩張卡片始終在同一行，變窄時會跟著縮小。頂部列與卡片內部的直向排列沒有改。
 
-```css 03-css/pages/20-flex.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/20-flex.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flex</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
+      .bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
 
-.bar a {
-  color: inherit;
-}
+      .bar a {
+        color: inherit;
+      }
 
-.trips {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  margin-top: 1rem;
-}
+      .trips {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
 
-.trip {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 14rem;
-  padding: 1rem;
-  background: #f0fdfa;
-}
+      .trip {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 14rem;
+        padding: 1rem;
+        background: #f0fdfa;
+      }
 
-.trip a {
-  margin-top: auto;
-}
+      .trip a {
+        margin-top: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>沿一個方向排</h1>
+    <header class="bar">
+      <strong>洛奇旅行</strong>
+      <nav>
+        <a href="#tours">行程</a>
+        <a href="#about">關於</a>
+      </nav>
+    </header>
+    <div class="trips">
+      <article class="trip">
+        <h2>京都三日</h2>
+        <p>清水寺與嵐山。</p>
+        <a href="#kyoto">看行程</a>
+      </article>
+      <article class="trip">
+        <h2>大阪美食</h2>
+        <p>這張字比較多，用來把連結推到卡片底部。</p>
+        <a href="#osaka">看行程</a>
+      </article>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -3005,7 +3286,35 @@ Grid 同時切欄與列。父層決定有幾欄，小孩預設各佔一格；一
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Grid</title>
-    <link rel="stylesheet" href="21-grid.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .trips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+        gap: 1rem;
+      }
+
+      .trips article {
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+
+      .feature {
+        grid-column: span 2;
+        background: #ccfbf1;
+      }
+    </style>
   </head>
   <body>
     <h1>欄與列一起排</h1>
@@ -3025,36 +3334,6 @@ Grid 同時切欄與列。父層決定有幾欄，小孩預設各佔一格；一
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/21-grid.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.trips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 1rem;
-}
-
-.trips article {
-  padding: 1rem;
-  background: #f0fdfa;
-}
-
-.feature {
-  grid-column: span 2;
-  background: #ccfbf1;
-}
 ```
 
 **解析**
@@ -3088,34 +3367,61 @@ body {
 
 最小寬度變大之後，同一個視窗寬度能放下的欄數變少，卡片更早改成上下排。第一張仍寫著跨兩欄，在兩欄都存在時才會比較寬。
 
-```css 03-css/pages/21-grid.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/21-grid.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.trips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-  gap: 1rem;
-}
+      .trips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+        gap: 1rem;
+      }
 
-.trips article {
-  padding: 1rem;
-  background: #f0fdfa;
-}
+      .trips article {
+        padding: 1rem;
+        background: #f0fdfa;
+      }
 
-.feature {
-  grid-column: span 2;
-  background: #ccfbf1;
-}
+      .feature {
+        grid-column: span 2;
+        background: #ccfbf1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>欄與列一起排</h1>
+    <div class="trips">
+      <article class="feature">
+        <h2>京都三日</h2>
+        <p>這一張跨兩欄。</p>
+      </article>
+      <article>
+        <h2>大阪</h2>
+        <p>一格。</p>
+      </article>
+      <article>
+        <h2>濟州</h2>
+        <p>一格。</p>
+      </article>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -3145,7 +3451,42 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>流動版面</title>
-    <link rel="stylesheet" href="22-rwd.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+
+      .wrap {
+        max-width: 60rem;
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+    </style>
   </head>
   <body>
     <div class="wrap">
@@ -3164,43 +3505,6 @@ body {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/22-rwd.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.wrap {
-  max-width: 60rem;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1rem;
-}
-
-.card {
-  padding: 1rem;
-  background: #f0fdfa;
-}
 ```
 
 **解析**
@@ -3230,41 +3534,67 @@ img {
 
 最小寬度變大之後，同一個視窗更早放不進兩欄，卡片改成上下排。照片仍不會比版心寬，版心仍停在 60rem。
 
-```css 03-css/pages/22-rwd.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/22-rwd.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>流動版面</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1.5rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
 
-.wrap {
-  max-width: 60rem;
-  margin-right: auto;
-  margin-left: auto;
-}
+      .wrap {
+        max-width: 60rem;
+        margin-right: auto;
+        margin-left: auto;
+      }
 
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: 1rem;
-}
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+        gap: 1rem;
+      }
 
-.card {
-  padding: 1rem;
-  background: #f0fdfa;
-}
+      .card {
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>洛奇旅行</h1>
+      <img src="https://picsum.photos/id/1016/1200/500" alt="海岸" />
+      <div class="cards">
+        <article class="card">
+          <h2>台北城市漫遊</h2>
+          <p>窄的時候一欄，拉寬後自動變多欄。</p>
+        </article>
+        <article class="card">
+          <h2>花蓮山海</h2>
+          <p>這裡還沒有媒體查詢。</p>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -3286,7 +3616,43 @@ img {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>斷點</title>
-    <link rel="stylesheet" href="30-css-breakpoint.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 1rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      nav a {
+        display: block;
+      }
+
+      @media (min-width: 40rem) {
+        .layout {
+          display: grid;
+          grid-template-columns: 1fr 14rem;
+          gap: 1rem;
+        }
+
+        header {
+          grid-column: 1 / -1;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        nav a {
+          display: inline-block;
+          margin-left: 0.75rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="layout">
@@ -3308,44 +3674,6 @@ img {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/30-css-breakpoint.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 1rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-nav a {
-  display: block;
-}
-
-@media (min-width: 40rem) {
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 14rem;
-    gap: 1rem;
-  }
-
-  header {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  nav a {
-    display: inline-block;
-    margin-left: 0.75rem;
-  }
-}
 ```
 
 **解析**
@@ -3375,48 +3703,77 @@ nav a {
 
 64rem 寫在後面，所以更寬的視窗會再用這條蓋過欄寬。介於 40rem 與 64rem 時，側欄仍是 14rem。窄於 40rem 時，兩條查詢都不成立，版面維持直排。
 
-```css 03-css/pages/30-css-breakpoint.css
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+```html 03-css/pages/30-css-breakpoint.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>斷點</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-body {
-  margin: 1rem;
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1rem;
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-nav a {
-  display: block;
-}
+      nav a {
+        display: block;
+      }
 
-@media (min-width: 40rem) {
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 14rem;
-    gap: 1rem;
-  }
+      @media (min-width: 40rem) {
+        .layout {
+          display: grid;
+          grid-template-columns: 1fr 14rem;
+          gap: 1rem;
+        }
 
-  header {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+        header {
+          grid-column: 1 / -1;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
 
-  nav a {
-    display: inline-block;
-    margin-left: 0.75rem;
-  }
-}
+        nav a {
+          display: inline-block;
+          margin-left: 0.75rem;
+        }
+      }
 
-@media (min-width: 64rem) {
-  .layout {
-    grid-template-columns: 1fr 18rem;
-  }
-}
+      @media (min-width: 64rem) {
+        .layout {
+          grid-template-columns: 1fr 18rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header>
+        <h1>洛奇旅行</h1>
+        <nav>
+          <a href="#tours">行程</a>
+          <a href="#tips">須知</a>
+        </nav>
+      </header>
+      <main id="tours">
+        <h2>行程</h2>
+        <p>窄的時候導覽在標題下面，一項一行。</p>
+      </main>
+      <aside id="tips">
+        <h2>須知</h2>
+        <p>夠寬時這欄才排到旁邊。</p>
+      </aside>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -3437,7 +3794,25 @@ nav a {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>列印與偏好</title>
-    <link rel="stylesheet" href="31-css-print.css" />
+    <style>
+      body {
+        color: #134e4a;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #042f2e;
+          color: #f0fdfa;
+        }
+      }
+
+      @media print {
+        .noprint {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <nav class="noprint"><a href="#tours">行程</a></nav>
@@ -3445,26 +3820,6 @@ nav a {
     <p>列印預覽時，上面的導覽會消失。系統若是深色，這一頁會換成深底淺字。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/31-css-print.css
-body {
-  color: #134e4a;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #042f2e;
-    color: #f0fdfa;
-  }
-}
-
-@media print {
-  .noprint {
-    display: none;
-  }
-}
 ```
 
 **解析**
@@ -3501,7 +3856,35 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>變數</title>
-    <link rel="stylesheet" href="23-vars.css" />
+    <style>
+      :root {
+        --brand: #0f766e;
+        --gap: 1rem;
+      }
+
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .card {
+        margin-bottom: var(--gap);
+        padding: 1rem;
+        background: #f0fdfa;
+      }
+
+      .price {
+        color: var(--brand);
+      }
+
+      .sale {
+        --brand: #9f1239;
+      }
+
+      .missing {
+        color: var(--missing, #475569);
+      }
+    </style>
   </head>
   <body>
     <article class="card">
@@ -3515,36 +3898,6 @@ body {
     <p class="missing">這段的顏色名稱不存在，所以用備援。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/23-vars.css
-:root {
-  --brand: #0f766e;
-  --gap: 1rem;
-}
-
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.card {
-  margin-bottom: var(--gap);
-  padding: 1rem;
-  background: #f0fdfa;
-}
-
-.price {
-  color: var(--brand);
-}
-
-.sale {
-  --brand: #9f1239;
-}
-
-.missing {
-  color: var(--missing, #475569);
-}
 ```
 
 **解析**
@@ -3574,34 +3927,55 @@ body {
 
 根上的值一改，第一張價格跟著變。sale 自己有同名變數，不跟根上的新值，所以仍是玫瑰紅。備援那段沒有這個名字，不受影響。
 
-```css 03-css/pages/23-vars.css
-:root {
-  --brand: #115e59;
-  --gap: 1rem;
-}
+```html 03-css/pages/23-vars.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>變數</title>
+    <style>
+      :root {
+        --brand: #115e59;
+        --gap: 1rem;
+      }
 
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.card {
-  margin-bottom: var(--gap);
-  padding: 1rem;
-  background: #f0fdfa;
-}
+      .card {
+        margin-bottom: var(--gap);
+        padding: 1rem;
+        background: #f0fdfa;
+      }
 
-.price {
-  color: var(--brand);
-}
+      .price {
+        color: var(--brand);
+      }
 
-.sale {
-  --brand: #9f1239;
-}
+      .sale {
+        --brand: #9f1239;
+      }
 
-.missing {
-  color: var(--missing, #475569);
-}
+      .missing {
+        color: var(--missing, #475569);
+      }
+    </style>
+  </head>
+  <body>
+    <article class="card">
+      <h1>京都三日</h1>
+      <p class="price">NT$12,800</p>
+    </article>
+    <article class="card sale">
+      <h2>大阪美食</h2>
+      <p class="price">NT$9,600</p>
+    </article>
+    <p class="missing">這段的顏色名稱不存在，所以用備援。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -3627,7 +4001,36 @@ transform 可以平移、縮放、旋轉。它不重新計算左右鄰居的位�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>變形</title>
-    <link rel="stylesheet" href="24-motion.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .box {
+        width: 4rem;
+        padding: 0.75rem 0;
+        background: #f0fdfa;
+        text-align: center;
+      }
+
+      .move {
+        transform: translateX(1rem);
+      }
+
+      .big {
+        transform: scale(1.25);
+      }
+
+      .turn {
+        transform: rotate(8deg);
+      }
+    </style>
   </head>
   <body>
     <h1>變形不推動鄰居</h1>
@@ -3639,37 +4042,6 @@ transform 可以平移、縮放、旋轉。它不重新計算左右鄰居的位�
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/24-motion.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.box {
-  width: 4rem;
-  padding: 0.75rem 0;
-  background: #f0fdfa;
-  text-align: center;
-}
-
-.move {
-  transform: translateX(1rem);
-}
-
-.big {
-  transform: scale(1.25);
-}
-
-.turn {
-  transform: rotate(8deg);
-}
 ```
 
 **解析**
@@ -3695,35 +4067,54 @@ body {
 
 translateY 的負值往上畫，格子佔的位子仍在原列，左右鄰居不會補進它空出來的視覺位置。放大與旋轉維持原樣。
 
-```css 03-css/pages/24-motion.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/24-motion.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>變形</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.row {
-  display: flex;
-  gap: 0.5rem;
-}
+      .row {
+        display: flex;
+        gap: 0.5rem;
+      }
 
-.box {
-  width: 4rem;
-  padding: 0.75rem 0;
-  background: #f0fdfa;
-  text-align: center;
-}
+      .box {
+        width: 4rem;
+        padding: 0.75rem 0;
+        background: #f0fdfa;
+        text-align: center;
+      }
 
-.move {
-  transform: translateY(-0.75rem);
-}
+      .move {
+        transform: translateY(-0.75rem);
+      }
 
-.big {
-  transform: scale(1.25);
-}
+      .big {
+        transform: scale(1.25);
+      }
 
-.turn {
-  transform: rotate(8deg);
-}
+      .turn {
+        transform: rotate(8deg);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>變形不推動鄰居</h1>
+    <div class="row">
+      <span class="box">原位</span>
+      <span class="box move">往右</span>
+      <span class="box big">放大</span>
+      <span class="box turn">旋轉</span>
+    </div>
+  </body>
+</html>
 ```
 
 </details>
@@ -3746,7 +4137,23 @@ transition 寫在元素平常的狀態上，告訴瀏覽器：這個屬性從舊
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>轉場</title>
-    <link rel="stylesheet" href="32-css-transition.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .card {
+        width: min(100%, 20rem);
+        padding: 1rem;
+        background: #f0fdfa;
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-0.35rem);
+      }
+    </style>
   </head>
   <body>
     <h1>兩個狀態之間</h1>
@@ -3756,24 +4163,6 @@ transition 寫在元素平常的狀態上，告訴瀏覽器：這個屬性從舊
     </article>
   </body>
 </html>
-```
-
-```css 03-css/pages/32-css-transition.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.card {
-  width: min(100%, 20rem);
-  padding: 1rem;
-  background: #f0fdfa;
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-0.35rem);
-}
 ```
 
 **解析**
@@ -3803,22 +4192,39 @@ body {
 
 終點仍是往上 0.35rem。改變的是過程：整整一秒、沒有兩頭的加減速。移開時也用同一秒走回來。
 
-```css 03-css/pages/32-css-transition.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/32-css-transition.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>轉場</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.card {
-  width: min(100%, 20rem);
-  padding: 1rem;
-  background: #f0fdfa;
-  transition: transform 1s linear;
-}
+      .card {
+        width: min(100%, 20rem);
+        padding: 1rem;
+        background: #f0fdfa;
+        transition: transform 1s linear;
+      }
 
-.card:hover {
-  transform: translateY(-0.35rem);
-}
+      .card:hover {
+        transform: translateY(-0.35rem);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>兩個狀態之間</h1>
+    <article class="card">
+      <h2>抬起的卡片</h2>
+      <p>滑鼠放上來時往上移，移開時回到原位。</p>
+    </article>
+  </body>
+</html>
 ```
 
 </details>
@@ -3841,37 +4247,35 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>動畫</title>
-    <link rel="stylesheet" href="33-css-keyframes.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.08);
+        }
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #115e59;
+        color: #f0fdfa;
+        animation: pulse 1s ease-in-out infinite alternate;
+      }
+    </style>
   </head>
   <body>
     <h1>自己播放</h1>
     <p class="badge">報名中</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/33-css-keyframes.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-@keyframes pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  background: #115e59;
-  color: #f0fdfa;
-  animation: pulse 1s ease-in-out infinite alternate;
-}
 ```
 
 **解析**
@@ -3898,28 +4302,42 @@ body {
 
 次數改成 1 之後，徽章放大再縮回一次就停在起點。alternate 仍負責這一回是正向再反向。頁面重新整理才會再播。
 
-```css 03-css/pages/33-css-keyframes.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/33-css-keyframes.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>動畫</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-@keyframes pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.08);
+        }
+      }
 
-.badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  background: #115e59;
-  color: #f0fdfa;
-  animation: pulse 1s ease-in-out 1 alternate;
-}
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #115e59;
+        color: #f0fdfa;
+        animation: pulse 1s ease-in-out 1 alternate;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>自己播放</h1>
+    <p class="badge">報名中</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -3934,10 +4352,10 @@ Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。C
 
 **觀念**
 
-- 完全找不到你的選擇器：名字、路徑或存檔有問題，還不是權重問題。
+- 完全找不到你的選擇器：名字不對，或 `style` 沒存檔，還不是權重問題。
 - 找得到但被劃掉：有另一條更優先，或同一條裡較下面的宣告蓋過它。
 - Computed 裡可以反查這個值是哪一條規則來的。
-- 在面板打字只是暫時預覽。要留下，必須改檔案再重新整理。
+- 在面板打字只是暫時預覽。要留下，必須改這頁的 `style` 再重新整理。
 
 ```html 03-css/pages/25-inspect.html
 <!DOCTYPE html>
@@ -3946,7 +4364,20 @@ Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。C
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Styles</title>
-    <link rel="stylesheet" href="25-inspect.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .note {
+        color: #b45309;
+      }
+
+      .note {
+        color: #0f766e;
+      }
+    </style>
   </head>
   <body>
     <h1>誰留下</h1>
@@ -3955,27 +4386,12 @@ Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。C
 </html>
 ```
 
-```css 03-css/pages/25-inspect.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.note {
-  color: #b45309;
-}
-
-.note {
-  color: #0f766e;
-}
-```
-
 **解析**
 
 - 點這段文字。
 - Styles 裡第一個顏色有刪除線，第二個深青綠沒有。
 - Computed 的 color 是深青綠。
-- 在面板把深青綠改成別的顏色，畫面會立刻變，重新整理後又回到檔案裡的深青綠。
+- 在面板把深青綠改成別的顏色，畫面會立刻變，重新整理後又回到 `style` 裡的深青綠。
 
 ```css
 .note {
@@ -3988,27 +4404,41 @@ body {
 
 {% note success %}
 **換你試試：**
-在檔案裡把留下的顏色改成 `#9f1239`，存檔後重新整理。面板上若還有你手改的顏色，重新整理後不該留下。
+在 `style` 裡把留下的顏色改成 `#9f1239`，存檔後重新整理。面板上若還有你手改的顏色，重新整理後不該留下。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-檔案較下面那條改成玫瑰紅之後，重新整理會留下玫瑰紅，琥珀色仍被劃掉。只在面板改、沒有寫進檔案的值，重新整理就消失。
+`style` 較下面那條改成玫瑰紅之後，重新整理會留下玫瑰紅，琥珀色仍被劃掉。只在面板改、沒有寫進 `style` 的值，重新整理就消失。
 
-```css 03-css/pages/25-inspect.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/25-inspect.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Styles</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.note {
-  color: #b45309;
-}
+      .note {
+        color: #b45309;
+      }
 
-.note {
-  color: #9f1239;
-}
+      .note {
+        color: #9f1239;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>誰留下</h1>
+    <p class="note">這段應是深青綠。較上面的琥珀色會被劃掉。</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -4034,37 +4464,35 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>盒子與斷點</title>
-    <link rel="stylesheet" href="34-css-devtools-box.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .go {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
+
+      .go:hover {
+        background: #0f766e;
+      }
+
+      @media (min-width: 40rem) {
+        .wide {
+          color: #0f766e;
+        }
+      }
+    </style>
   </head>
   <body>
     <a class="go" href="#top">看行程</a>
     <p class="wide">視窗寬於 40rem 時，這段才變成深青綠。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/34-css-devtools-box.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.go {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
-
-.go:hover {
-  background: #0f766e;
-}
-
-@media (min-width: 40rem) {
-  .wide {
-    color: #0f766e;
-  }
-}
 ```
 
 **解析**
@@ -4095,41 +4523,55 @@ body {
 
 左右內距變大之後，按鈕變寬，盒模型圖的左右數字跟著變。上下仍是 0.5rem。hover 仍是另一階青綠，斷點仍是 40rem。
 
-```css 03-css/pages/34-css-devtools-box.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/34-css-devtools-box.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>盒子與斷點</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-.go {
-  display: inline-block;
-  padding: 0.5rem 2rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
+      .go {
+        display: inline-block;
+        padding: 0.5rem 2rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
 
-.go:hover {
-  background: #0f766e;
-}
+      .go:hover {
+        background: #0f766e;
+      }
 
-@media (min-width: 40rem) {
-  .wide {
-    color: #0f766e;
-  }
-}
+      @media (min-width: 40rem) {
+        .wide {
+          color: #0f766e;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="go" href="#top">看行程</a>
+    <p class="wide">視窗寬於 40rem 時，這段才變成深青綠。</p>
+  </body>
+</html>
 ```
 
 </details>
 
 ### 動畫面板
 
-Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間。這是在看過程，不是在改檔案。
+Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間。這是在看過程，不是在改 `style`。
 
 **觀念**
 
 - 有 animation 或進行中的 transition 時，面板才有項目。
 - 暫停後拖曳時間軸，可以停在某一格看變形。
-- 面板把時間拉長只影響這一次預覽。重新整理後，仍是檔案裡寫的秒數。
+- 面板把時間拉長只影響這一次預覽。重新整理後，仍是 `style` 裡寫的秒數。
 
 ```html 03-css/pages/35-css-devtools-anim.html
 <!DOCTYPE html>
@@ -4138,7 +4580,29 @@ Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>動畫面板</title>
-    <link rel="stylesheet" href="35-css-devtools-anim.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.08);
+        }
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #115e59;
+        color: #f0fdfa;
+        animation: pulse 1s ease-in-out infinite alternate;
+      }
+    </style>
   </head>
   <body>
     <h1>打開動畫面板</h1>
@@ -4147,37 +4611,13 @@ Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間
 </html>
 ```
 
-```css 03-css/pages/35-css-devtools-anim.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-@keyframes pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  background: #115e59;
-  color: #f0fdfa;
-  animation: pulse 1s ease-in-out infinite alternate;
-}
-```
-
 **解析**
 
 - 按 <kbd>F12</kbd>，打開 Animations。
 - 徽章的 pulse 會出現在清單裡。
 - 暫停後，徽章停在當下的大小。
 - 拖時間軸，可以看到它放大與縮回。
-- 重新整理後又從檔案的 1 秒循環開始。
+- 重新整理後又從 `style` 的 1 秒循環開始。
 
 ```css
 .badge {
@@ -4187,36 +4627,50 @@ body {
 
 {% note success %}
 **換你試試：**
-把檔案裡的 1s 改成 3s，存檔重新整理。面板上這一條的長度應變成三秒，而不是你剛剛在面板拖出來的位置。
+把 `style` 裡的 `1s` 改成 3s，存檔重新整理。面板上這一條的長度應變成三秒，而不是你剛剛在面板拖出來的位置。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-時間改在檔案裡，重新整理後每一輪是三秒。alternate 與 infinite 沒有改，所以仍會來回、不會自己停。
+時間改在 `style` 裡，重新整理後每一輪是三秒。alternate 與 infinite 沒有改，所以仍會來回、不會自己停。
 
-```css 03-css/pages/35-css-devtools-anim.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
+```html 03-css/pages/35-css-devtools-anim.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>動畫面板</title>
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
 
-@keyframes pulse {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.08);
+        }
+      }
 
-.badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  background: #115e59;
-  color: #f0fdfa;
-  animation: pulse 3s ease-in-out infinite alternate;
-}
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        background: #115e59;
+        color: #f0fdfa;
+        animation: pulse 3s ease-in-out infinite alternate;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>打開動畫面板</h1>
+    <p class="badge">報名中</p>
+  </body>
+</html>
 ```
 
 </details>
@@ -4246,7 +4700,28 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>外距穿出</title>
-    <link rel="stylesheet" href="40-css-margin-out.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .open,
+      .held {
+        background: #ccfbf1;
+        margin-bottom: 1.5rem;
+      }
+
+      .open p,
+      .held p {
+        margin-top: 2rem;
+        background: #fff;
+      }
+
+      .held {
+        display: flow-root;
+      }
+    </style>
   </head>
   <body>
     <div class="open">
@@ -4257,29 +4732,6 @@ body {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/40-css-margin-out.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.open,
-.held {
-  background: #ccfbf1;
-  margin-bottom: 1.5rem;
-}
-
-.open p,
-.held p {
-  margin-top: 2rem;
-  background: #fff;
-}
-
-.held {
-  display: flow-root;
-}
 ```
 
 **解析**
@@ -4310,7 +4762,19 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>邏輯方向</title>
-    <link rel="stylesheet" href="41-css-logical.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .card {
+        margin-inline: auto;
+        padding-inline-start: 1rem;
+        border-inline-start: 6px solid #0f766e;
+        max-width: 24rem;
+      }
+    </style>
   </head>
   <body>
     <article class="card">
@@ -4319,20 +4783,6 @@ body {
     </article>
   </body>
 </html>
-```
-
-```css 03-css/pages/41-css-logical.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.card {
-  margin-inline: auto;
-  padding-inline-start: 1rem;
-  border-inline-start: 6px solid #0f766e;
-  max-width: 24rem;
-}
 ```
 
 **解析**
@@ -4364,7 +4814,20 @@ opacity 小於 1，或 transform 不是 none，也會讓該元素變成新的層
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>省略</title>
-    <link rel="stylesheet" href="42-css-clamp.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .clip {
+        width: min(100%, 16rem);
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+      }
+    </style>
   </head>
   <body>
     <p class="clip">
@@ -4372,21 +4835,6 @@ opacity 小於 1，或 transform 不是 none，也會讓該元素變成新的層
     </p>
   </body>
 </html>
-```
-
-```css 03-css/pages/42-css-clamp.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.clip {
-  width: min(100%, 16rem);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
 ```
 
 **解析**
@@ -4423,7 +4871,22 @@ float: left 把元素撥到這一行的左側，後面的文字沿著它的右�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>繞排</title>
-    <link rel="stylesheet" href="26-float.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .story {
+        display: flow-root;
+        background: #f0fdfa;
+      }
+
+      .story img {
+        float: left;
+        margin: 0 0.75rem 0.5rem 0;
+      }
+    </style>
   </head>
   <body>
     <div class="story">
@@ -4433,23 +4896,6 @@ float: left 把元素撥到這一行的左側，後面的文字沿著它的右�
     <p>下一段接在整則故事的下面。</p>
   </body>
 </html>
-```
-
-```css 03-css/pages/26-float.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.story {
-  display: flow-root;
-  background: #f0fdfa;
-}
-
-.story img {
-  float: left;
-  margin: 0 0.75rem 0.5rem 0;
-}
 ```
 
 **解析**
@@ -4484,7 +4930,23 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>不要用 float 切欄</title>
-    <link rel="stylesheet" href="36-css-no-float.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .trips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+        gap: 0.75rem;
+      }
+
+      .trips article {
+        padding: 0.75rem;
+        background: #f0fdfa;
+      }
+    </style>
   </head>
   <body>
     <div class="trips">
@@ -4494,24 +4956,6 @@ body {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/36-css-no-float.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.trips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: 0.75rem;
-}
-
-.trips article {
-  padding: 0.75rem;
-  background: #f0fdfa;
-}
 ```
 
 **解析**
@@ -4546,7 +4990,53 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>翻面</title>
-    <link rel="stylesheet" href="27-flip.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .scene {
+        width: 10rem;
+        height: 6rem;
+        perspective: 40rem;
+      }
+
+      .card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+
+      .scene:hover .card {
+        transform: rotateY(180deg);
+      }
+
+      .face {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: 0;
+        text-align: center;
+        line-height: 6rem;
+        backface-visibility: hidden;
+      }
+
+      .front {
+        background: #115e59;
+        color: #f0fdfa;
+      }
+
+      .back {
+        background: #9f1239;
+        color: #fff;
+        transform: rotateY(180deg);
+      }
+    </style>
   </head>
   <body>
     <div class="scene">
@@ -4557,54 +5047,6 @@ body {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/27-flip.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.scene {
-  width: 10rem;
-  height: 6rem;
-  perspective: 40rem;
-}
-
-.card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.scene:hover .card {
-  transform: rotateY(180deg);
-}
-
-.face {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: 0;
-  text-align: center;
-  line-height: 6rem;
-  backface-visibility: hidden;
-}
-
-.front {
-  background: #115e59;
-  color: #f0fdfa;
-}
-
-.back {
-  background: #9f1239;
-  color: #fff;
-  transform: rotateY(180deg);
-}
 ```
 
 **解析**
@@ -4644,7 +5086,39 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>容器查詢</title>
-    <link rel="stylesheet" href="28-read-extra.css" />
+    <style>
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .slot {
+        container-type: inline-size;
+        width: min(100%, 22rem);
+        border: 1px solid #99f6e4;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .card img {
+        width: 100%;
+        height: auto;
+      }
+
+      @container (min-width: 24rem) {
+        .card {
+          flex-direction: row;
+        }
+
+        .card img {
+          width: 8rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="slot">
@@ -4655,40 +5129,6 @@ body {
     </div>
   </body>
 </html>
-```
-
-```css 03-css/pages/28-read-extra.css
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.slot {
-  container-type: inline-size;
-  width: min(100%, 22rem);
-  border: 1px solid #99f6e4;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.card img {
-  width: 100%;
-  height: auto;
-}
-
-@container (min-width: 24rem) {
-  .card {
-    flex-direction: row;
-  }
-
-  .card img {
-    width: 8rem;
-  }
-}
 ```
 
 **解析**
@@ -4720,7 +5160,19 @@ vh 是視窗高度的百分之一，在手機上常常把瀏覽器工具列也�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>動態視窗高度</title>
-    <link rel="stylesheet" href="39-css-dvh.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .hero {
+        min-height: 100dvh;
+        padding: 1.5rem;
+        background: #115e59;
+        color: #f0fdfa;
+      }
+    </style>
   </head>
   <body>
     <section class="hero">
@@ -4729,20 +5181,6 @@ vh 是視窗高度的百分之一，在手機上常常把瀏覽器工具列也�
     </section>
   </body>
 </html>
-```
-
-```css 03-css/pages/39-css-dvh.css
-body {
-  margin: 0;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.hero {
-  min-height: 100dvh;
-  padding: 1.5rem;
-  background: #115e59;
-  color: #f0fdfa;
-}
 ```
 
 **解析**
@@ -4779,37 +5217,35 @@ body {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>可補間的變數</title>
-    <link rel="stylesheet" href="38-css-property.css" />
+    <style>
+      @property --angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+      }
+
+      body {
+        margin: 1.5rem;
+        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      }
+
+      .swatch {
+        --angle: 0deg;
+        width: min(100%, 16rem);
+        padding: 2rem 1rem;
+        background: linear-gradient(var(--angle), #115e59, #99f6e4);
+        transition: --angle 0.6s linear;
+      }
+
+      .swatch:hover {
+        --angle: 90deg;
+      }
+    </style>
   </head>
   <body>
     <div class="swatch">滑鼠放上來，漸層的角度會轉過去。</div>
   </body>
 </html>
-```
-
-```css 03-css/pages/38-css-property.css
-@property --angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-body {
-  margin: 1.5rem;
-  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-}
-
-.swatch {
-  --angle: 0deg;
-  width: min(100%, 16rem);
-  padding: 2rem 1rem;
-  background: linear-gradient(var(--angle), #115e59, #99f6e4);
-  transition: --angle 0.6s linear;
-}
-
-.swatch:hover {
-  --angle: 90deg;
-}
 ```
 
 **解析**
