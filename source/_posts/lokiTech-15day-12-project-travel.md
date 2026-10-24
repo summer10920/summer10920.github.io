@@ -1,11 +1,11 @@
 ---
-title: "結業專案：洛奇旅行（React 與 Tailwind）"
+title: "結業專案：洛奇旅行"
 categories:
   - 職訓課程
   - 本年度課程
 tag:
   - JS 網頁 AI 開發（假日班）
-date: 2026-08-30 10:10:00
+date: 2026-08-30 10:11:00
 ---
 
 ![](assets/images/banner/react.png)
@@ -16,7 +16,7 @@ date: 2026-08-30 10:10:00
 
 # 取得素材
 
-沿用 `student/react/` 整份複製成 `student/project/`。排版與 ESLint 跟著專案走，不要改個人的使用者設定。一個終端機 `pnpm dev`，另一個 `pnpm api`（json-server 仍鎖定 0.17）。
+結業站寫在 `05-project/`。路由從 `react-router` 引入，沿用 React Router 那篇的 `BrowserRouter`、`Routes`、`Link` 與 `NavLink`。排版與 ESLint 跟著專案走，不要改個人的使用者設定。一個終端機 `pnpm dev`，另一個 `pnpm api`（json-server 仍鎖定 0.17）。
 
 ## 規格
 
@@ -56,9 +56,11 @@ date: 2026-08-30 10:10:00
 
 # 照順序組站
 
-先讓本機四條路由與報名走得通，再換成靜態 JSON，最後才處理網址前綴與佈署。篩選、列表、表單沿用上一篇，這篇只補頁首開關、主視覺、詳情區塊與組裝。
+先讓本機四條路由與報名走得通，再換成靜態 JSON，最後才處理網址前綴與佈署。列表、篩選與受控表單在 React 基礎，依 id 讀取與增刪改在 React 進階，`BrowserRouter` 與 `Link` 在 React Router。這篇只補頁首開關、主視覺、詳情區塊與組裝。
 
 ## 組裝順序
+
+下面五步是組站的先後。先讓本機四條路由與報名走得通，再換成靜態 JSON，最後才處理網址前綴。每一步只開表上的那些檔。
 
 | 順序 | 做什麼 | 開哪一檔 |
 | --- | --- | --- |
@@ -68,9 +70,13 @@ date: 2026-08-30 10:10:00
 | 4 | 卡片圖片接上站點前綴 | `TourCard.jsx`、`TourDetail.jsx` |
 | 5 | 設定 `base` 與 `basename`，建置後複製 `404.html` | `vite.config.js`、`main.jsx` |
 
+## 頁首與路由
+
+頁首用狀態記住選單是否打開，契約 id 是 `site-header` 與 `nav-toggle`。主視覺放在首頁，詳情收到一筆行程後畫出標題、圖片與報名連結。`App` 把這幾頁掛上路由，頁首與頁尾留在路由外面，每一頁都看得到。
+
 ```jsx src/SiteHeader.jsx
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -92,7 +98,7 @@ export default function SiteHeader() {
 ```
 
 ```jsx src/Hero.jsx
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 export default function Hero() {
   return (
@@ -114,7 +120,7 @@ export default function HomePage() {
 ```
 
 ```jsx src/TourDetail.jsx
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const srcOf = (image) => import.meta.env.BASE_URL + image.replace(/^\//, "");
 
@@ -131,10 +137,12 @@ export default function TourDetail({ tour }) {
 }
 ```
 
-`TourDetailPage` 仍用上一篇的 `useEffect` 與 `getTour`。讀到資料後改成 `<TourDetail tour={tour} />`。`TourCard` 的 `img` 同樣用 `import.meta.env.BASE_URL` 接路徑，標題的 `Link` 仍是 `to={"/tours/" + tour.id}`。
+「我要報名」的 `to` 已經帶著 `tourId`。報名頁用 {% post_link lokiTech-15day-11-react-router %} 的 `useSearchParams` 讀這個鍵來預填。
+
+`TourDetailPage` 用 React 進階的 `useEffect` 讀一筆。函式名是 `getTour`，對應那篇的 `getPost`：參數是 id，失敗就丟錯。讀到資料後改成 `<TourDetail tour={tour} />`。`TourCard` 的 `img` 同樣用 `import.meta.env.BASE_URL` 接路徑，標題的 `Link` 仍是 `to={"/tours/" + tour.id}`。
 
 ```jsx src/App.jsx
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 import SiteHeader from "./SiteHeader.jsx";
 import SiteFooter from "./SiteFooter.jsx";
 import HomePage from "./HomePage.jsx";
@@ -168,7 +176,7 @@ export default function App() {
 
 ## 資料檔
 
-`db.json` 留給本機 API。線上用的是 `src/data/tours.json`，內容就是行程陣列，欄位與本機相同。
+`db.json` 留給本機 API。線上用的是 `src/data/tours.json`，內容就是行程陣列，欄位與本機相同。`getTours` 對應進階篇的 `getLocalItems`，讀的是清單。`getTour` 對應 `getPost`，依 id 取一筆。`createBooking` 對應 `createPost`。`saveTour` 有 id 時走 PUT，與 `updatePost` 同一種；沒有 id 時走 POST。`deleteTour` 對應 `deletePost`。
 
 ```json src/data/tours.json
 [
@@ -320,7 +328,7 @@ export default defineConfig({
 ```jsx src/main.jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -362,9 +370,17 @@ pnpm exec gh-pages -d dist
 先在本機從列表進詳情再送出報名，再開 GitHub Pages 走同一條瀏覽。口述挑 `TourList` 或 `TourDetail` 其中一個即可。
 {% endnote %}
 
-# 作業：結業站元件模板
+# 交作業
 
-這份作業就是洛奇旅行本身。交 `student/project/`，六個元件都掛在 `App` 上，並能指出每一個最後在哪一條路徑。
+交的是洛奇旅行這一個站，不是另開習題。路徑、元件與欄位都沿用前面的契約。
+
+## 交件路徑
+
+這份作業寫在 `05-project/`。六個元件都掛在 `App` 上，並能指出每一個最後在哪一條路徑。路由從 `react-router` 引入。不要裝 TypeScript，不要改欄位名稱。
+
+## 本機與靜態站
+
+本機要走完篩選列表、詳情、報名與 `/admin`。正式建置改讀 `tours.json`，佈上 GitHub Pages 後首頁與 `/tours` 仍要打得開。
 
 {% note success %}
 **跟著做：**
@@ -375,4 +391,9 @@ pnpm exec gh-pages -d dist
 
 # 本篇重點回顧
 
-結業站是六個作業元件加上四條前台路由與本機 `/admin`。開發時用 json-server，建置後改讀 `tours.json`，報名在靜態站只留在瀏覽器。`base`、`basename` 與 `404.html` 讓 GitHub Pages 的子路徑打得開。展示時先走完本機報名，再打開線上靜態站，並講出一個元件的資料來源。
+- 交作業的路徑是 `05-project/`。路由從 `react-router` 引入。
+- 前台是 `/`、`/tours`、`/tours/:id`、`/booking`。`/admin` 只在本機增刪改行程。
+- 六個作業元件是 `SiteHeader`、`Hero`、`TourList`／`TourCard`、`TourDetail`、`BookingForm`、`SiteFooter`。
+- `getTours` 對應 `getLocalItems`，`getTour` 對應 `getPost`。正式站改讀 `tours.json`，報名改寫進瀏覽器。
+- `base`、`basename` 與 `404.html` 讓 GitHub Pages 的子路徑打得開。
+- 展示時先走完本機報名，再打開線上靜態站，並講出一個元件的資料來源。
