@@ -45,17 +45,38 @@ Vue 的定位是漸進式框架（progressive framework）。同一套工具可�
 
 常見寫法是單檔元件（Single-File Component，SFC）。一個檔案裡放下這塊畫面的模板、腳本與樣式；使用者看到的結構寫在模板（template）裡，條件與清單用模板自己的指令（template directive），而不是一般的 JavaScript 陳述。官方的路由與狀態也沿同一套文件與套件走，專案往下接時仍在 Vue 的約定裡。
 
+核心以外，往下做完整專案時還常再接這些套件。
+
+- Vue Router 負責網址與頁面的對應。
+- Pinia 管理多個元件共用的狀態。舊專案裡還可能看到 Vuex。
+- 要做成全端應用時，常改接 Nuxt。
+- 介面元件庫（component library）常見 Element Plus 與 Vuetify。
+
 ### Angular
 
 Angular 把模板、路由、表單和專案結構收得更完整，一開始就用同一套框架約定把這些擺在一起。新專案通常依這套約定長出來，目錄的形狀在產生器裡就定了。
 
 畫面一樣寫在模板裡。路由怎麼對應頁面、表單怎麼綁資料、資料夾怎麼分層，都有框架自己的做法。模板和這些約定讓同一個專案裡的寫法穩定；要另外熟悉的，是那一種模板語法與目錄。
 
+核心以外，就業與實務往下還常再接這些套件。
+
+- 響應式程式庫（RxJS）處理非同步與資料流，寫 Angular 時幾乎都會碰到。
+- 大型應用的共用狀態常再接 NgRx。
+- 介面元件庫常見 Angular Material。
+- 職缺與周邊生態常要求會 TypeScript。
+
 ### React
 
 React 裡，元件是一支函式。這塊畫面的判斷、事件與要顯示的內容留在 JavaScript，標記用 JSX 寫進同一支函式的回傳。
 
 它不另外準備一套模板語言，也不規定專案目錄該怎麼切。檔案怎麼分、路由與共用狀態日後接哪一套，函式庫不過問。你沿用已經會的 JavaScript，再多學 JSX 這一種寫法。
+
+核心以外，往下常再接這些套件。
+
+- React Router 負責換頁。本課後面會教。
+- 全端與伺服器端渲染（server-side rendering，SSR）常見 Next.js。
+- 共用狀態常見 Zustand 與 Redux Toolkit。
+- 介面元件庫常見 MUI 與 Ant Design。
 
 ### 這門課的取捨
 
@@ -154,31 +175,32 @@ pnpm create          # 執行「專案產生器」：暫時下載 create-xxx 套
   --template react   # 範本：react 是 React + JavaScript；react-ts 是 TypeScript，這門課不選
 ```
 
-就算寫了 `--template react`，終端機多半還會再問兩題。Which linter to use 選 Oxlint，課堂的 ESLint 在 `03-react`，sandbox 用範本預設。Install with pnpm and start now 選 No，安裝與啟動留給下面兩步，你才看得到指令自己跑完。
+就算寫了 `--template react`，終端機多半還會再問兩題。Which linter to use 選 ESLint。本課一律選 ESLint。選完之後，產生器會拿掉範本裡的 `oxlint` 套件與 `.oxlintrc.json`，改加入 `eslint`、`@eslint/js`、`eslint-plugin-react-hooks`、`eslint-plugin-react-refresh`、`globals`，寫入 `eslint.config.js`，並把 `scripts.lint` 改成 `eslint .`。sandbox 先認得這份骨架；規則怎麼寫、怎麼跟 Prettier 搭配，留到後面的工具鏈，對照 `03-react`。Install with pnpm and start now 選 No，安裝與啟動留給下面兩步，你才看得到指令自己跑完。
 
 {% note success %}
 **試試：不指定範本**
-也可以拿掉範本參數，改用互動選單建立另一個資料夾。畫面會一步步問你框架（Framework）與語言（Variant），用方向鍵選、Enter 確定。Framework 選 React，Variant 選 JavaScript，會得到和上面一樣的結果。Variant 還有 TypeScript、JavaScript + React Compiler、RSC，以及名稱後面帶箭頭、會改跑別的指令的項目，那些先不要選。檢查器仍選 Oxlint，是否立刻安裝仍選 No。試完不需要的資料夾直接刪掉即可。
+也可以拿掉範本參數，改用互動選單建立另一個資料夾。畫面會一步步問你框架（Framework）與語言（Variant），用方向鍵選、Enter 確定。Framework 選 React，Variant 選 JavaScript，會得到和上面一樣的結果。Variant 還有 TypeScript、JavaScript + React Compiler、RSC，以及名稱後面帶箭頭、會改跑別的指令的項目，那些先不要選。Which linter to use 同樣選 ESLint，是否立刻安裝仍選 No。試完不需要的資料夾直接刪掉即可。
 
 ```bash
 # 拿掉 --template，改走互動選單；sandbox2 是另一個資料夾
 pnpm create vite@latest sandbox2
 # Framework：React
 # Variant：JavaScript
-# 完成後比較兩邊的 package.json
+# Which linter to use：ESLint
+# 完成後比較兩邊的 package.json：lint 都是 eslint .，並都有 eslint.config.js
 ```
 {% endnote %}
 
 #### 步驟 2：安裝依賴
 
-產生器只負責放檔案，還沒有下載任何套件。進入資料夾，依範本的 `package.json` 安裝 React、Vite 等套件。
+產生器只負責放檔案，還沒有下載任何套件。進入資料夾，依選完 ESLint 之後的 `package.json` 安裝 React、Vite 與檢查套件。
 
 ```bash
 cd sandbox     # 進入剛建立的專案資料夾
 pnpm install   # 依 package.json 下載套件到 node_modules/
 ```
 
-範本已經寫好 React、React DOM、Vite 與 `@vitejs/plugin-react`。這一步只是下載，不必再手動改版本。React 與 React DOM 要一起在；清單裡少一邊時，畫面畫不上去。
+範本已經寫好 React、React DOM、Vite 與 `@vitejs/plugin-react`。選 ESLint 之後，同一份清單還會多出 `eslint`、`@eslint/js`、`eslint-plugin-react-hooks`、`eslint-plugin-react-refresh` 與 `globals`，`lint` 指令是 `eslint .`。這一步只是下載，不必再手動改版本。React 與 React DOM 要一起在；清單裡少一邊時，畫面畫不上去。
 
 #### 步驟 3：認識檔案結構
 
@@ -189,7 +211,25 @@ pnpm install   # 依 package.json 下載套件到 node_modules/
 # sandbox/vite.config.js  plugins 裡有 react()，負責轉換 JSX
 # sandbox/src/main.jsx    入口：createRoot 把 App 畫進 #root
 # sandbox/src/App.jsx     畫面上那一塊元件；範本預設是標誌與計數按鈕
-# sandbox/package.json    依賴與 dev、build、lint 指令；lint 多半是 oxlint
+# sandbox/eslint.config.js  選 ESLint 後產生器寫入的檢查設定
+# sandbox/package.json      依賴與 dev、build、lint 指令；lint 是 eslint .
+```
+
+對一下檢查器改過的片段。`react`、`react-dom`、`vite` 仍在同一份檔案裡，這裡只留你要核對的指令與套件。版本號以產生器當下寫入的為準，名稱要對得上。
+
+```json sandbox/package.json
+{
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.10.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.6",
+    "globals": "^17.12.0"
+  }
+}
 ```
 
 頁面本體只有一個起點。腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔，路徑以斜線開頭，表示這個專案的根目錄。
@@ -217,7 +257,7 @@ createRoot(document.getElementById('root')).render(
 );
 ```
 
-設定檔裡要有 React 插件，瀏覽器才讀得懂 JSX。
+設定檔裡要有 React 插件，瀏覽器才讀得懂 JSX。`defineConfig` 是 Vite 提供的設定包裝函式，從 `vite` 匯入。傳進去的物件就是這份 Vite 設定，下面的例子放的是 `plugins`。
 
 ```js sandbox/vite.config.js
 import react from '@vitejs/plugin-react';
@@ -228,6 +268,11 @@ export default defineConfig({
 });
 ```
 
+{% note info %}
+**包裝函式把設定包起來再匯出**
+多數情況直接寫 `export default { … }` 也能跑。包一層主要是寫法統一，並讓編輯器較好給提示。
+{% endnote %}
+
 範本的 `App.jsx` 比較長，畫面上會是標誌和一顆計數按鈕。整份換成下面這樣，等一下才確定字是從這個檔來的。改完記得存檔。
 
 ```jsx sandbox/src/App.jsx
@@ -237,8 +282,8 @@ export default function App() {
 ```
 
 {% note info %}
-**Tailwind 與 ESLint 留在課堂專案**
-sandbox 這一步只要看到 React 畫面。`03-react` 已經接好 Tailwind、ESLint 與 Prettier。想在 sandbox 順便看到工具類別，可以照上一階段把 Tailwind 的 Vite 插件掛上，標題改成 `className="text-3xl font-bold text-teal-700"`，做完不必留著。檢查器維持選單上的 Oxlint，sandbox 不必再裝一套 ESLint。
+**Tailwind 設定留在課堂專案**
+sandbox 這一步只要跑起來，並對上 `eslint.config.js` 與 `lint` 指令。正式練習的完整設定在 `03-react`，sandbox 先認得產生器給的 ESLint 骨架。想在 sandbox 順便看到工具類別，可以照上一階段把 Tailwind 的 Vite 插件掛上，標題改成 `className="text-3xl font-bold text-teal-700"`，做完不必留著。
 {% endnote %}
 
 #### 步驟 4：啟動開發伺服器
@@ -446,19 +491,15 @@ createRoot(document.getElementById('root')).render(
 
 分頁標題來自 HTML 的 `title`，跟元件裡的標題是兩件事。
 
-```html 03-react/index.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>元件練習</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+```diff 03-react/index.html
+  // ...
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-     <title>React 練習</title>
++     <title>元件練習</title>
+    </head>
+    <body>
+      // ...
 ```
 
 </details>
@@ -472,8 +513,8 @@ createRoot(document.getElementById('root')).render(
 ESLint 看程式有沒有違反 React 的規則。Prettier 只負責空格、引號與分號。兩件事分開，避免同一行被兩套工具各改一次。你在 `03-react` 執行 `pnpm lint`，跑的就是這份設定。
 
 {% note info %}
-**範本自帶的 Oxlint**
-Vite 的 React 範本預設用 Oxlint，sandbox 維持那個選項即可。`03-react` 改用這一節的 ESLint，設定檔是 `eslint.config.js`。同一個專案不要同時留兩套檢查器改同一支程式。
+**檢查器選 ESLint**
+`pnpm create vite` 問 Which linter to use 時，本課一律選 ESLint。sandbox 認的是產生器留下的骨架，`03-react` 的 `eslint.config.js` 再往下接 Prettier。同一個專案不要同時留兩套檢查器改同一支程式。
 {% endnote %}
 
 **觀念**
@@ -481,6 +522,8 @@ Vite 的 React 範本預設用 Oxlint，sandbox 維持那個選項即可。`03-r
 這份設定用 ESLint 的 flat config。檢查範圍是 JavaScript 與 JSX。`dist` 不檢查。React Hooks 的建議規則，以及 Vite 重新整理元件時要守的規則，都掛在這裡。
 
 Prettier 的設定放在陣列最後，讓排版規則不要跟檢查規則打架。終端機用 `pnpm lint` 看結果。
+
+這裡的 `defineConfig` 從 `eslint/config` 匯入。它和 Vite 的 `defineConfig` 同名，套件不同，是另一個函式。用途類似：把設定包起來再匯出。前面 `vite.config.js` 見過同名寫法，來源不同；這裡包的是 flat config，內容是陣列。
 
 ```js 03-react/eslint.config.js
 import js from '@eslint/js';
@@ -810,189 +853,14 @@ export default function App() {
 
 只改起始值。清單與按鈕不用動。
 
-```jsx 03-react/src/App.jsx
-import { useState } from 'react';
-import Hello from './demos/01-hello.jsx';
-import FragmentDemo from './demos/02-fragment.jsx';
-import ExprDemo from './demos/03-expr.jsx';
-import StyleDemo from './demos/04-style.jsx';
-import EarlyDemo from './demos/05-early.jsx';
-import TernaryDemo from './demos/06-ternary.jsx';
-import AndDemo from './demos/07-and.jsx';
-import ZeroDemo from './demos/08-zero.jsx';
-import DownDemo from './demos/09-down.jsx';
-import TreeDemo from './demos/10-tree.jsx';
-import PlaceDemo from './demos/11-place.jsx';
-import CardDemo from './demos/12-card.jsx';
-import BoardDemo from './demos/13-board.jsx';
-import PropsDemo from './demos/14-props.jsx';
-import DefaultsDemo from './demos/15-defaults.jsx';
-import CallbackDemo from './demos/16-callback.jsx';
-import ChildrenDemo from './demos/17-children.jsx';
-import CountDemo from './demos/18-state.jsx';
-import SnapshotDemo from './demos/19-snapshot.jsx';
-import UpdaterDemo from './demos/20-updater.jsx';
-import BatchDemo from './demos/21-batch.jsx';
-import RulesDemo from './demos/22-rules.jsx';
-import AddDemo from './demos/23-add.jsx';
-import RemoveDemo from './demos/24-remove.jsx';
-import EditDemo from './demos/25-edit.jsx';
-import NestedDemo from './demos/26-nested.jsx';
-import EventDemo from './demos/27-event.jsx';
-import TargetDemo from './demos/28-target.jsx';
-import PickDemo from './demos/29-pick.jsx';
-import PreventDemo from './demos/30-prevent.jsx';
-import MapDemo from './demos/31-map.jsx';
-import FilterDemo from './demos/32-filter.jsx';
-import KeyDemo from './demos/33-key.jsx';
-import InputDemo from './demos/34-input.jsx';
-import AreaDemo from './demos/35-area.jsx';
-import SelectDemo from './demos/36-select.jsx';
-import CheckDemo from './demos/37-check.jsx';
-import RadioDemo from './demos/38-radio.jsx';
-import FieldsDemo from './demos/39-fields.jsx';
-import SubmitDemo from './demos/40-submit.jsx';
-import ClassDemo from './demos/41-class.jsx';
-import MultiDemo from './demos/42-multi.jsx';
-import UseIdDemo from './demos/43-useid.jsx';
-import ObjectDemo from './demos/44-object.jsx';
-import EmptyDemo from './demos/45-empty.jsx';
-import EffectMount from './demos/46-effect.jsx';
-import DepsDemo from './demos/47-deps.jsx';
-import TimerDemo from './demos/48-timer.jsx';
-import LoopDemo from './demos/49-loop.jsx';
-import LintDemo from './demos/50-lint.jsx';
-import LoadDemo from './demos/51-load.jsx';
-import EmptyLoadDemo from './demos/52-empty.jsx';
-import AbortDemo from './demos/53-abort.jsx';
-import GetDemo from './demos/54-get.jsx';
-import PostDemo from './demos/55-post.jsx';
-import PutDemo from './demos/56-put.jsx';
-import DeleteDemo from './demos/57-delete.jsx';
-import ApiDemo from './demos/58-api.jsx';
-import DeriveDemo from './demos/59-derive.jsx';
-import ClickFetchDemo from './demos/60-click.jsx';
-import HookDemo from './demos/61-hook.jsx';
-import TwiceDemo from './demos/62-twice.jsx';
-import LiftDemo from './demos/63-lift.jsx';
-import SiblingsDemo from './demos/64-siblings.jsx';
-import ContextDemo from './demos/65-context.jsx';
-import RefDemo from './demos/66-ref.jsx';
-import ReducerDemo from './demos/67-reducer.jsx';
-import ProviderDemo from './demos/68-provider.jsx';
-import ActionDemo from './demos/69-action.jsx';
-import ActionStateDemo from './demos/70-action-state.jsx';
-import OptimisticDemo from './demos/71-optimistic.jsx';
-import DefaultDemo from './demos/72-default.jsx';
-import RefCountDemo from './demos/73-ref-count.jsx';
-
-const demos = [
-  { id: '01', title: '函式元件', Component: Hello },
-  { id: '02', title: 'Fragment', Component: FragmentDemo },
-  { id: '03', title: '表達式', Component: ExprDemo },
-  { id: '04', title: 'style 物件', Component: StyleDemo },
-  { id: '05', title: '提早 return', Component: EarlyDemo },
-  { id: '06', title: '三元運算子', Component: TernaryDemo },
-  { id: '07', title: '邏輯且', Component: AndDemo },
-  { id: '08', title: '數字 0', Component: ZeroDemo },
-  { id: '09', title: '由父層傳入', Component: DownDemo },
-  { id: '10', title: '拆分元件', Component: TreeDemo },
-  { id: '11', title: '狀態的位置', Component: PlaceDemo },
-  { id: '12', title: 'default export', Component: CardDemo },
-  { id: '13', title: 'named export', Component: BoardDemo },
-  { id: '14', title: '解構', Component: PropsDemo },
-  { id: '15', title: '預設值', Component: DefaultsDemo },
-  { id: '16', title: '函式型 props', Component: CallbackDemo },
-  { id: '17', title: 'children', Component: ChildrenDemo },
-  { id: '18', title: '宣告狀態', Component: CountDemo },
-  { id: '19', title: '狀態快照', Component: SnapshotDemo },
-  { id: '20', title: '更新函式', Component: UpdaterDemo },
-  { id: '21', title: '批次更新', Component: BatchDemo },
-  { id: '22', title: 'Hooks 規則', Component: RulesDemo },
-  { id: '23', title: '陣列新增', Component: AddDemo },
-  { id: '24', title: '陣列刪除', Component: RemoveDemo },
-  { id: '25', title: '陣列修改', Component: EditDemo },
-  { id: '26', title: '巢狀物件', Component: NestedDemo },
-  { id: '27', title: '命名慣例', Component: EventDemo },
-  { id: '28', title: '事件物件', Component: TargetDemo },
-  { id: '29', title: '帶參數', Component: PickDemo },
-  { id: '30', title: 'preventDefault', Component: PreventDemo },
-  { id: '31', title: 'map', Component: MapDemo },
-  { id: '32', title: 'filter', Component: FilterDemo },
-  { id: '33', title: 'key', Component: KeyDemo },
-  { id: '34', title: 'input', Component: InputDemo },
-  { id: '35', title: 'textarea', Component: AreaDemo },
-  { id: '36', title: 'select', Component: SelectDemo },
-  { id: '37', title: 'checkbox', Component: CheckDemo },
-  { id: '38', title: 'radio', Component: RadioDemo },
-  { id: '39', title: '多欄位物件', Component: FieldsDemo },
-  { id: '40', title: 'submit', Component: SubmitDemo },
-  { id: '41', title: 'className', Component: ClassDemo },
-  { id: '42', title: '多個狀態', Component: MultiDemo },
-  { id: '43', title: 'useId', Component: UseIdDemo },
-  { id: '44', title: '物件欄位', Component: ObjectDemo },
-  { id: '45', title: '空清單', Component: EmptyDemo },
-  { id: '46', title: '第一次執行', Component: EffectMount },
-  { id: '47', title: '依賴陣列', Component: DepsDemo },
-  { id: '48', title: '清除函式', Component: TimerDemo },
-  { id: '49', title: '無限迴圈', Component: LoopDemo },
-  { id: '50', title: '漏寫依賴', Component: LintDemo },
-  { id: '51', title: '載入與錯誤', Component: LoadDemo },
-  { id: '52', title: '空資料', Component: EmptyLoadDemo },
-  { id: '53', title: 'AbortController', Component: AbortDemo },
-  { id: '54', title: 'GET', Component: GetDemo },
-  { id: '55', title: 'POST', Component: PostDemo },
-  { id: '56', title: 'PUT', Component: PutDemo },
-  { id: '57', title: 'DELETE', Component: DeleteDemo },
-  { id: '58', title: 'API 模組', Component: ApiDemo },
-  { id: '59', title: '渲染時計算', Component: DeriveDemo },
-  { id: '60', title: '事件裡的請求', Component: ClickFetchDemo },
-  { id: '61', title: '抽出讀取', Component: HookDemo },
-  { id: '62', title: '在元件裡使用', Component: TwiceDemo },
-  { id: '63', title: '父層持有', Component: LiftDemo },
-  { id: '64', title: '兄弟元件', Component: SiblingsDemo },
-  { id: '65', title: 'Provider', Component: ContextDemo },
-  { id: '66', title: '聚焦輸入框', Component: RefDemo },
-  { id: '67', title: '待辦清單', Component: ReducerDemo },
-  { id: '68', title: '搭配 Context', Component: ProviderDemo },
-  { id: '69', title: 'form action', Component: ActionDemo },
-  { id: '70', title: 'useActionState', Component: ActionStateDemo },
-  { id: '71', title: 'useOptimistic', Component: OptimisticDemo },
-  { id: '72', title: '預設值', Component: DefaultDemo },
-  { id: '73', title: '不觸發渲染的值', Component: RefCountDemo },
-];
-
-export default function App() {
-  const [current, setCurrent] = useState('03');
-  const demo = demos.find((item) => item.id === current) ?? demos[0];
-  const View = demo.Component;
-
-  return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
-      <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-3xl flex-wrap gap-2 px-4 py-3">
-          {demos.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={
-                item.id === demo.id
-                  ? 'rounded bg-teal-800 px-3 py-1 text-sm text-white'
-                  : 'rounded bg-stone-100 px-3 py-1 text-sm'
-              }
-              onClick={() => setCurrent(item.id)}
-            >
-              {item.id} {item.title}
-            </button>
-          ))}
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-6">
-        <View />
-      </main>
-    </div>
-  );
-}
+```diff 03-react/src/App.jsx
+  // ...
+  export default function App() {
+-   const [current, setCurrent] = useState('01');
++   const [current, setCurrent] = useState('03');
+    const demo = demos.find((item) => item.id === current) ?? demos[0];
+    // ...
+  }
 ```
 
 重新整理後，主區是花括號表達式那一則。
@@ -1059,25 +927,17 @@ export default function DownDemo() {
 
 文字只改父層。子層仍只讀 `name`，所以兩張一起換。
 
-```jsx 03-react/src/demos/09-down.jsx
-function Card({ name }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{name}</h2>
-    </article>
-  );
-}
-
-export default function DownDemo() {
-  const name = '紙';
-
-  return (
-    <section className="grid gap-3">
-      <Card name={name} />
-      <Card name={name} />
-    </section>
-  );
-}
+```diff 03-react/src/demos/09-down.jsx
+  // ...
+  }
+  
+  export default function DownDemo() {
+-   const name = '筆';
++   const name = '紙';
+  
+    return (
+      <section className="grid gap-3">
+        // ...
 ```
 
 </details>
@@ -1143,37 +1003,14 @@ export default function TreeDemo() {
 
 新卡片仍由父層決定位置與內容。卡片元件本身不用改。
 
-```jsx 03-react/src/demos/10-tree.jsx
-function PageTitle() {
-  return <h1 className="text-2xl font-bold">文具</h1>;
-}
-
-function PageLead() {
-  return <p className="mt-2">先拆開，再由父層排回去。</p>;
-}
-
-function Card({ name, price }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{name}</h2>
-      <p>{price}</p>
-    </article>
-  );
-}
-
-export default function TreeDemo() {
-  return (
-    <section>
-      <PageTitle />
-      <PageLead />
-      <div className="mt-4 grid gap-3">
-        <Card name="筆" price={25} />
-        <Card name="紙" price={40} />
-        <Card name="尺" price={15} />
-      </div>
-    </section>
-  );
-}
+```diff 03-react/src/demos/10-tree.jsx
+  // ...
+          <Card name="筆" price={25} />
+          <Card name="紙" price={40} />
++         <Card name="尺" price={15} />
+        </div>
+      </section>
+    // ...
 ```
 
 </details>
@@ -1231,26 +1068,17 @@ export default function PlaceDemo() {
 
 父層的值一改，兩張卡片收到的屬性一起改。這就是「狀態該放在共同父層」的原因，即使這一則還沒有寫 `useState`。
 
-```jsx 03-react/src/demos/11-place.jsx
-function Card({ name, price, showPrice }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{name}</h2>
-      {showPrice ? <p>{price}</p> : null}
-    </article>
-  );
-}
-
-export default function PlaceDemo() {
-  const showPrice = false;
-
-  return (
-    <section className="grid gap-3">
-      <Card name="筆" price={25} showPrice={showPrice} />
-      <Card name="紙" price={40} showPrice={showPrice} />
-    </section>
-  );
-}
+```diff 03-react/src/demos/11-place.jsx
+  // ...
+  }
+  
+  export default function PlaceDemo() {
+-   const showPrice = true;
++   const showPrice = false;
+  
+    return (
+      <section className="grid gap-3">
+        // ...
 ```
 
 </details>
@@ -1371,16 +1199,14 @@ export default function FragmentDemo() {
 
 三個兄弟都放在同一個 Fragment 裡，回傳還是只有一個根。
 
-```jsx 03-react/src/demos/02-fragment.jsx
-export default function FragmentDemo() {
-  return (
-    <>
-      <h1 className="text-2xl font-bold">文具</h1>
-      <p>這兩個兄弟沒有多包一層 div。</p>
-      <p>仍然沒有外框</p>
-    </>
-  );
-}
+```diff 03-react/src/demos/02-fragment.jsx
+  // ...
+        <h1 className="text-2xl font-bold">文具</h1>
+        <p>這兩個兄弟沒有多包一層 div。</p>
++       <p>仍然沒有外框</p>
+      </>
+    );
+  // ...
 ```
 
 </details>
@@ -1433,18 +1259,15 @@ export default function ExprDemo() {
 
 乘數改成 3。價格仍只有一份來源，總價在畫面上算出來。
 
-```jsx 03-react/src/demos/03-expr.jsx
-export default function ExprDemo() {
-  const name = '筆';
-  const price = 25;
-
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">{name}</h1>
-      <p>三支 {price * 3}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/03-expr.jsx
+  // ...
+      <section>
+        <h1 className="text-2xl font-bold">{name}</h1>
+-       <p>兩支 {price * 2}</p>
++       <p>三支 {price * 3}</p>
+      </section>
+    );
+  // ...
 ```
 
 ```text
@@ -1575,22 +1398,13 @@ export default function ClassDemo() {
 
 同一個布林同時餵給文字與類別。改一處，兩處一起換。
 
-```jsx 03-react/src/demos/41-class.jsx
-export default function ClassDemo() {
-  const active = false;
-  const buttonClass = active
-    ? 'rounded bg-teal-800 px-3 py-1 text-white'
-    : 'rounded bg-stone-200 px-3 py-1';
-
-  return (
-    <section>
-      <p>{active ? '使用中' : '已停用'}</p>
-      <button type="button" className={buttonClass}>
-        文具
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/41-class.jsx
+  export default function ClassDemo() {
+-   const active = true;
++   const active = false;
+    const buttonClass = active
+      ? 'rounded bg-teal-800 px-3 py-1 text-white'
+      // ...
 ```
 
 </details>
@@ -1661,21 +1475,14 @@ export default function EarlyDemo() {
 
 條件不再成立，函式會走到第二個 `return`。卡片用的是物件的欄位。
 
-```jsx 03-react/src/demos/05-early.jsx
-export default function EarlyDemo() {
-  const product = { name: '筆', price: 25 };
-
-  if (!product) {
-    return <p>尚未選擇商品。</p>;
-  }
-
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{product.name}</h2>
-      <p>{product.price}</p>
-    </article>
-  );
-}
+```diff 03-react/src/demos/05-early.jsx
+  export default function EarlyDemo() {
+-   const product = null;
++   const product = { name: '筆', price: 25 };
+  
+    if (!product) {
+      return <p>尚未選擇商品。</p>;
+    // ...
 ```
 
 </details>
@@ -1722,17 +1529,14 @@ export default function TernaryDemo() {
 
 條件變成假，三元改走冒號後面的元素。
 
-```jsx 03-react/src/demos/06-ternary.jsx
-export default function TernaryDemo() {
-  const stock = 0;
-
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">筆</h1>
-      {stock > 0 ? <p>有庫存</p> : <p>補貨中</p>}
-    </section>
-  );
-}
+```diff 03-react/src/demos/06-ternary.jsx
+  export default function TernaryDemo() {
+-   const stock = 3;
++   const stock = 0;
+  
+    return (
+      <section>
+        // ...
 ```
 
 </details>
@@ -1780,18 +1584,14 @@ export default function AndDemo() {
 
 比較變成假，`&&` 短路，段落不會出現。這裡的左邊是比較結果，不是數字 0 本身。
 
-```jsx 03-react/src/demos/07-and.jsx
-export default function AndDemo() {
-  const discount = 0;
-
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">筆</h1>
-      <p>價格 25</p>
-      {discount > 0 && <p>折扣 {discount}</p>}
-    </section>
-  );
-}
+```diff 03-react/src/demos/07-and.jsx
+  export default function AndDemo() {
+-   const discount = 10;
++   const discount = 0;
+  
+    return (
+      <section>
+        // ...
 ```
 
 </details>
@@ -1848,17 +1648,15 @@ export default function ZeroDemo() {
 
 比較的結果是 `false`。`false` 不會被畫成文字，右邊的段落也不會出現。
 
-```jsx 03-react/src/demos/08-zero.jsx
-export default function ZeroDemo() {
-  const count = 0;
-
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">筆</h1>
-      {count > 0 && <p>件數 {count}</p>}
-    </section>
-  );
-}
+```diff 03-react/src/demos/08-zero.jsx
+  // ...
+      <section>
+        <h1 className="text-2xl font-bold">筆</h1>
+-       {count && <p>件數 {count}</p>}
++       {count > 0 && <p>件數 {count}</p>}
+      </section>
+    );
+  // ...
 ```
 
 </details>
@@ -1920,19 +1718,14 @@ export default function CardDemo() {
 
 改的是呼叫 `Card` 時傳下去的值。卡片元件仍舊只負責顯示參數。
 
-```jsx 03-react/src/demos/12-card.jsx
-export function Card({ name, price }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{name}</h2>
-      <p>{price}</p>
-    </article>
-  );
-}
-
-export default function CardDemo() {
-  return <Card name="紙" price={40} />;
-}
+```diff 03-react/src/demos/12-card.jsx
+  // ...
+  }
+  
+  export default function CardDemo() {
+-   return <Card name="筆" price={25} />;
++   return <Card name="紙" price={40} />;
+  }
 ```
 
 </details>
@@ -1979,18 +1772,14 @@ export default function BoardDemo() {
 
 新的資料仍由這一頁決定。卡片檔不用為了第三張而修改。
 
-```jsx 03-react/src/demos/13-board.jsx
-import { Card } from './12-card.jsx';
-
-export default function BoardDemo() {
-  return (
-    <section className="grid gap-3">
-      <Card name="筆" price={25} />
-      <Card name="紙" price={40} />
-      <Card name="尺" price={15} />
-    </section>
-  );
-}
+```diff 03-react/src/demos/13-board.jsx
+  // ...
+        <Card name="筆" price={25} />
+        <Card name="紙" price={40} />
++       <Card name="尺" price={15} />
+      </section>
+    );
+  // ...
 ```
 
 </details>
@@ -2115,21 +1904,14 @@ export default function DefaultsDemo() {
 
 父層傳了值，預設值就不會介入。參數上的 `'件'` 留著，給下一次沒傳的時候用。
 
-```jsx 03-react/src/demos/15-defaults.jsx
-function Product({ name, price, unit = '件' }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{name}</h2>
-      <p>
-        {price} {unit}
-      </p>
-    </article>
-  );
-}
-
-export default function DefaultsDemo() {
-  return <Product name="筆" price={25} unit="盒" />;
-}
+```diff 03-react/src/demos/15-defaults.jsx
+  // ...
+  }
+  
+  export default function DefaultsDemo() {
+-   return <Product name="筆" price={25} />;
++   return <Product name="筆" price={25} unit="盒" />;
+  }
 ```
 
 </details>
@@ -2197,35 +1979,14 @@ export default function CallbackDemo() {
 
 新按鈕仍把同一個設定函式傳下去，只是名稱不同。
 
-```jsx 03-react/src/demos/16-callback.jsx
-import { useState } from 'react';
-
-function Choice({ name, onPick }) {
-  return (
-    <button
-      type="button"
-      className="rounded bg-stone-100 px-3 py-1"
-      onClick={() => onPick(name)}
-    >
-      {name}
-    </button>
-  );
-}
-
-export default function CallbackDemo() {
-  const [picked, setPicked] = useState('尚未選');
-
-  return (
-    <section>
-      <p>選到 {picked}</p>
-      <div className="mt-3 flex gap-2">
-        <Choice name="筆" onPick={setPicked} />
-        <Choice name="紙" onPick={setPicked} />
-        <Choice name="尺" onPick={setPicked} />
-      </div>
-    </section>
-  );
-}
+```diff 03-react/src/demos/16-callback.jsx
+  // ...
+          <Choice name="筆" onPick={setPicked} />
+          <Choice name="紙" onPick={setPicked} />
++         <Choice name="尺" onPick={setPicked} />
+        </div>
+      </section>
+    // ...
 ```
 
 </details>
@@ -2282,24 +2043,14 @@ export default function ChildrenDemo() {
 
 多出來的段落仍是 `children` 的一部分。外框元件會照單全收。
 
-```jsx 03-react/src/demos/17-children.jsx
-function Panel({ children }) {
-  return (
-    <section className="rounded border border-stone-200 bg-white p-4">
-      {children}
-    </section>
-  );
-}
-
-export default function ChildrenDemo() {
-  return (
-    <Panel>
-      <h1 className="text-2xl font-bold">文具</h1>
-      <p>外框在 Panel，文字在呼叫端。</p>
-      <p>第二段仍在外框裡</p>
-    </Panel>
-  );
-}
+```diff 03-react/src/demos/17-children.jsx
+  // ...
+        <h1 className="text-2xl font-bold">文具</h1>
+        <p>外框在 Panel，文字在呼叫端。</p>
++       <p>第二段仍在外框裡</p>
+      </Panel>
+    );
+  // ...
 ```
 
 </details>
@@ -2382,32 +2133,20 @@ export default function CountDemo() {
 
 歸零不依賴舊值，直接把 0 交出去即可。兩顆按鈕各管自己的設定。
 
-```jsx 03-react/src/demos/18-state.jsx
-import { useState } from 'react';
-
-export default function CountDemo() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <section>
-      <p>次數 {count}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        加一
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={() => setCount(0)}
-      >
-        歸零
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/18-state.jsx
+  // ...
+          加一
+        </button>
++       <button
++         type="button"
++         className="ml-2 rounded bg-stone-200 px-3 py-1"
++         onClick={() => setCount(0)}
++       >
++         歸零
++       </button>
+      </section>
+    );
+  // ...
 ```
 
 </details>
@@ -2526,43 +2265,32 @@ export default function MultiDemo() {
 
 第三個 Hook 仍寫在元件最上面。按鈕只呼叫它自己的設定函式。
 
-```jsx 03-react/src/demos/42-multi.jsx
-import { useState } from 'react';
-
-export default function MultiDemo() {
-  const [name, setName] = useState('筆');
-  const [count, setCount] = useState(1);
-  const [city, setCity] = useState('台北');
-
-  return (
-    <section>
-      <p>
-        {name} × {count} · {city}
-      </p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        加一件
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={() => setName('紙')}
-      >
-        改成紙
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={() => setCity('台南')}
-      >
-        改到台南
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/42-multi.jsx
+  // ...
+    const [name, setName] = useState('筆');
+    const [count, setCount] = useState(1);
++   const [city, setCity] = useState('台北');
+  
+    return (
+      <section>
+        <p>
+-         {name} × {count}
++         {name} × {count} · {city}
+        </p>
+        <button
+          // ...
+          改成紙
+        </button>
++       <button
++         type="button"
++         className="ml-2 rounded bg-stone-200 px-3 py-1"
++         onClick={() => setCity('台南')}
++       >
++         改到台南
++       </button>
+      </section>
+    );
+  // ...
 ```
 
 </details>
@@ -2629,32 +2357,15 @@ export default function SnapshotDemo() {
 
 `count + 1` 只是把快照拿來做算術，不會多排一次更新。畫面仍由那兩次相同的設定決定，停在 1。
 
-```jsx 03-react/src/demos/19-snapshot.jsx
-import { useState } from 'react';
-
-export default function SnapshotDemo() {
-  const [count, setCount] = useState(0);
-
-  const onAdd = () => {
-    setCount(count + 1);
-    setCount(count + 1);
-    console.log(count);
-    console.log(count + 1);
-  };
-
-  return (
-    <section>
-      <p>次數 {count}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onAdd}
-      >
-        加一
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/19-snapshot.jsx
+  // ...
+      setCount(count + 1);
+      console.log(count);
++     console.log(count + 1);
+    };
+  
+    return (
+      // ...
 ```
 
 ```text
@@ -2724,32 +2435,14 @@ export default function UpdaterDemo() {
 
 三個更新函式依序接到 0、1、2，最後排定的值是 3。
 
-```jsx 03-react/src/demos/20-updater.jsx
-import { useState } from 'react';
-
-export default function UpdaterDemo() {
-  const [count, setCount] = useState(0);
-
-  const onAdd = () => {
-    setCount((value) => value + 1);
-    setCount((value) => value + 1);
-    setCount((value) => value + 1);
-    console.log(count);
-  };
-
-  return (
-    <section>
-      <p>次數 {count}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onAdd}
-      >
-        加二
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/20-updater.jsx
+  // ...
+      setCount((value) => value + 1);
+      setCount((value) => value + 1);
++     setCount((value) => value + 1);
+      console.log(count);
+    };
+    // ...
 ```
 
 ```text
@@ -2825,35 +2518,19 @@ export default function BatchDemo() {
 
 同一個事件裡的兩個新值會一起出現在下一輪渲染。
 
-```jsx 03-react/src/demos/21-batch.jsx
-import { useState } from 'react';
-
-export default function BatchDemo() {
-  const [name, setName] = useState('筆');
-  const [count, setCount] = useState(1);
-
-  console.log('渲染', name, count);
-
-  const onChange = () => {
-    setName('尺');
-    setCount(5);
-  };
-
-  return (
-    <section>
-      <p>
-        {name} × {count}
-      </p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onChange}
-      >
-        一次改兩項
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/21-batch.jsx
+  // ...
+    console.log('渲染', name, count);
+  
+    const onChange = () => {
+-     setName('紙');
+-     setCount(3);
++     setName('尺');
++     setCount(5);
+    };
+  
+    return (
+      // ...
 ```
 
 ```text
@@ -2920,33 +2597,15 @@ export default function RulesDemo() {
 
 減一要用上一輪的庫存，所以用更新函式。條件仍只負責選句子。
 
-```jsx 03-react/src/demos/22-rules.jsx
-import { useState } from 'react';
-
-export default function RulesDemo() {
-  const [name, setName] = useState('筆');
-  const [stock, setStock] = useState(2);
-
-  return (
-    <section>
-      <p>{stock > 0 ? name + ' 有庫存' : name + ' 補貨中'}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setStock((value) => value - 1)}
-      >
-        設為缺貨
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={() => setName('紙')}
-      >
-        改成紙
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/22-rules.jsx
+  // ...
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+-         onClick={() => setStock(0)}
++         onClick={() => setStock((value) => value - 1)}
+        >
+          設為缺貨
+        // ...
 ```
 
 從 2 按一次還是有庫存，再按一次庫存是 0，句子變成補貨中。
@@ -3023,40 +2682,20 @@ export default function AddDemo() {
 
 空清單是新的陣列 `[]`，不是把原陣列的長度改成 0。清空後再加，序號會從 1 重新數。
 
-```jsx 03-react/src/demos/23-add.jsx
-import { useState } from 'react';
-
-export default function AddDemo() {
-  const [notes, setNotes] = useState(['買筆', '買紙']);
-
-  const onAdd = () => {
-    setNotes((items) => [...items, '備忘' + (items.length + 1)]);
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onAdd}
-      >
-        加一則
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={() => setNotes([])}
-      >
-        清空
-      </button>
-      <ul className="mt-3 list-disc pl-5">
-        {notes.map((note) => (
-          <li key={note}>{note}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+```diff 03-react/src/demos/23-add.jsx
+  // ...
+          加一則
+        </button>
++       <button
++         type="button"
++         className="ml-2 rounded bg-stone-200 px-3 py-1"
++         onClick={() => setNotes([])}
++       >
++         清空
++       </button>
+        <ul className="mt-3 list-disc pl-5">
+          {notes.map((note) => (
+            // ...
 ```
 
 </details>
@@ -3123,39 +2762,17 @@ export default function RemoveDemo() {
 
 條件改成 id 相同才留下。這仍是新陣列，不是把其他元素設成空的。
 
-```jsx 03-react/src/demos/24-remove.jsx
-import { useState } from 'react';
-
-const initial = [
-  { id: 'pen', name: '筆' },
-  { id: 'paper', name: '紙' },
-  { id: 'ruler', name: '尺' },
-];
-
-export default function RemoveDemo() {
-  const [items, setItems] = useState(initial);
-
-  const onRemove = (id) => {
-    setItems((current) => current.filter((item) => item.id === id));
-  };
-
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item.id} className="flex gap-2">
-          <span>{item.name}</span>
-          <button
-            type="button"
-            className="rounded bg-stone-200 px-2"
-            onClick={() => onRemove(item.id)}
-          >
-            刪除
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/24-remove.jsx
+  // ...
+    const [items, setItems] = useState(initial);
+  
+    const onRemove = (id) => {
+-     setItems((current) => current.filter((item) => item.id !== id));
++     setItems((current) => current.filter((item) => item.id === id));
+    };
+  
+    return (
+      // ...
 ```
 
 </details>
@@ -3230,45 +2847,15 @@ export default function EditDemo() {
 
 兩個新欄位都寫在展開後面。舊的名稱與價格都會被覆蓋。
 
-```jsx 03-react/src/demos/25-edit.jsx
-import { useState } from 'react';
-
-const initial = [
-  { id: 'pen', name: '筆', price: 25 },
-  { id: 'paper', name: '紙', price: 40 },
-  { id: 'ruler', name: '尺', price: 15 },
-];
-
-export default function EditDemo() {
-  const [items, setItems] = useState(initial);
-
-  const onEdit = () => {
-    setItems((current) =>
-      current.map((item) =>
-        item.id === 'paper' ? { ...item, name: '信紙', price: 45 } : item,
-      ),
-    );
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onEdit}
-      >
-        紙改價
-      </button>
-      <ul className="mt-3 grid gap-2">
-        {items.map((item) => (
-          <li key={item.id}>
-            {item.name} {item.price}
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+```diff 03-react/src/demos/25-edit.jsx
+  // ...
+      setItems((current) =>
+        current.map((item) =>
+-         item.id === 'paper' ? { ...item, price: 45 } : item,
++         item.id === 'paper' ? { ...item, name: '信紙', price: 45 } : item,
+        ),
+      );
+    // ...
 ```
 
 按下之後是「信紙 45」。
@@ -3331,31 +2918,17 @@ export default function ObjectDemo() {
 
 兩個新欄位都寫在展開後面。舊的名稱與城市都會被覆蓋。
 
-```jsx 03-react/src/demos/44-object.jsx
-import { useState } from 'react';
-
-export default function ObjectDemo() {
-  const [profile, setProfile] = useState({ name: '阿光', city: '台北' });
-
-  const onMove = () => {
-    setProfile((current) => ({ ...current, name: '阿明', city: '台中' }));
-  };
-
-  return (
-    <section>
-      <p>
-        {profile.name} 在 {profile.city}
-      </p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onMove}
-      >
-        改到台中
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/44-object.jsx
+  // ...
+    const [profile, setProfile] = useState({ name: '阿光', city: '台北' });
+  
+    const onMove = () => {
+-     setProfile((current) => ({ ...current, city: '台中' }));
++     setProfile((current) => ({ ...current, name: '阿明', city: '台中' }));
+    };
+  
+    return (
+      // ...
 ```
 
 按下之後是「阿明 在 台中」。
@@ -3424,37 +2997,15 @@ export default function NestedDemo() {
 
 路名與城市都寫在地址那一層的展開後面。人物的名稱沒有被覆蓋。
 
-```jsx 03-react/src/demos/26-nested.jsx
-import { useState } from 'react';
-
-export default function NestedDemo() {
-  const [profile, setProfile] = useState({
-    name: '阿光',
-    address: { city: '台北', street: '中山路' },
-  });
-
-  const onMove = () => {
-    setProfile((current) => ({
-      ...current,
-      address: { ...current.address, city: '台南', street: '民生路' },
-    }));
-  };
-
-  return (
-    <section>
-      <p>
-        {profile.name} 在 {profile.address.city} {profile.address.street}
-      </p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onMove}
-      >
-        改到台南
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/26-nested.jsx
+  // ...
+      setProfile((current) => ({
+        ...current,
+-       address: { ...current.address, city: '台南' },
++       address: { ...current.address, city: '台南', street: '民生路' },
+      }));
+    };
+    // ...
 ```
 
 按下之後是「阿光 在 台南 民生路」。
@@ -3532,40 +3083,30 @@ export default function EventDemo() {
 
 新的處理函式仍是「把函式交給屬性」。不要在 `onClick` 後面加上呼叫括號。
 
-```jsx 03-react/src/demos/27-event.jsx
-import { useState } from 'react';
-
-export default function EventDemo() {
-  const [label, setLabel] = useState('尚未點');
-
-  const handleClick = () => {
-    setLabel('已記錄');
-  };
-
-  const handleReset = () => {
-    setLabel('尚未點');
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={handleClick}
-      >
-        記錄
-      </button>
-      <button
-        type="button"
-        className="ml-2 rounded bg-stone-200 px-3 py-1"
-        onClick={handleReset}
-      >
-        還原
-      </button>
-      <p className="mt-2">{label}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/27-event.jsx
+  // ...
+      setLabel('已記錄');
+    };
+  
++   const handleReset = () => {
++     setLabel('尚未點');
++   };
++ 
+    return (
+      <section>
+        // ...
+          記錄
+        </button>
++       <button
++         type="button"
++         className="ml-2 rounded bg-stone-200 px-3 py-1"
++         onClick={handleReset}
++       >
++         還原
++       </button>
+        <p className="mt-2">{label}</p>
+      </section>
+    // ...
 ```
 
 </details>
@@ -3629,31 +3170,15 @@ Console 除了事件種類，再印出按鈕文字。畫面的那段文字維持
 
 文字已經在設定狀態時讀過一次。再印一次同一個來源，Console 就會多一行按鈕文字。
 
-```jsx 03-react/src/demos/28-target.jsx
-import { useState } from 'react';
-
-export default function TargetDemo() {
-  const [label, setLabel] = useState('尚未點');
-
-  const handleClick = (event) => {
-    setLabel(event.currentTarget.textContent);
-    console.log(event.type);
-    console.log(event.currentTarget.textContent);
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={handleClick}
-      >
-        記錄這顆按鈕
-      </button>
-      <p className="mt-2">{label}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/28-target.jsx
+  // ...
+      setLabel(event.currentTarget.textContent);
+      console.log(event.type);
++     console.log(event.currentTarget.textContent);
+    };
+  
+    return (
+      // ...
 ```
 
 ```text
@@ -3737,45 +3262,20 @@ export default function PickDemo() {
 
 第三顆按鈕呼叫同一個處理函式，只換傳進去的字串。
 
-```jsx 03-react/src/demos/29-pick.jsx
-import { useState } from 'react';
-
-export default function PickDemo() {
-  const [picked, setPicked] = useState('尚未選');
-
-  const handlePick = (name) => {
-    setPicked(name);
-  };
-
-  return (
-    <section>
-      <p>選到 {picked}</p>
-      <div className="mt-3 flex gap-2">
-        <button
-          type="button"
-          className="rounded bg-stone-100 px-3 py-1"
-          onClick={() => handlePick('筆')}
-        >
-          筆
-        </button>
-        <button
-          type="button"
-          className="rounded bg-stone-100 px-3 py-1"
-          onClick={() => handlePick('紙')}
-        >
-          紙
-        </button>
-        <button
-          type="button"
-          className="rounded bg-stone-100 px-3 py-1"
-          onClick={() => handlePick('尺')}
-        >
-          尺
-        </button>
-      </div>
-    </section>
-  );
-}
+```diff 03-react/src/demos/29-pick.jsx
+  // ...
+            紙
+          </button>
++         <button
++           type="button"
++           className="rounded bg-stone-100 px-3 py-1"
++           onClick={() => handlePick('尺')}
++         >
++           尺
++         </button>
+        </div>
+      </section>
+    // ...
 ```
 
 </details>
@@ -3842,35 +3342,16 @@ export default function PreventDemo() {
 
 `preventDefault` 留在第一行。後面只換要放進狀態的字串。
 
-```jsx 03-react/src/demos/30-prevent.jsx
-import { useState } from 'react';
-
-export default function PreventDemo() {
-  const [name, setName] = useState('筆');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setMessage('已收到' + name);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="grid max-w-sm gap-3">
-      <input
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        className="rounded border px-2 py-1"
-      />
-      <button
-        type="submit"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-      >
-        送出
-      </button>
-      <p>{message}</p>
-    </form>
-  );
-}
+```diff 03-react/src/demos/30-prevent.jsx
+  // ...
+    const handleSubmit = (event) => {
+      event.preventDefault();
+-     setMessage('送出 ' + name);
++     setMessage('已收到' + name);
+    };
+  
+    return (
+      // ...
 ```
 
 名稱是筆時，訊息是「已收到筆」。
@@ -3943,28 +3424,15 @@ export default function MapDemo() {
 
 新的 id 沒有跟舊的重複，所以四列都能各自對上。
 
-```jsx 03-react/src/demos/31-map.jsx
-const products = [
-  { id: 'pen', name: '筆', price: 25 },
-  { id: 'paper', name: '紙', price: 40 },
-  { id: 'ruler', name: '尺', price: 15 },
-  { id: 'eraser', name: '橡皮', price: 10 },
-];
-
-export default function MapDemo() {
-  return (
-    <ul className="grid gap-2">
-      {products.map((item) => (
-        <li
-          key={item.id}
-          className="rounded border border-stone-200 bg-white px-3 py-2"
-        >
-          {item.name} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/31-map.jsx
+  // ...
+    { id: 'paper', name: '紙', price: 40 },
+    { id: 'ruler', name: '尺', price: 15 },
++   { id: 'eraser', name: '橡皮', price: 10 },
+  ];
+  
+  export default function MapDemo() {
+    // ...
 ```
 
 </details>
@@ -4022,26 +3490,17 @@ export default function FilterDemo() {
 
 尺的價格是 15，過不了新的條件。筆與紙留下。
 
-```jsx 03-react/src/demos/32-filter.jsx
-const products = [
-  { id: 'pen', name: '筆', price: 25 },
-  { id: 'paper', name: '紙', price: 40 },
-  { id: 'ruler', name: '尺', price: 15 },
-];
-
-export default function FilterDemo() {
-  const visible = products.filter((item) => item.price > 20);
-
-  return (
-    <ul className="grid gap-2">
-      {visible.map((item) => (
-        <li key={item.id}>
-          {item.name} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/32-filter.jsx
+  // ...
+  ];
+  
+  export default function FilterDemo() {
+-   const visible = products.filter((item) => item.price < 30);
++   const visible = products.filter((item) => item.price > 20);
+  
+    return (
+      <ul className="grid gap-2">
+        // ...
 ```
 
 </details>
@@ -4101,30 +3560,17 @@ export default function EmptyDemo() {
 
 條件放寬後長度不再是 0，函式走到清單那個回傳。
 
-```jsx 03-react/src/demos/45-empty.jsx
-const products = [
-  { id: 'pen', name: '筆', price: 25 },
-  { id: 'paper', name: '紙', price: 40 },
-  { id: 'ruler', name: '尺', price: 15 },
-];
-
-export default function EmptyDemo() {
-  const visible = products.filter((item) => item.price < 30);
-
-  if (visible.length === 0) {
-    return <p>沒有符合的商品。</p>;
-  }
-
-  return (
-    <ul className="grid gap-2">
-      {visible.map((item) => (
-        <li key={item.id}>
-          {item.name} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/45-empty.jsx
+  // ...
+  ];
+  
+  export default function EmptyDemo() {
+-   const visible = products.filter((item) => item.price < 0);
++   const visible = products.filter((item) => item.price < 30);
+  
+    if (visible.length === 0) {
+      return <p>沒有符合的商品。</p>;
+    // ...
 ```
 
 </details>
@@ -4319,26 +3765,16 @@ export default function InputDemo() {
 
 起始值只影響第一次。之後仍由 `onChange` 更新。
 
-```jsx 03-react/src/demos/34-input.jsx
-import { useState } from 'react';
-
-export default function InputDemo() {
-  const [name, setName] = useState('筆');
-
-  return (
-    <section>
-      <label className="grid max-w-sm gap-1">
-        名稱
-        <input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          className="rounded border px-2 py-1"
-        />
-      </label>
-      <p className="mt-3">目前：{name || '尚未填'}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/34-input.jsx
+  import { useState } from 'react';
+  
+  export default function InputDemo() {
+-   const [name, setName] = useState('');
++   const [name, setName] = useState('筆');
+  
+    return (
+      <section>
+        // ...
 ```
 
 </details>
@@ -4390,31 +3826,20 @@ export default function AreaDemo() {
 
 按鈕只更新 `note`。字數跟著下一輪渲染重算。
 
-```jsx 03-react/src/demos/35-area.jsx
-import { useState } from 'react';
-
-export default function AreaDemo() {
-  const [note, setNote] = useState('第一行');
-
-  return (
-    <section className="grid max-w-sm gap-3">
-      <textarea
-        value={note}
-        onChange={(event) => setNote(event.target.value)}
-        rows={4}
-        className="rounded border px-2 py-1"
-      />
-      <button
-        type="button"
-        className="rounded bg-stone-200 px-3 py-1"
-        onClick={() => setNote('')}
-      >
-        清空
-      </button>
-      <p>字數 {note.length}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/35-area.jsx
+  // ...
+          className="rounded border px-2 py-1"
+        />
++       <button
++         type="button"
++         className="rounded bg-stone-200 px-3 py-1"
++         onClick={() => setNote('')}
++       >
++         清空
++       </button>
+        <p>字數 {note.length}</p>
+      </section>
+    // ...
 ```
 
 </details>
@@ -4474,27 +3899,14 @@ export default function SelectDemo() {
 
 新選項的 value 就是會進狀態的字串。顯示文字只出現在選單上。
 
-```jsx 03-react/src/demos/36-select.jsx
-import { useState } from 'react';
-
-export default function SelectDemo() {
-  const [city, setCity] = useState('taipei');
-
-  return (
-    <section>
-      <select
-        value={city}
-        onChange={(event) => setCity(event.target.value)}
-        className="rounded border px-2 py-1"
-      >
-        <option value="taipei">台北</option>
-        <option value="tainan">台南</option>
-        <option value="taichung">台中</option>
-      </select>
-      <p className="mt-3">代碼 {city}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/36-select.jsx
+  // ...
+          <option value="taipei">台北</option>
+          <option value="tainan">台南</option>
++         <option value="taichung">台中</option>
+        </select>
+        <p className="mt-3">代碼 {city}</p>
+      // ...
 ```
 
 </details>
@@ -4556,26 +3968,16 @@ export default function CheckDemo() {
 
 起始布林改成真。事件仍把使用者的下一次勾選寫回狀態。
 
-```jsx 03-react/src/demos/37-check.jsx
-import { useState } from 'react';
-
-export default function CheckDemo() {
-  const [gift, setGift] = useState(true);
-
-  return (
-    <section>
-      <label className="flex gap-2">
-        <input
-          type="checkbox"
-          checked={gift}
-          onChange={(event) => setGift(event.target.checked)}
-        />
-        加禮盒
-      </label>
-      <p className="mt-3">{gift ? '要禮盒' : '不包禮盒'}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/37-check.jsx
+  import { useState } from 'react';
+  
+  export default function CheckDemo() {
+-   const [gift, setGift] = useState(false);
++   const [gift, setGift] = useState(true);
+  
+    return (
+      <section>
+        // ...
 ```
 
 </details>
@@ -4643,45 +4045,29 @@ export default function RadioDemo() {
 
 `checked` 只有在 unit 等於 dozen 時為真。
 
-```jsx 03-react/src/demos/38-radio.jsx
-import { useState } from 'react';
-
-export default function RadioDemo() {
-  const [unit, setUnit] = useState('piece');
-
-  return (
-    <fieldset>
-      <label className="mr-4">
-        <input
-          type="radio"
-          name="unit"
-          checked={unit === 'piece'}
-          onChange={() => setUnit('piece')}
-        />
-        件
-      </label>
-      <label className="mr-4">
-        <input
-          type="radio"
-          name="unit"
-          checked={unit === 'box'}
-          onChange={() => setUnit('box')}
-        />
-        盒
-      </label>
-      <label>
-        <input
-          type="radio"
-          name="unit"
-          checked={unit === 'dozen'}
-          onChange={() => setUnit('dozen')}
-        />
-        打
-      </label>
-      <p className="mt-3">單位 {unit}</p>
-    </fieldset>
-  );
-}
+```diff 03-react/src/demos/38-radio.jsx
+  // ...
+          件
+        </label>
+-       <label>
++       <label className="mr-4">
+          <input
+            type="radio"
+            // ...
+          盒
+        </label>
++       <label>
++         <input
++           type="radio"
++           name="unit"
++           checked={unit === 'dozen'}
++           onChange={() => setUnit('dozen')}
++         />
++         打
++       </label>
+        <p className="mt-3">單位 {unit}</p>
+      </fieldset>
+    // ...
 ```
 
 </details>
@@ -4762,46 +4148,31 @@ export default function FieldsDemo() {
 
 輸入框的 `name` 寫成 `unit`。
 
-```jsx 03-react/src/demos/39-fields.jsx
-import { useState } from 'react';
-
-export default function FieldsDemo() {
-  const [form, setForm] = useState({ name: '', price: '', unit: '' });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-  };
-
-  return (
-    <section className="grid max-w-sm gap-3">
-      <input
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        placeholder="名稱"
-        className="rounded border px-2 py-1"
-      />
-      <input
-        name="price"
-        value={form.price}
-        onChange={handleChange}
-        placeholder="價格"
-        className="rounded border px-2 py-1"
-      />
-      <input
-        name="unit"
-        value={form.unit}
-        onChange={handleChange}
-        placeholder="單位"
-        className="rounded border px-2 py-1"
-      />
-      <p>
-        {form.name || '未填'} {form.price} {form.unit}
-      </p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/39-fields.jsx
+  import { useState } from 'react';
+  
+  export default function FieldsDemo() {
+-   const [form, setForm] = useState({ name: '', price: '' });
++   const [form, setForm] = useState({ name: '', price: '', unit: '' });
+  
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      // ...
+          className="rounded border px-2 py-1"
+        />
++       <input
++         name="unit"
++         value={form.unit}
++         onChange={handleChange}
++         placeholder="單位"
++         className="rounded border px-2 py-1"
++       />
+        <p>
+-         {form.name || '未填'} {form.price}
++         {form.name || '未填'} {form.price} {form.unit}
+        </p>
+      </section>
+    // ...
 ```
 
 </details>
@@ -4882,53 +4253,17 @@ export default function SubmitDemo() {
 
 空字串在送出時擋下來。兩個輸入框的受控寫法不用改。
 
-```jsx 03-react/src/demos/40-submit.jsx
-import { useState } from 'react';
-
-export default function SubmitDemo() {
-  const [form, setForm] = useState({ name: '', price: '' });
-  const [message, setMessage] = useState('');
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!form.name) {
-      setMessage('請填名稱');
-      return;
-    }
-    setMessage(form.name + ' ' + form.price);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="grid max-w-sm gap-3">
-      <input
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        placeholder="名稱"
-        className="rounded border px-2 py-1"
-      />
-      <input
-        name="price"
-        value={form.price}
-        onChange={handleChange}
-        placeholder="價格"
-        className="rounded border px-2 py-1"
-      />
-      <button
-        type="submit"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-      >
-        送出
-      </button>
-      <p>{message}</p>
-    </form>
-  );
-}
+```diff 03-react/src/demos/40-submit.jsx
+  // ...
+    const handleSubmit = (event) => {
+      event.preventDefault();
++     if (!form.name) {
++       setMessage('請填名稱');
++       return;
++     }
+      setMessage(form.name + ' ' + form.price);
+    };
+    // ...
 ```
 
 </details>
@@ -4999,38 +4334,22 @@ export default function UseIdDemo() {
 
 id 繼續用 `useId` 的結果，不要改回寫死的字串。
 
-```jsx 03-react/src/demos/43-useid.jsx
-import { useId, useState } from 'react';
-
-export default function UseIdDemo() {
-  const nameId = useId();
-  const priceId = useId();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-
-  return (
-    <form className="grid max-w-sm gap-3">
-      <div>
-        <label htmlFor={nameId}>名稱</label>
-        <input
-          id={nameId}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          className="mt-1 block w-full rounded border px-2 py-1"
-        />
-      </div>
-      <div>
-        <label htmlFor={priceId}>價格</label>
-        <input
-          id={priceId}
-          value={price}
-          onChange={(event) => setPrice(event.target.value)}
-          className="mt-1 block w-full rounded border px-2 py-1"
-        />
-      </div>
-    </form>
-  );
-}
+```diff 03-react/src/demos/43-useid.jsx
+  // ...
+    const priceId = useId();
+    const [name, setName] = useState('');
++   const [price, setPrice] = useState('');
+  
+    return (
+      <form className="grid max-w-sm gap-3">
+        // ...
+          <input
+            id={priceId}
++           value={price}
++           onChange={(event) => setPrice(event.target.value)}
+            className="mt-1 block w-full rounded border px-2 py-1"
+          />
+        // ...
 ```
 
 </details>
@@ -5058,6 +4377,17 @@ export default function UseIdDemo() {
 - 單檔元件（Single-File Component、SFC）
 - 模板（template）
 - 模板指令（template directive）
+- Vue 狀態管理（Pinia）
+- Vue 全端框架（Nuxt）
+- Vue 介面元件庫（Element Plus）
+- Vue 介面元件庫（Vuetify）
+- 響應式程式庫（RxJS）
+- Angular 狀態管理（NgRx）
+- Angular 介面元件庫（Angular Material）
+- React 狀態管理（Zustand）
+- React 狀態管理（Redux Toolkit）
+- React 介面元件庫（MUI）
+- React 介面元件庫（Ant Design）
 - 函式庫（library）
 - JSX
 - 使用者介面（user interface）
@@ -5081,7 +4411,9 @@ export default function UseIdDemo() {
 - 專案範本（project template）
 - 專案產生器（project generator）
 - 熱更新（Hot Module Replacement、HMR）
-- Oxlint
+- Vite 的 defineConfig（defineConfig，from vite）
+- ESLint
+- ESLint 的 defineConfig（defineConfig，from eslint/config）
 
 ## JSX
 

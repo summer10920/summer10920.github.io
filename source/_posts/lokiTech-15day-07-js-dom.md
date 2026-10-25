@@ -81,26 +81,14 @@ undefined
 
 setTimeout 是瀏覽器放在 window 上的函式，所以 in 的結果是 true。course 仍然不是 window 的屬性，第三行還是 undefined。
 
-```html 04-js/pages/85-js-window.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>window 與 document</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(window.window === window);
-      console.log(document === window.document);
-
-      const course = 'DOM';
-      console.log(window.course);
-      console.log('setTimeout' in window);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/85-js-window.html
+  // ...
+        const course = 'DOM';
+        console.log(window.course);
++       console.log('setTimeout' in window);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -175,28 +163,14 @@ BODY
 
 title 是文件的標題文字，讀的是 head 裡的 title 元素。前三行的標籤名不變。
 
-```html 04-js/pages/86-js-dom-tree.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DOM 樹</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <main>
-      <h1>標題</h1>
-      <p>段落</p>
-    </main>
-    <script>
-      console.log(document.documentElement.tagName);
-      console.log(document.head.tagName);
-      console.log(document.body.tagName);
-      console.log(document.title);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/86-js-dom-tree.html
+  // ...
+        console.log(document.head.tagName);
+        console.log(document.body.tagName);
++       console.log(document.title);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -397,25 +371,15 @@ BODY
 
 登記監聽的那一刻，解析還沒走到 body，所以第一行是 null。等 DOMContentLoaded 發生，第二行才印出 BODY。
 
-```html 04-js/pages/89-js-ready.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DOMContentLoaded</title>
-    <script>
-      console.log(document.body);
-
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log(document.body.tagName);
-      });
-    </script>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-  </body>
-</html>
+```diff 04-js/pages/89-js-ready.html
+  // ...
+      <title>DOMContentLoaded</title>
+      <script>
++       console.log(document.body);
++ 
+        document.addEventListener('DOMContentLoaded', () => {
+          console.log(document.body.tagName);
+        // ...
 ```
 
 ```text
@@ -474,19 +438,15 @@ BODY
 
 拿掉模組型別後，head 裡的 script 會立刻執行，document.body 仍是 null。加回 type="module" 才會延後到印出 BODY。
 
-```html 04-js/pages/90-js-module.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>模組腳本</title>
-    <script src="90-js-module.js"></script>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-  </body>
-</html>
+```diff 04-js/pages/90-js-module.html
+  // ...
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>模組腳本</title>
+-     <script type="module" src="90-js-module.js"></script>
++     <script src="90-js-module.js"></script>
+    </head>
+    <body>
+      // ...
 ```
 
 ```js 04-js/pages/90-js-module.js
@@ -567,27 +527,14 @@ undefined
 
 alert 一開始就掛在 window 上，所以 typeof 是 `'function'`。這一行只詢問型別，不會把對話框叫出來。label 與 count 仍然不是 window 的屬性。
 
-```html 04-js/pages/91-js-global.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>全域物件</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(window.innerWidth === innerWidth);
-
-      const label = 'bom';
-      let count = 1;
-      console.log(window.label);
-      console.log(window.count);
-      console.log(typeof window.alert);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/91-js-global.html
+  // ...
+        console.log(window.label);
+        console.log(window.count);
++       console.log(typeof window.alert);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -682,23 +629,22 @@ http:
 
 指定 hash 時不必自己加井字號，瀏覽器會補上，所以印出 `#next`。改 hash 只是移到同一份文件的片段，不會向伺服器重新要一整頁。
 
-```html 04-js/pages/92-js-location.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>讀取網址</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(location.hash);
-      location.hash = 'next';
-      console.log(location.hash);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/92-js-location.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
+-       console.log(location.href);
+-       console.log(location.origin);
+-       console.log(location.protocol);
+-       console.log(location.host);
+-       console.log(location.pathname);
+-       console.log(location.search);
+        console.log(location.hash);
++       location.hash = 'next';
++       console.log(location.hash);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -771,39 +717,18 @@ http:
 
 指定 href 與呼叫 assign 都會新增一筆瀏覽紀錄，所以兩者按上一頁的結果相同。
 
-```html 04-js/pages/93-js-redirect.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>導向與重新載入</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 goAssign()、goReplace() 或 reloadPage()。</p>
-    <script>
-      const target = '92-js-location.html';
-
-      const goAssign = () => {
-        location.assign(target);
-      };
-
-      const goReplace = () => {
-        location.replace(target);
-      };
-
-      const goHref = () => {
-        location.href = target;
-      };
-
-      const reloadPage = () => {
-        location.reload();
-      };
-
-      console.log('目前頁面：', location.pathname);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/93-js-redirect.html
+  // ...
+          location.replace(target);
+        };
+  
++       const goHref = () => {
++         location.href = target;
++       };
++ 
+        const reloadPage = () => {
+          location.reload();
+        // ...
 ```
 
 </details>
@@ -898,45 +823,15 @@ nowNode --> newerNode["下一筆<br/>forward"]
 
 多寫一段 four 之後，空白分頁的 length 變成 5，停在 `#four`。goSteps(-1) 回到 `#three`，筆數仍是 5。網址已經帶有片段時，if 不會重跑，所以要先清掉井字號再重新整理。
 
-```html 04-js/pages/94-js-history.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>返回與前進</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 showPlace()、goBack()、goForward() 或 goSteps(步數)。</p>
-    <script>
-      if (location.hash === '') {
-        location.hash = 'one';
-        location.hash = 'two';
-        location.hash = 'three';
-        location.hash = 'four';
-      }
-
-      const showPlace = () => {
-        console.log(location.hash);
-        console.log(history.length);
-      };
-
-      const goBack = () => {
-        history.back();
-      };
-
-      const goForward = () => {
-        history.forward();
-      };
-
-      const goSteps = (step) => {
-        history.go(step);
-      };
-
-      showPlace();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/94-js-history.html
+  // ...
+          location.hash = 'two';
+          location.hash = 'three';
++         location.hash = 'four';
+        }
+  
+        const showPlace = () => {
+          // ...
 ```
 
 載入時：
@@ -1015,31 +910,17 @@ replaced
 
 第二次 pushState 變成目前這一筆，所以 page 是 2。空白分頁上，replace 之後的筆數是 2，再 push 一次變成 3。
 
-```html 04-js/pages/95-js-state.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：pushState 與 replaceState</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      history.pushState({ page: 1 }, '', '#one');
-      console.log(history.state.page);
-      console.log(location.hash);
-
-      history.replaceState({ page: 1, note: 'replaced' }, '', '#one');
-      console.log(history.state.note);
-      console.log(history.length);
-
-      history.pushState({ page: 2 }, '', '#two');
-      console.log(history.state.page);
-      console.log(history.length);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/95-js-state.html
+  // ...
+        console.log(history.state.note);
+        console.log(history.length);
++ 
++       history.pushState({ page: 2 }, '', '#two');
++       console.log(history.state.page);
++       console.log(history.length);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -1117,28 +998,15 @@ replaced
 
 outerHeight 把工具列算進視窗高度，所以通常大於 innerHeight。screen.height 是整塊螢幕的高，不隨視窗拉窄而變。前六行仍是內部寬高、外框寬、螢幕寬、可用寬與像素比。
 
-```html 04-js/pages/96-js-size.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>視窗與螢幕尺寸</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(innerWidth);
-      console.log(innerHeight);
-      console.log(outerWidth);
-      console.log(screen.width);
-      console.log(screen.availWidth);
-      console.log(devicePixelRatio);
-      console.log(outerHeight);
-      console.log(screen.height);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/96-js-size.html
+  // ...
+        console.log(screen.availWidth);
+        console.log(devicePixelRatio);
++       console.log(outerHeight);
++       console.log(screen.height);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -1231,36 +1099,17 @@ downNode --> backNode["scrollTo 回到 0"]
 
 scrollBy 的 top 改成 800 之後，停下來的垂直距離約是 800。scrollTop 仍回到 0。
 
-```html 04-js/pages/97-js-scroll.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>捲動位置</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 showScroll()、scrollDown() 或 scrollTop()。</p>
-    <div style="height: 1800px"></div>
-    <p>頁面底部</p>
-    <script>
-      const showScroll = () => {
-        console.log(scrollX);
-        console.log(scrollY);
-      };
-
-      const scrollDown = () => {
-        scrollBy({ top: 800, left: 0, behavior: 'smooth' });
-      };
-
-      const scrollTop = () => {
-        scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      };
-
-      showScroll();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/97-js-scroll.html
+  // ...
+        };
+  
+        const scrollDown = () => {
+-         scrollBy({ top: 400, left: 0, behavior: 'smooth' });
++         scrollBy({ top: 800, left: 0, behavior: 'smooth' });
+        };
+  
+        const scrollTop = () => {
+          // ...
 ```
 
 ```text
@@ -1325,28 +1174,16 @@ true
 
 第三段問的是視窗是否夠窄。寬過 800 像素時，最小寬度那列是 true，最大寬度 600 那列是 false。把視窗拉窄到 600 以下再重新整理，後兩列會對調。
 
-```html 04-js/pages/98-js-media.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：媒體查詢與深色模式</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      console.log(darkQuery.matches);
-
-      const wideQuery = matchMedia('(min-width: 800px)');
-      console.log(wideQuery.matches);
-
-      const narrowQuery = matchMedia('(max-width: 600px)');
-      console.log(narrowQuery.matches);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/98-js-media.html
+  // ...
+        const wideQuery = matchMedia('(min-width: 800px)');
+        console.log(wideQuery.matches);
++ 
++       const narrowQuery = matchMedia('(max-width: 600px)');
++       console.log(narrowQuery.matches);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -1428,24 +1265,14 @@ Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like 
 
 languages 是偏好語言的清單，第一個多半就是 language。最後一行仍是那串識別文字。
 
-```html 04-js/pages/99-js-navigator.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>語言與連線</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(navigator.language);
-      console.log(navigator.onLine);
-      console.log(navigator.userAgent);
-      console.log(navigator.languages[0]);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/99-js-navigator.html
+  // ...
+        console.log(navigator.onLine);
+        console.log(navigator.userAgent);
++       console.log(navigator.languages[0]);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -1514,27 +1341,17 @@ zh-TW
 
 writeText 的引數改成 history，then 裡的文字改成已寫入。呼叫方式仍是 copyText()。
 
-```html 04-js/pages/100-js-clipboard.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>寫入剪貼簿</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 copyText()。</p>
-    <script>
-      const copyText = () => {
-        navigator.clipboard.writeText('history').then(() => {
-          console.log('已寫入');
-        });
-      };
-
-      console.log('呼叫 copyText()');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/100-js-clipboard.html
+  // ...
+      <script>
+        const copyText = () => {
+-         navigator.clipboard.writeText('BOM').then(() => {
+-           console.log('已複製');
++         navigator.clipboard.writeText('history').then(() => {
++           console.log('已寫入');
+          });
+        };
+        // ...
 ```
 
 ```text
@@ -1593,27 +1410,17 @@ writeText 的引數改成 history，then 裡的文字改成已寫入。呼叫方
 
 print 會停住這個分頁。先印出「列印之前」，對話框關掉之後才印「列印之後」。載入時的那行提示仍然先出現。
 
-```html 04-js/pages/101-js-print.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>列印</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 printPage()。</p>
-    <script>
-      const printPage = () => {
-        console.log('列印之前');
-        print();
-        console.log('列印之後');
-      };
-
-      console.log('呼叫 printPage() 會打開列印對話框');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/101-js-print.html
+  // ...
+      <script>
+        const printPage = () => {
++         console.log('列印之前');
+          print();
++         console.log('列印之後');
+        };
+  
+        console.log('呼叫 printPage() 會打開列印對話框');
+      // ...
 ```
 
 呼叫 printPage() 並關掉對話框之後：
@@ -1690,30 +1497,18 @@ true
 
 按取消才走進 else，印出已取消，並且不會列印。按確定仍呼叫 print，Console 不會多出已取消。載入時的提示還是先出現。
 
-```html 04-js/pages/102-js-confirm.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>alert、confirm 與 prompt</title>
-  </head>
-  <body>
-    <p>在 DevTools 的 Console 呼叫 printIfConfirmed()。</p>
-    <script>
-      const printIfConfirmed = () => {
-        const ok = confirm('要列印這一頁嗎');
-        if (ok) {
-          print();
-        } else {
-          console.log('已取消');
-        }
-      };
-
-      console.log('呼叫 printIfConfirmed()');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/102-js-confirm.html
+  // ...
+        const printIfConfirmed = () => {
+          const ok = confirm('要列印這一頁嗎');
+-         console.log(ok);
+          if (ok) {
+            print();
++         } else {
++           console.log('已取消');
+          }
+        };
+        // ...
 ```
 
 按取消並關掉對話框之後：
@@ -1799,28 +1594,18 @@ setTimeout 的第一個引數是到點要呼叫的函式，第二個是至少等
 
 clearTimeout 仍拿 pending 的識別碼，所以 500 毫秒那次不會執行。留下的計時器等兩秒，印出「兩秒後」。
 
-```html 04-js/pages/103-js-timeout.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>setTimeout 與 clearTimeout</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const pending = setTimeout(() => {
-        console.log('這句不該出現');
-      }, 500);
-      clearTimeout(pending);
-
-      setTimeout(() => {
-        console.log('兩秒後');
-      }, 2000);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/103-js-timeout.html
+  // ...
+        clearTimeout(pending);
+  
+        setTimeout(() => {
+-         console.log('一秒後');
+-       }, 1000);
++         console.log('兩秒後');
++       }, 2000);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -1890,30 +1675,15 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
 
 條件改成 5 之後，間隔會多跑兩次才清除。識別碼仍是同一個 id。
 
-```html 04-js/pages/104-js-interval.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>setInterval 與 clearInterval</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      let count = 0;
-
-      const id = setInterval(() => {
-        count += 1;
-        console.log(count);
-        if (count === 5) {
-          clearInterval(id);
-          console.log('已停止');
-        }
-      }, 400);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/104-js-interval.html
+  // ...
+          count += 1;
+          console.log(count);
+-         if (count === 3) {
++         if (count === 5) {
+            clearInterval(id);
+            console.log('已停止');
+          // ...
 ```
 
 ```text
@@ -1977,25 +1747,16 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
 
 取消之後，回呼不會再印下一幀。Console 只留下已取消與識別碼。
 
-```html 04-js/pages/105-js-frame.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：requestAnimationFrame</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const id = requestAnimationFrame(() => {
-        console.log('下一幀');
-      });
-      cancelAnimationFrame(id);
-      console.log('已取消', id);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/105-js-frame.html
+  // ...
+          console.log('下一幀');
+        });
+-       console.log('已預約', id);
++       cancelAnimationFrame(id);
++       console.log('已取消', id);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2066,32 +1827,16 @@ querySelector 從呼叫它的那個節點往下，在它的子孫層裡依文件
 
 class 選擇器會對上那個段落。缺的 id 仍然是 null，所以 if 裡面不會執行。
 
-```html 04-js/pages/106-js-query.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>querySelector</title>
-  </head>
-  <body>
-    <h1 id="title">原標題</h1>
-    <p class="note">原補充</p>
-    <script>
-      const title = document.querySelector('#title');
-      title.textContent = '已選到標題';
-
-      const missing = document.querySelector('#missing');
-      console.log(missing);
-      if (missing) {
-        missing.textContent = '有找到';
-      }
-
-      const note = document.querySelector('.note');
-      note.textContent = '這是補充';
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/106-js-query.html
+  // ...
+          missing.textContent = '有找到';
+        }
++ 
++       const note = document.querySelector('.note');
++       note.textContent = '這是補充';
+      </script>
+    </body>
+  // ...
 ```
 
 </details>
@@ -2148,31 +1893,17 @@ class 選擇器會對上那個段落。缺的 id 仍然是 null，所以 if 裡�
 
 模板字串可以把序號、原本文字與後綴接成一次指派。三列都會帶上同一個後綴。
 
-```html 04-js/pages/107-js-query-all.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>querySelectorAll</title>
-  </head>
-  <body>
-    <ul id="list">
-      <li class="item">蘋果</li>
-      <li class="item">香蕉</li>
-      <li class="item">橘子</li>
-    </ul>
-    <script>
-      const items = document.querySelectorAll('.item');
-
-      items.forEach((item, index) => {
-        item.textContent = `${index + 1}. ${item.textContent}（清單）`;
-      });
-
-      console.log(items.length);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/107-js-query-all.html
+  // ...
+        const items = document.querySelectorAll('.item');
+  
+        items.forEach((item, index) => {
+-         item.textContent = `${index + 1}. ${item.textContent}`;
++         item.textContent = `${index + 1}. ${item.textContent}（清單）`;
+        });
+  
+        console.log(items.length);
+      // ...
 ```
 
 </details>
@@ -2239,33 +1970,14 @@ null
 
 範圍縮在新聞區，所以只有頭條被改寫。兩區的數量仍是 3 與 1。
 
-```html 04-js/pages/108-js-query-scope.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>在容器裡找</title>
-  </head>
-  <body>
-    <section id="news">
-      <p class="item">新聞一</p>
-      <p class="item">新聞二</p>
-    </section>
-    <section id="shop">
-      <p class="item">商品一</p>
-    </section>
-    <script>
-      const shop = document.querySelector('#shop');
-      const news = document.querySelector('#news');
-      console.log(document.querySelectorAll('.item').length);
-      console.log(shop.querySelectorAll('.item').length);
-      console.log(shop.querySelector('#shop'));
-      news.querySelector('.item').textContent = '頭條';
-      console.log(news.querySelector('.item').textContent);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/108-js-query-scope.html
+  // ...
+        console.log(shop.querySelectorAll('.item').length);
+        console.log(shop.querySelector('#shop'));
++       news.querySelector('.item').textContent = '頭條';
+        console.log(news.querySelector('.item').textContent);
+      </script>
+    // ...
 ```
 
 ```text
@@ -2372,35 +2084,15 @@ null
 
 closest 含自己、再往祖先找。卡片自己不是 #text，祖先也不是，所以仍是 null。狀態列維持 app / story。
 
-```html 04-js/pages/109-js-up.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>往上找</title>
-  </head>
-  <body>
-    <article id="story">
-      <main id="app">
-        <p id="intro">前言</p>
-        <section id="card">
-          <h2 id="heading">標題</h2>
-          <p id="text">內文</p>
-          <button type="button" id="action">按鈕</button>
-        </section>
-        <p id="outro">結語</p>
-      </main>
-    </article>
-    <p id="status"></p>
-    <script>
-      const card = document.querySelector('#card');
-      const status = document.querySelector('#status');
-      status.textContent = `${card.parentElement.id} / ${card.closest('article').id}`;
-      console.log(card.closest('#text'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/109-js-up.html
+  // ...
+        const status = document.querySelector('#status');
+        status.textContent = `${card.parentElement.id} / ${card.closest('article').id}`;
+-       console.log(card.closest('aside'));
++       console.log(card.closest('#text'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2474,37 +2166,14 @@ action
 
 三個元素之間與前後各有換行，所以 childNodes 的長度是 7。前四行維持元素的結果。
 
-```html 04-js/pages/110-js-down.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>往下找</title>
-  </head>
-  <body>
-    <article id="story">
-      <main id="app">
-        <p id="intro">前言</p>
-        <section id="card">
-          <h2 id="heading">標題</h2>
-          <p id="text">內文</p>
-          <button type="button" id="action">按鈕</button>
-        </section>
-        <p id="outro">結語</p>
-      </main>
-    </article>
-    <p id="status"></p>
-    <script>
-      const card = document.querySelector('#card');
-      console.log(card.children.length);
-      console.log(card.firstElementChild.id);
-      console.log(card.lastElementChild.id);
-      console.log(card.querySelectorAll('p').length);
-      console.log(card.childNodes.length);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/110-js-down.html
+  // ...
+        console.log(card.lastElementChild.id);
+        console.log(card.querySelectorAll('p').length);
++       console.log(card.childNodes.length);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2578,35 +2247,14 @@ outro
 
 前言沒有更前面的元素兄弟，所以第三行是 null。前兩行仍是 intro 與 outro。
 
-```html 04-js/pages/111-js-side.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>同層元素</title>
-  </head>
-  <body>
-    <article id="story">
-      <main id="app">
-        <p id="intro">前言</p>
-        <section id="card">
-          <h2 id="heading">標題</h2>
-          <p id="text">內文</p>
-          <button type="button" id="action">按鈕</button>
-        </section>
-        <p id="outro">結語</p>
-      </main>
-    </article>
-    <p id="status"></p>
-    <script>
-      const card = document.querySelector('#card');
-      console.log(card.previousElementSibling.id);
-      console.log(card.nextElementSibling.id);
-      console.log(document.querySelector('#intro').previousElementSibling);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/111-js-side.html
+  // ...
+        console.log(card.previousElementSibling.id);
+        console.log(card.nextElementSibling.id);
++       console.log(document.querySelector('#intro').previousElementSibling);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2678,35 +2326,14 @@ false
 
 內文那顆段落符合 p，第三行是 true。卡片的兩個結果留著。
 
-```html 04-js/pages/112-js-match.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>matches</title>
-  </head>
-  <body>
-    <article id="story">
-      <main id="app">
-        <p id="intro">前言</p>
-        <section id="card">
-          <h2 id="heading">標題</h2>
-          <p id="text">內文</p>
-          <button type="button" id="action">按鈕</button>
-        </section>
-        <p id="outro">結語</p>
-      </main>
-    </article>
-    <p id="status"></p>
-    <script>
-      const card = document.querySelector('#card');
-      console.log(card.matches('section'));
-      console.log(card.matches('p'));
-      console.log(document.querySelector('#text').matches('p'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/112-js-match.html
+  // ...
+        console.log(card.matches('section'));
+        console.log(card.matches('p'));
++       console.log(document.querySelector('#text').matches('p'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2775,28 +2402,14 @@ null
 
 標題被改寫。兩行 Console 仍是 true 與 null，因為清單與 missing 沒有變。
 
-```html 04-js/pages/113-js-by-id.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>getElementById</title>
-  </head>
-  <body>
-    <h1 id="title">原標題</h1>
-    <ul id="list">
-      <li class="item">蘋果</li>
-      <li class="item">香蕉</li>
-    </ul>
-    <script>
-      const list = document.getElementById('list');
-      console.log(list === document.querySelector('#list'));
-      console.log(document.getElementById('missing'));
-      document.getElementById('title').textContent = '已用 id 選到';
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/113-js-by-id.html
+  // ...
+        console.log(list === document.querySelector('#list'));
+        console.log(document.getElementById('missing'));
++       document.getElementById('title').textContent = '已用 id 選到';
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2879,45 +2492,18 @@ Console：
 
 標籤名那份也是即時集合，三顆 li 都算進去，長度是 3。forEach 走的是新增前的清單，只剩蘋果與香蕉。
 
-```html 04-js/pages/114-js-live.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>即時集合</title>
-  </head>
-  <body>
-    <ul id="list">
-      <li class="item">蘋果</li>
-      <li class="item">香蕉</li>
-    </ul>
-    <script>
-      const list = document.getElementById('list');
-      const live = document.getElementsByClassName('item');
-      const snap = document.querySelectorAll('.item');
-      console.log(live.length);
-      console.log(snap.length);
-
-      const extra = document.createElement('li');
-      extra.className = 'item';
-      extra.textContent = '橘子';
-      list.append(extra);
-
-      console.log(live.length);
-      console.log(snap.length);
-
-      for (const item of live) {
-        console.log(item.textContent);
-      }
-
-      console.log(document.getElementsByTagName('li').length);
-      Array.from(snap).forEach((item) => {
-        console.log(item.textContent);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/114-js-live.html
+  // ...
+          console.log(item.textContent);
+        }
++ 
++       console.log(document.getElementsByTagName('li').length);
++       Array.from(snap).forEach((item) => {
++         console.log(item.textContent);
++       });
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2996,25 +2582,15 @@ Console：
 
 整段被換成可見之後，沒有隱藏的子元素，innerText 也是可見。
 
-```html 04-js/pages/115-js-content.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>textContent 與 innerText</title>
-  </head>
-  <body>
-    <p id="box">可見<span style="display: none">隱藏</span></p>
-    <script>
-      const box = document.querySelector('#box');
-      console.log(box.textContent);
-      console.log(box.innerText);
-      box.textContent = '可見';
-      console.log(box.innerText);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/115-js-content.html
+  // ...
+        console.log(box.textContent);
+        console.log(box.innerText);
++       box.textContent = '可見';
++       console.log(box.innerText);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3108,45 +2684,17 @@ false
 
 textContent 不解析標記，b 會照字串留在畫面上。上面的卡片仍是粗體與斜體。
 
-```html 04-js/pages/116-js-inner.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>innerHTML</title>
-  </head>
-  <body>
-    <div id="card">
-      <input id="name" value="小明" />
-      <button id="save" type="button">儲存</button>
-    </div>
-    <p id="plain"></p>
-    <script>
-      const card = document.querySelector('#card');
-      const name = document.querySelector('#name');
-      const save = document.querySelector('#save');
-      name.value = '改過';
-      save.addEventListener('click', () => {
-        console.log('按過');
-      });
-      console.log(name.value);
-
-      card.innerHTML = '<b id="mark">粗體</b>';
-      const mark = document.querySelector('#mark');
-      card.innerHTML += '<i>斜體</i>';
-      console.log(card.innerHTML);
-      console.log(mark.isConnected);
-      console.log(mark === document.querySelector('#mark'));
-      console.log(name.isConnected);
-      console.log(save.isConnected);
-
-      const plain = document.querySelector('#plain');
-      plain.textContent = '<b>純文字</b>';
-      console.log(plain.textContent);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/116-js-inner.html
+  // ...
+        console.log(name.isConnected);
+        console.log(save.isConnected);
++ 
++       const plain = document.querySelector('#plain');
++       plain.textContent = '<b>純文字</b>';
++       console.log(plain.textContent);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3235,30 +2783,22 @@ false
 
 頁面上換成 section，舊變數仍是原來的 p。第一行還是換掉之前讀到的標記。
 
-```html 04-js/pages/117-js-outer.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>outerHTML</title>
-  </head>
-  <body>
-    <p id="note">舊公告</p>
-    <script>
-      const note = document.querySelector('#note');
-      console.log(note.outerHTML);
-      note.outerHTML = '<section id="note">新公告</section>';
-      const next = document.querySelector('#note');
-      console.log(note.isConnected);
-      console.log(note === next);
-      note.textContent = '改舊的';
-      console.log(next.textContent);
-      console.log(next.tagName);
-      console.log(note.tagName);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/117-js-outer.html
+  // ...
+        const note = document.querySelector('#note');
+        console.log(note.outerHTML);
+-       note.outerHTML = '<p id="note">新公告</p>';
++       note.outerHTML = '<section id="note">新公告</section>';
+        const next = document.querySelector('#note');
+        console.log(note.isConnected);
+        // ...
+        note.textContent = '改舊的';
+        console.log(next.textContent);
++       console.log(next.tagName);
++       console.log(note.tagName);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3337,33 +2877,16 @@ nav
 
 改 className 之後，標籤上的 class 跟著變成兩個名字。前面六行不變。
 
-```html 04-js/pages/118-js-prop.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>attribute 與 property</title>
-  </head>
-  <body>
-    <input id="name" type="text" value="原始" />
-    <a id="link" class="nav" href="/tour">行程</a>
-    <script>
-      const name = document.querySelector('#name');
-      const link = document.querySelector('#link');
-      name.value = '目前';
-      console.log(name.getAttribute('value'));
-      console.log(name.value);
-      console.log(link.getAttribute('href'));
-      console.log(link.href);
-      console.log(link.getAttribute('class'));
-      console.log(link.className);
-      link.className = 'nav current';
-      console.log(link.getAttribute('class'));
-      console.log(link.className);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/118-js-prop.html
+  // ...
+        console.log(link.getAttribute('class'));
+        console.log(link.className);
++       link.className = 'nav current';
++       console.log(link.getAttribute('class'));
++       console.log(link.className);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3457,34 +2980,14 @@ http://127.0.0.1:5500/tour
 
 aria-label 已經拿掉，所以最後一行是 false。data-note 還在。前面七行不變。
 
-```html 04-js/pages/119-js-attr.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>屬性方法</title>
-  </head>
-  <body>
-    <button type="button" id="go" aria-label="收藏行程">收藏</button>
-    <a id="link" href="/tour">行程</a>
-    <script>
-      const go = document.querySelector('#go');
-      const link = document.querySelector('#link');
-      console.log(go.getAttribute('aria-label'));
-      go.setAttribute('aria-label', '已收藏');
-      console.log(go.getAttribute('aria-label'));
-      console.log(go.hasAttribute('aria-label'));
-      go.removeAttribute('aria-label');
-      console.log(go.getAttribute('aria-label'));
-      go.setAttribute('data-note', '熱門');
-      console.log(go.getAttribute('data-note'));
-      console.log(link.getAttribute('href'));
-      console.log(link.href);
-      console.log(go.hasAttribute('aria-label'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/119-js-attr.html
+  // ...
+        console.log(link.getAttribute('href'));
+        console.log(link.href);
++       console.log(go.hasAttribute('aria-label'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3582,37 +3085,15 @@ https://example.com/tour
 
 框裡已是目前，標籤上的 value 仍是原始。前面五行不變，最後兩行是原始與目前。
 
-```html 04-js/pages/120-js-field.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>一般 property</title>
-  </head>
-  <body>
-    <img id="photo" alt="舊說明" src="photo.png" />
-    <a id="link" href="/tour">行程</a>
-    <input id="name" type="text" value="原始" />
-    <script>
-      const photo = document.querySelector('#photo');
-      const link = document.querySelector('#link');
-      const name = document.querySelector('#name');
-      photo.id = 'cover';
-      photo.alt = '夏季特賣';
-      photo.src = 'cover.png';
-      console.log(photo.id);
-      console.log(photo.alt);
-      console.log(photo.getAttribute('src'));
-      link.href = 'https://example.com/tour';
-      console.log(link.href);
-      name.value = '目前';
-      console.log(name.value);
-      console.log(name.getAttribute('value'));
-      console.log(name.value);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/120-js-field.html
+  // ...
+        name.value = '目前';
+        console.log(name.value);
++       console.log(name.getAttribute('value'));
++       console.log(name.value);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3693,31 +3174,15 @@ true
 
 hidden 回到 false 之後，按鈕重新出現。前面三行不變，disabled 仍是 false，checked 仍是 true。
 
-```html 04-js/pages/121-js-bool.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>布林 property</title>
-  </head>
-  <body>
-    <p><button type="button" id="go" disabled>送出</button></p>
-    <p><input id="ok" type="checkbox" /></p>
-    <script>
-      const go = document.querySelector('#go');
-      const ok = document.querySelector('#ok');
-      go.disabled = false;
-      console.log(go.disabled);
-      go.hidden = true;
-      console.log(go.hidden);
-      ok.checked = true;
-      console.log(ok.checked);
-      go.hidden = false;
-      console.log(go.hidden);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/121-js-bool.html
+  // ...
+        ok.checked = true;
+        console.log(ok.checked);
++       go.hidden = false;
++       console.log(go.hidden);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3789,28 +3254,15 @@ Console：
 
 unit 沒有連字號，對上的屬性名是 data-unit。最後一行是支。前面四行不變。
 
-```html 04-js/pages/122-js-dataset.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dataset</title>
-  </head>
-  <body>
-    <p id="item" data-user-id="7">商品</p>
-    <script>
-      const item = document.querySelector('#item');
-      console.log(item.dataset.userId);
-      console.log(item.getAttribute('data-user-id'));
-      item.dataset.level = '2';
-      console.log(item.dataset.level);
-      console.log(item.getAttribute('data-level'));
-      item.dataset.unit = '支';
-      console.log(item.getAttribute('data-unit'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/122-js-dataset.html
+  // ...
+        console.log(item.dataset.level);
+        console.log(item.getAttribute('data-level'));
++       item.dataset.unit = '支';
++       console.log(item.getAttribute('data-unit'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3896,34 +3348,15 @@ false
 
 強制拿掉之後，盒子只剩 hit。第三行是 false。
 
-```html 04-js/pages/123-js-class.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>classList</title>
-    <style>
-      #box { padding: 0.75rem 1rem; border: 2px solid #0f766e; display: inline-block; }
-      #box.on { background: #99f6e4; }
-      #box.hit { background: #bbf7d0; }
-      #box.big { font-size: 1.4rem; }
-    </style>
-  </head>
-  <body>
-    <p id="box">盒子</p>
-    <script>
-      const box = document.querySelector('#box');
-      box.classList.add('on', 'big');
-      box.classList.toggle('hit', false);
-      console.log(box.classList.contains('on'));
-      box.classList.replace('big', 'hit');
-      console.log(box.classList.contains('big'));
-      box.classList.toggle('on', false);
-      console.log(box.classList.contains('on'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/123-js-class.html
+  // ...
+        box.classList.replace('big', 'hit');
+        console.log(box.classList.contains('big'));
++       box.classList.toggle('on', false);
++       console.log(box.classList.contains('on'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -3994,31 +3427,15 @@ rgb(204, 251, 241)
 
 空字串清掉行內背景，樣式表沒有另設背景，青色就消失。第三行是空的。
 
-```html 04-js/pages/124-js-style.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>style</title>
-    <style>
-      #box { color: #0f766e; padding: 0.75rem 1rem; display: inline-block; }
-    </style>
-  </head>
-  <body>
-    <p id="box">盒子</p>
-    <script>
-      const box = document.querySelector('#box');
-      box.style.backgroundColor = '#ccfbf1';
-      box.style.setProperty('--gap', '8px');
-      box.style.marginTop = 'var(--gap)';
-      console.log(box.style.backgroundColor);
-      console.log(box.style.getPropertyValue('--gap'));
-      box.style.backgroundColor = '';
-      console.log(box.style.backgroundColor);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/124-js-style.html
+  // ...
+        console.log(box.style.backgroundColor);
+        console.log(box.style.getPropertyValue('--gap'));
++       box.style.backgroundColor = '';
++       console.log(box.style.backgroundColor);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -4092,28 +3509,15 @@ rgb(15, 118, 110)
 
 寫進行內之後，style.color 才讀得到。第三行與計算後的顏色相同。
 
-```html 04-js/pages/125-js-computed.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>getComputedStyle</title>
-    <style>
-      #box { color: #0f766e; }
-    </style>
-  </head>
-  <body>
-    <p id="box">盒子</p>
-    <script>
-      const box = document.querySelector('#box');
-      console.log(box.style.color);
-      console.log(getComputedStyle(box).color);
-      box.style.color = 'rgb(15, 118, 110)';
-      console.log(box.style.color);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/125-js-computed.html
+  // ...
+        console.log(box.style.color);
+        console.log(getComputedStyle(box).color);
++       box.style.color = 'rgb(15, 118, 110)';
++       console.log(box.style.color);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -4195,39 +3599,15 @@ showBox 再多印 offsetHeight。
 
 第三個數字是含框線的高度。提示與前兩個數字仍會先出現。下面的高度只是一種視窗的例子。
 
-```html 04-js/pages/126-js-rect.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>尺寸與位置</title>
-    <style>
-      #box { display: inline-block; padding: 8px; border: 2px solid #0f766e; }
-    </style>
-  </head>
-  <body>
-    <div style="height: 240px"></div>
-    <p id="box">目標</p>
-    <div style="height: 900px"></div>
-    <p id="end">頁面底部</p>
-    <script>
-      const showBox = () => {
-        const box = document.querySelector('#box');
-        const rect = box.getBoundingClientRect();
-        console.log(Math.round(rect.top));
-        console.log(box.offsetWidth);
-        console.log(box.offsetHeight);
-      };
-
-      const goEnd = () => {
-        document.querySelector('#end').scrollIntoView({ behavior: 'smooth' });
-      };
-
-      console.log('呼叫 showBox() 或 goEnd()');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/126-js-rect.html
+  // ...
+          console.log(Math.round(rect.top));
+          console.log(box.offsetWidth);
++         console.log(box.offsetHeight);
+        };
+  
+        const goEnd = () => {
+          // ...
 ```
 
 ```text
@@ -4354,51 +3734,18 @@ Console：
 
 已在頁面上的節點再插入就是搬移。第二行只剩一顆「前面」，而且在最後。
 
-```html 04-js/pages/127-js-create.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>建立與插入</title>
-  </head>
-  <body>
-    <div id="stage">
-      <p id="target">目標</p>
-    </div>
-    <script>
-      const stage = document.querySelector('#stage');
-      const target = document.querySelector('#target');
-
-      const before = document.createElement('p');
-      before.textContent = '前面';
-      target.before(before);
-
-      const start = document.createElement('span');
-      start.textContent = '起點';
-      target.prepend(start);
-
-      const end = document.createElement('span');
-      end.textContent = '終點';
-      target.append(end);
-
-      const after = document.createElement('p');
-      after.textContent = '後面';
-      target.after(after);
-
-      target.append(document.createTextNode('尾端文字'));
-
-      const labels = [];
-      for (const node of stage.children) labels.push(node.textContent);
-      console.log(labels.join(' | '));
-
-      stage.append(before);
-      const moved = [];
-      for (const node of stage.children) moved.push(node.textContent);
-      console.log(moved.join(' | '));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/127-js-create.html
+  // ...
+        for (const node of stage.children) labels.push(node.textContent);
+        console.log(labels.join(' | '));
++ 
++       stage.append(before);
++       const moved = [];
++       for (const node of stage.children) moved.push(node.textContent);
++       console.log(moved.join(' | '));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -4463,29 +3810,23 @@ cloneNode(true) 連子節點一起複製，回傳的是新節點，還沒有掛�
 
 replaceChildren 拿掉原本的兩列與任何複製。畫面上只留下新建立的那一列。
 
-```html 04-js/pages/128-js-node-move.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>移動、複製與移除</title>
-  </head>
-  <body>
-    <ul id="list">
-      <li id="first">第一</li>
-      <li id="second">第二</li>
-    </ul>
-    <script>
-      const list = document.querySelector('#list');
-      list.replaceChildren();
-
-      const item = document.createElement('li');
-      item.textContent = '只剩這項';
-      list.append(item);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/128-js-node-move.html
+  // ...
+      <script>
+        const list = document.querySelector('#list');
+-       const first = document.querySelector('#first');
+-       const copy = first.cloneNode(true);
+-       list.append(copy);
++       list.replaceChildren();
+  
+-       const second = document.querySelector('#second');
+-       list.prepend(second);
++       const item = document.createElement('li');
++       item.textContent = '只剩這項';
++       list.append(item);
+      </script>
+    </body>
+  // ...
 ```
 
 </details>
@@ -4539,33 +3880,24 @@ template.content 是一份文件片段。cloneNode(true) 複製出片段，查�
 
 每次 cloneNode 都得到新的片段，改其中一列不會改到另一列，也不會改到 template 原本的骨架。
 
-```html 04-js/pages/129-js-template.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：template 元素</title>
-  </head>
-  <body>
-    <template id="row">
-      <li><span class="name"></span></li>
-    </template>
-    <ul id="list"></ul>
-    <script>
-      const list = document.querySelector('#list');
-      const row = document.querySelector('#row');
-
-      const pen = row.content.cloneNode(true);
-      pen.querySelector('.name').textContent = '筆';
-      list.append(pen);
-
-      const paper = row.content.cloneNode(true);
-      paper.querySelector('.name').textContent = '紙';
-      list.append(paper);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/129-js-template.html
+  // ...
+        const list = document.querySelector('#list');
+        const row = document.querySelector('#row');
+-       const fragment = row.content.cloneNode(true);
+  
+-       fragment.querySelector('.name').textContent = '筆';
+-       list.append(fragment);
++       const pen = row.content.cloneNode(true);
++       pen.querySelector('.name').textContent = '筆';
++       list.append(pen);
++ 
++       const paper = row.content.cloneNode(true);
++       paper.querySelector('.name').textContent = '紙';
++       list.append(paper);
+      </script>
+    </body>
+  // ...
 ```
 
 </details>
@@ -4635,31 +3967,16 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
 
 同一個點擊會依登記順序執行。第一下先寫成「點過了」，再被改成「首次點過了」。第二下只剩第一份監聽。
 
-```html 04-js/pages/130-js-listen.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>addEventListener</title>
-  </head>
-  <body>
-    <button type="button" id="go">點我</button>
-    <p id="status">尚未點</p>
-    <script>
-      const status = document.querySelector('#status');
-      const go = document.querySelector('#go');
-
-      go.addEventListener('click', () => {
-        status.textContent = '點過了';
-      });
-
-      go.addEventListener('click', () => {
-        status.textContent = '首次點過了';
-      }, { once: true });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/130-js-listen.html
+  // ...
+        });
+  
+        go.addEventListener('click', () => {
+-         console.log('只會看到一次');
++         status.textContent = '首次點過了';
+        }, { once: true });
+      </script>
+    // ...
 ```
 
 </details>
@@ -4720,39 +4037,17 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
 
 函式執行中可以拿自己的參考去解除。第三次點擊把數字設成 3 之後，這份監聽已經不在了。
 
-```html 04-js/pages/131-js-unlisten.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>removeEventListener</title>
-  </head>
-  <body>
-    <p id="status">0</p>
-    <button type="button" id="go">加一</button>
-    <button type="button" id="stop">停止</button>
-    <script>
-      const status = document.querySelector('#status');
-      const go = document.querySelector('#go');
-      const stop = document.querySelector('#stop');
-
-      const onClick = () => {
-        const count = Number(status.textContent) + 1;
-        status.textContent = String(count);
-        if (count === 3) {
-          go.removeEventListener('click', onClick);
-        }
-      };
-
-      go.addEventListener('click', onClick);
-
-      stop.addEventListener('click', () => {
-        go.removeEventListener('click', onClick);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/131-js-unlisten.html
+  // ...
+          const count = Number(status.textContent) + 1;
+          status.textContent = String(count);
++         if (count === 3) {
++           go.removeEventListener('click', onClick);
++         }
+        };
+  
+        go.addEventListener('click', onClick);
+        // ...
 ```
 
 </details>
@@ -4833,45 +4128,15 @@ Console：
 
 設成 null 會清掉這顆按鈕的舊式監聽。第三顆的兩份 addEventListener 仍會印出。
 
-```html 04-js/pages/132-js-onclick.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：onclick</title>
-  </head>
-  <body>
-    <button type="button" id="old" onclick="fromHtml()">HTML 屬性</button>
-    <button type="button" id="prop">屬性指派</button>
-    <button type="button" id="modern">addEventListener</button>
-    <p id="status">尚未點</p>
-    <script>
-      const status = document.querySelector('#status');
-
-      function fromHtml() {
-        status.textContent = '來自 HTML 屬性';
-      }
-
-      const prop = document.querySelector('#prop');
-      prop.onclick = () => {
-        status.textContent = '第一個函式';
-      };
-      prop.onclick = () => {
-        status.textContent = '只剩第二個';
-      };
-      prop.onclick = null;
-
-      const modern = document.querySelector('#modern');
-      modern.addEventListener('click', () => {
-        console.log('第一份');
-      });
-      modern.addEventListener('click', () => {
-        console.log('第二份');
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/132-js-onclick.html
+  // ...
+          status.textContent = '只剩第二個';
+        };
++       prop.onclick = null;
+  
+        const modern = document.querySelector('#modern');
+        modern.addEventListener('click', () => {
+          // ...
 ```
 
 ```text
@@ -4961,30 +4226,16 @@ target 是實際被點到的元素。currentTarget 是這份監聽登記的那�
 
 target 就是被點到的 li，textContent 是那一列的文字。currentTarget 這次沒有寫出來。
 
-```html 04-js/pages/133-js-target.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>target 與 currentTarget</title>
-  </head>
-  <body>
-    <ul id="menu">
-      <li>蘋果</li>
-      <li>香蕉</li>
-    </ul>
-    <p id="status"></p>
-    <script>
-      const menu = document.querySelector('#menu');
-      const status = document.querySelector('#status');
-
-      menu.addEventListener('click', (event) => {
-        status.textContent = event.target.textContent;
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/133-js-target.html
+  // ...
+        const status = document.querySelector('#status');
+  
+        menu.addEventListener('click', (event) => {
+-         status.textContent = `${event.target.tagName} / ${event.currentTarget.id}`;
++         status.textContent = event.target.textContent;
+        });
+      </script>
+    // ...
 ```
 
 </details>
@@ -5054,39 +4305,16 @@ mousemove 的文字再補上 pageX 與 pageY，放在斜線之後的下一組。
 
 第三組是文件座標。方塊還沒被捲走時，它會和視窗座標很接近。
 
-```html 04-js/pages/134-js-pointer.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>滑鼠座標</title>
-    <style>
-      #pad { position: relative; height: 160px; background: #ccfbf1; }
-      #dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #0f766e; left: 0; top: 0; }
-    </style>
-  </head>
-  <body>
-    <p id="pos">在方塊上移動滑鼠</p>
-    <div id="pad"><span id="dot"></span></div>
-    <script>
-      const pos = document.querySelector('#pos');
-      const pad = document.querySelector('#pad');
-      const dot = document.querySelector('#dot');
-
-      pad.addEventListener('mousemove', (event) => {
-        const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY} / ${event.pageX}, ${event.pageY}`;
-        pos.textContent = text;
-        console.log(text);
-      });
-
-      pad.addEventListener('click', (event) => {
-        dot.style.left = `${event.offsetX}px`;
-        dot.style.top = `${event.offsetY}px`;
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/134-js-pointer.html
+  // ...
+        const dot = document.querySelector('#dot');
+  
+        pad.addEventListener('mousemove', (event) => {
+-         const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY}`;
++         const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY} / ${event.pageX}, ${event.pageY}`;
+          pos.textContent = text;
+          console.log(text);
+        // ...
 ```
 
 ```text
@@ -5161,39 +4389,18 @@ a / KeyA / false /
 
 組合鍵改看 k。畫面寫已搜尋，瀏覽器不會因為這個鍵去執行它原本的動作。
 
-```html 04-js/pages/135-js-keyinfo.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>鍵盤資訊</title>
-  </head>
-  <body>
-    <p id="info">按任意鍵</p>
-    <p id="saved"></p>
-    <script>
-      const info = document.querySelector('#info');
-      const saved = document.querySelector('#saved');
-
-      document.addEventListener('keydown', (event) => {
-        const mods = [
-          event.ctrlKey ? 'Ctrl' : '',
-          event.metaKey ? 'Meta' : '',
-          event.shiftKey ? 'Shift' : '',
-          event.altKey ? 'Alt' : '',
-        ].filter(Boolean);
-        const text = `${event.key} / ${event.code} / ${event.repeat} / ${mods.join('+')}`;
-        info.textContent = text;
-        console.log(text);
-        if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-          event.preventDefault();
-          saved.textContent = '已搜尋';
-        }
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/135-js-keyinfo.html
+  // ...
+          info.textContent = text;
+          console.log(text);
+-         if ((event.ctrlKey || event.metaKey) && event.key === 's') {
++         if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+            event.preventDefault();
+-           saved.textContent = '已儲存';
++           saved.textContent = '已搜尋';
+          }
+        });
+      // ...
 ```
 
 ```text
@@ -5249,33 +4456,24 @@ a / KeyA / false /
 
 兩條連結各自有監聽，都會取消預設跳轉。狀態文字共用同一個段落。
 
-```html 04-js/pages/136-js-prevent.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>preventDefault</title>
-  </head>
-  <body>
-    <p><a id="jump" href="https://example.com">前往範例</a></p>
-    <p><a id="more" href="https://example.org">另一條</a></p>
-    <p id="status">還在這頁</p>
-    <script>
-      const status = document.querySelector('#status');
-
-      document.querySelector('#jump').addEventListener('click', (event) => {
-        event.preventDefault();
-        status.textContent = '已攔下預設跳轉';
-      });
-
-      document.querySelector('#more').addEventListener('click', (event) => {
-        event.preventDefault();
-        status.textContent = '已攔下預設跳轉';
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/136-js-prevent.html
+  // ...
+    <body>
+      <p><a id="jump" href="https://example.com">前往範例</a></p>
++     <p><a id="more" href="https://example.org">另一條</a></p>
+      <p id="status">還在這頁</p>
+      <script>
+        // ...
+          status.textContent = '已攔下預設跳轉';
+        });
++ 
++       document.querySelector('#more').addEventListener('click', (event) => {
++         event.preventDefault();
++         status.textContent = '已攔下預設跳轉';
++       });
+      </script>
+    </body>
+  // ...
 ```
 
 </details>
@@ -5350,39 +4548,14 @@ input 在內容每次改變時發生。change 在文字框離開焦點後，或�
 
 change 的當下可以同時讀文字框與選單。預覽會改成兩段資訊，之後再打字仍由 input 覆蓋成只有名字。
 
-```html 04-js/pages/137-js-input.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>input 與 change</title>
-  </head>
-  <body>
-    <input id="name" type="text" />
-    <p id="preview"></p>
-    <select id="color">
-      <option value="紅">紅</option>
-      <option value="藍">藍</option>
-    </select>
-    <p id="picked"></p>
-    <script>
-      const name = document.querySelector('#name');
-      const preview = document.querySelector('#preview');
-      const color = document.querySelector('#color');
-      const picked = document.querySelector('#picked');
-
-      name.addEventListener('input', () => {
-        preview.textContent = name.value;
-      });
-
-      color.addEventListener('change', () => {
-        picked.textContent = color.value;
-        preview.textContent = `${name.value} / ${color.value}`;
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/137-js-input.html
+  // ...
+        color.addEventListener('change', () => {
+          picked.textContent = color.value;
++         preview.textContent = `${name.value} / ${color.value}`;
+        });
+      </script>
+    // ...
 ```
 
 </details>
@@ -5440,33 +4613,16 @@ key 是 Escape 時，把文字框的 value 設成空字串。Enter 的行為保�
 
 同一個 keydown 可以依 key 分兩條路。Escape 只清輸入框，不改狀態段落。
 
-```html 04-js/pages/138-js-keydown.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>keydown</title>
-  </head>
-  <body>
-    <input id="name" type="text" />
-    <p id="status"></p>
-    <script>
-      const name = document.querySelector('#name');
-      const status = document.querySelector('#status');
-
-      name.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          status.textContent = name.value;
-        }
-        if (event.key === 'Escape') {
-          name.value = '';
-        }
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/138-js-keydown.html
+  // ...
+            status.textContent = name.value;
+          }
++         if (event.key === 'Escape') {
++           name.value = '';
++         }
+        });
+      </script>
+    // ...
 ```
 
 </details>
@@ -5539,47 +4695,23 @@ Console：
 
 加上邊界之後，數字不會小於 0，也不會大於欄位減掉方塊的尺寸。完成檔是 139-js-arrow.html.final。
 
-```html 04-js/pages/139-js-arrow.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>方向鍵移動</title>
-    <style>
-      #field { position: relative; width: 240px; height: 160px; background: #ccfbf1; }
-      #box { position: absolute; width: 32px; height: 32px; background: #0f766e; left: 0; top: 0; }
-    </style>
-  </head>
-  <body>
-    <div id="field"><div id="box"></div></div>
-    <p id="status">0, 0</p>
-    <script>
-      const box = document.querySelector('#box');
-      const field = document.querySelector('#field');
-      const status = document.querySelector('#status');
-      let x = 0;
-      let y = 0;
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowRight') x += 16;
-        if (event.key === 'ArrowLeft') x -= 16;
-        if (event.key === 'ArrowDown') y += 16;
-        if (event.key === 'ArrowUp') y -= 16;
-        if (!event.key.startsWith('Arrow')) return;
-        event.preventDefault();
-        const maxX = field.clientWidth - box.offsetWidth;
-        const maxY = field.clientHeight - box.offsetHeight;
-        x = Math.min(maxX, Math.max(0, x));
-        y = Math.min(maxY, Math.max(0, y));
-        box.style.left = `${x}px`;
-        box.style.top = `${y}px`;
-        status.textContent = `${x}, ${y}`;
-        console.log(status.textContent);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/139-js-arrow.html.final
+  // ...
+      <script>
+        const box = document.querySelector('#box');
++       const field = document.querySelector('#field');
+        const status = document.querySelector('#status');
+        let x = 0;
+        // ...
+          if (!event.key.startsWith('Arrow')) return;
+          event.preventDefault();
++         const maxX = field.clientWidth - box.offsetWidth;
++         const maxY = field.clientHeight - box.offsetHeight;
++         x = Math.min(maxX, Math.max(0, x));
++         y = Math.min(maxY, Math.max(0, y));
+          box.style.left = `${x}px`;
+          box.style.top = `${y}px`;
+          // ...
 ```
 
 ```text
@@ -5656,46 +4788,27 @@ Console：
 
 按錯只改提示，不加分。按對時提示被清掉，分數才加 1。完成檔是 140-js-type.html.final。
 
-```html 04-js/pages/140-js-type.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>打字小遊戲</title>
-  </head>
-  <body>
-    <p id="letter">A</p>
-    <p id="score">0</p>
-    <p id="hint"></p>
-    <script>
-      const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-      const letter = document.querySelector('#letter');
-      const score = document.querySelector('#score');
-      const hint = document.querySelector('#hint');
-      let points = 0;
-
-      const nextLetter = () => {
-        letter.textContent = letters[Math.floor(Math.random() * letters.length)];
-        hint.textContent = '';
-      };
-
-      nextLetter();
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key.length !== 1) return;
-        if (event.key.toUpperCase() === letter.textContent) {
-          points += 1;
-          score.textContent = String(points);
-          console.log(points);
-          nextLetter();
-        } else {
-          hint.textContent = '再試一次';
-        }
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/140-js-type.html.final
+  // ...
+        const letter = document.querySelector('#letter');
+        const score = document.querySelector('#score');
++       const hint = document.querySelector('#hint');
+        let points = 0;
+  
+        const nextLetter = () => {
+          letter.textContent = letters[Math.floor(Math.random() * letters.length)];
++         hint.textContent = '';
+        };
+  
+        nextLetter();
+        // ...
+            console.log(points);
+            nextLetter();
++         } else {
++           hint.textContent = '再試一次';
+          }
+        });
+      // ...
 ```
 
 ```text
@@ -5759,38 +4872,31 @@ Console：
 
 keyup 只在有起點時計算。放開後畫面變成力道加上毫秒，下面的 180 只是按住約 0.18 秒的例子。完成檔是 141-js-charge.html.final。
 
-```html 04-js/pages/141-js-charge.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>空白鍵蓄力</title>
-  </head>
-  <body>
-    <p id="power">力道 0</p>
-    <script>
-      let start = 0;
-      const power = document.querySelector('#power');
-
-      document.addEventListener('keydown', (event) => {
-        if (event.key !== ' ' || event.repeat) return;
-        event.preventDefault();
-        start = event.timeStamp;
-        power.textContent = '蓄力中';
-        console.log('蓄力中');
-      });
-
-      document.addEventListener('keyup', (event) => {
-        if (event.key !== ' ' || !start) return;
-        const force = Math.max(0, Math.round(event.timeStamp - start));
-        start = 0;
-        power.textContent = `力道 ${force}`;
-        console.log(power.textContent);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/141-js-charge.html.final
+  // ...
+      <script>
+        let start = 0;
++       const power = document.querySelector('#power');
+  
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== ' ' || event.repeat) return;
+          event.preventDefault();
+          start = event.timeStamp;
+-         document.querySelector('#power').textContent = '蓄力中';
++         power.textContent = '蓄力中';
+          console.log('蓄力中');
+        });
++ 
++       document.addEventListener('keyup', (event) => {
++         if (event.key !== ' ' || !start) return;
++         const force = Math.max(0, Math.round(event.timeStamp - start));
++         start = 0;
++         power.textContent = `力道 ${force}`;
++         console.log(power.textContent);
++       });
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -5863,34 +4969,14 @@ BUTTON
 
 新按鈕還是這份清單的後代，冒泡仍會進到同一份監聽。讀到的 id 是 3。
 
-```html 04-js/pages/142-js-delegate.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>事件委派</title>
-  </head>
-  <body>
-    <ul id="list">
-      <li><button type="button" data-id="1">一</button></li>
-      <li><button type="button" data-id="2">二</button></li>
-      <li><button type="button" data-id="3">三</button></li>
-    </ul>
-    <p id="status"></p>
-    <script>
-      const list = document.querySelector('#list');
-      const status = document.querySelector('#status');
-
-      list.addEventListener('click', (event) => {
-        const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
-        status.textContent = button.dataset.id;
-        console.log(event.target.tagName);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/142-js-delegate.html
+  // ...
+        <li><button type="button" data-id="1">一</button></li>
+        <li><button type="button" data-id="2">二</button></li>
++       <li><button type="button" data-id="3">三</button></li>
+      </ul>
+      <p id="status"></p>
+      // ...
 ```
 
 </details>
@@ -5987,54 +5073,17 @@ outerBubble -- 冒泡 --> docUp["document"]
 
 內層已經是目標。在目標呼叫 stopPropagation 會取消後面的冒泡，外層那份冒泡監聽就不會再改文字。捕獲階段在這之前已經跑過。
 
-```html 04-js/pages/143-js-bubble.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：捕獲與冒泡</title>
-    <style>
-      #outer { padding: 1rem; background: #ccfbf1; }
-      button { margin-right: 0.4rem; }
-    </style>
-  </head>
-  <body>
-    <div id="outer">
-      <button type="button" id="inner">內層</button>
-      <button type="button" id="stop">停止冒泡</button>
-    </div>
-    <p id="status"></p>
-    <script>
-      const outer = document.querySelector('#outer');
-      const inner = document.querySelector('#inner');
-      const stop = document.querySelector('#stop');
-      const status = document.querySelector('#status');
-
-      outer.addEventListener('click', () => {
-        status.textContent = '外捕獲';
-        console.log('外捕獲');
-      }, true);
-
-      inner.addEventListener('click', (event) => {
-        event.stopPropagation();
-        status.textContent = `${status.textContent} 內層`;
-        console.log('內層');
-      });
-
-      outer.addEventListener('click', () => {
-        status.textContent = `${status.textContent} 外冒泡`;
-        console.log('外冒泡');
-      });
-
-      stop.addEventListener('click', (event) => {
-        event.stopPropagation();
-        status.textContent = `${status.textContent} 停止`;
-        console.log('停止');
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/143-js-bubble.html
+  // ...
+          console.log('外捕獲');
+        }, true);
+  
+-       inner.addEventListener('click', () => {
++       inner.addEventListener('click', (event) => {
++         event.stopPropagation();
+          status.textContent = `${status.textContent} 內層`;
+          console.log('內層');
+        // ...
 ```
 
 </details>
@@ -6100,34 +5149,15 @@ outerBubble -- 冒泡 --> docUp["document"]
 
 checked 屬性讓這顆方塊一開始就是勾選的，render 在載入時讀到 true。之後仍可改勾選狀態。
 
-```html 04-js/pages/144-js-form-value.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>value 與 checked</title>
-  </head>
-  <body>
-    <p><input id="title" type="text" value="草稿" /></p>
-    <p><label><input id="done" type="checkbox" checked /> 完成</label></p>
-    <p id="result"></p>
-    <script>
-      const title = document.querySelector('#title');
-      const done = document.querySelector('#done');
-      const result = document.querySelector('#result');
-
-      const render = () => {
-        const mark = done.checked ? '已勾選' : '未勾選';
-        result.textContent = `${title.value} / ${mark}`;
-      };
-
-      title.addEventListener('input', render);
-      done.addEventListener('change', render);
-      render();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/144-js-form-value.html
+  // ...
+    <body>
+      <p><input id="title" type="text" value="草稿" /></p>
+-     <p><label><input id="done" type="checkbox" /> 完成</label></p>
++     <p><label><input id="done" type="checkbox" checked /> 完成</label></p>
+      <p id="result"></p>
+      <script>
+        // ...
 ```
 
 </details>
@@ -6196,37 +5226,15 @@ novalidate 關掉瀏覽器自動擋下送出，submit 才一定進得了監聽�
 
 minlength 也是約束驗證的規則。一個字不算通過，checkValidity 仍是 false，FormData 那一行不會執行。
 
-```html 04-js/pages/145-js-submit.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>送出與檢查</title>
-  </head>
-  <body>
-    <form id="editor" novalidate>
-      <input name="title" required minlength="2" />
-      <button type="submit">送出</button>
-    </form>
-    <p id="result"></p>
-    <script>
-      const form = document.querySelector('#editor');
-      const result = document.querySelector('#result');
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          result.textContent = '還沒通過檢查';
-          return;
-        }
-        const data = new FormData(form);
-        result.textContent = data.get('title');
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/145-js-submit.html
+  // ...
+    <body>
+      <form id="editor" novalidate>
+-       <input name="title" required />
++       <input name="title" required minlength="2" />
+        <button type="submit">送出</button>
+      </form>
+      // ...
 ```
 
 </details>
@@ -6309,43 +5317,16 @@ eventNode --> stateNode
 
 兩次點擊是兩次 push，陣列裡會有兩筆相同文字。render 照陣列長度畫，不會把相同文字合併。
 
-```html 04-js/pages/146-js-render.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>狀態與重繪</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button { font: inherit; }
-    </style>
-  </head>
-  <body>
-    <ul id="list"></ul>
-    <button type="button" id="add">加一筆</button>
-    <script>
-      const state = { items: ['筆', '紙'] };
-      const list = document.querySelector('#list');
-
-      const render = () => {
-        list.replaceChildren();
-        state.items.forEach((name) => {
-          const li = document.createElement('li');
-          li.textContent = name;
-          list.append(li);
+```diff 04-js/pages/146-js-render.html
+  // ...
+        };
+  
+        document.querySelector('#add').addEventListener('click', () => {
+-         state.items.push('新項目');
++         state.items.push('橡皮擦');
+          render();
         });
-      };
-
-      document.querySelector('#add').addEventListener('click', () => {
-        state.items.push('橡皮擦');
-        render();
-      });
-
-      render();
-    </script>
-  </body>
-</html>
+        // ...
 ```
 
 </details>
@@ -6439,65 +5420,15 @@ done 為 true 時，li 加上 done，樣式表負責刪除線。按鈕先放上 
 
 class 只在 done 為 true 時加上。兩筆都是 false 時，render 不會給任何 li 加上 done。
 
-```html 04-js/pages/147-js-todo.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>待辦清單</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input, button { font: inherit; }
-      li { margin: 0.4rem 0; }
-      li.done span { text-decoration: line-through; }
-      li button { margin-left: 0.35rem; }
-    </style>
-  </head>
-  <body>
-    <form id="editor" novalidate>
-      <input id="title" name="title" required />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const state = {
-        nextId: 3,
-        items: [
-          { id: 1, title: '讀講義', done: false },
-          { id: 2, title: '改練習檔', done: false },
-        ],
-      };
-
-      const list = document.querySelector('#list');
-
-      const render = () => {
-        list.replaceChildren();
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          if (item.done) li.classList.add('done');
-          const span = document.createElement('span');
-          span.textContent = item.title;
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.dataset.action = 'toggle';
-          toggle.dataset.id = String(item.id);
-          toggle.textContent = item.done ? '改回未完成' : '標成完成';
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.dataset.action = 'remove';
-          remove.dataset.id = String(item.id);
-          remove.textContent = '刪除';
-          li.append(span, toggle, remove);
-          list.append(li);
-        });
-      };
-
-      render();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/147-js-todo.html
+  // ...
+          items: [
+            { id: 1, title: '讀講義', done: false },
+-           { id: 2, title: '改練習檔', done: true },
++           { id: 2, title: '改練習檔', done: false },
+          ],
+        };
+        // ...
 ```
 
 </details>
@@ -6616,94 +5547,16 @@ submit 先 preventDefault，再用 checkValidity 看 required。通過後用 For
 
 required 只把完全沒字視為沒填，幾個空白仍算有值。trim 之後若是空字串就 return，輸入框還留著那些空白。
 
-```html 04-js/pages/147-js-todo.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>待辦清單</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input, button { font: inherit; }
-      li { margin: 0.4rem 0; }
-      li.done span { text-decoration: line-through; }
-      li button { margin-left: 0.35rem; }
-    </style>
-  </head>
-  <body>
-    <form id="editor" novalidate>
-      <input id="title" name="title" required />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const state = {
-        nextId: 3,
-        items: [
-          { id: 1, title: '讀講義', done: false },
-          { id: 2, title: '改練習檔', done: true },
-        ],
-      };
-
-      const list = document.querySelector('#list');
-      const form = document.querySelector('#editor');
-
-      const render = () => {
-        list.replaceChildren();
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          if (item.done) li.classList.add('done');
-          const span = document.createElement('span');
-          span.textContent = item.title;
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.dataset.action = 'toggle';
-          toggle.dataset.id = String(item.id);
-          toggle.textContent = item.done ? '改回未完成' : '標成完成';
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.dataset.action = 'remove';
-          remove.dataset.id = String(item.id);
-          remove.textContent = '刪除';
-          li.append(span, toggle, remove);
-          list.append(li);
-        });
-      };
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        const data = new FormData(form);
-        const title = String(data.get('title')).trim();
-        if (!title) return;
-        state.items.push({ id: state.nextId, title, done: false });
-        state.nextId += 1;
-        form.querySelector('#title').value = '';
-        render();
-      });
-
-      list.addEventListener('click', (event) => {
-        const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
-        const id = Number(button.dataset.id);
-        const item = state.items.find((row) => row.id === id);
-        if (!item) return;
-        if (button.dataset.action === 'toggle') item.done = !item.done;
-        if (button.dataset.action === 'remove') {
-          state.items = state.items.filter((row) => row.id !== id);
-        }
-        render();
-      });
-
-      render();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/147-js-todo.html.final
+  // ...
+          }
+          const data = new FormData(form);
+-         const title = String(data.get('title'));
++         const title = String(data.get('title')).trim();
++         if (!title) return;
+          state.items.push({ id: state.nextId, title, done: false });
+          state.nextId += 1;
+          // ...
 ```
 
 </details>
@@ -6803,62 +5656,15 @@ state 集中分數、剩餘秒數、是否進行中，以及每個洞要清除�
 
 畫面上的 20 只是 HTML 的初值。render 一執行就改成 state 裡的數字，所以改狀態才會留在畫面上。
 
-```html 04-js/pages/148-js-mole.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：打地鼠</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button { font: inherit; }
-      .board { display: grid; grid-template-columns: repeat(3, 4.5rem); gap: 0.5rem; margin: 1rem 0; }
-      .hole { width: 4.5rem; height: 4.5rem; border: 2px solid #0f766e; background: #fef9c3; }
-      .hole.up { background: #ef4444; }
-      .hole.hit { background: #22c55e; }
-    </style>
-  </head>
-  <body>
-    <p>剩餘 <span id="time">20</span> 秒，分數 <span id="score">0</span></p>
-    <button type="button" id="start">開始</button>
-    <div id="board" class="board">
-      <button type="button" class="hole" data-index="0"></button>
-      <button type="button" class="hole" data-index="1"></button>
-      <button type="button" class="hole" data-index="2"></button>
-      <button type="button" class="hole" data-index="3"></button>
-      <button type="button" class="hole" data-index="4"></button>
-      <button type="button" class="hole" data-index="5"></button>
-      <button type="button" class="hole" data-index="6"></button>
-      <button type="button" class="hole" data-index="7"></button>
-      <button type="button" class="hole" data-index="8"></button>
-    </div>
-    <script>
-      const state = {
-        holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
-        score: 0,
-        timeLeft: 15,
-        playing: false,
-        clockId: 0,
-        spawnId: 0,
-        hideIds: {},
-      };
-
-      const render = () => {
-        document.querySelector('#score').textContent = String(state.score);
-        document.querySelector('#time').textContent = String(state.timeLeft);
-        document.querySelectorAll('.hole').forEach((hole) => {
-          const index = Number(hole.dataset.index);
-          hole.classList.remove('up', 'hit');
-          if (state.holes[index] !== 'idle') hole.classList.add(state.holes[index]);
-        });
-        document.querySelector('#start').disabled = state.playing;
-      };
-
-      render();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/148-js-mole.html
+  // ...
+          holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
+          score: 0,
+-         timeLeft: 20,
++         timeLeft: 15,
+          playing: false,
+          clockId: 0,
+          // ...
 ```
 
 </details>
@@ -7033,137 +5839,16 @@ endNode --> clearNode["清除計時器"]
 
 停留時間只影響出現後自動回黃的那個 timeout。打中時仍會先清掉它，再改走 300 毫秒的變綠流程。
 
-```html 04-js/pages/148-js-mole.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：打地鼠</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button { font: inherit; }
-      .board { display: grid; grid-template-columns: repeat(3, 4.5rem); gap: 0.5rem; margin: 1rem 0; }
-      .hole { width: 4.5rem; height: 4.5rem; border: 2px solid #0f766e; background: #fef9c3; }
-      .hole.up { background: #ef4444; }
-      .hole.hit { background: #22c55e; }
-    </style>
-  </head>
-  <body>
-    <p>剩餘 <span id="time">20</span> 秒，分數 <span id="score">0</span></p>
-    <button type="button" id="start">開始</button>
-    <div id="board" class="board">
-      <button type="button" class="hole" data-index="0"></button>
-      <button type="button" class="hole" data-index="1"></button>
-      <button type="button" class="hole" data-index="2"></button>
-      <button type="button" class="hole" data-index="3"></button>
-      <button type="button" class="hole" data-index="4"></button>
-      <button type="button" class="hole" data-index="5"></button>
-      <button type="button" class="hole" data-index="6"></button>
-      <button type="button" class="hole" data-index="7"></button>
-      <button type="button" class="hole" data-index="8"></button>
-    </div>
-    <script>
-      const STAY_MS = 1200;
-      const SPAWN_MS = 700;
-
-      const state = {
-        holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
-        score: 0,
-        timeLeft: 20,
-        playing: false,
-        clockId: 0,
-        spawnId: 0,
-        hideIds: {},
-      };
-
-      const render = () => {
-        document.querySelector('#score').textContent = String(state.score);
-        document.querySelector('#time').textContent = String(state.timeLeft);
-        document.querySelectorAll('.hole').forEach((hole) => {
-          const index = Number(hole.dataset.index);
-          hole.classList.remove('up', 'hit');
-          if (state.holes[index] !== 'idle') hole.classList.add(state.holes[index]);
-        });
-        document.querySelector('#start').disabled = state.playing;
-      };
-
-      const clearTimers = () => {
-        clearInterval(state.clockId);
-        clearInterval(state.spawnId);
-        Object.keys(state.hideIds).forEach((key) => {
-          clearTimeout(state.hideIds[key]);
-        });
-        state.hideIds = {};
-      };
-
-      const spawn = () => {
-        const idleIndexes = [];
-        state.holes.forEach((status, index) => {
-          if (status === 'idle') idleIndexes.push(index);
-        });
-        if (idleIndexes.length === 0) return;
-        const index = idleIndexes[Math.floor(Math.random() * idleIndexes.length)];
-        state.holes[index] = 'up';
-        state.hideIds[index] = setTimeout(() => {
-          if (state.holes[index] === 'up') state.holes[index] = 'idle';
-          render();
-        }, STAY_MS);
-        render();
-      };
-
-      const hit = (index) => {
-        if (!state.playing || state.holes[index] !== 'up') return;
-        clearTimeout(state.hideIds[index]);
-        state.holes[index] = 'hit';
-        state.score += 1;
-        render();
-        state.hideIds[index] = setTimeout(() => {
-          state.holes[index] = 'idle';
-          render();
-        }, 300);
-      };
-
-      const end = () => {
-        state.playing = false;
-        clearTimers();
-        state.holes = ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'];
-        render();
-      };
-
-      const tick = () => {
-        state.timeLeft -= 1;
-        if (state.timeLeft <= 0) {
-          state.timeLeft = 0;
-          end();
-          return;
-        }
-        render();
-      };
-
-      const start = () => {
-        if (state.playing) return;
-        clearTimers();
-        state.score = 0;
-        state.timeLeft = 20;
-        state.playing = true;
-        state.holes = ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'];
-        state.clockId = setInterval(tick, 1000);
-        state.spawnId = setInterval(spawn, SPAWN_MS);
-        spawn();
-      };
-
-      document.querySelector('#board').addEventListener('click', (event) => {
-        const hole = event.target.closest('.hole');
-        if (!hole || !event.currentTarget.contains(hole)) return;
-        hit(Number(hole.dataset.index));
-      });
-
-      document.querySelector('#start').addEventListener('click', start);
-      render();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/148-js-mole.html.final
+  // ...
+      </div>
+      <script>
+-       const STAY_MS = 800;
++       const STAY_MS = 1200;
+        const SPAWN_MS = 700;
+  
+        const state = {
+          // ...
 ```
 
 </details>

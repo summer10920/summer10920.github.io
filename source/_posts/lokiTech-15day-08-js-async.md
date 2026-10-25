@@ -74,26 +74,14 @@ B
 
 D 與 A、C 一樣留在呼叫堆疊上，計時器裡的 B 要等這一段都結束。
 
-```html 04-js/pages/149-js-order.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>執行順序</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log('A');
-      setTimeout(() => {
-        console.log('B');
-      }, 0);
-      console.log('C');
-      console.log('D');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/149-js-order.html
+  // ...
+        }, 0);
+        console.log('C');
++       console.log('D');
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -196,44 +184,21 @@ JavaScript 一次只做一件事。函式呼叫時會疊到上面，做完才拿
 
 fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才能印出離開。
 
-```html 04-js/pages/150-js-stack.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>呼叫堆疊與單執行緒</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const fourth = () => {
-        console.log('進入 fourth');
-        console.log('離開 fourth');
-      };
-
-      const third = () => {
-        console.log('進入 third');
-        fourth();
-        console.log('離開 third');
-      };
-
-      const second = () => {
-        console.log('進入 second');
-        third();
-        console.log('離開 second');
-      };
-
-      const first = () => {
-        console.log('進入 first');
-        second();
-        console.log('離開 first');
-      };
-
-      first();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/150-js-stack.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
++       const fourth = () => {
++         console.log('進入 fourth');
++         console.log('離開 fourth');
++       };
++ 
+        const third = () => {
+          console.log('進入 third');
++         fourth();
+          console.log('離開 third');
+        };
+        // ...
 ```
 
 ```text
@@ -324,28 +289,16 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 兩個計時器都在同步程式裡登記，依照登記順序進入任務佇列。堆疊清空後，事件迴圈一個接一個拿出它們。
 
-```html 04-js/pages/151-js-queue.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>瀏覽器代為等待與任務佇列</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log('開始');
-      setTimeout(() => {
-        console.log('計時器');
-      }, 0);
-      console.log('結束');
-      setTimeout(() => {
-        console.log('計時器 2');
-      }, 0);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/151-js-queue.html
+  // ...
+        }, 0);
+        console.log('結束');
++       setTimeout(() => {
++         console.log('計時器 2');
++       }, 0);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -425,36 +378,14 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 「堆疊清空」還寫在這一次點擊的回呼裡，所以它比任務佇列裡的計時器早。
 
-```html 04-js/pages/152-js-block.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>長時間運算會卡住畫面</title>
-  </head>
-  <body>
-    <p>點一次按鈕，看畫面與 Console。按鈕會一直顯示「開始」，計算結束才變成「計算結束」。</p>
-    <button type="button" id="busy">開始</button>
-    <script>
-      const button = document.querySelector('#busy');
-      button.addEventListener('click', () => {
-        console.log('開始計算');
-        button.textContent = '計算中';
-        setTimeout(() => {
-          console.log('計時器到了');
-        }, 0);
-        const end = Date.now() + 3000;
-        while (Date.now() < end) {
-          // 故意留在這個函式裡，讓呼叫堆疊一直有東西
-        }
-        button.textContent = '計算結束';
-        console.log('計算結束');
-        console.log('堆疊清空');
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/152-js-block.html
+  // ...
+          button.textContent = '計算結束';
+          console.log('計算結束');
++         console.log('堆疊清空');
+        });
+      </script>
+    // ...
 ```
 
 ```text
@@ -524,31 +455,16 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 兩個微任務都在堆疊清空時一次做完。任務佇列要等這一批微任務結束才進得來。
 
-```html 04-js/pages/153-js-micro.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>微任務優先</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log('同步');
-      queueMicrotask(() => {
-        console.log('微任務');
-      });
-      queueMicrotask(() => {
-        console.log('微任務 2');
-      });
-      setTimeout(() => {
-        console.log('任務');
-      }, 0);
-      console.log('同步結束');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/153-js-micro.html
+  // ...
+          console.log('微任務');
+        });
++       queueMicrotask(() => {
++         console.log('微任務 2');
++       });
+        setTimeout(() => {
+          console.log('任務');
+        // ...
 ```
 
 ```text
@@ -625,33 +541,15 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 改的是計時器裡交給 callback 的引數。主程式那兩行仍是同步，所以還是先印。
 
-```html 04-js/pages/154-js-callback.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>callback 寫法</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const done = (name) => {
-        console.log(name);
-      };
-
-      const loadName = (callback) => {
-        setTimeout(() => {
-          callback('小林');
-        }, 10);
-      };
-
-      console.log('開始');
-      loadName(done);
-      console.log('已登記');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/154-js-callback.html
+  // ...
+        const loadName = (callback) => {
+          setTimeout(() => {
+-           callback('小安');
++           callback('小林');
+          }, 10);
+        };
+        // ...
 ```
 
 ```text
@@ -718,30 +616,14 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 做完寫在最內層，所以仍然要等三個計時器都跑過。它不會跑到第一步前面。
 
-```html 04-js/pages/155-js-nest.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>巢狀地獄</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      setTimeout(() => {
-        console.log('第一步');
-        setTimeout(() => {
-          console.log('第二步');
-          setTimeout(() => {
-            console.log('第三步');
-            console.log('做完');
+```diff 04-js/pages/155-js-nest.html
+  // ...
+            setTimeout(() => {
+              console.log('第三步');
++             console.log('做完');
+            }, 10);
           }, 10);
-        }, 10);
-      }, 10);
-    </script>
-  </body>
-</html>
+        // ...
 ```
 
 ```text
@@ -832,35 +714,15 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 改的是完成時帶出的值。執行器仍然同步先跑，then 仍然等這一輪同步程式結束。
 
-```html 04-js/pages/156-js-promise.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>三種狀態</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      new Promise((resolve) => {
-        console.log('執行器');
-        resolve('好了');
-      }).then((value) => {
-        console.log(value);
-      });
-      console.log('同步結束');
-
-      new Promise((resolve, reject) => {
-        resolve('第一次');
-        resolve('第二次');
-        reject(new Error('太晚'));
-      }).then((value) => {
-        console.log(value);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/156-js-promise.html
+  // ...
+        new Promise((resolve) => {
+          console.log('執行器');
+-         resolve('完成');
++         resolve('好了');
+        }).then((value) => {
+          console.log(value);
+        // ...
 ```
 
 ```text
@@ -934,32 +796,15 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 完成時走 then，不走 catch。finally 不看成功或失敗，所以收尾還在。
 
-```html 04-js/pages/157-js-then.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>then、catch、finally</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      new Promise((resolve, reject) => {
-        resolve('讀取完成');
-      })
-        .then((value) => {
-          console.log(value);
+```diff 04-js/pages/157-js-then.html
+  // ...
+      <script>
+        new Promise((resolve, reject) => {
+-         reject(new Error('讀取失敗'));
++         resolve('讀取完成');
         })
-        .catch((error) => {
-          console.log(error.message);
-        })
-        .finally(() => {
-          console.log('收尾');
-        });
-    </script>
-  </body>
-</html>
+          .then((value) => {
+            // ...
 ```
 
 ```text
@@ -1032,34 +877,16 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 1 先加 10 得到 11，wait 再收到 12。延遲只影響何時印出，不影響最後的數字。
 
-```html 04-js/pages/158-js-chain.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>鏈式傳值</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const wait = (value) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(value);
-          }, 10);
-        });
-      };
-
-      Promise.resolve(1)
-        .then((n) => n + 10)
-        .then((n) => wait(n + 1))
-        .then((n) => {
-          console.log(n);
-        });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/158-js-chain.html
+  // ...
+        };
+  
+        Promise.resolve(1)
+-         .then((n) => n + 1)
++         .then((n) => n + 10)
+          .then((n) => wait(n + 1))
+          .then((n) => {
+            // ...
 ```
 
 ```text
@@ -1127,34 +954,16 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 catch 再拋出錯誤時，它回傳的 Promise 是拒絕的。後面的 then 會被跳過，而且這個拒絕沒有下一個 catch。
 
-```html 04-js/pages/159-js-error.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>集中錯誤處理</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      Promise.resolve()
-        .then(() => {
-          throw new Error('第二步失敗');
-        })
-        .then(() => {
-          console.log('跳過');
-        })
-        .catch((error) => {
-          console.log('已處理');
-          throw error;
-        })
-        .then(() => {
-          console.log('繼續');
-        });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/159-js-error.html
+  // ...
+          })
+          .catch((error) => {
+-           console.log(error.message);
++           console.log('已處理');
++           throw error;
+          })
+          .then(() => {
+            // ...
 ```
 
 ```text
@@ -1225,38 +1034,16 @@ step 等 10 毫秒後印出標籤並 resolve。鏈上每次都 return 下一個 
 
 做完是第三步完成之後的下一環，所以它是最後一行。catch 沒有錯誤可接時不會印東西。
 
-```html 04-js/pages/160-js-flat.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>改寫巢狀地獄</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const step = (label) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            console.log(label);
-            resolve(label);
-          }, 10);
-        });
-      };
-
-      step('第一步')
-        .then(() => step('第二步'))
-        .then(() => step('第三步'))
-        .then(() => {
-          console.log('做完');
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/160-js-flat.html
+  // ...
+          .then(() => step('第二步'))
+          .then(() => step('第三步'))
++         .then(() => {
++           console.log('做完');
++         })
+          .catch((error) => {
+            console.log(error.message);
+          // ...
 ```
 
 ```text
@@ -1340,38 +1127,19 @@ rejected
 
 乙的名字就是拒絕原因。all 不會印出「甲,乙」，因為整組已經拒絕。allSettled 仍會印兩行 status。
 
-```html 04-js/pages/161-js-all.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Promise.all 與 allSettled</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const task = (name, ms, fail) => {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (fail) reject(new Error(name));
-            else resolve(name);
-          }, ms);
+```diff 04-js/pages/161-js-all.html
+  // ...
+          });
+        };
+  
+-       Promise.all([task('甲', 20, false), task('乙', 10, false)]).then((list) => {
+-         console.log(list.join(','));
++       Promise.all([task('甲', 20, false), task('乙', 10, true)]).catch((error) => {
++         console.log(error.message);
         });
-      };
-
-      Promise.all([task('甲', 20, false), task('乙', 10, true)]).catch((error) => {
-        console.log(error.message);
-      });
-
-      Promise.allSettled([task('甲', 20, false), task('乙', 10, true)]).then((list) => {
-        list.forEach((item) => {
-          console.log(item.status);
-        });
-      });
-    </script>
-  </body>
-</html>
+  
+        Promise.allSettled([task('甲', 20, false), task('乙', 10, true)]).then((list) => {
+          // ...
 ```
 
 ```text
@@ -1452,40 +1220,19 @@ AggregateError
 
 最快落地的是拒絕，所以第一行變成拒絕:快。any 的兩組時間點不受這次修改影響。
 
-```html 04-js/pages/162-js-race.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Promise.race 與 any</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const task = (name, ms, fail) => {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (fail) reject(new Error(name));
-            else resolve(name);
-          }, ms);
+```diff 04-js/pages/162-js-race.html
+  // ...
+          });
+        };
+  
+-       Promise.race([task('慢', 30, false), task('快', 10, false)]).then((name) => {
+-         console.log(name);
++       Promise.race([task('慢', 30, false), task('快', 10, true)]).catch((error) => {
++         console.log('拒絕:' + error.message);
         });
-      };
-
-      Promise.race([task('慢', 30, false), task('快', 10, true)]).catch((error) => {
-        console.log('拒絕:' + error.message);
-      });
-
-      Promise.any([task('失敗', 5, true), task('成功', 15, false)]).then((name) => {
-        console.log(name);
-      });
-
-      Promise.any([task('甲', 5, true), task('乙', 10, true)]).catch((error) => {
-        console.log(error.name);
-      });
-    </script>
-  </body>
-</html>
+  
+        Promise.any([task('失敗', 5, true), task('成功', 15, false)]).then((name) => {
+          // ...
 ```
 
 ```text
@@ -1571,46 +1318,16 @@ AggregateError
 
 延遲只改何時印出等完。圖的寬度來自檔案本身，跟等了幾毫秒無關。
 
-```html 04-js/pages/163-js-wrap.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：計時器與圖片</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const wait = (ms) => {
-        return new Promise((resolve) => {
-          setTimeout(resolve, ms);
-        });
-      };
-
-      const loadImage = (src) => {
-        return new Promise((resolve, reject) => {
-          const image = new Image();
-          image.addEventListener('load', () => resolve(image));
-          image.addEventListener('error', () => reject(new Error('圖片載入失敗')));
-          image.src = src;
-        });
-      };
-
-      const tiny =
-        'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
-      wait(30)
-        .then(() => {
-          console.log('等完');
-          return loadImage(tiny);
-        })
-        .then((image) => {
-          console.log(image.naturalWidth);
-        });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/163-js-wrap.html
+  // ...
+        const tiny =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  
+-       wait(10)
++       wait(30)
+          .then(() => {
+            console.log('等完');
+            // ...
 ```
 
 ```text
@@ -1689,34 +1406,18 @@ wait 在 10 毫秒後 resolve 它收到的毫秒數。run 印出開始之後才 
 
 改的是 await 之後的那一行，所以它還是最後才印。函式外的已呼叫不會被 await 拖住。
 
-```html 04-js/pages/164-js-async.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>async 函式與 await</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const wait = (ms) => {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve(ms), ms);
-        });
-      };
-
-      const run = async () => {
-        console.log('開始');
-        await wait(10);
-        console.log('等到了');
-      };
-
-      run();
-      console.log('已呼叫');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/164-js-async.html
+  // ...
+        const run = async () => {
+          console.log('開始');
+-         const ms = await wait(10);
+-         console.log(ms);
++         await wait(10);
++         console.log('等到了');
+        };
+  
+        run();
+        // ...
 ```
 
 ```text
@@ -1793,36 +1494,23 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
 
 沒有例外時不進 catch。await 的下一行會執行，finally 仍會收尾。
 
-```html 04-js/pages/165-js-try.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>try、catch、finally</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const fail = async () => {
-        return '完成';
-      };
-
-      const run = async () => {
-        try {
-          const value = await fail();
-          console.log(value);
-        } catch (error) {
-          console.log(error.message);
-        } finally {
-          console.log('收尾');
-        }
-      };
-
-      run();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/165-js-try.html
+  // ...
+      <script>
+        const fail = async () => {
+-         throw new Error('失敗');
++         return '完成';
+        };
+  
+        const run = async () => {
+          try {
+-           await fail();
+-           console.log('不會到');
++           const value = await fail();
++           console.log(value);
+          } catch (error) {
+            console.log(error.message);
+          // ...
 ```
 
 ```text
@@ -1909,41 +1597,20 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
 
 並行兩件 50 毫秒後才結束，依序乙在依序甲之後再 20 毫秒就印出。所以依序兩行會排到並行前面。
 
-```html 04-js/pages/166-js-parallel.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>依序等待與 Promise.all</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const task = (name, ms) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            console.log(name);
-            resolve(name);
-          }, ms);
-        });
-      };
-
-      const oneByOne = async () => {
-        await task('依序甲', 20);
-        await task('依序乙', 5);
-      };
-
-      const together = async () => {
-        await Promise.all([task('並行甲', 50), task('並行乙', 50)]);
-        console.log('並行結束');
-      };
-
-      oneByOne();
-      together();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/166-js-parallel.html
+  // ...
+        const oneByOne = async () => {
+          await task('依序甲', 20);
+-         await task('依序乙', 20);
++         await task('依序乙', 5);
+        };
+  
+        const together = async () => {
+-         await Promise.all([task('並行甲', 20), task('並行乙', 20)]);
++         await Promise.all([task('並行甲', 50), task('並行乙', 50)]);
+          console.log('並行結束');
+        };
+        // ...
 ```
 
 ```text
@@ -2026,38 +1693,16 @@ load 每件 10 毫秒。for...of 三次是一段一段等，所以 1、2、3 之
 
 迴圈與 all 都讀同一個陣列。陣列只剩兩格時，兩種寫法都只會處理 4 和 5。
 
-```html 04-js/pages/167-js-for-await.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>迴圈裡的 await</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const ids = [4, 5];
-
-      const load = (id) => {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve(id), 10);
-        });
-      };
-
-      const run = async () => {
-        for (const id of ids) {
-          const value = await load(id);
-          console.log(value);
-        }
-        const all = await Promise.all(ids.map((id) => load(id)));
-        console.log(all.join(','));
-      };
-
-      run();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/167-js-for-await.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
+-       const ids = [1, 2, 3];
++       const ids = [4, 5];
+  
+        const load = (id) => {
+          return new Promise((resolve) => {
+            // ...
 ```
 
 ```text
@@ -2134,28 +1779,17 @@ SyntaxError
 
 合法文字可以 parse 成物件。stringify 那一行沒有改，undefined 的鍵仍然不會出現。
 
-```html 04-js/pages/168-js-json-rule.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>語法規則與常見錯誤</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      try {
-        const data = JSON.parse('{"name":"小安"}');
-        console.log(data.name);
-      } catch (error) {
-        console.log(error.name);
-      }
-
-      console.log(JSON.stringify({ name: '小安', note: undefined }));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/168-js-json-rule.html
+  // ...
+      <script>
+        try {
+-         JSON.parse("{ name: '小安' }");
+-         console.log('不該成功');
++         const data = JSON.parse('{"name":"小安"}');
++         console.log(data.name);
+        } catch (error) {
+          console.log(error.name);
+        // ...
 ```
 
 ```text
@@ -2221,27 +1855,21 @@ true
 
 stringify 會把數字欄位一起寫進文字。parse 還原後 count 仍是數字 2，不是字串。
 
-```html 04-js/pages/169-js-json.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSON.parse 與 JSON.stringify</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const note = { title: '讀書', done: false, count: 2 };
-      const raw = JSON.stringify(note);
-      const back = JSON.parse(raw);
-      console.log(raw);
-      console.log(back.title);
-      console.log(back !== note);
-      console.log(back.count);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/169-js-json.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
+-       const note = { title: '讀書', done: false };
++       const note = { title: '讀書', done: false, count: 2 };
+        const raw = JSON.stringify(note);
+        const back = JSON.parse(raw);
+        // ...
+        console.log(back.title);
+        console.log(back !== note);
++       console.log(back.count);
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -2317,34 +1945,15 @@ true
 
 parse 會得到三個物件。forEach 多跑一圈，所以清單與 Console 都多一筆。
 
-```html 04-js/pages/170-js-json-read.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>從文字還原資料</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-    </style>
-  </head>
-  <body>
-    <ul id="list"></ul>
-    <script>
-      const raw = '[{"name":"筆","price":25},{"name":"紙","price":40},{"name":"尺","price":15}]';
-      const items = JSON.parse(raw);
-      const list = document.querySelector('#list');
-
-      items.forEach((item) => {
-        const li = document.createElement('li');
-        li.textContent = item.name + ' ' + item.price;
-        list.append(li);
-        console.log(item.name);
-      });
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/170-js-json-read.html
+  // ...
+      <ul id="list"></ul>
+      <script>
+-       const raw = '[{"name":"筆","price":25},{"name":"紙","price":40}]';
++       const raw = '[{"name":"筆","price":25},{"name":"紙","price":40},{"name":"尺","price":15}]';
+        const items = JSON.parse(raw);
+        const list = document.querySelector('#list');
+        // ...
 ```
 
 ```text
@@ -2410,29 +2019,15 @@ string
 
 欄位名稱仍是 title。改的是值，所以雙引號裡的文字跟著換，done 那一段還在。
 
-```html 04-js/pages/171-js-json-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>把資料收成文字</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-    </style>
-  </head>
-  <body>
-    <pre id="out"></pre>
-    <script>
-      const state = { title: '寫練習', done: false };
-      const text = JSON.stringify(state);
-      document.querySelector('#out').textContent = text;
-      console.log(text);
-      console.log(typeof text);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/171-js-json-text.html
+  // ...
+      <pre id="out"></pre>
+      <script>
+-       const state = { title: '讀書', done: false };
++       const state = { title: '寫練習', done: false };
+        const text = JSON.stringify(state);
+        document.querySelector('#out').textContent = text;
+        // ...
 ```
 
 ```text
@@ -2534,30 +2129,15 @@ true
 
 url 會被補成絕對位址。用 includes 看檔名，就不必把連接埠寫死。
 
-```html 04-js/pages/172-js-http.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>請求與回應的組成</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const response = await fetch('data/users.json');
-        const type = response.headers.get('content-type') || '';
-        console.log(response.status);
-        console.log(response.ok);
-        console.log(type.includes('json'));
-        console.log(response.url.includes('users.json'));
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/172-js-http.html
+  // ...
+          console.log(response.ok);
+          console.log(type.includes('json'));
++         console.log(response.url.includes('users.json'));
+        };
+  
+        main();
+      // ...
 ```
 
 ```text
@@ -2628,28 +2208,15 @@ true
 
 兩個請求都指向不存在的檔，所以兩個狀態碼相同。這仍然不是例外。
 
-```html 04-js/pages/173-js-status.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>狀態碼分類</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const okRes = await fetch('data/missing.json');
-        const missing = await fetch('data/missing.json');
-        console.log(okRes.status);
-        console.log(missing.status);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/173-js-status.html
+  // ...
+      <script>
+        const main = async () => {
+-         const okRes = await fetch('data/items.json');
++         const okRes = await fetch('data/missing.json');
+          const missing = await fetch('data/missing.json');
+          console.log(okRes.status);
+          // ...
 ```
 
 ```text
@@ -2727,29 +2294,19 @@ true
 
 users.json 的欄位是 name 與 city。這一支改印城市，筆數仍是兩筆。
 
-```html 04-js/pages/174-js-fetch.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>fetch 與 response.json</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const response = await fetch('data/users.json');
-        const items = await response.json();
-        items.forEach((item) => {
-          console.log(item.city);
-        });
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/174-js-fetch.html
+  // ...
+      <script>
+        const main = async () => {
+-         const response = await fetch('data/items.json');
++         const response = await fetch('data/users.json');
+          const items = await response.json();
+          items.forEach((item) => {
+-           console.log(item.name);
++           console.log(item.city);
+          });
+        };
+        // ...
 ```
 
 ```text
@@ -2822,37 +2379,17 @@ load 先印出狀態碼，確認回應已經回來，再在不是 2xx 時拋出�
 
 200 是成功，ok 為 true，所以不會 throw。json() 得到三筆，長度是 3。
 
-```html 04-js/pages/175-js-ok.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>檢查 response.ok</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const load = async (url) => {
-        try {
-          const response = await fetch(url);
-          console.log(response.status);
-          if (!response.ok) throw new Error('狀態 ' + response.status);
-          const data = await response.json();
-          console.log(data.length);
-        } catch (error) {
-          console.log(error.message);
-        }
-      };
-
-      const main = async () => {
-        await load('data/items.json');
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/175-js-ok.html
+  // ...
+        };
+  
+        const main = async () => {
+-         await load('data/missing.json');
++         await load('data/items.json');
+        };
+  
+        main();
+      // ...
 ```
 
 ```text
@@ -2929,32 +2466,15 @@ true
 
 參數改了，查詢字串與回來的 userId 一起改。中間那行仍只是在確認陣列不是空的。
 
-```html 04-js/pages/176-js-query.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>查詢參數</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const query = new URLSearchParams({ userId: '2' });
-        console.log(query.toString());
-        const response = await fetch(
-          'https://jsonplaceholder.typicode.com/posts?' + query.toString()
-        );
-        const posts = await response.json();
-        console.log(posts.length > 0);
-        console.log(posts[0].userId);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/176-js-query.html
+  // ...
+      <script>
+        const main = async () => {
+-         const query = new URLSearchParams({ userId: '1' });
++         const query = new URLSearchParams({ userId: '2' });
+          console.log(query.toString());
+          const response = await fetch(
+            // ...
 ```
 
 ```text
@@ -3029,32 +2549,15 @@ true
 
 標題來回應的 JSON，也就是你放進 stringify 的那個欄位。方法與標頭都沒改。
 
-```html 04-js/pages/177-js-post.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>POST 送 JSON</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: '第二則', body: '第一行', userId: 1 }),
-        });
-        const created = await response.json();
-        console.log(response.status);
-        console.log(created.title);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/177-js-post.html
+  // ...
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+-           body: JSON.stringify({ title: '新筆記', body: '第一行', userId: 1 }),
++           body: JSON.stringify({ title: '第二則', body: '第一行', userId: 1 }),
+          });
+          const created = await response.json();
+          // ...
 ```
 
 ```text
@@ -3137,41 +2640,15 @@ REST 是一種慣例：同一種資源用同一條路徑，動作靠方法區分
 
 200 屬於 2xx，所以 ok 是 true。三個方法的狀態碼那三行不變。
 
-```html 04-js/pages/178-js-rest.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PUT、PATCH、DELETE 與 REST</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const base = 'https://jsonplaceholder.typicode.com/posts/1';
-        const headers = { 'Content-Type': 'application/json' };
-        const putRes = await fetch(base, {
-          method: 'PUT',
-          headers,
-          body: JSON.stringify({ id: 1, title: '整筆更新', body: '全文', userId: 1 }),
-        });
-        const patchRes = await fetch(base, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify({ title: '只改標題' }),
-        });
-        const deleteRes = await fetch(base, { method: 'DELETE' });
-        console.log(putRes.status);
-        console.log(patchRes.status);
-        console.log(deleteRes.status);
-        console.log(putRes.ok);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/178-js-rest.html
+  // ...
+          console.log(patchRes.status);
+          console.log(deleteRes.status);
++         console.log(putRes.ok);
+        };
+  
+        main();
+      // ...
 ```
 
 ```text
@@ -3252,42 +2729,15 @@ true
 
 送出前先把欄位改成小林。FormData 在 requestSubmit 時讀到的就是這個新值。
 
-```html 04-js/pages/179-js-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FormData 送出表單</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-    </style>
-  </head>
-  <body>
-    <form id="editor">
-      <input name="name" value="小安" required />
-      <button type="submit">送出</button>
-    </form>
-    <script>
-      const form = document.querySelector('#editor');
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const data = new FormData(form);
-        console.log(data.get('name'));
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          body: data,
+```diff 04-js/pages/179-js-form.html
+  // ...
+          console.log(response.status);
         });
-        console.log(response.status);
-      });
-
-      document.querySelector('[name="name"]').value = '小林';
-      form.requestSubmit();
-    </script>
-  </body>
-</html>
+  
++       document.querySelector('[name="name"]').value = '小林';
+        form.requestSubmit();
+      </script>
+    // ...
 ```
 
 ```text
@@ -3405,73 +2855,15 @@ ready
 
 404 會進你丟出的錯誤，catch 把狀態改成 error。json() 不會被呼叫，items 保持空陣列。
 
-```html 04-js/pages/180-js-loading.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>三種狀態的重繪</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-      form { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
-      li { margin: 0.35rem 0; }
-    </style>
-  </head>
-  <body>
-    <p id="status"></p>
-    <ul id="list"></ul>
-    <button type="button" id="reload">重新載入</button>
-    <script>
-      const state = { status: 'idle', items: [] };
-      const statusEl = document.querySelector('#status');
-      const list = document.querySelector('#list');
-
-      const render = () => {
-        const label = {
-          idle: '尚未載入',
-          loading: '載入中',
-          ready: '完成',
-          error: '讀取失敗',
-        };
-        statusEl.textContent = label[state.status];
-        list.replaceChildren();
-        if (state.status !== 'ready') return;
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          li.textContent = item.name + ' ' + item.price;
-          list.append(li);
-        });
-      };
-
-      const load = async () => {
-        state.status = 'loading';
-        state.items = [];
-        render();
-        console.log(state.status);
-        try {
-          await new Promise((resolve) => setTimeout(resolve, 200));
-          const response = await fetch('data/missing.json');
-          if (!response.ok) throw new Error(String(response.status));
-          state.items = await response.json();
-          state.status = 'ready';
-        } catch (error) {
-          state.status = 'error';
-          state.items = [];
-        }
-        render();
-        console.log(state.status);
-        console.log(state.items.length);
-      };
-
-      document.querySelector('#reload').addEventListener('click', () => {
-        load();
-      });
-      load();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/180-js-loading.html
+  // ...
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+-           const response = await fetch('data/items.json');
++           const response = await fetch('data/missing.json');
+            if (!response.ok) throw new Error(String(response.status));
+            state.items = await response.json();
+            // ...
 ```
 
 ```text
@@ -3559,49 +2951,14 @@ main 等 json() 之後，把每一筆做成 li，狀態文字寫成完成，並�
 
 forEach 多一行 log 就會依陣列順序印出名字。畫面的列數仍然是三。
 
-```html 04-js/pages/181-js-items.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>抓清單與新增</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-      form { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
-      li { margin: 0.35rem 0; }
-    </style>
-  </head>
-  <body>
-    <p id="status"></p>
-    <form id="editor" novalidate>
-      <input name="name" required placeholder="名稱" />
-      <input name="price" required placeholder="價格" />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const statusEl = document.querySelector('#status');
-      const list = document.querySelector('#list');
-
-      const main = async () => {
-        const response = await fetch('data/items.json');
-        const items = await response.json();
-        statusEl.textContent = '完成';
-        items.forEach((item) => {
-          const li = document.createElement('li');
-          li.textContent = item.name + ' ' + item.price;
-          list.append(li);
-          console.log(item.name);
-        });
-        console.log(items.length);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/181-js-items.html
+  // ...
+            li.textContent = item.name + ' ' + item.price;
+            list.append(li);
++           console.log(item.name);
+          });
+          console.log(items.length);
+        // ...
 ```
 
 ```text
@@ -3736,97 +3093,15 @@ ready
 
 items[0] 就是檔案裡的第一個物件。送出表單的流程沒有改。
 
-```html 04-js/pages/181-js-items.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>抓清單與新增</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-      form { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
-      li { margin: 0.35rem 0; }
-    </style>
-  </head>
-  <body>
-    <p id="status"></p>
-    <form id="editor" novalidate>
-      <input name="name" required placeholder="名稱" />
-      <input name="price" required placeholder="價格" />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const state = { status: 'loading', items: [] };
-      const statusEl = document.querySelector('#status');
-      const list = document.querySelector('#list');
-      const form = document.querySelector('#editor');
-
-      const render = () => {
-        const label = { loading: '載入中', ready: '', error: '讀取失敗' };
-        statusEl.textContent = label[state.status];
-        list.replaceChildren();
-        if (state.status !== 'ready') return;
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          li.textContent = item.name + ' ' + item.price;
-          list.append(li);
-        });
-      };
-
-      const load = async () => {
-        state.status = 'loading';
-        state.items = [];
-        render();
-        console.log(state.status);
-        try {
-          const response = await fetch('data/items.json');
-          if (!response.ok) throw new Error(String(response.status));
-          state.items = await response.json();
-          state.status = 'ready';
-        } catch (error) {
-          state.status = 'error';
-        }
-        render();
-        console.log(state.status);
-        console.log(state.items.length);
-        console.log(state.items[0].name);
-      };
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        const data = new FormData(form);
-        const name = String(data.get('name')).trim();
-        const price = Number(data.get('price'));
-        if (!name || Number.isNaN(price)) return;
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: name, body: String(price), userId: 1 }),
-        });
-        if (!response.ok) {
-          state.status = 'error';
-          render();
-          return;
-        }
-        const created = await response.json();
-        state.items.push({ id: created.id, name, price });
-        state.status = 'ready';
-        form.reset();
-        render();
-        console.log(name);
-      });
-
-      load();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/181-js-items.html.final
+  // ...
+          console.log(state.status);
+          console.log(state.items.length);
++         console.log(state.items[0].name);
+        };
+  
+        form.addEventListener('submit', async (event) => {
+          // ...
 ```
 
 ```text
@@ -3905,37 +3180,18 @@ true
 
 沒有人中止時，await 會拿到回應。這一支不讀本體，只確認它完成。
 
-```html 04-js/pages/182-js-abort.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：取消與逾時</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        const controller = new AbortController();
-        const job = fetch('data/items.json', { signal: controller.signal });
-        try {
-          await job;
-          console.log('完成');
-        } catch (error) {
-          console.log(error.name);
-        }
-
-        const response = await fetch('data/items.json', {
-          signal: AbortSignal.timeout(3000),
-        });
-        console.log(response.ok);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/182-js-abort.html
+  // ...
+          const controller = new AbortController();
+          const job = fetch('data/items.json', { signal: controller.signal });
+-         controller.abort();
+          try {
+            await job;
+-           console.log('不該完成');
++           console.log('完成');
+          } catch (error) {
+            console.log(error.name);
+          // ...
 ```
 
 ```text
@@ -4005,32 +3261,15 @@ true
 
 同一個來源的檔案可以讀到本體，try 裡的 log 會執行，不會進 catch。
 
-```html 04-js/pages/183-js-cors.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：同源政策與 CORS</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const main = async () => {
-        try {
-          await fetch('data/items.json');
-          console.log('沒被擋');
-        } catch (error) {
-          console.log(error.name);
-        }
-        const local = await fetch('data/items.json');
-        console.log(local.ok);
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/183-js-cors.html
+  // ...
+        const main = async () => {
+          try {
+-           await fetch('https://example.com/');
++           await fetch('data/items.json');
+            console.log('沒被擋');
+          } catch (error) {
+            // ...
 ```
 
 ```text
@@ -4107,27 +3346,20 @@ null
 
 removeItem 不影響另一個儲存區。step 改的是寫入的字串，getItem 就讀到 2。
 
-```html 04-js/pages/184-js-storage.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>localStorage 與 sessionStorage</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      localStorage.setItem('color', 'teal');
-      sessionStorage.setItem('step', '2');
-      console.log(localStorage.getItem('color'));
-      console.log(sessionStorage.getItem('step'));
-      localStorage.removeItem('color');
-      console.log(localStorage.getItem('color'));
-      console.log(sessionStorage.getItem('step'));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/184-js-storage.html
+  // ...
+      <script>
+        localStorage.setItem('color', 'teal');
+-       sessionStorage.setItem('step', '1');
++       sessionStorage.setItem('step', '2');
+        console.log(localStorage.getItem('color'));
+        console.log(sessionStorage.getItem('step'));
+        localStorage.removeItem('color');
+        console.log(localStorage.getItem('color'));
++       console.log(sessionStorage.getItem('step'));
+      </script>
+    </body>
+  // ...
 ```
 
 ```text
@@ -4192,27 +3424,15 @@ string
 
 鍵名仍是 note。改的是物件裡的值，stringify 會把新標題寫進文字。
 
-```html 04-js/pages/185-js-storage-json.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>存物件要轉 JSON</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const note = { title: '寫練習', done: false };
-      localStorage.setItem('note', JSON.stringify(note));
-      const raw = localStorage.getItem('note');
-      const back = JSON.parse(raw);
-      console.log(typeof raw);
-      console.log(back.title);
-      localStorage.removeItem('note');
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/185-js-storage-json.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
+-       const note = { title: '讀書', done: false };
++       const note = { title: '寫練習', done: false };
+        localStorage.setItem('note', JSON.stringify(note));
+        const raw = localStorage.getItem('note');
+        // ...
 ```
 
 ```text
@@ -4345,94 +3565,15 @@ string
 
 標題是狀態的一部分，不是從儲存讀出來的。改程式裡的字，每次開啟都是這句。
 
-```html 04-js/pages/186-js-todo-keep.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>待辦清單重新整理後還在</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input, button { font: inherit; }
-      li { margin: 0.4rem 0; }
-      li.done span { text-decoration: line-through; }
-      li button { margin-left: 0.35rem; }
-    </style>
-  </head>
-  <body>
-    <form id="editor" novalidate>
-      <input id="title" name="title" required />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const state = {
-        nextId: 3,
-        items: [
-          { id: 1, title: '讀講義', done: false },
-          { id: 2, title: '交作業', done: true },
-        ],
-      };
-
-      const list = document.querySelector('#list');
-      const form = document.querySelector('#editor');
-
-      const render = () => {
-        list.replaceChildren();
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          if (item.done) li.classList.add('done');
-          const span = document.createElement('span');
-          span.textContent = item.title;
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.dataset.action = 'toggle';
-          toggle.dataset.id = String(item.id);
-          toggle.textContent = item.done ? '改回未完成' : '標成完成';
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.dataset.action = 'remove';
-          remove.dataset.id = String(item.id);
-          remove.textContent = '刪除';
-          li.append(span, toggle, remove);
-          list.append(li);
-        });
-      };
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        const data = new FormData(form);
-        const title = String(data.get('title'));
-        state.items.push({ id: state.nextId, title, done: false });
-        state.nextId += 1;
-        form.querySelector('#title').value = '';
-        render();
-      });
-
-      list.addEventListener('click', (event) => {
-        const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
-        const id = Number(button.dataset.id);
-        const item = state.items.find((row) => row.id === id);
-        if (!item) return;
-        if (button.dataset.action === 'toggle') item.done = !item.done;
-        if (button.dataset.action === 'remove') {
-          state.items = state.items.filter((row) => row.id !== id);
-        }
-        render();
-      });
-
-      render();
-      console.log(state.items.map((item) => item.title).join(','));
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/186-js-todo-keep.html
+  // ...
+          items: [
+            { id: 1, title: '讀講義', done: false },
+-           { id: 2, title: '改練習檔', done: true },
++           { id: 2, title: '交作業', done: true },
+          ],
+        };
+        // ...
 ```
 
 ```text
@@ -4589,118 +3730,15 @@ loadState 決定一開始的狀態。沒有舊資料時，Console 仍是兩個�
 
 fallback 只在沒有可使用的儲存時出現。改的是這份預設標題，不是已經存過的清單。
 
-```html 04-js/pages/186-js-todo-keep.html.final
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>待辦清單重新整理後還在</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input, button { font: inherit; }
-      li { margin: 0.4rem 0; }
-      li.done span { text-decoration: line-through; }
-      li button { margin-left: 0.35rem; }
-    </style>
-  </head>
-  <body>
-    <form id="editor" novalidate>
-      <input id="title" name="title" required />
-      <button type="submit">新增</button>
-    </form>
-    <ul id="list"></ul>
-    <script>
-      const KEY = 'todo-keep';
-
-      const fallback = () => ({
-        nextId: 3,
-        items: [
-          { id: 1, title: '讀講義', done: false },
-          { id: 2, title: '交作業', done: true },
-        ],
-      });
-
-      const loadState = () => {
-        const raw = localStorage.getItem(KEY);
-        if (!raw) return fallback();
-        try {
-          const data = JSON.parse(raw);
-          if (!data || !Array.isArray(data.items)) return fallback();
-          return { nextId: Number(data.nextId) || 1, items: data.items };
-        } catch (error) {
-          return fallback();
-        }
-      };
-
-      const state = loadState();
-      const list = document.querySelector('#list');
-      const form = document.querySelector('#editor');
-
-      const save = () => {
-        localStorage.setItem(
-          KEY,
-          JSON.stringify({ nextId: state.nextId, items: state.items })
-        );
-      };
-
-      const render = () => {
-        list.replaceChildren();
-        state.items.forEach((item) => {
-          const li = document.createElement('li');
-          if (item.done) li.classList.add('done');
-          const span = document.createElement('span');
-          span.textContent = item.title;
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.dataset.action = 'toggle';
-          toggle.dataset.id = String(item.id);
-          toggle.textContent = item.done ? '改回未完成' : '標成完成';
-          const remove = document.createElement('button');
-          remove.type = 'button';
-          remove.dataset.action = 'remove';
-          remove.dataset.id = String(item.id);
-          remove.textContent = '刪除';
-          li.append(span, toggle, remove);
-          list.append(li);
+```diff 04-js/pages/186-js-todo-keep.html.final
+  // ...
+          items: [
+            { id: 1, title: '讀講義', done: false },
+-           { id: 2, title: '改練習檔', done: true },
++           { id: 2, title: '交作業', done: true },
+          ],
         });
-      };
-
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        const data = new FormData(form);
-        const title = String(data.get('title'));
-        state.items.push({ id: state.nextId, title, done: false });
-        state.nextId += 1;
-        form.querySelector('#title').value = '';
-        save();
-        render();
-      });
-
-      list.addEventListener('click', (event) => {
-        const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
-        const id = Number(button.dataset.id);
-        const item = state.items.find((row) => row.id === id);
-        if (!item) return;
-        if (button.dataset.action === 'toggle') item.done = !item.done;
-        if (button.dataset.action === 'remove') {
-          state.items = state.items.filter((row) => row.id !== id);
-        }
-        save();
-        render();
-      });
-
-      render();
-      console.log(state.items.map((item) => item.title).join(','));
-    </script>
-  </body>
-</html>
+        // ...
 ```
 
 ```text
@@ -4759,23 +3797,17 @@ true
 
 寫入與檢查要用同一組名字與值。過期那一行仍然把 theme 清掉。
 
-```html 04-js/pages/187-js-cookie.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：Cookie</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      document.cookie = 'theme=dark';
-      console.log(document.cookie.includes('theme=dark'));
-      document.cookie = 'theme=; max-age=0';
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/187-js-cookie.html
+  // ...
+      <p>結果在 DevTools 的 Console。</p>
+      <script>
+-       document.cookie = 'theme=light';
+-       console.log(document.cookie.includes('theme=light'));
++       document.cookie = 'theme=dark';
++       console.log(document.cookie.includes('theme=dark'));
+        document.cookie = 'theme=; max-age=0';
+      </script>
+    // ...
 ```
 
 ```text
@@ -4850,25 +3882,15 @@ Bearer demo-token
 
 標頭是字串相接。token 變了，Bearer 這個詞還在前面。
 
-```html 04-js/pages/188-js-auth.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：Session 與 Token</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const sessionFlow = '瀏覽器自動帶上 cookie';
-      const token = 'demo-2';
-      const header = 'Bearer ' + token;
-      console.log(sessionFlow);
-      console.log(header);
-    </script>
-  </body>
-</html>
+```diff 04-js/pages/188-js-auth.html
+  // ...
+      <script>
+        const sessionFlow = '瀏覽器自動帶上 cookie';
+-       const token = 'demo-token';
++       const token = 'demo-2';
+        const header = 'Bearer ' + token;
+        console.log(sessionFlow);
+        // ...
 ```
 
 ```text

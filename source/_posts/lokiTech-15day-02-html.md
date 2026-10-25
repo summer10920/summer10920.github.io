@@ -74,19 +74,13 @@ HTML 用元素描述結構與內容：它不算數、不處理點擊邏輯，也
 
 語言改成 en 之後，畫面仍是原來那句中文，分頁標籤也還是「洛奇旅行」。語言代碼只告訴瀏覽器這份文件用哪一種語言來讀，不會當場翻譯。看完請改回 zh-Hant，後面的練習沿用繁體中文。
 
-```html 02-html/pages/01-shell.html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>洛奇旅行</title>
-  </head>
-  <body>
-    <!-- lang 改成 en，這句中文仍會留在畫面上 -->
-    <div>洛奇旅行的練習頁。這一行才出現在畫面裡。</div>
-  </body>
-</html>
+```diff 02-html/pages/01-shell.html
+  <!DOCTYPE html>
+- <html lang="zh-Hant">
++ <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      // ...
 ```
 
 </details>
@@ -142,18 +136,15 @@ head 這一區給瀏覽器、分頁標籤和搜尋引擎讀，字不會出現在
 
 分頁標籤變成「京都三日」，畫面仍是原來那一句練習頁的話。標題寫在 head，所以只換標籤上的字，正文要另外改。
 
-```html 02-html/pages/01-shell.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都三日</title>
-  </head>
-  <body>
-    <div>洛奇旅行的練習頁。這一行才出現在畫面裡。</div>
-  </body>
-</html>
+```diff 02-html/pages/01-shell.html
+  // ...
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-     <title>洛奇旅行</title>
++     <title>京都三日</title>
+    </head>
+    <body>
+      // ...
 ```
 
 </details>
@@ -205,20 +196,13 @@ body 裡的內容才會畫在畫面上。這一章還沒有標題和段落，先
 
 第三句用 div 包住，所以自己佔一行，接在前兩行下面。分頁標籤仍是「洛奇旅行」，這句話只出現在畫面上。
 
-```html 02-html/pages/01-shell.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>洛奇旅行</title>
-  </head>
-  <body>
-    <div>洛奇旅行的練習頁。這一行才出現在畫面裡。</div>
-    <div>分頁標籤上的字不會自動出現在這裡。</div>
-    <div>當日穿的衣服不托運。</div>
-  </body>
-</html>
+```diff 02-html/pages/01-shell.html
+  // ...
+      <div>洛奇旅行的練習頁。這一行才出現在畫面裡。</div>
+      <div>分頁標籤上的字不會自動出現在這裡。</div>
++     <div>當日穿的衣服不托運。</div>
+    </body>
+  </html>
 ```
 
 </details>
@@ -303,42 +287,24 @@ body 裡的內容才會畫在畫面上。這一章還沒有標題和段落，先
 
 「100 毫升」用 span 包住，才會留在「液體以……為限」這句中間；整句外面用 div，讓它自己佔一行。「當日穿的衣服不托運。」也用 div，才會從手提行李的下一行開始，不會黏到上一句的尾巴。
 
-```html 02-html/pages/02-box.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行李怎麼分箱</title>
-  </head>
-  <body>
-    <div style="border: 1px solid">行李怎麼分箱</div>
-
-    <div style="border: 1px solid">
-      護照請放在
-      <span style="border: 1px solid">隨身包</span>
-      ，不要放進行李箱。
-    </div>
-    <div style="border: 1px solid">
-      兩樣都要帶：
-      <span style="border: 1px solid">充電器</span>
-      <span style="border: 1px solid">轉接頭</span>
-      ，它們會緊挨著排在同一行。
-    </div>
-    <div style="border: 1px solid">
-      液體以
-      <span style="border: 1px solid">100 毫升</span>
-      為限，超過要托運。
-    </div>
-
-    <div style="border: 1px solid">
-      這一箱是托運行李。
-      <div style="border: 1px solid">箱子裡再隔一層，放易碎的茶葉罐。</div>
-    </div>
-    <div style="border: 1px solid">另一箱手提行李，一定從新的一行開始。</div>
-    <div style="border: 1px solid">當日穿的衣服不托運。</div>
-  </body>
-</html>
+```diff 02-html/pages/02-box.html
+  // ...
+        ，它們會緊挨著排在同一行。
+      </div>
++     <div style="border: 1px solid">
++       液體以
++       <span style="border: 1px solid">100 毫升</span>
++       為限，超過要托運。
++     </div>
+  
+      <div style="border: 1px solid">
+        這一箱是托運行李。
+        // ...
+      </div>
+      <div style="border: 1px solid">另一箱手提行李，一定從新的一行開始。</div>
++     <div style="border: 1px solid">當日穿的衣服不托運。</div>
+    </body>
+  </html>
 ```
 
 </details>
@@ -441,56 +407,23 @@ s2 --> asideNode["aside"]
 
 第三篇仍放在第一個主題區裡，跟前兩篇一樣可以獨立閱讀，所以用 `article`。公休是整頁的資訊，寫在頁尾，不放進其中一篇。
 
-```html 02-html/pages/03-layout.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>洛奇旅行</title>
-  </head>
-  <body>
-    <header>
-      <p>洛奇旅行 · 小團報名</p>
-      <nav>
-        <p>這一區是導覽。</p>
-        <ul>
-          <li>首頁</li>
-          <li>行程</li>
-          <li>報名</li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <h1>本週可以報名的小團</h1>
-      <section>
-        <h2>本週小團</h2>
-        <article>
-          <h3>京都三日</h3>
-          <p>清水寺、伏見稻荷與嵐山。含兩晚住宿，週六早上台北車站集合。</p>
-        </article>
-        <article>
-          <h3>大阪美食</h3>
-          <p>道頓堀與黑門市場，傍晚安排一趟在地小吃。同一頁可以有多篇行程。</p>
-        </article>
-        <article>
-          <h3>台南古蹟半日</h3>
-          <p>含午餐、不含交通。赤崁樓與孔廟，下午在國華街解散。</p>
-        </article>
-      </section>
-      <section>
-        <h2>報名前先看</h2>
-        <aside>
-          <p>護照效期要超過回國日六個月。集合時間請看行前信，不要自己改集合點。</p>
-        </aside>
-      </section>
-    </main>
-    <footer>
-      <p>© 2026 洛奇旅行 · hello@example.com · 教材用</p>
-      <p>客服週一公休。</p>
-    </footer>
-  </body>
-</html>
+```diff 02-html/pages/03-layout.html
+  // ...
+            <p>道頓堀與黑門市場，傍晚安排一趟在地小吃。同一頁可以有多篇行程。</p>
+          </article>
++         <article>
++           <h3>台南古蹟半日</h3>
++           <p>含午餐、不含交通。赤崁樓與孔廟，下午在國華街解散。</p>
++         </article>
+        </section>
+        <section>
+          // ...
+      <footer>
+        <p>© 2026 洛奇旅行 · hello@example.com · 教材用</p>
++       <p>客服週一公休。</p>
+      </footer>
+    </body>
+  // ...
 ```
 
 </details>
@@ -563,25 +496,13 @@ s2 --> asideNode["aside"]
 
 「費用包含」已經是章標題，它的下一級才是小節。跳到更細的標題，目錄會少掉中間那一層，字也會突然變得很小。
 
-```html 02-html/pages/04-headings.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都三日遊 · 行前</title>
-  </head>
-  <body>
-    <h1>京都三日遊</h1>
-    <h2>第一天：抵達與清水寺</h2>
-    <h3>集合</h3>
-    <h4>雨天</h4>
-    <h5>備用集合點</h5>
-    <h6>工作人員手機</h6>
-    <h2>費用包含</h2>
-    <h3>不含項目</h3>
-  </body>
-</html>
+```diff 02-html/pages/04-headings.html
+  // ...
+      <h6>工作人員手機</h6>
+      <h2>費用包含</h2>
++     <h3>不含項目</h3>
+    </body>
+  </html>
 ```
 
 </details>
@@ -633,23 +554,13 @@ s2 --> asideNode["aside"]
 
 這句是費用說明的下一段，所以再寫一個段落即可。小節標題留到上一節的練習，這一題只確認「一件事一段」。
 
-```html 02-html/pages/04-headings.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都三日遊 · 行前</title>
-  </head>
-  <body>
-    <h1>京都三日遊</h1>
-    <p>這一頁是行前說明。大標只用一個，下面依行程層級往下排。</p>
-    <h2>費用包含</h2>
-    <p>兩晚住宿、早餐、清水寺與伏見稻荷的導覽。</p>
-    <p>機場到市區的交通請自己買票。視窗變窄時，這一段會自己換行。</p>
-    <p>不含機票、午餐、個人購物。</p>
-  </body>
-</html>
+```diff 02-html/pages/04-headings.html
+  // ...
+      <p>兩晚住宿、早餐、清水寺與伏見稻荷的導覽。</p>
+      <p>機場到市區的交通請自己買票。視窗變窄時，這一段會自己換行。</p>
++     <p>不含機票、午餐、個人購物。</p>
+    </body>
+  </html>
 ```
 
 </details>
@@ -714,30 +625,15 @@ s2 --> asideNode["aside"]
 
 多一次換行，三段文字還是同一個段落的內容。若改成三個段落，段與段之間會多出空隙，就不是同一段了。
 
-```html 02-html/pages/04-headings.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都三日遊 · 行前</title>
-  </head>
-  <body>
-    <h1>京都三日遊</h1>
-    <h2>第一天：抵達與清水寺</h2>
-    <h3>集合</h3>
-    <p>
-      京都車站中央口，下午兩點，領隊舉「洛奇旅行」牌子。
-      <br />
-      雨天改在京都車站中央口室內集合。
-      <br />
-      遲到請先打電話，不要自己先走。
-    </p>
-    <hr />
-    <h2>費用包含</h2>
-    <p>兩晚住宿、早餐、清水寺與伏見稻荷的導覽。</p>
-  </body>
-</html>
+```diff 02-html/pages/04-headings.html
+  // ...
+        <br />
+        雨天改在京都車站中央口室內集合。
++       <br />
++       遲到請先打電話，不要自己先走。
+      </p>
+      <hr />
+      // ...
 ```
 
 </details>
@@ -819,36 +715,14 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 回到頁首用的是這頁已經寫在大標上的 id，井字號後面的名字要完全相同。外連原本就有新分頁，這一題不用拿掉。
 
-```html 02-html/pages/05-links.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>集合地點與相關連結</title>
-  </head>
-  <body>
-    <h1 id="top">集合地點與相關連結</h1>
-    <p>下面幾顆連結分別去站內頁、本頁下半、外站、信箱和電話。文字本身要看得出目的地。</p>
-    <p><a href="#top">回到頁首</a></p>
-    <p><a href="04-headings.html">看行前標題那一頁</a></p>
-    <p><a href="#gather">跳到本頁的集合說明</a></p>
-    <p>
-      <a href="https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/a" target="_blank" rel="noreferrer">
-        開新分頁看 MDN 的連結說明
-      </a>
-    </p>
-    <p><a href="mailto:hello@example.com">寫信給洛奇旅行</a></p>
-    <p><a href="tel:+886212345678">打電話給客服 02-1234-5678</a></p>
-    <section id="gather">
-      <h2>京都車站中央口</h2>
-      <p>領隊會在中央口的時鐘下方舉牌。請看牌子上的團名「京都三日」，不要跟隔壁的購物團。</p>
-      <p>建議提前二十分鐘到。車站裡有兩座時鐘，請認銀色、面對八條口的那一座。</p>
-      <p>遲到超過十五分鐘，隊伍會先移動到月台。請改撥頁面上的客服電話，不要自己叫車去清水寺。</p>
-      <p>回程同樣在這個出口解散。護照請放在隨身包，這一點跟行李那一頁的分法相同。</p>
-    </section>
-  </body>
-</html>
+```diff 02-html/pages/05-links.html
+  // ...
+      <h1 id="top">集合地點與相關連結</h1>
+      <p>下面幾顆連結分別去站內頁、本頁下半、外站、信箱和電話。文字本身要看得出目的地。</p>
++     <p><a href="#top">回到頁首</a></p>
+      <p><a href="04-headings.html">看行前標題那一頁</a></p>
+      <p><a href="#gather">跳到本頁的集合說明</a></p>
+      // ...
 ```
 
 </details>
@@ -912,24 +786,14 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 先回到上一層，再寫首頁檔名。只寫 `index.html` 會在 pages 裡找，那裡沒有這份檔。
 
-```html 02-html/pages/05-links.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>路徑怎麼數</title>
-  </head>
-  <body>
-    <h1>路徑怎麼數</h1>
-    <p>練習頁放在 pages 資料夾。下面兩顆都從這份檔案的位置出發。</p>
-    <p><a href="../index.html">回練習站首頁</a></p>
-    <p><a href="04-headings.html">同一層：行前標題</a></p>
-    <p>
-      <a href="https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element/a">完整網址：MDN 的連結說明</a>
-    </p>
-  </body>
-</html>
+```diff 02-html/pages/05-links.html
+  // ...
+      <h1>路徑怎麼數</h1>
+      <p>練習頁放在 pages 資料夾。下面兩顆都從這份檔案的位置出發。</p>
++     <p><a href="../index.html">回練習站首頁</a></p>
+      <p><a href="04-headings.html">同一層：行前標題</a></p>
+      <p>
+        // ...
 ```
 
 </details>
@@ -998,23 +862,13 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 這是改稿，不是只劃掉一個狀態。舊時間包在刪除裡，新時間包在插入裡，閱讀器才知道句子被改過。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>京都三日遊 · 行前須知</h1>
-    <p><strong>護照請放隨身包，不要托運。</strong>這句是重要事項，不是為了變粗。</p>
-    <p>這趟是<em>自由行</em>，集合時間請自己抓準。斜體在這裡表示語氣。</p>
-    <p>今日請認準集合點 <mark>京都車站中央口</mark>。</p>
-    <p>原價 <del>2000</del> 元，早鳥現價 <ins>1600</ins> 元。</p>
-    <p>集合時間由 <del>下午三點</del> 改為 <ins>下午兩點</ins>。</p>
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+      <p>今日請認準集合點 <mark>京都車站中央口</mark>。</p>
+      <p>原價 <del>2000</del> 元，早鳥現價 <ins>1600</ins> 元。</p>
++     <p>集合時間由 <del>下午三點</del> 改為 <ins>下午兩點</ins>。</p>
+    </body>
+  </html>
 ```
 
 </details>
@@ -1075,24 +929,15 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 不能看錯的資訊用表示重要的標籤。只變粗的那顆留給純外觀。這一題改的是標籤，畫面上仍是粗體。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>外觀與附註</h1>
-    <p>飯店叫 <strong>洛奇旅舍</strong>，行前信裡這個名字不能看錯。</p>
-    <p>晚餐訂在 <i>一蘭</i>，斜體只表示這是外文店名。</p>
-    <p><u>這一行有底線，但點了不會去任何地方。</u></p>
-    <p>加購名額 <s>已額滿</s>，這裡只是劃掉，沒有說文件改過。</p>
-    <p>水的化學式是 H<sub>2</sub>O。集合樓層是 2<sup>F</sup>。</p>
-    <p><small>以上價格未含機場接送。</small></p>
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+    <body>
+      <h1>外觀與附註</h1>
+-     <p>飯店叫 <b>洛奇旅舍</b>，只是讓名字醒目。</p>
++     <p>飯店叫 <strong>洛奇旅舍</strong>，行前信裡這個名字不能看錯。</p>
+      <p>晚餐訂在 <i>一蘭</i>，斜體只表示這是外文店名。</p>
+      <p><u>這一行有底線，但點了不會去任何地方。</u></p>
+      // ...
 ```
 
 </details>
@@ -1148,22 +993,15 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 組合鍵是兩顆按鍵前後相接。寫成同一顆，閱讀器會把它唸成一個鍵名。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>程式與按鍵</h1>
-    <p>開發者工具按 <kbd>F12</kbd>。儲存常用 <kbd>Ctrl</kbd>+<kbd>S</kbd>。人數 <var>n</var>、單價 <var>price</var>。</p>
-    <p>送出成功時，畫面出現 <samp>報名成功</samp>。</p>
-    <p>行內標籤要寫成文字：<code>&lt;div&gt;</code>。</p>
-    <pre><code>&lt;p&gt;小於號要寫成實體才會當文字。&lt;/p&gt;</code></pre>
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+    <body>
+      <h1>程式與按鍵</h1>
+-     <p>開發者工具按 <kbd>F12</kbd>。人數 <var>n</var>、單價 <var>price</var>。</p>
++     <p>開發者工具按 <kbd>F12</kbd>。儲存常用 <kbd>Ctrl</kbd>+<kbd>S</kbd>。人數 <var>n</var>、單價 <var>price</var>。</p>
+      <p>送出成功時，畫面出現 <samp>報名成功</samp>。</p>
+      <p>行內標籤要寫成文字：<code>&lt;div&gt;</code>。</p>
+      // ...
 ```
 
 </details>
@@ -1218,24 +1056,14 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 仍是一句話，所以用短引用，並把網址放在屬性裡。不要為了這一句再包一層長引用。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>引用</h1>
-    <p>行前信寫過：<q cite="https://example.com/notice">行李不超過 7 公斤。</q></p>
-    <p>同一則也寫過：<q cite="https://example.com/notice">護照效期要超過六個月。</q></p>
-    <blockquote>
-      <p>自由活動時請在約定時間回到集合點，不要單獨脫隊。</p>
-      <footer>出處 <cite>洛奇旅行行前須知</cite></footer>
-    </blockquote>
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+      <h1>引用</h1>
+      <p>行前信寫過：<q cite="https://example.com/notice">行李不超過 7 公斤。</q></p>
++     <p>同一則也寫過：<q cite="https://example.com/notice">護照效期要超過六個月。</q></p>
+      <blockquote>
+        <p>自由活動時請在約定時間回到集合點，不要單獨脫隊。</p>
+        // ...
 ```
 
 </details>
@@ -1307,38 +1135,16 @@ rel 用來說明這個連結和目的地的關係，開新分頁時常見兩個�
 
 畫面上的中文給人讀，屬性給機器讀，兩邊都要寫。格式用年-月-日，不要把中文寫進屬性。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>縮寫、時間與聯絡</h1>
-    <p>
-      <abbr title="HyperText Markup Language">HTML</abbr>
-      是這一課的標記語言。交通用
-      <abbr title="日本鐵路">JR</abbr>。
-    </p>
-    <p>
-      出發日 <time datetime="2026-08-30">2026 年 8 月 30 日</time>，
-      集合 <time datetime="14:00">下午 2:00</time>，
-      回國日 <time datetime="2026-09-02">2026 年 9 月 2 日</time>。
-    </p>
-    <address>
-      洛奇旅行<br />
-      台北市範例路 1 號<br />
-      信箱 hello@example.com
-    </address>
-    <details>
-      <summary>小費要給嗎？</summary>
-      <p>本行程不含強制小費。若想給導遊或司機，採自願。</p>
-    </details>
-
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+      <p>
+        出發日 <time datetime="2026-08-30">2026 年 8 月 30 日</time>，
+-       集合 <time datetime="14:00">下午 2:00</time>。
++       集合 <time datetime="14:00">下午 2:00</time>，
++       回國日 <time datetime="2026-09-02">2026 年 9 月 2 日</time>。
+      </p>
+      <address>
+        // ...
 ```
 
 </details>
@@ -1397,23 +1203,13 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 直接打角括號會被當成圖片元素，畫面不會出現這五個字。小於號改成實體，瀏覽器才把它當文字。
 
-```html 02-html/pages/06-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>行前須知</title>
-  </head>
-  <body>
-    <h1>畫面上的符號</h1>
-    <p>小於號寫成 &lt; ，大於號寫成 &gt; 。</p>
-    <p>公司名寫成洛奇 &amp; 夥伴，畫面上會看到和號。</p>
-    <p>手提行李以 7&nbsp;kg 為限，數字和單位中間這個空白不會被拆開。</p>
-    <p>&copy; 2026 洛奇旅行</p>
-    <p>圖片標籤要當文字時寫成 &lt;img&gt;。</p>
-  </body>
-</html>
+```diff 02-html/pages/06-text.html
+  // ...
+      <p>手提行李以 7&nbsp;kg 為限，數字和單位中間這個空白不會被拆開。</p>
+      <p>&copy; 2026 洛奇旅行</p>
++     <p>圖片標籤要當文字時寫成 &lt;img&gt;。</p>
+    </body>
+  </html>
 ```
 
 </details>
@@ -1470,25 +1266,14 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 雨衣是同一份行李的一項，加一顆項目即可。用段落加圓點字元，輔助工具不會把它算進這份清單。
 
-```html 02-html/pages/07-lists.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出發前清單</title>
-  </head>
-  <body>
-    <h1>出發前清單</h1>
-    <h2>要帶的東西</h2>
-    <ul>
-      <li>護照與影本</li>
-      <li>充電器</li>
-      <li>藥品</li>
-      <li>雨衣</li>
-    </ul>
-  </body>
-</html>
+```diff 02-html/pages/07-lists.html
+  // ...
+        <li>充電器</li>
+        <li>藥品</li>
++       <li>雨衣</li>
+      </ul>
+    </body>
+  // ...
 ```
 
 </details>
@@ -1541,25 +1326,14 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 再加一顆項目，瀏覽器會編成 4。自己在文字前面打號碼，之後插入步驟時號碼不會跟著改。
 
-```html 02-html/pages/07-lists.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出發前清單</title>
-  </head>
-  <body>
-    <h1>出發前清單</h1>
-    <h2>出境順序</h2>
-    <ol>
-      <li>報到櫃台托運行李</li>
-      <li>過安檢與證照查驗</li>
-      <li>到登機門，保留十五分鐘緩衝</li>
-      <li>上飛機</li>
-    </ol>
-  </body>
-</html>
+```diff 02-html/pages/07-lists.html
+  // ...
+        <li>過安檢與證照查驗</li>
+        <li>到登機門，保留十五分鐘緩衝</li>
++       <li>上飛機</li>
+      </ol>
+    </body>
+  // ...
 ```
 
 </details>
@@ -1617,36 +1391,22 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 吃藥的順序有先後時用有序清單。它必須放在「藥品」那個項目裡；若跟三個圓點項目並排，瀏覽器無法把這層算進藥品底下，縮排也會錯。
 
-```html 02-html/pages/07-lists.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出發前清單</title>
-  </head>
-  <body>
-    <h1>出發前清單</h1>
-    <h2>要帶的東西</h2>
-    <ul>
-      <li>護照與影本</li>
-      <li>
-        充電器
-        <ul>
-          <li>轉接頭（日本是兩腳扁插）</li>
-        </ul>
-      </li>
-      <li>
-        藥品
-        <ol>
-          <li>防曬</li>
-          <li>腸胃藥</li>
-          <li>OK 繃</li>
-        </ol>
-      </li>
-    </ul>
-  </body>
-</html>
+```diff 02-html/pages/07-lists.html
+  // ...
+          </ul>
+        </li>
+-       <li>藥品</li>
++       <li>
++         藥品
++         <ol>
++           <li>防曬</li>
++           <li>腸胃藥</li>
++           <li>OK 繃</li>
++         </ol>
++       </li>
+      </ul>
+    </body>
+  // ...
 ```
 
 </details>
@@ -1700,27 +1460,15 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 一組是一個名稱加一段說明，跟前兩組同一層。不要把這組寫成圓點項目。
 
-```html 02-html/pages/07-lists.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出發前清單</title>
-  </head>
-  <body>
-    <h1>出發前清單</h1>
-    <h2>名詞</h2>
-    <dl>
-      <dt>alt</dt>
-      <dd>圖片沒有出現時，畫面上改顯示這句；輔助工具也讀它。</dd>
-      <dt>name</dt>
-      <dd>表單送出時的欄位名。沒有它，這一欄通常不會被送出去。</dd>
-      <dt>href</dt>
-      <dd>連結要去的地方。沒有它，畫面上即使有底線也不是連結。</dd>
-    </dl>
-  </body>
-</html>
+```diff 02-html/pages/07-lists.html
+  // ...
+        <dt>name</dt>
+        <dd>表單送出時的欄位名。沒有它，這一欄通常不會被送出去。</dd>
++       <dt>href</dt>
++       <dd>連結要去的地方。沒有它，畫面上即使有底線也不是連結。</dd>
+      </dl>
+    </body>
+  // ...
 ```
 
 </details>
@@ -1786,34 +1534,16 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 圖和說明要一起搬走時用 figure。替代文字寫的是畫面裡有什麼，不是「圖片」兩個字。先寫寬高，這張圖還沒載入時，下面的內容不會突然被擠下去。
 
-```html 02-html/pages/08-media.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都素材</title>
-  </head>
-  <body>
-    <h1>京都素材</h1>
-    <figure>
-      <img
-        src="https://picsum.photos/id/1015/800/450"
-        width="800"
-        height="450"
-        alt="河谷與遠山，當作清水寺周邊的封面示意"
-      />
-      <figcaption>封面與這句說明綁在一起。正式行程會換成清水寺的照片。</figcaption>
-    </figure>
-    <p>
-      <img src="https://placehold.co/320x180?text=map" width="320" height="180" alt="京都車站到清水寺的路線示意，色塊占位" />
-    </p>
-    <figure>
-      <img src="https://picsum.photos/id/1016/800/450" width="800" height="450" alt="伏見稻荷的千本鳥居" />
-      <figcaption>第二天上午</figcaption>
-    </figure>
-  </body>
-</html>
+```diff 02-html/pages/08-media.html
+  // ...
+        <img src="https://placehold.co/320x180?text=map" width="320" height="180" alt="京都車站到清水寺的路線示意，色塊占位" />
+      </p>
++     <figure>
++       <img src="https://picsum.photos/id/1016/800/450" width="800" height="450" alt="伏見稻荷的千本鳥居" />
++       <figcaption>第二天上午</figcaption>
++     </figure>
+    </body>
+  </html>
 ```
 
 </details>
@@ -1877,29 +1607,14 @@ HTML 用小於號與大於號辨認標籤，用和號辨認實體，所以這些
 
 標籤中間那句只在播不了的時候出現。平常看得到的說明要放在播放器外面，用段落即可。
 
-```html 02-html/pages/08-media.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都素材</title>
-  </head>
-  <body>
-    <h1>京都素材</h1>
-    <video controls width="320">
-      <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm" type="video/webm" />
-      這個瀏覽器不支援影片播放。
-    </video>
-    <p>按播放才會出聲。</p>
-    <p>
-      <audio controls>
-        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3" type="audio/mpeg" />
-        這個瀏覽器不支援音訊播放。
-      </audio>
-    </p>
-  </body>
-</html>
+```diff 02-html/pages/08-media.html
+  // ...
+        這個瀏覽器不支援影片播放。
+      </video>
++     <p>按播放才會出聲。</p>
+      <p>
+        <audio controls>
+          // ...
 ```
 
 </details>
@@ -1952,22 +1667,15 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 退路是連結，不是再嵌一個框。開新分頁沿用連結那一節的寫法，並加上不把目前網址帶過去的 rel。
 
-```html 02-html/pages/08-media.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>京都素材</title>
-  </head>
-  <body>
-    <h1>京都素材</h1>
-    <iframe title="語意版面預覽" src="03-layout.html" width="480" height="320"></iframe>
-    <p>
-      <a href="03-layout.html" target="_blank" rel="noreferrer">開新分頁看語意版面</a>
-    </p>
-  </body>
-</html>
+```diff 02-html/pages/08-media.html
+  // ...
+      <h1>京都素材</h1>
+      <iframe title="語意版面預覽" src="03-layout.html" width="480" height="320"></iframe>
++     <p>
++       <a href="03-layout.html" target="_blank" rel="noreferrer">開新分頁看語意版面</a>
++     </p>
+    </body>
+  </html>
 ```
 
 </details>
@@ -2041,41 +1749,17 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 一列兩個資料格，對上現有的兩個欄。多寫一格，這一列會凸出去。
 
-```html 02-html/pages/09-table.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出團資料</title>
-  </head>
-  <body>
-    <h1>出團資料</h1>
-    <table border="1">
-      <caption>大阪一日遊</caption>
-      <thead>
-        <tr>
-          <th scope="col">時段</th>
-          <th scope="col">景點</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>上午</td>
-          <td>大阪城</td>
-        </tr>
-        <tr>
-          <td>下午</td>
-          <td>道頓堀</td>
-        </tr>
-        <tr>
-          <td>晚上</td>
-          <td>心齋橋</td>
-        </tr>
-      </tbody>
-    </table>
-  </body>
-</html>
+```diff 02-html/pages/09-table.html
+  // ...
+            <td>道頓堀</td>
+          </tr>
++         <tr>
++           <td>晚上</td>
++           <td>心齋橋</td>
++         </tr>
+        </tbody>
+      </table>
+    // ...
 ```
 
 </details>
@@ -2176,74 +1860,22 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 第二天的寫法跟第一天相同：日名那一格往下佔兩列，下一列只剩時段和地點。花蓮那一列維持橫向合併，不要插進第二天的兩列中間。
 
-```html 02-html/pages/09-table.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出團資料</title>
-  </head>
-  <body>
-    <h1>出團資料</h1>
-    <table border="1">
-      <caption>京都行程（含合併）</caption>
-      <thead>
-        <tr>
-          <th scope="col">日</th>
-          <th scope="col">時段</th>
-          <th scope="col">地點</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row" rowspan="2">第一天</th>
-          <td>上午</td>
-          <td>京都車站中央口</td>
-        </tr>
-        <tr>
-          <td>下午</td>
-          <td>清水寺山門</td>
-        </tr>
-        <tr>
-          <th scope="row" rowspan="2">第二天</th>
-          <td>上午</td>
-          <td>伏見稻荷</td>
-        </tr>
-        <tr>
-          <td>下午</td>
-          <td>嵐山</td>
-        </tr>
-        <tr>
-          <th scope="row">花蓮山海</th>
-          <td colspan="2">三日套裝（天數與售價合併成一格）</td>
-        </tr>
-      </tbody>
-    </table>
-    <table border="1">
-      <caption>團體報名</caption>
-      <thead>
-        <tr>
-          <th scope="col" rowspan="2">團名</th>
-          <th scope="col" colspan="2">人數</th>
-          <th scope="col" rowspan="2">導遊</th>
-        </tr>
-        <tr>
-          <th scope="col">成人</th>
-          <th scope="col">兒童</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">京都三日</th>
-          <td>2</td>
-          <td>1</td>
-          <td>林導遊</td>
-        </tr>
-      </tbody>
-    </table>
-  </body>
-</html>
+```diff 02-html/pages/09-table.html
+  // ...
+          </tr>
+          <tr>
++           <th scope="row" rowspan="2">第二天</th>
++           <td>上午</td>
++           <td>伏見稻荷</td>
++         </tr>
++         <tr>
++           <td>下午</td>
++           <td>嵐山</td>
++         </tr>
++         <tr>
+            <th scope="row">花蓮山海</th>
+            <td colspan="2">三日套裝（天數與售價合併成一格）</td>
+          // ...
 ```
 
 </details>
@@ -2329,57 +1961,28 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 單人房差是一筆資料，放在資料區，跟成人、兒童同一層。合計不是新增的一筆資料，所以仍留在表尾，只改人數和金額。列名用標題格並標明範圍，輔助工具才知道 1200 屬於單人房差。
 
-```html 02-html/pages/09-table.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>出團資料</title>
-  </head>
-  <body>
-    <h1>出團資料</h1>
-    <table border="1">
-      <caption>京都三日遊價目</caption>
-      <thead>
-        <tr>
-          <th scope="col">行程</th>
-          <th scope="col">人數</th>
-          <th scope="col">單價</th>
-          <th scope="col">小計</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">成人</th>
-          <td>2</td>
-          <td>1600</td>
-          <td>3200</td>
-        </tr>
-        <tr>
-          <th scope="row">兒童</th>
-          <td>1</td>
-          <td>800</td>
-          <td>800</td>
-        </tr>
-        <tr>
-          <th scope="row">單人房差</th>
-          <td>2</td>
-          <td>600</td>
-          <td>1200</td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th scope="row">合計</th>
-          <td>5</td>
-          <td></td>
-          <td>5200</td>
-        </tr>
-      </tfoot>
-    </table>
-  </body>
-</html>
+```diff 02-html/pages/09-table.html
+  // ...
+            <td>800</td>
+          </tr>
++         <tr>
++           <th scope="row">單人房差</th>
++           <td>2</td>
++           <td>600</td>
++           <td>1200</td>
++         </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">合計</th>
+-           <td>3</td>
++           <td>5</td>
+            <td></td>
+-           <td>4000</td>
++           <td>5200</td>
+          </tr>
+        </tfoot>
+      // ...
 ```
 
 </details>
@@ -2448,29 +2051,14 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 隱藏欄位仍要有名稱和值，只是類型設成 hidden。沒有名稱的話，送出時這筆不會出現。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <p>送出後仍停在這一頁，網址後面會出現欄位名稱與內容。</p>
-    <form id="booking-form" action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" value="王小明" />
-      </p>
-      <input type="hidden" name="source" value="class" />
-      <p>
-        <button type="submit">送出報名</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+          <input id="guest-name" name="name" type="text" value="王小明" />
+        </p>
++       <input type="hidden" name="source" value="class" />
+        <p>
+          <button type="submit">送出報名</button>
+        // ...
 ```
 
 </details>
@@ -2535,34 +2123,17 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 信箱是獨立欄位，所以有自己的 id。標籤的 for 要跟它完全相同。placeholder 可以不寫。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" placeholder="王小明" />
-      </p>
-      <p>
-        <label for="guest-email">信箱</label>
-        <input id="guest-email" name="email" type="email" />
-      </p>
-      <p>
-        <label>
-          <input type="checkbox" name="extra" value="insurance" />
-          保險
-        </label>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+        </p>
+        <p>
++         <label for="guest-email">信箱</label>
++         <input id="guest-email" name="email" type="email" />
++       </p>
++       <p>
+          <label>
+            <input type="checkbox" name="extra" value="insurance" />
+            // ...
 ```
 
 </details>
@@ -2633,39 +2204,17 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 緊急聯絡人是獨立欄位，所以有自己的 id 和 name。必填寫在欄位上，不是寫在標籤上。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" required maxlength="20" />
-      </p>
-      <p>
-        <label for="emergency-name">緊急聯絡人</label>
-        <input id="emergency-name" name="emergency" type="text" required />
-      </p>
-      <p>
-        <label for="tour-code">團號</label>
-        <input id="tour-code" name="code" type="text" value="KYOTO-0830" readonly />
-      </p>
-      <p>
-        <label for="sold-out">已額滿梯次</label>
-        <input id="sold-out" name="soldout" type="text" value="8/16 梯" disabled />
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+        </p>
+        <p>
++         <label for="emergency-name">緊急聯絡人</label>
++         <input id="emergency-name" name="emergency" type="text" required />
++       </p>
++       <p>
+          <label for="tour-code">團號</label>
+          <input id="tour-code" name="code" type="text" value="KYOTO-0830" readonly />
+        // ...
 ```
 
 </details>
@@ -2781,76 +2330,17 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 顏色也是輸入欄，只是類型換成 color。預設值寫在 value，畫面上會先顯示那一個顏色。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-email">信箱</label>
-        <input id="guest-email" name="email" type="email" autocomplete="email" />
-      </p>
-      <p>
-        <label for="guest-tel">電話</label>
-        <input id="guest-tel" name="tel" type="tel" />
-      </p>
-      <p>
-        <label for="guest-people">人數</label>
-        <input id="guest-people" name="people" type="number" min="1" max="10" value="1" />
-      </p>
-      <p>
-        <label for="guest-date">出發日</label>
-        <input id="guest-date" name="date" type="date" />
-      </p>
-      <p>
-        <label for="guest-file">護照影本</label>
-        <input id="guest-file" name="file" type="file" accept=".png,.jpg,.pdf" />
-      </p>
-      <p>
-        <label for="guest-pw">查詢密碼</label>
-        <input id="guest-pw" name="demoPassword" type="password" />
-      </p>
-      <p>
-        <label for="guest-url">個人頁網址</label>
-        <input id="guest-url" name="website" type="url" placeholder="https://" />
-      </p>
-      <p>
-        <label for="guest-search">搜尋行程</label>
-        <input id="guest-search" name="q" type="search" />
-      </p>
-      <p>
-        <label for="guest-range">期待指數</label>
-        <input id="guest-range" name="score" type="range" min="1" max="5" value="3" />
-      </p>
-      <p>
-        <label for="guest-time">集合時間</label>
-        <input id="guest-time" name="time" type="time" />
-      </p>
-      <p>
-        <label for="guest-dt">說明會</label>
-        <input id="guest-dt" name="datetime" type="datetime-local" />
-      </p>
-      <p>
-        <label for="guest-month">出發月份</label>
-        <input id="guest-month" name="month" type="month" />
-      </p>
-      <p>
-        <label for="guest-week">出發週</label>
-        <input id="guest-week" name="week" type="week" />
-      </p>
-      <p>
-        <label for="guest-color">識別色</label>
-        <input id="guest-color" name="color" type="color" value="#0f766e" />
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+          <input id="guest-week" name="week" type="week" />
+        </p>
++       <p>
++         <label for="guest-color">識別色</label>
++         <input id="guest-color" name="color" type="color" value="#0f766e" />
++       </p>
+      </form>
+    </body>
+  // ...
 ```
 
 </details>
@@ -2940,53 +2430,14 @@ iframe 在這一頁裡再開一份文件：來源指向那份文件，標題說�
 
 素食跟保險是同一組加購，name 必須相同，值才用來區分是哪一項。名字若寫成別的，它可以跟餐食同時存在，但也會變成另一組欄位。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label><input type="radio" name="traffic" value="bus" checked /> 巴士</label>
-        <label><input type="radio" name="traffic" value="train" /> 火車</label>
-      </p>
-      <p>
-        <label><input type="checkbox" name="extra" value="insurance" /> 保險</label>
-        <label><input type="checkbox" name="extra" value="meal" /> 餐食</label>
-        <label><input type="checkbox" name="extra" value="veg" /> 素食</label>
-      </p>
-      <p>
-        <label for="tour-select">行程</label>
-        <select id="tour-select" name="tourId">
-          <optgroup label="本島">
-            <option value="1">台北城市漫遊</option>
-            <option value="2">花蓮山海三日</option>
-          </optgroup>
-          <optgroup label="離島">
-            <option value="3">澎湖跳島</option>
-          </optgroup>
-        </select>
-      </p>
-      <p>
-        <label for="city-input">想去的城市</label>
-        <input id="city-input" name="city" type="text" list="city-list" />
-        <datalist id="city-list">
-          <option value="台北"></option>
-          <option value="花蓮"></option>
-          <option value="澎湖"></option>
-        </datalist>
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+          <label><input type="checkbox" name="extra" value="insurance" /> 保險</label>
+          <label><input type="checkbox" name="extra" value="meal" /> 餐食</label>
++         <label><input type="checkbox" name="extra" value="veg" /> 素食</label>
+        </p>
+        <p>
+          // ...
 ```
 
 </details>
@@ -3042,27 +2493,15 @@ rows 和 cols 先給一個大概的高寬，之後外觀交給 CSS。空欄提�
 
 提示用 placeholder。若把那句話寫在標籤中間，它會變成預設內容，沒改就會被送出去。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-note">備註</label>
-        <textarea id="guest-note" name="note" rows="3" cols="30" placeholder="飲食禁忌、接送地"></textarea>
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+        <p>
+          <label for="guest-note">備註</label>
+-         <textarea id="guest-note" name="note" rows="3" cols="30"></textarea>
++         <textarea id="guest-note" name="note" rows="3" cols="30" placeholder="飲食禁忌、接送地"></textarea>
+        </p>
+        <p>
+          // ...
 ```
 
 </details>
@@ -3130,30 +2569,14 @@ rows 和 cols 先給一個大概的高寬，之後外觀交給 CSS。空欄提�
 
 類型寫成 button。漏寫類型時，它在表單裡會跟「送出報名」做同一件事。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" />
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-        <button type="reset">重設</button>
-        <button type="button">試算人數（不送出）</button>
-        <button type="button">儲存草稿</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+          <button type="reset">重設</button>
+          <button type="button">試算人數（不送出）</button>
++         <button type="button">儲存草稿</button>
+        </p>
+      </form>
+    // ...
 ```
 
 </details>
@@ -3209,32 +2632,18 @@ rows 和 cols 先給一個大概的高寬，之後外觀交給 CSS。空欄提�
 
 交通是報名資料裡的一組，所以內層 fieldset 放在外層裡面，不要跟外層並排到表單底下。兩顆單選共用名字，才是同一組。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form id="booking-form" action="#" method="get">
-      <fieldset>
-        <legend>報名資料</legend>
-        <p>
-          <label for="guest-name">姓名</label>
-          <input id="guest-name" name="name" type="text" />
-        </p>
-        <fieldset>
-          <legend>交通</legend>
-          <label><input type="radio" name="traffic" value="bus" checked /> 巴士</label>
-          <label><input type="radio" name="traffic" value="train" /> 火車</label>
+```diff 02-html/pages/10-form.html
+  // ...
+            <input id="guest-name" name="name" type="text" />
+          </p>
++         <fieldset>
++           <legend>交通</legend>
++           <label><input type="radio" name="traffic" value="bus" checked /> 巴士</label>
++           <label><input type="radio" name="traffic" value="train" /> 火車</label>
++         </fieldset>
         </fieldset>
-      </fieldset>
-    </form>
-  </body>
-</html>
+      </form>
+    // ...
 ```
 
 </details>
@@ -3297,28 +2706,15 @@ rows 和 cols 先給一個大概的高寬，之後外觀交給 CSS。空欄提�
 
 value 和中間的文字一起改。只改其中一邊，不認得進度條的環境會唸到舊的百分比。
 
-```html 02-html/pages/10-form.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>名額 <progress max="100" value="70">70%</progress></p>
-      <p>
-        報名熱度
-        <meter min="0" max="100" low="30" high="70" optimum="80" value="60">60</meter>
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/10-form.html
+  // ...
+      <h1>報名京都三日遊</h1>
+      <form action="#" method="get">
+-       <p>名額 <progress max="100" value="40">40%</progress></p>
++       <p>名額 <progress max="100" value="70">70%</progress></p>
+        <p>
+          報名熱度
+          // ...
 ```
 
 </details>
@@ -3490,27 +2886,15 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 兩節都是主標題底下的章，所以都用同一級。改成更細的標題，目錄會少掉這一層。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <header>
-      <p>洛奇旅行</p>
-    </header>
-    <main>
-      <h1>報名京都三日遊</h1>
-      <h2>注意事項</h2>
-      <p>護照效期要超過回國日六個月。閱讀器可以用標題清單跳到這一節。</p>
-      <h2>集合方式</h2>
-      <p>京都車站中央口，領隊舉牌。</p>
-    </main>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+        <h2>注意事項</h2>
+        <p>護照效期要超過回國日六個月。閱讀器可以用標題清單跳到這一節。</p>
++       <h2>集合方式</h2>
++       <p>京都車站中央口，領隊舉牌。</p>
+      </main>
+    </body>
+  // ...
 ```
 
 </details>
@@ -3562,22 +2946,16 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 星號一旦改成有內容的照片，空的替代文字會讓看不到圖的人失去這張圖的意思，所以要寫出畫面。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <img src="https://picsum.photos/id/1016/640/360" width="640" height="360" alt="清水寺本堂與參道上的人" />
-    <p>
-      <img src="https://picsum.photos/id/1036/640/360" width="640" height="360" alt="伏見稻荷的千本鳥居" />
-    </p>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+      <img src="https://picsum.photos/id/1016/640/360" width="640" height="360" alt="清水寺本堂與參道上的人" />
+      <p>
+-       <img src="https://placehold.co/24x24?text=*" width="24" height="24" alt="" />
+-       這顆星只是裝飾，替代文字留空。
++       <img src="https://picsum.photos/id/1036/640/360" width="640" height="360" alt="伏見稻荷的千本鳥居" />
+      </p>
+    </body>
+  // ...
 ```
 
 </details>
@@ -3638,34 +3016,17 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 電話跟姓名一樣是獨立欄位。標籤的文字就是閱讀器要唸的名字。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" placeholder="王小明" />
-      </p>
-      <p>
-        <label for="guest-tel">電話</label>
-        <input id="guest-tel" name="tel" type="tel" />
-      </p>
-      <p>
-        <label>
-          <input type="radio" name="traffic" value="bus" />
-          巴士
-        </label>
-      </p>
-    </form>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+        </p>
+        <p>
++         <label for="guest-tel">電話</label>
++         <input id="guest-tel" name="tel" type="tel" />
++       </p>
++       <p>
+          <label>
+            <input type="radio" name="traffic" value="bus" />
+            // ...
 ```
 
 </details>
@@ -3719,26 +3080,14 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 儲存草稿是本頁動作，用按鈕並寫明類型。若做成沒有 type 的按鈕放在表單裡，它會變成第二顆送出鈕。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <button type="submit">送出報名</button>
-        <button type="button">試算人數</button>
-        <button type="button">儲存草稿</button>
-      </p>
-    </form>
-    <p><a href="05-links.html">看集合方式</a></p>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+          <button type="submit">送出報名</button>
+          <button type="button">試算人數</button>
++         <button type="button">儲存草稿</button>
+        </p>
+      </form>
+      // ...
 ```
 
 </details>
@@ -3800,37 +3149,17 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 兒童跟成人同一層，都是列名。單價仍是資料格，不要兩個都用標題格。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <table border="1">
-      <caption>京都三日遊價目</caption>
-      <thead>
-        <tr>
-          <th scope="col">行程</th>
-          <th scope="col">單價</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">成人</th>
-          <td>1600</td>
-        </tr>
-        <tr>
-          <th scope="row">兒童</th>
-          <td>800</td>
-        </tr>
-      </tbody>
-    </table>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+            <td>1600</td>
+          </tr>
++         <tr>
++           <th scope="row">兒童</th>
++           <td>800</td>
++         </tr>
+        </tbody>
+      </table>
+    // ...
 ```
 
 </details>
@@ -3894,32 +3223,14 @@ Chrome 按 <kbd>F12</kbd>，在 Elements 旁或按 <kbd>Esc</kbd> 打開的抽�
 
 原始碼裡它寫在試算後面、連結前面，Tab 的順序就跟著這個位置。不要用絕對定位把它搬到畫面別處卻留在原始碼最後面，順序會對不上眼睛看到的位置。
 
-```html 02-html/pages/11-a11y.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>報名京都三日遊</title>
-  </head>
-  <body>
-    <h1>報名京都三日遊</h1>
-    <form action="#" method="get">
-      <p>
-        <label for="guest-name">姓名</label>
-        <input id="guest-name" name="name" type="text" />
-      </p>
-      <p>
-        <button type="submit">送出報名</button>
-        <button type="button">試算人數</button>
-        <button type="button">儲存草稿</button>
-      </p>
-    </form>
-    <p><a href="05-links.html">看集合方式</a></p>
-    <p style="color: #ccc; background: #fff">這行淺灰字在白底上很難讀。</p>
-    <p style="color: #111; background: #fff">這行深色字在白底上分得開。</p>
-  </body>
-</html>
+```diff 02-html/pages/11-a11y.html
+  // ...
+          <button type="submit">送出報名</button>
+          <button type="button">試算人數</button>
++         <button type="button">儲存草稿</button>
+        </p>
+      </form>
+      // ...
 ```
 
 </details>

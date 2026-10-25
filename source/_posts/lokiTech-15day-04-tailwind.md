@@ -518,104 +518,16 @@ import './style.css'; // Vite 會處理這個 import
 
 這行小字只改字級和顏色，加在右邊的標籤上就會出現，不用回樣式表新增選擇器。按鈕圓角加大到跟卡片同一階，只動這一顆連結。左邊維持原樣，並排時才看得出右邊多了一行、按鈕更圓。
 
-```html 02-tailwind/pages/01-compare.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>傳統 CSS 與 utility</title>
-    <style>
-      .trip-card {
-        max-width: 24rem;
-        overflow: hidden;
-        border-radius: 1rem;
-        background: #fff;
-        box-shadow:
-          0 4px 6px -1px rgb(0 0 0 / 0.1),
-          0 2px 4px -2px rgb(0 0 0 / 0.1);
-      }
-      .trip-card img {
-        display: block;
-        height: 11rem;
-        width: 100%;
-        object-fit: cover;
-      }
-      .trip-card .body {
-        padding: 1.25rem;
-      }
-      .trip-card .meta {
-        margin: 0;
-        font-size: 0.75rem;
-        font-weight: 500;
-        letter-spacing: 0.025em;
-        color: #0f766e;
-      }
-      .trip-card h2 {
-        margin: 0.5rem 0 0;
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-      .trip-card .summary {
-        margin: 0.5rem 0 0;
-        color: #57534e;
-        font-size: 0.875rem;
-        line-height: 1.5rem;
-      }
-      .trip-card .price {
-        margin: 0.75rem 0 0;
-        color: #134e4a;
-        font-size: 1.125rem;
-        font-weight: 600;
-      }
-      .trip-card a {
-        display: inline-block;
-        margin-top: 1rem;
-        border-radius: 0.5rem;
-        background: #0f766e;
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #fff;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body class="bg-stone-100 p-6 text-stone-900">
-    <h1 class="mb-2 text-2xl font-bold">同一張行程卡，兩種寫法</h1>
-    <p class="mb-6 max-w-prose text-sm leading-6 text-stone-600">
-      左右兩張是同一趟花蓮小團。左邊外觀收在 style，右邊把同一組外觀拆到標籤上。
-    </p>
-    <div class="flex flex-wrap items-start gap-6">
-      <article class="trip-card">
-        <img src="https://picsum.photos/id/1015/800/500" alt="太魯閣步道" />
-        <div class="body">
-          <p class="meta">花蓮 · 3 天</p>
-          <h2>太魯閣與七星潭</h2>
-          <p class="summary">清晨走峽谷步道，下午到七星潭看海。含兩晚住宿。</p>
-          <p class="price">NT$16,800</p>
-          <a href="#book">看行程</a>
-        </div>
-      </article>
-      <article class="max-w-sm overflow-hidden rounded-2xl bg-white shadow-md">
-        <img class="h-44 w-full object-cover" src="https://picsum.photos/id/1016/800/500" alt="七星潭海岸" />
-        <div class="p-5">
-          <p class="text-xs font-medium tracking-wide text-teal-700">花蓮 · 3 天</p>
-          <h2 class="mt-2 text-xl font-semibold">太魯閣與七星潭</h2>
-          <p class="mt-2 text-sm leading-6 text-stone-600">清晨走峽谷步道，下午到七星潭看海。含兩晚住宿。</p>
-          <p class="mt-3 text-lg font-semibold text-teal-900">NT$16,800</p>
-          <!-- text-xs 較小字級；text-stone-500 石色。跟價錢的大小、顏色都不同 -->
-          <p class="mt-1 text-xs text-stone-500">每週六出發</p>
-          <!-- rounded-2xl 是 1rem，跟卡片圓角同一階 -->
-          <a class="mt-4 inline-block rounded-2xl bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#book">
-            看行程
-          </a>
-        </div>
-      </article>
-    </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/01-compare.html
+  // ...
+            <p class="mt-2 text-sm leading-6 text-stone-600">清晨走峽谷步道，下午到七星潭看海。含兩晚住宿。</p>
+            <p class="mt-3 text-lg font-semibold text-teal-900">NT$16,800</p>
+-           <a class="mt-4 inline-block rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#book">
++           <p class="mt-1 text-xs text-stone-500">每週六出發</p>
++           <a class="mt-4 inline-block rounded-2xl bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#book">
+              看行程
+            </a>
+          // ...
 ```
 
 </details>
@@ -688,31 +600,17 @@ import './style.css'; // Vite 會處理這個 import
 
 標題的 `text-` 改接到更大的字級，字變大，顏色沒有一起改。眉題改接琥珀色，它仍是小字，只是不再跟價錢一樣綠。
 
-```html 02-tailwind/pages/02-naming.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>命名</title>
-  </head>
-  <body class="bg-stone-50 p-6 text-stone-900">
-    <article class="max-w-lg rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
-      <!-- text-amber-800：text 接到色名，只改顏色 -->
-      <p class="text-sm font-medium text-amber-800">2026 春季梯</p>
-      <!-- text-4xl 比 text-3xl 再大一階 -->
-      <h1 class="mt-1 text-4xl font-bold text-stone-900">花蓮太魯閣三日</h1>
-      <p class="mt-3 text-base leading-7 text-stone-600">
-        第一天進太魯閣，第二天走清水斷崖，第三天在七星潭解散。含兩晚住宿與早餐。
-      </p>
-      <p class="mt-4 text-2xl font-semibold text-teal-900">NT$16,800</p>
-      <a class="mt-5 inline-block rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#dates">
-        看這梯日期
-      </a>
-    </article>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/02-naming.html
+  // ...
+    <body class="bg-stone-50 p-6 text-stone-900">
+      <article class="max-w-lg rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+-       <p class="text-sm font-medium text-teal-700">2026 春季梯</p>
+-       <h1 class="mt-1 text-3xl font-bold text-stone-900">花蓮太魯閣三日</h1>
++       <p class="text-sm font-medium text-amber-800">2026 春季梯</p>
++       <h1 class="mt-1 text-4xl font-bold text-stone-900">花蓮太魯閣三日</h1>
+        <p class="mt-3 text-base leading-7 text-stone-600">
+          第一天進太魯閣，第二天走清水斷崖，第三天在七星潭解散。含兩晚住宿與早餐。
+        // ...
 ```
 
 </details>
@@ -798,40 +696,20 @@ import './style.css'; // Vite 會處理這個 import
 
 橫條從 70% 改成 40%，還是同一顆深青綠，只是更透。 「含早餐」用實心那一階配白字，跟淺底標籤並排，才看得出 100 和 700 的差別。
 
-```html 02-tailwind/pages/05-palette.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>色票與色階</title>
-  </head>
-  <body class="bg-teal-50 p-6 text-teal-950">
-    <article class="mx-auto max-w-md overflow-hidden rounded-2xl bg-white shadow-md">
-      <div class="relative">
-        <img class="h-52 w-full object-cover" src="https://picsum.photos/id/1015/800/500" alt="清水斷崖海岸" />
-        <!-- /40 比 /70 更透，海岸多露出來 -->
-        <p class="absolute inset-x-0 bottom-0 bg-teal-900/40 px-4 py-2 text-sm text-white">剩餘 4 席</p>
-      </div>
-      <div class="space-y-3 p-5">
-        <div class="flex flex-wrap gap-2">
-          <p class="rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">花蓮 · 一日</p>
-          <!-- 跟報名按鈕同一組：teal-700 底、白字 -->
-          <p class="rounded-full bg-teal-700 px-3 py-1 text-xs font-medium text-white">含早餐</p>
+```diff 02-tailwind/pages/05-palette.html
+  // ...
+        <div class="relative">
+          <img class="h-52 w-full object-cover" src="https://picsum.photos/id/1015/800/500" alt="清水斷崖海岸" />
+-         <p class="absolute inset-x-0 bottom-0 bg-teal-900/70 px-4 py-2 text-sm text-white">剩餘 4 席</p>
++         <p class="absolute inset-x-0 bottom-0 bg-teal-900/40 px-4 py-2 text-sm text-white">剩餘 4 席</p>
         </div>
-        <h1 class="text-2xl font-bold">清水斷崖日出</h1>
-        <p class="text-sm leading-6 text-teal-900/80">
-          清晨從花蓮市區出發，在觀景台等第一道陽光。回程經七星潭，下午解散。
-        </p>
-        <a class="inline-block rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#book">
-          報名這梯
-        </a>
-        <p class="rounded-lg bg-amber-100 px-3 py-2 text-sm text-amber-950">雨備：若風浪過大，改走七星潭步道。</p>
-      </div>
-    </article>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+        <div class="space-y-3 p-5">
+          <div class="flex flex-wrap gap-2">
+            <p class="rounded-full bg-teal-100 px-3 py-1 text-xs font-medium text-teal-800">花蓮 · 一日</p>
++           <p class="rounded-full bg-teal-700 px-3 py-1 text-xs font-medium text-white">含早餐</p>
+          </div>
+          <h1 class="text-2xl font-bold">清水斷崖日出</h1>
+          // ...
 ```
 
 </details>
@@ -913,37 +791,25 @@ import './style.css'; // Vite 會處理這個 import
 
 數字是同一套刻度。卡片內距變成 2rem，標籤縫和清單列距都變成 1.5rem。清單裡的文字與顏色保持原樣。標籤列仍只用縫，清單仍只用直向間距，沒有疊在同一顆元素上。
 
-```html 02-tailwind/pages/15-scale.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>間距刻度</title>
-  </head>
-  <body class="bg-stone-100 p-6 text-stone-900">
-    <article class="max-w-md rounded-2xl bg-white p-8 shadow-sm">
-      <h1 class="text-2xl font-bold">第一天 · 花蓮市區</h1>
-      <p class="mt-2 text-sm text-stone-600">車站東門集合，走完市區再北上七星潭。</p>
-      <!-- gap-6：標籤縫 1.5rem -->
-      <div class="mt-4 flex flex-wrap gap-6 text-sm">
-        <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">集合 08:30</span>
-        <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">車站東門</span>
-        <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">含午餐</span>
-      </div>
-      <!-- space-y-6：列與列 1.5rem -->
-      <ul class="mt-4 space-y-6 text-sm leading-6 text-stone-700">
-        <li class="rounded-lg bg-stone-50 px-4 py-3">上午：松園別館散步</li>
-        <li class="rounded-lg bg-stone-50 px-4 py-3">中午：公正街包子</li>
-        <li class="rounded-lg bg-stone-50 px-4 py-3">下午：七星潭看海</li>
-      </ul>
-      <a class="mt-6 inline-block rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white" href="#day1">
-        看集合地圖
-      </a>
-    </article>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/15-scale.html
+  // ...
+    </head>
+    <body class="bg-stone-100 p-6 text-stone-900">
+-     <article class="max-w-md rounded-2xl bg-white p-6 shadow-sm">
++     <article class="max-w-md rounded-2xl bg-white p-8 shadow-sm">
+        <h1 class="text-2xl font-bold">第一天 · 花蓮市區</h1>
+        <p class="mt-2 text-sm text-stone-600">車站東門集合，走完市區再北上七星潭。</p>
+-       <div class="mt-4 flex flex-wrap gap-3 text-sm">
++       <div class="mt-4 flex flex-wrap gap-6 text-sm">
+          <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">集合 08:30</span>
+          <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">車站東門</span>
+          <span class="rounded-full bg-teal-50 px-3 py-1 text-teal-800">含午餐</span>
+        </div>
+-       <ul class="mt-4 space-y-3 text-sm leading-6 text-stone-700">
++       <ul class="mt-4 space-y-6 text-sm leading-6 text-stone-700">
+          <li class="rounded-lg bg-stone-50 px-4 py-3">上午：松園別館散步</li>
+          <li class="rounded-lg bg-stone-50 px-4 py-3">中午：公正街包子</li>
+          // ...
 ```
 
 </details>
@@ -1032,44 +898,22 @@ import './style.css'; // Vite 會處理這個 import
 
 `space-y-4` 讓父層的子元素上下隔開 `1rem`，一次補回被拿掉的預設外距，所以不必每顆都寫上外距。圖片固定高度並用裁切填滿，才會跟右邊一樣是橫幅，而不是整張原圖的高度。
 
-```html 02-tailwind/pages/29-preflight.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Preflight</title>
-  </head>
-  <body class="bg-stone-100 p-6 text-stone-900">
-    <h1 class="mb-2 text-2xl font-bold">預設外距被拿掉之後</h1>
-    <p class="mb-6 max-w-prose text-sm text-stone-600">左邊那張卡沒有另外加上外距。右邊用父層把同一份內容撐開。</p>
-    <div class="flex flex-wrap items-start gap-6">
-      <section class="w-80 max-w-full space-y-4 rounded-2xl border-4 border-stone-200 bg-white p-5">
-        <p class="text-sm font-medium text-teal-700">花蓮小團</p>
-        <h2 class="text-xl font-semibold">太魯閣三日</h2>
-        <p class="text-sm text-stone-600">清晨進峽谷，下午到海邊。</p>
-        <ul class="list-disc pl-5 text-sm text-stone-700">
-          <li>太魯閣步道</li>
-          <li>七星潭</li>
-        </ul>
-        <img class="h-36 w-full rounded-lg object-cover" src="https://picsum.photos/id/1016/800/500" alt="七星潭海岸" />
-        <button type="button" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white">我要報名</button>
-      </section>
-      <section class="w-80 max-w-full space-y-4 rounded-2xl border-4 border-stone-200 bg-white p-5">
-        <p class="text-sm font-medium text-teal-700">花蓮小團</p>
-        <h2 class="text-xl font-semibold">太魯閣三日</h2>
-        <p class="text-sm text-stone-600">清晨進峽谷，下午到海邊。</p>
-        <ul class="list-disc pl-5 text-sm text-stone-700">
-          <li>太魯閣步道</li>
-          <li>七星潭</li>
-        </ul>
-        <img class="h-36 w-full rounded-lg object-cover" src="https://picsum.photos/id/1016/800/500" alt="七星潭海岸" />
-        <button type="button" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white">我要報名</button>
-      </section>
-    </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/29-preflight.html
+  // ...
+      <p class="mb-6 max-w-prose text-sm text-stone-600">左邊那張卡沒有另外加上外距。右邊用父層把同一份內容撐開。</p>
+      <div class="flex flex-wrap items-start gap-6">
+-       <section class="w-80 max-w-full rounded-2xl border-4 border-stone-200 bg-white p-5">
++       <section class="w-80 max-w-full space-y-4 rounded-2xl border-4 border-stone-200 bg-white p-5">
+          <p class="text-sm font-medium text-teal-700">花蓮小團</p>
+          <h2 class="text-xl font-semibold">太魯閣三日</h2>
+          // ...
+            <li>七星潭</li>
+          </ul>
+-         <img class="w-full rounded-lg" src="https://picsum.photos/id/1016/800/500" alt="七星潭海岸" />
++         <img class="h-36 w-full rounded-lg object-cover" src="https://picsum.photos/id/1016/800/500" alt="七星潭海岸" />
+          <button type="button" class="rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white">我要報名</button>
+        </section>
+        // ...
 ```
 
 </details>
@@ -1151,35 +995,15 @@ import './style.css'; // Vite 會處理這個 import
 
 class 寫進檔案、存檔後，編譯器掃到完整字串，背景才變成玫瑰色。白字在深底上比較讀得清楚。開發者工具裡臨時加過的名字在重新整理後會消失，以檔案裡的為準。
 
-```html 02-tailwind/pages/04-scan.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>只輸出用到的 class</title>
-  </head>
-  <body class="bg-stone-50 p-6 text-stone-900">
-    <h1 class="text-2xl font-bold">這一梯的報名狀態</h1>
-    <div class="mt-4 flex flex-wrap gap-4">
-      <article class="w-full max-w-sm rounded-2xl border border-stone-200 bg-white p-5">
-        <h2 class="text-lg font-semibold">太魯閣三日</h2>
-        <p class="mt-2 text-sm text-stone-600">4/12 出發 · 尚有名額</p>
-        <p class="mt-4 inline-block rounded-full bg-teal-700 px-3 py-1 text-sm font-medium text-white">可報名</p>
-      </article>
-      <article class="w-full max-w-sm rounded-2xl border border-stone-200 bg-white p-5">
-        <h2 class="text-lg font-semibold">清水斷崖一日</h2>
-        <p class="mt-2 text-sm text-stone-600">4/18 出發 · 候補中</p>
-        <!-- bg-rose-700 與 text-white 寫在檔案裡 -->
-        <p class="mt-4 inline-block rounded-full bg-rose-700 px-3 py-1 text-sm font-medium text-white">候補中</p>
-      </article>
-    </div>
-    <p class="mt-4 max-w-prose text-sm text-stone-600">
-      第二顆標籤先不要寫背景。用 F12 在 Elements 加上 bg-rose-700，再對照存檔後的結果。
-    </p>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/04-scan.html
+  // ...
+          <h2 class="text-lg font-semibold">清水斷崖一日</h2>
+          <p class="mt-2 text-sm text-stone-600">4/18 出發 · 候補中</p>
+-         <p class="mt-4 inline-block rounded-full border border-stone-300 px-3 py-1 text-sm text-stone-700">候補中</p>
++         <p class="mt-4 inline-block rounded-full bg-rose-700 px-3 py-1 text-sm font-medium text-white">候補中</p>
+        </article>
+      </div>
+      // ...
 ```
 
 </details>
@@ -1338,57 +1162,26 @@ class 寫進檔案、存檔後，編譯器掃到完整字串，背景才變成�
 
 全圓只改主要動作那一顆的圓角，內距和顏色不變，所以它變成長膠囊，其他顆仍是小圓角。 「下載行程表」複用線框那一組 class，才會跟「加入比較」一樣是白底青綠框；它是這一頁的動作，所以用按鈕。
 
-```html 02-tailwind/pages/11-button.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>按鈕</title>
-  </head>
-  <body class="bg-stone-100 p-6 text-stone-900">
-    <section class="mx-auto max-w-xl rounded-2xl bg-white p-6 shadow-sm">
-      <p class="text-sm font-medium text-teal-700">花蓮 · 太魯閣三日</p>
-      <h1 class="mt-1 text-2xl font-bold">4/12 星期日出發</h1>
-      <p class="mt-2 text-sm text-stone-600">含兩晚住宿與早餐。名額 12 人，目前剩餘 3 席。</p>
-      <p class="mt-4 text-2xl font-semibold text-teal-900">
-        NT$16,800 <span class="text-sm font-normal text-stone-500">/ 人</span>
-      </p>
-      <div class="mt-5 flex flex-wrap items-center gap-3">
-        <!-- rounded-full 全圓 -->
-        <a
-          class="inline-flex items-center rounded-full bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-900"
-          href="#book"
-        >
-          立即預訂
-        </a>
-        <button
-          type="button"
-          class="rounded-lg border border-teal-700 bg-white px-4 py-2 font-medium text-teal-800 hover:bg-teal-50"
-        >
-          加入比較
-        </button>
-        <button type="button" class="rounded-lg px-4 py-2 font-medium text-teal-800 underline-offset-4 hover:underline">
-          退改規則
-        </button>
-        <button
-          type="button"
-          class="rounded-lg border border-teal-700 bg-white px-4 py-2 font-medium text-teal-800 hover:bg-teal-50"
-        >
-          下載行程表
-        </button>
-        <button
-          type="button"
-          class="cursor-not-allowed rounded-lg bg-stone-300 px-4 py-2 font-medium text-stone-500"
-          disabled
-        >
-          候補已滿
-        </button>
-      </div>
-    </section>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/11-button.html
+  // ...
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <a
+-           class="inline-flex items-center rounded-lg bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-900"
++           class="inline-flex items-center rounded-full bg-teal-700 px-4 py-2 font-medium text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-900"
+            href="#book"
+          >
+            // ...
+          <button
+            type="button"
++           class="rounded-lg border border-teal-700 bg-white px-4 py-2 font-medium text-teal-800 hover:bg-teal-50"
++         >
++           下載行程表
++         </button>
++         <button
++           type="button"
+            class="cursor-not-allowed rounded-lg bg-stone-300 px-4 py-2 font-medium text-stone-500"
+            disabled
+          // ...
 ```
 
 </details>
@@ -1473,45 +1266,18 @@ class 寫進檔案、存檔後，編譯器掃到完整字串，背景才變成�
 
 `shadow-lg` 比 `shadow-md` 更浮，卡片和頁面底的分界更清楚。 「熱門」是獨立的一小塊，淺底深字，放在眉題前面，內層的直向縫會把它和地名分開。它不是按鈕，只是標示。
 
-```html 02-tailwind/pages/12-card.html
-<!doctype html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>卡片</title>
-  </head>
-  <body class="bg-stone-100 p-6 text-stone-900">
-    <h1 class="mb-6 text-2xl font-bold">本週可報名</h1>
-    <!-- shadow-lg 比 shadow-md 更深 -->
-    <article class="max-w-sm overflow-hidden rounded-2xl bg-white shadow-lg">
-      <img class="h-44 w-full object-cover" src="https://picsum.photos/id/1018/800/500" alt="台北夜市燈籠" />
-      <div class="space-y-3 p-5">
-        <!-- 淺玫瑰底、深玫瑰字、全圓 -->
-        <p class="inline-block rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-800">熱門</p>
-        <p class="text-xs font-medium tracking-wide text-teal-700">台北 · 3 天 2 夜</p>
-        <h2 class="text-xl font-semibold">城市漫遊</h2>
-        <p class="text-sm leading-6 text-stone-600">迪化街、大稻埕河岸，最後一晚住在老屋改建的旅社。</p>
-        <ul class="space-y-1 text-sm text-stone-700">
-          <li>含早餐與一趟夜間導覽</li>
-          <li>週五晚間台北車站集合</li>
-          <li>最多 8 人小團</li>
-        </ul>
-        <div class="flex items-baseline justify-between">
-          <p class="text-sm text-stone-400 line-through">NT$15,800</p>
-          <p class="text-lg font-semibold text-teal-900">NT$12,800</p>
-        </div>
-        <a
-          class="inline-block w-full rounded-lg bg-teal-700 px-4 py-2 text-center text-sm font-medium text-white"
-          href="#detail"
-        >
-          看詳情
-        </a>
-      </div>
-    </article>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
+```diff 02-tailwind/pages/12-card.html
+  // ...
+    <body class="bg-stone-100 p-6 text-stone-900">
+      <h1 class="mb-6 text-2xl font-bold">本週可報名</h1>
+-     <article class="max-w-sm overflow-hidden rounded-2xl bg-white shadow-md">
++     <article class="max-w-sm overflow-hidden rounded-2xl bg-white shadow-lg">
+        <img class="h-44 w-full object-cover" src="https://picsum.photos/id/1018/800/500" alt="台北夜市燈籠" />
+        <div class="space-y-3 p-5">
++         <p class="inline-block rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-800">熱門</p>
+          <p class="text-xs font-medium tracking-wide text-teal-700">台北 · 3 天 2 夜</p>
+          <h2 class="text-xl font-semibold">城市漫遊</h2>
+          // ...
 ```
 
 </details>

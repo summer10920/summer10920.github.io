@@ -110,40 +110,34 @@ h1 {
 
 h3 寫進逗號那一組，所以跟前兩顆標題一樣是粗體，但不繼承 h1 的深色與字級。h1 同屬性仍是較下面那行留下，所以標題變成另一階青綠。
 
-```html 03-css/pages/01-syntax.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>一條規則</title>
-    <style>
-      h1,
-      h2,
-      h3 {
-        font-weight: 700;
-      }
-
-      h1 {
-        color: #99f6e4;
-        colour: red;
-        color: #0f766e;
-        font-size: 1.75rem;
-      }
-
-      .lead {
-        font-size: 1.125rem;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>一條規則三個零件</h1>
-    <p class="lead">標題應是深青綠，不是紅色。</p>
-    <h2>次標題跟主標題共用字重</h2>
-    <p>這段沒有自己的 class，字級是瀏覽器預設。</p>
-    <h3>行前準備</h3>
-  </body>
-</html>
+```diff 03-css/pages/01-syntax.html
+  // ...
+      <title>一條規則</title>
+      <style>
+- 
+        h1,
+-       h2 {
+-         font-weight: 700; /* 逗號：兩條選擇器共用，權重不會相加 */
++       h2,
++       h3 {
++         font-weight: 700;
+        }
+  
+        h1 {
+-         color: #99f6e4; /* 同屬性寫兩次，這行會被下一行蓋掉 */
+-         colour: red; /* 拼錯，只丟掉這一行，標題不會變紅 */
+-         color: #115e59;
++         color: #99f6e4;
++         colour: red;
++         color: #0f766e;
+          font-size: 1.75rem;
+        }
+        // ...
+      <h2>次標題跟主標題共用字重</h2>
+      <p>這段沒有自己的 class，字級是瀏覽器預設。</p>
++     <h3>行前準備</h3>
+    </body>
+  </html>
 ```
 
 </details>
@@ -220,27 +214,22 @@ h3 寫進逗號那一組，所以跟前兩顆標題一樣是粗體，但不繼�
 
 第一行不再把顏色寫在標籤上，所以之後要改色只要動樣式表。頁內的琥珀色與外部的深青綠維持原樣，三行仍是三種顏色。
 
-```html 03-css/pages/02-where.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CSS 寫在哪</title>
-    <link rel="stylesheet" href="02-where.css" />
-    <style>
-      .from-page {
-        color: #b45309;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>三種地方都可以寫</h1>
-    <p class="from-inline">這行的顏色寫在開始標籤上。</p>
-    <p class="from-page">這行的顏色寫在這頁的 style。</p>
-    <p class="from-file">這行的顏色寫在外部樣式表。</p>
-  </body>
-</html>
+```diff 03-css/pages/02-where.html
+  // ...
+      <style>
+        .from-page {
+-         color: #b45309; /* 頁內：只在這份 HTML */
++         color: #b45309;
+        }
+      </style>
+    // ...
+    <body>
+      <h1>三種地方都可以寫</h1>
+-     <p style="color: #9f1239">這行的顏色寫在開始標籤上。</p>
++     <p class="from-inline">這行的顏色寫在開始標籤上。</p>
+      <p class="from-page">這行的顏色寫在這頁的 style。</p>
+      <p class="from-file">這行的顏色寫在外部樣式表。</p>
+    // ...
 ```
 
 ```css 03-css/pages/02-where.css
@@ -343,52 +332,29 @@ Styles 裡完全沒有你寫的那條，多半是 class 拼字，或 `style` 沒
 
 第二段同時有兩個 class，沒有空格的那條打中它，所以是玫瑰紅。第一段只有 tour，仍是深青綠。售完那段仍走原來的灰色與刪除線。
 
-```html 03-css/pages/03-selectors-basic.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>基本選擇器</title>
-    <style>
-      p {
-        color: #475569;
-      }
-
-      .tour {
-        color: #0f766e;
-      }
-
-      .hot {
-        color: #9f1239;
-      }
-
-      .tour.hot {
-        color: #9f1239;
-      }
-
-      .soldout {
-        text-decoration: line-through;
-      }
-
-      .tour.soldout {
-        color: #64748b;
-      }
-
-      #featured {
-        font-weight: 700;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>選擇器決定規則打到誰</h1>
-    <p>元素選擇器：這段是石板色。</p>
-    <p class="tour">class：行程用字。同一個 class 可以再出現一次。</p>
-    <p class="tour hot">另一段行程，顏色跟上面那行相同。</p>
-    <p class="tour soldout">兩個 class 都在：字是灰的，而且有刪除線。</p>
-    <p id="featured">id：全頁這一個，字重較粗。</p>
-  </body>
-</html>
+```diff 03-css/pages/03-selectors-basic.html
+  // ...
+          color: #0f766e;
+        }
+  
++       .hot {
++         color: #9f1239;
++       }
++ 
++       .tour.hot {
++         color: #9f1239;
++       }
++ 
+        .soldout {
+          text-decoration: line-through;
+        // ...
+      <p>元素選擇器：這段是石板色。</p>
+      <p class="tour">class：行程用字。同一個 class 可以再出現一次。</p>
+-     <p class="tour">另一段行程，顏色跟上面那行相同。</p>
++     <p class="tour hot">另一段行程，顏色跟上面那行相同。</p>
+      <p class="tour soldout">兩個 class 都在：字是灰的，而且有刪除線。</p>
+      <p id="featured">id：全頁這一個，字重較粗。</p>
+    // ...
 ```
 
 </details>
@@ -475,49 +441,31 @@ article > .direct {
 
 加號只打緊接在 h2 後面的那一個 p，所以只有第一段是石板色。再下一段不再被這條打中，顏色回到瀏覽器預設。清單的加號沒有改。
 
-```html 03-css/pages/04-selectors-combine.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>組合選擇器</title>
-    <style>
-      article p {
-        color: #0f766e;
-      }
-
-      article > .direct {
-        font-weight: 700;
-      }
-
-      h2 + p {
-        color: #475569;
-      }
-
-      .stops li + li {
-        text-decoration: line-through;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>關係寫在選擇器中間</h1>
-    <article>
-      <p class="direct">這段是 article 的直接小孩，所以較粗，也有深色。</p>
-      <div>
-        <p>後代仍打得到這段，直接子層打不到，所以不會變粗。</p>
-      </div>
-    </article>
-    <h2>相鄰與後面的兄弟</h2>
-    <p>這個標題後面的段落會改成石板色。</p>
-    <p>這段也在標題後面，同樣改色。</p>
-    <ul class="stops">
-      <li>台北</li>
-      <li>這一項起才有刪除線</li>
-      <li>濟州</li>
-    </ul>
-  </body>
-</html>
+```diff 03-css/pages/04-selectors-combine.html
+  // ...
+      <style>
+        article p {
+-         color: #0f766e; /* 後代：任何深度的 p */
++         color: #0f766e;
+        }
+  
+        article > .direct {
+-         font-weight: 700; /* 只限 article 的直接小孩 */
++         font-weight: 700;
+        }
+  
+-       h2 ~ p {
+-         color: #475569; /* 同一個父層裡，h2 之後的 p */
++       h2 + p {
++         color: #475569;
+        }
+  
+        .stops li + li {
+-         text-decoration: line-through; /* 緊接在 li 後面的那個 li */
++         text-decoration: line-through;
+        }
+      </style>
+    // ...
 ```
 
 </details>
@@ -646,80 +594,33 @@ before 拿掉之後，HTML 裡的文字仍要讀得懂。清單若用奇數項�
 
 nth-child 的括號改成 even 之後，第 2、4 項是深青綠，第 1、3 項回到預設。第 2 項仍較粗。價格前面的字變成「約 NT$」，數字還在 HTML 裡。
 
-```html 03-css/pages/05-selectors-pseudo.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>偽類與偽元素</title>
-    <style>
-      a:link {
-        color: #0f766e;
-      }
-      a:visited {
-        color: #6d28d9;
-      }
-      a:hover {
-        color: #9f1239;
-      }
-      a:active {
-        color: #b45309;
-      }
-      a:focus-visible {
-        color: #115e59;
-      }
-
-      .days li:nth-child(even) {
-        color: #0f766e;
-      }
-      .days li:nth-child(2) {
-        font-weight: 700;
-      }
-
-      .pitfall p:first-child {
-        color: #9f1239;
-      }
-      .pitfall p:first-of-type {
-        color: #0f766e;
-      }
-
-      .price::before {
-        content: "約 NT$ ";
-      }
-
-      input[type="email"] {
-        color: #0f766e;
-      }
-      input::placeholder {
-        color: #94a3b8;
-      }
-      input:disabled {
-        color: #94a3b8;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>狀態、位置、裝飾</h1>
-    <p><a href="#days">把滑鼠放上來，再用 Tab 走進來</a></p>
-    <ul class="days" id="days">
-      <li>奇數項</li>
-      <li>第二項較粗</li>
-      <li>奇數項</li>
-      <li>第四項</li>
-    </ul>
-    <section class="pitfall">
-      <h2>不是第一個小孩</h2>
-      <p>這段是深青綠。第一個小孩是標題，所以段落不是第一個小孩。</p>
-    </section>
-    <p class="price">12800</p>
-    <p>
-      <input type="email" placeholder="you@example.com" />
-      <input type="text" placeholder="姓名" />
-      <input type="text" value="已額滿" disabled />
-    </p>
-  </body>
-</html>
+```diff 03-css/pages/05-selectors-pseudo.html
+  // ...
+          color: #115e59;
+        }
+  
+-       .days li:nth-child(odd) {
++       .days li:nth-child(even) {
+          color: #0f766e;
+        }
+        // ...
+        }
+  
+        .pitfall p:first-child {
+-         color: #9f1239; /* 打不中：第一個小孩是 h2 */
++         color: #9f1239;
+        }
+        .pitfall p:first-of-type {
+          // ...
+        }
+  
+        .price::before {
+-         content: "NT$ ";
++         content: "約 NT$ ";
+        }
+  
+        input[type="email"] {
+          // ...
 ```
 
 </details>
@@ -821,53 +722,52 @@ nth-child 的括號改成 even 之後，第 2、4 項是深青綠，第 1、3 �
 
 id 那一欄比 class 那一欄優先，所以 sale 的玫瑰紅蓋過 force 的灰色。畫面上這段仍是玫瑰紅，Styles 裡不會再看到 important。
 
-```html 03-css/pages/06-specificity.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>權重</title>
-    <style>
-      p {
-        color: #475569;
-      }
-
-      .note {
-        color: #b45309;
-      }
-
-      #one {
-        color: #0f766e;
-      }
-
-      .chip {
-        color: #0369a1;
-      }
-
-      .chip {
-        color: #115e59;
-      }
-
-      .force {
-        color: #94a3b8;
-      }
-
-      #sale {
-        color: #9f1239;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>誰贏</h1>
-    <p>只有元素選擇器：石板色。</p>
-    <p class="note">加上 class：琥珀色。</p>
-    <p id="one" class="note">同時有 id 與 class：深青綠。</p>
-    <p id="two" class="note" style="color: #9f1239">行內樣式：玫瑰紅。</p>
-    <p class="chip">同權重寫了兩次，留下較下面的深青綠。</p>
-    <p id="sale" class="force">這段用了 important，留下玫瑰紅。</p>
-  </body>
-</html>
+```diff 03-css/pages/06-specificity.html
+  // ...
+      <title>權重</title>
+      <style>
+- 
+        p {
+-         color: #475569; /* 元素欄 */
++         color: #475569;
+        }
+  
+        .note {
+-         color: #b45309; /* class 欄，贏過元素 */
++         color: #b45309;
+        }
+  
+        #one {
+-         color: #0f766e; /* id 欄，贏過 class */
++         color: #0f766e;
+        }
+  
+        .chip {
+          // ...
+        }
+  
+        .chip {
+-         color: #115e59; /* 權重相同，較下面的贏 */
++         color: #115e59;
+        }
+  
+        .force {
+          color: #94a3b8;
+        }
+  
+-       .force {
+-         color: #9f1239 !important;
++       #sale {
++         color: #9f1239;
+        }
+      </style>
+    // ...
+      <p id="two" class="note" style="color: #9f1239">行內樣式：玫瑰紅。</p>
+      <p class="chip">同權重寫了兩次，留下較下面的深青綠。</p>
+-     <p class="force">這段用了 important，留下玫瑰紅。</p>
++     <p id="sale" class="force">這段用了 important，留下玫瑰紅。</p>
+    </body>
+  </html>
 ```
 
 </details>
@@ -950,30 +850,17 @@ miss --> init["不可繼承的用初始值"]
 
 price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍只在父層，段落自己還是沒有背景。
 
-```html 03-css/pages/07-inherit.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>繼承</title>
-    <style>
-      .story {
-        color: #7c2d12;
-        background: #fff7ed;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>沒寫的屬性會不會跟父層</h1>
-    <article class="story">
-      <h2>繼承</h2>
-      <p>這段沒寫顏色，所以跟 article 的磚紅。底色是父層透出來的，不是這段自己的背景。</p>
-      <p class="price">這段自己寫了顏色，不再跟父層。</p>
-    </article>
-    <p>article 外面這段不跟那塊磚紅。</p>
-  </body>
-</html>
+```diff 03-css/pages/07-inherit.html
+  // ...
+          background: #fff7ed;
+        }
+- 
+-       .price {
+-         color: #115e59;
+-       }
+      </style>
+    </head>
+    // ...
 ```
 
 </details>
@@ -1063,50 +950,17 @@ price 不再寫顏色之後，兩段正文都跟 article 的磚紅。淺底仍�
 
 initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大小與粗細維持瀏覽器預設。
 
-```html 03-css/pages/08-keywords.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>繼承關鍵字</title>
-    <style>
-      .keywords {
-        color: #1d4ed8;
-      }
-
-      .in {
-        color: inherit;
-      }
-
-      .init {
-        color: inherit;
-      }
-
-      .un {
-        color: unset;
-      }
-
-      .back h2 {
-        font-size: 1rem;
-        font-weight: 400;
-        font-size: revert;
-        font-weight: revert;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>明示跟父層，或回到初始</h1>
-    <div class="keywords">
-      <p class="in">inherit：字跟父層的藍。</p>
-      <p class="init">initial：字回到屬性初始值。</p>
-      <p class="un">unset：顏色會繼承，所以仍是藍字。</p>
-    </div>
-    <section class="back">
-      <h2>這顆標題用了 revert，字級與字重回到瀏覽器預設。</h2>
-    </section>
-  </body>
-</html>
+```diff 03-css/pages/08-keywords.html
+  // ...
+        }
+  
+        .init {
+-         color: initial;
++         color: inherit;
+        }
+  
+        .un {
+          // ...
 ```
 
 </details>
@@ -1233,74 +1087,26 @@ initial 換成 inherit 之後，三段都是藍字。標題仍走 revert，大�
 
 子層改跟根字級走之後，兩塊的子層都約 32px。父層仍是 1.25em 與 1.25rem，看起來仍接近，但 em 子層不再變成約 40px。
 
-```html 03-css/pages/09-units.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>單位</title>
-    <style>
-      html {
-        font-size: 16px;
-      }
-
-      .em-box {
-        font-size: 1.25em;
-        background: #f0fdfa;
-      }
-
-      .em-child {
-        font-size: 2rem;
-      }
-
-      .rem-box {
-        font-size: 1.25rem;
-        background: #ecfeff;
-      }
-
-      .rem-child {
-        font-size: 2rem;
-      }
-
-      .meter {
-        width: 16rem;
-        background: #ccfbf1;
-      }
-
-      .half {
-        width: 50%;
-        background: #115e59;
-        color: #fff;
-      }
-
-      .measure {
-        max-width: 36ch;
-      }
-
-      .vw-title {
-        font-size: 4vw;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>單位</h1>
-    <p>這頁把根字級設成 16px，只為了讓 Computed 好對。</p>
-    <div class="em-box">
-      父層 1.25em
-      <p class="em-child">子層 2em，相對父層，約 40px。</p>
-    </div>
-    <div class="rem-box">
-      父層 1.25rem
-      <p class="rem-child">子層 2rem，相對根元素，約 32px。</p>
-    </div>
-    <div class="meter">
-      <div class="half">父層一半寬</div>
-    </div>
-    <p class="measure">這段最寬約 36 個 0 的寬度。中文不會剛好 36 個字，行寬仍收得住。</p>
-    <p class="vw-title">這行會跟著視窗寬度變</p>
-  </body>
-</html>
+```diff 03-css/pages/09-units.html
+  // ...
+        }
+  
+        .em-child {
+-         font-size: 2em; /* 1.25 × 2 × 16px */
++         font-size: 2rem;
+        }
+  
+        .rem-box {
+          // ...
+        }
+  
+        .rem-child {
+-         font-size: 2rem; /* 2 × 16px，不乘父層 */
++         font-size: 2rem;
+        }
+  
+        .meter {
+          // ...
 ```
 
 </details>
@@ -1404,59 +1210,23 @@ Styles 裡的色塊可以打開調色盤，也會提示對比是否過低。過�
 
 兩處透明度都變成不透明之後，清單那項回到實心青綠，斜紋上的段落變成實心淺底，蓋住下面的紋。currentColor 那行沒有改。
 
-```html 03-css/pages/10-colors.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>顏色</title>
-    <style>
-      .named {
-        color: teal;
-      }
-      .hex {
-        color: #0f766e;
-      }
-      .rgb {
-        color: rgb(15 118 110);
-      }
-      .mix {
-        color: rgb(15 118 110 / 100%);
-      }
-      .hsl {
-        color: hsl(175 80% 26%);
-      }
-
-      .tag {
-        color: #9f1239;
-        background: currentColor;
-      }
-
-      .stripe {
-        background: repeating-linear-gradient(45deg, #134e4a 0 8px, #042f2e 8px 16px);
-      }
-
-      .frost {
-        background: rgb(240 253 250 / 100%);
-      }
-    </style>
-  </head>
-  <body>
-    <h1>同一套顏色，很多種寫法</h1>
-    <ul>
-      <li class="named">名稱 teal</li>
-      <li class="hex">六碼色票</li>
-      <li class="rgb">rgb 空格寫法</li>
-      <li class="mix">同一色，一半透明</li>
-      <li class="hsl">hsl，亮度在第三個數</li>
-    </ul>
-    <p class="tag">這行的底跟字同一色</p>
-    <div class="stripe">
-      <p class="frost">半透明的底會透出底下的斜紋。</p>
-    </div>
-  </body>
-</html>
+```diff 03-css/pages/10-colors.html
+  // ...
+        }
+        .mix {
+-         color: rgb(15 118 110 / 50%);
++         color: rgb(15 118 110 / 100%);
+        }
+        .hsl {
+          // ...
+        }
+  
+        .frost {
+-         background: rgb(240 253 250 / 70%);
++         background: rgb(240 253 250 / 100%);
+        }
+      </style>
+    // ...
 ```
 
 </details>
@@ -1565,63 +1335,19 @@ font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個�
 
 拆開之後，這行仍是粗體、較大、行高 1.3，字型跟 body 走。因為沒有用簡寫，其他字型屬性不會被掃回初始值。
 
-```html 03-css/pages/11-type.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>字型</title>
-    <style>
-      body {
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.6;
-      }
-
-      .banner {
-        font-weight: 700;
-        font-size: 1.5rem;
-        line-height: 1.3;
-      }
-
-      .strong {
-        font-weight: 700;
-      }
-
-      .serif {
-        font-family: Palatino, "Palatino Linotype", serif;
-      }
-
-      .mono {
-        font-family: ui-monospace, Consolas, monospace;
-      }
-
-      .tight {
-        line-height: 1;
-        max-width: 24rem;
-        background: #f0fdfa;
-      }
-
-      .loose {
-        line-height: 1.8;
-        max-width: 24rem;
-        background: #ecfeff;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>字型堆疊</h1>
-    <p class="banner">這行用簡寫：粗體、較大字、行高 1.3。</p>
-    <p>內文用無襯線。<span class="strong">這幾個字是粗體。</span></p>
-    <p class="serif">這段改走襯線，中文會落到系統有的明體或宋體。</p>
-    <p class="mono">行程代碼 TPE-001 用等寬字較好對。</p>
-    <p class="tight">行高 1：行與行貼得很近。兩行以上就不好讀。洛奇旅行的說明至少要留出行距。</p>
-    <p class="loose">行高 1.8：同一段文字鬆很多。內文常用 1.5 到 1.7。</p>
-  </body>
-</html>
+```diff 03-css/pages/11-type.html
+  // ...
+        }
+  
+        .banner {
+-         font: 700 1.5rem/1.3 system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
++         font-weight: 700;
++         font-size: 1.5rem;
++         line-height: 1.3;
+        }
+  
+        .strong {
+          // ...
 ```
 
 </details>
@@ -1729,67 +1455,24 @@ font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個�
 
 原本置中的那段改靠行末，畫面上連續兩段都貼著右邊。連結底線變粗，顏色與距離維持原樣。代碼仍是大寫、字距不變。
 
-```html 03-css/pages/12-text.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>文字</title>
-    <style>
-      body {
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-        line-height: 1.6;
-      }
-
-      .display {
-        font-size: 2rem;
-        color: #f0fdfa;
-        background: #115e59;
-        text-shadow: 0 2px 0 rgb(0 0 0 / 35%);
-      }
-
-      .center {
-        text-align: end;
-      }
-
-      .end {
-        text-align: end;
-      }
-
-      .jump {
-        text-decoration-line: underline;
-        text-decoration-color: #0f766e;
-        text-decoration-thickness: 4px;
-        text-underline-offset: 0.2em;
-      }
-
-      .code {
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
-
-      .schedule {
-        white-space: pre-wrap;
-        font-family: ui-monospace, Consolas, monospace;
-        background: #f8fafc;
-      }
-    </style>
-  </head>
-  <body>
-    <h1 class="display">洛奇旅行</h1>
-    <p class="center">這段置中。</p>
-    <p class="end">這段靠行末。</p>
-    <p>連結可以只調底線：<a class="jump" href="#top">看行程</a></p>
-    <p class="code">tpe-kt-03</p>
-    <p class="schedule">
-      Day 1 台北
-      Day 2 京都
-      Day 3 濟州
-    </p>
-  </body>
-</html>
+```diff 03-css/pages/12-text.html
+  // ...
+        }
+  
+        .center {
+-         text-align: center;
++         text-align: end;
+        }
+  
+        .end {
+          // ...
+          text-decoration-line: underline;
+          text-decoration-color: #0f766e;
+-         text-decoration-thickness: 2px;
++         text-decoration-thickness: 4px;
+          text-underline-offset: 0.2em;
+        }
+        // ...
 ```
 
 </details>
@@ -1895,64 +1578,16 @@ font-family 是一串字型，逗號分隔，瀏覽器由左到右挑第一個�
 
 class 對調之後，第一張照片改成整張放進盒子，第二張改成蓋滿並裁切。說明文字跟著換，才不會看文跟看圖相反。
 
-```html 03-css/pages/13-background.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>背景</title>
-    <style>
-      body {
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-        line-height: 1.6;
-      }
-
-      .swatch {
-        background-color: #f0fdfa;
-      }
-
-      .shade {
-        background-image: linear-gradient(160deg, #115e59, #0f766e 42%, #f0fdfa);
-      }
-
-      .photo {
-        color: #f0fdfa;
-        background-color: #042f2e;
-        background-image: url("https://picsum.photos/id/1015/800/500");
-        background-repeat: no-repeat;
-      }
-
-      .cover {
-        background-size: cover;
-        background-position: center;
-      }
-
-      .contain {
-        background-size: contain;
-        background-position: center;
-      }
-
-      .hero {
-        color: #f0fdfa;
-        background-color: #115e59;
-        background-image:
-          linear-gradient(rgb(15 23 42 / 55%), rgb(15 23 42 / 15%)),
-          radial-gradient(circle, #99f6e4 1.5px, transparent 1.6px);
-        background-size: auto, 16px 16px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>背景</h1>
-    <div class="swatch">只有底色。</div>
-    <div class="shade">線性漸層也是一層背景圖。</div>
-    <div class="photo contain">contain：整張都在，旁邊露出底色。<br /><br /><br /></div>
-    <div class="photo cover">cover：蓋滿，多的被裁掉。<br /><br /><br /></div>
-    <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
-  </body>
-</html>
+```diff 03-css/pages/13-background.html
+  // ...
+      <div class="swatch">只有底色。</div>
+      <div class="shade">線性漸層也是一層背景圖。</div>
+-     <div class="photo cover">cover：蓋滿，多的被裁掉。<br /><br /><br /></div>
+      <div class="photo contain">contain：整張都在，旁邊露出底色。<br /><br /><br /></div>
++     <div class="photo cover">cover：蓋滿，多的被裁掉。<br /><br /><br /></div>
+      <div class="hero">漸層寫在前面，所以蓋在圓點上面。<br /><br /></div>
+    </body>
+  // ...
 ```
 
 </details>
@@ -2296,99 +1931,25 @@ padding --> content["content 內容"]
 
 拿掉 content-box 那條之後，兩條軌道都用開頭的 border-box，小孩不再撐破虛線。卡片四角更圓，寬度與外距沒有改。
 
-```html 03-css/pages/16-box.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>盒子模型</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-        line-height: 1.6;
-      }
-
-      .stage {
-        background: #ccfbf1;
-      }
-
-      .card {
-        width: min(100%, 22rem);
-        margin: 1rem auto;
-        padding: 1rem;
-        border: 6px solid #0f766e;
-        border-radius: 1.5rem;
-        background: #f0fdfa;
-      }
-
-      .content {
-        background: #cffafe;
-      }
-
-      .track {
-        width: 16rem;
-        max-width: 100%;
-        margin-bottom: 0.75rem;
-        border: 1px dashed #0f766e;
-      }
-
-      .kid {
-        width: 100%;
-        padding: 0.5rem 1rem;
-        border: 4px solid #115e59;
-        background: #f0fdfa;
-      }
-
-      .collapse p {
-        margin-top: 0.5rem;
-        margin-bottom: 2rem;
-        background: #f0fdfa;
-      }
-
-      .collapse p + p {
-        margin-bottom: 0;
-      }
-
-      .go {
-        padding: 0.4rem 0.9rem;
-        border-radius: 0.4rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .go:focus-visible {
-        outline: 3px solid #9f1239;
-        outline-offset: 3px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>盒子四層</h1>
-    <div class="stage">
-      <article class="card">
-        <p class="content">淺藍是內容。卡片的淺綠含內距。粗框是邊框。框外淺青是外距。</p>
-      </article>
-    </div>
-    <h2>兩種算法</h2>
-    <div class="track"><div class="kid">border-box：對齊虛線。</div></div>
-    <div class="track content-box"><div class="kid">content-box：虛線包不住。</div></div>
-    <h2>垂直外距合併</h2>
-    <div class="collapse">
-      <p>這段下外距是 2rem。</p>
-      <p>上外距只有 0.5rem。中間是較大的 2rem。</p>
-    </div>
-    <p><a class="go" href="#top">看行程</a>（用 Tab 移來，焦點框不改變按鈕尺寸）</p>
-  </body>
-</html>
+```diff 03-css/pages/16-box.html
+  // ...
+          padding: 1rem;
+          border: 6px solid #0f766e;
+-         border-radius: 0.75rem;
++         border-radius: 1.5rem;
+          background: #f0fdfa;
+        }
+        // ...
+          background: #f0fdfa;
+        }
+  
+-       .content-box .kid {
+-         box-sizing: content-box;
+-       }
+- 
+        .collapse p {
+          margin-top: 0.5rem;
+          // ...
 ```
 
 </details>
@@ -2536,101 +2097,17 @@ display 決定盒子怎麼參加排版，不改變標籤的語意。區塊、行
 
 第一列的 2 現在跟第二列一樣留著空位。它不再用 none，所以 1 和 3 不會靠在一起。第三列仍是透明但點得到。
 
-```html 03-css/pages/17-display.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>display</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .block {
-        margin-bottom: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        background: #f0fdfa;
-      }
-
-      .item {
-        padding: 0.35rem 0.5rem;
-        border: 2px solid #0f766e;
-        background: #ccfbf1;
-      }
-
-      .day {
-        display: inline-block;
-        width: 4.5rem;
-        padding: 0.35rem 0;
-        background: #115e59;
-        color: #f0fdfa;
-        text-align: center;
-      }
-
-      .cell {
-        display: inline-block;
-        width: 2.5rem;
-        margin-right: 0.35rem;
-        padding: 0.35rem 0;
-        background: #115e59;
-        color: #f0fdfa;
-        text-align: center;
-      }
-
-      .gone {
-        visibility: hidden;
-      }
-
-      .hold {
-        visibility: hidden;
-      }
-
-      .ghost {
-        opacity: 0;
-      }
-
-      .photo {
-        width: 4.5rem;
-        height: 3rem;
-      }
-
-      .photo.block {
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>盒子怎麼參加排版</h1>
-    <h2>block</h2>
-    <div class="block">第一張獨佔一行。</div>
-    <div class="block">第二張從下一行開始。</div>
-    <h2>inline</h2>
-    <p class="line">行程有<span class="item">甲</span>與<span class="item">乙</span>兩站。</p>
-    <h2>inline-block</h2>
-    <p>
-      <span class="day">三日</span>
-      <span class="day">四日</span>
-      <span class="day">五日</span>
-    </p>
-    <h2>三種隱藏</h2>
-    <p><span class="cell">1</span><span class="cell gone">2</span><span class="cell">3</span></p>
-    <p><span class="cell">1</span><span class="cell hold">2</span><span class="cell">3</span></p>
-    <p><span class="cell">1</span><span class="cell ghost">2</span><span class="cell">3</span></p>
-    <h2>圖片底縫</h2>
-    <p><img class="photo" alt="" src="https://picsum.photos/id/1015/120/80" /> 行內圖片底下有一條縫。</p>
-    <p><img class="photo block" alt="" src="https://picsum.photos/id/1015/120/80" /> 改成 block 就沒有縫。</p>
-  </body>
-</html>
+```diff 03-css/pages/17-display.html
+  // ...
+        }
+  
+        .gone {
+-         display: none;
++         visibility: hidden;
+        }
+  
+        .hold {
+          // ...
 ```
 
 </details>
@@ -2795,117 +2272,17 @@ position 決定偏移量跟誰比。預設 static 參加正常排版，寫了 to
 
 對準對象仍是卡片。徽章從右上移到左下，文字流不受影響。黏性標題與右下角固定塊維持原樣。
 
-```html 03-css/pages/18-position.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>定位</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem 1.5rem 5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .card {
-        position: relative;
-        width: min(100%, 22rem);
-        padding: 1rem;
-        background: #f0fdfa;
-      }
-
-      .badge {
-        position: absolute;
-        bottom: 0.5rem;
-        left: 0.5rem;
-        z-index: 1;
-        padding: 0.15rem 0.5rem;
-        background: #9f1239;
-        color: #fff;
-      }
-
-      .pile {
-        position: relative;
-        height: 4.5rem;
-        margin-top: 1rem;
-      }
-
-      .layer {
-        position: absolute;
-        width: 5rem;
-        padding: 0.75rem 0;
-        text-align: center;
-        color: #fff;
-      }
-
-      .low {
-        top: 0.6rem;
-        left: 1.5rem;
-        z-index: 1;
-        background: #0f766e;
-      }
-
-      .high {
-        top: 0;
-        left: 0;
-        z-index: 2;
-        background: #9f1239;
-      }
-
-      .scroller {
-        overflow: auto;
-        height: 7rem;
-        margin-top: 1rem;
-        background: #fff;
-        border: 1px solid #99f6e4;
-      }
-
-      .sticky {
-        position: sticky;
-        top: 0;
-        margin: 0;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .pin {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        margin: 0;
-        padding: 0.4rem 0.7rem;
-        background: #0f766e;
-        color: #fff;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>座標跟誰比</h1>
-    <article class="card">
-      <span class="badge">熱門</span>
-      <h2>京都三日</h2>
-      <p>徽章對準這張卡片，不是整頁。</p>
-    </article>
-    <div class="pile">
-      <span class="layer low">下層</span>
-      <span class="layer high">上層</span>
-    </div>
-    <div class="scroller">
-      <p class="sticky">這行會黏在這個盒子的上緣</p>
-      <p>往下捲這塊白盒，標題黏住，直到盒子捲完。</p>
-      <p>父層結束後，黏性也結束。</p>
-    </div>
-    <p class="pin">固定在視窗右下</p>
-  </body>
-</html>
+```diff 03-css/pages/18-position.html
+  // ...
+        .badge {
+          position: absolute;
+-         top: 0.5rem;
+-         right: 0.5rem;
++         bottom: 0.5rem;
++         left: 0.5rem;
+          z-index: 1;
+          padding: 0.15rem 0.5rem;
+          // ...
 ```
 
 </details>
@@ -3004,60 +2381,17 @@ position 決定偏移量跟誰比。預設 static 參加正常排版，寫了 to
 
 兩塊現在都會在裝不下時出現捲軸，第一塊不再直接把句子切掉。單行那段仍是一行加省略號。
 
-```html 03-css/pages/19-overflow.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>overflow</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .box {
-        width: min(100%, 18rem);
-        height: 4.5rem;
-        margin-bottom: 1rem;
-        background: #f0fdfa;
-      }
-
-      .clip {
-        overflow: auto;
-      }
-
-      .scroll {
-        overflow: auto;
-      }
-
-      .one-line {
-        width: min(100%, 18rem);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>超出盒子時</h1>
-    <div class="box clip">
-      <p>這段比盒子高。hidden 會裁掉下面的句子，不出現捲軸。洛奇旅行的說明在這裡被切掉。</p>
-    </div>
-    <div class="box scroll">
-      <p>這段同樣比較高。auto 在裝不下時出現捲軸，句子可以捲出來讀完。洛奇旅行的說明在這裡還在。</p>
-    </div>
-    <p class="one-line">這一行很長時不要換行，尾端改成省略號。京都、大阪、濟州、花蓮都排在同一行。</p>
-  </body>
-</html>
+```diff 03-css/pages/19-overflow.html
+  // ...
+        }
+  
+        .clip {
+-         overflow: hidden;
++         overflow: auto;
+        }
+  
+        .scroll {
+          // ...
 ```
 
 </details>
@@ -3186,83 +2520,15 @@ Flex 沿一個方向排：主軸是這個方向，交叉軸是垂直於它的那
 
 不准換行之後，兩張卡片始終在同一行，變窄時會跟著縮小。頂部列與卡片內部的直向排列沒有改。
 
-```html 03-css/pages/20-flex.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flex</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.75rem 1rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .bar a {
-        color: inherit;
-      }
-
-      .trips {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-
-      .trip {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 14rem;
-        padding: 1rem;
-        background: #f0fdfa;
-      }
-
-      .trip a {
-        margin-top: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>沿一個方向排</h1>
-    <header class="bar">
-      <strong>洛奇旅行</strong>
-      <nav>
-        <a href="#tours">行程</a>
-        <a href="#about">關於</a>
-      </nav>
-    </header>
-    <div class="trips">
-      <article class="trip">
-        <h2>京都三日</h2>
-        <p>清水寺與嵐山。</p>
-        <a href="#kyoto">看行程</a>
-      </article>
-      <article class="trip">
-        <h2>大阪美食</h2>
-        <p>這張字比較多，用來把連結推到卡片底部。</p>
-        <a href="#osaka">看行程</a>
-      </article>
-    </div>
-  </body>
-</html>
+```diff 03-css/pages/20-flex.html
+  // ...
+        .trips {
+          display: flex;
+-         flex-wrap: wrap;
++         flex-wrap: nowrap;
+          gap: 1rem;
+          margin-top: 1rem;
+        // ...
 ```
 
 </details>
@@ -3367,61 +2633,15 @@ Grid 同時切欄與列。父層決定有幾欄，小孩預設各佔一格；一
 
 最小寬度變大之後，同一個視窗寬度能放下的欄數變少，卡片更早改成上下排。第一張仍寫著跨兩欄，在兩欄都存在時才會比較寬。
 
-```html 03-css/pages/21-grid.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .trips {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-        gap: 1rem;
-      }
-
-      .trips article {
-        padding: 1rem;
-        background: #f0fdfa;
-      }
-
-      .feature {
-        grid-column: span 2;
-        background: #ccfbf1;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>欄與列一起排</h1>
-    <div class="trips">
-      <article class="feature">
-        <h2>京都三日</h2>
-        <p>這一張跨兩欄。</p>
-      </article>
-      <article>
-        <h2>大阪</h2>
-        <p>一格。</p>
-      </article>
-      <article>
-        <h2>濟州</h2>
-        <p>一格。</p>
-      </article>
-    </div>
-  </body>
-</html>
+```diff 03-css/pages/21-grid.html
+  // ...
+        .trips {
+          display: grid;
+-         grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
++         grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+          gap: 1rem;
+        }
+        // ...
 ```
 
 </details>
@@ -3534,67 +2754,15 @@ img {
 
 最小寬度變大之後，同一個視窗更早放不進兩欄，卡片改成上下排。照片仍不會比版心寬，版心仍停在 60rem。
 
-```html 03-css/pages/22-rwd.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>流動版面</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1.5rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-      }
-
-      .wrap {
-        max-width: 60rem;
-        margin-right: auto;
-        margin-left: auto;
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-        gap: 1rem;
-      }
-
-      .card {
-        padding: 1rem;
-        background: #f0fdfa;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <h1>洛奇旅行</h1>
-      <img src="https://picsum.photos/id/1016/1200/500" alt="海岸" />
-      <div class="cards">
-        <article class="card">
-          <h2>台北城市漫遊</h2>
-          <p>窄的時候一欄，拉寬後自動變多欄。</p>
-        </article>
-        <article class="card">
-          <h2>花蓮山海</h2>
-          <p>這裡還沒有媒體查詢。</p>
-        </article>
-      </div>
-    </div>
-  </body>
-</html>
+```diff 03-css/pages/22-rwd.html
+  // ...
+        .cards {
+          display: grid;
+-         grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
++         grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+          gap: 1rem;
+        }
+        // ...
 ```
 
 </details>
@@ -3703,77 +2871,19 @@ img {
 
 64rem 寫在後面，所以更寬的視窗會再用這條蓋過欄寬。介於 40rem 與 64rem 時，側欄仍是 14rem。窄於 40rem 時，兩條查詢都不成立，版面維持直排。
 
-```html 03-css/pages/30-css-breakpoint.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>斷點</title>
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 1rem;
-        color: #134e4a;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      nav a {
-        display: block;
-      }
-
-      @media (min-width: 40rem) {
-        .layout {
-          display: grid;
-          grid-template-columns: 1fr 14rem;
-          gap: 1rem;
+```diff 03-css/pages/30-css-breakpoint.html
+  // ...
+          }
         }
-
-        header {
-          grid-column: 1 / -1;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        nav a {
-          display: inline-block;
-          margin-left: 0.75rem;
-        }
-      }
-
-      @media (min-width: 64rem) {
-        .layout {
-          grid-template-columns: 1fr 18rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="layout">
-      <header>
-        <h1>洛奇旅行</h1>
-        <nav>
-          <a href="#tours">行程</a>
-          <a href="#tips">須知</a>
-        </nav>
-      </header>
-      <main id="tours">
-        <h2>行程</h2>
-        <p>窄的時候導覽在標題下面，一項一行。</p>
-      </main>
-      <aside id="tips">
-        <h2>須知</h2>
-        <p>夠寬時這欄才排到旁邊。</p>
-      </aside>
-    </div>
-  </body>
-</html>
++ 
++       @media (min-width: 64rem) {
++         .layout {
++           grid-template-columns: 1fr 18rem;
++         }
++       }
+      </style>
+    </head>
+    // ...
 ```
 
 </details>
@@ -3927,55 +3037,15 @@ img {
 
 根上的值一改，第一張價格跟著變。sale 自己有同名變數，不跟根上的新值，所以仍是玫瑰紅。備援那段沒有這個名字，不受影響。
 
-```html 03-css/pages/23-vars.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>變數</title>
-    <style>
-      :root {
-        --brand: #115e59;
-        --gap: 1rem;
-      }
-
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .card {
-        margin-bottom: var(--gap);
-        padding: 1rem;
-        background: #f0fdfa;
-      }
-
-      .price {
-        color: var(--brand);
-      }
-
-      .sale {
-        --brand: #9f1239;
-      }
-
-      .missing {
-        color: var(--missing, #475569);
-      }
-    </style>
-  </head>
-  <body>
-    <article class="card">
-      <h1>京都三日</h1>
-      <p class="price">NT$12,800</p>
-    </article>
-    <article class="card sale">
-      <h2>大阪美食</h2>
-      <p class="price">NT$9,600</p>
-    </article>
-    <p class="missing">這段的顏色名稱不存在，所以用備援。</p>
-  </body>
-</html>
+```diff 03-css/pages/23-vars.html
+  // ...
+      <style>
+        :root {
+-         --brand: #0f766e;
++         --brand: #115e59;
+          --gap: 1rem;
+        }
+        // ...
 ```
 
 </details>
@@ -4067,54 +3137,17 @@ transform 可以平移、縮放、旋轉。它不重新計算左右鄰居的位�
 
 translateY 的負值往上畫，格子佔的位子仍在原列，左右鄰居不會補進它空出來的視覺位置。放大與旋轉維持原樣。
 
-```html 03-css/pages/24-motion.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>變形</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .row {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .box {
-        width: 4rem;
-        padding: 0.75rem 0;
-        background: #f0fdfa;
-        text-align: center;
-      }
-
-      .move {
-        transform: translateY(-0.75rem);
-      }
-
-      .big {
-        transform: scale(1.25);
-      }
-
-      .turn {
-        transform: rotate(8deg);
-      }
-    </style>
-  </head>
-  <body>
-    <h1>變形不推動鄰居</h1>
-    <div class="row">
-      <span class="box">原位</span>
-      <span class="box move">往右</span>
-      <span class="box big">放大</span>
-      <span class="box turn">旋轉</span>
-    </div>
-  </body>
-</html>
+```diff 03-css/pages/24-motion.html
+  // ...
+        }
+  
+        .move {
+-         transform: translateX(1rem);
++         transform: translateY(-0.75rem);
+        }
+  
+        .big {
+          // ...
 ```
 
 </details>
@@ -4192,39 +3225,16 @@ transition 寫在元素平常的狀態上，告訴瀏覽器：這個屬性從舊
 
 終點仍是往上 0.35rem。改變的是過程：整整一秒、沒有兩頭的加減速。移開時也用同一秒走回來。
 
-```html 03-css/pages/32-css-transition.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>轉場</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .card {
-        width: min(100%, 20rem);
-        padding: 1rem;
-        background: #f0fdfa;
-        transition: transform 1s linear;
-      }
-
-      .card:hover {
-        transform: translateY(-0.35rem);
-      }
-    </style>
-  </head>
-  <body>
-    <h1>兩個狀態之間</h1>
-    <article class="card">
-      <h2>抬起的卡片</h2>
-      <p>滑鼠放上來時往上移，移開時回到原位。</p>
-    </article>
-  </body>
-</html>
+```diff 03-css/pages/32-css-transition.html
+  // ...
+          padding: 1rem;
+          background: #f0fdfa;
+-         transition: transform 0.3s ease;
++         transition: transform 1s linear;
+        }
+  
+        .card:hover {
+          // ...
 ```
 
 </details>
@@ -4302,42 +3312,15 @@ transition 寫在元素平常的狀態上，告訴瀏覽器：這個屬性從舊
 
 次數改成 1 之後，徽章放大再縮回一次就停在起點。alternate 仍負責這一回是正向再反向。頁面重新整理才會再播。
 
-```html 03-css/pages/33-css-keyframes.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>動畫</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      @keyframes pulse {
-        from {
-          transform: scale(1);
+```diff 03-css/pages/33-css-keyframes.html
+  // ...
+          background: #115e59;
+          color: #f0fdfa;
+-         animation: pulse 1s ease-in-out infinite alternate;
++         animation: pulse 1s ease-in-out 1 alternate;
         }
-        to {
-          transform: scale(1.08);
-        }
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        background: #115e59;
-        color: #f0fdfa;
-        animation: pulse 1s ease-in-out 1 alternate;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>自己播放</h1>
-    <p class="badge">報名中</p>
-  </body>
-</html>
+      </style>
+    // ...
 ```
 
 </details>
@@ -4412,33 +3395,16 @@ Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。C
 
 `style` 較下面那條改成玫瑰紅之後，重新整理會留下玫瑰紅，琥珀色仍被劃掉。只在面板改、沒有寫進 `style` 的值，重新整理就消失。
 
-```html 03-css/pages/25-inspect.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Styles</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .note {
-        color: #b45309;
-      }
-
-      .note {
-        color: #9f1239;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>誰留下</h1>
-    <p class="note">這段應是深青綠。較上面的琥珀色會被劃掉。</p>
-  </body>
-</html>
+```diff 03-css/pages/25-inspect.html
+  // ...
+        }
+  
+        .note {
+-         color: #0f766e;
++         color: #9f1239;
+        }
+      </style>
+    // ...
 ```
 
 </details>
@@ -4523,42 +3489,15 @@ Styles 列出打中這個元素的規則，被劃掉的是沒留下的宣告。C
 
 左右內距變大之後，按鈕變寬，盒模型圖的左右數字跟著變。上下仍是 0.5rem。hover 仍是另一階青綠，斷點仍是 40rem。
 
-```html 03-css/pages/34-css-devtools-box.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>盒子與斷點</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      .go {
-        display: inline-block;
-        padding: 0.5rem 2rem;
-        background: #115e59;
-        color: #f0fdfa;
-      }
-
-      .go:hover {
-        background: #0f766e;
-      }
-
-      @media (min-width: 40rem) {
-        .wide {
-          color: #0f766e;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <a class="go" href="#top">看行程</a>
-    <p class="wide">視窗寬於 40rem 時，這段才變成深青綠。</p>
-  </body>
-</html>
+```diff 03-css/pages/34-css-devtools-box.html
+  // ...
+        .go {
+          display: inline-block;
+-         padding: 0.5rem 1rem;
++         padding: 0.5rem 2rem;
+          background: #115e59;
+          color: #f0fdfa;
+        // ...
 ```
 
 </details>
@@ -4635,42 +3574,15 @@ Animations 面板看得到正在播的動畫與轉場，可以暫停、拖時間
 
 時間改在 `style` 裡，重新整理後每一輪是三秒。alternate 與 infinite 沒有改，所以仍會來回、不會自己停。
 
-```html 03-css/pages/35-css-devtools-anim.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>動畫面板</title>
-    <style>
-      body {
-        margin: 1.5rem;
-        font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      }
-
-      @keyframes pulse {
-        from {
-          transform: scale(1);
+```diff 03-css/pages/35-css-devtools-anim.html
+  // ...
+          background: #115e59;
+          color: #f0fdfa;
+-         animation: pulse 1s ease-in-out infinite alternate;
++         animation: pulse 3s ease-in-out infinite alternate;
         }
-        to {
-          transform: scale(1.08);
-        }
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        background: #115e59;
-        color: #f0fdfa;
-        animation: pulse 3s ease-in-out infinite alternate;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>打開動畫面板</h1>
-    <p class="badge">報名中</p>
-  </body>
-</html>
+      </style>
+    // ...
 ```
 
 </details>
