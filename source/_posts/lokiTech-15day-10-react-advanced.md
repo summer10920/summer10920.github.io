@@ -16,11 +16,21 @@ date: 2026-08-30 10:09:00
 
 # Effect 與資料
 
-渲染時只負責算出這一次的畫面。讀檔、計時器與送出請求都放在 effect，或放在使用者按下的事件裡。這一章用本機 JSON 練習載入、失敗與空資料，寫入則用 JSONPlaceholder 走完新增、更新與刪除。
+渲染時只負責算出這一次的畫面。計時器、讀取與訂閱放在 effect。使用者按一次才要送出的請求放在事件裡。這一章用本機 JSON 練習載入、失敗與空資料，寫入則用 JSONPlaceholder 走完新增、更新與刪除。
 
 ## useEffect 的執行時機
 
-`useEffect` 在瀏覽器把這一輪畫上畫面之後才執行。它用來跟網路、計時器或瀏覽器 API 同步，不拿來算畫面已經推得出來的數字。
+畫面畫上之後，才去跟外面的世界對齊。計時器、讀取資料、訂閱通知，都是這一類。`useEffect` 把這段對齊寫成畫完才執行的函式。
+
+**觀念**
+
+元件函式負責算出這一輪要畫什麼，算完就停。總價、過濾後的清單、從狀態推得出來的文字，留在渲染裡用運算式得出來。這些值不必再放進 effect 重算一次。
+
+使用者做一次才要發生的事，寫在事件處理函式裡。按下才送出、按下才讀一筆，都是事件，不是進畫面就自動做的 effect。
+
+寫在元件函式裡的 `console.log` 每次渲染都會印，而且印在畫上畫面之前。那是渲染的過程。effect 要等這一輪提交、畫面更新之後才跑。
+
+下面先記它什麼時候跑，再逐段看示範。
 
 - 依賴陣列是空的時候，效果只在這顆元件第一次畫完後跑。元件被拿掉時，會先跑你回傳的清除函式。
 - 依賴陣列裡的值變了，React 會先清除上一次，再用新的值跑下一次。
@@ -39,15 +49,13 @@ date: 2026-08-30 10:09:00
 
 ### 第一次執行
 
-空的依賴陣列表示不要因為狀態改變就重跑。按鈕讓計數增加時，畫面會變，效果不會再印一次。回傳的函式是清除。
+這一則用空的依賴陣列。按鈕讓計數增加時，畫面會變。回傳的函式是清除。Console 先看第一次掛上印了什麼，再看按下之後有沒有再增加。
 
 **觀念**
 
-效果裡印出「效果執行」。清除函式印出「清除」。開發模式的嚴格模式會先跑一次、清除、再跑一次，用來提早發現沒有收尾的副作用。正式建置只會在畫完後跑一次。
+效果裡印出「效果執行」。清除函式印出「清除」。依賴寫成 `[]`：第一次畫完後會跑，之後狀態變了不重跑。
 
-把 `console.log` 直接寫在元件函式裡，會在每次渲染都印，而且印在畫面更新之前。那不是 effect。
-
-```jsx 03-react/src/demos/46-effect.jsx
+```jsx 03-react/src/demos/48-effect.jsx
 import { useEffect, useState } from 'react';
 
 export default function EffectMount() {
@@ -75,7 +83,11 @@ export default function EffectMount() {
 }
 ```
 
-開發時，一打開 Console 會看到效果、清除、再一次效果。按下加一，次數變了，這三行不會再增加。
+開發時嚴格模式開著。這顆元件第一次掛上，Console 依序是下面三行：先「效果執行」（掛上），再「清除」（把這一次收掉），再「效果執行」（再掛上，確認清除有跑）。正式建置只印一次「效果執行」。
+
+上一篇 {% post_link lokiTech-15day-09-react-basics %} 的「createRoot」說過，Vite 範本預設就包著 `<StrictMode>`。課堂與 `03-react` 保持打開。拿掉之後這三行會變成一行，收尾沒寫好的問題也一起看不見。
+
+接著按下「加一」。畫面上的次數會變，Console 不會再多出這三行。`[]` 表示狀態變了，這個效果不重跑。
 
 ```text
 效果執行
@@ -85,9 +97,11 @@ export default function EffectMount() {
 
 **解析**
 
+- 開發時嚴格模式在第一次掛上檢查收尾，所以順序是「效果執行」、「清除」、「效果執行」。正式建置只印一次「效果執行」。
+- 這三行來自嚴格模式的收尾檢查，不是按了「加一」。課堂保持 `<StrictMode>` 打開。為什麼預設開著，見上一篇的「createRoot」。
 - 空陣列不是完全不跑。它會在第一次畫完後跑。
-- 回傳的函式是清除。元件離開畫面，或嚴格模式重跑之前，都會先執行它。
-- 計數的狀態變了，元件會再渲染。依賴是空的，所以效果不會跟著再跑。
+- 回傳的函式是清除。元件離開畫面之前會先執行它。開發時，嚴格模式在再掛上之前也會先執行它。
+- 按下「加一」會再渲染，畫面上的次數改變。依賴是 `[]`，效果不跟著重跑，那三行也不會再增加。
 - 清除函式裡不要同步設定這顆元件的狀態。元件都要卸掉了，設定已經沒有畫面可畫。
 
 {% note success %}
@@ -100,7 +114,7 @@ export default function EffectMount() {
 
 計數被印出來，但沒有放進依賴陣列，所以按按鈕不會再跑效果。這也是下一步要把效果裡讀到的值寫進依賴的原因。
 
-```jsx 03-react/src/demos/46-effect.jsx
+```jsx 03-react/src/demos/48-effect.jsx
 import { useEffect, useState } from 'react';
 
 export default function EffectMount() {
@@ -137,15 +151,15 @@ export default function EffectMount() {
 
 **觀念**
 
-關鍵字從「筆」開始。效果印出這一次要查的字。按下按鈕把關鍵字換成「紙」之後，Console 會先印清除，再印一次新的關鍵字。
+關鍵字從「台北城市漫遊」開始。效果印出這一次要查的字。按下按鈕把關鍵字換成「花蓮山海三日」之後，Console 會先印清除，再印一次新的關鍵字。
 
 依賴寫成 `[keyword]`。不要因為想少跑幾次就把讀到的值藏起來。藏起來的那一次，閉包裡仍是舊的字。
 
-```jsx 03-react/src/demos/47-deps.jsx
+```jsx 03-react/src/demos/49-deps.jsx
 import { useEffect, useState } from 'react';
 
 export default function DepsDemo() {
-  const [keyword, setKeyword] = useState('筆');
+  const [keyword, setKeyword] = useState('台北城市漫遊');
 
   useEffect(() => {
     console.log('查詢', keyword);
@@ -160,32 +174,32 @@ export default function DepsDemo() {
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword('紙')}
+        onClick={() => setKeyword('花蓮山海三日')}
       >
-        改查紙
+        改查花蓮山海三日
       </button>
     </section>
   );
 }
 ```
 
-打開時 Console 在嚴格模式下會看到查詢、清除、再查詢，文字都是筆。按下按鈕後，會清除筆，再查詢紙。
+打開時，開發中的嚴格模式會依序印「查詢 台北城市漫遊」、「清除 台北城市漫遊」、「查詢 台北城市漫遊」，和上一則同一種收尾檢查。按下按鈕後，會先清除台北城市漫遊，再查詢花蓮山海三日。
 
 ```text
-清除 筆
-查詢 紙
+清除 台北城市漫遊
+查詢 花蓮山海三日
 ```
 
 **解析**
 
 - 依賴裡的 `keyword` 變了，效果才會重跑。畫面其他狀態若沒放進陣列，也不該在效果裡讀。
-- 清除函式看到的是上一次的關鍵字。所以會先印「清除 筆」，再印「查詢 紙」。
-- 按第二次時關鍵字已經是紙，設定成同一個字，React 可以不重跑效果。
+- 清除函式看到的是上一次的關鍵字。所以會先印「清除 台北城市漫遊」，再印「查詢 花蓮山海三日」。
+- 按第二次時關鍵字已經是花蓮山海三日，設定成同一個字，React 可以不重跑效果。
 - 陣列、物件若在渲染時現做一個新的，依賴會每次都變成新參考，效果就會每次都跑。
 
 {% note success %}
 **換你試試：**
-按鈕改成把關鍵字設成尺。按下後應先清除舊字，再查詢尺。
+按鈕改成把關鍵字設成京都紅葉散步。按下後應先清除舊字，再查詢京都紅葉散步。
 {% endnote %}
 
 <details>
@@ -193,11 +207,11 @@ export default function DepsDemo() {
 
 依賴已經寫了關鍵字，所以換成任何新字都會先清再跑。
 
-```jsx 03-react/src/demos/47-deps.jsx
+```jsx 03-react/src/demos/49-deps.jsx
 import { useEffect, useState } from 'react';
 
 export default function DepsDemo() {
-  const [keyword, setKeyword] = useState('筆');
+  const [keyword, setKeyword] = useState('台北城市漫遊');
 
   useEffect(() => {
     console.log('查詢', keyword);
@@ -212,9 +226,9 @@ export default function DepsDemo() {
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword('尺')}
+        onClick={() => setKeyword('京都紅葉散步')}
       >
-        改查紙
+        改查京都紅葉散步
       </button>
     </section>
   );
@@ -233,7 +247,7 @@ export default function DepsDemo() {
 
 設定狀態寫在計時器的回呼裡，不是寫在效果函式的第一行。效果本身只負責登記與清掉計時器。
 
-```jsx 03-react/src/demos/48-timer.jsx
+```jsx 03-react/src/demos/50-timer.jsx
 import { useEffect, useState } from 'react';
 
 export default function TimerDemo() {
@@ -269,7 +283,7 @@ export default function TimerDemo() {
 
 只改間隔。清除仍用同一個 id，否則會停不掉。
 
-```jsx 03-react/src/demos/48-timer.jsx
+```jsx 03-react/src/demos/50-timer.jsx
 import { useEffect, useState } from 'react';
 
 export default function TimerDemo() {
@@ -304,11 +318,11 @@ useEffect(() => {
 
 要在效果裡跟外部系統同步，設定狀態應發生在請求回來的回呼，或計時器的回呼，而不是效果函式的第一行。這一則只在關鍵字改變時印出記錄，不在效果裡設定狀態。
 
-```jsx 03-react/src/demos/49-loop.jsx
+```jsx 03-react/src/demos/51-loop.jsx
 import { useEffect, useState } from 'react';
 
 export default function LoopDemo() {
-  const [keyword, setKeyword] = useState('筆');
+  const [keyword, setKeyword] = useState('台北城市漫遊');
 
   useEffect(() => {
     console.log('記錄', keyword);
@@ -345,7 +359,7 @@ export default function LoopDemo() {
 
 {% note success %}
 **換你試試：**
-按鈕改成把關鍵字設回筆。從「筆!」按一次，Console 應再記一行筆，而且只記一行。
+按鈕改成把關鍵字設回台北城市漫遊。從「台北城市漫遊!」按一次，Console 應再記一行台北城市漫遊，而且只記一行。
 {% endnote %}
 
 <details>
@@ -353,11 +367,11 @@ export default function LoopDemo() {
 
 設成固定的字不會連加。效果只跟著關鍵字重跑一次。
 
-```jsx 03-react/src/demos/49-loop.jsx
+```jsx 03-react/src/demos/51-loop.jsx
 import { useEffect, useState } from 'react';
 
 export default function LoopDemo() {
-  const [keyword, setKeyword] = useState('筆');
+  const [keyword, setKeyword] = useState('台北城市漫遊');
 
   useEffect(() => {
     console.log('記錄', keyword);
@@ -369,7 +383,7 @@ export default function LoopDemo() {
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword('筆')}
+        onClick={() => setKeyword('台北城市漫遊')}
       >
         加一個驚嘆號
       </button>
@@ -390,7 +404,7 @@ export default function LoopDemo() {
 
 不要用把警告關掉來收尾。要嘛把值放進依賴，要嘛不要在效果裡讀它。
 
-```jsx 03-react/src/demos/50-lint.jsx
+```jsx 03-react/src/demos/52-lint.jsx
 import { useEffect, useState } from 'react';
 
 export default function LintDemo() {
@@ -434,7 +448,7 @@ export default function LintDemo() {
 
 空陣列會讓檢查指出少了 count。改回之後警告消失，按按鈕也會再印新的次數。
 
-```jsx 03-react/src/demos/50-lint.jsx
+```jsx 03-react/src/demos/52-lint.jsx
 import { useEffect, useState } from 'react';
 
 export default function LintDemo() {
@@ -484,7 +498,7 @@ export default function LintDemo() {
 
 ### 載入與錯誤
 
-本機的 `items.json` 有三筆文具。效果在第一次畫完後讀它，並把狀態設成載入、完成或失敗。空陣列另外一句話，不跟失敗混在一起。
+本機的 `items.json` 有三筆行程。效果在第一次畫完後讀它，並把狀態設成載入、完成或失敗。空陣列另外一句話，不跟失敗混在一起。
 
 **觀念**
 
@@ -494,7 +508,7 @@ export default function LintDemo() {
 
 設定狀態發生在 `await` 之後的回呼裡，不是效果的第一行，所以不會被當成同步設定。
 
-```jsx 03-react/src/demos/51-load.jsx
+```jsx 03-react/src/demos/53-load.jsx
 import { useEffect, useState } from 'react';
 
 export default function LoadDemo() {
@@ -524,7 +538,7 @@ export default function LoadDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -532,7 +546,7 @@ export default function LoadDemo() {
 }
 ```
 
-讀取完成後是三列：筆 25、紙 40、尺 15。
+讀取完成後是三列：台北城市漫遊 12800、花蓮山海三日 15900、京都紅葉散步 42800。
 
 **解析**
 
@@ -551,7 +565,7 @@ export default function LoadDemo() {
 
 檔案不存在時狀態碼不是成功，catch 把狀態設成 error。
 
-```jsx 03-react/src/demos/51-load.jsx
+```jsx 03-react/src/demos/53-load.jsx
 import { useEffect, useState } from 'react';
 
 export default function LoadDemo() {
@@ -581,7 +595,7 @@ export default function LoadDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -603,7 +617,7 @@ export default function LoadDemo() {
 
 不要用讀取失敗的句子來表示空清單。使用者會以為網路壞了，然後重新整理。
 
-```jsx 03-react/src/demos/52-empty.jsx
+```jsx 03-react/src/demos/54-empty.jsx
 import { useEffect, useState } from 'react';
 
 export default function EmptyLoadDemo() {
@@ -632,7 +646,7 @@ export default function EmptyLoadDemo() {
   return (
     <ul>
       {items.map((item) => (
-        <li key={item.id}>{item.name}</li>
+        <li key={item.id}>{item.title}</li>
       ))}
     </ul>
   );
@@ -650,7 +664,7 @@ export default function EmptyLoadDemo() {
 
 {% note success %}
 **換你試試：**
-網址改回 `/data/items.json`。應改看到三個名稱，而不是沒有資料。
+網址改回 `/data/items.json`。應改看到三個標題，而不是沒有資料。
 {% endnote %}
 
 <details>
@@ -658,7 +672,7 @@ export default function EmptyLoadDemo() {
 
 檔案裡有三筆，長度不再是 0，所以改走清單。
 
-```jsx 03-react/src/demos/52-empty.jsx
+```jsx 03-react/src/demos/54-empty.jsx
 import { useEffect, useState } from 'react';
 
 export default function EmptyLoadDemo() {
@@ -687,7 +701,7 @@ export default function EmptyLoadDemo() {
   return (
     <ul>
       {items.map((item) => (
-        <li key={item.id}>{item.name}</li>
+        <li key={item.id}>{item.title}</li>
       ))}
     </ul>
   );
@@ -708,7 +722,7 @@ export default function EmptyLoadDemo() {
 
 嚴格模式會先跑一次再清掉，所以開發時可能看到第一次請求被取消。第二次完成的那筆才是畫面要的資料。
 
-```jsx 03-react/src/demos/53-abort.jsx
+```jsx 03-react/src/demos/55-abort.jsx
 import { useEffect, useState } from 'react';
 
 export default function AbortDemo() {
@@ -744,7 +758,7 @@ export default function AbortDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -752,7 +766,7 @@ export default function AbortDemo() {
 }
 ```
 
-完成後仍是筆、紙、尺。切到別的示範時，進行中的請求會被 abort，不會把錯誤寫上已經離開的畫面。
+完成後仍是台北城市漫遊、花蓮山海三日、京都紅葉散步。切到別的示範時，進行中的請求會被 abort，不會把錯誤寫上已經離開的畫面。
 
 **解析**
 
@@ -771,7 +785,7 @@ export default function AbortDemo() {
 
 取消只記一行。錯誤畫面仍只留給真的失敗。
 
-```jsx 03-react/src/demos/53-abort.jsx
+```jsx 03-react/src/demos/55-abort.jsx
 import { useEffect, useState } from 'react';
 
 export default function AbortDemo() {
@@ -810,7 +824,7 @@ export default function AbortDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -839,7 +853,7 @@ GET 讀取單筆文章。網址的 id 寫在路徑最後。這一則按按鈕才
 
 按下之後把 id 為 1 的標題放進狀態。失敗時訊息是讀取失敗。載入中先把訊息設成「讀取中」，避免使用者以為沒按到。
 
-```jsx 03-react/src/demos/54-get.jsx
+```jsx 03-react/src/demos/56-get.jsx
 import { useState } from 'react';
 
 export default function GetDemo() {
@@ -893,7 +907,7 @@ export default function GetDemo() {
 
 只改路徑最後的 id。其餘的狀態流程不變。
 
-```jsx 03-react/src/demos/54-get.jsx
+```jsx 03-react/src/demos/56-get.jsx
 import { useState } from 'react';
 
 export default function GetDemo() {
@@ -940,7 +954,7 @@ POST 把新的 JSON 放在 body。標頭要註明內容是 JSON。這一則把�
 
 JSONPlaceholder 回的 id 是它編的練習用編號。重新整理後那一筆不會留在清單裡。
 
-```jsx 03-react/src/demos/55-post.jsx
+```jsx 03-react/src/demos/57-post.jsx
 import { useState } from 'react';
 
 export default function PostDemo() {
@@ -953,7 +967,7 @@ export default function PostDemo() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: '新文具', body: '筆', userId: 1 }),
+          body: JSON.stringify({ title: '新行程', body: '台北城市漫遊', userId: 1 }),
         },
       );
       if (!response.ok) throw new Error(String(response.status));
@@ -998,7 +1012,7 @@ export default function PostDemo() {
 
 只改送出的 title。方法、標頭與錯誤處理留著。
 
-```jsx 03-react/src/demos/55-post.jsx
+```jsx 03-react/src/demos/57-post.jsx
 import { useState } from 'react';
 
 export default function PostDemo() {
@@ -1011,7 +1025,7 @@ export default function PostDemo() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: '第二則', body: '筆', userId: 1 }),
+          body: JSON.stringify({ title: '第二則', body: '台北城市漫遊', userId: 1 }),
         },
       );
       if (!response.ok) throw new Error(String(response.status));
@@ -1049,7 +1063,7 @@ PUT 替換指定 id 的那一筆。網址要帶 id，body 是替換後的整份�
 
 PATCH 只送要改的欄位。這門課的練習先用 PUT，因為畫面上交出去的就是一整份。
 
-```jsx 03-react/src/demos/56-put.jsx
+```jsx 03-react/src/demos/58-put.jsx
 import { useState } from 'react';
 
 export default function PutDemo() {
@@ -1117,7 +1131,7 @@ export default function PutDemo() {
 
 狀態碼那一行留著，再印 ok。標題改成新的字串。
 
-```jsx 03-react/src/demos/56-put.jsx
+```jsx 03-react/src/demos/58-put.jsx
 import { useState } from 'react';
 
 export default function PutDemo() {
@@ -1180,7 +1194,7 @@ DELETE 的網址指向要刪的那一筆，通常沒有 body。成功時這一�
 
 不要在刪除成功前就把畫面那一列先拿掉又沒有失敗可還原。這一則沒有本地清單，只練習請求本身。
 
-```jsx 03-react/src/demos/57-delete.jsx
+```jsx 03-react/src/demos/59-delete.jsx
 import { useState } from 'react';
 
 export default function DeleteDemo() {
@@ -1233,7 +1247,7 @@ export default function DeleteDemo() {
 
 只改路徑上的 id。方法與成功判斷不變。
 
-```jsx 03-react/src/demos/57-delete.jsx
+```jsx 03-react/src/demos/59-delete.jsx
 import { useState } from 'react';
 
 export default function DeleteDemo() {
@@ -1322,7 +1336,7 @@ export const deletePost = async (id) => {
 };
 ```
 
-```jsx 03-react/src/demos/58-api.jsx
+```jsx 03-react/src/demos/60-api.jsx
 import { useEffect, useState } from 'react';
 import { getLocalItems } from '../api/items.js';
 
@@ -1351,7 +1365,7 @@ export default function ApiDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -1359,7 +1373,7 @@ export default function ApiDemo() {
 }
 ```
 
-畫面是本機的三筆文具。元件裡看不到網址，只看得到 `getLocalItems`。
+畫面是本機的三筆行程。元件裡看不到網址，只看得到 `getLocalItems`。
 
 **解析**
 
@@ -1378,7 +1392,7 @@ export default function ApiDemo() {
 
 按鈕走事件，不放進 effect。讀取函式仍來自同一個模組。
 
-```jsx 03-react/src/demos/58-api.jsx
+```jsx 03-react/src/demos/60-api.jsx
 import { useEffect, useState } from 'react';
 import { getLocalItems, getPost } from '../api/items.js';
 
@@ -1419,7 +1433,7 @@ export default function ApiDemo() {
       <ul className="grid gap-2">
         {items.map((item) => (
           <li key={item.id}>
-            {item.name} {item.price}
+            {item.title} {item.price}
           </li>
         ))}
       </ul>
@@ -1439,49 +1453,49 @@ export default function ApiDemo() {
 
 ### 渲染時計算
 
-總價是單價乘上件數。兩個來源都在這一次渲染裡，總價就在渲染時算。
+總價是單價乘上人數。兩個來源都在這一次渲染裡，總價就在渲染時算。
 
 **觀念**
 
-`total` 不是狀態。件數一變，元件再跑，總價自然是新的。若把總價放進狀態，又在 effect 裡 `setTotal(price * count)`，會多一次渲染，也會被檢查擋下來。
+`total` 不是狀態。人數一變，元件再跑，總價自然是新的。若把總價放進狀態，又在 effect 裡 `setTotal(price * count)`，會多一次渲染，也會被檢查擋下來。
 
-```jsx 03-react/src/demos/59-derive.jsx
+```jsx 03-react/src/demos/61-derive.jsx
 import { useState } from 'react';
 
 export default function DeriveDemo() {
   const [count, setCount] = useState(2);
-  const price = 25;
+  const price = 12800;
   const total = price * count;
 
   return (
     <section>
       <p>
-        {count} 支，共 {total}
+        {count} 人，共 {total}
       </p>
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
         onClick={() => setCount((value) => value + 1)}
       >
-        加一支
+        加一人
       </button>
     </section>
   );
 }
 ```
 
-一開始是「2 支，共 50」。按一次變成「3 支，共 75」。
+一開始是「2 人，共 25600」。按一次變成「3 人，共 38400」。
 
 **解析**
 
 - `total` 在渲染時宣告。它沒有自己的設定函式。
-- 件數是唯一會變的狀態。單價這一則是常數。
+- 人數是唯一會變的狀態。單價這一則是常數。
 - 沒有 effect，也就沒有依賴要記。
 - 清單的篩選結果也一樣。上一篇的 `filter` 寫在渲染裡，不寫在 effect 裡。
 
 {% note success %}
 **換你試試：**
-單價改成 40。兩支時應顯示共 80。不要為總價加 `useState`。
+單價改成 15900。兩人時應顯示共 31800。不要為總價加 `useState`。
 {% endnote %}
 
 <details>
@@ -1489,25 +1503,25 @@ export default function DeriveDemo() {
 
 總價仍是乘法。改的是來源，不是另存一份結果。
 
-```jsx 03-react/src/demos/59-derive.jsx
+```jsx 03-react/src/demos/61-derive.jsx
 import { useState } from 'react';
 
 export default function DeriveDemo() {
   const [count, setCount] = useState(2);
-  const price = 40;
+  const price = 15900;
   const total = price * count;
 
   return (
     <section>
       <p>
-        {count} 支，共 {total}
+        {count} 人，共 {total}
       </p>
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
         onClick={() => setCount((value) => value + 1)}
       >
-        加一支
+        加一人
       </button>
     </section>
   );
@@ -1526,7 +1540,7 @@ export default function DeriveDemo() {
 
 這跟「一進畫面就要有清單」不同。進畫面就要有的那一種，才用 effect。
 
-```jsx 03-react/src/demos/60-click.jsx
+```jsx 03-react/src/demos/62-click.jsx
 import { useState } from 'react';
 
 export default function ClickFetchDemo() {
@@ -1578,7 +1592,7 @@ export default function ClickFetchDemo() {
 
 只改網址的 id。觸發方式仍是按鈕。
 
-```jsx 03-react/src/demos/60-click.jsx
+```jsx 03-react/src/demos/62-click.jsx
 import { useState } from 'react';
 
 export default function ClickFetchDemo() {
@@ -1656,7 +1670,7 @@ export function useLocalItems() {
 }
 ```
 
-```jsx 03-react/src/demos/61-hook.jsx
+```jsx 03-react/src/demos/63-hook.jsx
 import { useLocalItems } from '../hooks/useLocalItems.js';
 
 export default function HookDemo() {
@@ -1669,7 +1683,7 @@ export default function HookDemo() {
     <ul className="grid gap-2">
       {items.map((item) => (
         <li key={item.id}>
-          {item.name} {item.price}
+          {item.title} {item.price}
         </li>
       ))}
     </ul>
@@ -1677,7 +1691,7 @@ export default function HookDemo() {
 }
 ```
 
-畫面仍是三筆文具。示範檔裡沒有 `fetch`，也沒有 `useEffect`。
+畫面仍是三筆行程。示範檔裡沒有 `fetch`，也沒有 `useEffect`。
 
 **解析**
 
@@ -1696,7 +1710,7 @@ export default function HookDemo() {
 
 畫面怎麼畫是元件的事。讀取仍在 Hook 裡。
 
-```jsx 03-react/src/demos/61-hook.jsx
+```jsx 03-react/src/demos/63-hook.jsx
 import { useLocalItems } from '../hooks/useLocalItems.js';
 
 export default function HookDemo() {
@@ -1708,7 +1722,7 @@ export default function HookDemo() {
   return (
     <ul className="grid gap-2">
       {items.map((item) => (
-        <li key={item.id}>{item.name}</li>
+        <li key={item.id}>{item.title}</li>
       ))}
     </ul>
   );
@@ -1727,13 +1741,13 @@ export default function HookDemo() {
 
 網路分頁會看到兩次 `items.json`。若你希望全頁只讀一次，把讀取留在共同父層，再用 props 傳下去。
 
-```jsx 03-react/src/demos/62-twice.jsx
+```jsx 03-react/src/demos/64-twice.jsx
 import { useLocalItems } from '../hooks/useLocalItems.js';
 
 function NameList() {
   const { status, items } = useLocalItems();
   if (status !== 'ready') return <p>{status}</p>;
-  return <p>{items.map((item) => item.name).join('、')}</p>;
+  return <p>{items.map((item) => item.title).join('、')}</p>;
 }
 
 export default function TwiceDemo() {
@@ -1746,7 +1760,7 @@ export default function TwiceDemo() {
 }
 ```
 
-兩行都會變成「筆、紙、尺」。它們不是同一份狀態。
+兩行都會變成「台北城市漫遊、花蓮山海三日、京都紅葉散步」。它們不是同一份狀態。
 
 **解析**
 
@@ -1765,13 +1779,13 @@ export default function TwiceDemo() {
 
 少一次呼叫，就少一組狀態與一次請求。
 
-```jsx 03-react/src/demos/62-twice.jsx
+```jsx 03-react/src/demos/64-twice.jsx
 import { useLocalItems } from '../hooks/useLocalItems.js';
 
 function NameList() {
   const { status, items } = useLocalItems();
   if (status !== 'ready') return <p>{status}</p>;
-  return <p>{items.map((item) => item.name).join('、')}</p>;
+  return <p>{items.map((item) => item.title).join('、')}</p>;
 }
 
 export default function TwiceDemo() {
@@ -1802,7 +1816,7 @@ export default function TwiceDemo() {
 
 `LiftDemo` 把 `draft` 畫在輸入框下面，證明值在父層。
 
-```jsx 03-react/src/demos/63-lift.jsx
+```jsx 03-react/src/demos/65-lift.jsx
 import { useState } from 'react';
 
 function Editor({ value, onChange }) {
@@ -1816,7 +1830,7 @@ function Editor({ value, onChange }) {
 }
 
 export default function LiftDemo() {
-  const [draft, setDraft] = useState('筆');
+  const [draft, setDraft] = useState('台北城市漫遊');
 
   return (
     <section className="grid max-w-sm gap-3">
@@ -1827,7 +1841,7 @@ export default function LiftDemo() {
 }
 ```
 
-輸入框一開始是筆。再打一個字，下面那行跟著變。
+輸入框一開始是台北城市漫遊。再打一個字，下面那行跟著變。
 
 **解析**
 
@@ -1840,7 +1854,7 @@ export default function LiftDemo() {
 
 {% note success %}
 **換你試試：**
-起始文字改成紙。父層那一行與輸入框都要是紙。
+起始文字改成花蓮山海三日。父層那一行與輸入框都要是花蓮山海三日。
 {% endnote %}
 
 <details>
@@ -1848,7 +1862,7 @@ export default function LiftDemo() {
 
 起始值只改父層。子層仍讀 props。
 
-```jsx 03-react/src/demos/63-lift.jsx
+```jsx 03-react/src/demos/65-lift.jsx
 import { useState } from 'react';
 
 function Editor({ value, onChange }) {
@@ -1862,7 +1876,7 @@ function Editor({ value, onChange }) {
 }
 
 export default function LiftDemo() {
-  const [draft, setDraft] = useState('紙');
+  const [draft, setDraft] = useState('花蓮山海三日');
 
   return (
     <section className="grid max-w-sm gap-3">
@@ -1883,9 +1897,9 @@ export default function LiftDemo() {
 
 `Picker` 回報名稱。`Summary` 只讀現在的名稱。
 
-父層把 `picked` 與 `setPicked` 分下去。選紙的時候，摘要立刻變成紙，因為它們讀的是同一次渲染的狀態。
+父層把 `picked` 與 `setPicked` 分下去。選花蓮山海三日的時候，摘要立刻變成花蓮山海三日，因為它們讀的是同一次渲染的狀態。
 
-```jsx 03-react/src/demos/64-siblings.jsx
+```jsx 03-react/src/demos/66-siblings.jsx
 import { useState } from 'react';
 
 function Picker({ onPick }) {
@@ -1894,16 +1908,16 @@ function Picker({ onPick }) {
       <button
         type="button"
         className="rounded bg-stone-100 px-3 py-1"
-        onClick={() => onPick('筆')}
+        onClick={() => onPick('台北城市漫遊')}
       >
-        筆
+        台北城市漫遊
       </button>
       <button
         type="button"
         className="rounded bg-stone-100 px-3 py-1"
-        onClick={() => onPick('紙')}
+        onClick={() => onPick('花蓮山海三日')}
       >
-        紙
+        花蓮山海三日
       </button>
     </div>
   );
@@ -1925,7 +1939,7 @@ export default function SiblingsDemo() {
 }
 ```
 
-按下紙之後，摘要是「目前 紙」。
+按下花蓮山海三日之後，摘要是「目前 花蓮山海三日」。
 
 **解析**
 
@@ -1936,7 +1950,7 @@ export default function SiblingsDemo() {
 
 {% note success %}
 **換你試試：**
-再加一顆按鈕回報尺。摘要要能顯示尺。`Summary` 不用改。
+再加一顆按鈕回報京都紅葉散步。摘要要能顯示京都紅葉散步。`Summary` 不用改。
 {% endnote %}
 
 <details>
@@ -1944,20 +1958,20 @@ export default function SiblingsDemo() {
 
 新的選項仍呼叫同一個 `onPick`。摘要只讀父層的狀態。
 
-```jsx 03-react/src/demos/64-siblings.jsx
+```jsx 03-react/src/demos/66-siblings.jsx
 import { useState } from 'react';
 
 function Picker({ onPick }) {
   return (
     <div className="flex gap-2">
-      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('筆')}>
-        筆
+      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('台北城市漫遊')}>
+        台北城市漫遊
       </button>
-      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('紙')}>
-        紙
+      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('花蓮山海三日')}>
+        花蓮山海三日
       </button>
-      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('尺')}>
-        尺
+      <button type="button" className="rounded bg-stone-100 px-3 py-1" onClick={() => onPick('京都紅葉散步')}>
+        京都紅葉散步
       </button>
     </div>
   );
@@ -1999,7 +2013,7 @@ props 要穿過中間許多層、而那些中間層自己不用這份資料時�
 
 context 的值變了，讀它的元件會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
 
-```jsx 03-react/src/demos/65-context.jsx
+```jsx 03-react/src/demos/67-context.jsx
 import { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext('淺色');
@@ -2056,7 +2070,7 @@ export default function ContextDemo() {
 
 兩顆按鈕都設定同一份狀態。Provider 的 value 仍是那個狀態。
 
-```jsx 03-react/src/demos/65-context.jsx
+```jsx 03-react/src/demos/67-context.jsx
 import { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext('淺色');
@@ -2115,7 +2129,7 @@ export default function ContextDemo() {
 
 預設值適合「沒包到也不該爆炸」的顯示。若忘了包是程式錯誤，上一節的 `useTodos` 那種直接丟出錯誤比較好找。
 
-```jsx 03-react/src/demos/72-default.jsx
+```jsx 03-react/src/demos/68-default.jsx
 import { createContext, useContext } from 'react';
 
 const ThemeContext = createContext('淺色');
@@ -2149,7 +2163,7 @@ export default function DefaultDemo() {
 
 改的是預設值。元件樹上仍沒有 Provider。
 
-```jsx 03-react/src/demos/72-default.jsx
+```jsx 03-react/src/demos/68-default.jsx
 import { createContext, useContext } from 'react';
 
 const ThemeContext = createContext('深色');
@@ -2186,7 +2200,7 @@ export default function DefaultDemo() {
 
 不要在渲染過程中讀寫 `current` 來決定要回傳哪一棵樹。那會讓渲染不純。
 
-```jsx 03-react/src/demos/66-ref.jsx
+```jsx 03-react/src/demos/69-ref.jsx
 import { useRef } from 'react';
 
 export default function RefDemo() {
@@ -2239,7 +2253,7 @@ export default function RefDemo() {
 
 清空 DOM 的值不會通知 React。這一則本來就沒有受控，所以這樣做看得到格子被清掉。
 
-```jsx 03-react/src/demos/66-ref.jsx
+```jsx 03-react/src/demos/69-ref.jsx
 import { useRef } from 'react';
 
 export default function RefDemo() {
@@ -2285,7 +2299,7 @@ ref 可以累計次數，但改 `current` 不會重畫。要把次數顯示出�
 
 這用來分辨「要記住」與「要畫出來」。要畫出來的值用狀態。
 
-```jsx 03-react/src/demos/73-ref-count.jsx
+```jsx 03-react/src/demos/70-ref-count.jsx
 import { useRef, useState } from 'react';
 
 export default function RefCountDemo() {
@@ -2360,11 +2374,11 @@ dispatch 送出的物件慣例上有 `type`。
 
 待辦有 id、標題與是否完成。新增、切換完成、刪除是三種 action。reducer 用 `switch` 決定回傳哪一種新陣列。不明的 type 就把原狀態還回去。
 
-```jsx 03-react/src/demos/67-reducer.jsx
+```jsx 03-react/src/demos/71-reducer.jsx
 import { useState } from 'react';
 
 export default function ReducerDemo() {
-  const [todos, setTodos] = useState([{ id: 1, title: '買筆', done: false }]);
+  const [todos, setTodos] = useState([{ id: 1, title: '台北城市漫遊', done: false }]);
 
   const onAdd = () => {
     setTodos((items) => [
@@ -2411,7 +2425,7 @@ export default function ReducerDemo() {
 
 三個按鈕都只 `dispatch` 一種 action。陣列的複製留在 reducer，元件不再自己展開。
 
-```jsx 03-react/src/demos/67-reducer.jsx
+```jsx 03-react/src/demos/71-reducer.jsx
 import { useReducer } from 'react';
 
 const reducer = (todos, action) => {
@@ -2434,7 +2448,7 @@ const reducer = (todos, action) => {
 
 export default function ReducerDemo() {
   const [todos, dispatch] = useReducer(reducer, [
-    { id: 1, title: '買筆', done: false },
+    { id: 1, title: '台北城市漫遊', done: false },
   ]);
 
   const onAdd = () => {
@@ -2492,7 +2506,7 @@ reducer 的 `dispatch` 與清單若要給深一點的子元件用，把它們放
 
 清單與新增按鈕分成兩個子元件。它們都呼叫 `useTodos`，所以看到的是同一份待辦。
 
-```jsx 03-react/src/demos/68-provider.jsx
+```jsx 03-react/src/demos/72-provider.jsx
 import { createContext, useContext, useReducer } from 'react';
 
 const TodoContext = createContext(null);
@@ -2576,7 +2590,7 @@ export default function ProviderDemo() {
 
 空狀態看的是 context 裡的陣列長度。按鈕不用知道這句話。
 
-```jsx 03-react/src/demos/68-provider.jsx
+```jsx 03-react/src/demos/72-provider.jsx
 import { createContext, useContext, useReducer } from 'react';
 
 const TodoContext = createContext(null);
@@ -2674,7 +2688,7 @@ React 19 可以把送出函式交給 `<form action>`。這次送出被當成一�
 
 送出函式用 `formData.get('title')` 讀文字，放進狀態。函式可以是 async。這一則沒有真的打網路，只模擬把標題留下。
 
-```jsx 03-react/src/demos/69-action.jsx
+```jsx 03-react/src/demos/73-action.jsx
 import { useState } from 'react';
 
 export default function ActionDemo() {
@@ -2703,7 +2717,7 @@ export default function ActionDemo() {
 }
 ```
 
-在格子打「筆」再送出，下面一行變成筆。網址不變。
+在格子打「台北城市漫遊」再送出，下面一行變成台北城市漫遊。網址不變。
 
 **解析**
 
@@ -2722,7 +2736,7 @@ export default function ActionDemo() {
 
 兩個 `get` 都來自同一份 FormData。輸入框都要有 name。
 
-```jsx 03-react/src/demos/69-action.jsx
+```jsx 03-react/src/demos/73-action.jsx
 import { useState } from 'react';
 
 export default function ActionDemo() {
@@ -2759,7 +2773,7 @@ export default function ActionDemo() {
 
 不要在渲染時呼叫這個動作。把它交給 `action` 即可。
 
-```jsx 03-react/src/demos/70-action-state.jsx
+```jsx 03-react/src/demos/74-action-state.jsx
 import { useActionState } from 'react';
 
 const send = async (previous, formData) => {
@@ -2791,7 +2805,7 @@ export default function ActionStateDemo() {
 }
 ```
 
-第一次送出「筆」，約三分之一秒後訊息變成筆。再送出「紙」，訊息變成「筆、紙」。等待時按鈕是停用的。
+第一次送出「台北城市漫遊」，約三分之一秒後訊息變成台北城市漫遊。再送出「花蓮山海三日」，訊息變成「台北城市漫遊、花蓮山海三日」。等待時按鈕是停用的。
 
 **解析**
 
@@ -2810,7 +2824,7 @@ export default function ActionStateDemo() {
 
 忽略 `previous`，只回傳這一次讀到的標題。
 
-```jsx 03-react/src/demos/70-action-state.jsx
+```jsx 03-react/src/demos/74-action-state.jsx
 import { useActionState } from 'react';
 
 const send = async (previous, formData) => {
@@ -2851,11 +2865,11 @@ export default function ActionStateDemo() {
 
 送出時先 `setOptimisticName`，再等待，最後才 `setName`。等待的那 300 毫秒，畫面已經是新名稱。
 
-```jsx 03-react/src/demos/71-optimistic.jsx
+```jsx 03-react/src/demos/75-optimistic.jsx
 import { useOptimistic, useState } from 'react';
 
 export default function OptimisticDemo() {
-  const [name, setName] = useState('筆');
+  const [name, setName] = useState('台北城市漫遊');
   const [optimisticName, setOptimisticName] = useOptimistic(name);
 
   const send = async (formData) => {
@@ -2884,7 +2898,7 @@ export default function OptimisticDemo() {
 }
 ```
 
-輸入紙並送出，畫面上的「目前」會先變成紙，不必等那 300 毫秒結束才看得到。
+輸入花蓮山海三日並送出，畫面上的「目前」會先變成花蓮山海三日，不必等那 300 毫秒結束才看得到。
 
 **解析**
 
@@ -2903,11 +2917,11 @@ export default function OptimisticDemo() {
 
 只改等待時間。先顯示、後落地的順序不變。
 
-```jsx 03-react/src/demos/71-optimistic.jsx
+```jsx 03-react/src/demos/75-optimistic.jsx
 import { useOptimistic, useState } from 'react';
 
 export default function OptimisticDemo() {
-  const [name, setName] = useState('筆');
+  const [name, setName] = useState('台北城市漫遊');
   const [optimisticName, setOptimisticName] = useOptimistic(name);
 
   const send = async (formData) => {
@@ -2933,18 +2947,21 @@ export default function OptimisticDemo() {
 
 # 本篇重點回顧
 
-- effect 在畫上畫面之後才跑。空依賴只跑第一次，依賴改變時先清再跑。
+- effect 在畫上畫面之後才跟計時器、讀取或訂閱對齊。畫面推得出來的值留在渲染，按一次才要做的事放在事件裡。元件函式裡的 log 每次渲染都會印，那是渲染，不是 effect。
+- 開發時嚴格模式會在第一次掛上依序跑效果、清除、再跑效果，用來檢查收尾。正式建置只跑一次。課堂保持打開，原因在上一篇的 createRoot。
+- 空依賴只在第一次畫完後跑。依賴改變時先清再跑。
 - 在 effect 裡無條件設定狀態會造成無限迴圈。漏寫依賴會閉包住舊值。
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求。
 - GET、POST、PUT、DELETE 收進 API 模組。元件決定何時呼叫、結果放進哪一份狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
-- 渲染推得出來的值不要寫進 effect。按下去才要的請求放在事件裡。context、ref、reducer 與表單 Actions 是選讀。
+- context、ref、reducer 與表單 Actions 是選讀。
 
 # 專有名詞中英對照
 
 ## Effect 與資料
 
 - 效果（effect）
+- 嚴格模式（React Strict Mode）：開發時對 effect 先執行、再清除、再執行
 - 依賴陣列（dependency array）
 - 清除函式（cleanup）
 - 中止控制器（AbortController）
