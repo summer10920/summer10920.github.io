@@ -20,26 +20,46 @@ date: 2026-08-30 10:09:00
 
 ## useEffect 的執行時機
 
-畫面畫上之後，才去跟外面的世界對齊。計時器、讀取資料、訂閱通知，都是這一類。`useEffect` 把這段對齊寫成畫完才執行的函式。
+`useEffect` 把「畫面畫完之後才跟外面同步」寫成一次呼叫：
+
+```jsx
+useEffect(setup, deps);
+```
+
+對上真實的寫法會長這樣。第一個參數是 setup，第二個參數是 deps：
+
+```jsx
+useEffect(() => {
+  console.log('效果執行');
+  return () => {
+    console.log('清除');
+  };
+}, []);
+```
+
+箭頭函式整段是 setup（準備函式）：畫面提交之後才跑，用來跟外面的世界對齊，例如計時器、讀取、訂閱；這裡印「效果執行」。`return` 出去的函式是清除函式，同一個 Hook 下一次再跑 setup 之前、以及元件卸掉時會先執行，用它清掉計時器、中止讀取、解除訂閱；這裡印「清除」。`[]` 是 deps（依賴陣列），這一則先用空陣列。完整元件與按鈕對照在「第一次執行」。
+
+依賴陣列本身是陣列，可以列出多個值，例如 `[keyword, page]`。列出來的任何一個變了，就先執行清除，再執行下一次 setup。下面的示範多半只放一個值，方便看出是哪一個變了；能放多個，規則相同。
+
+三種寫法：
+
+- `[a, b]`：列出的任何一個依賴變了，就先清除再跑 setup。
+- `[]`：只在第一次畫完後跑。清除發生在卸載，以及開發時嚴格模式的再掛上檢查。
+- 完全省略第二個參數：每一次渲染之後都跑。setup 裡若同步呼叫設定函式，渲染與效果會互相追。見「無限迴圈」。
+
+空陣列的第一次執行、依賴改變、清除函式、省略依賴造成的迴圈、漏寫依賴，下面各有一則。
 
 **觀念**
 
 元件函式負責算出這一輪要畫什麼，算完就停。總價、過濾後的清單、從狀態推得出來的文字，留在渲染裡用運算式得出來。這些值不必再放進 effect 重算一次。
 
-使用者做一次才要發生的事，寫在事件處理函式裡。按下才送出、按下才讀一筆，都是事件，不是進畫面就自動做的 effect。
+使用者做一次才要發生的事，寫在事件處理函式裡。按下才送出、按下才讀一筆，都是事件。進畫面就要自動做的，才是 effect。
 
 寫在元件函式裡的 `console.log` 每次渲染都會印，而且印在畫上畫面之前。那是渲染的過程。effect 要等這一輪提交、畫面更新之後才跑。
 
-下面先記它什麼時候跑，再逐段看示範。
-
-- 依賴陣列是空的時候，效果只在這顆元件第一次畫完後跑。元件被拿掉時，會先跑你回傳的清除函式。
-- 依賴陣列裡的值變了，React 會先清除上一次，再用新的值跑下一次。
-- 漏寫依賴時，效果會閉包住舊的值。ESLint 會對這件事提出警告。
-- 在效果裡同步呼叫設定狀態，而且沒有依賴可停，會讓渲染與效果互相追著跑。
-
 {% mermaid graph LR %}
   renderNode["渲染：算出元素"] --> commitNode["提交：畫上畫面"]
-  commitNode --> effectNode["執行 effect"]
+  commitNode --> effectNode["執行 setup"]
   effectNode --> cleanupNode["下次或卸載時清除"]
   style renderNode fill:#e3f2fd
   style commitNode fill:#e3f2fd
@@ -49,11 +69,11 @@ date: 2026-08-30 10:09:00
 
 ### 第一次執行
 
-這一則用空的依賴陣列。按鈕讓計數增加時，畫面會變。回傳的函式是清除。Console 先看第一次掛上印了什麼，再看按下之後有沒有再增加。
+這一則的依賴是空陣列。setup 印「效果執行」，清除函式印「清除」。按鈕讓計數增加，用來確認重新渲染不會讓這個 effect 再跑。
 
 **觀念**
 
-效果裡印出「效果執行」。清除函式印出「清除」。依賴寫成 `[]`：第一次畫完後會跑，之後狀態變了不重跑。
+`[]` 表示第一次畫完後跑 setup，之後這顆元件的狀態變了也不重跑。清除仍會在卸載時跑。開發時嚴格模式還會在再掛上之前先跑一次清除。
 
 ```jsx 03-react/src/demos/48-effect.jsx
 import { useEffect, useState } from 'react';
@@ -98,62 +118,45 @@ export default function EffectMount() {
 **解析**
 
 - 開發時嚴格模式在第一次掛上檢查收尾，所以順序是「效果執行」、「清除」、「效果執行」。正式建置只印一次「效果執行」。
-- 這三行來自嚴格模式的收尾檢查，不是按了「加一」。課堂保持 `<StrictMode>` 打開。為什麼預設開著，見上一篇的「createRoot」。
-- 空陣列不是完全不跑。它會在第一次畫完後跑。
+- 這三行來自嚴格模式的收尾檢查。課堂保持 `<StrictMode>` 打開。為什麼預設開著，見上一篇的「createRoot」。
+- 空陣列會在第一次畫完後跑。
 - 回傳的函式是清除。元件離開畫面之前會先執行它。開發時，嚴格模式在再掛上之前也會先執行它。
 - 按下「加一」會再渲染，畫面上的次數改變。依賴是 `[]`，效果不跟著重跑，那三行也不會再增加。
 - 清除函式裡不要同步設定這顆元件的狀態。元件都要卸掉了，設定已經沒有畫面可畫。
 
 {% note success %}
 **換你試試：**
-在效果裡多印一行計數。清除那行留著。按下加一之後，Console 仍不該再增加。
+在 setup 裡多印一行固定字串「已掛上」。不要在效果裡讀 `count`。按下加一之後，Console 不該再出現「已掛上」。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-計數被印出來，但沒有放進依賴陣列，所以按按鈕不會再跑效果。這也是下一步要把效果裡讀到的值寫進依賴的原因。
+多印的是固定字串，效果裡沒有讀 `count`，依賴仍是空陣列。按下加一只改畫面，setup 不重跑，「已掛上」不會再出現。
 
-```jsx 03-react/src/demos/48-effect.jsx
-import { useEffect, useState } from 'react';
-
-export default function EffectMount() {
-  const [count, setCount] = useState(0);
-
+```diff 03-react/src/demos/48-effect.jsx
+  // ...
   useEffect(() => {
     console.log('效果執行');
-    console.log(count);
++   console.log('已掛上');
     return () => {
       console.log('清除');
     };
   }, []);
-
-  return (
-    <section>
-      <p>計數 {count}。效果只在第一次畫完後執行，請看 Console。</p>
-      <button
-        type="button"
-        className="mt-3 rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        加一
-      </button>
-    </section>
-  );
-}
+  // ...
 ```
 
 </details>
 
 ### 依賴陣列
 
-效果裡讀到的 props 與 state，都要放進依賴陣列。值變了，React 先清除上一次，再用新的值跑下一次。
+效果裡讀到的 props 與 state，都要放進依賴陣列。值變了，React 先執行清除，再用新的值跑下一次 setup。
 
 **觀念**
 
-關鍵字從「台北城市漫遊」開始。效果印出這一次要查的字。按下按鈕把關鍵字換成「花蓮山海三日」之後，Console 會先印清除，再印一次新的關鍵字。
+依賴陣列是陣列。它可以同時列好幾個值，例如 `[keyword, page]`，任何一個變了都會先清再跑。這一則只放一個 `keyword`，畫面與 Console 都只跟著這個字。
 
-依賴寫成 `[keyword]`。不要因為想少跑幾次就把讀到的值藏起來。藏起來的那一次，閉包裡仍是舊的字。
+關鍵字從「台北城市漫遊」開始。setup 印出這一次要查的字，清除函式印出上一次的字。按下按鈕換成「花蓮山海三日」之後，Console 會先印清除，再印一次新的查詢。
 
 ```jsx 03-react/src/demos/49-deps.jsx
 import { useEffect, useState } from 'react';
@@ -170,7 +173,7 @@ export default function DepsDemo() {
 
   return (
     <section>
-      <p>關鍵字 {keyword}</p>
+      <p>查詢字 {keyword}</p>
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
@@ -192,9 +195,9 @@ export default function DepsDemo() {
 
 **解析**
 
-- 依賴裡的 `keyword` 變了，效果才會重跑。畫面其他狀態若沒放進陣列，也不該在效果裡讀。
+- 依賴裡的 `keyword` 變了，效果才會重跑。這一則的畫面只顯示查詢字，Console 也只印查詢與清除。
 - 清除函式看到的是上一次的關鍵字。所以會先印「清除 台北城市漫遊」，再印「查詢 花蓮山海三日」。
-- 按第二次時關鍵字已經是花蓮山海三日，設定成同一個字，React 可以不重跑效果。
+- 按第二次時關鍵字已經是花蓮山海三日。設定成同一個字時，React 可以略過這次渲染，效果也不重跑。
 - 陣列、物件若在渲染時現做一個新的，依賴會每次都變成新參考，效果就會每次都跑。
 
 {% note success %}
@@ -207,32 +210,15 @@ export default function DepsDemo() {
 
 依賴已經寫了關鍵字，所以換成任何新字都會先清再跑。
 
-```jsx 03-react/src/demos/49-deps.jsx
-import { useEffect, useState } from 'react';
-
-export default function DepsDemo() {
-  const [keyword, setKeyword] = useState('台北城市漫遊');
-
-  useEffect(() => {
-    console.log('查詢', keyword);
-    return () => {
-      console.log('清除', keyword);
-    };
-  }, [keyword]);
-
-  return (
-    <section>
-      <p>關鍵字 {keyword}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword('京都紅葉散步')}
+```diff 03-react/src/demos/49-deps.jsx
+  // ...
+-       onClick={() => setKeyword('花蓮山海三日')}
++       onClick={() => setKeyword('京都紅葉散步')}
       >
-        改查京都紅葉散步
+-       改查花蓮山海三日
++       改查京都紅葉散步
       </button>
-    </section>
-  );
-}
+  // ...
 ```
 
 </details>
@@ -243,9 +229,9 @@ export default function DepsDemo() {
 
 **觀念**
 
-`setInterval` 每一秒把秒數加一。清除函式呼叫 `clearInterval`。切到別的示範時，這顆元件卸掉，秒數就不再增加，Console 也不該再報已卸載的更新。
+`setInterval` 每一秒把秒數加一。setup 只負責拿到計時器的 id，回傳的清除函式用這個 id 呼叫 `clearInterval`。切到別的示範時，這顆元件卸掉，秒數就不再增加，Console 也不該再報已卸載的更新。
 
-設定狀態寫在計時器的回呼裡，不是寫在效果函式的第一行。效果本身只負責登記與清掉計時器。
+設定狀態寫在計時器的回呼裡，不是寫在 setup 的第一行。效果本身只負責登記與清掉計時器。
 
 ```jsx 03-react/src/demos/50-timer.jsx
 import { useEffect, useState } from 'react';
@@ -283,32 +269,28 @@ export default function TimerDemo() {
 
 只改間隔。清除仍用同一個 id，否則會停不掉。
 
-```jsx 03-react/src/demos/50-timer.jsx
-import { useEffect, useState } from 'react';
-
-export default function TimerDemo() {
-  const [seconds, setSeconds] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setSeconds((value) => value + 1);
-    }, 2000);
+```diff 03-react/src/demos/50-timer.jsx
+  // ...
+-   }, 1000);
++   }, 2000);
     return () => clearInterval(id);
-  }, []);
-
-  return <p>秒數 {seconds}</p>;
-}
+  // ...
 ```
 
 </details>
 
 ### 無限迴圈
 
-效果若在渲染之後同步設定狀態，而依賴又每次都變，渲染與效果會一直互相觸發。ESLint 會把「在效果裡同步設定狀態」當成錯誤。
+效果若在每次渲染之後同步設定狀態，渲染與效果會一直互相追。ESLint 的 `react-hooks/set-state-in-effect` 會把效果裡同步的 `setState` 標成錯誤。
 
 **觀念**
 
-下面這段不要存進專案。它在效果裡用這一輪的 `count` 再設定下一個 `count`，而且沒有依賴陣列。每一輪渲染結束都再設定，畫面就停不下來。
+跟外面的系統對齊時，setup 可以改外面的東西，例如瀏覽器分頁標題。這一則把 `document.title` 設成目前的行程名稱。依賴是 `[place]`，只有行程變了才改標題。清除函式把標題還原成這一次 setup 開始前的文字。練習頁進來時的標題是「React 練習」，切到別的示範後會回到這句。
+
+{% note warning %}
+**不要存進專案**
+
+下面這段省略了第二個參數，所以每次渲染之後都會跑。setup 裡又同步 `setCount(count + 1)`，每一次設定都排下一次渲染，下一次渲染又跑效果。
 
 ```jsx
 useEffect(() => {
@@ -316,93 +298,80 @@ useEffect(() => {
 });
 ```
 
-要在效果裡跟外部系統同步，設定狀態應發生在請求回來的回呼，或計時器的回呼，而不是效果函式的第一行。這一則只在關鍵字改變時印出記錄，不在效果裡設定狀態。
+這種寫法會讓畫面停不下來，也不要留在 `51-loop.jsx`。
+{% endnote %}
 
 ```jsx 03-react/src/demos/51-loop.jsx
 import { useEffect, useState } from 'react';
 
 export default function LoopDemo() {
-  const [keyword, setKeyword] = useState('台北城市漫遊');
+  const [place, setPlace] = useState('台北城市漫遊');
 
   useEffect(() => {
-    console.log('記錄', keyword);
-  }, [keyword]);
+    const previous = document.title;
+    document.title = place;
+    return () => {
+      document.title = previous;
+    };
+  }, [place]);
 
   return (
     <section>
-      <p>關鍵字 {keyword}</p>
+      <p>分頁標題 {place}</p>
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword((value) => value + '!')}
+        onClick={() => setPlace('花蓮山海三日')}
       >
-        加一個驚嘆號
+        改成花蓮山海三日
       </button>
     </section>
   );
 }
 ```
 
-每按一次，關鍵字多一個驚嘆號，Console 多一行記錄。不會無限增加。
+打開時，瀏覽器分頁標題變成「台北城市漫遊」，畫面上的句子也是這個名字。按一次「改成花蓮山海三日」，標題與句子一起換成花蓮山海三日，然後停住。再按一次，字沒變，標題也不會連跳。
 
 **解析**
 
-- 效果沒有呼叫設定函式，所以不會因為自己再觸發下一輪。
-- 按鈕的更新函式才會改關鍵字。改完的那一輪才重跑效果。
-- 同步的 `setCount(count + 1)` 寫在效果裡，檢查會直接失敗。
-- 依賴若放了一個每次渲染都新建的物件，即使你覺得內容一樣，效果也會每次都跑。
-
-{% note warning %}
-**不要在效果裡補算畫面**
-能從現有狀態算出來的字，直接在渲染時算。下一節的選讀會把這種寫法單獨看一次。
-{% endnote %}
+- setup 只寫 `document.title`，沒有呼叫 `setPlace`。效果自己不會排下一輪渲染。
+- 依賴是 `[place]`。行程沒變，效果不重跑。警告裡的片段把第二個參數整個省略，每次渲染後都會再跑。
+- 按鈕把行程設成一個固定字。設成同一個字時，React 可以略過渲染，效果也不會再跑。
+- 清除函式還原的是這一次 setup 開始前讀到的標題。切到別的示範時，分頁標題回到「React 練習」。
+- 警告裡的 `setCount(count + 1)` 寫在 setup 的第一行。渲染結束就設定，設定又造成渲染，兩邊互相追。`react-hooks/set-state-in-effect` 會把這段標成錯誤。
 
 {% note success %}
 **換你試試：**
-按鈕改成把關鍵字設回台北城市漫遊。從「台北城市漫遊!」按一次，Console 應再記一行台北城市漫遊，而且只記一行。
+按鈕改成把行程設成京都紅葉散步，按鈕文字一併改成「改成京都紅葉散步」。按一次後，分頁標題應是京都紅葉散步，而且只換一次。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-設成固定的字不會連加。效果只跟著關鍵字重跑一次。
+設成固定的字只會再跑一次效果。標題換成京都紅葉散步之後就停住。
 
-```jsx 03-react/src/demos/51-loop.jsx
-import { useEffect, useState } from 'react';
-
-export default function LoopDemo() {
-  const [keyword, setKeyword] = useState('台北城市漫遊');
-
-  useEffect(() => {
-    console.log('記錄', keyword);
-  }, [keyword]);
-
-  return (
-    <section>
-      <p>關鍵字 {keyword}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setKeyword('台北城市漫遊')}
+```diff 03-react/src/demos/51-loop.jsx
+  // ...
+-       onClick={() => setPlace('花蓮山海三日')}
++       onClick={() => setPlace('京都紅葉散步')}
       >
-        加一個驚嘆號
+-       改成花蓮山海三日
++       改成京都紅葉散步
       </button>
-    </section>
-  );
-}
+  // ...
 ```
 
 </details>
 
 ### 漏寫依賴
 
-效果裡用到的狀態要寫進陣列。少寫時，ESLint 的 `react-hooks/exhaustive-deps` 會警告，指出少了哪一個名字。警告不會讓 `pnpm lint` 失敗，但代表這一則可能讀到舊值。
+效果裡讀到的值要寫進依賴陣列。少寫時，閉包會停在第一次的值。ESLint 的 `react-hooks/exhaustive-deps` 會警告少了哪個名字。警告不會讓 `pnpm lint` 失敗，但代表這一則讀到的是舊值。
 
 **觀念**
 
-這一則把 `count` 寫進依賴，所以次數一變，效果就再印一次。這是對的寫法。你若把陣列改成空的，效果仍會印出第一次的 0，之後按按鈕不會再印，終端機則會警告少了 `count`。
+這一則故意把錯誤寫法留在檔案裡。效果讀了 `count`，依賴卻是 `[]`。畫面次數會隨按鈕增加，Console 在嚴格模式安頓之後停在 0。
 
-不要用把警告關掉來收尾。要嘛把值放進依賴，要嘛不要在效果裡讀它。
+把 `count` 放進依賴，或從效果裡拿掉這個讀取。不要用關掉警告來收尾。
 
 ```jsx 03-react/src/demos/52-lint.jsx
 import { useEffect, useState } from 'react';
@@ -412,7 +381,7 @@ export default function LintDemo() {
 
   useEffect(() => {
     console.log('次數', count);
-  }, [count]);
+  }, []);
 
   return (
     <section>
@@ -429,48 +398,32 @@ export default function LintDemo() {
 }
 ```
 
-按一次，Console 在原本的次數之後再印「次數 1」。`pnpm lint` 對這一檔沒有依賴警告。
+打開時，嚴格模式會讓這個效果多跑一次，印出的都是「次數 0」。安頓之後 Console 停在這個 0。按下「加一」，畫面變成 1、2、3，Console 不再增加。
+
+在 `03-react` 執行 `pnpm lint`，這一檔會出現 `react-hooks/exhaustive-deps`，指出少了 `count`。
 
 **解析**
 
-- 依賴與效果裡讀到的名字一致，警告就不會出現。
-- 空陣列配上讀 `count`，是漏寫，不是最佳化。
-- 警告的文字會點名少了哪個變數。照它補上，或從效果裡拿掉那個讀取。
-- 函式若在渲染時現寫一個，又被效果呼叫，也算依賴。能搬進效果裡的函式，就不要留在外面。
+- 效果函式閉包住的是第一次渲染的 `count`，也就是 0。空依賴讓它之後不再建立新的函式。
+- 畫面讀的是每一輪渲染的 `count`，所以按鈕仍會把次數加上去。兩邊讀到的進度不一樣。
+- `pnpm lint` 的警告名稱是 `react-hooks/exhaustive-deps`。它點名少了 `count`。警告不會讓這條指令以失敗結束。
+- 函式若在渲染時現寫一個，又被效果呼叫，也算依賴。能搬進效果裡的函式，就留在 setup 裡面。
 
 {% note success %}
 **換你試試：**
-暫時把依賴改成空陣列，執行 `pnpm lint`，讀警告裡的 count。看完再改回 `[count]`。
+把依賴改成 `[count]`。按下加一後，Console 應跟著印出新的次數。改完再執行 `pnpm lint`，這一則少依賴的警告會消失。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-空陣列會讓檢查指出少了 count。改回之後警告消失，按按鈕也會再印新的次數。
+依賴補上 `count` 之後，次數一變就再跑 setup，Console 跟上畫面。按下加一，會在原本的 0 之後出現「次數 1」。開發時一開始的 0 仍可能有兩行，那是嚴格模式的掛上檢查。按按鈕加上去的數字各印一次。
 
-```jsx 03-react/src/demos/52-lint.jsx
-import { useEffect, useState } from 'react';
-
-export default function LintDemo() {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    console.log('次數', count);
-  }, [count]);
-
-  return (
-    <section>
-      <p>次數 {count}</p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        加一
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/52-lint.jsx
+  // ...
+- }, []);
++ }, [count]);
+  // ...
 ```
 
 </details>
@@ -498,7 +451,7 @@ export default function LintDemo() {
 
 ### 載入與錯誤
 
-本機的 `items.json` 有三筆行程。效果在第一次畫完後讀它，並把狀態設成載入、完成或失敗。空陣列另外一句話，不跟失敗混在一起。
+本機的 `items.json` 有三筆行程。效果在第一次畫完後讀它，並把狀態設成載入、完成或失敗。空陣列另外一句話，不跟失敗混在一起。下一則「空資料」沿用同一套骨架，只換資料來源。
 
 **觀念**
 
@@ -607,7 +560,7 @@ export default function LoadDemo() {
 
 ### 空資料
 
-成功與「沒有任何一筆」是不同的事。這一則讀一份空陣列的 JSON，狀態仍是 ready，畫面用長度決定要不要說沒有資料。
+成功與「沒有任何一筆」是不同的事。這一則與「載入與錯誤」共用同一套骨架，差別只在資料來源：這裡讀一份內容為 `[]` 的 JSON。狀態仍是 ready，畫面用長度決定要不要說沒有資料。
 
 **觀念**
 
@@ -1532,97 +1485,101 @@ export default function DeriveDemo() {
 
 ### 事件裡的請求
 
-按下才讀取的資料，放在 `onClick`。不要為了「有網路」就套一個 effect，然後用一個布林去觸發它。
+按下才讀取的資料，放在 `onClick`。進畫面就要有的清單才用 effect。
 
 **觀念**
 
-`onLoad` 是 async 函式。按下才 fetch。沒按之前，訊息停在「尚未讀取」，也不會有請求。
+「載入與錯誤」是進畫面就讀。這一則的原因是點擊，所以 fetch 寫在事件函式裡。GET 的路徑、狀態碼與 JSON 欄位見「GET」。這裡改讀第五篇，並把「按了沒有」和文章內容分成兩行，跟「GET」那顆只換標題的按鈕分開。
 
-這跟「一進畫面就要有清單」不同。進畫面就要有的那一種，才用 effect。
+{% note warning %}
+**不要存進專案**
+
+點擊只把 `armed` 設成 true，真正的 fetch 卻寫在 effect 裡。請求的原因是按鈕，卻繞去跟畫面同步的那條路。
+
+```jsx
+const [armed, setArmed] = useState(false);
+
+useEffect(() => {
+  if (!armed) return;
+  fetch('https://jsonplaceholder.typicode.com/posts/5')
+    .then((response) => response.json())
+    .then((post) => setPost(post));
+}, [armed]);
+```
+
+`armed` 變成 true 之後就留在那裡。想再讀一次，還得先改回 false 再改回 true，中間多一次沒有畫面意義的渲染。開發時嚴格模式也可能在它變成 true 之後把效果多跑一次。按下要發生的事，直接寫在事件函式裡。
+{% endnote %}
 
 ```jsx 03-react/src/demos/62-click.jsx
 import { useState } from 'react';
 
 export default function ClickFetchDemo() {
-  const [title, setTitle] = useState('尚未讀取');
+  const [status, setStatus] = useState('尚未按下');
+  const [post, setPost] = useState(null);
 
   const onLoad = async () => {
-    const response = await fetch(
-      'https://jsonplaceholder.typicode.com/posts/1',
-    );
-    if (!response.ok) {
-      setTitle('讀取失敗');
-      return;
+    setStatus('讀取中');
+    setPost(null);
+    try {
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts/5',
+      );
+      if (!response.ok) throw new Error(String(response.status));
+      setPost(await response.json());
+      setStatus('完成');
+    } catch {
+      setPost(null);
+      setStatus('讀取失敗');
     }
-    const post = await response.json();
-    setTitle(post.title);
   };
 
   return (
     <section>
+      <p>狀態 {status}</p>
       <button
         type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
+        className="mt-3 rounded bg-teal-800 px-3 py-1 text-white"
         onClick={onLoad}
       >
-        讀取
+        按一下讀第五篇
       </button>
-      <p className="mt-3">{title}</p>
+      {post ? (
+        <p className="mt-3">
+          #{post.id} {post.title}
+        </p>
+      ) : null}
     </section>
   );
 }
 ```
 
-按下之前沒有請求。按下之後標題換成文章標題。
+按下之前，狀態是「尚未按下」，沒有文章，也沒有請求。按下之後狀態先變成「讀取中」，成功則是「完成」，並出現 `#5` 與標題。失敗時狀態是「讀取失敗」，不留下半篇資料。
 
 **解析**
 
-- 事件函式可以是 async。渲染函式本身不要做成 async。
-- 沒有 effect，就沒有嚴格模式多跑一次的請求。
-- 失敗寫進狀態。不要只在 Console 看。
-- 若改成進畫面就讀，再把這段搬進 effect，並加上清除。
+- 進畫面就要有的資料用 effect，見「載入與錯誤」。這一則沒有 effect。沒按就不會打網路，嚴格模式也不會多送一次。
+- 按下才讀，所以 fetch 在事件函式裡。GET 的細節見「GET」。這一則改讀第五篇，並把狀態與文章拆開。
+- 事件函式可以是 async。元件函式本身保持同步，回傳的仍是元素。
+- 失敗把文章清成 `null`，畫面只留狀態那一行。錯誤寫在畫面上，讀的人不用打開 Console 才知道。
 
 {% note success %}
 **換你試試：**
-改讀 posts/3。按下後標題應換成第三篇。
+改讀 `posts/8`，按鈕文字改成「按一下讀第八篇」。按下後狀態應是完成，畫面出現 `#8` 與那篇標題。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-只改網址的 id。觸發方式仍是按鈕。
+觸發方式仍是按鈕。路徑改成第八篇，按鈕文字跟著改。
 
-```jsx 03-react/src/demos/62-click.jsx
-import { useState } from 'react';
-
-export default function ClickFetchDemo() {
-  const [title, setTitle] = useState('尚未讀取');
-
-  const onLoad = async () => {
-    const response = await fetch(
-      'https://jsonplaceholder.typicode.com/posts/3',
-    );
-    if (!response.ok) {
-      setTitle('讀取失敗');
-      return;
-    }
-    const post = await response.json();
-    setTitle(post.title);
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onLoad}
-      >
-        讀取
-      </button>
-      <p className="mt-3">{title}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/62-click.jsx
+  // ...
+-       'https://jsonplaceholder.typicode.com/posts/5',
++       'https://jsonplaceholder.typicode.com/posts/8',
+  // ...
+-       按一下讀第五篇
++       按一下讀第八篇
+  // ...
 ```
 
 </details>
@@ -1997,11 +1954,37 @@ export default function SiblingsDemo() {
 
 ## 選讀：useContext
 
-props 要穿過中間許多層、而那些中間層自己不用這份資料時，可以用 context。它不是另一種狀態，只是讓樹的深處讀得到上層提供的值。
+props 要穿過中間許多層、而那些中間層自己不用這份資料時，可以用 context。它不是另一種狀態，只是讓樹的深處讀得到上層提供的值。呼叫分成建立通道、讀值，以及把值放上樹：
 
-- `createContext` 建立一個通道。
-- Provider 放在共同父層，`value` 就是這一輪要分享的資料。
-- `useContext` 讀最近的那一層 Provider。沒有 Provider 時得到建立時的預設值。
+```jsx
+const SomeContext = createContext(defaultValue);
+const value = useContext(SomeContext);
+```
+
+```jsx
+<SomeContext.Provider value={value}>…</SomeContext.Provider>
+```
+
+對上主題字串，三件事接在一起會長這樣：
+
+```jsx
+const ThemeContext = createContext('淺色');
+
+function Banner() {
+  const theme = useContext(ThemeContext);
+  return <p>主題 {theme}</p>;
+}
+
+export default function ThemeApp() {
+  return (
+    <ThemeContext.Provider value="深色">
+      <Banner />
+    </ThemeContext.Provider>
+  );
+}
+```
+
+`createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料，這裡是字串 `'深色'`。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。有狀態、按鈕與中間層的完整示範在「Provider」。
 
 ### Provider
 
@@ -2150,7 +2133,7 @@ export default function DefaultDemo() {
 
 - 預設值只在找不到 Provider 時使用。有 Provider 時，以 value 為準。
 - 這一則沒有狀態。預設值不會因為你按了什麼而改變。
-- 兩顆元件各呼叫 `useContext`，沒有 Provider 時都會拿到同一個預設值。
+- 這一則只有 `Banner` 呼叫 `useContext`。樹上沒有 Provider，所以它讀到建立時的預設值「淺色」。
 - 預設值不是「全域狀態」。它不會在別的示範裡被改掉。
 
 {% note success %}
@@ -2183,7 +2166,31 @@ export default function DefaultDemo() {
 
 ## 選讀：useRef
 
-`useRef` 記住一個可變的盒子，改 `current` 不會引發渲染。它適合點名某個 DOM 節點，或記住不需要畫上畫面的值，例如計時器的 id。
+`useRef` 記住一個可變的盒子，改 `current` 不會引發渲染。它適合點名某個 DOM 節點，或記住不需要畫上畫面的值，例如計時器的 id。呼叫寫成這樣：
+
+```jsx
+const ref = useRef(initialValue);
+```
+
+盒子在 `ref.current`。下面用數字當起始值，按一下只改盒子：
+
+```jsx
+function ClickBox() {
+  const clicks = useRef(0);
+
+  const onCount = () => {
+    clicks.current += 1;
+  };
+
+  return (
+    <button type="button" onClick={onCount}>
+      只累計
+    </button>
+  );
+}
+```
+
+`initialValue` 是盒子一開始的內容，這裡是 `0`。之後讀寫都走 `clicks.current`。接到 DOM 節點並呼叫 `focus` 的寫法在「聚焦輸入框」；把次數抄上畫面的對照在「不觸發渲染的值」。
 
 - ref 的 `current` 可以改。React 不會因為你改了它就再渲染。
 - 要讓畫面變，仍用狀態。不要把該顯示的數字只放在 ref。
@@ -2359,9 +2366,36 @@ export default function RefCountDemo() {
 
 ## 選讀：useReducer
 
-更新邏輯變多、而且下一個狀態取決於上一筆時，可以把分支收進 reducer。`useReducer` 回傳現在的狀態，以及一個 `dispatch`。
+更新邏輯變多、而且下一個狀態取決於上一筆時，可以把分支收進 reducer。`useReducer` 回傳現在的狀態，以及一個 `dispatch`。呼叫寫成這樣：
 
-dispatch 送出的物件慣例上有 `type`。
+```jsx
+const [state, dispatch] = useReducer(reducer, initialArg);
+```
+
+reducer 依 `action.type` 回傳下一筆，按鈕用 `dispatch` 送出動作：
+
+```jsx
+function reducer(state, action) {
+  switch (action.type) {
+    case 'add':
+      return state + 1;
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [count, dispatch] = useReducer(reducer, 0);
+
+  return (
+    <button type="button" onClick={() => dispatch({ type: 'add' })}>
+      加一 {count}
+    </button>
+  );
+}
+```
+
+`reducer` 是第一個參數，接收上一筆 `state` 與這次的 `action`，回傳下一筆。`initialArg` 是起始狀態，這裡是 `0`，解構出來的名字是 `count`。`dispatch({ type: 'add' })` 送進對應分支；不明的 type 走 `default`，把原狀態還回去。清單的新增、切換與刪除，以及改寫前的 `useState` 對照，在「待辦清單」。
 
 - reducer 是純函式。它接收上一筆狀態與這次的 action，回傳下一筆狀態。
 - 它不呼叫 fetch，也不改原陣列。要新陣列就回傳新陣列。
@@ -2947,22 +2981,25 @@ export default function OptimisticDemo() {
 
 # 本篇重點回顧
 
-- effect 在畫上畫面之後才跟計時器、讀取或訂閱對齊。畫面推得出來的值留在渲染，按一次才要做的事放在事件裡。元件函式裡的 log 每次渲染都會印，那是渲染，不是 effect。
+- `useEffect(setup, deps);`。setup 在畫面提交之後執行，用來跟計時器、讀取或訂閱對齊，並可以回傳清除函式。清除在下一次 setup 之前執行，元件卸載時也執行。
+- 畫面推得出來的值留在渲染。按一次才要做的事放在事件裡。元件函式裡的 log 每次渲染都會印，那是渲染，不是 effect。
+- 依賴陣列可以列多個值，任何一個變了就先清除再跑 setup。三種寫法：`[a, b]` 跟著列出的值，`[]` 只在第一次畫完後，省略第二個參數則每次渲染之後都跑。
 - 開發時嚴格模式會在第一次掛上依序跑效果、清除、再跑效果，用來檢查收尾。正式建置只跑一次。課堂保持打開，原因在上一篇的 createRoot。
-- 空依賴只在第一次畫完後跑。依賴改變時先清再跑。
-- 在 effect 裡無條件設定狀態會造成無限迴圈。漏寫依賴會閉包住舊值。
+- 在 effect 裡同步設定狀態、又讓它每次渲染都再跑，渲染與效果會互相追。漏寫依賴會讓效果閉包住舊值，`react-hooks/exhaustive-deps` 會警告。
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求。
 - GET、POST、PUT、DELETE 收進 API 模組。元件決定何時呼叫、結果放進哪一份狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - context、ref、reducer 與表單 Actions 是選讀。
+- `const value = useContext(SomeContext);`、`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
 
 ## Effect 與資料
 
 - 效果（effect）
+- 準備函式（setup）
 - 嚴格模式（React Strict Mode）：開發時對 effect 先執行、再清除、再執行
-- 依賴陣列（dependency array）
+- 依賴陣列（dependency array）：可列多個值；`[a, b]`、`[]`、省略第二參數
 - 清除函式（cleanup）
 - 中止控制器（AbortController）
 - 自訂 Hook（custom Hook）
