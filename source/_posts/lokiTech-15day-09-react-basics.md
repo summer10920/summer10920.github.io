@@ -978,7 +978,6 @@ export default function DownDemo() {
 這一步對應 Thinking in React 的前兩步：畫出元件階層，以及用固定資料組出靜態版本。按鈕與刪除留到狀態那一章。
 
 ```jsx 03-react/src/demos/03-tree.jsx
-// TODO: 講義「拆分元件」。先看拆分前；講義有拆分後。換你試試：在拆分後的檔案再排一張卡片，名稱是京都紅葉散步、價格是 42800。標題與說明那兩個元件留著。
 export default function TreeDemo() {
   return (
     <section>
@@ -1009,7 +1008,6 @@ export default function TreeDemo() {
 拆完之後，標題、說明、卡片各自是一個函式，父層的回傳只負責把它們排回同一個 `section`。
 
 ```jsx 03-react/src/demos/03-tree.jsx.final
-// TODO: 講義「拆分元件」。換你試試：再排一張卡片，名稱是京都紅葉散步、價格是 42800。標題與說明那兩個元件留著。
 function PageTitle() {
   return <h1 className="text-2xl font-bold">洛奇旅行</h1>;
 }

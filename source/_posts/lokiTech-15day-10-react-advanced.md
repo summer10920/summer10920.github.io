@@ -1018,17 +1018,22 @@ export default function DeleteDemo() {
 
 ### API 模組
 
-元件不應該每則都自己組網址與標頭。把讀寫收成函式之後，元件只決定何時呼叫、結果放進哪一份狀態。
+前面的 GET、POST、PUT、DELETE，以及 AbortController，都在元件裡直接 fetch。每個元件自己組網址、標頭、檢查 ok，重複又重。這一節先把請求收成模組函式，再用同一模組做完整 CRUD 示範。
 
-**觀念**
+#### API 模組函式
 
-`items-api.js` 把這件事收成五個函式。`getItems` 讀本機清單，可以帶入 `AbortSignal`。`getItem`、`createItem`、`updateItem`、`deleteItem` 分別對單筆做讀取、新增、更新與刪除，基底網址 `itemsUrl` 指到 jsonplaceholder 的 `/posts`。私有的 `readJson` 集中檢查 `response.ok`，失敗就丟出狀態碼，元件的 catch 只負責改畫面。`deleteItem` 在 `response.ok` 時回傳 true。刪除的回應常常是空的，所以不要對它呼叫 `response.json`。遠端路徑是文章 API，模組對外的名字則是 item。清單讀取對應結業專案的 `getTours`，單筆讀取對應 `getTour`。
+這一小節只看模組本身。五個匯出函式，加上不匯出的讀 JSON 函式，把網址、標頭與成功檢查收在一起。
 
-示範在第一次畫完後用 `getItems(controller.signal)` 載入清單，清除時 abort。載入中畫面是「載入中」，失敗是「讀取失敗」。完成後左欄是清單，右欄是同一份表單。`editingId` 是 `null` 時，送出走 `createItem`；有 id 時走 `updateItem`。編輯時欄位從那一筆清單資料填入。`getItem` 仍留在模組裡；這一則直接用卡片上已有的欄位，因為 `/posts/:id` 回傳的是文章的 title、body、userId。
+**一覽**
 
-新增、更新、刪除都在事件裡呼叫，不放進 effect。請求成功之後才改本機的 `items`。新增把回應的 id 和表單的 title、place、days、price 合成一筆放進清單。更新用表單欄位換掉同一個 id。刪除從清單濾掉那個 id。這三次寫入打到 jsonplaceholder。練習服務不保存，本機 JSON 也不能寫，所以清單的變化只在這次畫面的狀態裡。重新整理會回到檔案裡的三筆。
+- `readJson` 不匯出，回應成功時讀 JSON，失敗時丟出狀態碼。
+- `getItems` 讀本機清單。可選參數就是前面 AbortController 節的 `controller.signal`，交給 fetch 當中止用。
+- `getItem` 依 id 讀遠端單筆。
+- `createItem` 新增一筆。
+- `updateItem` 替換指定 id 的整筆。
+- `deleteItem` 刪除指定 id，成功時回傳 true。
 
-```js 03-react/src/api/items-api.js
+```js 03-react/src/api/fake-api.js
 const itemsUrl = 'https://jsonplaceholder.typicode.com/posts';
 
 const readJson = async (response) => {
@@ -1071,25 +1076,43 @@ export const deleteItem = async (id) => {
 };
 ```
 
+**解析**
+
+- 清單讀本機的 `/data/items.json`。單筆、新增、更新、刪除的基底是 itemsUrl，指到 jsonplaceholder 的 /posts。
+- readJson 集中檢查回應是否 ok。失敗時丟出的是狀態碼。
+- getItems 的可選參數可以不傳。有傳入 `controller.signal` 時，清除時才取消得了這一次讀取。
+- deleteItem 成功時不讀 JSON。刪除回應常常是空的，硬讀會失敗。
+- 函式名叫 item，遠端路徑仍是 posts。名字跟著清單資料，路徑跟著這個練習服務的文章介面。
+
+#### 示範完整 CRUD
+
+元件從模組引入函式。進畫面用 useEffect 更新清單。新增、更新、刪除在事件裡呼叫，成功後改本機狀態。示範是旅遊卡片，左邊清單、右邊共用同一份新增與編輯表單。程式裡的註解標出處理順序。
+
+**觀念**
+
+模組負責請求。元件負責何時呼叫，以及畫面上的狀態。左邊卡片讀的是元件裡的清單狀態，不是每次再打伺服器。練習服務新增、更新、刪除會回成功，但不會把資料留在遠端；重新整理又會從本機檔案讀回原來的三筆。所以請求成功之後，要在這份狀態裡接上新列、換掉同一個編號，或拿掉刪掉的那一筆，左邊卡片才會立刻對上。
+
 ```jsx 03-react/src/demos/60-items-demo.jsx
-// TODO: 講義「API 模組」。換你試試：按「新增」清表單時，標題從空字串改成「新行程」。地點、天數、價格仍是空的。送出前輸入框裡應看得到「新行程」。
 import { useEffect, useState } from 'react';
 import {
   createItem,
   deleteItem,
   getItems,
   updateItem,
-} from '../api/items-api.js';
+} from '../api/fake-api.js';
 
+// 空白表單：新增與清表單共用
 const emptyForm = { title: '', place: '', days: '', price: '' };
 
 export default function ItemsDemo() {
+  // 清單、表單、正在編輯的 id、載入訊息
   const [items, setItems] = useState([]);
   const [message, setMessage] = useState('載入中');
   const [ready, setReady] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
 
+  // 進畫面讀清單一次；清除時中止這次請求
   useEffect(() => {
     const controller = new AbortController();
     const load = async () => {
@@ -1106,6 +1129,7 @@ export default function ItemsDemo() {
     return () => controller.abort();
   }, []);
 
+  // 表單欄位、清成新增、帶入編輯
   const onChange = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
@@ -1126,6 +1150,7 @@ export default function ItemsDemo() {
     });
   };
 
+  // 刪除成功後改本機清單
   const onDelete = async (id) => {
     try {
       await deleteItem(id);
@@ -1137,6 +1162,7 @@ export default function ItemsDemo() {
     }
   };
 
+  // 送出：新增或更新；成功後改本機清單並清表單
   const onSubmit = async (event) => {
     event.preventDefault();
     const id = editingId;
@@ -1163,6 +1189,7 @@ export default function ItemsDemo() {
     }
   };
 
+  // 載入中先擋；左邊卡片＋新增，右邊共用表單
   if (!ready) return <p>{message}</p>;
 
   return (
@@ -1248,17 +1275,14 @@ export default function ItemsDemo() {
 }
 ```
 
-畫面先是「載入中」。完成後左欄上方是「新增」，下面三張卡片：台北城市漫遊、台北、3 天、12800；花蓮山海三日、花蓮、3 天、15900；京都紅葉散步、京都、5 天、42800。每張卡片有「編輯」和「刪除」。右欄標題是「新增」，標題、地點、天數、價格四個欄位是空的，按鈕是「送出」。按「新增」會清回這份空表單。按一張卡的「編輯」，右欄標題變成「編輯」，欄位填上那一筆。送出成功後表單回到新增，左欄跟著改：新的一筆用回應的 id（這個練習服務多半給 101）接上表單欄位；更新換成該 id 的新欄位。刪除成功後那張卡從左欄消失；若刪的是正在編的那筆，表單也回到新增。再按一次新增，id 常常仍是 101。重新整理又是原來三筆。
+畫面先顯示「載入中」。完成後左邊上方是「新增」，下面三張卡片：台北城市漫遊、台北、3 天、12800；花蓮山海三日、花蓮、3 天、15900；京都紅葉散步、京都、5 天、42800。每張有「編輯」和「刪除」。右邊標題是「新增」，四個欄位是空的。按「編輯」後右邊改成「編輯」並填入那一筆；送出或刪除成功後左邊跟著變，表單回到新增。重新整理又是原來的三筆。
 
 **解析**
 
-- 網址、標頭與 `response.ok` 集中在模組。元件改的是狀態，不是請求的組法。
-- `getItems` 接受 signal，effect 回傳的清除函式呼叫 `abort`，卸載時請求才取消得掉。
-- `editingId === null` 是新增，否則是編輯。兩種送出共用一份表單，在 `onSubmit` 裡才呼叫 `createItem` 或 `updateItem`。
-- 新增成功後，清單那一筆的 id 取回應，title、place、days、price 取表單。天數和價格在輸入框是字串，寫進清單前用 `Number` 轉成數字，跟本機 JSON 一致。
-- 更新要等 `updateItem` 成功才用 `map` 換掉那個 id。請求失敗時清單維持原樣。
-- 刪除要等 `deleteItem` 成功才用 `filter` 拿掉那個 id。它回傳 true，空回應不要拿去 `response.json`。
-- 元件從 `../api/items-api.js` 引入。路徑相對這一支示範檔。
+- 載入放在 useEffect。這裡建立 AbortController，把 `controller.signal` 交給 getItems，清除時取消這一次。名稱是 AbortError 就返回，不要改成讀取失敗。
+- editingId 沒有值時是新增，有值則是正在編的那一筆。兩種送出共用同一份表單。
+- 新增、更新、刪除都在事件裡呼叫，不放進 effect。
+- 要等請求成功才改清單。新增接上回應的編號，更新換掉同一個 id，刪除拿掉那個 id。失敗時清單維持原樣。
 
 {% note success %}
 **換你試試：**
@@ -1288,19 +1312,25 @@ export default function ItemsDemo() {
 
 ### 渲染時計算
 
-總價是單價乘上人數。兩個來源都在這一次渲染裡，總價就在渲染時算。
+總價是單價乘上人數。這一則故意把算出來的總價放進狀態，再在 effect 裡抄一次。
 
 **觀念**
 
-`total` 不是狀態。人數一變，元件再跑，總價自然是新的。若把總價放進狀態，又在 effect 裡 `setTotal(price * count)`，會多一次渲染，也會被檢查擋下來。
+`count` 從 2 開始，`price` 是 12800。兩個來源都在這一次渲染裡，`total` 可以直接相乘。下面這支卻把 `total` 放進 `useState`，effect 依賴 `[count]`，在裡面 `setTotal(price * count)`。
+
+人數一變，React 先用舊的總價畫一次，效果跑完才把新總價寫回去，於是多一次渲染。在 effect 裡同步設定狀態，會被 `react-hooks/set-state-in-effect` 標成錯誤。算出來的值留在渲染，不要等效果再設定一次。
 
 ```jsx 03-react/src/demos/61-derive.jsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function DeriveDemo() {
   const [count, setCount] = useState(2);
   const price = 12800;
-  const total = price * count;
+  const [total, setTotal] = useState(price * count);
+
+  useEffect(() => {
+    setTotal(price * count);
+  }, [count]);
 
   return (
     <section>
@@ -1319,29 +1349,38 @@ export default function DeriveDemo() {
 }
 ```
 
-一開始是「2 人，共 25600」。按一次變成「3 人，共 38400」。
+打開是「2 人，共 25600」，因為狀態的初值就是 `price * count`。按「加一人」，人數變成 3，總價最後會到 38400。更新仍會發生，但是 effect 同步進來的：人數改變的那一輪，畫面上的總價還是上一輪的 25600，效果裡的 `setTotal` 才排出下一輪。
 
 **解析**
 
-- `total` 在渲染時宣告。它沒有自己的設定函式。
-- 人數是唯一會變的狀態。單價這一則是常數。
-- 沒有 effect，也就沒有依賴要記。
-- 清單的篩選結果也一樣。上一篇的 `filter` 寫在渲染裡，不寫在 effect 裡。
+- `total` 有自己的 `useState` 和 `setTotal`。它不是渲染時宣告的常數。
+- effect 在 `[count]` 變了之後跑，setup 裡同步設定總價。渲染和效果多接一次。
+- 單價是常數。會變的只有人數。總價完全由這兩個值決定，不需要另存一份。
+- `react-hooks/set-state-in-effect` 會標出 effect 裡的 `setTotal`。清單的 `filter` 也一樣，寫在渲染裡，不寫在 effect 裡。
+
+拿掉 `total` 的狀態和這支 effect。在渲染時寫 `const total = price * count`。人數一變，元件再跑，總價就是新的。沒有 effect，就沒有依賴，也不會在效果裡設定狀態。`useEffect` 的引入一起拿掉。
 
 {% note success %}
 **換你試試：**
-單價改成 15900。兩人時應顯示共 31800。不要為總價加 `useState`。
+拿掉 `total` 的狀態和同步它的 effect。在渲染時寫 `const total = price * count`。兩人時應顯示共 25600。不要為總價留 `useEffect`。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-總價仍是乘法。改的是來源，不是另存一份結果。
+總價改在渲染時相乘。狀態只留人數。
 
 ```diff 03-react/src/demos/61-derive.jsx
  // ...
--  const price = 12800;
-+  const price = 15900;
+-import { useEffect, useState } from 'react';
++import { useState } from 'react';
+ // ...
+-  const [total, setTotal] = useState(price * count);
+-
+-  useEffect(() => {
+-    setTotal(price * count);
+-  }, [count]);
++  const total = price * count;
  // ...
 ```
 
@@ -1349,53 +1388,41 @@ export default function DeriveDemo() {
 
 ### 事件裡的請求
 
-按下才讀取的資料，放在 `onClick`。進畫面就要有的清單才用 effect。
+按下才讀的請求，原因是點擊。這一則故意只把旗標設成 true，fetch 卻寫在 effect 裡。
 
 **觀念**
 
-「載入與錯誤」是進畫面就讀。這一則的原因是點擊，所以 fetch 寫在事件函式裡。GET 的路徑、狀態碼與 JSON 欄位見「GET」。這裡改讀第五篇，並把「按了沒有」和文章內容分成兩行，跟「GET」那顆只換標題的按鈕分開。
+`armed` 從 false 開始。按鈕只呼叫 `setArmed(true)`。effect 依賴 `[armed]`，旗標為 true 才去讀 `posts/5`，並把狀態與文章寫進 state。請求的原因是按鈕，卻繞去跟畫面同步的那條路。
 
-{% note warning %}
-**不要存進專案**
-
-點擊只把 `armed` 設成 true，真正的 fetch 卻寫在 effect 裡。請求的原因是按鈕，卻繞去跟畫面同步的那條路。
-
-```jsx
-const [armed, setArmed] = useState(false);
-
-useEffect(() => {
-  if (!armed) return;
-  fetch('https://jsonplaceholder.typicode.com/posts/5')
-    .then((response) => response.json())
-    .then((post) => setPost(post));
-}, [armed]);
-```
-
-`armed` 變成 true 之後就留在那裡。想再讀一次，還得先改回 false 再改回 true，中間多一次沒有畫面意義的渲染。開發時嚴格模式也可能在它變成 true 之後把效果多跑一次。按下要發生的事，直接寫在事件函式裡。
-{% endnote %}
+`armed` 變成 true 之後就留在那裡。想再讀一次，還得先改回 false 再改回 true，中間多一次沒有畫面意義的渲染。開發時嚴格模式會在 effect 要跑的那次先執行、再清除、再執行。這一則沒有清除函式，旗標打開後可能把同一篇讀兩次。進畫面就要有的清單才用 effect，見「載入與錯誤」。按下要發生的事，直接寫在事件函式裡。
 
 ```jsx 03-react/src/demos/62-click.jsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ClickFetchDemo() {
+  const [armed, setArmed] = useState(false);
   const [status, setStatus] = useState('尚未按下');
   const [post, setPost] = useState(null);
 
-  const onLoad = async () => {
-    setStatus('讀取中');
-    setPost(null);
-    try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts/5',
-      );
-      if (!response.ok) throw new Error(String(response.status));
-      setPost(await response.json());
-      setStatus('完成');
-    } catch {
+  useEffect(() => {
+    if (!armed) return;
+    const load = async () => {
+      setStatus('讀取中');
       setPost(null);
-      setStatus('讀取失敗');
-    }
-  };
+      try {
+        const response = await fetch(
+          'https://jsonplaceholder.typicode.com/posts/5',
+        );
+        if (!response.ok) throw new Error(String(response.status));
+        setPost(await response.json());
+        setStatus('完成');
+      } catch {
+        setPost(null);
+        setStatus('讀取失敗');
+      }
+    };
+    load();
+  }, [armed]);
 
   return (
     <section>
@@ -1403,7 +1430,7 @@ export default function ClickFetchDemo() {
       <button
         type="button"
         className="mt-3 rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onLoad}
+        onClick={() => setArmed(true)}
       >
         按一下讀第五篇
       </button>
@@ -1417,33 +1444,74 @@ export default function ClickFetchDemo() {
 }
 ```
 
-按下之前，狀態是「尚未按下」，沒有文章，也沒有請求。按下之後狀態先變成「讀取中」，成功則是「完成」，並出現 `#5` 與標題。失敗時狀態是「讀取失敗」，不留下半篇資料。
+按下之前，狀態是「尚未按下」，沒有文章，也還沒有請求。按下之後 effect 才送出，狀態變成「讀取中」，成功則是「完成」，並出現 `#5` 與標題。失敗時狀態是「讀取失敗」，不留下半篇資料。再按一次，狀態停在「完成」：`armed` 已經是 true，依賴沒變，effect 不重跑。
 
 **解析**
 
-- 進畫面就要有的資料用 effect，見「載入與錯誤」。這一則沒有 effect。沒按就不會打網路，嚴格模式也不會多送一次。
-- 按下才讀，所以 fetch 在事件函式裡。GET 的細節見「GET」。這一則改讀第五篇，並把狀態與文章拆開。
-- 事件函式可以是 async。元件函式本身保持同步，回傳的仍是元素。
-- 失敗把文章清成 `null`，畫面只留狀態那一行。錯誤寫在畫面上，讀的人不用打開 Console 才知道。
+- 進畫面時 `armed` 是 false，effect 直接 return。沒按就不會打網路。錯在按下之後的那條路。
+- 事件只改旗標。fetch 寫在 effect，和進畫面就要讀的寫法混在一起。GET 的路徑、狀態碼與 JSON 欄位見「GET」。
+- 再讀一次要先把 `armed` 設回 false。那一次渲染沒有對應的使用者動作。
+- 嚴格模式會把剛打開的效果多跑一次。事件函式可以是 async，元件函式本身保持同步。
+
+把 fetch 搬進按鈕的處理函式，拿掉 `armed` 和這支 effect。路徑仍是 `posts/5`，按鈕仍是「按一下讀第五篇」。按一次就呼叫一次。再按就再讀一次，不靠旗標從 false 變成 true。這一則不留 effect。
 
 {% note success %}
 **換你試試：**
-改讀 `posts/8`，按鈕文字改成「按一下讀第八篇」。按下後狀態應是完成，畫面出現 `#8` 與那篇標題。
+把讀取搬進按鈕的處理函式。拿掉 `armed` 和這支 effect。按鈕仍是「按一下讀第五篇」，仍讀 `posts/5`。改完不該再為這次請求留 effect。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-觸發方式仍是按鈕。路徑改成第八篇，按鈕文字跟著改。
+觸發改回事件。讀取的 try、路徑與按鈕文字不動。
 
 ```diff 03-react/src/demos/62-click.jsx
-  // ...
--       'https://jsonplaceholder.typicode.com/posts/5',
-+       'https://jsonplaceholder.typicode.com/posts/8',
-  // ...
--       按一下讀第五篇
-+       按一下讀第八篇
-  // ...
+ // ...
+-import { useEffect, useState } from 'react';
++import { useState } from 'react';
+ // ...
+-  const [armed, setArmed] = useState(false);
+   const [status, setStatus] = useState('尚未按下');
+   const [post, setPost] = useState(null);
+ 
+-  useEffect(() => {
+-    if (!armed) return;
+-    const load = async () => {
+-      setStatus('讀取中');
+-      setPost(null);
+-      try {
+-        const response = await fetch(
+-          'https://jsonplaceholder.typicode.com/posts/5',
+-        );
+-        if (!response.ok) throw new Error(String(response.status));
+-        setPost(await response.json());
+-        setStatus('完成');
+-      } catch {
+-        setPost(null);
+-        setStatus('讀取失敗');
+-      }
+-    };
+-    load();
+-  }, [armed]);
++  const onLoad = async () => {
++    setStatus('讀取中');
++    setPost(null);
++    try {
++      const response = await fetch(
++        'https://jsonplaceholder.typicode.com/posts/5',
++      );
++      if (!response.ok) throw new Error(String(response.status));
++      setPost(await response.json());
++      setStatus('完成');
++    } catch {
++      setPost(null);
++      setStatus('讀取失敗');
++    }
++  };
+ // ...
+-        onClick={() => setArmed(true)}
++        onClick={onLoad}
+ // ...
 ```
 
 </details>
@@ -1465,7 +1533,7 @@ Hook 寫在 `src/hooks/useLocalItems.js`。它的依賴是空陣列，所以只�
 
 ```js 03-react/src/hooks/useLocalItems.js
 import { useEffect, useState } from 'react';
-import { getItems } from '../api/items-api.js';
+import { getItems } from '../api/fake-api.js';
 
 export function useLocalItems() {
   const [status, setStatus] = useState('loading');
@@ -1949,7 +2017,6 @@ export default function DefaultDemo() {
 
 </details>
 
-
 ## 選讀：useRef
 
 `useRef` 記住一個可變的盒子，改 `current` 不會引發渲染。它適合點名某個 DOM 節點，或記住不需要畫上畫面的值，例如計時器的 id。呼叫寫成這樣：
@@ -2148,7 +2215,6 @@ export default function RefCountDemo() {
 按兩次只累計，Console 依序是 1 與 2。按下顯示之後，畫面上的次數變成 2。
 
 </details>
-
 
 ## 選讀：useReducer
 
@@ -2702,8 +2768,8 @@ export default function OptimisticDemo() {
 - 依賴陣列可以列多個值，任何一個變了就先清除再跑 setup。三種寫法：`[a, b]` 跟著列出的值，`[]` 只在第一次畫完後，省略第二個參數則每次渲染之後都跑。
 - 開發時嚴格模式會在第一次掛上依序跑效果、清除、再跑效果，用來檢查收尾。正式建置只跑一次。課堂保持打開，原因在上一篇的 createRoot。
 - 在 effect 裡同步設定狀態、又讓它每次渲染都再跑，渲染與效果會互相追。漏寫依賴會讓效果閉包住舊值，`react-hooks/exhaustive-deps` 會警告。
-- 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求。
-- `items-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
+- 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求；交給 fetch 的是 `controller.signal`。
+- `fake-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - context、ref、reducer 與表單 Actions 是選讀。
 - `const value = useContext(SomeContext);`、`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
