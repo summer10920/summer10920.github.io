@@ -1022,9 +1022,11 @@ export default function DeleteDemo() {
 
 **觀念**
 
-`items-api.js` 把這件事收成五個函式：`getItems` 讀本機清單，`getItem`、`createItem`、`updateItem`、`deleteItem` 分別對單筆做讀取、新增、更新與刪除。私有的 `readJson` 集中檢查 `response.ok`，失敗就丟出狀態碼，元件的 catch 只負責改畫面。`getItems` 可以帶入 `AbortSignal`。其餘四個的基底網址 `itemsUrl` 指到 jsonplaceholder 的 `/posts`，遠端路徑是文章 API，模組對外的名字則是 item。單筆讀取對應結業專案的 `getTour`，清單讀取對應 `getTours`。
+`items-api.js` 把這件事收成五個函式。`getItems` 讀本機清單，可以帶入 `AbortSignal`。`getItem`、`createItem`、`updateItem`、`deleteItem` 分別對單筆做讀取、新增、更新與刪除，基底網址 `itemsUrl` 指到 jsonplaceholder 的 `/posts`。私有的 `readJson` 集中檢查 `response.ok`，失敗就丟出狀態碼，元件的 catch 只負責改畫面。`deleteItem` 在 `response.ok` 時回傳 true。刪除的回應常常是空的，所以不要對它呼叫 `response.json`。遠端路徑是文章 API，模組對外的名字則是 item。清單讀取對應結業專案的 `getTours`，單筆讀取對應 `getTour`。
 
-示範在第一次畫完後用 `getItems(controller.signal)` 載入清單，清除時 abort。載入中畫面是「載入中」。完成後清單留在畫面上，四顆按鈕在事件裡呼叫單筆的四個函式，把結果寫進訊息。新增、更新與刪除不會改寫這份清單，因為練習服務不保存，本機 JSON 也不能寫入。
+示範在第一次畫完後用 `getItems(controller.signal)` 載入清單，清除時 abort。載入中畫面是「載入中」，失敗是「讀取失敗」。完成後左欄是清單，右欄是同一份表單。`editingId` 是 `null` 時，送出走 `createItem`；有 id 時走 `updateItem`。編輯時欄位從那一筆清單資料填入。`getItem` 仍留在模組裡；這一則直接用卡片上已有的欄位，因為 `/posts/:id` 回傳的是文章的 title、body、userId。
+
+新增、更新、刪除都在事件裡呼叫，不放進 effect。請求成功之後才改本機的 `items`。新增把回應的 id 和表單的 title、place、days、price 合成一筆放進清單。更新用表單欄位換掉同一個 id。刪除從清單濾掉那個 id。這三次寫入打到 jsonplaceholder。練習服務不保存，本機 JSON 也不能寫，所以清單的變化只在這次畫面的狀態裡。重新整理會回到檔案裡的三筆。
 
 ```js 03-react/src/api/items-api.js
 const itemsUrl = 'https://jsonplaceholder.typicode.com/posts';
@@ -1069,21 +1071,24 @@ export const deleteItem = async (id) => {
 };
 ```
 
-```jsx 03-react/src/demos/60-api.jsx
-// TODO: 講義「API 模組」。換你試試：把 `getItem(1)` 改成 `getItem(2)`。清單仍是本機三筆，訊息換成另一篇標題。
+```jsx 03-react/src/demos/60-items-demo.jsx
+// TODO: 講義「API 模組」。換你試試：按「新增」清表單時，標題從空字串改成「新行程」。地點、天數、價格仍是空的。送出前輸入框裡應看得到「新行程」。
 import { useEffect, useState } from 'react';
 import {
   createItem,
   deleteItem,
-  getItem,
   getItems,
   updateItem,
 } from '../api/items-api.js';
+
+const emptyForm = { title: '', place: '', days: '', price: '' };
 
 export default function ItemsDemo() {
   const [items, setItems] = useState([]);
   const [message, setMessage] = useState('載入中');
   const [ready, setReady] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -1101,46 +1106,58 @@ export default function ItemsDemo() {
     return () => controller.abort();
   }, []);
 
-  const onRead = async () => {
+  const onChange = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const onNew = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+  };
+
+  const onEdit = (item) => {
+    setEditingId(item.id);
+    setForm({
+      title: item.title,
+      place: item.place,
+      days: String(item.days),
+      price: String(item.price),
+    });
+  };
+
+  const onDelete = async (id) => {
     try {
-      const item = await getItem(1);
-      setMessage(item.title);
+      await deleteItem(id);
+      setItems((current) => current.filter((item) => item.id !== id));
+      if (editingId === id) onNew();
+      setMessage('');
     } catch (error) {
       setMessage(error.message);
     }
   };
 
-  const onCreate = async () => {
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    const id = editingId;
+    const fields = {
+      title: form.title,
+      place: form.place,
+      days: Number(form.days),
+      price: Number(form.price),
+    };
     try {
-      const created = await createItem({
-        title: '新行程',
-        body: '台北城市漫遊',
-        userId: 1,
-      });
-      setMessage(created.id + ' ' + created.title);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  const onUpdate = async () => {
-    try {
-      const updated = await updateItem(1, {
-        id: 1,
-        title: '更新後的標題',
-        body: '內容',
-        userId: 1,
-      });
-      setMessage(updated.title);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  const onDelete = async () => {
-    try {
-      const removed = await deleteItem(1);
-      setMessage(removed ? '已刪除' : '刪除失敗');
+      if (id === null) {
+        const created = await createItem(fields);
+        setItems((current) => [...current, { ...fields, id: created.id }]);
+      } else {
+        await updateItem(id, { ...fields, id });
+        setItems((current) =>
+          current.map((item) => (item.id === id ? { ...fields, id } : item)),
+        );
+      }
+      onNew();
+      setMessage('');
     } catch (error) {
       setMessage(error.message);
     }
@@ -1149,74 +1166,114 @@ export default function ItemsDemo() {
   if (!ready) return <p>{message}</p>;
 
   return (
-    <section className="grid gap-2">
-      <div className="flex flex-wrap gap-2">
+    <section className="grid items-start gap-4 md:grid-cols-2">
+      <div className="grid gap-3">
         <button
           type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={onRead}
-        >
-          讀一筆
-        </button>
-        <button
-          type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={onCreate}
+          className="justify-self-start rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={onNew}
         >
           新增
         </button>
-        <button
-          type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={onUpdate}
-        >
-          更新
-        </button>
-        <button
-          type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={onDelete}
-        >
-          刪除
-        </button>
+        <ul className="grid gap-2">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className="grid gap-2 rounded border border-stone-200 bg-white p-4"
+            >
+              <p>{item.title}</p>
+              <p>
+                {item.place} {item.days} 天 {item.price}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded bg-teal-800 px-3 py-1 text-white"
+                  onClick={() => onEdit(item)}
+                >
+                  編輯
+                </button>
+                <button
+                  type="button"
+                  className="rounded bg-teal-800 px-3 py-1 text-white"
+                  onClick={() => onDelete(item.id)}
+                >
+                  刪除
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
-      <p>{message}</p>
-      <ul className="grid gap-2">
-        {items.map((item) => (
-          <li key={item.id}>
-            {item.title} {item.price}
-          </li>
-        ))}
-      </ul>
+      <form onSubmit={onSubmit} className="grid max-w-sm gap-3">
+        <p>{editingId === null ? '新增' : '編輯'}</p>
+        <input
+          name="title"
+          value={form.title}
+          onChange={onChange}
+          placeholder="標題"
+          className="rounded border px-2 py-1"
+        />
+        <input
+          name="place"
+          value={form.place}
+          onChange={onChange}
+          placeholder="地點"
+          className="rounded border px-2 py-1"
+        />
+        <input
+          name="days"
+          value={form.days}
+          onChange={onChange}
+          placeholder="天數"
+          className="rounded border px-2 py-1"
+        />
+        <input
+          name="price"
+          value={form.price}
+          onChange={onChange}
+          placeholder="價格"
+          className="rounded border px-2 py-1"
+        />
+        <button
+          type="submit"
+          className="justify-self-start rounded bg-teal-800 px-3 py-1 text-white"
+        >
+          送出
+        </button>
+        {message ? <p>{message}</p> : null}
+      </form>
     </section>
   );
 }
 ```
 
-畫面先是「載入中」，完成後是本機三筆行程，以及讀一筆、新增、更新、刪除；按下之後訊息區換成該次結果，清單仍是那三筆。
+畫面先是「載入中」。完成後左欄上方是「新增」，下面三張卡片：台北城市漫遊、台北、3 天、12800；花蓮山海三日、花蓮、3 天、15900；京都紅葉散步、京都、5 天、42800。每張卡片有「編輯」和「刪除」。右欄標題是「新增」，標題、地點、天數、價格四個欄位是空的，按鈕是「送出」。按「新增」會清回這份空表單。按一張卡的「編輯」，右欄標題變成「編輯」，欄位填上那一筆。送出成功後表單回到新增，左欄跟著改：新的一筆用回應的 id（這個練習服務多半給 101）接上表單欄位；更新換成該 id 的新欄位。刪除成功後那張卡從左欄消失；若刪的是正在編的那筆，表單也回到新增。再按一次新增，id 常常仍是 101。重新整理又是原來三筆。
 
 **解析**
 
 - 網址、標頭與 `response.ok` 集中在模組。元件改的是狀態，不是請求的組法。
 - `getItems` 接受 signal，effect 回傳的清除函式呼叫 `abort`，卸載時請求才取消得掉。
-- `getItem`、`createItem`、`updateItem` 與 `deleteItem` 都從按鈕的事件處理函式呼叫，不放進 effect，所以載入清單不會連帶打這四次。
-- `deleteItem` 在 `response.ok` 時回傳 true。刪除的回應常常是空的，所以不要對它呼叫 `response.json`。
+- `editingId === null` 是新增，否則是編輯。兩種送出共用一份表單，在 `onSubmit` 裡才呼叫 `createItem` 或 `updateItem`。
+- 新增成功後，清單那一筆的 id 取回應，title、place、days、price 取表單。天數和價格在輸入框是字串，寫進清單前用 `Number` 轉成數字，跟本機 JSON 一致。
+- 更新要等 `updateItem` 成功才用 `map` 換掉那個 id。請求失敗時清單維持原樣。
+- 刪除要等 `deleteItem` 成功才用 `filter` 拿掉那個 id。它回傳 true，空回應不要拿去 `response.json`。
 - 元件從 `../api/items-api.js` 引入。路徑相對這一支示範檔。
 
 {% note success %}
 **換你試試：**
-把 `getItem(1)` 改成 `getItem(2)`。清單仍是本機三筆，訊息換成另一篇標題。
+按「新增」清表單時，標題從空字串改成「新行程」。地點、天數、價格仍是空的。送出前輸入框裡應看得到「新行程」。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-只改讀取的 id。按鈕、清單與另外三個函式維持原樣。
+只改新增模式那份空白表單的標題。`emptyForm` 也是一進畫面時的表單，所以還沒按「新增」也會看到「新行程」。按鈕、編輯與清單更新維持原樣。
 
-```diff 03-react/src/demos/60-api.jsx
+```diff 03-react/src/demos/60-items-demo.jsx
  // ...
--      const item = await getItem(1);
-+      const item = await getItem(2);
+-const emptyForm = { title: '', place: '', days: '', price: '' };
++const emptyForm = { title: '新行程', place: '', days: '', price: '' };
  // ...
 ```
 
@@ -2646,7 +2703,7 @@ export default function OptimisticDemo() {
 - 開發時嚴格模式會在第一次掛上依序跑效果、清除、再跑效果，用來檢查收尾。正式建置只跑一次。課堂保持打開，原因在上一篇的 createRoot。
 - 在 effect 裡同步設定狀態、又讓它每次渲染都再跑，渲染與效果會互相追。漏寫依賴會讓效果閉包住舊值，`react-hooks/exhaustive-deps` 會警告。
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求。
-- `items-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫、結果放進哪一份狀態。
+- `items-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - context、ref、reducer 與表單 Actions 是選讀。
 - `const value = useContext(SomeContext);`、`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
