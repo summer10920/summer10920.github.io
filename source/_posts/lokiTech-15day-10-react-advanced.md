@@ -518,42 +518,11 @@ export default function LoadDemo() {
 
 檔案不存在時狀態碼不是成功，catch 把狀態設成 error。
 
-```jsx 03-react/src/demos/53-load.jsx
-import { useEffect, useState } from 'react';
-
-export default function LoadDemo() {
-  const [status, setStatus] = useState('loading');
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const response = await fetch('/data/missing.json');
-        if (!response.ok) throw new Error(String(response.status));
-        setItems(await response.json());
-        setStatus('ready');
-      } catch {
-        setItems([]);
-        setStatus('error');
-      }
-    };
-    load();
-  }, []);
-
-  if (status === 'loading') return <p>載入中</p>;
-  if (status === 'error') return <p>讀取失敗</p>;
-  if (items.length === 0) return <p>沒有資料</p>;
-
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item.id}>
-          {item.title} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/53-load.jsx
+ // ...
+-        const response = await fetch('/data/items.json');
++        const response = await fetch('/data/missing.json');
+ // ...
 ```
 
 </details>
@@ -625,40 +594,11 @@ export default function EmptyLoadDemo() {
 
 檔案裡有三筆，長度不再是 0，所以改走清單。
 
-```jsx 03-react/src/demos/54-empty.jsx
-import { useEffect, useState } from 'react';
-
-export default function EmptyLoadDemo() {
-  const [status, setStatus] = useState('loading');
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const response = await fetch('/data/items.json');
-        if (!response.ok) throw new Error(String(response.status));
-        setItems(await response.json());
-        setStatus('ready');
-      } catch {
-        setItems([]);
-        setStatus('error');
-      }
-    };
-    load();
-  }, []);
-
-  if (status === 'loading') return <p>載入中</p>;
-  if (status === 'error') return <p>讀取失敗</p>;
-  if (items.length === 0) return <p>沒有資料</p>;
-
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/54-empty.jsx
+ // ...
+-        const response = await fetch('/data/empty.json');
++        const response = await fetch('/data/items.json');
+ // ...
 ```
 
 </details>
@@ -738,51 +678,14 @@ export default function AbortDemo() {
 
 取消只記一行。錯誤畫面仍只留給真的失敗。
 
-```jsx 03-react/src/demos/55-abort.jsx
-import { useEffect, useState } from 'react';
-
-export default function AbortDemo() {
-  const [status, setStatus] = useState('loading');
-  const [items, setItems] = useState([]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const load = async () => {
-      try {
-        const response = await fetch('/data/items.json', {
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error(String(response.status));
-        setItems(await response.json());
-        setStatus('ready');
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log('已取消');
-          return;
-        }
-        setItems([]);
-        setStatus('error');
-      }
-    };
-
-    load();
-    return () => controller.abort();
-  }, []);
-
-  if (status === 'loading') return <p>載入中</p>;
-  if (status === 'error') return <p>讀取失敗</p>;
-
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item.id}>
-          {item.title} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/55-abort.jsx
+ // ...
+-        if (error.name === 'AbortError') return;
++        if (error.name === 'AbortError') {
++          console.log('已取消');
++          return;
++        }
+ // ...
 ```
 
 </details>
@@ -860,39 +763,11 @@ export default function GetDemo() {
 
 只改路徑最後的 id。其餘的狀態流程不變。
 
-```jsx 03-react/src/demos/56-get.jsx
-import { useState } from 'react';
-
-export default function GetDemo() {
-  const [title, setTitle] = useState('尚未讀取');
-
-  const onLoad = async () => {
-    setTitle('讀取中');
-    try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts/2',
-      );
-      if (!response.ok) throw new Error(String(response.status));
-      const post = await response.json();
-      setTitle(post.title);
-    } catch {
-      setTitle('讀取失敗');
-    }
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onLoad}
-      >
-        讀取第一篇
-      </button>
-      <p className="mt-3">{title}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/56-get.jsx
+ // ...
+-        'https://jsonplaceholder.typicode.com/posts/1',
++        'https://jsonplaceholder.typicode.com/posts/2',
+ // ...
 ```
 
 </details>
@@ -965,43 +840,11 @@ export default function PostDemo() {
 
 只改送出的 title。方法、標頭與錯誤處理留著。
 
-```jsx 03-react/src/demos/57-post.jsx
-import { useState } from 'react';
-
-export default function PostDemo() {
-  const [message, setMessage] = useState('尚未送出');
-
-  const onCreate = async () => {
-    try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: '第二則', body: '台北城市漫遊', userId: 1 }),
-        },
-      );
-      if (!response.ok) throw new Error(String(response.status));
-      const created = await response.json();
-      setMessage(response.status + ' id ' + created.id);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onCreate}
-      >
-        新增
-      </button>
-      <p className="mt-3">{message}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/57-post.jsx
+ // ...
+-          body: JSON.stringify({ title: '新行程', body: '台北城市漫遊', userId: 1 }),
++          body: JSON.stringify({ title: '第二則', body: '台北城市漫遊', userId: 1 }),
+ // ...
 ```
 
 </details>
@@ -1084,50 +927,14 @@ export default function PutDemo() {
 
 狀態碼那一行留著，再印 ok。標題改成新的字串。
 
-```jsx 03-react/src/demos/58-put.jsx
-import { useState } from 'react';
-
-export default function PutDemo() {
-  const [title, setTitle] = useState('尚未更新');
-
-  const onUpdate = async () => {
-    try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts/1',
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: 1,
-            title: '已改標題',
-            body: '內容',
-            userId: 1,
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(String(response.status));
-      const updated = await response.json();
-      console.log(response.status);
-      console.log(response.ok);
-      setTitle(updated.title);
-    } catch (error) {
-      setTitle(error.message);
-    }
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onUpdate}
-      >
-        更新第一篇
-      </button>
-      <p className="mt-3">{title}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/58-put.jsx
+ // ...
+-            title: '更新後的標題',
++            title: '已改標題',
+ // ...
+       console.log(response.status);
++      console.log(response.ok);
+ // ...
 ```
 
 ```text
@@ -1200,38 +1007,11 @@ export default function DeleteDemo() {
 
 只改路徑上的 id。方法與成功判斷不變。
 
-```jsx 03-react/src/demos/59-delete.jsx
-import { useState } from 'react';
-
-export default function DeleteDemo() {
-  const [message, setMessage] = useState('尚未刪除');
-
-  const onDelete = async () => {
-    try {
-      const response = await fetch(
-        'https://jsonplaceholder.typicode.com/posts/2',
-        { method: 'DELETE' },
-      );
-      if (!response.ok) throw new Error(String(response.status));
-      setMessage('已刪除 ' + response.status);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onDelete}
-      >
-        刪除第一篇
-      </button>
-      <p className="mt-3">{message}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/59-delete.jsx
+ // ...
+-        'https://jsonplaceholder.typicode.com/posts/1',
++        'https://jsonplaceholder.typicode.com/posts/2',
+ // ...
 ```
 
 </details>
@@ -1456,29 +1236,11 @@ export default function DeriveDemo() {
 
 總價仍是乘法。改的是來源，不是另存一份結果。
 
-```jsx 03-react/src/demos/61-derive.jsx
-import { useState } from 'react';
-
-export default function DeriveDemo() {
-  const [count, setCount] = useState(2);
-  const price = 15900;
-  const total = price * count;
-
-  return (
-    <section>
-      <p>
-        {count} 人，共 {total}
-      </p>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        加一人
-      </button>
-    </section>
-  );
-}
+```diff 03-react/src/demos/61-derive.jsx
+ // ...
+-  const price = 12800;
++  const price = 15900;
+ // ...
 ```
 
 </details>
@@ -1667,23 +1429,13 @@ export default function HookDemo() {
 
 畫面怎麼畫是元件的事。讀取仍在 Hook 裡。
 
-```jsx 03-react/src/demos/63-hook.jsx
-import { useLocalItems } from '../hooks/useLocalItems.js';
-
-export default function HookDemo() {
-  const { status, items } = useLocalItems();
-
-  if (status === 'loading') return <p>載入中</p>;
-  if (status === 'error') return <p>讀取失敗</p>;
-
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
+```diff 03-react/src/demos/63-hook.jsx
+ // ...
+-        <li key={item.id}>
+-          {item.title} {item.price}
+-        </li>
++        <li key={item.id}>{item.title}</li>
+ // ...
 ```
 
 </details>
@@ -1736,22 +1488,11 @@ export default function TwiceDemo() {
 
 少一次呼叫，就少一組狀態與一次請求。
 
-```jsx 03-react/src/demos/64-twice.jsx
-import { useLocalItems } from '../hooks/useLocalItems.js';
-
-function NameList() {
-  const { status, items } = useLocalItems();
-  if (status !== 'ready') return <p>{status}</p>;
-  return <p>{items.map((item) => item.title).join('、')}</p>;
-}
-
-export default function TwiceDemo() {
-  return (
-    <section className="grid gap-2">
-      <NameList />
-    </section>
-  );
-}
+```diff 03-react/src/demos/64-twice.jsx
+ // ...
+       <NameList />
+-      <NameList />
+ // ...
 ```
 
 </details>
@@ -1819,29 +1560,11 @@ export default function LiftDemo() {
 
 起始值只改父層。子層仍讀 props。
 
-```jsx 03-react/src/demos/65-lift.jsx
-import { useState } from 'react';
-
-function Editor({ value, onChange }) {
-  return (
-    <input
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      className="rounded border px-2 py-1"
-    />
-  );
-}
-
-export default function LiftDemo() {
-  const [draft, setDraft] = useState('花蓮山海三日');
-
-  return (
-    <section className="grid max-w-sm gap-3">
-      <Editor value={draft} onChange={setDraft} />
-      <p>父層看到 {draft}</p>
-    </section>
-  );
-}
+```diff 03-react/src/demos/65-lift.jsx
+ // ...
+-  const [draft, setDraft] = useState('台北城市漫遊');
++  const [draft, setDraft] = useState('花蓮山海三日');
+ // ...
 ```
 
 </details>
@@ -2053,49 +1776,18 @@ export default function ContextDemo() {
 
 兩顆按鈕都設定同一份狀態。Provider 的 value 仍是那個狀態。
 
-```jsx 03-react/src/demos/67-context.jsx
-import { createContext, useContext, useState } from 'react';
-
-const ThemeContext = createContext('淺色');
-
-function Banner() {
-  const theme = useContext(ThemeContext);
-  return <p>主題 {theme}</p>;
-}
-
-function Layout() {
-  return (
-    <div className="rounded border border-stone-200 p-3">
-      <Banner />
-    </div>
-  );
-}
-
-export default function ContextDemo() {
-  const [theme, setTheme] = useState('淺色');
-
-  return (
-    <ThemeContext.Provider value={theme}>
-      <section className="grid gap-3">
-        <button
-          type="button"
-          className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={() => setTheme('深色')}
-        >
-          改成深色
-        </button>
-        <button
-          type="button"
-          className="w-fit rounded bg-stone-200 px-3 py-1"
-          onClick={() => setTheme('淺色')}
-        >
-          改回淺色
-        </button>
-        <Layout />
-      </section>
-    </ThemeContext.Provider>
-  );
-}
+```diff 03-react/src/demos/67-context.jsx
+ // ...
+         </button>
++        <button
++          type="button"
++          className="w-fit rounded bg-stone-200 px-3 py-1"
++          onClick={() => setTheme('淺色')}
++        >
++          改回淺色
++        </button>
+         <Layout />
+ // ...
 ```
 
 </details>
@@ -2146,19 +1838,11 @@ export default function DefaultDemo() {
 
 改的是預設值。元件樹上仍沒有 Provider。
 
-```jsx 03-react/src/demos/68-default.jsx
-import { createContext, useContext } from 'react';
-
-const ThemeContext = createContext('深色');
-
-function Banner() {
-  const theme = useContext(ThemeContext);
-  return <p>主題 {theme}</p>;
-}
-
-export default function DefaultDemo() {
-  return <Banner />;
-}
+```diff 03-react/src/demos/68-default.jsx
+ // ...
+-const ThemeContext = createContext('淺色');
++const ThemeContext = createContext('深色');
+ // ...
 ```
 
 </details>
@@ -2624,70 +2308,12 @@ export default function ProviderDemo() {
 
 空狀態看的是 context 裡的陣列長度。按鈕不用知道這句話。
 
-```jsx 03-react/src/demos/72-provider.jsx
-import { createContext, useContext, useReducer } from 'react';
-
-const TodoContext = createContext(null);
-
-const reducer = (todos, action) => {
-  switch (action.type) {
-    case 'add':
-      return [...todos, { id: action.id, title: action.title, done: false }];
-    default:
-      return todos;
-  }
-};
-
-function TodoProvider({ children }) {
-  const [todos, dispatch] = useReducer(reducer, []);
-  return (
-    <TodoContext.Provider value={{ todos, dispatch }}>
-      {children}
-    </TodoContext.Provider>
-  );
-}
-
-function useTodos() {
-  const value = useContext(TodoContext);
-  if (!value) throw new Error('缺少 TodoProvider');
-  return value;
-}
-
-function AddButton() {
-  const { dispatch } = useTodos();
-  return (
-    <button
-      type="button"
-      className="rounded bg-teal-800 px-3 py-1 text-white"
-      onClick={() => dispatch({ type: 'add', id: Date.now(), title: '新待辦' })}
-    >
-      新增
-    </button>
-  );
-}
-
-function TodoList() {
-  const { todos } = useTodos();
-  if (todos.length === 0) return <p className="mt-3">沒有待辦</p>;
-  return (
-    <ul className="mt-3 grid gap-2">
-      {todos.map((todo) => (
-        <li key={todo.id}>{todo.title}</li>
-      ))}
-    </ul>
-  );
-}
-
-export default function ProviderDemo() {
-  return (
-    <TodoProvider>
-      <section>
-        <AddButton />
-        <TodoList />
-      </section>
-    </TodoProvider>
-  );
-}
+```diff 03-react/src/demos/72-provider.jsx
+ // ...
+   const { todos } = useTodos();
++  if (todos.length === 0) return <p className="mt-3">沒有待辦</p>;
+   return (
+ // ...
 ```
 
 </details>
@@ -2858,31 +2484,19 @@ export default function ActionStateDemo() {
 
 忽略 `previous`，只回傳這一次讀到的標題。
 
-```jsx 03-react/src/demos/74-action-state.jsx
-import { useActionState } from 'react';
-
-const send = async (previous, formData) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return String(formData.get('title') || '未填');
-};
-
-export default function ActionStateDemo() {
-  const [message, formAction, isPending] = useActionState(send, '尚未送出');
-
-  return (
-    <form action={formAction} className="grid max-w-sm gap-3">
-      <input name="title" className="rounded border px-2 py-1" placeholder="標題" />
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded bg-teal-800 px-3 py-1 text-white disabled:opacity-60"
-      >
-        {isPending ? '送出中' : '送出'}
-      </button>
-      <p>{message}</p>
-    </form>
-  );
-}
+```diff 03-react/src/demos/74-action-state.jsx
+ // ...
+-  const title = String(formData.get('title') || '未填');
+-  return previous === '尚未送出' ? title : previous + '、' + title;
++  return String(formData.get('title') || '未填');
+ // ...
+-      <input
+-        name="title"
+-        className="rounded border px-2 py-1"
+-        placeholder="標題"
+-      />
++      <input name="title" className="rounded border px-2 py-1" placeholder="標題" />
+ // ...
 ```
 
 `previous` 沒有被讀到，檢查可能警告未使用。把參數改名成 `_previous` 即可，行為不變。
