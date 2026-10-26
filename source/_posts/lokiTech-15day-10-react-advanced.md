@@ -1022,67 +1022,76 @@ export default function DeleteDemo() {
 
 **觀念**
 
-`items.js` 提供本機清單，以及文章的讀取、新增、更新與刪除。每個函式都檢查 `response.ok`，失敗就丟出錯誤。元件的 catch 只負責改畫面。
+`items-api.js` 把這件事收成五個函式：`getItems` 讀本機清單，`getItem`、`createItem`、`updateItem`、`deleteItem` 分別對單筆做讀取、新增、更新與刪除。私有的 `readJson` 集中檢查 `response.ok`，失敗就丟出狀態碼，元件的 catch 只負責改畫面。`getItems` 可以帶入 `AbortSignal`。其餘四個的基底網址 `itemsUrl` 指到 jsonplaceholder 的 `/posts`，遠端路徑是文章 API，模組對外的名字則是 item。單筆讀取對應結業專案的 `getTour`，清單讀取對應 `getTours`。
 
-這一則的示範只呼叫本機讀取，放在 effect 裡，並在清除時 abort。遠端的四個函式留給你在事件裡換著呼叫。依 id 取一筆的寫法與結業專案的 `getTour` 相同，這裡的名字是 `getPost`。讀清單則是 `getLocalItems`，結業專案叫 `getTours`。
+示範在第一次畫完後用 `getItems(controller.signal)` 載入清單，清除時 abort。載入中畫面是「載入中」。完成後清單留在畫面上，四顆按鈕在事件裡呼叫單筆的四個函式，把結果寫進訊息。新增、更新與刪除不會改寫這份清單，因為練習服務不保存，本機 JSON 也不能寫入。
 
-```js 03-react/src/api/items.js
-const posts = 'https://jsonplaceholder.typicode.com/posts';
+```js 03-react/src/api/items-api.js
+const itemsUrl = 'https://jsonplaceholder.typicode.com/posts';
 
 const readJson = async (response) => {
   if (!response.ok) throw new Error(String(response.status));
   return response.json();
 };
 
-export const getLocalItems = async (signal) => {
+export const getItems = async (signal) => {
   const response = await fetch('/data/items.json', { signal });
   return readJson(response);
 };
 
-export const getPost = async (id) => {
-  const response = await fetch(posts + '/' + id);
+export const getItem = async (id) => {
+  const response = await fetch(itemsUrl + '/' + id);
   return readJson(response);
 };
 
-export const createPost = async (post) => {
-  const response = await fetch(posts, {
+export const createItem = async (item) => {
+  const response = await fetch(itemsUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(post),
+    body: JSON.stringify(item),
   });
   return readJson(response);
 };
 
-export const updatePost = async (id, post) => {
-  const response = await fetch(posts + '/' + id, {
+export const updateItem = async (id, item) => {
+  const response = await fetch(itemsUrl + '/' + id, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(post),
+    body: JSON.stringify(item),
   });
   return readJson(response);
 };
 
-export const deletePost = async (id) => {
-  const response = await fetch(posts + '/' + id, { method: 'DELETE' });
+export const deleteItem = async (id) => {
+  const response = await fetch(itemsUrl + '/' + id, { method: 'DELETE' });
   if (!response.ok) throw new Error(String(response.status));
   return true;
 };
 ```
 
 ```jsx 03-react/src/demos/60-api.jsx
+// TODO: 講義「API 模組」。換你試試：把 `getItem(1)` 改成 `getItem(2)`。清單仍是本機三筆，訊息換成另一篇標題。
 import { useEffect, useState } from 'react';
-import { getLocalItems } from '../api/items.js';
+import {
+  createItem,
+  deleteItem,
+  getItem,
+  getItems,
+  updateItem,
+} from '../api/items-api.js';
 
-export default function ApiDemo() {
+export default function ItemsDemo() {
   const [items, setItems] = useState([]);
   const [message, setMessage] = useState('載入中');
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     const load = async () => {
       try {
-        setItems(await getLocalItems(controller.signal));
+        setItems(await getItems(controller.signal));
         setMessage('');
+        setReady(true);
       } catch (error) {
         if (error.name === 'AbortError') return;
         setMessage('讀取失敗');
@@ -1092,77 +1101,86 @@ export default function ApiDemo() {
     return () => controller.abort();
   }, []);
 
-  if (message) return <p>{message}</p>;
-
-  return (
-    <ul className="grid gap-2">
-      {items.map((item) => (
-        <li key={item.id}>
-          {item.title} {item.price}
-        </li>
-      ))}
-    </ul>
-  );
-}
-```
-
-畫面是本機的三筆行程。元件裡看不到網址，只看得到 `getLocalItems`。
-
-**解析**
-
-- 網址與 `response.ok` 集中在模組。元件改的是狀態，不是標頭。
-- `getLocalItems` 接受 signal，清除時才取消得掉。
-- `deletePost` 沒有 JSON 可解析，所以只回傳 true。不要對空回應呼叫 `response.json`。
-- 元件從 `../api/items.js` 引入。路徑相對這一支示範檔。
-
-{% note success %}
-**換你試試：**
-在示範裡加一顆按鈕，按下呼叫 `getPost(1)`，把標題寫進訊息。清單留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-按鈕走事件，不放進 effect。讀取函式仍來自同一個模組。
-
-```jsx 03-react/src/demos/60-api.jsx
-import { useEffect, useState } from 'react';
-import { getLocalItems, getPost } from '../api/items.js';
-
-export default function ApiDemo() {
-  const [items, setItems] = useState([]);
-  const [message, setMessage] = useState('載入中');
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const load = async () => {
-      try {
-        setItems(await getLocalItems(controller.signal));
-        setMessage('');
-      } catch (error) {
-        if (error.name === 'AbortError') return;
-        setMessage('讀取失敗');
-      }
-    };
-    load();
-    return () => controller.abort();
-  }, []);
-
-  const onPost = async () => {
-    const post = await getPost(1);
-    setMessage(post.title);
+  const onRead = async () => {
+    try {
+      const item = await getItem(1);
+      setMessage(item.title);
+    } catch (error) {
+      setMessage(error.message);
+    }
   };
 
+  const onCreate = async () => {
+    try {
+      const created = await createItem({
+        title: '新行程',
+        body: '台北城市漫遊',
+        userId: 1,
+      });
+      setMessage(created.id + ' ' + created.title);
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const onUpdate = async () => {
+    try {
+      const updated = await updateItem(1, {
+        id: 1,
+        title: '更新後的標題',
+        body: '內容',
+        userId: 1,
+      });
+      setMessage(updated.title);
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  const onDelete = async () => {
+    try {
+      const removed = await deleteItem(1);
+      setMessage(removed ? '已刪除' : '刪除失敗');
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
+  if (!ready) return <p>{message}</p>;
+
   return (
-    <section>
-      <button
-        type="button"
-        className="mb-3 rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onPost}
-      >
-        讀第一篇
-      </button>
-      {message ? <p>{message}</p> : null}
+    <section className="grid gap-2">
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={onRead}
+        >
+          讀一筆
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={onCreate}
+        >
+          新增
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={onUpdate}
+        >
+          更新
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={onDelete}
+        >
+          刪除
+        </button>
+      </div>
+      <p>{message}</p>
       <ul className="grid gap-2">
         {items.map((item) => (
           <li key={item.id}>
@@ -1173,6 +1191,33 @@ export default function ApiDemo() {
     </section>
   );
 }
+```
+
+畫面先是「載入中」，完成後是本機三筆行程，以及讀一筆、新增、更新、刪除；按下之後訊息區換成該次結果，清單仍是那三筆。
+
+**解析**
+
+- 網址、標頭與 `response.ok` 集中在模組。元件改的是狀態，不是請求的組法。
+- `getItems` 接受 signal，effect 回傳的清除函式呼叫 `abort`，卸載時請求才取消得掉。
+- `getItem`、`createItem`、`updateItem` 與 `deleteItem` 都從按鈕的事件處理函式呼叫，不放進 effect，所以載入清單不會連帶打這四次。
+- `deleteItem` 在 `response.ok` 時回傳 true。刪除的回應常常是空的，所以不要對它呼叫 `response.json`。
+- 元件從 `../api/items-api.js` 引入。路徑相對這一支示範檔。
+
+{% note success %}
+**換你試試：**
+把 `getItem(1)` 改成 `getItem(2)`。清單仍是本機三筆，訊息換成另一篇標題。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+只改讀取的 id。按鈕、清單與另外三個函式維持原樣。
+
+```diff 03-react/src/demos/60-api.jsx
+ // ...
+-      const item = await getItem(1);
++      const item = await getItem(2);
+ // ...
 ```
 
 </details>
@@ -1363,7 +1408,7 @@ Hook 寫在 `src/hooks/useLocalItems.js`。它的依賴是空陣列，所以只�
 
 ```js 03-react/src/hooks/useLocalItems.js
 import { useEffect, useState } from 'react';
-import { getLocalItems } from '../api/items.js';
+import { getItems } from '../api/items-api.js';
 
 export function useLocalItems() {
   const [status, setStatus] = useState('loading');
@@ -1373,7 +1418,7 @@ export function useLocalItems() {
     const controller = new AbortController();
     const load = async () => {
       try {
-        setItems(await getLocalItems(controller.signal));
+        setItems(await getItems(controller.signal));
         setStatus('ready');
       } catch (error) {
         if (error.name === 'AbortError') return;
@@ -2601,7 +2646,7 @@ export default function OptimisticDemo() {
 - 開發時嚴格模式會在第一次掛上依序跑效果、清除、再跑效果，用來檢查收尾。正式建置只跑一次。課堂保持打開，原因在上一篇的 createRoot。
 - 在 effect 裡同步設定狀態、又讓它每次渲染都再跑，渲染與效果會互相追。漏寫依賴會讓效果閉包住舊值，`react-hooks/exhaustive-deps` 會警告。
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求。
-- GET、POST、PUT、DELETE 收進 API 模組。元件決定何時呼叫、結果放進哪一份狀態。
+- `items-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫、結果放進哪一份狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - context、ref、reducer 與表單 Actions 是選讀。
 - `const value = useContext(SomeContext);`、`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
@@ -2616,6 +2661,7 @@ export default function OptimisticDemo() {
 - 依賴陣列（dependency array）：可列多個值；`[a, b]`、`[]`、省略第二參數
 - 清除函式（cleanup）
 - 中止控制器（AbortController）
+- 應用程式介面模組（API module）
 - 自訂 Hook（custom Hook）
 
 ## 共用狀態
