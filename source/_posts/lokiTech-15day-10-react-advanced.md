@@ -2142,7 +2142,7 @@ export default function DrillDemo() {
 
 ### 用 Context 改善
 
-同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。
+同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。同一檔裡把建立、讀取與 Provider 寫在一起也能跑；元件各自成檔時，通道要放到外面的模組，下一節說明為什麼只能建一次。
 
 **觀念**
 
@@ -2157,7 +2157,7 @@ const value = useContext(SomeContext);
 <SomeContext.Provider value={value}>…</SomeContext.Provider>
 ```
 
-對上主題字串，三件事接在一起會長這樣：
+對上主題字串，三件事接在一起會長這樣。這段是單檔暖身，練習檔裡的完整示範拆在後面幾個檔案：
 
 ```jsx
 const ThemeContext = createContext('淺色');
@@ -2178,33 +2178,58 @@ export default function ThemeApp() {
 
 `createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。
 
-完整示範把主題放在狀態裡，中間仍隔著 `Layout` 與 `Panel`，但它們的參數裡已經沒有主題：
+完整示範把主題放在狀態裡。通道在 `context/ThemeContext.js` 只建一次，`Banner` 引入那一份再讀值，`Panel` 與 `Layout` 只負責外框，狀態、按鈕與 Provider 留在 `67-context.jsx`。
 
-```jsx 03-react/src/demos/67-context.jsx
-import { createContext, useContext, useState } from 'react';
+- `03-react/src/context/ThemeContext.js`
+- `03-react/src/demos/theme/Banner.jsx`
+- `03-react/src/demos/theme/Panel.jsx`
+- `03-react/src/demos/theme/Layout.jsx`
+- `03-react/src/demos/67-context.jsx`
 
-const ThemeContext = createContext('淺色');
+```js 03-react/src/context/ThemeContext.js
+import { createContext } from 'react';
 
-function Banner() {
+export const ThemeContext = createContext('淺色');
+```
+
+```jsx 03-react/src/demos/theme/Banner.jsx
+import { useContext } from 'react';
+import { ThemeContext } from '../../context/ThemeContext.js';
+
+export default function Banner() {
   const theme = useContext(ThemeContext);
   return <p>主題 {theme}</p>;
 }
+```
 
-function Panel() {
+```jsx 03-react/src/demos/theme/Panel.jsx
+import Banner from './Banner.jsx';
+
+export default function Panel() {
   return (
     <div className="rounded border border-dashed border-stone-300 p-3">
       <Banner />
     </div>
   );
 }
+```
 
-function Layout() {
+```jsx 03-react/src/demos/theme/Layout.jsx
+import Panel from './Panel.jsx';
+
+export default function Layout() {
   return (
     <div className="rounded border border-stone-200 p-3">
       <Panel />
     </div>
   );
 }
+```
+
+```jsx 03-react/src/demos/67-context.jsx
+import { useState } from 'react';
+import { ThemeContext } from '../context/ThemeContext.js';
+import Layout from './theme/Layout.jsx';
 
 export default function ContextDemo() {
   const [theme, setTheme] = useState('淺色');
@@ -2226,19 +2251,19 @@ export default function ContextDemo() {
 }
 ```
 
-按下之後，外框裡的文字變成「主題 深色」。`Layout` 與 `Panel` 的參數裡沒有主題。
+按下之後，實線框裡的虛線框文字變成「主題 深色」。`Layout` 與 `Panel` 的參數裡沒有主題。
 
 **解析**
 
-- Provider 的 `value` 是字串。這一則不必包成物件。
-- `useContext` 寫在 `Banner` 的最上層，不寫在條件裡。
-- 中間層不轉傳 props。這是 context 比一層層轉手省事的地方。
-- context 的值變了，讀它的元件會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
+- Provider 寫在 `67-context.jsx`，`value` 是主題狀態那個字串，這一則不必包成物件。
+- `Banner` 從 `context/ThemeContext.js` 引入同一份 `ThemeContext`，再在元件最上層呼叫 `useContext`，不寫在條件裡。
+- `Layout` 與 `Panel` 不接收主題，也不引入 context，只畫實線框與虛線框。中間層不轉 props。
+- context 的值變了，讀它的 `Banner` 會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
 - 只有一層父子時，直接用 props。context 是為了中間很多層都不關心這份資料。
 
 {% note success %}
 **換你試試：**
-再加一個按鈕把主題設回淺色。Banner 要跟著回去。
+在 `67-context.jsx` 再加一個按鈕，把主題設回淺色。Banner 要跟著回去。按鈕留在這一檔。
 {% endnote %}
 
 <details>
@@ -2262,27 +2287,67 @@ export default function ContextDemo() {
 
 </details>
 
-### 預設值
+### 拆成多個檔案
 
-沒有包到 Provider 時，`useContext` 得到建立 context 時的那個預設值。這一則故意不包，讓你看見預設值長什麼樣子。
+元件各自一個檔案時，`createContext` 必須只建一次。這個函式每呼叫一次就做出一個新的 context 物件。Provider 與 `useContext` 只有拿到同一個物件，才算走同一條通道。
 
 **觀念**
 
-`ThemeContext` 的預設是淺色。
+要讀值或要提供值的檔案，都從 `ThemeContext.js` 引入那一個匯出。`Banner` 在 `demos/theme`，相對路徑往上兩層。`67-context.jsx` 在 `demos`，相對路徑往上一層。路徑不同，引入的物件相同。
 
-`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
+若某個元件檔自己再寫一次 `createContext`，就算變數名稱也叫 `ThemeContext`，那也是另一條通道。外層 Provider 包的是 67 引入的那一份，內層 `useContext` 讀的是元件檔自己建的那一份，按鈕改的狀態就到不了文字。
 
-預設值適合「沒包到也不該爆炸」的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
+上面五個檔案的職責：
+
+- `03-react/src/context/ThemeContext.js` 只呼叫一次 `createContext` 並匯出。
+- `03-react/src/demos/theme/Banner.jsx` 引入它並讀值。
+- `03-react/src/demos/theme/Panel.jsx` 畫虛線框，內嵌 `Banner`。
+- `03-react/src/demos/theme/Layout.jsx` 畫實線框，內嵌 `Panel`。
+- `03-react/src/demos/67-context.jsx` 持有狀態，用同一份物件的 Provider 包住 `Layout`。
+
+**解析**
+
+- 各檔 import 的 `ThemeContext` 是同一個物件。對得上的是物件本身，不是變數名稱像不像。
+- `context` 資料夾與 `hooks`、`api` 放在同一層，把可以共用的通道收成模組。元件檔只留畫面與狀態。
+- `Layout` 與 `Panel` 沒有 import `ThemeContext`。它們不讀值，也不提供值，所以不需要這條通道。
+- `67-context.jsx` 的 Provider 與 `Banner` 的 `useContext` 對上這同一個物件，按下按鈕才會改到外框裡的文字。
+
+{% note success %}
+**換你試試：**
+在 `Banner` 的主題那一行下面，再顯示一行固定文字「這一層才讀主題」。`Layout` 與 `Panel` 保持不引入 context。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+多的那一行只加在讀值的 `Banner`。外框元件仍然不碰 `ThemeContext`。
+
+```diff 03-react/src/demos/theme/Banner.jsx
+ // ...
+-  return <p>主題 {theme}</p>;
++  return (
++    <>
++      <p>主題 {theme}</p>
++      <p>這一層才讀主題</p>
++    </>
++  );
+ // ...
+```
+
+</details>
+
+### 預設值
+
+沒有包到 Provider 時，`useContext` 得到建立 context 時的那個預設值。這一則直接用上面的 `Banner`，故意不包 Provider，讓你看見 `ThemeContext.js` 裡的預設字串。
+
+**觀念**
+
+預設寫在 `ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
+
+預設值適合沒包到也不該爆炸的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
 
 ```jsx 03-react/src/demos/68-default.jsx
-import { createContext, useContext } from 'react';
-
-const ThemeContext = createContext('淺色');
-
-function Banner() {
-  const theme = useContext(ThemeContext);
-  return <p>主題 {theme}</p>;
-}
+import Banner from './theme/Banner.jsx';
 
 export default function DefaultDemo() {
   return <Banner />;
@@ -2293,25 +2358,25 @@ export default function DefaultDemo() {
 
 **解析**
 
-- 預設值只在找不到 Provider 時使用。有 Provider 時，以 value 為準。
-- 這一則沒有狀態。預設值不會因為你按了什麼而改變。
-- 這一則只有 `Banner` 呼叫 `useContext`。樹上沒有 Provider，所以它讀到建立時的預設值「淺色」。
-- 預設值不是「全域狀態」。它不會在別的示範裡被改掉。
+- 預設值只在找不到 Provider 時使用。有 Provider 時以 value 為準，所以 67 畫面上的主題仍由那一則的狀態決定。
+- 這一則沒有狀態，也沒有按鈕。預設值不會因為你在別則按了什麼而改變。
+- `Banner` 與 67 引入的是同一份 `ThemeContext`。這一則樹上沒有 Provider，所以讀到建立時的預設值「淺色」。
+- 預設值不是會自己更新的狀態。它只是這條通道在沒有 Provider 時的後援。
 
 {% note success %}
 **換你試試：**
-把建立 context 的預設字串改成深色。畫面應變成主題深色，仍然不要加 Provider。
+把 `context/ThemeContext.js` 建立 context 的預設字串改成深色。68 的畫面應變成主題深色，這一則仍然不要加 Provider。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-改的是預設值。元件樹上仍沒有 Provider。
+改的是共用模組上的預設值。68 的元件樹上仍沒有 Provider。67 有 Provider，那一則的畫面不靠這個預設字串。
 
-```diff 03-react/src/demos/68-default.jsx
+```diff 03-react/src/context/ThemeContext.js
  // ...
--const ThemeContext = createContext('淺色');
-+const ThemeContext = createContext('深色');
+-export const ThemeContext = createContext('淺色');
++export const ThemeContext = createContext('深色');
  // ...
 ```
 
@@ -3073,6 +3138,7 @@ export default function OptimisticDemo() {
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
 - 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。
+- 元件拆到多個檔案時，`createContext` 只建一次並從獨立模組 import，Provider 與 `useContext` 才對得上同一條通道。
 - ref、reducer 與表單 Actions 是選讀。`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
