@@ -10,7 +10,7 @@ date: 2026-08-30 10:09:00
 
 ![](assets/images/banner/react.png)
 
-畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態。Context、ref、reducer 與表單 Actions 放在選讀。換頁留到 React Router。
+畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態，並用 Context 處理中間層只為轉傳 props 的麻煩。ref、reducer 與表單 Actions 放在選讀。換頁留到 React Router。
 
 <!-- more -->
 
@@ -1518,14 +1518,14 @@ export default function ClickFetchDemo() {
 
 ## 選讀：自訂 Hook
 
-重複的讀取流程可以收成函式，函式名稱用 `use` 開頭。它裡面可以呼叫別的 Hooks，所以它自己也要遵守 Hooks 的規則：只在元件或其他 Hook 的最上層呼叫。
+重複的狀態與讀取流程可以收成函式，名稱用 `use` 開頭。它裡面可以呼叫別的 Hooks，所以自己也要遵守 Hooks 規則：只在元件或其他 Hook 的最上層呼叫。自訂 Hook 可以傳入引數，讓同一套邏輯走出不同結果；會變的引數要放進內部 effect 的依賴。
 
 - 自訂 Hook 是普通函式，不是元件。它不回傳畫面，回傳狀態與動作。
-- 元件負責把回傳值畫出來。讀取的細節留在 Hook 裡。
+- 元件負責把回傳值畫出來。讀取與切換的細節留在 Hook 裡。
 
 ### 抽出讀取
 
-`useLocalItems` 把載入、失敗與 abort 收進去，回傳狀態與清單。示範元件只負責三種畫面。
+`useLocalItems` 把載入、失敗與取消收進去，回傳狀態與清單。示範元件只負責三種畫面。
 
 **觀念**
 
@@ -1580,7 +1580,7 @@ export default function HookDemo() {
 }
 ```
 
-畫面仍是三筆行程。示範檔裡沒有 `fetch`，也沒有 `useEffect`。
+畫面仍是三筆資料。示範檔裡沒有 `fetch`，也沒有 `useEffect`。
 
 **解析**
 
@@ -1610,7 +1610,205 @@ export default function HookDemo() {
 
 </details>
 
-### 在元件裡使用
+### 傳入引數
+
+自訂 Hook 是普通函式，呼叫時可以傳引數。不同的初始值會走出不同的起始畫面。
+
+**觀念**
+
+`useToggle(initialOpen)` 用引數決定一開始是開還是關，並回傳目前狀態與切換函式。兩個呼叫各傳不同的初始值，左側從開開始，右側從關開始。
+
+```js 03-react/src/hooks/useToggle.js
+import { useState } from 'react';
+
+export function useToggle(initialOpen) {
+  const [open, setOpen] = useState(initialOpen);
+
+  const toggle = () => {
+    setOpen((value) => !value);
+  };
+
+  return { open, toggle };
+}
+```
+
+```jsx 03-react/src/demos/63b-toggle.jsx
+import { useToggle } from '../hooks/useToggle.js';
+
+function Panel({ label, initialOpen }) {
+  const { open, toggle } = useToggle(initialOpen);
+
+  return (
+    <section className="rounded border p-3">
+      <p>
+        {label}：{open ? '開' : '關'}
+      </p>
+      <button
+        type="button"
+        className="rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={toggle}
+      >
+        切換
+      </button>
+    </section>
+  );
+}
+
+export default function ToggleDemo() {
+  return (
+    <section className="grid gap-3">
+      <Panel label="左側" initialOpen={true} />
+      <Panel label="右側" initialOpen={false} />
+    </section>
+  );
+}
+```
+
+一開始左側顯示「開」、右側顯示「關」。各自按切換，只改自己那一側。
+
+**解析**
+
+- `initialOpen` 只在第一次建立狀態時用到，之後改 props 不會自動改回狀態。
+- 兩個 `Panel` 各呼叫一次 Hook，所以各有一份 `open`。
+- 引數可以是布林、字串或數字。重點是同一套邏輯能依引數走出不同起點。
+
+{% note success %}
+**換你試試：**
+把右側的初始值改成 `true`。重新整理後兩側都應從「開」開始。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+只改呼叫時傳入的引數。Hook 本體不用動。
+
+```diff 03-react/src/demos/63b-toggle.jsx
+ // ...
+       <Panel label="左側" initialOpen={true} />
+-      <Panel label="右側" initialOpen={false} />
++      <Panel label="右側" initialOpen={true} />
+ // ...
+```
+
+</details>
+
+### 引數放進依賴
+
+若 Hook 內部的 effect 會讀到引數，而且引數之後還會變，就要把該引數寫進依賴陣列。值變了，先取消上一次讀取，再用新的值重跑。
+
+**觀念**
+
+`useFilteredItems(minPrice)` 讀完整清單後，留下 `price >= minPrice` 的項目。`minPrice` 放在依賴裡。父層用按鈕改門檻時，清單會跟著變。樣本價格是 12800、15900、42800，所以 15000 起剩兩筆，20000 起剩一筆。
+
+```js 03-react/src/hooks/useFilteredItems.js
+import { useEffect, useState } from 'react';
+import { getItems } from '../api/fake-api.js';
+
+export function useFilteredItems(minPrice) {
+  const [status, setStatus] = useState('loading');
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const load = async () => {
+      try {
+        setStatus('loading');
+        const list = await getItems(controller.signal);
+        setItems(list.filter((item) => item.price >= minPrice));
+        setStatus('ready');
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        setItems([]);
+        setStatus('error');
+      }
+    };
+    load();
+    return () => controller.abort();
+  }, [minPrice]);
+
+  return { status, items };
+}
+```
+
+```jsx 03-react/src/demos/64b-filter.jsx
+import { useState } from 'react';
+import { useFilteredItems } from '../hooks/useFilteredItems.js';
+
+export default function FilterHookDemo() {
+  const [minPrice, setMinPrice] = useState(15000);
+  const { status, items } = useFilteredItems(minPrice);
+
+  return (
+    <section className="grid gap-3">
+      <p>最低價格 {minPrice}</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => setMinPrice(0)}
+        >
+          全部
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => setMinPrice(15000)}
+        >
+          15000 起
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => setMinPrice(20000)}
+        >
+          20000 起
+        </button>
+      </div>
+      {status === 'loading' && <p>載入中</p>}
+      {status === 'error' && <p>讀取失敗</p>}
+      {status === 'ready' && (
+        <ul className="grid gap-2">
+          {items.map((item) => (
+            <li key={item.id}>
+              {item.title} {item.price}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+```
+
+一開始是 15000 起，畫面上兩筆。按「20000 起」會先短暫載入，再剩京都那一筆。
+
+**解析**
+
+- effect 讀到 `minPrice`，依賴就要寫 `[minPrice]`。少寫時門檻變了清單不會重算。
+- 清除函式呼叫 `controller.abort()`，並把 `controller.signal` 交給 `getItems` 當取消用參數，避免舊的回應蓋掉新的一次。
+- 過濾在資料回來之後做。這一則先求看清楚引數與依賴的關係。
+- 原本的 `useLocalItems` 仍然無參數，63 與 64 不用改。
+
+{% note success %}
+**換你試試：**
+把起始門檻改成 `20000`。一進來就應只看到一筆。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+只改父層的初始狀態。Hook 與按鈕邏輯不變。
+
+```diff 03-react/src/demos/64b-filter.jsx
+ // ...
+-  const [minPrice, setMinPrice] = useState(15000);
++  const [minPrice, setMinPrice] = useState(20000);
+ // ...
+```
+
+</details>
+
+### 各呼叫各一份狀態
 
 同一個 Hook 可以被兩顆元件各呼叫一次。它們會各打一次請求，各有各的載入狀態。這不是缺點，只是你要知道它沒有自動變成全域資料。
 
@@ -1669,7 +1867,7 @@ export default function TwiceDemo() {
 
 # 共用狀態
 
-同一份會變的資料若有兩個以上的元件要讀，就把狀態放到它們的共同父層，這叫做狀態提升。子層用 props 接收值，用函式回報變更。兄弟之間不互相傳資料。
+同一份會變的資料若有兩個以上的元件要讀，就把狀態放到它們的共同父層，這叫做狀態提升。子層用 props 接收值，用函式回報變更。兄弟之間不互相傳資料。中間還隔許多層、而那些層自己不用這份資料時，再用 Context，避免一層層拋丟 props。
 
 - 父層擁有狀態與設定函式。
 - 子層接收現在的值，以及一個 `onChange` 之類的函式。
@@ -1845,9 +2043,110 @@ export default function SiblingsDemo() {
 
 </details>
 
-## 選讀：useContext
+## useContext
 
-props 要穿過中間許多層、而那些中間層自己不用這份資料時，可以用 context。它不是另一種狀態，只是讓樹的深處讀得到上層提供的值。呼叫分成建立通道、讀值，以及把值放上樹：
+狀態提升之後，資料還是靠 props 往下傳。若中間還隔著好幾層元件，而那些中間層自己根本不用這份資料，每一層卻都要在參數裡多寫幾個欄位再往下拋，改一處就要改一路。這種情況叫做屬性鑽孔。Context 不是另一種狀態，只是讓真正要讀的那一層直接取得上層提供的值，中間層不必再轉手。
+
+### 層層傳遞的問題
+
+主題狀態在最外層，真正顯示與切換的卻是最內層的 `Banner`。中間的 `Layout` 與 `Panel` 自己不用主題，卻仍要接收再往下傳。
+
+**觀念**
+
+`theme` 與 `onThemeChange` 經過兩層中間元件。每一層的函式簽名都膨脹，之後若再多一層，整條鏈都要再改一次。
+
+```jsx 03-react/src/demos/66b-drill.jsx
+import { useState } from 'react';
+
+function Banner({ theme, onThemeChange }) {
+  return (
+    <div className="grid gap-2">
+      <p>主題 {theme}</p>
+      <button
+        type="button"
+        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={() => onThemeChange('深色')}
+      >
+        改成深色
+      </button>
+    </div>
+  );
+}
+
+function Panel({ theme, onThemeChange }) {
+  return (
+    <div className="rounded border border-dashed border-stone-300 p-3">
+      <Banner theme={theme} onThemeChange={onThemeChange} />
+    </div>
+  );
+}
+
+function Layout({ theme, onThemeChange }) {
+  return (
+    <div className="rounded border border-stone-200 p-3">
+      <Panel theme={theme} onThemeChange={onThemeChange} />
+    </div>
+  );
+}
+
+export default function DrillDemo() {
+  const [theme, setTheme] = useState('淺色');
+
+  return (
+    <section className="grid gap-3">
+      <Layout theme={theme} onThemeChange={setTheme} />
+    </section>
+  );
+}
+```
+
+一開始是「主題 淺色」。按下之後變成「主題 深色」。`Layout` 與 `Panel` 的參數裡都有主題，但 JSX 裡沒有用到。
+
+**解析**
+
+- 狀態仍在最外層的 `DrillDemo`。來源只有一處，這一點與狀態提升相同。
+- `Layout` 與 `Panel` 只是轉手。它們的參數簽名卻跟著主題一起膨脹。
+- 若之後再包一層外殼，新的那一層也要再寫一次 `theme` 與 `onThemeChange`。
+- 只有一層父子時，直接用 props 即可。問題出在中間很多層都不關心這份資料。
+
+{% note success %}
+**換你試試：**
+在 `Banner` 再加一顆按鈕，把主題設回淺色。中間層的參數不用改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+設定函式已經傳到最內層。多一顆按鈕只改 `Banner`。
+
+```diff 03-react/src/demos/66b-drill.jsx
+ // ...
+       <button
+         type="button"
+         className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+         onClick={() => onThemeChange('深色')}
+       >
+         改成深色
+       </button>
++      <button
++        type="button"
++        className="w-fit rounded bg-stone-200 px-3 py-1"
++        onClick={() => onThemeChange('淺色')}
++      >
++        改回淺色
++      </button>
+ // ...
+```
+
+</details>
+
+### 用 Context 改善
+
+同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。
+
+**觀念**
+
+呼叫分成建立通道、讀值，以及把值放上樹：
 
 ```jsx
 const SomeContext = createContext(defaultValue);
@@ -1877,17 +2176,9 @@ export default function ThemeApp() {
 }
 ```
 
-`createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料，這裡是字串 `'深色'`。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。有狀態、按鈕與中間層的完整示範在「Provider」。
+`createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。
 
-### Provider
-
-主題字串放在父層的狀態。中間的 `Layout` 不接收主題，內層的 `Banner` 用 useContext 直接讀。
-
-**觀念**
-
-預設值是「淺色」，所以忘了包 Provider 時仍有字可畫。這一則有包，按下按鈕會把值改成深色，Banner 跟著變。
-
-context 的值變了，讀它的元件會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
+完整示範把主題放在狀態裡，中間仍隔著 `Layout` 與 `Panel`，但它們的參數裡已經沒有主題：
 
 ```jsx 03-react/src/demos/67-context.jsx
 import { createContext, useContext, useState } from 'react';
@@ -1899,10 +2190,18 @@ function Banner() {
   return <p>主題 {theme}</p>;
 }
 
+function Panel() {
+  return (
+    <div className="rounded border border-dashed border-stone-300 p-3">
+      <Banner />
+    </div>
+  );
+}
+
 function Layout() {
   return (
     <div className="rounded border border-stone-200 p-3">
-      <Banner />
+      <Panel />
     </div>
   );
 }
@@ -1927,13 +2226,14 @@ export default function ContextDemo() {
 }
 ```
 
-按下之後，外框裡的文字變成「主題 深色」。`Layout` 的參數裡沒有主題。
+按下之後，外框裡的文字變成「主題 深色」。`Layout` 與 `Panel` 的參數裡沒有主題。
 
 **解析**
 
 - Provider 的 `value` 是字串。這一則不必包成物件。
 - `useContext` 寫在 `Banner` 的最上層，不寫在條件裡。
 - 中間層不轉傳 props。這是 context 比一層層轉手省事的地方。
+- context 的值變了，讀它的元件會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
 - 只有一層父子時，直接用 props。context 是為了中間很多層都不關心這份資料。
 
 {% note success %}
@@ -1972,7 +2272,7 @@ export default function ContextDemo() {
 
 `Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
 
-預設值適合「沒包到也不該爆炸」的顯示。若忘了包是程式錯誤，上一節的 `useTodos` 那種直接丟出錯誤比較好找。
+預設值適合「沒包到也不該爆炸」的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
 
 ```jsx 03-react/src/demos/68-default.jsx
 import { createContext, useContext } from 'react';
@@ -2771,8 +3071,9 @@ export default function OptimisticDemo() {
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求；交給 fetch 的是 `controller.signal`。
 - `fake-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
-- context、ref、reducer 與表單 Actions 是選讀。
-- `const value = useContext(SomeContext);`、`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
+- 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
+- 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。
+- ref、reducer 與表單 Actions 是選讀。`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
 
@@ -2790,6 +3091,7 @@ export default function OptimisticDemo() {
 ## 共用狀態
 
 - 狀態提升（lifting state up）
+- 屬性鑽孔（prop drilling）
 - 情境（context）
 - 參考（ref）
 - 歸納函式（reducer）
