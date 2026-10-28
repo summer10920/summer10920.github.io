@@ -2694,7 +2694,7 @@ export default function RefCountDemo() {
 
 ## 選讀：useReducer
 
-`useState` 更新一兩個值很順手。可是同一份狀態有好幾種改法（加一、減一、重設），或下一個值一定要看上一筆（清單新增、勾選、刪除）時，設定函式會散在各顆按鈕裡，讀起來要在元件上下找邏輯。
+`useState` 更新一兩個值很順手。可是同一份狀態有好幾種改法（加一、減一、歸零），或下一個值一定要看上一筆（清單新增、勾選、刪除）時，設定函式會散在各顆按鈕裡，讀起來要在元件上下找邏輯。
 
 `useReducer` 把「狀態怎麼變」收進一個函式。元件負責送出「發生了什麼」，那個函式再依動作算出下一筆狀態。呼叫形狀是：
 
@@ -2704,61 +2704,116 @@ const [state, dispatch] = useReducer(reducer, initialArg);
 
 兩個回傳值跟 `useState` 對得上：左邊是現在的狀態，右邊是更新用的函式。差別在於右邊不是直接塞新值，而是呼叫 `dispatch`，送進一筆描述這次動作的物件（常見寫法是帶 `type`）。
 
-真正算下一筆的是第一個參數 `reducer`。它接收「上一筆狀態」與「這次的 action」，必須回傳「下一筆狀態」：
+真正算下一筆的是第一個參數 `reducer`。它接收「上一筆狀態」與「這次的 action」，必須回傳「下一筆狀態」。`switch` 依 `action.type` 走分支；認不出的 type 走 `default`，把原狀態原封還回去。
 
-```jsx
-function reducer(state, action) {
+### 計數按鈕
+
+下面用加一、減一、歸零把整條路接起來。按一下就 `dispatch({ type: '…' })`，React 把目前的 `count` 與這筆 action 交給 `reducer`，再用回傳值重跑畫面。
+
+**觀念**
+
+起始狀態是 `0`。三種按鈕各送一種 `type`；數字的加減與歸零都寫在 `reducer` 裡，元件只負責送出動作。
+
+```jsx 03-react/src/demos/71-reducer-count.jsx
+import { useReducer } from 'react';
+
+function reducer(count, action) {
   switch (action.type) {
     case 'add':
-      return state + 1;
+      return count + 1;
+    case 'sub':
+      return count - 1;
+    case 'reset':
+      return 0;
     default:
-      return state;
+      return count;
   }
 }
-```
 
-下面用計數按鈕把整條路接起來。按一下就 `dispatch({ type: 'add' })`，React 把目前的 `count` 與這筆 action 交給 `reducer`，再用回傳值重跑畫面：
-
-```jsx
-function Counter() {
+export default function ReducerCountDemo() {
   const [count, dispatch] = useReducer(reducer, 0);
 
   return (
-    <button type="button" onClick={() => dispatch({ type: 'add' })}>
-      加一 {count}
-    </button>
+    <section className="grid max-w-sm gap-3">
+      <p className="text-2xl font-semibold">{count}</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => dispatch({ type: 'add' })}
+        >
+          加一
+        </button>
+        <button
+          type="button"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => dispatch({ type: 'sub' })}
+        >
+          減一
+        </button>
+        <button
+          type="button"
+          className="rounded bg-stone-200 px-3 py-1"
+          onClick={() => dispatch({ type: 'reset' })}
+        >
+          歸零
+        </button>
+      </div>
+    </section>
   );
 }
 ```
 
-這裡的起始狀態是 `0`。`switch` 裡認得出的 `type` 走對應分支；認不出的走 `default`，把原狀態原封還回去，避免誤觸發改壞資料。
+按下加一，數字變大；減一變小；歸零回到 0。三種改法都走同一個 `dispatch`。
+
+**解析**
+
+- `useReducer(reducer, 0)` 的第二個參數是起始狀態。
+- 每個按鈕只描述「發生什麼」，不自己算下一筆數字。
+- `default` 把不認識的 `type` 擋下來，避免誤觸發改壞資料。
 
 {% note info %}
 **reducer 要當純函式**
 只依傳進來的 `state` 與 `action` 算出下一筆並回傳。不要在裡面改原來的陣列或物件，也不要在裡面打 API；要新資料就回傳新的那一份。
 {% endnote %}
 
-清單這種「很多種改法」的例子，放在下一節「待辦清單」：先看 `useState`，再對照改成 `useReducer`。
-
 ### 待辦清單
 
-同一份待辦清單，先用你已會的 `useState` 寫「新增」，看狀態長什麼樣；再在完成檔改成 `useReducer`，把新增、勾選完成、刪除收進同一個 reducer。練習檔先留狀態寫法，完成檔才是 reducer。
+同一份待辦（新增、勾選完成、刪除），下面先用 `useState` 寫一則，再用 `useReducer` 寫一則，對照邏輯放在哪裡。
 
 **觀念**
 
-每一筆待辦至少有 id、標題、是否完成。之後會有三種動作：新增一筆、切換某一筆的完成、刪掉某一筆。改成 reducer 之後，按鈕只負責 `dispatch({ type: '…', … })`；`switch` 依 `type` 回傳新的陣列。碰到不認識的 `type`，就把原來的陣列還回去。
+每一筆待辦至少有 id、標題、是否完成。三種動作可以散在三個設定函式裡，也可以收進同一個 `reducer`：按鈕只 `dispatch({ type: '…', … })`，`switch` 依 `type` 回傳新陣列。
 
-```jsx 03-react/src/demos/71-reducer.jsx
+#### 用 useState
+
+三種改法各自一個函式，裡面都要自己展開或對應陣列。
+
+```jsx 03-react/src/demos/71-reducer-state.jsx
 import { useState } from 'react';
 
-export default function ReducerDemo() {
-  const [todos, setTodos] = useState([{ id: 1, title: '台北城市漫遊', done: false }]);
+export default function ReducerStateDemo() {
+  const [todos, setTodos] = useState([
+    { id: 1, title: '台北城市漫遊', done: false },
+  ]);
 
   const onAdd = () => {
     setTodos((items) => [
       ...items,
-      { id: items.length + 1, title: '待辦' + (items.length + 1), done: false },
+      { id: Date.now(), title: '新待辦', done: false },
     ]);
+  };
+
+  const onToggle = (id) => {
+    setTodos((items) =>
+      items.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo,
+      ),
+    );
+  };
+
+  const onRemove = (id) => {
+    setTodos((items) => items.filter((todo) => todo.id !== id));
   };
 
   return (
@@ -2772,7 +2827,23 @@ export default function ReducerDemo() {
       </button>
       <ul className="mt-3 grid gap-2">
         {todos.map((todo) => (
-          <li key={todo.id}>{todo.title}</li>
+          <li key={todo.id} className="flex gap-2">
+            <button
+              type="button"
+              className="rounded bg-stone-100 px-2"
+              onClick={() => onToggle(todo.id)}
+            >
+              {todo.done ? '完成' : '未完成'}
+            </button>
+            <span>{todo.title}</span>
+            <button
+              type="button"
+              className="rounded bg-stone-200 px-2"
+              onClick={() => onRemove(todo.id)}
+            >
+              刪除
+            </button>
+          </li>
         ))}
       </ul>
     </section>
@@ -2780,24 +2851,17 @@ export default function ReducerDemo() {
 }
 ```
 
-按下新增，清單多出「待辦2」。這是改寫前的寫法。
+按下新增會多一列「新待辦」；切換完成與刪除也看得到變化。行為正確，但「狀態怎麼變」散在 `onAdd`、`onToggle`、`onRemove`。
 
 **解析**
 
-- 這一則只有新增，狀態仍夠用。分支一多，設定函式裡的邏輯會散在各顆按鈕。
-- id 用長度加一，只適合這個不會刪除後再新增的起步。完成檔改用時間戳，避免刪掉之後 id 重複。
+- 每個事件處理函式都直接呼叫 `setTodos`，並在回呼裡算下一筆陣列。
+- id 用 `Date.now()`，避免刪掉之後再新增時跟舊編號撞號。
 - `key` 用 id。標題可能重複，不能當 key。
-- 下一步不是再加一個 `useState`，而是把轉移寫進 reducer。
 
-{% note success %}
-**換你試試：**
-完成檔改成 `useReducer`，做出新增、切換完成與刪除。不明的 type 要回傳原狀態。
-{% endnote %}
+#### 用 useReducer
 
-<details>
-<summary>參考答案</summary>
-
-三個按鈕都只 `dispatch` 一種 action。陣列的複製留在 reducer，元件不再自己展開。
+同一組行為改由 `reducer` 集中處理。元件只 `dispatch`，陣列怎麼複製留在 `switch` 裡。
 
 ```jsx 03-react/src/demos/71-reducer.jsx
 import { useReducer } from 'react';
@@ -2864,9 +2928,13 @@ export default function ReducerDemo() {
 }
 ```
 
-勾選未完成會變成完成，再按一次改回來。刪除拿掉那一列。新增用 `Date.now()` 當 id，避免跟被刪掉的編號撞在一起。
+畫面上的操作與上一則相同。差在新增、切換、刪除的轉移都寫在 `reducer`，元件讀起來較短。
 
-</details>
+**解析**
+
+- 三個按鈕都只 `dispatch` 一種 action；陣列的複製留在 reducer。
+- 不明的 `type` 回傳原陣列，跟計數那一則的 `default` 相同。
+- 對照上一則：行為一樣時，選 `useState` 或 `useReducer` 差在邏輯要不要集中，不是能不能做出清單。
 
 ### 搭配 Context
 
