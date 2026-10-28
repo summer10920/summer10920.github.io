@@ -2142,7 +2142,7 @@ export default function DrillDemo() {
 
 ### 用 Context 改善
 
-同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。同一檔裡把建立、讀取與 Provider 寫在一起也能跑；元件各自成檔時，通道要放到外面的模組，下一節說明為什麼只能建一次。
+同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。這一則先全部寫在同一個檔，下一節再拆成多個檔案。
 
 **觀念**
 
@@ -2157,7 +2157,7 @@ const value = useContext(SomeContext);
 <SomeContext.Provider value={value}>…</SomeContext.Provider>
 ```
 
-對上主題字串，三件事接在一起會長這樣。這段是單檔暖身，練習檔裡的完整示範拆在後面幾個檔案：
+對上主題字串，三件事接在一起會長這樣：
 
 ```jsx
 const ThemeContext = createContext('淺色');
@@ -2178,58 +2178,33 @@ export default function ThemeApp() {
 
 `createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。
 
-完整示範把主題放在狀態裡。通道在 `context/ThemeContext.js` 只建一次，`Banner` 引入那一份再讀值，`Panel` 與 `Layout` 只負責外框，狀態、按鈕與 Provider 留在 `67-context.jsx`。
+完整示範把主題放在狀態裡，`createContext`、`Banner`、外框與 Provider 都寫在同一個練習檔：
 
-- `03-react/src/context/ThemeContext.js`
-- `03-react/src/demos/theme/Banner.jsx`
-- `03-react/src/demos/theme/Panel.jsx`
-- `03-react/src/demos/theme/Layout.jsx`
-- `03-react/src/demos/67-context.jsx`
+```jsx 03-react/src/demos/67-context.jsx
+import { createContext, useContext, useState } from 'react';
 
-```js 03-react/src/context/ThemeContext.js
-import { createContext } from 'react';
+const ThemeContext = createContext('淺色');
 
-export const ThemeContext = createContext('淺色');
-```
-
-```jsx 03-react/src/demos/theme/Banner.jsx
-import { useContext } from 'react';
-import { ThemeContext } from '../../context/ThemeContext.js';
-
-export default function Banner() {
+function Banner() {
   const theme = useContext(ThemeContext);
   return <p>主題 {theme}</p>;
 }
-```
 
-```jsx 03-react/src/demos/theme/Panel.jsx
-import Banner from './Banner.jsx';
-
-export default function Panel() {
+function Panel() {
   return (
     <div className="rounded border border-dashed border-stone-300 p-3">
       <Banner />
     </div>
   );
 }
-```
 
-```jsx 03-react/src/demos/theme/Layout.jsx
-import Panel from './Panel.jsx';
-
-export default function Layout() {
+function Layout() {
   return (
     <div className="rounded border border-stone-200 p-3">
       <Panel />
     </div>
   );
 }
-```
-
-```jsx 03-react/src/demos/67-context.jsx
-import { useState } from 'react';
-import { ThemeContext } from '../context/ThemeContext.js';
-import Layout from './theme/Layout.jsx';
 
 export default function ContextDemo() {
   const [theme, setTheme] = useState('淺色');
@@ -2255,9 +2230,9 @@ export default function ContextDemo() {
 
 **解析**
 
-- Provider 寫在 `67-context.jsx`，`value` 是主題狀態那個字串，這一則不必包成物件。
-- `Banner` 從 `context/ThemeContext.js` 引入同一份 `ThemeContext`，再在元件最上層呼叫 `useContext`，不寫在條件裡。
-- `Layout` 與 `Panel` 不接收主題，也不引入 context，只畫實線框與虛線框。中間層不轉 props。
+- Provider 寫在同一個檔，`value` 是主題狀態那個字串，這一則不必包成物件。
+- `Banner` 在元件最上層呼叫 `useContext`，不寫在條件裡；這一則的 `ThemeContext` 還沒拆檔，所以直接用同一份常數。
+- `Layout` 與 `Panel` 不接收主題，也不呼叫 `useContext`，只畫實線框與虛線框。中間層不轉 props。
 - context 的值變了，讀它的 `Banner` 會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
 - 只有一層父子時，直接用 props。context 是為了中間很多層都不關心這份資料。
 
@@ -2289,28 +2264,112 @@ export default function ContextDemo() {
 
 ### 拆成多個檔案
 
-元件各自一個檔案時，`createContext` 必須只建一次。這個函式每呼叫一次就做出一個新的 context 物件。Provider 與 `useContext` 只有拿到同一個物件，才算走同一條通道。
+上一則全部寫在一個檔也能跑。元件要分檔時，把同一示範收進一個資料夾，通道只建一次，其他檔再 import 同一個物件。
 
 **觀念**
 
-要讀值或要提供值的檔案，都從 `ThemeContext.js` 引入那一個匯出。`Banner` 在 `demos/theme`，相對路徑往上兩層。`67-context.jsx` 在 `demos`，相對路徑往上一層。路徑不同，引入的物件相同。
+從單檔拆出去時，建議開一個資料夾（這裡用 `03-react/src/demos/67-contextDemo/`），各檔只留一件事：
 
-若某個元件檔自己再寫一次 `createContext`，就算變數名稱也叫 `ThemeContext`，那也是另一條通道。外層 Provider 包的是 67 引入的那一份，內層 `useContext` 讀的是元件檔自己建的那一份，按鈕改的狀態就到不了文字。
+- `ThemeContext.js`：只呼叫一次 `createContext` 並匯出。
+- `Banner.jsx`：引入那一份再讀值。
+- `Panel.jsx`、`Layout.jsx`：只畫外框，不碰 context。
+- `index.jsx`：持有狀態，用 Provider 包住 `Layout`。
 
-上面五個檔案的職責：
+同名變數不會自動接上。若 `Banner.jsx` 自己再呼叫一次 `createContext`，那是另一條通道，外層 Provider 對它沒有作用。
 
-- `03-react/src/context/ThemeContext.js` 只呼叫一次 `createContext` 並匯出。
-- `03-react/src/demos/theme/Banner.jsx` 引入它並讀值。
-- `03-react/src/demos/theme/Panel.jsx` 畫虛線框，內嵌 `Banner`。
-- `03-react/src/demos/theme/Layout.jsx` 畫實線框，內嵌 `Panel`。
-- `03-react/src/demos/67-context.jsx` 持有狀態，用同一份物件的 Provider 包住 `Layout`。
+```jsx
+import { createContext, useContext } from 'react';
+
+const ThemeContext = createContext('淺色');
+
+export default function Banner() {
+  const theme = useContext(ThemeContext);
+  return <p>主題 {theme}</p>;
+}
+```
+
+正確寫法是引入資料夾裡已經建立的那個物件：
+
+```jsx
+import { useContext } from 'react';
+import { ThemeContext } from './ThemeContext.js';
+
+const theme = useContext(ThemeContext);
+```
+
+```js 03-react/src/demos/67-contextDemo/ThemeContext.js
+import { createContext } from 'react';
+
+export const ThemeContext = createContext('淺色');
+```
+
+```jsx 03-react/src/demos/67-contextDemo/Banner.jsx
+import { useContext } from 'react';
+import { ThemeContext } from './ThemeContext.js';
+
+export default function Banner() {
+  const theme = useContext(ThemeContext);
+  return <p>主題 {theme}</p>;
+}
+```
+
+```jsx 03-react/src/demos/67-contextDemo/Panel.jsx
+import Banner from './Banner.jsx';
+
+export default function Panel() {
+  return (
+    <div className="rounded border border-dashed border-stone-300 p-3">
+      <Banner />
+    </div>
+  );
+}
+```
+
+```jsx 03-react/src/demos/67-contextDemo/Layout.jsx
+import Panel from './Panel.jsx';
+
+export default function Layout() {
+  return (
+    <div className="rounded border border-stone-200 p-3">
+      <Panel />
+    </div>
+  );
+}
+```
+
+```jsx 03-react/src/demos/67-contextDemo/index.jsx
+import { useState } from 'react';
+import { ThemeContext } from './ThemeContext.js';
+import Layout from './Layout.jsx';
+
+export default function ContextSplitDemo() {
+  const [theme, setTheme] = useState('淺色');
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <section className="grid gap-3">
+        <button
+          type="button"
+          className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={() => setTheme('深色')}
+        >
+          改成深色
+        </button>
+        <Layout />
+      </section>
+    </ThemeContext.Provider>
+  );
+}
+```
+
+按下之後，畫面與上一則相同。差在檔案各司其職，通道只存在資料夾裡那一份。
 
 **解析**
 
 - 各檔 import 的 `ThemeContext` 是同一個物件。對得上的是物件本身，不是變數名稱像不像。
-- `context` 資料夾與 `hooks`、`api` 放在同一層，把可以共用的通道收成模組。元件檔只留畫面與狀態。
-- `Layout` 與 `Panel` 沒有 import `ThemeContext`。它們不讀值，也不提供值，所以不需要這條通道。
-- `67-context.jsx` 的 Provider 與 `Banner` 的 `useContext` 對上這同一個物件，按下按鈕才會改到外框裡的文字。
+- `Panel` 與 `Layout` 沒有 import `ThemeContext`。它們不讀值，也不提供值。
+- `index.jsx` 的 Provider 與 `Banner` 的 `useContext` 對上同一份物件，按鈕才改得到文字。
+- 這一則的檔案都收在 `67-contextDemo`，方便對照上一則的單檔寫法。
 
 {% note success %}
 **換你試試：**
@@ -2322,7 +2381,7 @@ export default function ContextDemo() {
 
 多的那一行只加在讀值的 `Banner`。外框元件仍然不碰 `ThemeContext`。
 
-```diff 03-react/src/demos/theme/Banner.jsx
+```diff 03-react/src/demos/67-contextDemo/Banner.jsx
  // ...
 -  return <p>主題 {theme}</p>;
 +  return (
@@ -2338,16 +2397,16 @@ export default function ContextDemo() {
 
 ### 預設值
 
-沒有包到 Provider 時，`useContext` 得到建立 context 時的那個預設值。這一則直接用上面的 `Banner`，故意不包 Provider，讓你看見 `ThemeContext.js` 裡的預設字串。
+沒有包到 Provider 時，`useContext` 得到建立 context 時的那個預設值。這一則直接用資料夾裡的 `Banner`，故意不包 Provider，讓你看見 `ThemeContext.js` 裡的預設字串。
 
 **觀念**
 
-預設寫在 `ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
+預設寫在 `67-contextDemo/ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
 
 預設值適合沒包到也不該爆炸的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
 
 ```jsx 03-react/src/demos/68-default.jsx
-import Banner from './theme/Banner.jsx';
+import Banner from './67-contextDemo/Banner.jsx';
 
 export default function DefaultDemo() {
   return <Banner />;
@@ -2358,22 +2417,22 @@ export default function DefaultDemo() {
 
 **解析**
 
-- 預設值只在找不到 Provider 時使用。有 Provider 時以 value 為準，所以 67 畫面上的主題仍由那一則的狀態決定。
+- 預設值只在找不到 Provider 時使用。有 Provider 時以 value 為準，所以拆檔那一則畫面上的主題仍由 `index.jsx` 的狀態決定。
 - 這一則沒有狀態，也沒有按鈕。預設值不會因為你在別則按了什麼而改變。
-- `Banner` 與 67 引入的是同一份 `ThemeContext`。這一則樹上沒有 Provider，所以讀到建立時的預設值「淺色」。
+- `Banner` 與拆檔示範引入的是同一份 `ThemeContext`。這一則樹上沒有 Provider，所以讀到建立時的預設值「淺色」。
 - 預設值不是會自己更新的狀態。它只是這條通道在沒有 Provider 時的後援。
 
 {% note success %}
 **換你試試：**
-把 `context/ThemeContext.js` 建立 context 的預設字串改成深色。68 的畫面應變成主題深色，這一則仍然不要加 Provider。
+把 `67-contextDemo/ThemeContext.js` 建立 context 的預設字串改成深色。68 的畫面應變成主題深色，這一則仍然不要加 Provider。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-改的是共用模組上的預設值。68 的元件樹上仍沒有 Provider。67 有 Provider，那一則的畫面不靠這個預設字串。
+改的是共用模組上的預設值。68 的元件樹上仍沒有 Provider。拆檔那一則有 Provider，畫面不靠這個預設字串。
 
-```diff 03-react/src/context/ThemeContext.js
+```diff 03-react/src/demos/67-contextDemo/ThemeContext.js
  // ...
 -export const ThemeContext = createContext('淺色');
 +export const ThemeContext = createContext('深色');
@@ -2384,46 +2443,39 @@ export default function DefaultDemo() {
 
 ## 選讀：useRef
 
-`useRef` 記住一個可變的盒子，改 `current` 不會引發渲染。它適合點名某個 DOM 節點，或記住不需要畫上畫面的值，例如計時器的 id。呼叫寫成這樣：
+有時你要的不是畫面上顯示的文字，而是那顆真正的 DOM 節點，例如按下按鈕時呼叫 `focus()`、量尺寸，或捲到某個位置。這些是瀏覽器對節點提供的方法；只靠狀態描述「現在顯示什麼」，拿不到那顆節點。
+
+`useRef` 用來在多次渲染之間記住一份值。它回傳一個普通物件，形狀可以想成：
 
 ```jsx
-const ref = useRef(initialValue);
+{ current: initialValue }
 ```
 
-盒子在 `ref.current`。下面用數字當起始值，按一下只改盒子：
+要記住 DOM 時，先呼叫 `useRef(null)` 拿到這份物件，再在 JSX 寫 `ref={inputRef}`。這是 JSX 的特殊 props，不是 HTML 屬性。你交給 React 的是**整份物件**，不是當下的 `inputRef.current`。提交之後，React 才把該節點寫進 `current`，等於把 DOM 交給 `useRef` 記起來。元件再渲染時仍是同一份物件，事件裡讀到的還是那個節點。
 
 ```jsx
-function ClickBox() {
-  const clicks = useRef(0);
-
-  const onCount = () => {
-    clicks.current += 1;
-  };
-
-  return (
-    <button type="button" onClick={onCount}>
-      只累計
-    </button>
-  );
-}
+const inputRef = useRef(null);
+// …
+<input ref={inputRef} />
+// 事件裡：inputRef.current?.focus()
 ```
 
-`initialValue` 是盒子一開始的內容，這裡是 `0`。之後讀寫都走 `clicks.current`。接到 DOM 節點並呼叫 `focus` 的寫法在「聚焦輸入框」；把次數抄上畫面的對照在「不觸發渲染的值」。
-
-- ref 的 `current` 可以改。React 不會因為你改了它就再渲染。
-- 要讓畫面變，仍用狀態。不要把該顯示的數字只放在 ref。
+不要寫 `ref={inputRef.current}`。一開始 `current` 是 `null`，等於只傳空值進去，React 沒有物件可以把節點寫回去。
 
 ### 聚焦輸入框
 
-按下按鈕時，讓輸入框聚焦。節點存在 ref 裡，不存在狀態裡。
+套用上一節的寫法：按「聚焦」時，對記在 ref 裡的那個 `<input>` 呼叫 `focus()`。
 
 **觀念**
 
-`ref={inputRef}` 在提交之後，把那個 DOM 節點放進 `inputRef.current`。
+起始值是 `null`，因為在 React 把畫面交給瀏覽器畫出來之前，DOM 節點還不存在。`ref={inputRef}` 掛上之後，`inputRef.current` 才變成 DOM 元素，事件裡才能寫 `inputRef.current?.focus()`。`?.` 避免節點尚未接上時呼叫失敗。
 
-按鈕的處理函式呼叫 `focus`。聚焦不會改變 React 的狀態，所以這一則沒有 `useState`。
+聚焦是瀏覽器對畫面的行為（游標進到輸入框），跟 React 重跑元件、改 DOM 無關，這一則不必使用 `useState`。也不要在渲染過程中讀寫 `current` 來決定要回傳哪一棵樹，那會讓渲染不純。
 
-不要在渲染過程中讀寫 `current` 來決定要回傳哪一棵樹。那會讓渲染不純。
+{% note info %}
+**跟過去學 JS 操作 DOM 的差別**
+以前用 JavaScript 直接改節點（找元素、改屬性、呼叫 `focus()`），覺得很理所當然。現在日常畫面多半靠 JSX 告訴 React「這次要長成什麼」，再由它去算差、更新 DOM；要碰真正的節點時，才透過 `ref` 伸手進去。多繞這一層，心智負擔會比較大，但畫面的來源就集中在描述裡。
+{% endnote %}
 
 ```jsx 03-react/src/demos/69-ref.jsx
 import { useRef } from 'react';
@@ -2478,45 +2530,104 @@ export default function RefDemo() {
 
 清空 DOM 的值不會通知 React。這一則本來就沒有受控，所以這樣做看得到格子被清掉。
 
-```jsx 03-react/src/demos/69-ref.jsx
-import { useRef } from 'react';
-
-export default function RefDemo() {
-  const inputRef = useRef(null);
-
-  const onFocus = () => {
-    inputRef.current?.focus();
-  };
-
-  const onClear = () => {
-    if (inputRef.current) inputRef.current.value = '';
-  };
-
-  return (
-    <section className="grid max-w-sm gap-3">
-      <input ref={inputRef} className="rounded border px-2 py-1" placeholder="名稱" />
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
-          onClick={onFocus}
-        >
-          聚焦
-        </button>
-        <button type="button" className="rounded bg-stone-200 px-3 py-1" onClick={onClear}>
-          清空
-        </button>
-      </div>
-    </section>
-  );
-}
+```diff 03-react/src/demos/69-ref.jsx
+ // ...
+   const onFocus = () => {
+     inputRef.current?.focus();
+   };
++
++  const onClear = () => {
++    if (inputRef.current) inputRef.current.value = '';
++  };
+ // ...
+-      <button
+-        type="button"
+-        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+-        onClick={onFocus}
+-      >
+-        聚焦
+-      </button>
++      <div className="flex gap-2">
++        <button
++          type="button"
++          className="rounded bg-teal-800 px-3 py-1 text-white"
++          onClick={onFocus}
++        >
++          聚焦
++        </button>
++        <button type="button" className="rounded bg-stone-200 px-3 py-1" onClick={onClear}>
++          清空
++        </button>
++      </div>
+ // ...
 ```
 
 </details>
 
 ### 不觸發渲染的值
 
-ref 可以累計次數，但改 `current` 不會重畫。要把次數顯示出來，還是得另有一份狀態。
+除了 DOM，`current` 也可以放「要跨渲染留下、但畫面不必顯示」的值。這時不要用 `useState` 硬記：每次 `set…` 都會整輪重跑，值沒畫上畫面也白跑。也不要用元件內的 `let`：每次重跑都會重新宣告，接不住上次的值。模組頂層的 `let` 雖然能留下，卻會讓多個實例搶同一份。
+
+若用 `useState` 記，而畫面根本不顯示該值：
+
+{% mermaid graph LR %}
+  needNode["只要記住<br/>畫面不顯示"] --> setNode["卻用 setState"]
+  setNode --> rerunNode["整輪重跑＋比對"]
+  rerunNode --> wasteNode["畫面其實沒變"]
+  style needNode fill:#e8f5e9
+  style setNode fill:#fff3e0
+  style rerunNode fill:#e3f2fd
+  style wasteNode fill:#ffcdd2
+{% endmermaid %}
+
+若在元件函式裡寫 `let count = 0`：
+
+{% mermaid graph LR %}
+  needNode2["只要記住<br/>畫面不顯示"] --> letNode["元件內 let"]
+  letNode --> r1Node["渲染 1：count = 0"]
+  r1Node --> clickNode["事件 += 1"]
+  clickNode --> r2Node["渲染 2：又從 0<br/>記不住"]
+  style needNode2 fill:#e8f5e9
+  style letNode fill:#fff3e0
+  style r1Node fill:#e3f2fd
+  style clickNode fill:#e3f2fd
+  style r2Node fill:#ffcdd2
+{% endmermaid %}
+
+那把 `let` 寫在元件函式外面呢？值確實能留下，因為模組只載入一次。但那一份變數屬於整個模組，不屬於某一次元件實例：
+
+{% mermaid graph TD %}
+  sharedNode["模組頂層 let count = 0"]
+  aClick["元件 A 按一次<br/>count += 1"] --> sharedNode
+  bClick["元件 B 再按一次<br/>count += 1"] --> sharedNode
+  sharedNode --> resultNode["兩邊讀到的都是 2<br/>不是各自累計"]
+  style sharedNode fill:#fff3e0
+  style aClick fill:#e3f2fd
+  style bClick fill:#e3f2fd
+  style resultNode fill:#ffcdd2
+{% endmermaid %}
+
+`useRef` 就是為這種情況：每一份元件實例各有自己的 ref 物件；改 `current` 不會觸發渲染。反過來說，要顯示在畫面上的數字仍放狀態；只放在 ref 裡，畫面不會自己更新。
+
+先看短示範：只改 `clicks.current`，沒有 `setState`，畫面文字不會變。
+
+```jsx
+function ClickCount() {
+  const clicks = useRef(0);
+
+  const onCount = () => {
+    clicks.current += 1;
+  };
+
+  return (
+    <button type="button" onClick={onCount}>
+      只累計
+    </button>
+  );
+}
+```
+
+完整示範把次數顯示出來時，還是得另有一份狀態。
 
 **觀念**
 
@@ -2583,13 +2694,17 @@ export default function RefCountDemo() {
 
 ## 選讀：useReducer
 
-更新邏輯變多、而且下一個狀態取決於上一筆時，可以把分支收進 reducer。`useReducer` 回傳現在的狀態，以及一個 `dispatch`。呼叫寫成這樣：
+`useState` 更新一兩個值很順手。可是同一份狀態有好幾種改法（加一、減一、重設），或下一個值一定要看上一筆（清單新增、勾選、刪除）時，設定函式會散在各顆按鈕裡，讀起來要在元件上下找邏輯。
+
+`useReducer` 把「狀態怎麼變」收進一個函式。元件負責送出「發生了什麼」，那個函式再依動作算出下一筆狀態。呼叫形狀是：
 
 ```jsx
 const [state, dispatch] = useReducer(reducer, initialArg);
 ```
 
-reducer 依 `action.type` 回傳下一筆，按鈕用 `dispatch` 送出動作：
+兩個回傳值跟 `useState` 對得上：左邊是現在的狀態，右邊是更新用的函式。差別在於右邊不是直接塞新值，而是呼叫 `dispatch`，送進一筆描述這次動作的物件（常見寫法是帶 `type`）。
+
+真正算下一筆的是第一個參數 `reducer`。它接收「上一筆狀態」與「這次的 action」，必須回傳「下一筆狀態」：
 
 ```jsx
 function reducer(state, action) {
@@ -2600,7 +2715,11 @@ function reducer(state, action) {
       return state;
   }
 }
+```
 
+下面用計數按鈕把整條路接起來。按一下就 `dispatch({ type: 'add' })`，React 把目前的 `count` 與這筆 action 交給 `reducer`，再用回傳值重跑畫面：
+
+```jsx
 function Counter() {
   const [count, dispatch] = useReducer(reducer, 0);
 
@@ -2612,18 +2731,22 @@ function Counter() {
 }
 ```
 
-`reducer` 是第一個參數，接收上一筆 `state` 與這次的 `action`，回傳下一筆。`initialArg` 是起始狀態，這裡是 `0`，解構出來的名字是 `count`。`dispatch({ type: 'add' })` 送進對應分支；不明的 type 走 `default`，把原狀態還回去。清單的新增、切換與刪除，以及改寫前的 `useState` 對照，在「待辦清單」。
+這裡的起始狀態是 `0`。`switch` 裡認得出的 `type` 走對應分支；認不出的走 `default`，把原狀態原封還回去，避免誤觸發改壞資料。
 
-- reducer 是純函式。它接收上一筆狀態與這次的 action，回傳下一筆狀態。
-- 它不呼叫 fetch，也不改原陣列。要新陣列就回傳新陣列。
+{% note info %}
+**reducer 要當純函式**
+只依傳進來的 `state` 與 `action` 算出下一筆並回傳。不要在裡面改原來的陣列或物件，也不要在裡面打 API；要新資料就回傳新的那一份。
+{% endnote %}
+
+清單這種「很多種改法」的例子，放在下一節「待辦清單」：先看 `useState`，再對照改成 `useReducer`。
 
 ### 待辦清單
 
-先看同一份清單用 `useState` 怎麼寫，再改成 reducer。練習檔先留著狀態的寫法，完成檔才是 reducer。
+同一份待辦清單，先用你已會的 `useState` 寫「新增」，看狀態長什麼樣；再在完成檔改成 `useReducer`，把新增、勾選完成、刪除收進同一個 reducer。練習檔先留狀態寫法，完成檔才是 reducer。
 
 **觀念**
 
-待辦有 id、標題與是否完成。新增、切換完成、刪除是三種 action。reducer 用 `switch` 決定回傳哪一種新陣列。不明的 type 就把原狀態還回去。
+每一筆待辦至少有 id、標題、是否完成。之後會有三種動作：新增一筆、切換某一筆的完成、刪掉某一筆。改成 reducer 之後，按鈕只負責 `dispatch({ type: '…', … })`；`switch` 依 `type` 回傳新的陣列。碰到不認識的 `type`，就把原來的陣列還回去。
 
 ```jsx 03-react/src/demos/71-reducer.jsx
 import { useState } from 'react';
@@ -2747,15 +2870,13 @@ export default function ReducerDemo() {
 
 ### 搭配 Context
 
-reducer 的 `dispatch` 與清單若要給深一點的子元件用，把它們放進 context。子元件不用再把 `dispatch` 一層層用 props 傳。
+上一節的清單若拆成「新增按鈕」與「列表」兩顆子元件，又再往下傳，props 又會開始一層層丟。做法跟主題色那節一樣：把「現在的清單」和「用來改清單的 `dispatch`」放進 context，需要的子元件自己讀。
 
 **觀念**
 
-`TodoProvider` 擁有 reducer。`value` 放清單與 dispatch。
+`TodoProvider` 裡面呼叫 `useReducer`，再把 `{ todos, dispatch }` 放進 `value`。子元件透過 `useTodos`（包一層 `useContext`）取出自己要的欄位：按鈕只要 `dispatch`，列表只要 `todos`。
 
-`useTodos` 在沒有 Provider 時直接丟出錯誤，避免默默讀到空的預設值還以為一切正常。
-
-清單與新增按鈕分成兩個子元件。它們都呼叫 `useTodos`，所以看到的是同一份待辦。
+若外層忘了包 Provider，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
 
 ```jsx 03-react/src/demos/72-provider.jsx
 import { createContext, useContext, useReducer } from 'react';
@@ -3137,8 +3258,7 @@ export default function OptimisticDemo() {
 - `fake-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
-- 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。
-- 元件拆到多個檔案時，`createContext` 只建一次並從獨立模組 import，Provider 與 `useContext` 才對得上同一條通道。
+- 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。分檔時把同一示範收進資料夾，`createContext` 只建一次再 import。
 - ref、reducer 與表單 Actions 是選讀。`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
