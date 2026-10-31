@@ -635,7 +635,7 @@ pnpm lint
 
 Prettier 會依 `.prettierrc` 把 JavaScript 字串改回單引號。不要為了這一點去改 ESLint。
 
-```jsx 03-react/src/demos/06-expr.jsx
+```jsx 03-react/src/demos/02-expr.jsx
 export default function ExprDemo() {
   const name = '台北城市漫遊';
   const price = 12800;
@@ -673,11 +673,11 @@ export default function ExprDemo() {
 ```jsx 03-react/src/App.jsx
 import { useState } from 'react';
 import Hello from './demos/01-hello.jsx';
-import DownDemo from './demos/02-down.jsx';
-import TreeDemo from './demos/03-tree.jsx';
-import PlaceDemo from './demos/04-place.jsx';
-import FragmentDemo from './demos/05-fragment.jsx';
-import ExprDemo from './demos/06-expr.jsx';
+import ExprDemo from './demos/02-expr.jsx';
+import DownDemo from './demos/03-down.jsx';
+import TreeDemo from './demos/04-tree.jsx';
+import PlaceDemo from './demos/05-place.jsx';
+import FragmentDemo from './demos/06-fragment.jsx';
 import StyleDemo from './demos/07-style.jsx';
 import ClassDemo from './demos/08-class.jsx';
 import EarlyDemo from './demos/09-early.jsx';
@@ -731,30 +731,37 @@ import GetDemo from './demos/56-get.jsx';
 import PostDemo from './demos/57-post.jsx';
 import PutDemo from './demos/58-put.jsx';
 import DeleteDemo from './demos/59-delete.jsx';
-import ApiDemo from './demos/60-api.jsx';
+import ItemsDemo from './demos/60-items-demo.jsx';
 import DeriveDemo from './demos/61-derive.jsx';
 import ClickFetchDemo from './demos/62-click.jsx';
 import HookDemo from './demos/63-hook.jsx';
-import TwiceDemo from './demos/64-twice.jsx';
-import LiftDemo from './demos/65-lift.jsx';
-import SiblingsDemo from './demos/66-siblings.jsx';
-import ContextDemo from './demos/67-context.jsx';
-import DefaultDemo from './demos/68-default.jsx';
-import RefDemo from './demos/69-ref.jsx';
-import RefCountDemo from './demos/70-ref-count.jsx';
-import ReducerDemo from './demos/71-reducer.jsx';
-import ProviderDemo from './demos/72-provider.jsx';
-import ActionDemo from './demos/73-action.jsx';
-import ActionStateDemo from './demos/74-action-state.jsx';
-import OptimisticDemo from './demos/75-optimistic.jsx';
+import ToggleDemo from './demos/64-toggle.jsx';
+import FilterHookDemo from './demos/65-filter.jsx';
+import TwiceDemo from './demos/66-twice.jsx';
+import LiftDemo from './demos/67-lift.jsx';
+import SiblingsDemo from './demos/68-siblings.jsx';
+import DrillDemo from './demos/69-drill.jsx';
+import ContextDemo from './demos/70-context.jsx';
+import ContextSplitDemo from './demos/71-contextDemo/index.jsx';
+import DefaultDemo from './demos/72-default.jsx';
+import RefDemo from './demos/73-ref.jsx';
+import RefCountDemo from './demos/74-ref-count.jsx';
+import ReducerCountDemo from './demos/75-reducer-count.jsx';
+import ReducerStateDemo from './demos/76-reducer-state.jsx';
+import ReducerDemo from './demos/77-reducer.jsx';
+import TodoPropsDemo from './demos/78-propsDemo/index.jsx';
+import ProviderDemo from './demos/79-providerDemo/index.jsx';
+import ActionDemo from './demos/80-action.jsx';
+import ActionStateDemo from './demos/81-action-state.jsx';
+import OptimisticDemo from './demos/82-optimistic.jsx';
 
 const demos = [
   { id: '01', title: '函式元件', Component: Hello },
-  { id: '02', title: '由父層傳入', Component: DownDemo },
-  { id: '03', title: '拆分元件', Component: TreeDemo },
-  { id: '04', title: '狀態的位置', Component: PlaceDemo },
-  { id: '05', title: 'Fragment', Component: FragmentDemo },
-  { id: '06', title: '表達式', Component: ExprDemo },
+  { id: '02', title: '表達式', Component: ExprDemo },
+  { id: '03', title: '由父層傳入', Component: DownDemo },
+  { id: '04', title: '拆分元件', Component: TreeDemo },
+  { id: '05', title: '狀態的位置', Component: PlaceDemo },
+  { id: '06', title: 'Fragment', Component: FragmentDemo },
   { id: '07', title: 'style 物件', Component: StyleDemo },
   { id: '08', title: 'className', Component: ClassDemo },
   { id: '09', title: '提早 return', Component: EarlyDemo },
@@ -808,22 +815,29 @@ const demos = [
   { id: '57', title: 'POST', Component: PostDemo },
   { id: '58', title: 'PUT', Component: PutDemo },
   { id: '59', title: 'DELETE', Component: DeleteDemo },
-  { id: '60', title: 'API 模組', Component: ApiDemo },
+  { id: '60', title: 'API 模組', Component: ItemsDemo },
   { id: '61', title: '渲染時計算', Component: DeriveDemo },
   { id: '62', title: '事件裡的請求', Component: ClickFetchDemo },
   { id: '63', title: '抽出讀取', Component: HookDemo },
-  { id: '64', title: '在元件裡使用', Component: TwiceDemo },
-  { id: '65', title: '父層持有', Component: LiftDemo },
-  { id: '66', title: '兄弟元件', Component: SiblingsDemo },
-  { id: '67', title: 'Provider', Component: ContextDemo },
-  { id: '68', title: '預設值', Component: DefaultDemo },
-  { id: '69', title: '聚焦輸入框', Component: RefDemo },
-  { id: '70', title: '不觸發渲染的值', Component: RefCountDemo },
-  { id: '71', title: '待辦清單', Component: ReducerDemo },
-  { id: '72', title: '搭配 Context', Component: ProviderDemo },
-  { id: '73', title: 'form action', Component: ActionDemo },
-  { id: '74', title: 'useActionState', Component: ActionStateDemo },
-  { id: '75', title: 'useOptimistic', Component: OptimisticDemo },
+  { id: '64', title: '傳入引數', Component: ToggleDemo },
+  { id: '65', title: '引數放進依賴', Component: FilterHookDemo },
+  { id: '66', title: '各呼叫各一份狀態', Component: TwiceDemo },
+  { id: '67', title: '父層持有', Component: LiftDemo },
+  { id: '68', title: '兄弟元件', Component: SiblingsDemo },
+  { id: '69', title: '層層傳遞', Component: DrillDemo },
+  { id: '70', title: '用 Context 改善', Component: ContextDemo },
+  { id: '71', title: '拆成多個檔案', Component: ContextSplitDemo },
+  { id: '72', title: '預設值', Component: DefaultDemo },
+  { id: '73', title: '聚焦輸入框', Component: RefDemo },
+  { id: '74', title: '不觸發渲染的值', Component: RefCountDemo },
+  { id: '75', title: '計數（useReducer）', Component: ReducerCountDemo },
+  { id: '76', title: '待辦（useState）', Component: ReducerStateDemo },
+  { id: '77', title: '待辦（useReducer）', Component: ReducerDemo },
+  { id: '78', title: '拆成元件用 props', Component: TodoPropsDemo },
+  { id: '79', title: '改用 Context', Component: ProviderDemo },
+  { id: '80', title: 'form action', Component: ActionDemo },
+  { id: '81', title: 'useActionState', Component: ActionStateDemo },
+  { id: '82', title: 'useOptimistic', Component: OptimisticDemo },
 ];
 
 export default function App() {
@@ -870,7 +884,7 @@ export default function App() {
 
 {% note success %}
 **換你試試：**
-把起始編號改成 06。重新整理後應先看到表達式那個示範。
+把起始編號改成 02。重新整理後應先看到表達式那個示範。
 {% endnote %}
 
 <details>
@@ -882,7 +896,7 @@ export default function App() {
   // ...
   export default function App() {
 -   const [current, setCurrent] = useState('01');
-+   const [current, setCurrent] = useState('06');
++   const [current, setCurrent] = useState('02');
     const demo = demos.find((item) => item.id === current) ?? demos[0];
     // ...
   }
@@ -912,7 +926,7 @@ Thinking in React 是官方建議的拆法：先照畫面把元件界線畫出�
 
 這就是單向。之後狀態放進父層時，方向仍然一樣，只是值會在父層被換成新的。
 
-```jsx 03-react/src/demos/02-down.jsx
+```jsx 03-react/src/demos/03-down.jsx
 function Card({ title }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -952,7 +966,7 @@ export default function DownDemo() {
 
 文字只改父層。子層仍只讀 `title`，所以兩張一起換。
 
-```diff 03-react/src/demos/02-down.jsx
+```diff 03-react/src/demos/03-down.jsx
   // ...
   }
   
@@ -977,7 +991,7 @@ export default function DownDemo() {
 
 這一步對應 Thinking in React 的前兩步：畫出元件階層，以及用固定資料組出靜態版本。按鈕與刪除留到狀態那一章。
 
-```jsx 03-react/src/demos/03-tree.jsx
+```jsx 03-react/src/demos/04-tree.jsx
 export default function TreeDemo() {
   return (
     <section>
@@ -1007,7 +1021,7 @@ export default function TreeDemo() {
 
 拆完之後，標題、說明、卡片各自是一個函式，父層的回傳只負責把它們排回同一個 `section`。
 
-```jsx 03-react/src/demos/03-tree.jsx.final
+```jsx 03-react/src/demos/04-tree.jsx.final
 function PageTitle() {
   return <h1 className="text-2xl font-bold">洛奇旅行</h1>;
 }
@@ -1057,7 +1071,7 @@ export default function TreeDemo() {
 
 新卡片仍由父層決定位置與內容。卡片元件本身不用改。
 
-```diff 03-react/src/demos/03-tree.jsx.final
+```diff 03-react/src/demos/04-tree.jsx.final
   // ...
           <Card title="台北城市漫遊" price={12800} />
           <Card title="花蓮山海三日" price={15900} />
@@ -1079,7 +1093,7 @@ export default function TreeDemo() {
 
 能從現有資料算出來的字，也不要另存一份。名稱已經在，就不要再存一個「大寫名稱」。
 
-```jsx 03-react/src/demos/04-place.jsx
+```jsx 03-react/src/demos/05-place.jsx
 function Card({ title, price, showPrice }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -1122,7 +1136,7 @@ export default function PlaceDemo() {
 
 父層的值一改，兩張卡片收到的屬性一起改。這就是「狀態該放在共同父層」的原因，即使這一則還沒有寫 `useState`。
 
-```diff 03-react/src/demos/04-place.jsx
+```diff 03-react/src/demos/05-place.jsx
   // ...
   }
   
@@ -1147,7 +1161,7 @@ React Developer Tools 是瀏覽器擴充功能。它讓你點畫面上的元件�
 
 在 Components 裡點選一顆元件，右側會列出它收到的 props，以及它自己的 state 與 hooks。這一則還沒有 state，所以你會先看到 props。下一章的計數元件，則可以在同一個分頁看 `count` 怎麼變。
 
-```jsx 03-react/src/demos/02-down.jsx
+```jsx 03-react/src/demos/03-down.jsx
 function Card({ title }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -1223,7 +1237,7 @@ JSX 讓你在 JavaScript 裡寫元素。它不是字串，也不是另開一個 
 
 這一則先用簡寫。
 
-```jsx 03-react/src/demos/05-fragment.jsx
+```jsx 03-react/src/demos/06-fragment.jsx
 export default function FragmentDemo() {
   return (
     <>
@@ -1253,7 +1267,7 @@ export default function FragmentDemo() {
 
 三個兄弟都放在同一個 Fragment 裡，回傳還是只有一個根。
 
-```diff 03-react/src/demos/05-fragment.jsx
+```diff 03-react/src/demos/06-fragment.jsx
   // ...
         <h1 className="text-2xl font-bold">洛奇旅行</h1>
         <p>這兩個兄弟沒有多包一層 div。</p>
@@ -1273,7 +1287,7 @@ export default function FragmentDemo() {
 
 元件函式裡先準備名稱、單價與人數。花括號只接受表達式。人數要換成畫面上的說法時，在 `return` 之前用 `if` 決定 `peopleLabel`，回傳時只把這個字串放進花括號。總價寫 `{price * people}`，乘法會先算出數字，再變成文字節點。
 
-```jsx 03-react/src/demos/06-expr.jsx
+```jsx 03-react/src/demos/02-expr.jsx
 export default function ExprDemo() {
   const name = '台北城市漫遊';
   const price = 12800;
@@ -1326,7 +1340,7 @@ export default function ExprDemo() {
 
 只改 `people`。同一個 `if` 會把標籤改成「多人」，總價仍用 `{price * people}` 算出來。標題仍是 `{name}`。
 
-```diff 03-react/src/demos/06-expr.jsx
+```diff 03-react/src/demos/02-expr.jsx
   // ...
 -   const people = 2;
 +   const people = 3;
@@ -2282,6 +2296,12 @@ export default function ChildrenDemo() {
 `useState` 讓元件記住會變的資料。呼叫寫成這樣：
 
 ```jsx
+/**
+ * @param {*} initialValue 這顆元件實例第一次掛上時使用的起始值
+ * @returns [value, setValue]
+ *   value：這一輪的狀態
+ *   setValue：把下一輪的值排進去的函式。指派給 value 不會重畫
+ */
 const [value, setValue] = useState(initialValue);
 ```
 
@@ -4549,6 +4569,15 @@ export default function SubmitDemo() {
 `useId` 產生這一輪元件專用的 id。
 
 把它接到標籤的 `htmlFor` 與輸入框的 `id`，點標籤就會聚焦到那一格。同一頁有兩份元件時，兩組 id 不會撞在一起。
+
+```jsx
+/**
+ * 產生這一輪元件專用的 id。同一頁有兩份元件時不會撞在一起。
+ * @returns {string} id
+ *   id：穩定字串，接到標籤的 htmlFor 與輸入框的 id
+ */
+const id = useId();
+```
 
 **觀念**
 

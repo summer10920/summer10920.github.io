@@ -2415,24 +2415,22 @@ Sizing（尺寸）類別用來設定元素的寬高，以及最小、最大寬�
 ```
 
 ### 自訂
-自訂方法說明：
-- Google Fonts 整合：`@import` 必須放在 `@import "tailwindcss"` 之前
-- 主題變數：`--font-display` 定義後可直接使用 `font-display` 類別
-- 字體特性：`--font-display--font-feature-settings` 啟用 OpenType 特性
-- 字體變化：`--font-display--font-variation-settings` 控制光學尺寸
-- 本地字體：`@font-face` 載入專案內的字體檔案
-
 ```css
+/* Google Fonts：這行 @import 必須放在 @import "tailwindcss" 之前 */
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 @import "tailwindcss";
 
 @theme {
+  /* 定義後可直接使用 font-display 類別 */
   --font-display: "Oswald", sans-serif;
-  --font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11"; 
-  --font-display--font-variation-settings: "opsz" 32; 
-  --font-roboto: "Roboto", sans-serif; 
+  /* 啟用 OpenType 特性 */
+  --font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  /* 控制光學尺寸 */
+  --font-display--font-variation-settings: "opsz" 32;
+  --font-roboto: "Roboto", sans-serif;
 }
 
+/* 載入專案內的字體檔案 */
 @font-face {
   font-family: Oswald;
   font-style: normal;
@@ -3265,24 +3263,23 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 | `to-(<custom-property>)`        | `--tw-gradient-to: var(<custom-property>);`                                            | 使用 CSS 變數自訂漸層結束顏色                    |
 | `to-[<value>]`                  | `--tw-gradient-to: <value>;`                                                           | 任意自訂漸層結束顏色（如 #123456、rgba(...) 等） |
 
-使用技巧
-- 可直接使用 `bg-[url('路徑')]` 來設定任意圖片為背景，例如 `bg-[url('/assets/bg.png')]`。
-- from, to 屬於 CSS 關鍵變數，用來控制漸層色位置以及指定色，tailwindcss 會自動判斷哪種屬性用途。
-- via 是中間色。某個狀態要拿掉中間色時用 `via-none`（例如 `dark:via-none`），from／to 不會整段被重設。
-- v3 的 `bg-gradient-to-*` 改為 `bg-linear-to-*`。角度用 `bg-linear-65`，負角度用 `-bg-linear-45`。
-
 ```html
+<!-- bg-[url('路徑')] 設定任意圖片，例如 bg-[url('/assets/bg.png')] -->
 <div class="bg-[url(/img/mountains.jpg)]"></div>
+<!-- from、to 控制漸層起迄色與位置。v3 的 bg-gradient-to-* 改為 bg-linear-to-* -->
 <div class="h-14 bg-linear-to-r from-cyan-500 to-blue-500"></div>
 <div class="size-18 rounded-full bg-radial from-pink-400 from-40% to-fuchsia-700"></div>
+<!-- via 是中間色 -->
 <div class="size-18 rounded-full bg-radial-[at_50%_75%] from-sky-200 via-blue-400 to-indigo-900 to-90%"></div>
 <div class="size-18 rounded-full bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%"></div>
 <div class="size-24 rounded-full bg-conic from-blue-600 to-sky-400 to-50%"></div>
 <div class="size-24 rounded-full bg-conic-180 from-indigo-600 via-indigo-50 to-indigo-600"></div>
 <div class="size-24 rounded-full bg-conic/decreasing from-violet-700 via-lime-300 to-violet-700"></div>
 <div class="bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+<!-- 某個狀態要拿掉中間色時用 via-none（例如 dark:via-none），from／to 不會整段被重設 -->
 <div class="bg-linear-to-r from-red-500 via-orange-400 to-yellow-400 dark:via-none dark:from-blue-500 dark:to-teal-400"></div>
 
+<!-- 角度用 bg-linear-65，負角度用 -bg-linear-45；任意角度寫在 bg-linear-[...] -->
 <div class="bg-linear-[25deg,red_5%,yellow_60%,lime_90%,teal]"></div>
 <div class="bg-linear-(--my-gradient)"></div>
 ```

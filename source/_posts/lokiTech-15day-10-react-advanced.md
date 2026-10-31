@@ -23,6 +23,21 @@ date: 2026-08-30 10:09:00
 `useEffect` 把「畫面畫完之後才跟外面同步」寫成一次呼叫：
 
 ```jsx
+/**
+ * 畫面提交之後才執行，用來跟計時器、讀取或訂閱對齊。
+ * @returns {function|void} cleanup
+ *   cleanup：清除函式。下一次 setup 之前與元件卸載時執行；不需要清除就不用回傳
+ */
+const setup = () => {
+  // ...
+  return cleanup;
+};
+
+/**
+ * @param setup 上面的準備函式
+ * @param {Array} deps 依賴陣列。列出的值變了就先執行 cleanup 再跑 setup
+ * @returns {void}
+ */
 useEffect(setup, deps);
 ```
 
@@ -1632,7 +1647,7 @@ export function useToggle(initialOpen) {
 }
 ```
 
-```jsx 03-react/src/demos/63b-toggle.jsx
+```jsx 03-react/src/demos/64-toggle.jsx
 import { useToggle } from '../hooks/useToggle.js';
 
 function Panel({ label, initialOpen }) {
@@ -1682,7 +1697,7 @@ export default function ToggleDemo() {
 
 只改呼叫時傳入的引數。Hook 本體不用動。
 
-```diff 03-react/src/demos/63b-toggle.jsx
+```diff 03-react/src/demos/64-toggle.jsx
  // ...
        <Panel label="左側" initialOpen={true} />
 -      <Panel label="右側" initialOpen={false} />
@@ -1730,7 +1745,7 @@ export function useFilteredItems(minPrice) {
 }
 ```
 
-```jsx 03-react/src/demos/64b-filter.jsx
+```jsx 03-react/src/demos/65-filter.jsx
 import { useState } from 'react';
 import { useFilteredItems } from '../hooks/useFilteredItems.js';
 
@@ -1799,7 +1814,7 @@ export default function FilterHookDemo() {
 
 只改父層的初始狀態。Hook 與按鈕邏輯不變。
 
-```diff 03-react/src/demos/64b-filter.jsx
+```diff 03-react/src/demos/65-filter.jsx
  // ...
 -  const [minPrice, setMinPrice] = useState(15000);
 +  const [minPrice, setMinPrice] = useState(20000);
@@ -1818,7 +1833,7 @@ export default function FilterHookDemo() {
 
 網路分頁會看到兩次 `items.json`。若你希望全頁只讀一次，把讀取留在共同父層，再用 props 傳下去。
 
-```jsx 03-react/src/demos/64-twice.jsx
+```jsx 03-react/src/demos/66-twice.jsx
 import { useLocalItems } from '../hooks/useLocalItems.js';
 
 function NameList() {
@@ -1856,7 +1871,7 @@ export default function TwiceDemo() {
 
 少一次呼叫，就少一組狀態與一次請求。
 
-```diff 03-react/src/demos/64-twice.jsx
+```diff 03-react/src/demos/66-twice.jsx
  // ...
        <NameList />
 -      <NameList />
@@ -1882,7 +1897,7 @@ export default function TwiceDemo() {
 
 `LiftDemo` 把 `draft` 畫在輸入框下面，證明值在父層。
 
-```jsx 03-react/src/demos/65-lift.jsx
+```jsx 03-react/src/demos/67-lift.jsx
 import { useState } from 'react';
 
 function Editor({ value, onChange }) {
@@ -1928,7 +1943,7 @@ export default function LiftDemo() {
 
 起始值只改父層。子層仍讀 props。
 
-```diff 03-react/src/demos/65-lift.jsx
+```diff 03-react/src/demos/67-lift.jsx
  // ...
 -  const [draft, setDraft] = useState('台北城市漫遊');
 +  const [draft, setDraft] = useState('花蓮山海三日');
@@ -1947,7 +1962,7 @@ export default function LiftDemo() {
 
 父層把 `picked` 與 `setPicked` 分下去。選花蓮山海三日的時候，摘要立刻變成花蓮山海三日，因為它們讀的是同一次渲染的狀態。
 
-```jsx 03-react/src/demos/66-siblings.jsx
+```jsx 03-react/src/demos/68-siblings.jsx
 import { useState } from 'react';
 
 function Picker({ onPick }) {
@@ -2006,7 +2021,7 @@ export default function SiblingsDemo() {
 
 新的選項仍呼叫同一個 `onPick`。摘要只讀父層的狀態。
 
-```jsx 03-react/src/demos/66-siblings.jsx
+```jsx 03-react/src/demos/68-siblings.jsx
 import { useState } from 'react';
 
 function Picker({ onPick }) {
@@ -2055,7 +2070,7 @@ export default function SiblingsDemo() {
 
 `theme` 與 `onThemeChange` 經過兩層中間元件。每一層的函式簽名都膨脹，之後若再多一層，整條鏈都要再改一次。
 
-```jsx 03-react/src/demos/66b-drill.jsx
+```jsx 03-react/src/demos/69-drill.jsx
 import { useState } from 'react';
 
 function Banner({ theme, onThemeChange }) {
@@ -2119,7 +2134,7 @@ export default function DrillDemo() {
 
 設定函式已經傳到最內層。多一顆按鈕只改 `Banner`。
 
-```diff 03-react/src/demos/66b-drill.jsx
+```diff 03-react/src/demos/69-drill.jsx
  // ...
        <button
          type="button"
@@ -2142,31 +2157,37 @@ export default function DrillDemo() {
 
 ### 用 Context 改善
 
-同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取。中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。這一則先全部寫在同一個檔，下一節再拆成多個檔案。
-
-**觀念**
-
-呼叫分成建立通道、讀值，以及把值放上樹：
+同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取，中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。這一則先全部寫在同一個檔，下一節再拆成多個檔案；建立通道、讀值，以及把 value 放上樹，都寫在下面這一段。
 
 ```jsx
-const SomeContext = createContext(defaultValue);
-const value = useContext(SomeContext);
-```
-
-```jsx
-<SomeContext.Provider value={value}>…</SomeContext.Provider>
-```
-
-對上主題字串，三件事接在一起會長這樣：
-
-```jsx
+/**
+ * 建立一條 context 通道。
+ * @param {*} defaultValue 樹上沒有 Provider 時，useContext 拿到的預設值
+ * @returns {object} ThemeContext
+ *   ThemeContext：這條通道。Provider 與 useContext 都要對上同一個物件
+ */
 const ThemeContext = createContext('淺色');
 
+/**
+ * 讀取主題並顯示在畫面上。
+ * @returns {*} 顯示目前主題的段落
+ */
 function Banner() {
+  /**
+   * 讀最近一層 Provider 放上來的值。
+   * @param {object} ThemeContext createContext 建立的通道
+   * @returns {*} theme
+   *   theme：最近一層 Provider 的 value。樹上沒有 Provider 時，是建立 context 時的 defaultValue
+   */
   const theme = useContext(ThemeContext);
   return <p>主題 {theme}</p>;
 }
 
+/**
+ * 把 Provider 放在共同父層，讓 Banner 讀得到主題。
+ * @param {*} value 寫在 Provider 上的 value，這一輪要分享的資料。這裡是 '深色'，Banner 的 theme 就是它
+ * @returns {*} 包住子元件的 Provider
+ */
 export default function ThemeApp() {
   return (
     <ThemeContext.Provider value="深色">
@@ -2176,11 +2197,11 @@ export default function ThemeApp() {
 }
 ```
 
-`createContext` 建立通道。括號裡的 `'淺色'` 是 defaultValue：樹上沒有 Provider 時，`useContext` 拿到這個預設值。`ThemeContext.Provider` 放在共同父層，`value` 是這一輪要分享的資料。`Banner` 裡的 `useContext(ThemeContext)` 讀最近的那一層 Provider。
+**觀念**
 
-完整示範把主題放在狀態裡，`createContext`、`Banner`、外框與 Provider 都寫在同一個練習檔：
+上面把 Provider 的 value 寫成固定字串；完整示範則把主題放在狀態裡，按下按鈕就更新這份狀態，通道、讀取元件、外框與 Provider 都寫在同一個練習檔：
 
-```jsx 03-react/src/demos/67-context.jsx
+```jsx 03-react/src/demos/70-context.jsx
 import { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext('淺色');
@@ -2238,7 +2259,7 @@ export default function ContextDemo() {
 
 {% note success %}
 **換你試試：**
-在 `67-context.jsx` 再加一個按鈕，把主題設回淺色。Banner 要跟著回去。按鈕留在這一檔。
+在 `70-context.jsx` 再加一個按鈕，把主題設回淺色。Banner 要跟著回去。按鈕留在這一檔。
 {% endnote %}
 
 <details>
@@ -2246,7 +2267,7 @@ export default function ContextDemo() {
 
 兩顆按鈕都設定同一份狀態。Provider 的 value 仍是那個狀態。
 
-```diff 03-react/src/demos/67-context.jsx
+```diff 03-react/src/demos/70-context.jsx
  // ...
          </button>
 +        <button
@@ -2268,7 +2289,7 @@ export default function ContextDemo() {
 
 **觀念**
 
-從單檔拆出去時，建議開一個資料夾（這裡用 `03-react/src/demos/67-contextDemo/`），各檔只留一件事：
+從單檔拆出去時，建議開一個資料夾（這裡用 `03-react/src/demos/71-contextDemo/`），各檔只留一件事：
 
 - `ThemeContext.js`：只呼叫一次 `createContext` 並匯出。
 - `Banner.jsx`：引入那一份再讀值。
@@ -2297,13 +2318,13 @@ import { ThemeContext } from './ThemeContext.js';
 const theme = useContext(ThemeContext);
 ```
 
-```js 03-react/src/demos/67-contextDemo/ThemeContext.js
+```js 03-react/src/demos/71-contextDemo/ThemeContext.js
 import { createContext } from 'react';
 
 export const ThemeContext = createContext('淺色');
 ```
 
-```jsx 03-react/src/demos/67-contextDemo/Banner.jsx
+```jsx 03-react/src/demos/71-contextDemo/Banner.jsx
 import { useContext } from 'react';
 import { ThemeContext } from './ThemeContext.js';
 
@@ -2313,7 +2334,7 @@ export default function Banner() {
 }
 ```
 
-```jsx 03-react/src/demos/67-contextDemo/Panel.jsx
+```jsx 03-react/src/demos/71-contextDemo/Panel.jsx
 import Banner from './Banner.jsx';
 
 export default function Panel() {
@@ -2325,7 +2346,7 @@ export default function Panel() {
 }
 ```
 
-```jsx 03-react/src/demos/67-contextDemo/Layout.jsx
+```jsx 03-react/src/demos/71-contextDemo/Layout.jsx
 import Panel from './Panel.jsx';
 
 export default function Layout() {
@@ -2337,7 +2358,7 @@ export default function Layout() {
 }
 ```
 
-```jsx 03-react/src/demos/67-contextDemo/index.jsx
+```jsx 03-react/src/demos/71-contextDemo/index.jsx
 import { useState } from 'react';
 import { ThemeContext } from './ThemeContext.js';
 import Layout from './Layout.jsx';
@@ -2369,7 +2390,7 @@ export default function ContextSplitDemo() {
 - 各檔 import 的 `ThemeContext` 是同一個物件。對得上的是物件本身，不是變數名稱像不像。
 - `Panel` 與 `Layout` 沒有 import `ThemeContext`。它們不讀值，也不提供值。
 - `index.jsx` 的 Provider 與 `Banner` 的 `useContext` 對上同一份物件，按鈕才改得到文字。
-- 這一則的檔案都收在 `67-contextDemo`，方便對照上一則的單檔寫法。
+- 這一則的檔案都收在 `71-contextDemo`，方便對照上一則的單檔寫法。
 
 {% note success %}
 **換你試試：**
@@ -2381,7 +2402,7 @@ export default function ContextSplitDemo() {
 
 多的那一行只加在讀值的 `Banner`。外框元件仍然不碰 `ThemeContext`。
 
-```diff 03-react/src/demos/67-contextDemo/Banner.jsx
+```diff 03-react/src/demos/71-contextDemo/Banner.jsx
  // ...
 -  return <p>主題 {theme}</p>;
 +  return (
@@ -2401,12 +2422,12 @@ export default function ContextSplitDemo() {
 
 **觀念**
 
-預設寫在 `67-contextDemo/ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
+預設寫在 `71-contextDemo/ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
 
 預設值適合沒包到也不該爆炸的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
 
-```jsx 03-react/src/demos/68-default.jsx
-import Banner from './67-contextDemo/Banner.jsx';
+```jsx 03-react/src/demos/72-default.jsx
+import Banner from './71-contextDemo/Banner.jsx';
 
 export default function DefaultDemo() {
   return <Banner />;
@@ -2424,15 +2445,15 @@ export default function DefaultDemo() {
 
 {% note success %}
 **換你試試：**
-把 `67-contextDemo/ThemeContext.js` 建立 context 的預設字串改成深色。68 的畫面應變成主題深色，這一則仍然不要加 Provider。
+把 `71-contextDemo/ThemeContext.js` 建立 context 的預設字串改成深色。72 的畫面應變成主題深色，這一則仍然不要加 Provider。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-改的是共用模組上的預設值。68 的元件樹上仍沒有 Provider。拆檔那一則有 Provider，畫面不靠這個預設字串。
+改的是共用模組上的預設值。72 的元件樹上仍沒有 Provider。拆檔那一則有 Provider，畫面不靠這個預設字串。
 
-```diff 03-react/src/demos/67-contextDemo/ThemeContext.js
+```diff 03-react/src/demos/71-contextDemo/ThemeContext.js
  // ...
 -export const ThemeContext = createContext('淺色');
 +export const ThemeContext = createContext('深色');
@@ -2445,16 +2466,17 @@ export default function DefaultDemo() {
 
 有時你要的不是畫面上顯示的文字，而是那顆真正的 DOM 節點，例如按下按鈕時呼叫 `focus()`、量尺寸，或捲到某個位置。這些是瀏覽器對節點提供的方法；只靠狀態描述「現在顯示什麼」，拿不到那顆節點。
 
-`useRef` 用來在多次渲染之間記住一份值。它回傳一個普通物件，形狀可以想成：
-
-```jsx
-{ current: initialValue }
-```
+`useRef` 用來在多次渲染之間記住一份值。它回傳一個普通物件。
 
 要記住 DOM 時，先呼叫 `useRef(null)` 拿到這份物件，再在 JSX 寫 `ref={inputRef}`。這是 JSX 的特殊 props，不是 HTML 屬性。你交給 React 的是**整份物件**，不是當下的 `inputRef.current`。提交之後，React 才把該節點寫進 `current`，等於把 DOM 交給 `useRef` 記起來。元件再渲染時仍是同一份物件，事件裡讀到的還是那個節點。
 
 ```jsx
-const inputRef = useRef(null);
+/**
+ * @param {*} initialValue 第一次建立時寫進 current 的值。要記住 DOM 時先給 null
+ * @returns {object} ref
+ *   current：跨渲染留下的同一份值。交給 JSX 的 ref 後，提交時 React 把節點寫進來
+ */
+const inputRef = useRef(initialValue);
 // …
 <input ref={inputRef} />
 // 事件裡：inputRef.current?.focus()
@@ -2477,7 +2499,7 @@ const inputRef = useRef(null);
 以前用 JavaScript 直接改節點（找元素、改屬性、呼叫 `focus()`），覺得很理所當然。現在日常畫面多半靠 JSX 告訴 React「這次要長成什麼」，再由它去算差、更新 DOM；要碰真正的節點時，才透過 `ref` 伸手進去。多繞這一層，心智負擔會比較大，但畫面的來源就集中在描述裡。
 {% endnote %}
 
-```jsx 03-react/src/demos/69-ref.jsx
+```jsx 03-react/src/demos/73-ref.jsx
 import { useRef } from 'react';
 
 export default function RefDemo() {
@@ -2530,7 +2552,7 @@ export default function RefDemo() {
 
 清空 DOM 的值不會通知 React。這一則本來就沒有受控，所以這樣做看得到格子被清掉。
 
-```diff 03-react/src/demos/69-ref.jsx
+```diff 03-react/src/demos/73-ref.jsx
  // ...
    const onFocus = () => {
      inputRef.current?.focus();
@@ -2635,7 +2657,7 @@ function ClickCount() {
 
 這用來分辨「要記住」與「要畫出來」。要畫出來的值用狀態。
 
-```jsx 03-react/src/demos/70-ref-count.jsx
+```jsx 03-react/src/demos/74-ref-count.jsx
 import { useRef, useState } from 'react';
 
 export default function RefCountDemo() {
@@ -2699,6 +2721,24 @@ export default function RefCountDemo() {
 `useReducer` 把「狀態怎麼變」收進一個函式。元件負責送出「發生了什麼」，那個函式再依動作算出下一筆狀態。呼叫形狀是：
 
 ```jsx
+/**
+ * 依這次的動作算出下一筆狀態。
+ * @param {*} state 上一筆狀態
+ * @param {*} action 這次的動作，常見是帶 type 的物件
+ * @returns {*} 下一筆狀態。認不出的動作把原狀態原封還回去
+ */
+const reducer = (state, action) => {
+  // ...
+  return nextState;
+};
+
+/**
+ * @param reducer 上面計算下一筆狀態的函式
+ * @param {*} initialArg 起始狀態
+ * @returns [state, dispatch]
+ *   state：現在的狀態
+ *   dispatch：送出 action 的函式，不直接塞新值
+ */
 const [state, dispatch] = useReducer(reducer, initialArg);
 ```
 
@@ -2714,7 +2754,7 @@ const [state, dispatch] = useReducer(reducer, initialArg);
 
 起始狀態是 `0`。三種按鈕各送一種 `type`；數字的加減與歸零都寫在 `reducer` 裡，元件只負責送出動作。
 
-```jsx 03-react/src/demos/71-reducer-count.jsx
+```jsx 03-react/src/demos/75-reducer-count.jsx
 import { useReducer } from 'react';
 
 function reducer(count, action) {
@@ -2789,7 +2829,7 @@ export default function ReducerCountDemo() {
 
 三種改法各自一個函式，裡面都要自己展開或對應陣列。
 
-```jsx 03-react/src/demos/71-reducer-state.jsx
+```jsx 03-react/src/demos/76-reducer-state.jsx
 import { useState } from 'react';
 
 export default function ReducerStateDemo() {
@@ -2863,7 +2903,7 @@ export default function ReducerStateDemo() {
 
 同一組行為改由 `reducer` 集中處理。元件只 `dispatch`，陣列怎麼複製留在 `switch` 裡。
 
-```jsx 03-react/src/demos/71-reducer.jsx
+```jsx 03-react/src/demos/77-reducer.jsx
 import { useReducer } from 'react';
 
 const reducer = (todos, action) => {
@@ -2938,45 +2978,18 @@ export default function ReducerDemo() {
 
 ### 搭配 Context
 
-上一節的清單若拆成「新增按鈕」與「列表」兩顆子元件，又再往下傳，props 又會開始一層層丟。做法跟主題色那節一樣：把「現在的清單」和「用來改清單的 `dispatch`」放進 context，需要的子元件自己讀。
+清單變大之後，通常會把畫面拆成幾個子元件。拆開之後，狀態和 `dispatch` 還留在父層，子元件要用就得靠 props 傳下去。這一節先看用 props 怎麼傳，再改成 context，對照少掉了哪些傳遞。
+
+#### 拆成元件用 props
 
 **觀念**
 
-`TodoProvider` 裡面呼叫 `useReducer`，再把 `{ todos, dispatch }` 放進 `value`。子元件透過 `useTodos`（包一層 `useContext`）取出自己要的欄位：按鈕只要 `dispatch`，列表只要 `todos`。
+把上一則的新增按鈕拆成 `AddButton`，把列表拆成 `TodoList`。`useReducer` 還是在最外層的 `TodoPropsDemo`，所以 `todos` 和 `dispatch` 要從父層一個個當 props 交給子元件：新增按鈕只要 `dispatch`，列表要 `todos` 來畫，也要 `dispatch` 來切換與刪除。
 
-若外層忘了包 Provider，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
+檔案拆成資料夾 `78-propsDemo/`：`AddButton.jsx`、`TodoList.jsx` 各放一個子元件，`index.jsx` 放 reducer、持有 `useReducer` 並組合畫面。reducer 跟持有狀態的元件放在同一個檔案，是小專案最常見的寫法。
 
-```jsx 03-react/src/demos/72-provider.jsx
-import { createContext, useContext, useReducer } from 'react';
-
-const TodoContext = createContext(null);
-
-const reducer = (todos, action) => {
-  switch (action.type) {
-    case 'add':
-      return [...todos, { id: action.id, title: action.title, done: false }];
-    default:
-      return todos;
-  }
-};
-
-function TodoProvider({ children }) {
-  const [todos, dispatch] = useReducer(reducer, []);
-  return (
-    <TodoContext.Provider value={{ todos, dispatch }}>
-      {children}
-    </TodoContext.Provider>
-  );
-}
-
-function useTodos() {
-  const value = useContext(TodoContext);
-  if (!value) throw new Error('缺少 TodoProvider');
-  return value;
-}
-
-function AddButton() {
-  const { dispatch } = useTodos();
+```jsx 03-react/src/demos/78-propsDemo/AddButton.jsx
+export default function AddButton({ dispatch }) {
   return (
     <button
       type="button"
@@ -2987,42 +3000,195 @@ function AddButton() {
     </button>
   );
 }
+```
 
-function TodoList() {
-  const { todos } = useTodos();
+```jsx 03-react/src/demos/78-propsDemo/TodoList.jsx
+export default function TodoList({ todos, dispatch }) {
   return (
     <ul className="mt-3 grid gap-2">
       {todos.map((todo) => (
-        <li key={todo.id}>{todo.title}</li>
+        <li key={todo.id} className="flex gap-2">
+          <button
+            type="button"
+            className="rounded bg-stone-100 px-2"
+            onClick={() => dispatch({ type: 'toggle', id: todo.id })}
+          >
+            {todo.done ? '完成' : '未完成'}
+          </button>
+          <span>{todo.title}</span>
+          <button
+            type="button"
+            className="rounded bg-stone-200 px-2"
+            onClick={() => dispatch({ type: 'remove', id: todo.id })}
+          >
+            刪除
+          </button>
+        </li>
       ))}
     </ul>
   );
 }
+```
 
-export default function ProviderDemo() {
+```jsx 03-react/src/demos/78-propsDemo/index.jsx
+import { useReducer } from 'react';
+import AddButton from './AddButton.jsx';
+import TodoList from './TodoList.jsx';
+
+const reducer = (todos, action) => {
+  switch (action.type) {
+    case 'add':
+      return [...todos, { id: action.id, title: action.title, done: false }];
+    case 'toggle':
+      return todos.map((todo) =>
+        todo.id === action.id ? { ...todo, done: !todo.done } : todo,
+      );
+    case 'remove':
+      return todos.filter((todo) => todo.id !== action.id);
+    default:
+      return todos;
+  }
+};
+
+export default function TodoPropsDemo() {
+  const [todos, dispatch] = useReducer(reducer, [
+    { id: 1, title: '台北城市漫遊', done: false },
+  ]);
+
   return (
-    <TodoProvider>
-      <section>
-        <AddButton />
-        <TodoList />
-      </section>
-    </TodoProvider>
+    <section>
+      <AddButton dispatch={dispatch} />
+      <TodoList todos={todos} dispatch={dispatch} />
+    </section>
   );
 }
 ```
 
-每按一次新增，清單多一列「新待辦」。按鈕與清單沒有互相傳 props。
+操作跟上一則相同：新增多一列，切換完成、刪除都有效。差在畫面拆成兩個子元件，資料由父層用 props 傳進去。
+
+**解析**
+
+- reducer 跟上一則一模一樣，拆元件不影響狀態怎麼變。
+- `AddButton` 只接 `dispatch`，`TodoList` 接 `todos` 與 `dispatch`，兩者都是父層 `<AddButton dispatch={dispatch} />` 這樣傳進來的。
+- 目前只有一層，props 還不算麻煩。若中間再多幾層外框元件，每一層都得幫忙轉傳，就會變成前面 `useContext` 提過的 props 層層傳遞。
+
+#### 改用 Context
+
+**觀念**
+
+做法跟主題色那節一樣：把 `useReducer` 搬進 `TodoProvider`，再把 `{ todos, dispatch }` 放進 `value`。子元件不再從參數拿資料，而是呼叫 `useTodos`（包一層 `useContext`）自己取需要的欄位。若外層忘了包 Provider，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
+
+照上一則 `78-propsDemo/` 的資料夾複製成 `79-providerDemo/`，一個檔案一個檔案看改了什麼。
+
+先新增 `TodoContext.jsx`，把 reducer 和 `useReducer` 從 `index.jsx` 一起搬進來交給 `TodoProvider`，並提供 `useTodos` 給子元件取用。狀態、reducer、Provider 與取用的 hook 收在同一個檔案，也是 React 官方文件的做法：
+
+```jsx 03-react/src/demos/79-providerDemo/TodoContext.jsx
+import { createContext, useContext, useReducer } from 'react';
+
+const reducer = (todos, action) => {
+  switch (action.type) {
+    case 'add':
+      return [...todos, { id: action.id, title: action.title, done: false }];
+    case 'toggle':
+      return todos.map((todo) =>
+        todo.id === action.id ? { ...todo, done: !todo.done } : todo,
+      );
+    case 'remove':
+      return todos.filter((todo) => todo.id !== action.id);
+    default:
+      return todos;
+  }
+};
+
+const TodoContext = createContext(null);
+
+export function TodoProvider({ children }) {
+  const [todos, dispatch] = useReducer(reducer, [
+    { id: 1, title: '台北城市漫遊', done: false },
+  ]);
+  return (
+    <TodoContext.Provider value={{ todos, dispatch }}>
+      {children}
+    </TodoContext.Provider>
+  );
+}
+
+export function useTodos() {
+  const value = useContext(TodoContext);
+  if (!value) throw new Error('缺少 TodoProvider');
+  return value;
+}
+```
+
+兩個子元件拿掉參數，改由 `useTodos()` 取自己要的欄位：
+
+```diff 03-react/src/demos/79-providerDemo/AddButton.jsx
++import { useTodos } from './TodoContext.jsx';
++
+-export default function AddButton({ dispatch }) {
++export default function AddButton() {
++  const { dispatch } = useTodos();
+   return (
+ // ...
+```
+
+```diff 03-react/src/demos/79-providerDemo/TodoList.jsx
++import { useTodos } from './TodoContext.jsx';
++
+-export default function TodoList({ todos, dispatch }) {
++export default function TodoList() {
++  const { todos, dispatch } = useTodos();
+   return (
+ // ...
+```
+
+`index.jsx` 不再持有狀態，只負責用 Provider 把畫面包起來：
+
+```diff 03-react/src/demos/79-providerDemo/index.jsx
+-import { useReducer } from 'react';
++import { TodoProvider } from './TodoContext.jsx';
+ import AddButton from './AddButton.jsx';
+ import TodoList from './TodoList.jsx';
+
+-const reducer = (todos, action) => {
+-  // ...（整段搬到 TodoContext.jsx）
+-};
+-
+-export default function TodoPropsDemo() {
+-  const [todos, dispatch] = useReducer(reducer, [
+-    { id: 1, title: '台北城市漫遊', done: false },
+-  ]);
+-
++export default function ProviderDemo() {
+   return (
+-    <section>
+-      <AddButton dispatch={dispatch} />
+-      <TodoList todos={todos} dispatch={dispatch} />
+-    </section>
++    <TodoProvider>
++      <section>
++        <AddButton />
++        <TodoList />
++      </section>
++    </TodoProvider>
+   );
+ }
+```
+
+`// ...` 的地方跟 `78-propsDemo/` 裡對應的檔案相同，也就是按鈕與列表的 JSX。
+
+畫面和操作跟上一則相同。差在父層的 JSX 不再寫 `dispatch={dispatch}`，子元件自己從 context 取資料。
 
 **解析**
 
 - Provider 包在兩顆子元件外面。少了這層，`useTodos` 會丟出錯誤。
 - `dispatch` 的身份是穩定的，可以放進 context。
-- 子元件各自取自己要的欄位。清單元件沒有拿到 dispatch 也可以。
+- 子元件各自取自己要的欄位。`AddButton` 只拿 `dispatch`，`TodoList` 兩個都拿。
 - 這個 context 只服務待辦。主題若是另一份資料，另開一個 context，不要全部塞進同一個物件。
 
 {% note success %}
 **換你試試：**
-`TodoList` 在沒有待辦時顯示「沒有待辦」。新增後那句話要消失。
+`TodoList` 在沒有待辦時顯示「沒有待辦」。把預設那一筆刪掉就看得到，新增後那句話要消失。
 {% endnote %}
 
 <details>
@@ -3030,9 +3196,9 @@ export default function ProviderDemo() {
 
 空狀態看的是 context 裡的陣列長度。按鈕不用知道這句話。
 
-```diff 03-react/src/demos/72-provider.jsx
+```diff 03-react/src/demos/79-providerDemo/TodoList.jsx
  // ...
-   const { todos } = useTodos();
+   const { todos, dispatch } = useTodos();
 +  if (todos.length === 0) return <p className="mt-3">沒有待辦</p>;
    return (
  // ...
@@ -3066,18 +3232,18 @@ React 19 可以把送出函式交給 `<form action>`。這次送出被當成一�
 
 **觀念**
 
-欄位的 `name` 是 `title`。
+欄位的 `name` 是 `title`，裡面填想去的行程。
 
-送出函式用 `formData.get('title')` 讀文字，放進狀態。函式可以是 async。這一則沒有真的打網路，只模擬把標題留下。
+送出函式用 `formData.get('title')` 讀行程名稱，組成「已收到詢問：」加上該名稱，再放進狀態。函式可以是 async。這一則沒有真的打網路，只模擬留下這次詢問。
 
-```jsx 03-react/src/demos/73-action.jsx
+```jsx 03-react/src/demos/80-action.jsx
 import { useState } from 'react';
 
 export default function ActionDemo() {
-  const [title, setTitle] = useState('尚未送出');
+  const [message, setMessage] = useState('尚未詢問');
 
   const send = async (formData) => {
-    setTitle(String(formData.get('title') || '未填'));
+    setMessage('已收到詢問：' + String(formData.get('title') || '未填'));
   };
 
   return (
@@ -3085,21 +3251,21 @@ export default function ActionDemo() {
       <input
         name="title"
         className="rounded border px-2 py-1"
-        placeholder="標題"
+        placeholder="想去的行程（例如台北城市漫遊）"
       />
       <button
         type="submit"
         className="rounded bg-teal-800 px-3 py-1 text-white"
       >
-        送出
+        送出詢問
       </button>
-      <p>{title}</p>
+      <p>{message}</p>
     </form>
   );
 }
 ```
 
-在格子打「台北城市漫遊」再送出，下面一行變成台北城市漫遊。網址不變。
+送出前下面一行是尚未詢問。在格子打「台北城市漫遊」再按送出詢問，下面一行變成「已收到詢問：台北城市漫遊」。網址不變。
 
 **解析**
 
@@ -3110,76 +3276,97 @@ export default function ActionDemo() {
 
 {% note success %}
 **換你試試：**
-再讀一個欄位 `price`，訊息改成標題加上空白與價格。
+再讀一個欄位 `date`（`type="date"`），訊息改成行程名稱、空白、再出發日期。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-兩個 `get` 都來自同一份 FormData。輸入框都要有 name。
+兩個 `get` 都來自同一份 FormData。日期欄位要有 `name` 和 `type="date"`。
 
-```jsx 03-react/src/demos/73-action.jsx
-import { useState } from 'react';
-
-export default function ActionDemo() {
-  const [title, setTitle] = useState('尚未送出');
-
-  const send = async (formData) => {
-    const name = String(formData.get('title') || '未填');
-    const price = String(formData.get('price') || '');
-    setTitle(name + ' ' + price);
-  };
-
-  return (
-    <form action={send} className="grid max-w-sm gap-3">
-      <input name="title" className="rounded border px-2 py-1" placeholder="標題" />
-      <input name="price" className="rounded border px-2 py-1" placeholder="價格" />
-      <button type="submit" className="rounded bg-teal-800 px-3 py-1 text-white">
-        送出
-      </button>
-      <p>{title}</p>
-    </form>
-  );
-}
+```diff 03-react/src/demos/80-action.jsx
+ // ...
+   const send = async (formData) => {
+-    setMessage('已收到詢問：' + String(formData.get('title') || '未填'));
++    const name = String(formData.get('title') || '未填');
++    const date = String(formData.get('date') || '');
++    setMessage('已收到詢問：' + name + ' ' + date);
+   };
+ // ...
+         placeholder="想去的行程（例如台北城市漫遊）"
+       />
++      <input
++        name="date"
++        type="date"
++        className="rounded border px-2 py-1"
++      />
+       <button
+ // ...
 ```
 
 </details>
 
 ### useActionState
 
-`useActionState` 把動作的回傳值變成狀態。函式的第一個參數是上一次的結果，第二個是這次的 `FormData`。第三個回傳值表示正在送出。
+表單送出後，通常要把資料交給伺服器，等它回一個結果，例如「已儲存」或錯誤訊息，再把結果顯示在畫面上。這段等待期間，按鈕最好不能再按，免得同一筆送兩次。
+
+如果全靠 `useState` 自己寫，要另外管「結果」和「是否送出中」兩份狀態，在送出函式的開頭、結尾各設一次。`useActionState` 把這件事收在一起：你只寫一個送出函式，它負責記住回傳的結果與進行中的狀態。
+
+```jsx
+/**
+ * 送出時要做的事。實際專案會把 FormData 送到伺服器，再回傳伺服器給的結果。
+ * @param {*} previous 上一次 send 回傳的結果
+ * @param {FormData} formData 這次表單的欄位
+ * @returns {*} 回傳什麼，state 就變成什麼，不必再呼叫 setState
+ */
+const send = async (previous, formData) => {
+  // ...
+  return result;
+};
+
+/**
+ * @param send 上面的送出函式
+ * @param initialState 還沒送出過的起始結果
+ * @returns [state, formAction, isPending]
+ *   state：最近一次 send 回傳的值，第一次是 initialState
+ *   formAction：交給 <form action> 的函式，按下送出時 React 會呼叫 send
+ *   isPending：send 還沒結束時為 true
+ */
+const [state, formAction, isPending] = useActionState(send, initialState);
+```
 
 **觀念**
 
-動作等 300 毫秒再回傳標題，模擬慢一點的請求。進行中時按鈕不能再按，文字顯示「送出中」。結束後，畫面換成動作回傳的字串。
+我們沒有自己的伺服器，所以沿用前面寫好的 `fake-api.js`：`send` 呼叫 `createItem`，把行程名稱 POST 到練習用的假 API，等它回傳建立好的資料，再拿回應裡的 `title` 串成報名訊息。進行中時按鈕不能再按，文字顯示「報名中」。結束後，畫面換成 `send` 回傳的字串。
 
-不要在渲染時呼叫這個動作。把它交給 `action` 即可。
+`send` 不要自己呼叫，交給 `useActionState`，再把拿到的 `formAction` 放進 `action` 即可。
 
-```jsx 03-react/src/demos/74-action-state.jsx
+```jsx 03-react/src/demos/81-action-state.jsx
 import { useActionState } from 'react';
+import { createItem } from '../api/fake-api.js';
 
 const send = async (previous, formData) => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  const title = String(formData.get('title') || '未填');
-  return previous === '尚未送出' ? title : previous + '、' + title;
+  const item = await createItem({ title: String(formData.get('title') || '未填') });
+  const title = item.title;
+  return previous === '尚未報名' ? '已報名：' + title : previous + '、' + title;
 };
 
 export default function ActionStateDemo() {
-  const [message, formAction, isPending] = useActionState(send, '尚未送出');
+  const [message, formAction, isPending] = useActionState(send, '尚未報名');
 
   return (
     <form action={formAction} className="grid max-w-sm gap-3">
       <input
         name="title"
         className="rounded border px-2 py-1"
-        placeholder="標題"
+        placeholder="想報名的行程"
       />
       <button
         type="submit"
         disabled={isPending}
         className="rounded bg-teal-800 px-3 py-1 text-white disabled:opacity-60"
       >
-        {isPending ? '送出中' : '送出'}
+        {isPending ? '報名中' : '報名'}
       </button>
       <p>{message}</p>
     </form>
@@ -3187,37 +3374,30 @@ export default function ActionStateDemo() {
 }
 ```
 
-第一次送出「台北城市漫遊」，約三分之一秒後訊息變成台北城市漫遊。再送出「花蓮山海三日」，訊息變成「台北城市漫遊、花蓮山海三日」。等待時按鈕是停用的。
+第一次送出「台北城市漫遊」，等假 API 回應後訊息變成「已報名：台北城市漫遊」。再送出「花蓮山海三日」，訊息變成「已報名：台北城市漫遊、花蓮山海三日」。等待時按鈕是停用的，文字是「報名中」。
 
 **解析**
 
-- 起始狀態是第二個引數「尚未送出」。第一次動作的 `previous` 就是它。
+- 起始狀態是第二個引數「尚未報名」。第一次動作的 `previous` 就是它。
 - 回傳值會變成下一次的 `message`。不需要再呼叫 `setState`。
 - `isPending` 在動作結束前為真。用它停用按鈕，避免連按兩次。
 - `previous` 是上一筆結果，不是輸入框裡的草稿。草稿在 FormData。
 
 {% note success %}
 **換你試試：**
-動作改成只回傳這一次的標題，不要串上一筆。第二次送出應蓋掉第一筆。
+動作改成只回傳這一次的「已報名：」加上行程名稱，不要串上一筆。第二次送出應蓋掉第一筆。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-忽略 `previous`，只回傳這一次讀到的標題。
+忽略 `previous`，只回傳這一次的「已報名：」加上假 API 回來的行程名稱。
 
-```diff 03-react/src/demos/74-action-state.jsx
+```diff 03-react/src/demos/81-action-state.jsx
  // ...
--  const title = String(formData.get('title') || '未填');
--  return previous === '尚未送出' ? title : previous + '、' + title;
-+  return String(formData.get('title') || '未填');
- // ...
--      <input
--        name="title"
--        className="rounded border px-2 py-1"
--        placeholder="標題"
--      />
-+      <input name="title" className="rounded border px-2 py-1" placeholder="標題" />
+   const title = item.title;
+-  return previous === '尚未報名' ? '已報名：' + title : previous + '、' + title;
++  return '已報名：' + title;
  // ...
 ```
 
@@ -3227,15 +3407,37 @@ export default function ActionStateDemo() {
 
 ### useOptimistic
 
-動作還沒回來時，先把預期的名稱畫出來。真正的狀態仍等動作結束才更新。失敗的話，樂觀的那一層會回到實際狀態。
+動作還沒回來時，先把預期的旅程名稱畫出來。真正的狀態仍等動作結束才更新。失敗的話，樂觀的那一層會回到實際的旅程名稱。
+
+```jsx
+/**
+ * 把預期值併進目前的狀態。省略時，addOptimistic 收到的值會直接當成下一筆樂觀狀態。
+ * @param {*} current 目前的實際狀態
+ * @param {*} optimistic 這次 addOptimistic 傳入的預期值
+ * @returns {*} 畫面上要顯示的樂觀狀態
+ */
+const updateFn = (current, optimistic) => {
+  // ...
+  return next;
+};
+
+/**
+ * @param {*} state 實際狀態
+ * @param updateFn 可省略。上面這個合併函式
+ * @returns [optimisticState, addOptimistic]
+ *   optimisticState：動作進行中是預期結果，結束或失敗後回到實際狀態
+ *   addOptimistic：送出預期值的函式
+ */
+const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
+```
 
 **觀念**
 
-`useOptimistic` 的第一個引數是實際名稱，第二個是「如何把預期值併進現在的畫面」。
+`useOptimistic` 的第一個引數是實際的旅程名稱。還可以傳第二個引數，說明怎麼把預期值併進現在的畫面；這一則直接用新的旅程名稱取代，所以省略。
 
-送出時先 `setOptimisticName`，再等待，最後才 `setName`。等待的那 300 毫秒，畫面已經是新名稱。
+送出時先 `setOptimisticName`，再等待，最後才 `setName`。等待的那 3 秒，畫面已經是新的旅程名稱。這裡故意不用 fake-api，因為它回得太快，看不出樂觀更新的差別。
 
-```jsx 03-react/src/demos/75-optimistic.jsx
+```jsx 03-react/src/demos/82-optimistic.jsx
 import { useOptimistic, useState } from 'react';
 
 export default function OptimisticDemo() {
@@ -3245,41 +3447,42 @@ export default function OptimisticDemo() {
   const send = async (formData) => {
     const next = String(formData.get('name') || name);
     setOptimisticName(next);
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    // 故意不用 fake-api：模擬伺服器 3 秒後才返回，讓先顯示、後更新的差別看得出來
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     setName(next);
   };
 
   return (
     <form action={send} className="grid max-w-sm gap-3">
-      <p>目前 {optimisticName}</p>
+      <p>旅程名稱 {optimisticName}</p>
       <input
         name="name"
         className="rounded border px-2 py-1"
-        placeholder="新名稱"
+        placeholder="新的旅程名稱"
       />
       <button
         type="submit"
         className="rounded bg-teal-800 px-3 py-1 text-white"
       >
-        更新
+        更新名稱
       </button>
     </form>
   );
 }
 ```
 
-輸入花蓮山海三日並送出，畫面上的「目前」會先變成花蓮山海三日，不必等那 300 毫秒結束才看得到。
+輸入花蓮山海三日並送出，畫面上的「旅程名稱」會先變成花蓮山海三日，不必等那 3 秒結束才看得到。
 
 **解析**
 
 - 畫面讀 `optimisticName`，不直接讀 `name`。進行中時兩者可能不同。
 - 動作結束後 `setName` 更新實際狀態，樂觀值會跟著回到這份實際值。
-- 不要只改樂觀值卻永遠不改實際狀態。重新整理或下一次渲染會回到舊名稱。
-- 這是預期成功的顯示。真的失敗時，不要呼叫最後的 `setName`，畫面會回到舊的實際名稱。
+- 不要只改樂觀值卻永遠不改實際狀態。重新整理或下一次渲染會回到舊的旅程名稱。
+- 這是預期成功的顯示。真的失敗時，不要呼叫最後的 `setName`，畫面會回到舊的實際旅程名稱。
 
 {% note success %}
 **換你試試：**
-等待改成 800 毫秒。送出後應仍立刻看到新名稱，只是實際狀態晚一點才跟上。
+等待改成 1 秒。送出後一樣立刻看到新的旅程名稱，只是實際狀態更快跟上。
 {% endnote %}
 
 <details>
@@ -3287,30 +3490,14 @@ export default function OptimisticDemo() {
 
 只改等待時間。先顯示、後落地的順序不變。
 
-```jsx 03-react/src/demos/75-optimistic.jsx
-import { useOptimistic, useState } from 'react';
-
-export default function OptimisticDemo() {
-  const [name, setName] = useState('台北城市漫遊');
-  const [optimisticName, setOptimisticName] = useOptimistic(name);
-
-  const send = async (formData) => {
-    const next = String(formData.get('name') || name);
-    setOptimisticName(next);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setName(next);
-  };
-
-  return (
-    <form action={send} className="grid max-w-sm gap-3">
-      <p>目前 {optimisticName}</p>
-      <input name="name" className="rounded border px-2 py-1" placeholder="新名稱" />
-      <button type="submit" className="rounded bg-teal-800 px-3 py-1 text-white">
-        更新
-      </button>
-    </form>
-  );
-}
+```diff 03-react/src/demos/82-optimistic.jsx
+ // ...
+     setOptimisticName(next);
+     // 故意不用 fake-api：模擬伺服器 3 秒後才返回，讓先顯示、後更新的差別看得出來
+-    await new Promise((resolve) => setTimeout(resolve, 3000));
++    await new Promise((resolve) => setTimeout(resolve, 1000));
+     setName(next);
+ // ...
 ```
 
 </details>
