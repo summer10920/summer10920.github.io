@@ -20,9 +20,9 @@ date: 2026-08-30 10:10:00
 
 ## 狀態切頁
 
-選單與主畫面可以先放在同一個元件裡，用一個狀態決定現在畫哪一塊。按鈕改的是 `page`，主區就在首頁與清單之間切換。先看這份可跑的元件怎麼配在一起，再看重新整理與網址會停在哪裡。
+還沒複製 04 之前，先在 `03-react` 裡試。選單與主畫面可以先放在同一個元件裡，用一個狀態決定現在畫哪一塊。按鈕改的是 `page`，主區就在首頁與清單之間切換。先看這份可跑的元件怎麼配在一起，再看重新整理與網址會停在哪裡。
 
-```jsx 04-react-router/src/demos/01-state-pages.jsx
+```jsx 03-react/src/demos/83-state-pages.jsx
 import { useState } from 'react';
 
 const trips = [
@@ -70,7 +70,7 @@ export default function StatePages() {
 
 只改起始值。按鈕與資料留著。
 
-```diff 04-react-router/src/demos/01-state-pages.jsx
+```diff 03-react/src/demos/83-state-pages.jsx
  // ...
  export default function StatePages() {
 -  const [page, setPage] = useState('home');
