@@ -1170,7 +1170,7 @@ export default function Home() {
 
 ## 連結
 
-一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。`Link` 看起來一樣是連結，點了只換網址，React Router 依新網址換掉對應的那一塊畫面，其餘不動。`NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，是的話自動加上 `active` class。分法很簡單：要依「是不是目前頁」換樣式的連結（選單、分頁）用 `NavLink`，其他一般連結都用 `Link`。所以首頁的「從第一則開始」用 `Link`，左側每一則與站名用 `NavLink`。
+一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。`Link` 看起來一樣是連結，點了只換網址，React Router 依新網址換掉對應的那一塊畫面，其餘不動。`NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，是的話自動加上 `active` class。分法很簡單：要依「是不是目前頁」換樣式的連結（選單、分頁）用 `NavLink`，其他一般連結都用 `Link`。所以首頁的「從第一則開始」用 `Link`，左側每一則與站名用 `NavLink`。點了首頁的 `Link` 進到 `/demos/01` 後，左側對應的那一則會自動變成 active：`NavLink` 看的是目前網址，不管你從哪裡點進來。
 
 **一覽**
 
@@ -1926,11 +1926,11 @@ const central = (
 
 # 選讀：部署到 GitHub Pages
 
-這份筆記網站若放到 GitHub Pages 的專案子路徑，例如倉庫名稱那一段，打包後的檔案與路由的前綴都要算進去。`vite` 的 `base` 負責打包後的檔案路徑，`basename` 負責路由。另外，GitHub Pages 對未知路徑會找 `404.html`。單頁應用要讓那份檔案跟 `index.html` 相同，重新整理 `/demos/01` 這種子路徑才進得了 React。`HashRouter` 則是伺服器只肯回傳一個檔案時的退路。
+假設把 `04-react-router` 這份專案單獨推成自己的 GitHub 倉庫 `my-notes`，開啟 GitHub Pages 後，網址會是 `https://帳號.github.io/my-notes/`。`/my-notes/` 這段是 GitHub 依倉庫名稱加上的網址前綴，打包後的檔案與路由都要算進去。注意 `base` 是網址的前綴，不是資料夾路徑：專案在電腦上放哪個資料夾、在哪裡跑 build 都不影響它。`vite` 的 `base` 負責打包後的檔案路徑，`basename` 負責路由。另外，GitHub Pages 對未知路徑會找 `404.html`。單頁應用要讓那份檔案跟 `index.html` 相同，重新整理 `/demos/01` 這種子路徑才進得了 React。`HashRouter` 則是伺服器只肯回傳一個檔案時的退路。
 
 ## basename 與 404.html
 
-建置前在 Vite 設定 `base`，下面用 `/04-react-router/` 當這個筆記網站的專案頁路徑。路由的 `basename` 用同一個前綴，但拿掉結尾斜線，而且讀 Vite 提供的 `BASE_URL`，前綴就只寫在 `base` 一處。建置完成後，把 `dist/index.html` 複製成 `dist/404.html`。
+建置前在 Vite 設定 `base`，下面用 `/my-notes/`，對應上面的倉庫網址。路由的 `basename` 用同一個前綴，但拿掉結尾斜線，而且讀 Vite 提供的 `BASE_URL`，前綴就只寫在 `base` 一處。建置完成後，把 `dist/index.html` 複製成 `dist/404.html`。
 
 **語法**
 
@@ -1947,7 +1947,7 @@ const rooted = <BrowserRouter basename={basename}>{/* App */}</BrowserRouter>;
 
 **觀念**
 
-本機 `pnpm dev` 的 `BASE_URL` 是 `/`，去掉斜線後是空字串，網址與現在一樣。只有建置時把 `base` 設成專案頁路徑，前綴才會出現。元件裡的 `to="/demos/01"` 仍寫 `/demos/01`，實際會指向 `/04-react-router/demos/01`。結尾斜線只留在 `base`。`404.html` 必須在每次建置後重新複製，舊的那份不會含這一次的檔名雜湊。
+本機 `pnpm dev` 的 `BASE_URL` 是 `/`，去掉斜線後是空字串，網址與現在一樣。只有建置時把 `base` 設成專案頁路徑，前綴才會出現。元件裡的 `to="/demos/01"` 仍寫 `/demos/01`，實際會指向 `/my-notes/demos/01`。結尾斜線只留在 `base`。`404.html` 必須在每次建置後重新複製，舊的那份不會含這一次的檔名雜湊。
 
 ```diff 04-react-router/src/main.jsx
  import './index.css';
@@ -1964,7 +1964,7 @@ const rooted = <BrowserRouter basename={basename}>{/* App */}</BrowserRouter>;
 
 ```diff 04-react-router/vite.config.js
  export default defineConfig({
-+  base: '/04-react-router/',
++  base: '/my-notes/',
    plugins: [react(), tailwindcss()],
  });
 ```
@@ -1979,7 +1979,7 @@ cp dist/index.html dist/404.html
 
 {% note success %}
 **換你試試：**
-把例子的 `/04-react-router/` 改成 `/lecture/`。`basename` 那一行不要改寫死。建置後看 `dist/index.html` 的 script 路徑應含 `lecture`。看完把 `base` 拿掉。
+假設倉庫改名成 `lecture`，把例子的 `/my-notes/` 改成 `/lecture/`。`basename` 那一行不要改寫死。建置後看 `dist/index.html` 的 script 路徑應含 `lecture`。看完把 `base` 拿掉。
 {% endnote %}
 
 <details>
@@ -1989,7 +1989,7 @@ cp dist/index.html dist/404.html
 
 ```diff 04-react-router/vite.config.js
  // ...
--  base: '/04-react-router/',
+-  base: '/my-notes/',
 +  base: '/lecture/',
  // ...
 ```
