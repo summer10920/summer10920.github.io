@@ -136,7 +136,7 @@ export default function App() {
 
 ## 樣式與主題
 
-MUI 管元件的色、圓角與字級，Tailwind 管欄數與間距。兩套 CSS 叠在一起時，要先講好層級順序，preflight 才不會把按鈕內距清成零。
+這一節先認識 MUI，用一顆按鈕確認主題有接到畫面上，再把 Tailwind 接進來並排好層疊順序。色票只寫在 `tokens`，字型與圖示字型接著載入。各元件的圓角、class 與圖示覆寫，留到該元件第一次出現的小節再補。
 
 ### 步驟 1：安裝套件
 
@@ -172,23 +172,192 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 - MUI 9 的樣式執行期是 Emotion，所以兩個 `@emotion` 套件要一起裝。
 - Tailwind 4 用 `@tailwindcss/vite` 接進 Vite，主題寫在 CSS 裡，不必另建 `tailwind.config.js`。
 
-### 步驟 2：層級、字型與入口
+### 步驟 2：認識 MUI
 
-`index.html` 在 `head` 最前面放一層 `@layer`，`index.css` 的第一行再宣告一次。這行必須先於 `@import` 與 MUI 注入的樣式，瀏覽器才會把 preflight 留在 `base`、把元件樣式留在 `mui`。
+MUI（Material UI）是一套 React 元件庫。按鈕、輸入框、對話框都有現成元件，色與字級集中在一份主題，不必每個元件各寫一份 CSS。
 
-```diff 06-project-init/index.html
+三個函式各管一件事。
+
+- `createTheme` 建立主題物件。這一步只放主色，後面再補完整色票與字級。
+- `ThemeProvider` 把主題交給子樹裡的 MUI 元件。包在外面，裡面的 `Button` 才讀得到。
+- `CssBaseline` 清掉瀏覽器給 `body` 的預設外距，並套上主題的文字色與背景色。
+
+下面把畫面換成一顆實心按鈕，確認主題有接到畫面上。路由那一節會整份換掉 `App`，這顆按鈕只留在這一步。
+
+```js 06-project-init/src/theme.js
+import { createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: { main: '#1F6B4A' },
+  },
+});
+
+export default theme;
+```
+
+```diff 06-project-init/src/main.jsx
  // ...
-   <head>
-+    <style>@layer theme, base, mui, components, utilities;</style>
-     <meta charset="UTF-8" />
+ import { createRoot } from 'react-dom/client';
++import { ThemeProvider } from '@mui/material/styles';
++import CssBaseline from '@mui/material/CssBaseline';
+ import App from './App.jsx';
++import theme from './theme.js';
+ 
+ createRoot(document.getElementById('root')).render(
+   <StrictMode>
+-    <App />
++    <ThemeProvider theme={theme}>
++      <CssBaseline />
++      <App />
++    </ThemeProvider>
+   </StrictMode>,
+ );
+```
+
+```jsx 06-project-init/src/App.jsx
+import Button from '@mui/material/Button';
+
+export default function App() {
+  return <Button variant="contained">洛奇旅行</Button>;
+}
+```
+
+**解析**
+
+- 按鈕底色來自 `palette.primary.main`。`variant="contained"` 用這個色當底。
+- 少了 `ThemeProvider`，`Button` 只用 MUI 內建主題，讀不到這份 `palette`。
+- `CssBaseline` 渲染之後，`body` 的 `margin` 是 0。
+- `import './index.css'` 留在 `main.jsx` 最上面，樣式會在 `render` 之前進到頁面。
+
+### 步驟 3：Tailwind 與層疊層級
+
+先把 Tailwind 的 Vite 外掛接上，`index.css` 才能 `@import 'tailwindcss'`。接著要處理兩套樣式誰蓋過誰。
+
+沒有放進 layer 的規則，優先度高過任何有分層的規則。Tailwind 的 preflight 放在 `base`，會把按鈕內距歸零。MUI 的按鈕樣式若落在層級外面，後面的 class 就改不到它。`enableCssLayer` 把 MUI 收進中間的 `mui` 層：preflight 清不掉按鈕內距，排在最後的 utilities 仍蓋得過元件。
+
+{% mermaid graph LR %}
+  themeL["theme"] --> baseL["base"]
+  baseL --> muiL["mui"]
+  muiL --> compL["components"]
+  compL --> utilL["utilities"]
+{% endmermaid %}
+
+箭頭往右，後層蓋過前層。
+
+- `theme` 放設計代幣。
+- `base` 放 preflight，以及下一步才寫的 `body`。
+- `components` 放稍後才寫的 class。
+- `utilities` 放 Tailwind 的工具 class，所以欄數與間距蓋得過 MUI。
+
+層級順序只宣告一次，放在 `index.css` 第一行，而且要在 `@import` 之前。瀏覽器沿用這份順序，HTML 與執行時都不必再寫一次。
+
+```css 06-project-init/src/index.css
+@layer theme, base, mui, components, utilities;
+
+@import 'tailwindcss';
+```
+
+```diff 06-project-init/vite.config.js
  // ...
-     <title>洛奇旅行</title>
-+    <link rel="preconnect" href="https://fonts.googleapis.com" />
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
-+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
-   </head>
+ import react from '@vitejs/plugin-react';
++import tailwindcss from '@tailwindcss/vite';
+ 
+ export default defineConfig({
+-  plugins: [react()],
++  plugins: [react(), tailwindcss()],
+ });
+```
+
+```diff 06-project-init/src/main.jsx
  // ...
+ import { createRoot } from 'react-dom/client';
+-import { ThemeProvider } from '@mui/material/styles';
++import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
+ import CssBaseline from '@mui/material/CssBaseline';
+ // ...
+   <StrictMode>
+-    <ThemeProvider theme={theme}>
+-      <CssBaseline />
+-      <App />
+-    </ThemeProvider>
++    <StyledEngineProvider enableCssLayer>
++      <ThemeProvider theme={theme}>
++        <CssBaseline />
++        <App />
++      </ThemeProvider>
++    </StyledEngineProvider>
+   </StrictMode>,
+ // ...
+```
+
+**解析**
+
+- `plugins` 同時留著 `react()` 與 `tailwindcss()`。少了後者，`@import 'tailwindcss'` 不會被處理。
+- `StyledEngineProvider` 要包住會渲染 MUI 的那一層，`enableCssLayer` 才作用在這些元件上。
+- 開發伺服器聽哪個位址、打包時怎麼拆檔，留到最後的靜態部署再補。這一節的 `vite.config.js` 只加外掛。
+
+### 步驟 4：主題與色票
+
+色票只留在 `tokens`。`applyTokens` 在繪製之前把每一色寫成 CSS 變數，名稱是 `--loki-` 加上鍵名。`@theme inline` 用這些變數對到顏色 class，樣式表裡不再抄一份色碼。
+
+MUI 的 `palette` 要拿色碼算對比，所以寫十六進位。嫩綠 `#3FB27F` 配白字是 2.66:1，帶字的主按鈕改用 `#1F6B4A`（白字 6.44:1），hover 用 `#146845`。
+
+`@layer base` 用同一組變數設定頁面底色、文字色、選取範圍與鍵盤焦點。元件自己的 class 與 MUI 覆寫還不寫。把 `theme.js` 整份換成下面這樣，上一步的主色收進 `tokens.action`。
+
+```js 06-project-init/src/theme.js
+import { createTheme } from '@mui/material/styles';
+
+/**
+ * 色票來源。main.jsx 會寫進 --loki-*，Tailwind 讀這些變數。
+ * 嫩綠 #3FB27F 配白字僅 2.66:1，未達 WCAG AA（大字門檻 3:1 也未過）。
+ * 帶字的主按鈕與連結改用 action #1F6B4A（白字 6.44:1），hover #146845（6.78:1）。
+ */
+export const tokens = {
+  primary: '#3FB27F',
+  hover: '#2E8F63',
+  action: '#1F6B4A',
+  actionHover: '#146845',
+  accent: '#FFC94A',
+  secondary: '#FFC94A',
+  ink: '#1F2A44',
+  muted: '#3A4350',
+  paper: '#FAF8F3',
+  mist: '#E7F4EC',
+  foam: '#FFF6D6',
+  line: '#E4E0D4',
+  alert: '#C23B4A',
+  white: '#FFFFFF',
+};
+
+export const applyTokens = () => {
+  Object.entries(tokens).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(`--loki-${key}`, value);
+  });
+};
+
+const theme = createTheme({
+  cssVariables: true,
+  palette: {
+    primary: { main: tokens.action, light: tokens.primary, dark: tokens.actionHover, contrastText: tokens.white },
+    secondary: { main: tokens.accent, dark: '#E8B423', contrastText: tokens.ink },
+    error: { main: tokens.alert, contrastText: tokens.white },
+    text: { primary: tokens.ink, secondary: tokens.muted },
+    background: { default: tokens.paper, paper: tokens.white },
+    divider: tokens.line,
+  },
+  typography: {
+    fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+    h1: { fontWeight: 700, fontSize: '3rem', lineHeight: 1.15, letterSpacing: '-0.02em' },
+    h2: { fontWeight: 700, fontSize: '2.25rem', lineHeight: 1.25 },
+    h3: { fontWeight: 600, fontSize: '1.5rem', lineHeight: 1.35 },
+    body1: { fontSize: '1rem', lineHeight: 1.7 },
+    body2: { fontSize: '1rem', lineHeight: 1.7 },
+    button: { fontWeight: 700, fontSize: '1rem', textTransform: 'none' },
+  },
+});
+
+export default theme;
 ```
 
 ```css 06-project-init/src/index.css
@@ -196,27 +365,7 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 
 @import 'tailwindcss';
 
-/* 與 src/theme.js tokens 同一組。執行時 main.jsx 會再寫一次。 */
-:root {
-  --loki-primary: #3fb27f;
-  --loki-hover: #2e8f63;
-  --loki-action: #1f6b4a;
-  --loki-actionHover: #146845;
-  --loki-accent: #ffc94a;
-  --loki-secondary: #ffc94a;
-  --loki-ink: #1f2a44;
-  --loki-muted: #3a4350;
-  --loki-paper: #faf8f3;
-  --loki-mist: #e7f4ec;
-  --loki-foam: #fff6d6;
-  --loki-line: #e4e0d4;
-  --loki-alert: #c23b4a;
-  --loki-white: #ffffff;
-}
-
 @theme inline {
-  --font-sans: 'Noto Sans TC', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Noto Serif TC', ui-serif, serif;
   --color-primary: var(--loki-primary);
   --color-hover: var(--loki-hover);
   --color-action: var(--loki-action);
@@ -267,335 +416,95 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
     }
   }
 }
-
-@layer components {
-  .skip {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .skip:focus {
-    position: absolute;
-    top: 0.5rem;
-    left: 1rem;
-    z-index: 80;
-    width: auto;
-    height: auto;
-    margin: 0;
-    clip: auto;
-    overflow: visible;
-    border-radius: 999px;
-    background: var(--loki-white);
-    color: var(--loki-ink);
-    padding: 0.5rem 0.75rem;
-  }
-
-  .panel {
-    border-radius: 24px;
-    background: var(--loki-white);
-    box-shadow: var(--shadow-card);
-  }
-
-  .price-tag {
-    display: inline-block;
-    border-radius: 999px;
-    background: var(--loki-accent);
-    color: var(--loki-ink);
-    font-weight: 700;
-    line-height: 1.15;
-    padding: 0.12em 0.55em;
-  }
-
-  .text-link {
-    font-weight: 700;
-    color: var(--loki-action);
-    text-decoration-line: underline;
-    text-decoration-color: color-mix(in srgb, var(--loki-action) 45%, transparent);
-    text-underline-offset: 4px;
-  }
-
-  .text-link:hover {
-    color: var(--loki-actionHover);
-  }
-}
-
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: 24px;
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'liga';
-}
-```
-
-```diff 06-project-init/vite.config.js
- // ...
- import react from '@vitejs/plugin-react';
-+import tailwindcss from '@tailwindcss/vite';
- 
- export default defineConfig({
--  plugins: [react()],
-+  plugins: [react(), tailwindcss()],
-+  server: { host: 'localhost' },
-+  preview: { host: 'localhost' },
-+  build: {
-+    rollupOptions: {
-+      output: {
-+        manualChunks(id) {
-+          if (!id.includes('node_modules')) return undefined;
-+          if (id.includes('@mui') || id.includes('@emotion')) return 'mui';
-+          if (id.includes('react-dom') || id.includes('react-router') || id.includes('/react/')) return 'react';
-+          return undefined;
-+        },
-+      },
-+    },
-+  },
- });
 ```
 
 ```diff 06-project-init/src/main.jsx
  // ...
- import { createRoot } from 'react-dom/client';
-+import GlobalStyles from '@mui/material/GlobalStyles';
-+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
-+import CssBaseline from '@mui/material/CssBaseline';
-+import { BrowserRouter } from 'react-router';
  import App from './App.jsx';
+-import theme from './theme.js';
 +import theme, { applyTokens } from './theme.js';
  
 +applyTokens();
 +
- // ...
-   <StrictMode>
--    <App />
-+    <StyledEngineProvider enableCssLayer>
-+      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
-+      <ThemeProvider theme={theme}>
-+        <CssBaseline />
-+        <BrowserRouter>
-+          <App />
-+        </BrowserRouter>
-+      </ThemeProvider>
-+    </StyledEngineProvider>
-   </StrictMode>,
+ createRoot(document.getElementById('root')).render(
  // ...
 ```
 
 **解析**
 
-- 層級順序是 `theme`、`base`、`mui`、`components`、`utilities`。Tailwind 的 preflight 在 `base`，蓋不掉後面 `mui` 裡的按鈕內距。
-- `StyledEngineProvider` 的 `enableCssLayer` 讓 MUI 把樣式放進 `mui` 層。少了這層時，MUI 的樣式不屬於任何層，會壓過 Tailwind。
-- `GlobalStyles` 再宣告一次相同的層名，讓執行時注入的樣式也走這個順序。字型與 Material Symbols 的 `<link>` 放在 `index.html`。
-- `manualChunks` 只把 React 與 MUI 拆成獨立檔案，不改變畫面。
+- `applyTokens` 寫在 `render` 之前，第一批畫面就讀得到 `--loki-*`。
+- `cssVariables` 讓 MUI 另外寫出自己的 CSS 變數。Tailwind 不讀那些名字，只讀 `--loki-*`。
+- `--color-action` 對到 class `bg-action`、`text-action`。連字號是 Tailwind 的色名，`tokens` 裡的鍵維持駝峰。
+- 字型名稱下一步再換。這一步的 `fontFamily` 仍是系統無襯線字。
 
-### 步驟 3：色票
+### 步驟 5：字型與圖示
 
-色票只寫在 `tokens`。`applyTokens` 把它們寫進 `--loki-*`，Tailwind 的 `@theme` 讀這些變數。MUI 的 palette 要能算對比，所以寫色碼，不寫 `var()`。
+介面用 Noto Sans TC，標題用 Noto Serif TC。Material Symbols Outlined 是圖示字型：元素的文字內容寫圖示名稱，字型把名稱畫成圖。圖示元件留到頁首再寫，這裡只把字檔與 class 載進來。
 
-```js 06-project-init/src/theme.js
-import { createElement } from 'react';
-import { createTheme } from '@mui/material/styles';
+```diff 06-project-init/index.html
+ // ...
+     <title>洛奇旅行</title>
++    <link rel="preconnect" href="https://fonts.googleapis.com" />
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
++    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet" />
+   </head>
+ // ...
+```
 
-/**
- * 色票來源。main.jsx 會寫進 --loki-*，Tailwind 讀這些變數。
- * 嫩綠 #3FB27F 配白字僅 2.66:1，未達 WCAG AA（大字門檻 3:1 也未過）。
- * 帶字的主按鈕與連結改用 action #1F6B4A（白字 6.44:1），hover #146845（6.78:1）。
- */
-export const tokens = {
-  primary: '#3FB27F',
-  hover: '#2E8F63',
-  action: '#1F6B4A',
-  actionHover: '#146845',
-  accent: '#FFC94A',
-  secondary: '#FFC94A',
-  ink: '#1F2A44',
-  muted: '#3A4350',
-  paper: '#FAF8F3',
-  mist: '#E7F4EC',
-  foam: '#FFF6D6',
-  line: '#E4E0D4',
-  alert: '#C23B4A',
-  white: '#FFFFFF',
-};
+```diff 06-project-init/src/theme.js
+ // ...
+   typography: {
+-    fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+-    h1: { fontWeight: 700, fontSize: '3rem', lineHeight: 1.15, letterSpacing: '-0.02em' },
+-    h2: { fontWeight: 700, fontSize: '2.25rem', lineHeight: 1.25 },
+-    h3: { fontWeight: 600, fontSize: '1.5rem', lineHeight: 1.35 },
++    fontFamily: "'Noto Sans TC', ui-sans-serif, sans-serif",
++    h1: { fontFamily: "'Noto Serif TC', serif", fontWeight: 700, fontSize: '3rem', lineHeight: 1.15, letterSpacing: '-0.02em' },
++    h2: { fontFamily: "'Noto Serif TC', serif", fontWeight: 700, fontSize: '2.25rem', lineHeight: 1.25 },
++    h3: { fontFamily: "'Noto Serif TC', serif", fontWeight: 600, fontSize: '1.5rem', lineHeight: 1.35 },
+     body1: { fontSize: '1rem', lineHeight: 1.7 },
+     body2: { fontSize: '1rem', lineHeight: 1.7 },
+-    button: { fontWeight: 700, fontSize: '1rem', textTransform: 'none' },
++    button: { fontFamily: "'Noto Sans TC', sans-serif", fontWeight: 700, fontSize: '1rem', textTransform: 'none' },
+   },
+ // ...
+```
 
-export const applyTokens = () => {
-  Object.entries(tokens).forEach(([key, value]) => {
-    document.documentElement.style.setProperty(`--loki-${key}`, value);
-  });
-};
-
-
-/** Material Symbols 字型 icon（取代 MUI 內建 SVG）。 */
-const ms = (name, props = {}) => createElement('span', { 'aria-hidden': 'true', ...props, className: `material-symbols-outlined ${props.className || ''}`.trim() }, name);
-const SelectArrow = ({ className }) => ms('expand_more', { className });
-const CloseIcon = () => ms('close');
-const StepIcon = ({ active, completed, icon }) => {
-  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
-  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
-  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
-};
-
-const theme = createTheme({
-  cssVariables: true,
-  palette: {
-    primary: { main: tokens.action, light: tokens.primary, dark: tokens.actionHover, contrastText: tokens.white },
-    secondary: { main: tokens.accent, dark: '#E8B423', contrastText: tokens.ink },
-    error: { main: tokens.alert, contrastText: tokens.white },
-    text: { primary: tokens.ink, secondary: tokens.muted },
-    background: { default: tokens.paper, paper: tokens.white },
-    divider: tokens.line,
-  },
-  shape: { borderRadius: 12 },
-  typography: {
-    fontFamily: "'Noto Sans TC', ui-sans-serif, sans-serif",
-    h1: { fontFamily: "'Noto Serif TC', serif", fontWeight: 700, fontSize: '3rem', lineHeight: 1.15, letterSpacing: '-0.02em' },
-    h2: { fontFamily: "'Noto Serif TC', serif", fontWeight: 700, fontSize: '2.25rem', lineHeight: 1.25 },
-    h3: { fontFamily: "'Noto Serif TC', serif", fontWeight: 600, fontSize: '1.5rem', lineHeight: 1.35 },
-    body1: { fontSize: '1rem', lineHeight: 1.7 },
-    body2: { fontSize: '1rem', lineHeight: 1.7 },
-    button: { fontFamily: "'Noto Sans TC', sans-serif", fontWeight: 700, fontSize: '1rem', textTransform: 'none' },
-  },
-  components: {
-    MuiButton: {
-      defaultProps: { disableElevation: true },
-      styleOverrides: {
-        root: { borderRadius: 999, minHeight: 44, paddingInline: 22, fontWeight: 700 },
-        containedPrimary: {
-          backgroundColor: tokens.action,
-          color: tokens.white,
-          '&:hover': { backgroundColor: tokens.actionHover },
-        },
-        containedSecondary: {
-          backgroundColor: tokens.accent,
-          color: tokens.ink,
-          '&:hover': { backgroundColor: '#E8B423' },
-        },
-        outlined: { borderColor: tokens.line, color: tokens.ink, '&:hover': { borderColor: tokens.action, backgroundColor: tokens.mist } },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: { root: { borderRadius: 999 } },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: { rounded: { borderRadius: 24 } },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: { borderRadius: 16, backgroundColor: tokens.white },
-      },
-    },
-    MuiAccordion: {
-      styleOverrides: {
-        root: {
-          borderRadius: 24,
-          boxShadow: 'none',
-          border: `1px solid ${tokens.line}`,
-          backgroundColor: tokens.white,
-          '&:before': { display: 'none' },
-          '&.Mui-expanded': { margin: 0 },
-          '&:first-of-type, &:last-of-type': { borderRadius: 24 },
-        },
-      },
-    },
-    MuiAccordionSummary: {
-      defaultProps: { expandIcon: ms('expand_more') },
-      styleOverrides: { root: { minHeight: 56, paddingInline: 20, '&.Mui-expanded': { minHeight: 56 } } },
-    },
-    MuiChip: {
-      defaultProps: { deleteIcon: ms('cancel') },
-      styleOverrides: {
-        root: { borderRadius: 999, fontWeight: 700 },
-        colorSecondary: { backgroundColor: tokens.accent, color: tokens.ink },
-        colorPrimary: { backgroundColor: tokens.action, color: tokens.white },
-      },
-    },
-    MuiAppBar: {
-      defaultProps: { color: 'inherit', elevation: 0 },
-      styleOverrides: {
-        root: {
-          backgroundColor: 'rgb(250 248 243 / 92%)',
-          color: tokens.ink,
-          backdropFilter: 'blur(14px)',
-          borderBottom: `1px solid ${tokens.line}`,
-        },
-      },
-    },
-    MuiDrawer: {
-      styleOverrides: { paper: { borderRadius: '0 24px 24px 0', width: 280 } },
-    },
-    MuiDialog: {
-      styleOverrides: { paper: { borderRadius: 24 } },
-    },
-    MuiBackdrop: {
-      styleOverrides: { root: { backgroundColor: 'rgb(31 42 68 / 45%)' } },
-    },
-    MuiSelect: {
-      defaultProps: { IconComponent: SelectArrow },
-    },
-    MuiRating: {
-      defaultProps: {
-        icon: ms('star', { style: { fontVariationSettings: "'FILL' 1" } }),
-        emptyIcon: ms('star'),
-      },
-    },
-    MuiStepLabel: {
-      defaultProps: { slots: { stepIcon: StepIcon } },
-    },
-    MuiAlert: {
-      defaultProps: {
-        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
-        slots: { closeIcon: CloseIcon },
-      },
-      styleOverrides: {
-        root: { borderRadius: 16, alignItems: 'center' },
-        standardSuccess: {
-          backgroundColor: tokens.mist,
-          color: tokens.action,
-          '& .MuiAlert-icon': { color: tokens.action },
-        },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        root: { borderColor: tokens.line },
-        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
-      },
-    },
-    MuiTab: {
-      styleOverrides: { root: { textTransform: 'none', fontWeight: 700, minHeight: 48 } },
-    },
-  },
-});
-
-export default theme;
+```diff 06-project-init/src/index.css
+ // ...
+ @theme inline {
++  --font-sans: 'Noto Sans TC', ui-sans-serif, system-ui, sans-serif;
++  --font-serif: 'Noto Serif TC', ui-serif, serif;
+   --color-primary: var(--loki-primary);
+ // ...
+       animation: none !important;
+     }
+   }
+ }
++
++.material-symbols-outlined {
++  font-family: 'Material Symbols Outlined';
++  font-weight: normal;
++  font-style: normal;
++  font-size: 24px;
++  line-height: 1;
++  letter-spacing: normal;
++  text-transform: none;
++  display: inline-block;
++  white-space: nowrap;
++  word-wrap: normal;
++  direction: ltr;
++  -webkit-font-smoothing: antialiased;
++  font-feature-settings: 'liga';
++}
 ```
 
 **解析**
 
-- 嫩綠 `#3FB27F` 配白字只有 2.66:1，帶字的主按鈕改用 `#1F6B4A`，白字對比才過得了 4.5:1。
-- 圓角、陰影與字級集中在 `theme` 的 `components`。欄數與間距仍用 Tailwind class。
-- Select、Chip、Alert、Stepper 的圖示改走 Material Symbols，不再用 MUI 內建的 SVG。
-- `Noto Serif TC` 用在標題，`Noto Sans TC` 用在介面與表單。
-
+- `font-sans` 與 `font-serif` 給 Tailwind 的 `font-sans`、`font-serif`。MUI 的 `typography` 另外寫字型名稱，標題元件才會用襯線。
+- 圖示字型的網址帶 `display=block`，字檔到達前先不顯示名稱。內文字型用 `display=swap`，先用後備字再換。
+- `font-feature-settings: 'liga'` 把圖示名稱連成一個圖形。頁首的 `Icon` 會把名稱放進帶這個 class 的 `span`。
 # 路由與版面
 
 十二條路徑先全部掛上，每頁只顯示頁名。頁首、頁尾與連結可以先點過一輪，再逐頁換成真正的畫面。
@@ -632,6 +541,94 @@ export default function NavLinks({ onNavigate, id }) {
     </nav>
   );
 }
+```
+
+「跳到內容」的 class，以及頁首按鈕、頂列、抽屜與遮罩的覆寫，補在這一節。`shape.borderRadius` 先設成 12，按鈕再改成膠囊。
+
+```diff 06-project-init/src/index.css
+ // ...
+ }
+ 
++@layer components {
++  .skip {
++    position: absolute;
++    width: 1px;
++    height: 1px;
++    margin: -1px;
++    overflow: hidden;
++    clip: rect(0, 0, 0, 0);
++    white-space: nowrap;
++    border: 0;
++  }
++
++  .skip:focus {
++    position: absolute;
++    top: 0.5rem;
++    left: 1rem;
++    z-index: 80;
++    width: auto;
++    height: auto;
++    margin: 0;
++    clip: auto;
++    overflow: visible;
++    border-radius: 999px;
++    background: var(--loki-white);
++    color: var(--loki-ink);
++    padding: 0.5rem 0.75rem;
++  }
++}
++
+ .material-symbols-outlined {
+ // ...
+```
+
+```diff 06-project-init/src/theme.js
+ // ...
+     divider: tokens.line,
+   },
++  shape: { borderRadius: 12 },
+   typography: {
+ // ...
+     button: { fontFamily: "'Noto Sans TC', sans-serif", fontWeight: 700, fontSize: '1rem', textTransform: 'none' },
+   },
++  components: {
++    MuiButton: {
++      defaultProps: { disableElevation: true },
++      styleOverrides: {
++        root: { borderRadius: 999, minHeight: 44, paddingInline: 22, fontWeight: 700 },
++        containedPrimary: {
++          backgroundColor: tokens.action,
++          color: tokens.white,
++          '&:hover': { backgroundColor: tokens.actionHover },
++        },
++        containedSecondary: {
++          backgroundColor: tokens.accent,
++          color: tokens.ink,
++          '&:hover': { backgroundColor: '#E8B423' },
++        },
++        outlined: { borderColor: tokens.line, color: tokens.ink, '&:hover': { borderColor: tokens.action, backgroundColor: tokens.mist } },
++      },
++    },
++    MuiAppBar: {
++      defaultProps: { color: 'inherit', elevation: 0 },
++      styleOverrides: {
++        root: {
++          backgroundColor: 'rgb(250 248 243 / 92%)',
++          color: tokens.ink,
++          backdropFilter: 'blur(14px)',
++          borderBottom: `1px solid ${tokens.line}`,
++        },
++      },
++    },
++    MuiDrawer: {
++      styleOverrides: { paper: { borderRadius: '0 24px 24px 0', width: 280 } },
++    },
++    MuiBackdrop: {
++      styleOverrides: { root: { backgroundColor: 'rgb(31 42 68 / 45%)' } },
++    },
++  },
+ });
+ // ...
 ```
 
 ```jsx 06-project-init/src/components/SiteHeader.jsx
@@ -714,6 +711,7 @@ export default function SiteFooter() {
 - 頁首的 id 是 `site-header`，手機選單按鈕的 id 是 `nav-toggle`。
 - 頁尾另放一條「後台登入」，前台選單不放後台連結。
 - `skip` 這個 class 把「跳到內容」移出畫面，鍵盤焦點進來才顯示。
+- 按鈕改成膠囊、去掉陰影。頂列半透明貼在上緣，抽屜從右側打開，後面的遮罩是 Backdrop。
 
 ### 佔位頁
 
@@ -772,6 +770,23 @@ export default function SiteLayout() {
   layout --> miss["* NotFoundPage"]
 {% endmermaid %}
 
+`Routes` 要包在 `BrowserRouter` 裡才讀得到網址。上一步那顆按鈕從這裡換成路由表。
+
+```diff 06-project-init/src/main.jsx
+ // ...
+ import CssBaseline from '@mui/material/CssBaseline';
++import { BrowserRouter } from 'react-router';
+ import App from './App.jsx';
+ // ...
+         <CssBaseline />
+-        <App />
++        <BrowserRouter>
++          <App />
++        </BrowserRouter>
+       </ThemeProvider>
+ // ...
+```
+
 ```jsx 06-project-init/src/App.jsx
 import { Route, Routes } from 'react-router';
 import SiteLayout from './layouts/SiteLayout.jsx';
@@ -804,6 +819,7 @@ export default function App() {
 - `index` 就是 `/`。`booking/done` 與 `admin/login` 和較短的 path 寫在同一層，各自對自己的網址。
 - `tours/:id` 的 `id` 等詳情頁才用 `useParams` 讀取。路徑參數見第 11 篇。
 - 星號放在最後，前面的路徑都沒對上才會進來。
+- `BrowserRouter` 提供目前網址。`App` 裡的 `Routes` 靠它把路徑對到佔位頁。
 
 # 前台頁面
 
@@ -918,6 +934,32 @@ export function StoreProvider({ children }) {
 export const useStore = () => useContext(StoreContext);
 ```
 
+Select 的箭頭改成圖示字型。`ms` 產生一顆帶圖示名稱的 `span`，`MuiSelect` 用它取代預設的 SVG。
+
+```diff 06-project-init/src/theme.js
++import { createElement } from 'react';
+ import { createTheme } from '@mui/material/styles';
+ // ...
+   });
+ };
+ 
++
++/** Material Symbols 字型 icon（取代 MUI 內建 SVG）。 */
++const ms = (name, props = {}) => createElement('span', { 'aria-hidden': 'true', ...props, className: `material-symbols-outlined ${props.className || ''}`.trim() }, name);
++const SelectArrow = ({ className }) => ms('expand_more', { className });
++
+ const theme = createTheme({
+ // ...
+     MuiBackdrop: {
+       styleOverrides: { root: { backgroundColor: 'rgb(31 42 68 / 45%)' } },
+     },
++    MuiSelect: {
++      defaultProps: { IconComponent: SelectArrow },
++    },
+   },
+ // ...
+```
+
 ```jsx 06-project-init/src/components/FieldSelect.jsx
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -934,6 +976,34 @@ export default function FieldSelect({ id, label, value, onChange, options, hidde
     </FormControl>
   );
 }
+```
+
+搜尋表單用 `.panel`，文字連結用 `.text-link`。兩個 class 從這裡加進 `components` 層。
+
+```diff 06-project-init/src/index.css
+ // ...
+     padding: 0.5rem 0.75rem;
+   }
++
++  .panel {
++    border-radius: 24px;
++    background: var(--loki-white);
++    box-shadow: var(--shadow-card);
++  }
++
++  .text-link {
++    font-weight: 700;
++    color: var(--loki-action);
++    text-decoration-line: underline;
++    text-decoration-color: color-mix(in srgb, var(--loki-action) 45%, transparent);
++    text-underline-offset: 4px;
++  }
++
++  .text-link:hover {
++    color: var(--loki-actionHover);
++  }
+ }
+ // ...
 ```
 
 ```jsx 06-project-init/src/components/HeroSearch.jsx
@@ -969,6 +1039,39 @@ export default function HeroSearch() {
     </form>
   );
 }
+```
+
+價格膠囊是 `.price-tag`。左右切換的 IconButton 改成圓形。
+
+```diff 06-project-init/src/index.css
+ // ...
+     box-shadow: var(--shadow-card);
+   }
++
++  .price-tag {
++    display: inline-block;
++    border-radius: 999px;
++    background: var(--loki-accent);
++    color: var(--loki-ink);
++    font-weight: 700;
++    line-height: 1.15;
++    padding: 0.12em 0.55em;
++  }
+ 
+   .text-link {
+ // ...
+```
+
+```diff 06-project-init/src/theme.js
+ // ...
+         outlined: { borderColor: tokens.line, color: tokens.ink, '&:hover': { borderColor: tokens.action, backgroundColor: tokens.mist } },
+       },
+     },
++    MuiIconButton: {
++      styleOverrides: { root: { borderRadius: 999 } },
++    },
+     MuiAppBar: {
+ // ...
 ```
 
 ```jsx 06-project-init/src/components/HeroSlider.jsx
@@ -1032,6 +1135,30 @@ export default function HeroSlider({ slides }) {
     </section>
   );
 }
+```
+
+卡片的圓角與陰影、Chip 的配色與刪除圖示，補進主題。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiIconButton: {
+       styleOverrides: { root: { borderRadius: 999 } },
+     },
++    MuiCard: {
++      styleOverrides: {
++        root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
++      },
++    },
++    MuiChip: {
++      defaultProps: { deleteIcon: ms('cancel') },
++      styleOverrides: {
++        root: { borderRadius: 999, fontWeight: 700 },
++        colorSecondary: { backgroundColor: tokens.accent, color: tokens.ink },
++        colorPrimary: { backgroundColor: tokens.action, color: tokens.white },
++      },
++    },
+     MuiAppBar: {
+ // ...
 ```
 
 ```jsx 06-project-init/src/components/TourCard.jsx
@@ -1113,6 +1240,23 @@ export default function ReasonList() {
     </div>
   );
 }
+```
+
+星星改用圖示字型。實心星加上 `FILL` 1，空心星維持線框。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiSelect: {
+       defaultProps: { IconComponent: SelectArrow },
+     },
++    MuiRating: {
++      defaultProps: {
++        icon: ms('star', { style: { fontVariationSettings: "'FILL' 1" } }),
++        emptyIcon: ms('star'),
++      },
++    },
+   },
+ // ...
 ```
 
 ```jsx 06-project-init/src/components/ReviewList.jsx
@@ -1235,6 +1379,7 @@ export default function App() {
 - 搜尋把地區與天數寫進查詢字串，導到 `/tours`。真正的篩選留在列表頁。
 - 評價只存 `tourId`，標題從行程陣列回查，兩處標題才不會各寫一份。
 - `Store` 目前只提供 `tours`。報名陣列等詳情頁要算剩餘名額再放進來。
+- `.panel`、`.text-link`、`.price-tag` 寫在 `components` 層。Select 箭頭、圓形 IconButton、卡片、Chip 與星星的覆寫寫進 `theme.js`。
 
 {% note success %}
 **換你試試：**
@@ -1369,6 +1514,34 @@ export default function App() {
 +};
 ```
 
+手風琴的圓角、邊線與展開圖示補進主題。展開圖示沿用 `ms`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+         root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
+       },
+     },
++    MuiAccordion: {
++      styleOverrides: {
++        root: {
++          borderRadius: 24,
++          boxShadow: 'none',
++          border: `1px solid ${tokens.line}`,
++          backgroundColor: tokens.white,
++          '&:before': { display: 'none' },
++          '&.Mui-expanded': { margin: 0 },
++          '&:first-of-type, &:last-of-type': { borderRadius: 24 },
++        },
++      },
++    },
++    MuiAccordionSummary: {
++      defaultProps: { expandIcon: ms('expand_more') },
++      styleOverrides: { root: { minHeight: 56, paddingInline: 20, '&.Mui-expanded': { minHeight: 56 } } },
++    },
+     MuiChip: {
+ // ...
+```
+
 ```jsx 06-project-init/src/components/TourFilters.jsx
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
@@ -1442,6 +1615,36 @@ export default function TourFilters() {
     </form>
   );
 }
+```
+
+提示框的圓角、成功色與圖示補進主題。關閉鈕也改成圖示字型。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const SelectArrow = ({ className }) => ms('expand_more', { className });
++const CloseIcon = () => ms('close');
+ 
+ const theme = createTheme({
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
++    MuiAlert: {
++      defaultProps: {
++        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
++        slots: { closeIcon: CloseIcon },
++      },
++      styleOverrides: {
++        root: { borderRadius: 16, alignItems: 'center' },
++        standardSuccess: {
++          backgroundColor: tokens.mist,
++          color: tokens.action,
++          '& .MuiAlert-icon': { color: tokens.action },
++        },
++      },
++    },
+   },
+ // ...
 ```
 
 ```jsx 06-project-init/src/pages/ToursPage.jsx
@@ -1526,6 +1729,7 @@ export default function ToursPage() {
 - `theme` 由首頁的主題圖帶入。清除地區與價格時要留著它，拿掉主題用 Chip 的 `onDelete`。
 - 網址沒寫排序時，當成價格由低到高，網址就不必每筆都帶預設值。
 - `id="tour-list"` 同時包住有結果與沒結果，空狀態才不會落在這個節點外面。
+- 手風琴的外框與 Alert 的圖示在這一節寫進 `theme.js`。關於頁的常見問題沿用同一組手風琴。
 
 ## 行程詳情
 
@@ -2084,6 +2288,22 @@ export default function MemberGate({ children }) {
 }
 ```
 
+文字欄的外框圓角補進主題。
+
+```diff 06-project-init/src/theme.js
+ // ...
+         root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
+       },
+     },
++    MuiOutlinedInput: {
++      styleOverrides: {
++        root: { borderRadius: 16, backgroundColor: tokens.white },
++      },
++    },
+     MuiAccordion: {
+ // ...
+```
+
 ```jsx 06-project-init/src/components/BookingForm.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -2201,6 +2421,29 @@ export default function BookingForm({ tour, departure, user }) {
  // ...
 ```
 
+步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const CloseIcon = () => ms('close');
++const StepIcon = ({ active, completed, icon }) => {
++  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
++  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
++  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
++};
+ 
+ const theme = createTheme({
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
++    MuiStepLabel: {
++      defaultProps: { slots: { stepIcon: StepIcon } },
++    },
+     MuiAlert: {
+ // ...
+```
+
 ```jsx 06-project-init/src/pages/BookingPage.jsx
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
@@ -2279,6 +2522,7 @@ export default function BookingPage() {
 - 姓名與 email 唯讀。電話是空的就不能送出，`id="booking-form"` 留在這張表單上。
 - `createBooking` 把新的一筆插到陣列最前面，並記下 `lastBooking`，完成頁才讀得到剛送出的內容。
 - 提示文字放在 `notice`。版面用 Snackbar 顯示，重新整理就回到種子，提示也跟著消失。
+- 輸入框圓角與步驟圖示在這一節補進 `theme.js`。
 
 {% note success %}
 **換你試試：**
@@ -2559,6 +2803,20 @@ export default function AboutPage() {
 
 按下按鈕寫入的是固定的旅客林可，沒有接上 Google。`next` 只接受站內路徑，通過之後頁首要改顯示姓名與登出。
 
+登入對話框的圓角補進主題。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiDrawer: {
+       styleOverrides: { paper: { borderRadius: '0 24px 24px 0', width: 280 } },
+     },
++    MuiDialog: {
++      styleOverrides: { paper: { borderRadius: 24 } },
++    },
+     MuiBackdrop: {
+ // ...
+```
+
 ```jsx 06-project-init/src/pages/LoginPage.jsx
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -2691,6 +2949,7 @@ export default function SiteHeader() {
 - `next` 要以單一斜線開頭。`//` 開頭會被瀏覽器當成協定相對網址，這種值退回首頁。
 - 已經登入時不再呼叫 `signIn`，直接前往 `next`。
 - 頁首從這一節起讀 session。路徑以 `/admin` 開頭時，商標與選單改成後台那一組。
+- 登入 Dialog 的圓角在這一節補進 `theme.js`。
 
 # 後台與找不到頁
 
@@ -2699,6 +2958,20 @@ export default function SiteHeader() {
 ## 後台登入
 
 管理員是另一組寫進同一個 session 的身份。按下之後前往 `/admin`，擋人的邏輯放在後台頁，不放在這一頁。
+
+`Paper` 的圓角補進主題。白底與陰影仍用已經寫好的 `.panel`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+         root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
+       },
+     },
++    MuiPaper: {
++      styleOverrides: { rounded: { borderRadius: 24 } },
++    },
+     MuiOutlinedInput: {
+ // ...
+```
 
 ```jsx 06-project-init/src/pages/AdminLoginPage.jsx
 import { useEffect } from 'react';
@@ -2743,6 +3016,7 @@ export default function AdminLoginPage() {
 - `signInAdmin` 寫入的 `role` 是 `admin`，信箱是 `admin@gmail.com`。與旅客共用同一個儲存鍵，後來登入的會蓋掉前一個。
 - 這一頁不檢查目前是誰。已經是管理員時再按一次，仍然前往 `/admin`。
 - 頁首在後台路徑會顯示「後台登入」，連到的就是這一頁。
+- `Paper` 的圓角在這一節補進 `theme.js`。
 
 ## 行程管理
 
@@ -2843,6 +3117,21 @@ export default function AdminGate({ children }) {
 }
 ```
 
+分頁取消大寫，高度改成 48。
+
+```diff 06-project-init/src/theme.js
+ // ...
+           '& .MuiAlert-icon': { color: tokens.action },
+         },
+       },
+     },
++    MuiTab: {
++      styleOverrides: { root: { textTransform: 'none', fontWeight: 700, minHeight: 48 } },
++    },
+   },
+ // ...
+```
+
 ```jsx 06-project-init/src/components/AdminTabs.jsx
 import { useLocation, useNavigate } from 'react-router';
 import Tab from '@mui/material/Tab';
@@ -2938,6 +3227,24 @@ export default function TourForm({ editingId, draft, setDraft, onClear, onSaved 
 }
 
 export { empty };
+```
+
+表頭鋪上 mist，分隔線用色票的 `line`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiAlert: {
+ // ...
+       },
+     },
++    MuiTableCell: {
++      styleOverrides: {
++        root: { borderColor: tokens.line },
++        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
++      },
++    },
+     MuiTab: {
+ // ...
 ```
 
 ```jsx 06-project-init/src/pages/AdminToursPage.jsx
@@ -3044,6 +3351,7 @@ export default function AdminToursPage() {
 - `saveTour` 找到舊資料時，保留表單沒有的圖集、每日行程與費用。編號已存在，或編號、標題是空的，函式回傳錯誤字串。
 - 刪除前先開 Dialog。桌機用表格，窄螢幕改成一筆一張卡片。
 - `AdminTabs` 用目前路徑決定選到哪一頁，報名清單那一頁會再沿用它。
+- 分頁與表頭的覆寫在這一節補進 `theme.js`。
 
 ## 報名清單
 
@@ -3307,11 +3615,36 @@ export default function NotFoundPage() {
  // ...
 ```
 
+開發伺服器與 preview 只綁 localhost。`manualChunks` 把 React 與 MUI 拆成獨立檔，畫面不變。
+
+```diff 06-project-init/vite.config.js
+ // ...
+ export default defineConfig({
+   plugins: [react(), tailwindcss()],
++  server: { host: 'localhost' },
++  preview: { host: 'localhost' },
++  build: {
++    rollupOptions: {
++      output: {
++        manualChunks(id) {
++          if (!id.includes('node_modules')) return undefined;
++          if (id.includes('@mui') || id.includes('@emotion')) return 'mui';
++          if (id.includes('react-dom') || id.includes('react-router') || id.includes('/react/')) return 'react';
++          return undefined;
++        },
++      },
++    },
++  },
+ });
+```
+
 **解析**
 
 - `pnpm build` 先產出 `dist/`，再複製一份 `404.html`，靜態主機才接得住重新整理後的路徑。
+- `server` 與 `preview` 只聽 localhost，不對區網開放。
+- `manualChunks` 只拆檔，不改變路由或樣式。
 - 網站從 `/` 開始時，`BrowserRouter` 維持預設，不必加 `basename`。
-- 做完後的原始碼應與 `05-project-prototype` 一致，包含這一條 build 指令。
+- 做完後的原始碼應與 `05-project-prototype` 一致，包含這條 build 指令，以及 `vite.config.js` 的 localhost 與 `manualChunks`。
 
 ## 下一步
 
@@ -3326,7 +3659,7 @@ export default function NotFoundPage() {
 # 本篇重點回顧
 
 - Vite 專案先清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
-- `@layer` 要最先宣告，MUI 的樣式才進得了 `mui` 層，preflight 不會把按鈕內距清掉。
+- `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
 - 十二條路由先用佔位元件接通，頁首頁尾經由 `Outlet` 共用。
 - 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。
 - 旅客與管理員是兩種 session。報名頁與後台頁各自先檢查身份。
@@ -3340,6 +3673,10 @@ export default function NotFoundPage() {
 - 套件管理器（pnpm）
 - 依賴（dependency）
 - 開發依賴（devDependency）
+- 元件庫（Material UI）
+- 主題提供者（ThemeProvider）
+- 基準樣式（CssBaseline）
+- 樣式引擎（StyledEngineProvider）
 - 層疊層級（cascade layer）
 - 預設樣式（preflight）
 - 主題（theme）
