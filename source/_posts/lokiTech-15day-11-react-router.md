@@ -1926,73 +1926,48 @@ const central = (
 
 # 選讀：部署到 GitHub Pages
 
-假設把 `04-react-router` 這份專案單獨推成自己的 GitHub 倉庫 `my-notes`，開啟 GitHub Pages 後，網址會是 `https://帳號.github.io/my-notes/`。`/my-notes/` 這段是 GitHub 依倉庫名稱加上的網址前綴，打包後的檔案與路由都要算進去。注意 `base` 是網址的前綴，不是資料夾路徑：專案在電腦上放哪個資料夾、在哪裡跑 build 都不影響它。`vite` 的 `base` 負責打包後的檔案路徑，`basename` 負責路由。另外，GitHub Pages 對未知路徑會找 `404.html`。單頁應用要讓那份檔案跟 `index.html` 相同，重新整理 `/demos/01` 這種子路徑才進得了 React。`HashRouter` 則是伺服器只肯回傳一個檔案時的退路。
+`pnpm build` 產生的 `dist` 就是一般靜態檔案，網站從 `/` 開始，首頁是 `dist/index.html`。放上 GitHub Pages 後，從首頁點左側目錄進 `/demos/01` 都正常。問題出在直接打開或重新整理 `/demos/01`：GitHub Pages 是純靜態主機，會去找 `demos/01` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
 
-## basename 與 404.html
+GitHub Pages 不能設定「其他路徑都改走 `index.html`」的規則，常見的做法有兩種：
 
-建置前在 Vite 設定 `base`，下面用 `/my-notes/`，對應上面的倉庫網址。路由的 `basename` 用同一個前綴，但拿掉結尾斜線，而且讀 Vite 提供的 `BASE_URL`，前綴就只寫在 `base` 一處。建置完成後，把 `dist/index.html` 複製成 `dist/404.html`。
+- 用 `404.html` 接住：找不到檔案時 GitHub 會回傳 `404.html`。讓它的內容和 `index.html` 一樣，React 照樣載入，React Router 再依網址畫出那一頁。
+- 改用 `HashRouter`：路徑放在 `#` 後面，伺服器永遠只收到首頁的請求。
 
-**語法**
-
-```jsx
-/**
- * 路由的基底路徑。Link 與 Route 仍寫從根目錄算起的路徑，實際網址會先接上這一段。
- * @param {object} props
- * @param {string} [props.basename] 不含結尾斜線的前綴。開發時 BASE_URL 去掉斜線後是空字串
- * @param {React.ReactNode} props.children 路由表與其頁面
- * @returns {React.ReactElement}
- */
-const rooted = <BrowserRouter basename={basename}>{/* App */}</BrowserRouter>;
-```
+## 404.html
 
 **觀念**
 
-本機 `pnpm dev` 的 `BASE_URL` 是 `/`，去掉斜線後是空字串，網址與現在一樣。只有建置時把 `base` 設成專案頁路徑，前綴才會出現。元件裡的 `to="/demos/01"` 仍寫 `/demos/01`，實際會指向 `/my-notes/demos/01`。結尾斜線只留在 `base`。`404.html` 必須在每次建置後重新複製，舊的那份不會含這一次的檔名雜湊。
-
-```diff 04-react-router/src/main.jsx
- import './index.css';
- 
-+const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
-+
- createRoot(document.getElementById('root')).render(
-   <StrictMode>
--    <BrowserRouter>
-+    <BrowserRouter basename={basename}>
-       <App />
- // ...
-```
-
-```diff 04-react-router/vite.config.js
- export default defineConfig({
-+  base: '/my-notes/',
-   plugins: [react(), tailwindcss()],
- });
-```
-
-`pnpm build` 之後再複製。`dist/404.html` 的內容與當時的 `dist/index.html` 相同。
+每次 `pnpm build` 之後，把 `dist/index.html` 複製成 `dist/404.html`，再把 `dist` 部署上去。打包後的檔名帶有雜湊，所以每次建置都要重新複製，不能沿用舊的那份。
 
 ```bash
 cp dist/index.html dist/404.html
 ```
 
-本機若已把 `base` 改成專案頁路徑，開發時的網址也要加上這段前綴才打得開。看完這節，把 `base` 那一行拿掉，平常的 `pnpm dev` 與 `pnpm build` 才從網站根目錄輸出。`basename` 那一行可以留著。
+也可以寫進 `package.json`，建置完自動複製：
+
+```diff 04-react-router/package.json
+ "scripts": {
+-  "build": "vite build",
++  "build": "vite build && cp dist/index.html dist/404.html",
+ // ...
+```
+
+這份 `404.html` 回傳時，HTTP 狀態碼仍是 404，但瀏覽器照樣畫出頁面，使用者看到的就是正確的那一則。
+
+{% note info %}
+**網址多一段子路徑時：**
+用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找；並在 `BrowserRouter` 設 `basename={import.meta.env.BASE_URL.replace(/\/$/, '')}`，讓路由也從這段算起。元件裡的 `to="/demos/01"` 都不用改。
+{% endnote %}
 
 {% note success %}
 **換你試試：**
-假設倉庫改名成 `lecture`，把例子的 `/my-notes/` 改成 `/lecture/`。`basename` 那一行不要改寫死。建置後看 `dist/index.html` 的 script 路徑應含 `lecture`。看完把 `base` 拿掉。
+在 `04-react-router` 執行 `pnpm build`，再執行 `pnpm preview`，打開首頁後點進任一則，再直接重新整理，看看會發生什麼事。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-只改 Vite 的 `base`。路由仍讀 `BASE_URL`，所以前綴只寫一處。改完要重新建置，再複製 404。本機練習結束後刪掉 `base`。
-
-```diff 04-react-router/vite.config.js
- // ...
--  base: '/my-notes/',
-+  base: '/lecture/',
- // ...
-```
+`pnpm preview` 跟開發伺服器一樣會把未知路徑改送 `index.html`，所以重新整理也正常。換到 GitHub Pages 就不會這樣，所以才需要 `404.html`。
 
 </details>
 
@@ -2060,7 +2035,7 @@ createRoot(document.getElementById('root')).render(
 - 篩選目錄用查詢 `?q=`，`useSearchParams` 讀、`setSearchParams` 寫，重新整理仍留著同一組結果。
 - 分散式把 `*` 放在版型裡，找不到時目錄還在；集中式把 `*` 與版型並列，未知網址整頁替換。
 - 選讀的 `useLocation` 讀整段位置，常用欄位是 `pathname`、`search` 與 `hash`。
-- 選讀把這個筆記網站部署到 GitHub Pages 時，要同時處理 `base`、`basename` 與 `404.html`，`HashRouter` 是靜態主機的退路。
+- 選讀：GitHub Pages 不會把未知路徑改送 `index.html`，建置後複製出 `404.html` 接住子路徑；`HashRouter` 是另一條退路。網址有子路徑時才需要 `base` 與 `basename`。
 
 # 專有名詞中英對照
 
@@ -2137,7 +2112,7 @@ createRoot(document.getElementById('root')).render(
 
 ## 選讀：部署到 GitHub Pages
 
-這一組是把筆記網站放到子路徑時的前綴，以及井字號路由這條退路。`base` 管打包，`basename` 管路由。
+這一組是讓靜態主機接住子路徑的做法，以及網址有子路徑時的前綴。`base` 管打包，`basename` 管路由。
 
 - 單頁應用（single-page application）
 - 基底路徑（basename）
