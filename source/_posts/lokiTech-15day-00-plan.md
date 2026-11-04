@@ -39,7 +39,7 @@ date: 2026-08-30 08:00:00
 | 3 Tailwind | ~8h | utilities、RWD、dark mode、改寫先前頁面、公式表 | {% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-05-tailwind-cheatsheet %} |
 | 4 JavaScript | ~32h | 變數、函式、陣列／物件、DOM／事件、fetch／async、modules、小練習 | {% post_link lokiTech-15day-06-js-basics %}、{% post_link lokiTech-15day-07-js-dom %}、{% post_link lokiTech-15day-08-js-async %} |
 | 5 React | ~24h | 基礎約 8h：JSX、元件、狀態、列表與表單；進階約 8h：effect、共用狀態；Router 約 8h | {% post_link lokiTech-15day-09-react-basics %}、{% post_link lokiTech-15day-10-react-advanced %}、{% post_link lokiTech-15day-11-react-router %} |
-| 6 結業專案 | ~16h | 規劃、元件組裝、API、佈署 GitHub Pages、demo | {% post_link lokiTech-15day-12-project-travel %} |
+| 6 結業專案 | ~16h | 切版、功能化（API）、佈署 GitHub Pages、demo | {% post_link lokiTech-15day-12-project-travel %}、{% post_link lokiTech-15day-13-project-travel-api %} |
 
 # 作業對到專題元件
 
@@ -78,4 +78,4 @@ date: 2026-08-30 08:00:00
 
 # 本篇重點回顧
 
-約 120 小時分成六個階段：工具與 HTML、CSS、Tailwind、JavaScript、React、結業專案，最後佈上 GitHub Pages。React 分基礎、進階與 Router 三篇，合計仍約 24 小時。六份作業分別是頁首導覽、主視覺、行程卡片、行程詳情、報名表、頁尾。舊的 jQuery／Bootstrap 教材留著當選讀；這條路徑不上 TypeScript。
+約 120 小時分成六個階段：工具與 HTML、CSS、Tailwind、JavaScript、React、結業專案，最後佈上 GitHub Pages。React 分基礎、進階與 Router 三篇，合計仍約 24 小時。結業專案分切版與功能化兩篇。六份作業分別是頁首導覽、主視覺、行程卡片、行程詳情、報名表、頁尾。舊的 jQuery／Bootstrap 教材留著當選讀；這條路徑不上 TypeScript。

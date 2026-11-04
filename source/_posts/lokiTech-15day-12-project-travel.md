@@ -1,5 +1,5 @@
 ---
-title: "結業專案：洛奇旅行"
+title: "結業專案：洛奇旅行（一）切版"
 categories:
   - 職訓課程
   - 本年度課程
@@ -10,7 +10,7 @@ date: 2026-08-30 10:11:00
 
 ![](assets/images/banner/react.png)
 
-這一章把 React、MUI 與 Tailwind 收成一個多頁網站。先接通十二條路由的佔位頁，再逐頁換成真正的畫面，假資料跟著一起補齊。打包沿用 {% post_link lokiTech-15day-11-react-router %}。
+這一章做洛奇旅行的切版：把 React、MUI 與 Tailwind 收成一個多頁網站。先接通十二條路由的佔位頁，再逐頁換成真正的畫面，假資料跟著一起補齊。打包沿用 {% post_link lokiTech-15day-11-react-router %}。
 
 <!-- more -->
 
@@ -2951,9 +2951,9 @@ export default function SiteHeader() {
 - 頁首從這一節起讀 session。路徑以 `/admin` 開頭時，商標與選單改成後台那一組。
 - 登入 Dialog 的圓角在這一節補進 `theme.js`。
 
-# 後台與找不到頁
+# 後台與部署
 
-後台兩頁先確認 `role` 為 `admin`。旅客進得了網址，畫面只留警告與前往後台登入的按鈕。
+這一章把切版收尾。後台兩頁先確認 `role` 為 `admin`，旅客進得了網址時畫面只留警告與前往後台登入的按鈕。找不到的路徑換成正式頁面，打包時再讓靜態主機接得住重新整理後的網址。
 
 ## 後台登入
 
@@ -3598,10 +3598,6 @@ export default function NotFoundPage() {
 - 詳情頁把原先的佔位換成這個元件，兩處文案才會一致。
 - 刪掉 `src/components/Placeholder.jsx`。十二條路徑到這裡都已換成完成品裡的頁面。
 
-# 完成專案
-
-路由、頁面與 `src/data/` 到上一節結束時應與完成品相同。剩下的是打包，以及這份網站接下來要補的功能。
-
 ## 靜態部署
 
 未知路徑為什麼要另外準備一個 404 頁，見 {% post_link lokiTech-15day-11-react-router %} 的選讀。這份專案在打包之後把首頁複製成那一頁；網站掛在網域根目錄時，路由維持預設。
@@ -3646,15 +3642,7 @@ export default function NotFoundPage() {
 - 網站從 `/` 開始時，`BrowserRouter` 維持預設，不必加 `basename`。
 - 做完後的原始碼應與 `05-project-prototype` 一致，包含這條 build 指令，以及 `vite.config.js` 的 localhost 與 `manualChunks`。
 
-## 下一步
-
-下一階段是 React 功能規劃。可以複製 `05-project-prototype` 當底，也可以繼續用自己按這篇做完、已經與完成品相同的那一份。
-
-**解析**
-
-- 完成品裡的登入、報名與後台儲存都只改記憶體，重新整理回到 `src/data/` 的種子。
-- 功能規劃要決定哪些互動留在瀏覽器、哪些以後才需要真正的後端。這一章不接 Firebase，也不接 Google 登入。
-- 色票、路由表與契約 id（`site-header`、`nav-toggle`、`tour-list`、`booking-form`）維持不變，後面的功能加在這些頁面之上。
+切版到此為止。同一份畫面怎麼接上資料層、Hooks、Firestore 與管理員登入，見 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 # 本篇重點回顧
 
@@ -3664,6 +3652,7 @@ export default function NotFoundPage() {
 - 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。
 - 旅客與管理員是兩種 session。報名頁與後台頁各自先檢查身份。
 - 打包沿用第 11 篇：`vite build` 之後複製一份 `404.html`。
+- 切版在這一章結束。資料層、Hooks、Firestore 與管理員登入寫在下一篇。
 
 # 專有名詞中英對照
 
