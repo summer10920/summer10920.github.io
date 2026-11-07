@@ -77,10 +77,10 @@ pnpm dev
 
 ## 記憶體狀態與本章範圍
 
-切版裡的登入、報名與後台儲存只改這次開啟的記憶體。重新整理之後，畫面回到 `src/data/` 的種子。這一章要換掉的是這一層讀寫。版面、色票與路由留在第 12 篇的結果。
+切版裡的登入、報名與後台儲存只改這次開啟的記憶體。重新整理之後，畫面回到各功能 `mock.data.js` 的種子。這一章要換掉的是這一層讀寫。版面、色票與路由留在第 12 篇的結果。
 
 {% mermaid graph LR %}
-  seed["src/data 種子"] --> store["StoreProvider"]
+  seed["features/tours/mock.data.js"] --> store["StoreProvider"]
   store --> pages["頁面"]
   session["sessionStorage"] --> gate["假的登入"]
 {% endmermaid %}
@@ -242,11 +242,11 @@ export const auth = app ? getAuth(app) : null;
 
 `getDocs` 讀整個集合，`getDoc` 讀一份文件。`setDoc` 寫到指定 id，行程用這個，id 就是切版裡的 `tour.id`。`addDoc` 讓 Firestore 產生 id，訂單用這個。`updateDoc` 只改帶上去的欄位。`serverTimestamp` 由伺服器填寫入時間，清單依它由新到舊。
 
-種子函式走訪 `src/data/tours.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。
+種子函式走訪 `src/features/tours/mock.data.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。
 
 ```js 07-project-final/src/api.js
 import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
-import { tours } from './data/tours.js';
+import { tours } from './features/tours/mock.data.js';
 import { db, missingFirebaseMessage } from './firebase.js';
 
 const database = () => {
@@ -297,26 +297,6 @@ export const updateOrderStatus = async (id, status) => {
 - `getTour` 找不到文件時回傳 `null`，詳情頁把它畫成找不到頁面。
 - `createOrder` 回傳的物件還不含伺服器時間戳。完成頁只用這份回傳，不立刻再讀一次訂單。
 - `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。
-
-{% note success %}
-**換你試試：**
-讓種子按鈕連已存在的行程也覆寫。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-拿掉存在就略過的那一行之後，每次按下都會用 `src/data/tours.js` 蓋掉雲端上的同名文件。
-
-```diff 07-project-final/src/api.js
- // ...
-     const ref = doc(base, 'tours', tour.id);
--    if ((await getDoc(ref)).exists()) continue;
-     await setDoc(ref, tour);
- // ...
-```
-
-</details>
 
 ## 自訂 Hook
 
@@ -388,15 +368,15 @@ export default function LoadGate({ loading, error, children }) {
 
 `store.jsx` 先留著。報名與後台下一節才脫離它。
 
-```diff 07-project-final/src/pages/HomePage.jsx
+```diff 07-project-final/src/features/home/HomePage.jsx
  import { useEffect } from 'react';
 +import Alert from '@mui/material/Alert';
  import Typography from '@mui/material/Typography';
  // ...
- import TourCard from '../components/TourCard.jsx';
--import { useStore } from '../store.jsx';
-+import LoadGate from '../LoadGate.jsx';
-+import { useTours } from '../useAsync.js';
+ import TourCard from '../tours/components/TourCard.jsx';
+-import { useStore } from '../../store.jsx';
++import LoadGate from '../../LoadGate.jsx';
++import { useTours } from '../../useAsync.js';
 
  export default function HomePage() {
 -  const { tours } = useStore();
@@ -413,14 +393,14 @@ export default function LoadGate({ loading, error, children }) {
  // ...
 ```
 
-列表的 `useMemo` 必須留在提前返回之前。Hook 不能寫在 `if` 後面。集合還是空的時候，空狀態改提示去種子頁。篩選把已有的行程濾光時，仍維持原本的「沒有符合的條件」。
+篩選與排序仍在 render 時直接計算。`useTours` 與 `useEffect` 這些 Hook 要留在提前返回之前，不能寫在 `if` 後面。集合還是空的時候，空狀態的說明改提示去種子頁。篩選把已有的行程濾光時，說明仍請對方換地區、天數或價格條件。
 
-```diff 07-project-final/src/pages/ToursPage.jsx
- import TourFilters from '../components/TourFilters.jsx';
-+import LoadGate from '../LoadGate.jsx';
- import { matchPrice } from '../format.js';
--import { useStore } from '../store.jsx';
-+import { useTours } from '../useAsync.js';
+```diff 07-project-final/src/features/tours/ToursPage.jsx
+ import TourFilters from './components/TourFilters.jsx';
++import LoadGate from '../../LoadGate.jsx';
+ import { matchPrice } from '../../format.js';
+-import { useStore } from '../../store.jsx';
++import { useTours } from '../../useAsync.js';
 
  export default function ToursPage() {
 -  const { tours } = useStore();
@@ -429,27 +409,25 @@ export default function LoadGate({ loading, error, children }) {
    const [params, setParams] = useSearchParams();
    useEffect(() => { document.title = '行程 · 洛奇旅行'; }, []);
  // ...
-   }, [params, tours]);
+   const visible = [...list].sort(rank[sort] || rank['price-asc']);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
 
    return (
  // ...
--          <Alert severity="info">沒有符合的條件。</Alert>
-+          <Alert severity="info">{tours.length ? '沒有符合的條件。' : '還沒有行程。請先打開 /seed 寫入種子。'}</Alert>
-           <Typography id="empty-title" variant="h2" className="mt-3">沒有符合的行程</Typography>
+           <Typography id="empty-title" variant="h2">沒有符合的行程</Typography>
 -          <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
-+          <p className="mt-3 max-w-prose">{tours.length ? '換一個地區或天數，或清掉價格條件。' : '種子寫入後再回到這一頁。'}</p>
++          <p className="mt-3 max-w-prose">{tours.length ? '換一個地區或天數，或清掉價格條件。' : '還沒有行程。請先打開 /seed 寫入種子。'}</p>
  // ...
 ```
 
-```diff 07-project-final/src/pages/TourDetailPage.jsx
- import NotFoundPage from './NotFoundPage.jsx';
--import { ntd, seatsLeft } from '../format.js';
--import { useSession } from '../session.jsx';
--import { useStore } from '../store.jsx';
-+import LoadGate from '../LoadGate.jsx';
-+import { ntd } from '../format.js';
-+import { useTour } from '../useAsync.js';
+```diff 07-project-final/src/features/tours/TourDetailPage.jsx
+ import NotFoundPage from '../../pages/NotFoundPage.jsx';
+-import { ntd, seatsLeft } from '../../format.js';
+-import { useSession } from '../../session.jsx';
+-import { useStore } from '../../store.jsx';
++import LoadGate from '../../LoadGate.jsx';
++import { ntd } from '../../format.js';
++import { useTour } from '../../useAsync.js';
 
  export default function TourDetailPage() {
    const { id } = useParams();
@@ -480,13 +458,13 @@ export default function LoadGate({ loading, error, children }) {
 
 手機上的出發日列表改成只收行程，按鈕直接前往報名。
 
-```jsx 07-project-final/src/components/DepartureList.jsx
+```jsx 07-project-final/src/features/tours/components/DepartureList.jsx
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
 
 export default function DepartureList({ tour }) {
   return (
-    <ul className="panel mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
+    <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
       {tour.departures.map((departure) => (
         <li key={departure.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -514,14 +492,14 @@ export default function DepartureList({ tour }) {
 
 規則換成最後一節的內容之後，這個按鈕會被拒絕。那是預期的：正式規則不允許瀏覽器寫行程。
 
-```jsx 07-project-final/src/pages/SeedPage.jsx
+```jsx 07-project-final/src/features/admin/SeedPage.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { seedTours } from '../api.js';
-import { firebaseReady, missingFirebaseMessage } from '../firebase.js';
+import { seedTours } from '../../api.js';
+import { firebaseReady, missingFirebaseMessage } from '../../firebase.js';
 
 export default function SeedPage() {
   const [message, setMessage] = useState('');
@@ -562,13 +540,13 @@ export default function SeedPage() {
 路由先加在現有的 `SessionProvider` 裡面。登入提供者下一節才換成 Authentication。
 
 ```diff 07-project-final/src/App.jsx
- import LoginPage from './pages/LoginPage.jsx';
-+import SeedPage from './pages/SeedPage.jsx';
- import AdminLoginPage from './pages/AdminLoginPage.jsx';
+ import LoginPage from './features/auth/LoginPage.jsx';
++import SeedPage from './features/admin/SeedPage.jsx';
+ import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
  // ...
-           <Route path="login" element={<LoginPage />} />
-+          <Route path="seed" element={<SeedPage />} />
-           <Route path="admin/login" element={<AdminLoginPage />} />
+       { path: 'login', element: <LoginPage /> },
++      { path: 'seed', element: <SeedPage /> },
+       { path: 'admin/login', element: <AdminLoginPage /> },
  // ...
 ```
 
@@ -585,17 +563,17 @@ export default function SeedPage() {
 
 報名不再包 `MemberGate`。姓名與 email 改成可填。送出時呼叫 `createOrder`，成功後把回傳的那一筆放進路由的 `state`，導到完成頁。完成頁重新整理後，`state` 消失。訂單不能公開讀，所以這一頁不再向雲端要那一筆。
 
-`/login` 與 `/me` 留著路由，內容改成說明。頁首的「登入」下一節才拿掉。刪掉已經沒有人 import 的 `src/components/MemberGate.jsx`。
+`/login` 與 `/me` 留著路由，內容改成說明。頁首的「登入」下一節才拿掉。刪掉已經沒有人 import 的 `src/features/booking/components/MemberGate.jsx`。
 
-```jsx 07-project-final/src/components/BookingForm.jsx
+```jsx 07-project-final/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { createOrder } from '../api.js';
-import { ntd } from '../format.js';
-import FieldSelect from './FieldSelect.jsx';
+import { createOrder } from '../../../api.js';
+import { ntd } from '../../../format.js';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 export default function BookingForm({ tour, departure, onDone }) {
   const [people, setPeople] = useState('2');
@@ -637,7 +615,7 @@ export default function BookingForm({ tour, departure, onDone }) {
   };
 
   return (
-    <form id="booking-form" noValidate className="panel grid gap-4 p-6 md:p-8" onSubmit={submit}>
+    <form id="booking-form" noValidate className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8" onSubmit={submit}>
       <Typography variant="h2">填寫資料</Typography>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="姓名" required value={name} error={submitted && !name.trim()} onChange={(event) => setName(event.target.value)} />
@@ -654,7 +632,7 @@ export default function BookingForm({ tour, departure, onDone }) {
 }
 ```
 
-```jsx 07-project-final/src/pages/BookingPage.jsx
+```jsx 07-project-final/src/features/booking/BookingPage.jsx
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import Alert from '@mui/material/Alert';
@@ -662,10 +640,10 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import BookingForm from '../components/BookingForm.jsx';
-import LoadGate from '../LoadGate.jsx';
-import { ntd } from '../format.js';
-import { useTours } from '../useAsync.js';
+import BookingForm from './components/BookingForm.jsx';
+import LoadGate from '../../LoadGate.jsx';
+import { ntd } from '../../format.js';
+import { useTours } from '../../useAsync.js';
 
 const steps = ['選出發日', '填寫資料', '送出確認'];
 
@@ -691,7 +669,7 @@ export default function BookingPage() {
       ) : (
         <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
           <BookingForm tour={tour} departure={departure} onDone={(row) => navigate('/booking/done', { state: row })} />
-          <aside className="panel p-6 md:p-8 lg:sticky lg:top-24">
+          <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
             <Typography variant="h2">這趟行程</Typography>
             <dl className="mt-5 grid gap-4 text-base">
               <div><dt className="text-muted">行程</dt><dd className="mt-1 text-lg font-medium">{tour.title}</dd></div>
@@ -710,7 +688,7 @@ export default function BookingPage() {
 }
 ```
 
-```jsx 07-project-final/src/pages/BookingDonePage.jsx
+```jsx 07-project-final/src/features/booking/BookingDonePage.jsx
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
 import Alert from '@mui/material/Alert';
@@ -720,7 +698,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import { ntd, statusLabel } from '../format.js';
+import { ntd, statusLabel } from '../../format.js';
 
 const steps = ['選出發日', '填寫資料', '送出確認'];
 
@@ -740,7 +718,7 @@ export default function BookingDonePage() {
       {row ? (
         <>
           <Typography variant="h2" className="mt-10">這筆內容</Typography>
-          <dl className="panel mt-4 max-w-prose divide-y divide-line px-5">
+          <dl className="rounded-card bg-white shadow-card mt-4 max-w-prose divide-y divide-line px-5">
             {[['行程', row.tourTitle], ['出發日', row.date], ['人數', row.people], ['姓名', row.name], ['電話', row.phone], ['小計', ntd(row.subtotal)], ['狀態', statusLabel[row.status] || row.status]].map(([label, value]) => (
               <div key={label} className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]"><dt className="text-muted">{label}</dt><dd className={label === '小計' ? 'font-serif text-2xl font-bold text-action' : undefined}>{value}</dd></div>
             ))}
@@ -756,7 +734,7 @@ export default function BookingDonePage() {
 }
 ```
 
-```jsx 07-project-final/src/pages/LoginPage.jsx
+```jsx 07-project-final/src/features/auth/LoginPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
@@ -775,7 +753,7 @@ export default function LoginPage() {
 }
 ```
 
-```jsx 07-project-final/src/pages/MyBookingsPage.jsx
+```jsx 07-project-final/src/features/booking/MyBookingsPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
@@ -794,7 +772,7 @@ export default function MyBookingsPage() {
 }
 ```
 
-送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`。重新整理完成頁，明細消失，Firestore 裡的文件還在。`src/data/bookings.js` 不再被頁面 import。
+送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`。重新整理完成頁，明細消失，Firestore 裡的文件還在。`src/features/booking/mock.data.js` 不再被頁面 import。
 
 **解析**
 
@@ -865,16 +843,14 @@ export const useAuth = () => useContext(AuthContext);
 
 ```diff 07-project-final/src/App.jsx
 +import { AuthProvider } from './auth.jsx';
- import SiteLayout from './layouts/SiteLayout.jsx';
+ import SiteLayout from './layout/SiteLayout.jsx';
  // ...
  export default function App() {
    return (
 +    <AuthProvider>
      <SessionProvider>
        <StoreProvider>
-         <Routes>
- // ...
-         </Routes>
+         <RouterProvider router={router} />
        </StoreProvider>
      </SessionProvider>
 +    </AuthProvider>
@@ -882,12 +858,12 @@ export const useAuth = () => useContext(AuthContext);
  }
 ```
 
-版面裡的成功提示原本來自 `store`。訂單狀態改由清單頁自己顯示錯誤，這個 Snackbar 拿掉。
+版面裡的成功提示原本來自 `store`。訂單狀態改由清單頁自己顯示錯誤，這個 Snackbar 拿掉，`ScrollRestoration` 留在頁尾後面。
 
-```jsx 07-project-final/src/layouts/SiteLayout.jsx
-import { Outlet } from 'react-router';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+```jsx 07-project-final/src/layout/SiteLayout.jsx
+import { Outlet, ScrollRestoration } from 'react-router';
+import SiteHeader from './components/SiteHeader.jsx';
+import SiteFooter from './components/SiteFooter.jsx';
 
 export default function SiteLayout() {
   return (
@@ -897,6 +873,7 @@ export default function SiteLayout() {
         <Outlet />
       </div>
       <SiteFooter />
+      <ScrollRestoration />
     </div>
   );
 }
@@ -904,9 +881,9 @@ export default function SiteLayout() {
 
 頁首只在後台路徑顯示「後台登入」。已登入時顯示 email。前台不再放會員登入按鈕。
 
-```diff 07-project-final/src/components/SiteHeader.jsx
--import { useSession } from '../session.jsx';
-+import { useAuth } from '../auth.jsx';
+```diff 07-project-final/src/layout/components/SiteHeader.jsx
+-import { useSession } from '../../session.jsx';
++import { useAuth } from '../../auth.jsx';
  // ...
  export default function SiteHeader() {
 -  const { user, signOut } = useSession();
@@ -944,7 +921,7 @@ export default function SiteLayout() {
 
 密碼錯誤時，Firebase 的代碼是 `auth/invalid-credential`。這一種改寫成中文。其他失敗仍顯示 `err.message`，尚未設定 Firebase 時就是那句固定文字。
 
-```jsx 07-project-final/src/pages/AdminLoginPage.jsx
+```jsx 07-project-final/src/features/admin/AdminLoginPage.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Alert from '@mui/material/Alert';
@@ -952,7 +929,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useAuth } from '../auth.jsx';
+import { useAuth } from '../../auth.jsx';
 
 export default function AdminLoginPage() {
   const { signIn, user } = useAuth();
@@ -979,7 +956,7 @@ export default function AdminLoginPage() {
 
   return (
     <main id="content" className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24">
-      <Paper component="form" elevation={0} className="panel grid max-w-md gap-4 p-6 md:p-8" onSubmit={submit}>
+      <Paper component="form" elevation={0} className="rounded-card bg-white shadow-card grid max-w-md gap-4 p-6 md:p-8" onSubmit={submit}>
         <Typography variant="h1">後台登入</Typography>
         <p className="text-lg leading-relaxed">使用 Firebase Authentication 的 email 與密碼。前台報名不需要登入。</p>
         <TextField label="Email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
@@ -992,12 +969,12 @@ export default function AdminLoginPage() {
 }
 ```
 
-```jsx 07-project-final/src/components/AdminGate.jsx
+```jsx 07-project-final/src/features/admin/components/AdminGate.jsx
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { useAuth } from '../auth.jsx';
-import { missingFirebaseMessage } from '../firebase.js';
+import { useAuth } from '../../../auth.jsx';
+import { missingFirebaseMessage } from '../../../firebase.js';
 
 export default function AdminGate({ children }) {
   const { user, ready, firebaseReady } = useAuth();
@@ -1019,28 +996,6 @@ export default function AdminGate({ children }) {
 }
 ```
 
-{% note success %}
-**換你試試：**
-登入失敗時一律顯示「登入失敗」，不要把 Firebase 的英文訊息直接給使用者。密碼錯誤那句中文留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`auth/invalid-credential` 仍用中文。其餘失敗改成固定句子，尚未設定的說明也就不再從 `err.message` 漏出來。若要保留那句，得在 `catch` 裡先判斷 `err.message === missingFirebaseMessage`。
-
-```diff 07-project-final/src/pages/AdminLoginPage.jsx
- // ...
-     } catch (err) {
--      setError(err.code === 'auth/invalid-credential' ? 'email 或密碼不對。請用主控台建立的那一組。' : err.message);
-+      setError(err.code === 'auth/invalid-credential' ? 'email 或密碼不對。請用主控台建立的那一組。' : '登入失敗');
-       setBusy(false);
-     }
- // ...
-```
-
-</details>
-
 **解析**
 
 - `signInWithEmailAndPassword` 成功後，`onAuthStateChanged` 會更新 `user`。表單另外 `navigate` 一次，已登入者重新打開登入頁也會被帶去清單。
@@ -1052,7 +1007,7 @@ export default function AdminGate({ children }) {
 
 後台行程頁改成只讀。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面與表格都換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
 
-```jsx 07-project-final/src/pages/AdminToursPage.jsx
+```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
@@ -1064,11 +1019,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import AdminGate from '../components/AdminGate.jsx';
-import AdminTabs from '../components/AdminTabs.jsx';
-import LoadGate from '../LoadGate.jsx';
-import { ntd } from '../format.js';
-import { useTours } from '../useAsync.js';
+import AdminGate from './components/AdminGate.jsx';
+import AdminTabs from './components/AdminTabs.jsx';
+import LoadGate from '../../LoadGate.jsx';
+import { ntd } from '../../format.js';
+import { useTours } from '../../useAsync.js';
 
 function AdminToursBody() {
   const { data, loading, error } = useTours();
@@ -1085,7 +1040,7 @@ function AdminToursBody() {
       <Button className="mt-4" component={Link} to="/seed" variant="outlined">寫入種子</Button>
       {tours.length ? (
         <>
-          <TableContainer elevation={0} className="panel mt-8 hidden overflow-x-auto md:block">
+          <TableContainer elevation={0} className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block">
             <Table>
               <TableHead>
                 <TableRow>
@@ -1126,10 +1081,10 @@ export default function AdminToursPage() {
 
 表格不再自己碰 store。狀態變更由清單頁傳進來。
 
-```diff 07-project-final/src/components/BookingTable.jsx
- import { ntd, statusLabel } from '../format.js';
--import { useStore } from '../store.jsx';
- import { tokens } from '../theme.js';
+```diff 07-project-final/src/features/admin/components/BookingTable.jsx
+ import { ntd, statusLabel } from '../../../format.js';
+-import { useStore } from '../../../store.jsx';
+ import { tokens } from '../../../theme.js';
  // ...
 -function StatusSelect({ booking }) {
 -  const { setBookingStatus } = useStore();
@@ -1150,17 +1105,17 @@ export default function AdminToursPage() {
  // ...
 ```
 
-```diff 07-project-final/src/pages/AdminBookingsPage.jsx
- import { useEffect, useMemo, useState } from 'react';
+```diff 07-project-final/src/features/admin/AdminBookingsPage.jsx
+ import { useEffect, useState } from 'react';
 +import Alert from '@mui/material/Alert';
  import MenuItem from '@mui/material/MenuItem';
  // ...
- import BookingTable from '../components/BookingTable.jsx';
-+import LoadGate from '../LoadGate.jsx';
-+import { updateOrderStatus } from '../api.js';
- import { statusLabel } from '../format.js';
--import { useStore } from '../store.jsx';
-+import { useOrders } from '../useAsync.js';
+ import BookingTable from './components/BookingTable.jsx';
++import LoadGate from '../../LoadGate.jsx';
++import { updateOrderStatus } from '../../api.js';
+ import { statusLabel } from '../../format.js';
+-import { useStore } from '../../store.jsx';
++import { useOrders } from '../../useAsync.js';
  // ...
  function AdminBookingsBody() {
 -  const { bookings } = useStore();
@@ -1174,8 +1129,7 @@ export default function AdminToursPage() {
  // ...
 -      .filter((booking) => !keyword || booking.name.includes(keyword))
 +      .filter((booking) => !keyword || booking.name?.includes(keyword))
- // ...
-   }, [bookings, status, query, sort]);
+       .sort((a, b) => (sort === 'date-asc' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
 +
 +  const changeStatus = async (id, next) => {
 +    setNotice('');
@@ -1213,9 +1167,7 @@ export default function AdminToursPage() {
      <AuthProvider>
 -    <SessionProvider>
 -      <StoreProvider>
-         <Routes>
- // ...
-         </Routes>
+         <RouterProvider router={router} />
 -      </StoreProvider>
 -    </SessionProvider>
      </AuthProvider>
@@ -1227,8 +1179,8 @@ export default function AdminToursPage() {
 
 - `src/store.jsx`
 - `src/session.jsx`
-- `src/components/TourForm.jsx`
-- `src/components/MemberGate.jsx`（報名那一節若已刪，這裡不用再刪）
+- `src/features/admin/components/TourForm.jsx`
+- `src/features/booking/components/MemberGate.jsx`（報名那一節若已刪，這裡不用再刪）
 
 未登入時打開 `/admin/bookings`，應停在閘門，不應出現訂單。登入後看得到剛才那一筆。把狀態改成已確認，重新整理後仍是已確認。主控台裡同一份文件的 `status` 一起變。
 
@@ -1334,7 +1286,7 @@ pnpm build
 - 前台不設會員。訪客直接把報名寫進 `orders`。只有後台使用 email 與密碼。
 - Firebase 的網頁設定放在 `.env.local`，以 `VITE_` 開頭。範例檔是 `.env.example`。金鑰不要 commit。
 - `src/api.js` 集中 Firestore 讀寫。`useAsync` 把等待、失敗與結果留在頁面。
-- `/seed` 在測試模式把 `src/data/tours.js` 寫進 `tours`。已存在的文件略過。
+- `/seed` 在測試模式把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。
 - `AdminGate` 等 Authentication 回報之後才畫訂單。閘門擋的是畫面。
 - `firestore.rules` 讓行程公開可讀、不可寫，訂單公開可新增、僅登入者可讀可改。
 - 打包沿用第 12 篇。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。

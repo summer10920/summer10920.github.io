@@ -10,13 +10,13 @@ date: 2026-08-30 10:10:00
 
 ![](assets/images/banner/react.png)
 
-網址決定現在畫哪一頁。這一篇用 React Router 8 的宣告式寫法，從 `react-router` 引入，把 `03-react` 複製成 `04-react-router`，再把原本用按鈕切換的示範收成練習筆記網站。路由表、左側目錄、連結、路徑參數與查詢參數都接在同一份專案上。
+網址決定現在畫哪一頁。這一篇用 React Router 8 資料模式的 `createBrowserRouter` 與 `RouterProvider`，從 `react-router` 引入，把 `03-react` 複製成 `04-react-router`，再把原本用按鈕切換的示範收成練習筆記網站。路由表、左側目錄、連結、路徑參數與查詢參數都接在同一份專案上。
 
 <!-- more -->
 
 # 認識路由
 
-這一章先用狀態把選單與主畫面配在一起，看重新整理與網址各自少了什麼，再說明為什麼要另外找路由套件、React Router 負責什麼。三種接法分在後面三章；可跑的路由表要等複製出 `04-react-router` 之後才開始寫。
+這一章先用狀態把選單與主畫面配在一起，看重新整理與網址各自少了什麼，再說明為什麼要另外找路由套件、React Router 負責什麼。課堂用資料模式，宣告式與框架模式留在同一節對照。可跑的路由表要等複製出 `04-react-router` 之後才開始寫。
 
 ## 狀態切頁
 
@@ -82,7 +82,7 @@ export default function StatePages() {
 
 ## React Router
 
-這一節說明為什麼畫面不能只靠狀態切換，以及 React Router 負責網址的哪一段。接著依序看宣告式、資料模式與框架模式的寫法與目錄，最後決定課堂要用哪一種。
+這一節說明為什麼畫面不能只靠狀態切換，以及 React Router 負責網址的哪一段。接著先看課堂要用的資料模式，再對照宣告式與框架模式的寫法與目錄。
 
 ### 為什麼需要路由
 
@@ -108,16 +108,142 @@ React Router 是目前最普遍的 React 路由套件。它把現在的網址對
   style viewNode fill:#e8f5e9
 {% endmermaid %}
 
-套件把網址、歷史與換頁接起來，不負責這一頁的資料在哪裡讀。讀取留在元件裡，或提前寫在路由上，是後面三種接法的差別。同一套對應可以寫成宣告式、資料模式或框架模式；先確認專案是不是已經帶了別的路由，再看這三種怎麼寫。
+套件把網址、歷史與換頁接起來，不負責這一頁的資料在哪裡讀。讀取留在元件裡，或提前寫在路由上，是後面三種接法的差別。同一套對應可以寫成資料模式、宣告式或框架模式。先看課堂要用的資料模式，再對照另外兩種。
 
 {% note info %}
 **Next.js 自帶路由**
 Next.js 依檔案結構決定路徑（檔案路由，file-based routing），用 Next.js 的專案不必再裝 React Router。本課用 Vite，所以接 React Router。
 {% endnote %}
 
-### 宣告式
+### 資料模式
 
-三種接法裡，課堂與結業專案只用宣告式。路由寫在元件樹，頁面掛上之後才讀資料，專案骨架仍是一般的 Vite 與 React。下面先看資料夾怎麼分，再看程式怎麼對網址。
+課堂與結業專案用資料模式。路由寫成物件陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 渲染。可以先不寫 loader。專案骨架仍是一般的 Vite 與 React。下面先看資料夾怎麼分，再看程式怎麼對網址。這一堂把路由器寫在 `App.jsx`；專案變大時可以再拆成 `router.jsx`。
+
+#### 目錄架構
+
+資料模式不改變 Vite 專案的骨架。入口與還沒接路由時相同，直接渲染 `App`；路由器物件放在 `App.jsx`。共用版型放在 `layouts`，每個網址對應 `pages` 裡的一個頁面元件。`loader` 可以在進頁前讀資料，課堂練習與後面切版先不寫，頁面仍在掛上之後自己讀。
+
+{% mermaid graph LR %}
+root["專案根目錄"] --> html["index.html<br/>網頁外殼，掛載點 #root"]
+root --> pkg["package.json<br/>相依套件，含 react-router"]
+root --> vite["vite.config.js<br/>Vite 設定"]
+root --> src["src/"]
+src --> main["main.jsx<br/>入口：createRoot，直接渲染 App"]
+src --> app["App.jsx<br/>課堂：createBrowserRouter 與 RouterProvider"]
+src --> layouts["layouts/"]
+layouts --> layout["MainLayout.jsx<br/>共用版型：選單、Outlet、ScrollRestoration"]
+src --> pages["pages/"]
+pages --> home["Home.jsx<br/>路徑 /"]
+pages --> list["TripList.jsx<br/>路徑 /trips；loader 只出現在觀念示範"]
+src --> api["api/"]
+api --> fake["fake-api.js<br/>getItems；課堂由頁面呼叫，觀念示範才提前呼叫"]
+classDef router fill:#fff3e0,stroke:#fb8c00
+class pkg,main,app,layout router
+{% endmermaid %}
+
+較大的專案可以把 `createBrowserRouter` 從 `App.jsx` 再拆到 `router.jsx`。下面的觀念示範就是拆開、並加上 `loader` 的寫法，路徑沒有 `04-react-router/` 前綴，不是這份練習的完成檔。版型圖裡的 `ScrollRestoration` 留到啟用路由再寫，這組示範沒有放。
+
+#### 觀念
+
+資料模式把路由表寫成陣列，交給 `createBrowserRouter`。清單的 `loader` 在進入該路徑之前執行，元件用 `useLoaderData` 接結果，自己不再寫第一次的 `useEffect`。那是資料模式還能做的事。課堂練習把同一套路由器寫在 `App.jsx`，用 `element` 放進已經建立的元素，先不寫 `loader`、`action` 與 `useLoaderData`。這裡的 `Component` 與課堂的 `element` 都是指定要畫的元件。
+
+```jsx src/main.jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+/** 觀念示範把路由器拆出去，入口直接渲染 RouterProvider。課堂的 main.jsx 仍渲染 App。 */
+import { RouterProvider } from 'react-router';
+import router from './router.jsx';
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+);
+```
+
+```jsx src/router.jsx
+/** createBrowserRouter 把路由陣列變成路由器物件。 */
+import { createBrowserRouter } from 'react-router';
+import { getItems } from './api/fake-api.js';
+import MainLayout from './layouts/MainLayout.jsx';
+import Home from './pages/Home.jsx';
+import TripList from './pages/TripList.jsx';
+
+/**
+ * 父路由畫版型，children 畫進版型的 Outlet。
+ * index 是首頁；trips 多掛 loader，進頁前呼叫 getItems，回傳值交給頁面。
+ * 同一層還可以加 action（表單送出）與 errorElement（錯誤頁），這裡先不掛。
+ */
+const router = createBrowserRouter([
+  {
+    path: '/',
+    Component: MainLayout,
+    children: [
+      { index: true, Component: Home },
+      { path: 'trips', loader: () => getItems(), Component: TripList },
+    ],
+  },
+]);
+
+export default router;
+```
+
+```jsx src/layouts/MainLayout.jsx
+/** Link 換頁不重新載入；Outlet 是子路由頁面要畫進來的位置。 */
+import { Link, Outlet } from 'react-router';
+
+/** 共用版型。頁首與選單每頁都在，中間的 Outlet 依網址換成首頁或清單。 */
+export default function MainLayout() {
+  return (
+    <>
+      <header>
+        <nav>
+          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
+        </nav>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+```
+
+```jsx src/pages/Home.jsx
+/** 路徑 / 要畫的頁面。 */
+export default function Home() {
+  return <h1>首頁</h1>;
+}
+```
+
+```jsx src/pages/TripList.jsx
+/** useLoaderData 取得這條路由 loader 的回傳值。 */
+import { useLoaderData } from 'react-router';
+
+/** 行程清單。資料在進頁前已經拿到，頁面裡沒有 useEffect。 */
+export default function TripList() {
+  const items = useLoaderData();
+
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+進入清單路徑之前就執行 `getItems`，清單元件接到的是 `loader` 的回傳值。上面這組檔是觀念對照，不要抄進 `04-react-router`。課堂與後面切版先不寫 `loader`。
+
+{% note info %}
+**舊的套件名稱**
+v8 已移除套件 `react-router-dom`。v7 時它只是相容用的再出口。不要再安裝那個套件，也不要照舊文件的入口去引入。
+{% endnote %}
+
+### 選讀：宣告式
+
+這一節對照另一種接法。路由寫成 JSX，入口用 `BrowserRouter` 包住應用，頁面掛上之後才讀資料。官方的 `ScrollRestoration` 不能用在這一種。課堂與結業專案不用這一套，下面只留寫法與目錄，方便和資料模式對照。
 
 #### 目錄架構
 
@@ -242,136 +368,11 @@ export default function TripList() {
 }
 ```
 
-網址是根路徑時畫首頁，是 `/trips` 時畫清單。`main.jsx` 只負責掛上路由器，`App.jsx` 只負責把網址對到頁面，頁面本身不知道自己掛在哪個路徑。
-
-{% note info %}
-**舊的套件名稱**
-v8 已移除套件 `react-router-dom`。v7 時它只是相容用的再出口。不要再安裝那個套件，也不要照舊文件的入口去引入。
-{% endnote %}
-
-### 選讀：資料模式
-
-本課後續練習仍只用宣告式，這一節對照另一種接法。路由寫成物件，讀取放在進頁前的 loader，元件只消費已經拿到的資料。看完即可，課堂的 `04-react-router` 不要改成這一套。
-
-#### 目錄架構
-
-資料模式仍是 Vite 專案，入口把路由器物件交給 `RouterProvider`。路徑與 `loader` 寫在同一份路由模組，頁面檔負責把已經拿到的資料畫出來。
-
-{% mermaid graph LR %}
-root["專案根目錄"] --> html["index.html<br/>網頁外殼，掛載點 #root"]
-root --> pkg["package.json<br/>相依套件，含 react-router"]
-root --> vite["vite.config.js<br/>Vite 設定"]
-root --> src["src/"]
-src --> main["main.jsx<br/>入口：createRoot 並渲染 RouterProvider"]
-src --> router["router.jsx<br/>createBrowserRouter：路徑、loader、errorElement"]
-src --> layouts["layouts/"]
-layouts --> layout["MainLayout.jsx<br/>共用版型：頁首、選單與 Outlet"]
-src --> pages["pages/"]
-pages --> home["Home.jsx<br/>路徑 /"]
-pages --> list["TripList.jsx<br/>路徑 /trips，useLoaderData 取資料"]
-pages --> nf["NotFoundPage.jsx<br/>404：errorElement 或 path=*"]
-src --> api["api/"]
-api --> fake["fake-api.js<br/>getItems，由 loader 呼叫"]
-classDef router fill:#fff3e0,stroke:#fb8c00
-class pkg,main,router,layout,list,nf router
-{% endmermaid %}
-
-#### 觀念
-
-資料模式把路由表寫成陣列，交給 `createBrowserRouter`。清單的 `loader` 在進入該路徑之前執行，元件用 `useLoaderData` 接結果，自己不再寫第一次的 `useEffect`。
-
-```jsx src/main.jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-/** RouterProvider 從 react-router/dom 引入，把路由器物件畫出來；入口不寫 Routes。 */
-import { RouterProvider } from 'react-router/dom';
-import router from './router.jsx';
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
-```
-
-```jsx src/router.jsx
-/** createBrowserRouter 把路由陣列變成路由器物件。 */
-import { createBrowserRouter } from 'react-router';
-import { getItems } from './api/fake-api.js';
-import MainLayout from './layouts/MainLayout.jsx';
-import Home from './pages/Home.jsx';
-import TripList from './pages/TripList.jsx';
-
-/**
- * 父路由畫版型，children 畫進版型的 Outlet。
- * index 是首頁；trips 多掛 loader，進頁前呼叫 getItems，回傳值交給頁面。
- * 同一層還可以加 action（表單送出）與 errorElement（錯誤頁），這裡先不掛。
- */
-const router = createBrowserRouter([
-  {
-    path: '/',
-    Component: MainLayout,
-    children: [
-      { index: true, Component: Home },
-      { path: 'trips', loader: () => getItems(), Component: TripList },
-    ],
-  },
-]);
-
-export default router;
-```
-
-```jsx src/layouts/MainLayout.jsx
-/** Link 換頁不重新載入；Outlet 是子路由頁面要畫進來的位置。 */
-import { Link, Outlet } from 'react-router';
-
-/** 共用版型。頁首與選單每頁都在，中間的 Outlet 依網址換成首頁或清單。 */
-export default function MainLayout() {
-  return (
-    <>
-      <header>
-        <nav>
-          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
-        </nav>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </>
-  );
-}
-```
-
-```jsx src/pages/Home.jsx
-/** 路徑 / 要畫的頁面。 */
-export default function Home() {
-  return <h1>首頁</h1>;
-}
-```
-
-```jsx src/pages/TripList.jsx
-/** useLoaderData 取得這條路由 loader 的回傳值。 */
-import { useLoaderData } from 'react-router';
-
-/** 行程清單。資料在進頁前已經拿到，頁面裡沒有 useEffect。 */
-export default function TripList() {
-  const items = useLoaderData();
-
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-進入清單路徑之前就執行 `getItems`，清單元件接到的是 `loader` 的回傳值。
+網址是根路徑時畫首頁，是 `/trips` 時畫清單。`main.jsx` 的 `BrowserRouter` 讓元件樹聽得到網址，`App.jsx` 再用 JSX 把路徑對到頁面。這組檔同樣不是 `04-react-router` 的完成檔。
 
 ### 選讀：框架模式
 
-框架模式的前身是 Remix。它在資料模式之上加上檔案路由、伺服器端渲染（SSR）、程式碼切分（code splitting），並由建置工具負責打包；需要搜尋引擎最佳化（SEO）或 SSR 時，整個專案架構都跟著這套走。課堂的 Vite 專案維持宣告式，不換成這套目錄。
+框架模式的前身是 Remix。它在資料模式之上加上檔案路由、伺服器端渲染（SSR）、程式碼切分（code splitting），並由建置工具負責打包；需要搜尋引擎最佳化（SEO）或 SSR 時，整個專案架構都跟著這套走。課堂的 Vite 專案維持資料模式，用 `createBrowserRouter` 接路由，不換成這套目錄。
 
 #### 目錄架構
 
@@ -471,17 +472,17 @@ export default function TripList() {
 
 ### 怎麼選
 
-三種接法都能把網址對上元件。路由表可以寫在元件樹、寫成路由物件，或交給框架的設定檔；資料可以等頁面掛上再讀，也可以在進頁前由路由先讀好。
+三種接法都能把網址對上元件。路由表可以寫成路由物件、寫在元件樹，或交給框架的設定檔；資料可以等頁面掛上再讀，也可以在進頁前由路由先讀好。
 
-後面的練習都在從 `03-react` 複製出來的 `04-react-router` 上，只用宣告式往下加，不為另外兩種各開一個專案。先學宣告式；資料流變複雜再換資料模式；要做完整的伺服器端渲染（SSR）網站，選框架模式或 Next.js。
+後面的練習都在從 `03-react` 複製出來的 `04-react-router` 上，用資料模式往下加，不為另外兩種各開一個專案。先學 `createBrowserRouter`。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`。要做完整的伺服器端渲染，再看框架模式或 Next.js。
 
 # 啟用路由
 
-這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份，清掉舊的依賴再安裝，然後裝上 `react-router`、在入口包住 `BrowserRouter`。後面在同一份裡把按鈕切換改成路由表、左側目錄與各則筆記的網址。
+這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份，清掉舊的依賴再安裝，然後裝上 `react-router`，在 `App.jsx` 用 `createBrowserRouter` 與 `RouterProvider` 接上路由器。`main.jsx` 不用包 `BrowserRouter`。後面在同一份裡把按鈕切換改成路由表、左側目錄與各則筆記的網址。
 
 ## 安裝與入口
 
-`04-react-router` 的起點就是 `03-react` 的成品：同一套 Vite、React 19 與示範元件。這一節只做複製、安裝與入口。路由表、版型與目錄在後面幾節接到同一份專案。
+`04-react-router` 的起點就是 `03-react` 的成品：同一套 Vite、React 19 與示範元件。這一節只做複製、安裝，並在 `App.jsx` 接上路由器。`main.jsx` 維持直接渲染 `App`。路由表、版型與目錄在後面幾節接到同一份專案。
 
 ### 步驟 1：複製專案
 
@@ -550,49 +551,77 @@ pnpm add react-router@8
 倉庫這份的 `package.json` 已經寫入 `react-router` 8。你的專案裡若看得到這個依賴，確認版本即可，不必再裝一次。
 {% endnote %}
 
-### 步驟 4：BrowserRouter
+### 步驟 4：createBrowserRouter
 
-複製過來的 `src/main.jsx` 與 `03-react` 相同，嚴格模式裡直接渲染 `App`。現在在嚴格模式裡面加上 `BrowserRouter`。元件仍從 `#root` 畫起，只是多了一層知道網址的元件。沒有這一層，後面的 `Routes` 與 Hook 都讀不到現在的路徑。
+複製過來的 `src/main.jsx` 與 `03-react` 相同，嚴格模式裡直接渲染 `App`。資料模式不是在入口包一層 `BrowserRouter`，而是建立路由器物件，再交給 `RouterProvider`。這份專案把路由器寫在 `App.jsx`，`main.jsx` 不用改。
 
 ```jsx
 /**
- * 用瀏覽器的 History API 聽網址，包住會讀網址的那棵元件樹。
+ * 建立使用 History API 的路由器。路由表是物件陣列。
+ * @param {object[]} routes 每一筆含 path、index、element、children
+ * @param {object} [opts]
+ * @param {string} [opts.basename] 基底路徑。開發時由 BASE_URL 去掉結尾斜線
+ * @returns {object} 路由器物件
+ */
+const router = createBrowserRouter(routes, { basename });
+
+/**
+ * 把路由器畫出來。由 App 回傳，入口不再包一層。
  * @param {object} props
- * @param {string} [props.basename] 基底路徑，可省略。開發時通常不寫
- * @param {React.ReactNode} props.children 路由表與其頁面
+ * @param {object} props.router createBrowserRouter 的回傳值
  * @returns {React.ReactElement}
  */
-const router = <BrowserRouter>{/* children */}</BrowserRouter>;
+const view = <RouterProvider router={router} />;
 ```
 
 **觀念**
 
-`BrowserRouter` 使用瀏覽器的 History API。網址是一般路徑，例如 `/items`，不是井字號後面的片段。它必須包住所有會讀網址的元件，所以放在 `App` 外面、嚴格模式裡面。開發伺服器已經會把未知路徑回傳同一份 `index.html`，重新整理子路徑也不會變成找不到檔案。`basename` 現在先不寫，路徑從網站根目錄算起。
+`createBrowserRouter` 使用瀏覽器的 History API。網址是一般路徑，例如 `/items`，不是井字號後面的片段。會讀網址的元件要畫在 `RouterProvider` 裡面，所以路由器放在 `App`，`main.jsx` 只負責把 `App` 掛上 `#root`。開發伺服器已經會把未知路徑回傳同一份 `index.html`，重新整理子路徑也不會變成找不到檔案。`basename` 是 `createBrowserRouter` 的第二個參數，值用 Vite 的 `BASE_URL` 去掉結尾斜線。開發時 `BASE_URL` 預設是 `/`，去掉之後與從網站根目錄算起相同。子路徑怎麼跟著 `base` 變，留到部署那一節。
 
 ```jsx 04-react-router/src/main.jsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router';
 import App from './App.jsx';
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <App />
   </StrictMode>,
 );
 ```
 
-這一則還沒有路由表，畫面要等下一節的 `App` 接上才會出現「路由已經接上」。
+**解析**
+
+- 這份入口與 `03-react` 相同，嚴格模式裡直接渲染 `App`。
+- 沒有包 `BrowserRouter`。路由器寫在下面的 `App.jsx` 草稿，路由表下一節再補。
+- 樣式仍由 `index.css` 引入。嚴格模式不取代路由，也不會幫你對路徑。
+
+下面是接上路由器的草稿，路由表下一節再換成版型與首頁。畫面應出現「路由已經接上」。
+
+```jsx 04-react-router/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+
+/**
+ * 路由器先接上。路由表下一節再寫進這個陣列。
+ */
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const router = createBrowserRouter(
+  [{ path: '/', element: <p>路由已經接上</p> }],
+  { basename },
+);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
 
 **解析**
 
-- 引入來源是 `react-router`。不要再裝一套 `react-router-dom` 來拿同樣的元件。
-- `BrowserRouter` 放在 `App` 外面，整棵樹才讀得到網址。
-- 嚴格模式仍包在最外層。它不取代路由，也不會幫你對路徑。
-- 這一則還沒有 `basename`。本機開發的路徑從網站根目錄算起。
+- `createBrowserRouter` 與 `RouterProvider` 都從 `react-router` 引入。
+- 第二個參數的 `basename` 用 `BASE_URL` 去掉結尾斜線。開發時效果與從網站根目錄算起相同。
+- 這一則的 `element` 只是一句話，用來確認路由器有畫出來。下一節改成版型與首頁。
 
 ## 路由表與版型
 
@@ -600,12 +629,13 @@ createRoot(document.getElementById('root')).render(
 
 **一覽**
 
-- `Routes` 是路由表。它比較目前網址，畫出第一個對上的 `Route`。
-- `Route` 用 `path` 對路徑、用 `element` 指定要畫的元素。`index` 表示跟父路徑同一個網址，這一條只留 `index` 與 `element`。
-- `Outlet` 是版型裡子路由出現的位置。子路由寫在父 `Route` 的標籤中間，才會嵌進這個位置。
+- 路由表是物件陣列，交給 `createBrowserRouter`。它比較目前網址，用第一筆對上的路由。
+- 每一筆用 `path` 對路徑、用 `element` 指定要畫的元素。`index: true` 表示跟父路徑同一個網址，這一筆只留 `index` 與 `element`。
+- `children` 是子路由。寫在父路由裡，才會畫進版型的 `Outlet`。
+- `Outlet` 是版型裡子路由出現的位置。畫什麼由路由表決定。
 
 {% mermaid graph LR %}
-  urlNode["網址 /"] --> tableNode["Routes"]
+  urlNode["網址 /"] --> tableNode["路由物件"]
   tableNode --> layoutNode["MainLayout"]
   layoutNode --> menuNode["左側目錄"]
   layoutNode --> slotNode["Outlet 主區"]
@@ -618,59 +648,69 @@ createRoot(document.getElementById('root')).render(
 
 ### 路由表
 
-路由表集中在 `src/App.jsx`。父路由的路徑是 `/`，元件是版型；`index` 那一條跟父路徑同一個網址，所以打開網站根目錄時，版型中間是首頁。後面的單則筆記會寫成 `demos/:id`，跟父路徑接成 `/demos/01` 這種網址。
+路由表集中在 `src/App.jsx`，用物件陣列交給 `createBrowserRouter`。父路由的 `path` 是 `/`，`element` 是版型；`index: true` 那一筆跟父路徑同一個網址，所以打開網站根目錄時，版型中間是首頁。後面的單則筆記會寫成 `demos/:id`，跟父路徑接成 `/demos/01` 這種網址。上一節的草稿整份換成下面這份。
 
 **語法**
 
 ```jsx
 /**
- * 路由表。看目前網址，畫出第一個對上的 Route。
- * @param {object} props
- * @param {React.ReactNode} props.children 若干 Route
- * @returns {React.ReactElement}
+ * 父路由。path 是網址，element 是要畫的元素，children 畫進版型的 Outlet。
+ * @type {{ path: string, element: React.ReactElement, children: object[] }}
  */
-const table = <Routes>{/* Route */}</Routes>;
+const layoutRoute = {
+  path: '/',
+  element: <MainLayout />,
+  children: [],
+};
 
 /**
- * 一條路徑與要畫的元素。index 為 true 時，這一條跟父路徑同一個網址。
- * @param {object} props
- * @param {string} [props.path] 路徑片段，會接在父路徑後面
- * @param {boolean} [props.index] 為 true 時對上父路由自己的網址
- * @param {React.ReactElement} props.element 對上時畫出的元素
- * @returns {React.ReactElement|null}
+ * 跟父路徑同一個網址的那一筆。index 為 true 時不寫 path。
+ * @type {{ index: true, element: React.ReactElement }}
  */
-const route = <Route path="/" element={<MainLayout />} />;
+const indexRoute = { index: true, element: <Home /> };
 ```
 
 **觀念**
 
-這種包在父路由裡面的寫法是巢狀路由：外層負責一直留在畫面上的版型，內層負責換掉的那一頁。`element` 傳入的是已經建立的元素，例如 `<Home />`。路徑用小寫，根路徑寫成斜線。
+這種寫在父路由 `children` 裡的做法是巢狀路由：外層負責一直留在畫面上的版型，內層負責換掉的那一頁。`element` 傳入的是已經建立的元素，例如 `<Home />`。路徑用小寫，根路徑寫成斜線。`basename` 仍是第二個參數，開發時與從網站根目錄算起相同。
 
 ```jsx 04-react-router/src/App.jsx
-import { Route, Routes } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 import MainLayout from './layouts/MainLayout.jsx';
 import Home from './pages/Home.jsx';
 
 /**
  * 路由表。父路由畫版型，index 在同一個網址畫首頁。
- * 子路由要寫在父 Route 的標籤裡面，才會出現在 Outlet。
+ * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。
  */
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <Home /> },
+    ],
+  },
+], { basename });
+
 export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<Home />} />
-      </Route>
-    </Routes>
-  );
+  return <RouterProvider router={router} />;
 }
 ```
+
+**解析**
+
+- 路由表是陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 渲染。
+- 父路由的 `path` 是 `/`，`element` 是版型。`children` 裡 `index: true` 的那筆跟父路徑同一個網址，打開 `/` 時主區是 `Home`。
+- `basename` 來自 Vite 的 `BASE_URL`。開發時預設是 `/`，去掉結尾斜線後，路徑仍從網站根目錄算起。
 
 打開 `/` 時，畫面分成版型與首頁兩塊。別的路徑目前還沒有對應的頁，主區是空的。
 
 {% note success %}
 **換你試試：**
-把首頁那條暫時改成一段文字，確認主區出現「總覽」兩個字。看完改回 `Home`，後面的總覽仍用頁面元件。
+把首頁那筆暫時改成一段文字，確認主區出現「總覽」兩個字。看完改回 `Home`，後面的總覽仍用頁面元件。
 {% endnote %}
 
 <details>
@@ -680,8 +720,8 @@ export default function App() {
 
 ```diff 04-react-router/src/App.jsx
  // ...
--        <Route index element={<Home />} />
-+        <Route index element={<p>總覽</p>} />
+-      { index: true, element: <Home /> },
++      { index: true, element: <p>總覽</p> },
  // ...
 ```
 
@@ -727,17 +767,21 @@ export default function MainLayout() {
 }
 ```
 
-寬螢幕時左側是一欄、右側是主區。窄螢幕時目錄在上、主區在下。站名這一則還是文字，連結下一章再換。
+**解析**
+
+- `Outlet` 畫在 `main` 裡。子路由對上之後，頁面出現在這個位置，左側外框留著。
+- 寬螢幕時左側是一欄、右側是主區。窄螢幕時目錄在上、主區在下。
+- 站名這一則還是文字，連結下一章再換。
 
 {% note success %}
 **換你試試：**
-在 `Outlet` 上面加一行「主區」。首頁標題仍應出現在這行下面。
+在 `Outlet` 上面加一行「主區」。首頁標題仍應出現在這行下面。看完拿掉這一行，後面的版型不再留它。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-那一行屬於版型，每一頁都會看到。首頁元件不用改。
+那一行屬於版型，每一頁都會看到。首頁元件不用改。看完刪掉這一行。
 
 ```diff 04-react-router/src/layouts/MainLayout.jsx
  // ...
@@ -749,6 +793,26 @@ export default function MainLayout() {
 
 </details>
 
+換頁時要捲到頂部，按瀏覽器上一頁或下一頁時要回到當時的位置。資料模式提供官方的 `ScrollRestoration`，放在版型裡、與 `Outlet` 同層，不必自己寫 `window.scrollTo`。宣告式沒有這個元件。
+
+```diff 04-react-router/src/layouts/MainLayout.jsx
+-import { Outlet } from 'react-router';
++import { Outlet, ScrollRestoration } from 'react-router';
+ // ...
+       <main className="px-4 py-6">
+         <Outlet />
+       </main>
++      <ScrollRestoration />
+     </div>
+ // ...
+```
+
+**解析**
+
+- `ScrollRestoration` 與 `Outlet` 同層，放在外層 `div` 裡、`main` 之後。
+- 用連結或 `navigate` 換頁時，視窗捲到頂部。
+- 按瀏覽器上一頁或下一頁時，還原離開那一頁之前的捲動位置。
+
 ### 首頁總覽
 
 首頁是打開網站時的第一眼，用來說明這份筆記站在做什麼。目錄的則數與主題下一節才從資料算出來，這一則先把總覽的句子放上。
@@ -757,13 +821,10 @@ export default function MainLayout() {
 
 ```jsx
 /**
- * 跟父路徑同一個網址的那一頁。
- * @param {object} props
- * @param {boolean} props.index 為 true 時對上父路由自己的網址
- * @param {React.ReactElement} props.element 這一頁的元素
- * @returns {React.ReactElement|null}
+ * 跟父路徑同一個網址的那一筆。index 為 true 時對上父路由自己的網址。
+ * @type {{ index: true, element: React.ReactElement }}
  */
-const homeRoute = <Route index element={<Home />} />;
+const homeRoute = { index: true, element: <Home /> };
 ```
 
 **觀念**
@@ -1109,7 +1170,7 @@ export default function DemoList() {
 目錄放進版型的左側，首頁改成讀同一份主題與則數。
 
 ```diff 04-react-router/src/layouts/MainLayout.jsx
- import { Outlet } from 'react-router';
+ import { Outlet, ScrollRestoration } from 'react-router';
 +import DemoList from '../pages/DemoList.jsx';
  // ...
            <span className="font-semibold">練習筆記</span>
@@ -1280,8 +1341,8 @@ const item = (
 目錄的 `to` 用該則的 `id` 接成 `/demos/` 加上編號。`isActive` 為真時套深色底與白字，其餘只留一行淡色。站名若連到 `/` 卻沒有 `end`，往後只要路徑以斜線開頭，站名都會亮；加上 `end` 之後，只有停在總覽時站名才是使用中。
 
 ```diff 04-react-router/src/layouts/MainLayout.jsx
--import { Outlet } from 'react-router';
-+import { NavLink, Outlet } from 'react-router';
+-import { Outlet, ScrollRestoration } from 'react-router';
++import { NavLink, Outlet, ScrollRestoration } from 'react-router';
  import DemoList from '../pages/DemoList.jsx';
  // ...
 -/**
@@ -1378,7 +1439,7 @@ const item = (
 ```jsx
 /**
  * 讀取目前路徑上的參數，欄位都是字串。
- * @returns {{ id: string }} 與 Route 的 :id 同名
+ * @returns {{ id: string }} 與 path 裡的 :id 同名
  */
 const { id } = useParams();
 ```
@@ -1392,8 +1453,8 @@ const { id } = useParams();
 +import DemoPage from './pages/DemoPage.jsx';
  import Home from './pages/Home.jsx';
  // ...
-         <Route index element={<Home />} />
-+        <Route path="demos/:id" element={<DemoPage />} />
+       { index: true, element: <Home /> },
++      { path: 'demos/:id', element: <DemoPage /> },
  // ...
 ```
 
@@ -1748,8 +1809,8 @@ export default function WherePage() {
  import Home from './pages/Home.jsx';
 +import WherePage from './pages/WherePage.jsx';
  // ...
-         <Route path="demos/:id" element={<DemoPage />} />
-+        <Route path="where" element={<WherePage />} />
+       { path: 'demos/:id', element: <DemoPage /> },
++      { path: 'where', element: <WherePage /> },
  // ...
 ```
 
@@ -1804,13 +1865,10 @@ export default function WherePage() {
 
 ```jsx
 /**
- * 接住前面沒有對上的路徑。放在版型的子路由裡時，主區換成這個元素，目錄留著。
- * @param {object} props
- * @param {string} props.path 星號，表示其餘路徑
- * @param {React.ReactElement} props.element 找不到時的頁面
- * @returns {React.ReactElement|null}
+ * 接住前面沒有對上的路徑。放在版型的 children 最後一筆時，主區換成這個元素，目錄留著。
+ * @type {{ path: string, element: React.ReactElement }}
  */
-const missed = <Route path="*" element={<NotFoundPage />} />;
+const missed = { path: '*', element: <NotFoundPage /> };
 ```
 
 **觀念**
@@ -1845,15 +1903,19 @@ export default function NotFoundPage() {
  import WherePage from './pages/WherePage.jsx';
  // ...
 - * 路由表。父路由畫版型，index 在同一個網址畫首頁。
-- * 子路由要寫在父 Route 的標籤裡面，才會出現在 Outlet。
+- * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。
 + * 筆記網站的路由表。版型包住首頁、單則筆記、位置頁與找不到的頁面。
-+ * 子路由寫在父 Route 裡面，才會畫進版型的 Outlet。星號放在最後，更具體的路徑先對上。
++ * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。星號放在最後，更具體的路徑先對上。
  // ...
-         <Route path="where" element={<WherePage />} />
-+        <Route path="*" element={<NotFoundPage />} />
-       </Route>
+       { path: 'where', element: <WherePage /> },
++      { path: '*', element: <NotFoundPage /> },
  // ...
 ```
+
+**解析**
+
+- 星號是版型 `children` 的最後一筆，仍包在版型裡，找不到時左側目錄還在。
+- 註解與完成的 `App.jsx` 相同：子路由寫在 `children`，更具體的路徑先對上。
 
 打開 `/no-such`，左側目錄還在，主區是找不到頁面。點「回目錄」會回到 `/`。
 
@@ -1885,22 +1947,24 @@ export default function NotFoundPage() {
 
 ```jsx
 /**
- * 星號與版型並列時，未知網址整頁換成 404，版型的目錄不會出現。
- * @returns {React.ReactElement}
+ * 星號與版型路由同級時，未知網址整頁換成 404，版型的目錄不會出現。
+ * 完成的 04-react-router 不用這一種，星號仍留在 children 裡。
  */
-const central = (
-  <Routes>
-    <Route path="/" element={<MainLayout />}>
-      {/* 首頁、單則與位置仍寫在版型裡 */}
-    </Route>
-    <Route path="*" element={<NotFoundPage />} />
-  </Routes>
-);
+const central = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainLayout />,
+    children: [
+      /* 首頁、單則與位置仍寫在版型裡 */
+    ],
+  },
+  { path: '*', element: <NotFoundPage /> },
+]);
 ```
 
 **觀念**
 
-子頁面的元件與上一則相同，差別是 `*` 不在版型裡面。兩種星號不要同時留著：版型裡的星號會先接住，外面的就不會輪到。看完這一則，把星號移回版型裡面，完成的表仍用分散式。
+子頁面的元件與上一則相同，差別是星號與版型路由同級，不在 `children` 裡。找不到頁就沒有側欄。兩種星號不要同時留著：版型裡的星號會先接住，外面的就不會輪到。看完這一則，把星號移回版型的 `children`，完成的 `04-react-router` 仍用分散式。
 
 {% note success %}
 **換你試試：**
@@ -1914,11 +1978,12 @@ const central = (
 
 ```diff 04-react-router/src/App.jsx
  // ...
-         <Route path="where" element={<WherePage />} />
--        <Route path="*" element={<NotFoundPage />} />
-       </Route>
-+      <Route path="*" element={<NotFoundPage />} />
-     </Routes>
+       { path: 'where', element: <WherePage /> },
+-      { path: '*', element: <NotFoundPage /> },
+     ],
+   },
++  { path: '*', element: <NotFoundPage /> },
+ ], { basename });
  // ...
 ```
 
@@ -1931,7 +1996,7 @@ const central = (
 GitHub Pages 不能設定「其他路徑都改走 `index.html`」的規則，常見的做法有兩種：
 
 - 用 `404.html` 接住：找不到檔案時 GitHub 會回傳 `404.html`。讓它的內容和 `index.html` 一樣，React 照樣載入，React Router 再依網址畫出那一頁。
-- 改用 `HashRouter`：路徑放在 `#` 後面，伺服器永遠只收到首頁的請求。
+- 改用 `createHashRouter`：路徑放在 `#` 後面，伺服器永遠只收到首頁的請求。同一份路由表，只換建立路由器的函式。
 
 ## 404.html
 
@@ -1956,7 +2021,7 @@ cp dist/index.html dist/404.html
 
 {% note info %}
 **網址多一段子路徑時：**
-用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找；並在 `BrowserRouter` 設 `basename={import.meta.env.BASE_URL.replace(/\/$/, '')}`，讓路由也從這段算起。元件裡的 `to="/demos/01"` 都不用改。
+用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找。路由的 `basename` 已經寫在 `createBrowserRouter` 的第二個參數，值是 `import.meta.env.BASE_URL.replace(/\/$/, '')`。`base` 一改，`BASE_URL` 跟著變，路由也從這段算起。元件裡的 `to="/demos/01"` 都不用改。
 {% endnote %}
 
 {% note success %}
@@ -1971,71 +2036,64 @@ cp dist/index.html dist/404.html
 
 </details>
 
-## HashRouter
+## createHashRouter
 
-`HashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01`。伺服器收到的路徑只有 `#` 前面那一段，靜態主機只要能打開 `index.html` 即可。代價是網址比較不好讀。這份筆記網站平常仍用 `BrowserRouter`。
+`createHashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01`。伺服器收到的路徑只有 `#` 前面那一段，靜態主機只要能打開 `index.html` 即可。代價是網址比較不好讀。`App` 已經回傳 `RouterProvider`，不能再在外面加 `HashRouter`。要試井字號網址，把同一份路由表的 `createBrowserRouter` 暫時換成 `createHashRouter`。平常完成版仍用 `createBrowserRouter`。
 
 **語法**
 
 ```jsx
 /**
- * 把路徑放在網址的井字號後面，包住會讀網址的那棵元件樹。
- * @param {object} props
- * @param {string} [props.basename] 基底路徑，可省略
- * @param {React.ReactNode} props.children 路由表與其頁面
- * @returns {React.ReactElement}
+ * 與 createBrowserRouter 同一份路由表，網址改放在井字號後面。
+ * @param {object[]} routes 路由物件陣列
+ * @param {object} [opts]
+ * @param {string} [opts.basename] 基底路徑，可省略
+ * @returns {object} 交給 RouterProvider 的路由器
  */
-const hashed = <HashRouter>{/* App */}</HashRouter>;
+const router = createHashRouter(routes, { basename });
 ```
 
 **觀念**
 
-下面這段入口只用來對照，它不設 `basename`。目錄、路由表與 `to` 都維持原樣。井字號後面的變化不會向伺服器要一份新文件，所以不必為 `/demos/01` 準備 `404.html`。
+下面只換建立路由器的函式，路由表、目錄與 `to` 都維持原樣。井字號後面的變化不會向伺服器要一份新文件，所以不必為 `/demos/01` 準備 `404.html`。這是觀念示範，沒有另外的練習檔。看完改回 `createBrowserRouter`。
 
-```jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { HashRouter } from 'react-router';
-import App from './App.jsx';
-import './index.css';
-
-/**
- * 對照用入口。路徑放在井字號後面，路由表與目錄連結不用改。
- * 筆記網站的完成版仍用 BrowserRouter。
- */
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </StrictMode>,
-);
+```diff 04-react-router/src/App.jsx
+-import { createBrowserRouter, RouterProvider } from 'react-router';
++import { createHashRouter, RouterProvider } from 'react-router';
+ // ...
+-const router = createBrowserRouter([
++const router = createHashRouter([
+ // ...
 ```
 
-若暫時改用這份入口，第一則的網址會像 `http://localhost:5173/#/demos/01`。重新整理仍停在該則。做完把入口改回 `BrowserRouter`。
+**解析**
+
+- `RouterProvider` 不用換。不能在 `App` 外面再包 `HashRouter`，因為 `App` 已經把路由器畫出來了。
+- 路由物件與 `basename` 留著。第一則的網址會像 `http://localhost:5173/#/demos/01`。
+- 重新整理仍停在該則。做完把函式改回 `createBrowserRouter`。
 
 {% note success %}
 **換你試試：**
-對照兩種網址：`BrowserRouter` 的 `/demos/01`，以及 `HashRouter` 的 `/#/demos/01`。目錄的 `to` 都不必改。
+對照兩種網址：`createBrowserRouter` 的 `/demos/01`，以及 `createHashRouter` 的 `/#/demos/01`。目錄的 `to` 都不必改。看完改回 `createBrowserRouter`。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-`to` 寫的是路由路徑。兩種路由器都會把它接到自己的網址形式。平常把入口留在 `BrowserRouter`。只有在靜態主機無法用 `404.html` 回到同一頁時，才改看 `HashRouter`。
+`to` 寫的是路由路徑。兩種路由器都會把它接到自己的網址形式。平常完成版留在 `createBrowserRouter`。只有在靜態主機無法用 `404.html` 回到同一頁時，才暫時改看 `createHashRouter`。
 
 </details>
 
 # 本篇重點回顧
 
-- `04-react-router` 由 `03-react` 複製後再裝 `react-router`，課堂用宣告式的 `BrowserRouter`、`Routes` 與 `Route`。
-- 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，首頁是筆記總覽。
+- `04-react-router` 由 `03-react` 複製後再裝 `react-router`。課堂用資料模式的 `createBrowserRouter` 與 `RouterProvider`；宣告式的 `BrowserRouter`、`Routes` 與 `Route` 只留作選讀對照。
+- 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，同層的 `ScrollRestoration` 負責換頁捲動。
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
 - 單則筆記的路徑是 `/demos/:id`，`useParams` 取出字串 id，上一則與下一則用 `useNavigate`。
 - 篩選目錄用查詢 `?q=`，`useSearchParams` 讀、`setSearchParams` 寫，重新整理仍留著同一組結果。
 - 分散式把 `*` 放在版型裡，找不到時目錄還在；集中式把 `*` 與版型並列，未知網址整頁替換。
 - 選讀的 `useLocation` 讀整段位置，常用欄位是 `pathname`、`search` 與 `hash`。
-- 選讀：GitHub Pages 不會把未知路徑改送 `index.html`，建置後複製出 `404.html` 接住子路徑；`HashRouter` 是另一條退路。網址有子路徑時才需要 `base` 與 `basename`。
+- 選讀：GitHub Pages 不會把未知路徑改送 `index.html`，建置後複製出 `404.html` 接住子路徑；`createHashRouter` 是另一條退路。網址有子路徑時才需要 `base` 與 `basename`。
 
 # 專有名詞中英對照
 
@@ -2043,19 +2101,24 @@ createRoot(document.getElementById('root')).render(
 
 ## 認識路由
 
-這一組是網址怎麼對上畫面、三種接法，以及選讀才出現的讀取與框架檔案。課堂專案用宣告式。
+這一組是網址怎麼對上畫面，以及課堂用的資料模式。宣告式、`BrowserRouter`、`Routes`、`Route` 是選讀對照。框架模式也是選讀。
 
 - 路由（routing）
-- 連結（Link）
-- 宣告式（declarative mode）
 - 資料模式（data mode）
-- 框架模式（framework mode）
-- 瀏覽器路由（BrowserRouter）
 - createBrowserRouter
 - RouterProvider
+- 捲動還原（ScrollRestoration）
 - 換頁前讀取（loader）
+- useLoaderData
 - 表單送出（action）
 - 錯誤頁（errorElement）
+- 連結（Link）
+- 舊套件入口（react-router-dom）
+- 選讀對照：宣告式（declarative mode）
+- 選讀對照：瀏覽器路由（BrowserRouter）
+- 選讀對照：路由表（Routes）
+- 選讀對照：路由（Route）
+- 框架模式（framework mode）
 - Remix
 - 伺服器端渲染（SSR）
 - 程式碼切分（code splitting）
@@ -2063,23 +2126,22 @@ createRoot(document.getElementById('root')).render(
 - 檔案路由（file-based routing）
 - HydratedRouter
 - Next.js
-- 舊套件入口（react-router-dom）
-- useLoaderData
 - 路由設定（routes.ts）
 - 路由模組（route module）
 
 ## 啟用路由
 
-這一組是把複製來的專案接上宣告式路由、路由表、版型與目錄資料。
+這一組是把複製來的專案接上資料模式、路由表、版型與目錄資料。`basename` 是 `createBrowserRouter` 的第二個參數。
 
 - 歷史 API（History API）
-- 路由表（Routes）
-- 路由（Route）
 - 索引路由（index route）
 - 路徑（path）
 - 元素（element）
+- 子路由（children）
 - 插槽（Outlet）
 - 巢狀路由（nested route）
+- 基底路徑（basename）
+- BASE_URL
 
 ## 連結與選單
 
@@ -2112,10 +2174,8 @@ createRoot(document.getElementById('root')).render(
 
 ## 選讀：部署到 GitHub Pages
 
-這一組是讓靜態主機接住子路徑的做法，以及網址有子路徑時的前綴。`base` 管打包，`basename` 管路由。
+這一組是讓靜態主機接住子路徑的做法。`base` 管打包；`basename` 沿用前面 `createBrowserRouter` 的第二個參數。
 
-- 單頁應用（single-page application）
-- 基底路徑（basename）
 - 建置基底（base）
-- BASE_URL
+- 雜湊路由器（createHashRouter）
 - 雜湊路由（HashRouter）

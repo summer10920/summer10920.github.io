@@ -10,7 +10,7 @@ date: 2026-08-30 10:11:00
 
 ![](assets/images/banner/react.png)
 
-這一章做洛奇旅行的切版：把 React、MUI 與 Tailwind 收成一個多頁網站。先接通十二條路由的佔位頁，再逐頁換成真正的畫面，假資料跟著一起補齊。打包沿用 {% post_link lokiTech-15day-11-react-router %}。
+這一章做洛奇旅行的切版：把 React、MUI 與 Tailwind 收成一個多頁網站。先建立佔位頁並接到路由，再組出外框（頁首、主導覽、頁尾）；外框下層先放標記，再逐一換成真正的元件，假資料跟著一起補齊。打包沿用 {% post_link lokiTech-15day-11-react-router %}。
 
 <!-- more -->
 
@@ -20,7 +20,7 @@ date: 2026-08-30 10:11:00
 
 ## Vite 專案
 
-`pnpm create vite` 會產生 React 需要的入口。清掉計數器範本之後，這個資料夾就是後面每一步的起點。
+`pnpm create vite` 會產生 React 需要的入口。選 JavaScript 時它不會附上 `jsconfig.json`，這份檔要自己加，編輯器才能把 `src` 當成同一個專案。清掉計數器範本之後，這個資料夾就是後面每一步的起點。
 
 ### 步驟 1：建立專案
 
@@ -52,9 +52,35 @@ pnpm create vite
 - `vite.config.js` 裡的 `react()` 把 JSX 轉成瀏覽器能執行的 JavaScript。
 - `createRoot` 只呼叫一次。元件與狀態的寫法見 {% post_link lokiTech-15day-09-react-basics %}。
 
-### 步驟 2：清掉範本
+### 步驟 2：加入 jsconfig.json
 
-計數器、標誌圖與 `App.css` 刪掉。套件名稱改成 `loki-travel`，`App` 只留標題。`react`、`react-dom`、`vite`、`@vitejs/plugin-react` 的版本與完成品對齊。
+剛才產生的骨架沒有 `jsconfig.json`。接下來在專案根目錄自己建立這份檔，讓 Cursor 或 VS Code 知道哪些檔屬於同一個 JavaScript 專案。沒有它時，編輯器常把每個 `.jsx` 當成獨立檔，跨檔跳轉和「找出所有引用」會找不到。
+
+```json 06-project-init/jsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "checkJs": false
+  },
+  "include": ["src"]
+}
+```
+
+**解析**
+
+- `include` 寫 `src`，編輯器會把 `src` 底下的檔當成同一個專案。
+- `moduleResolution` 設成 `bundler`，解析 import 的方式和 Vite 一致。
+- `jsx` 設成 `react-jsx`，編輯器才會把 JSX 當成合法語法。
+- `checkJs` 設成 `false`，不要用 TypeScript 的型別規則去檢查這些 JavaScript 檔。
+- 不必寫 `baseUrl`。這個專案的 import 都是相對路徑，不需要它。TypeScript 6 也已把它標成即將移除。
+- Vite 打包不會讀這份檔。少了它網站一樣能建置，少的是編輯器的跨檔能力。
+
+### 步驟 3：清掉範本
+
+計數器、標誌圖與 `App.css` 刪掉。Vite 附的 `public/vite.svg` 一併換成我們自己的網站圖示。套件名稱改成 `loki-travel`，`App` 只留標題。`react`、`react-dom`、`vite`、`@vitejs/plugin-react` 的版本與完成品對齊。
 
 ```json 06-project-init/package.json
 {
@@ -90,6 +116,13 @@ export default defineConfig({
 });
 ```
 
+```svg 06-project-init/public/favicon.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#1F6B4A"/>
+  <text x="16" y="22.5" text-anchor="middle" font-family="ui-serif, 'Songti TC', serif" font-size="18" font-weight="700" fill="#FAF8F3">洛</text>
+</svg>
+```
+
 ```html 06-project-init/index.html
 <!doctype html>
 <html lang="zh-Hant">
@@ -97,6 +130,7 @@ export default defineConfig({
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>洛奇旅行</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
     <div id="root"></div>
@@ -133,6 +167,9 @@ export default function App() {
 - `dependencies` 只留 `react` 與 `react-dom`。Vite 與外掛放在 `devDependencies`，打包後的靜態檔不依賴它們。
 - `type` 設成 `module`，設定檔才能用 `import`。`engines` 把 Node.js 定在 24 以上。
 - 這個 `App` 沒有狀態，也沒有路由，畫面只有「洛奇旅行」。
+- Vite 範本的網站圖示是 `public/vite.svg`，`index.html` 裡也有一條指向 `/vite.svg` 的連結。刪掉那張圖，改放自己的檔，並把 `href` 改成對應的檔名。
+- 以後要換圖示，只要替換 `public` 裡的檔，或改 `href` 指向新檔。這個專案用的是 `favicon.svg`，瀏覽器分頁會顯示圓角方塊與「洛」字。
+- 為什麼放在 `public`：Vite 打包時會把 `src` 裡被 import 的檔編進產物，但網站圖示是 `index.html` 用網址去載入的，沒有經過 import。`public` 裡的檔會原樣複製到網站根目錄，所以 `href="/favicon.svg"` 對應的就是 `public/favicon.svg`。
 
 ## 樣式與主題
 
@@ -140,12 +177,22 @@ export default function App() {
 
 ### 步驟 1：安裝套件
 
-在 `06-project-init` 執行。版本範圍與完成品相同。
+這一步把後面會用到的套件裝進 `06-project-init`：路由、MUI 與它的樣式執行期，以及 Tailwind。版本範圍與完成品相同。
+
+先執行下面兩行。網站執行時需要的套件用 `pnpm add`，只在開發與打包時需要的用 `pnpm add -D`。
 
 ```bash
 pnpm add react-router@^8.5.1 @mui/material@^9.5.0 @emotion/react@^11.14.0 @emotion/styled@^11.14.1
 pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 ```
+
+**解析**
+
+- 路由元件從 `react-router` 引入。`createBrowserRouter` 與 `RouterProvider` 的寫法見 {% post_link lokiTech-15day-11-react-router %}。
+- MUI 9 的樣式執行期是 Emotion，所以兩個 `@emotion` 套件要一起裝。
+- Tailwind 4 用 `@tailwindcss/vite` 接進 Vite，主題寫在 CSS 裡，不必另建 `tailwind.config.js`。
+
+裝完之後，`package.json` 會多出這些欄位。
 
 ```diff 06-project-init/package.json
  // ...
@@ -168,21 +215,16 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 
 **解析**
 
-- 路由元件從 `react-router` 引入。宣告式路由的寫法見 {% post_link lokiTech-15day-11-react-router %}。
-- MUI 9 的樣式執行期是 Emotion，所以兩個 `@emotion` 套件要一起裝。
-- Tailwind 4 用 `@tailwindcss/vite` 接進 Vite，主題寫在 CSS 裡，不必另建 `tailwind.config.js`。
+- `dependencies` 裝進 `react-router`、`@mui/material` 與兩個 `@emotion` 套件。打包後的網站會用到它們。
+- `tailwindcss` 與 `@tailwindcss/vite` 放在 `devDependencies`。它們只參與開發與打包，打包後的靜態檔不依賴它們。
 
 ### 步驟 2：認識 MUI
 
 MUI（Material UI）是一套 React 元件庫。按鈕、輸入框、對話框都有現成元件，色與字級集中在一份主題，不必每個元件各寫一份 CSS。
 
-三個函式各管一件事。
+這一步會依序改三個檔案：建立主題、在入口把主題交給畫面、再用一顆實心按鈕確認有接上。這顆按鈕只是暫時的測試畫面，後續章節會重新設計 `App`。
 
-- `createTheme` 建立主題物件。這一步只放主色，後面再補完整色票與字級。
-- `ThemeProvider` 把主題交給子樹裡的 MUI 元件。包在外面，裡面的 `Button` 才讀得到。
-- `CssBaseline` 清掉瀏覽器給 `body` 的預設外距，並套上主題的文字色與背景色。
-
-下面把畫面換成一顆實心按鈕，確認主題有接到畫面上。路由那一節會整份換掉 `App`，這顆按鈕只留在這一步。
+先建一份主題，裡面只放主色。
 
 ```js 06-project-init/src/theme.js
 import { createTheme } from '@mui/material/styles';
@@ -195,6 +237,13 @@ const theme = createTheme({
 
 export default theme;
 ```
+
+**解析**
+
+- `createTheme` 建立主題物件。傳進去的設定會變成之後元件讀到的預設色與字級。
+- 這一步的 `palette.primary.main` 先寫主色 `#1F6B4A`。完整色票與字級留到後面的步驟再補。
+
+主題建好之後，還要在入口把它交給畫面。
 
 ```diff 06-project-init/src/main.jsx
  // ...
@@ -215,6 +264,14 @@ export default theme;
  );
 ```
 
+**解析**
+
+- `ThemeProvider` 把主題交給子樹裡的 MUI 元件。它要包在外面，裡面的 `Button` 才讀得到這份 `palette`。
+- `CssBaseline` 清掉瀏覽器給 `body` 的預設外距，並套上主題的文字色與背景色。渲染之後，`body` 的 `margin` 是 0。
+- `import './index.css'` 留在 `main.jsx` 最上面，樣式會在 `render` 之前進到頁面。
+
+最後把畫面暫時換成一顆實心按鈕。
+
 ```jsx 06-project-init/src/App.jsx
 import Button from '@mui/material/Button';
 
@@ -225,10 +282,8 @@ export default function App() {
 
 **解析**
 
-- 按鈕底色來自 `palette.primary.main`。`variant="contained"` 用這個色當底。
-- 少了 `ThemeProvider`，`Button` 只用 MUI 內建主題，讀不到這份 `palette`。
-- `CssBaseline` 渲染之後，`body` 的 `margin` 是 0。
-- `import './index.css'` 留在 `main.jsx` 最上面，樣式會在 `render` 之前進到頁面。
+- `Button` 是 MUI 的現成元件。`variant="contained"` 會用 `palette.primary.main` 當底色。
+- 少了前面的 `ThemeProvider`，這顆按鈕只用 MUI 內建主題，讀不到我們寫的主色。
 
 ### 步驟 3：Tailwind 與層疊層級
 
@@ -243,20 +298,31 @@ export default function App() {
   compL --> utilL["utilities"]
 {% endmermaid %}
 
-箭頭往右，後層蓋過前層。
+箭頭往右，後層蓋過前層。這五個名字是 CSS 圖層的名稱，用來決定誰蓋過誰。其中的 `theme` 是 Tailwind 內建的圖層名，跟下一步才會寫的 `theme.js` 不是同一個東西。
 
-- `theme` 放設計代幣。
-- `base` 放 preflight，以及下一步才寫的 `body`。
-- `components` 放稍後才寫的 class。
-- `utilities` 放 Tailwind 的工具 class，所以欄數與間距蓋得過 MUI。
+design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 `--color-action`，值是那一個綠色；之後 class 與元件都引用這個名字，不必到處抄色碼。
 
-層級順序只宣告一次，放在 `index.css` 第一行，而且要在 `@import` 之前。瀏覽器沿用這份順序，HTML 與執行時都不必再寫一次。
+- `theme` 這層就是放這些 design token 的地方。
+- `base` 這層放 preflight，以及下一步才寫的 `body`。
+- `components` 這層稍後只放「跳到內容」的 `.skip`。
+- `utilities` 這層放 Tailwind 的工具 class，所以欄數與間距蓋得過 MUI。
+
+接下來會依序改三個檔案：在 `index.css` 宣告這份層級順序並引入 Tailwind，在 Vite 接上 Tailwind 外掛，最後讓 MUI 的樣式進到剛才宣告的 `mui` 層。
 
 ```css 06-project-init/src/index.css
+/* 宣告層級順序，後層可以蓋過前層。mui 是我們插入的層名，必須和 MUI 寫死的名稱相同。 */
 @layer theme, base, mui, components, utilities;
 
 @import 'tailwindcss';
 ```
+
+**解析**
+
+- `@layer theme, base, mui, components, utilities;` 是在宣告 Tailwind 要把樣式掛進哪些圖層，以及後層可以蓋過前層。`@import 'tailwindcss'` 之後，design token、reset、元件 class、工具 class 會分別掛到 `theme`、`base`、`components`、`utilities`。
+- 中間多出來的 `mui` 是我們自己寫的圖層名，Tailwind 沒有提供這一層。沒有這一行，Tailwind 仍會用自己的預設順序，裡面沒有 `mui`。層名為什麼必須叫 `mui`，下一小步接上 `enableCssLayer` 時再看。
+- 這一行要寫在 `@import` 之前，而且整份專案只宣告一次。它不寫顏色，也不會去讀 `theme.js`。
+
+再把 Tailwind 外掛加進 Vite。
 
 ```diff 06-project-init/vite.config.js
  // ...
@@ -269,12 +335,20 @@ export default function App() {
  });
 ```
 
+**解析**
+
+- `plugins` 同時留著 `react()` 與 `tailwindcss()`。少了後者，`@import 'tailwindcss'` 不會被處理。
+- 開發伺服器聽哪個位址、打包時怎麼拆檔，留到最後的靜態部署再補。這一節的 `vite.config.js` 只加外掛。
+
+最後讓 MUI 把自己的樣式放進剛才宣告的 `mui` 層，並依官方 Vite 作法補上圖層順序的宣告。
+
 ```diff 06-project-init/src/main.jsx
  // ...
  import { createRoot } from 'react-dom/client';
 -import { ThemeProvider } from '@mui/material/styles';
 +import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
  import CssBaseline from '@mui/material/CssBaseline';
++import GlobalStyles from '@mui/material/GlobalStyles';
  // ...
    <StrictMode>
 -    <ThemeProvider theme={theme}>
@@ -282,6 +356,7 @@ export default function App() {
 -      <App />
 -    </ThemeProvider>
 +    <StyledEngineProvider enableCssLayer>
++      <GlobalStyles styles="@layer theme, base, mui, components, utilities;" />
 +      <ThemeProvider theme={theme}>
 +        <CssBaseline />
 +        <App />
@@ -293,17 +368,26 @@ export default function App() {
 
 **解析**
 
-- `plugins` 同時留著 `react()` 與 `tailwindcss()`。少了後者，`@import 'tailwindcss'` 不會被處理。
-- `StyledEngineProvider` 要包住會渲染 MUI 的那一層，`enableCssLayer` 才作用在這些元件上。
-- 開發伺服器聽哪個位址、打包時怎麼拆檔，留到最後的靜態部署再補。這一節的 `vite.config.js` 只加外掛。
+- `StyledEngineProvider` 要包住會渲染 MUI 的那一層。`enableCssLayer` 是布林值，只負責打開這個行為，沒有屬性可以傳入層名。
+- 打開之後，MUI 會把元件樣式包成 `@layer mui { ... }`。這裡的 `mui` 是 MUI 套件寫死的預設名稱，我們的程式裡看不到、也改不到這一行。
+- 所以上一步 `@layer` 清單裡也必須寫同樣的字 `mui`，瀏覽器才會把 MUI 的規則放進我們插入的那一層。兩邊名稱對不上，MUI 的樣式就進不了這個順序。
+- 沒有這層包裹，MUI 的樣式會落在層級外面，優先度高過 Tailwind，後面的工具 class 就蓋不過去。
+- `GlobalStyles` 必須是 `StyledEngineProvider` 的第一個子元件。它再寫一次和 `index.css` 相同的 `@layer theme, base, mui, components, utilities;`，讓瀏覽器在任何 MUI 元件樣式出現之前，先鎖定圖層順序。
+- 只有 `index.css` 那一行還不夠：Vite 用 JavaScript 把這份 CSS 注入頁面，MUI 的樣式也由 JavaScript 注入。若 Emotion 先建立起 `mui` 這一層，之後就無法再把它插回 `base` 與 `components` 中間，Tailwind 的 preflight 會清掉按鈕內距，也會讓 Select 的外框消失。
+- 這是 Material UI 文件給 Vite 專案的作法，層級順序的字串必須和 `index.css` 那一行相同。
+
+{% note info %}
+**打包時只會讀 index.css 的層級宣告**
+Vite 把 CSS 打包成 stylesheet 時，不會讀到 GlobalStyles 裡的那一行。index.css 若少了這行，產出會回到 Tailwind 沒有 mui 的預設順序，我們插入 mui 的客製就丟失了。GlobalStyles 是 React 渲染時才套用規則，因此開發模式靠它能正常顯示。
+{% endnote %}
 
 ### 步驟 4：主題與色票
 
-色票只留在 `tokens`。`applyTokens` 在繪製之前把每一色寫成 CSS 變數，名稱是 `--loki-` 加上鍵名。`@theme inline` 用這些變數對到顏色 class，樣式表裡不再抄一份色碼。
+色票只寫一份，放在 `theme.js` 的 `tokens`。MUI 與 Tailwind 都從這裡取值，樣式表裡不再抄一份色碼。`index.css` 不會引入 `theme.js`；真正引入它的是 `main.jsx`。
 
-MUI 的 `palette` 要拿色碼算對比，所以寫十六進位。嫩綠 `#3FB27F` 配白字是 2.66:1，帶字的主按鈕改用 `#1F6B4A`（白字 6.44:1），hover 用 `#146845`。
+這一步會依序改三個檔案：先把 `theme.js` 換成完整色票，再於 `main.jsx` 引入它、把色票寫成 CSS 變數，最後讓 `index.css` 去讀這些變數。元件自己的 class 與 MUI 覆寫這一步還不寫。
 
-`@layer base` 用同一組變數設定頁面底色、文字色、選取範圍與鍵盤焦點。元件自己的 class 與 MUI 覆寫還不寫。把 `theme.js` 整份換成下面這樣，上一步的主色收進 `tokens.action`。
+先把 `theme.js` 整份換掉，上一步的主色收進 `tokens.action`。
 
 ```js 06-project-init/src/theme.js
 import { createTheme } from '@mui/material/styles';
@@ -360,11 +444,44 @@ const theme = createTheme({
 export default theme;
 ```
 
+**解析**
+
+- `tokens` 是唯一的色票來源。後面 Tailwind 與 MUI 都從這裡取值，不再各抄一份色碼。
+- `applyTokens` 把每個鍵名原樣接在 `--loki-` 後面。例如 `tokens` 裡的 `actionHover` 會變成 `--loki-actionHover`，不會改成連字號。
+- `createTheme` 的 `palette` 要拿色碼算對比，所以直接讀 `tokens` 裡的十六進位。帶字的主按鈕用 `tokens.action`，不用較亮的 `tokens.primary`。
+- `cssVariables` 讓 MUI 另外寫出自己的 CSS 變數。Tailwind 不讀那些名字，只讀 `--loki-*`。
+- 字型名稱下一步再換。這一步的 `fontFamily` 仍是系統無襯線字。
+
+`theme.js` 要在 `main.jsx` 引入。`theme` 繼續交給 `ThemeProvider`；`applyTokens` 則在繪製之前，把 `tokens` 寫成網頁根節點上的 `--loki-*`。
+
+```diff 06-project-init/src/main.jsx
+ // ...
+ import App from './App.jsx';
+-import theme from './theme.js';
++import theme, { applyTokens } from './theme.js';
+ 
++applyTokens();
++
+ createRoot(document.getElementById('root')).render(
+ // ...
+```
+
+**解析**
+
+- `import theme, { applyTokens } from './theme.js'` 是專案裡引入這份色票的地方。`index.css` 不會、也不能去 import 它。
+- `theme` 傳進 `ThemeProvider`，MUI 元件才讀得到 `palette`。
+- `applyTokens()` 寫在 `render` 之前，第一批畫面就讀得到 `--loki-*`。寫在後面，第一幀可能會先出現沒有色票的樣子。
+
+色票變成 CSS 變數之後，`index.css` 才去讀它們。檔案開頭的 `@layer` 與上一步相同，沒有改動。
+
 ```css 06-project-init/src/index.css
+/* 宣告層級順序，後層可以蓋過前層。mui 是我們插入的層名，必須和 MUI 寫死的名稱相同。 */
 @layer theme, base, mui, components, utilities;
 
 @import 'tailwindcss';
 
+/* 把 :root 上的 --loki-*（由 main.jsx 的 applyTokens 寫入）接到 Tailwind 的色名與字型。
+   這份檔案不會引入 theme.js。 */
 @theme inline {
   --color-primary: var(--loki-primary);
   --color-hover: var(--loki-hover);
@@ -384,6 +501,7 @@ export default theme;
   --shadow-card: 0 10px 28px rgb(31 42 68 / 8%);
 }
 
+/* 全站基底：頁面底色與文字、選取顏色、鍵盤焦點外框，以及減少動畫。 */
 @layer base {
   body {
     margin: 0;
@@ -418,32 +536,23 @@ export default theme;
 }
 ```
 
-```diff 06-project-init/src/main.jsx
- // ...
- import App from './App.jsx';
--import theme from './theme.js';
-+import theme, { applyTokens } from './theme.js';
- 
-+applyTokens();
-+
- createRoot(document.getElementById('root')).render(
- // ...
-```
-
 **解析**
 
-- `applyTokens` 寫在 `render` 之前，第一批畫面就讀得到 `--loki-*`。
-- `cssVariables` 讓 MUI 另外寫出自己的 CSS 變數。Tailwind 不讀那些名字，只讀 `--loki-*`。
-- `--color-action` 對到 class `bg-action`、`text-action`。連字號是 Tailwind 的色名，`tokens` 裡的鍵維持駝峰。
-- 字型名稱下一步再換。這一步的 `fontFamily` 仍是系統無襯線字。
+- 第一行 `@layer theme, base, mui, components, utilities;` 仍是上一步宣告的掛載順序，跟色票無關。這裡的 `theme` 是 Tailwind 的圖層名，不是 `theme.js`。
+- `@theme inline` 才是在讀 `--loki-*`，並對到 Tailwind 的顏色名稱。例如 `--color-action: var(--loki-action);` 讓 class `bg-action`、`text-action` 去用這個色。
+- `@layer base { ... }` 是把規則放進已經宣告好的 `base` 層，用同一組變數設定頁面底色、文字色、選取範圍與鍵盤焦點。它跟第一行「列出有哪些層」是兩件事。
+- Tailwind 的色名用連字號，所以會看到 `--color-action-hover: var(--loki-actionHover);`。左邊是 Tailwind 要的名字，右邊是上一份 `theme.js` 裡 `actionHover` 被 `applyTokens` 寫出來的變數。
 
 ### 步驟 5：字型與圖示
 
-介面用 Noto Sans TC，標題用 Noto Serif TC。Material Symbols Outlined 是圖示字型：元素的文字內容寫圖示名稱，字型把名稱畫成圖。圖示元件留到頁首再寫，這裡只把字檔與 class 載進來。
+介面用 Noto Sans TC，標題用 Noto Serif TC。Material Symbols Outlined 是圖示字型：元素的文字內容寫圖示名稱，字型把名稱畫成圖。
+
+這一步會依序改三個檔案：在 `index.html` 載入字檔、讓 MUI 的標題與按鈕改用這兩套字、再讓 Tailwind 與圖示 class 也用同一套字檔。圖示元件留到頁首再寫。
 
 ```diff 06-project-init/index.html
  // ...
      <title>洛奇旅行</title>
+     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 +    <link rel="preconnect" href="https://fonts.googleapis.com" />
 +    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 +    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" rel="stylesheet" />
@@ -451,6 +560,13 @@ export default theme;
    </head>
  // ...
 ```
+
+**解析**
+
+- 兩個 `preconnect` 先跟字型服務建立連線，後面的樣式表下載會快一些。
+- 圖示字型的網址帶 `display=block`，字檔到達前先不顯示名稱。內文字型用 `display=swap`，先用後備字再換。
+
+字檔載進來之後，讓 MUI 的標題與按鈕改用這兩套字。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -471,6 +587,14 @@ export default theme;
  // ...
 ```
 
+**解析**
+
+- 預設的 `fontFamily` 改成 Noto Sans TC，內文與多數元件會用無襯線。
+- `h1`、`h2`、`h3` 另外指定 Noto Serif TC，標題元件才會用襯線。
+- `button` 維持無襯線，避免按鈕文字跟著標題變成襯線字。
+
+最後讓 Tailwind 與圖示 class 也用同一套字檔。
+
 ```diff 06-project-init/src/index.css
  // ...
  @theme inline {
@@ -483,6 +607,7 @@ export default theme;
    }
  }
 +
++/* 把元素文字裡的圖示名稱畫成圖。liga 讓名稱連成一個圖形。 */
 +.material-symbols-outlined {
 +  font-family: 'Material Symbols Outlined';
 +  font-weight: normal;
@@ -502,22 +627,203 @@ export default theme;
 
 **解析**
 
-- `font-sans` 與 `font-serif` 給 Tailwind 的 `font-sans`、`font-serif`。MUI 的 `typography` 另外寫字型名稱，標題元件才會用襯線。
-- 圖示字型的網址帶 `display=block`，字檔到達前先不顯示名稱。內文字型用 `display=swap`，先用後備字再換。
-- `font-feature-settings: 'liga'` 把圖示名稱連成一個圖形。頁首的 `Icon` 會把名稱放進帶這個 class 的 `span`。
+- `--font-sans` 與 `--font-serif` 給 Tailwind 的 `font-sans`、`font-serif`。MUI 的 `typography` 已經在上一份程式各自寫過字型名稱。
+- 圖示 class 的用意寫在 `index.css` 的註解裡。頁首的 `Icon` 會把名稱放進帶這個 class 的 `span`，元件本身留到頁首再寫。
+
 # 路由與版面
 
-十二條路徑先全部掛上，每頁只顯示頁名。頁首、頁尾與連結可以先點過一輪，再逐頁換成真正的畫面。
+先做佔位頁與路由表，重整後先看到各頁標題。再組 `SiteLayout`，頁首、主導覽與頁尾先放標記，並接到路由當外框。之後把標記換成真正的元件，再逐頁換成真正的畫面。
 
-## 共用版面
+這一章的檔案用 feature-based（功能目錄）來放。跨頁元件放 `_shared`，整站外框放 `layout`。
 
-`Outlet` 決定版面中間換哪一頁。頁首、頁尾與佔位元件先獨立，路由表只負責把網址對到元件。
+## 路由表
 
-### 頁首與頁尾
+這一節先寫佔位頁，再寫路由表。此時還沒有整站外框，重整後會看到各頁的大標題，外框下一節再加。`main.jsx` 維持主題那一步，直接渲染 `App`。本課切版不寫 loader。
 
-這一版頁首還沒有登入狀態，登入鈕只是一條連到 `/login` 的連結。圖示是一顆寫著名稱的 `<span>`，字型在上一步已引入。
+### 步驟 1：建立佔位頁
 
-```jsx 06-project-init/src/components/Icon.jsx
+路由表裡還沒寫的頁，先用佔位頁顯示頁名。檔案放在 `_shared`。版面這一版還沒有提示訊息，`notice` 等報名頁再接。
+
+```jsx 06-project-init/src/_shared/Placeholder.jsx
+export default function Placeholder({ title }) {
+  return (
+    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <h1 className="font-serif text-4xl font-bold text-ink">{title}</h1>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- 佔位頁只顯示頁名。`title` 畫成正文裡的大標題。
+- 每個佔位頁都有 `id="content"`，對應稍後頁首那個跳到內容的錨點。
+- 十二頁都換成真正的元件之後，自行評估刪掉 `Placeholder.jsx`。
+
+### 步驟 2：寫路由表
+
+先前那顆測試按鈕從這裡換成路由表。在 `App.jsx` 用 `createBrowserRouter` 建立扁平的路由物件陣列，再交給 `RouterProvider`。這一版不引入 `SiteLayout`，每個路徑直接渲染對應的佔位頁。
+
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import Placeholder from './_shared/Placeholder.jsx';
+
+const router = createBrowserRouter([
+  { index: true, element: <Placeholder title="首頁" /> },
+  { path: 'tours', element: <Placeholder title="行程列表" /> },
+  { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
+  { path: 'booking', element: <Placeholder title="報名" /> },
+  { path: 'booking/done', element: <Placeholder title="報名完成" /> },
+  { path: 'me', element: <Placeholder title="我的報名" /> },
+  { path: 'about', element: <Placeholder title="關於" /> },
+  { path: 'login', element: <Placeholder title="登入提示" /> },
+  { path: 'admin/login', element: <Placeholder title="後台登入" /> },
+  { path: 'admin', element: <Placeholder title="後台行程" /> },
+  { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
+  { path: '*', element: <Placeholder title="找不到頁面" /> },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- `createBrowserRouter` 把路由物件陣列做成路由器。`App` 回傳 `RouterProvider`，由它依照目前網址畫出對上的頁。
+- 此刻還沒有外框，每個路徑直接渲染對應的 `Placeholder`。
+- `index: true` 就是 `/`。`booking/done` 與 `admin/login` 和較短的 path 寫在同一層，各自對自己的網址。
+- `tours/:id` 的 `id` 等詳情頁才用 `useParams` 讀取。路徑參數見第 11 篇。
+- 星號放在最後，前面的路徑都沒對上才會進來。
+- 重整之後只會看到佔位頁的大標題，還沒有頁首與頁尾。
+
+## 規劃 SiteLayout
+
+路由已經接上。這一節要組出整站外框 `SiteLayout`。它拆成跨頁使用的 `Icon`、頁首下層的 `SiteNav`、`SiteHeader`、`SiteFooter`，最後由 `SiteLayout` 把頁首、中間的 `Outlet`、頁尾和 `ScrollRestoration` 組起來。先組出 `SiteLayout`，頁首、主導覽與頁尾先放標記，並把它接到路由當父路由，就可以在畫面上對照，再逐一換成真正的元件。登入鈕仍只是連到 `/login` 的連結，後面談到時再寫。
+
+```
+src/
+├── _shared/
+│   └── Icon.jsx
+└── layout/
+    ├── SiteLayout.jsx
+    └── components/
+        ├── SiteHeader.jsx
+        ├── SiteNav.jsx
+        └── SiteFooter.jsx
+```
+
+{% mermaid graph TD %}
+  layout["SiteLayout"] --> header["SiteHeader"]
+  layout --> outlet["Outlet"]
+  layout --> footer["SiteFooter"]
+  header --> nav["SiteNav"]
+  header --> icon["Icon"]
+  footer --> icon
+{% endmermaid %}
+
+### 步驟 1：下層標記與 SiteLayout
+
+先寫頁首、主導覽與頁尾的標記元件，再組 `SiteLayout`。接著把它接到路由當父路由，畫面上就能對照外框。頁首會渲染主導覽，所以之後換主導覽時，效果出現在頁首的位置。
+
+```jsx 06-project-init/src/layout/components/SiteNav.jsx
+export default function SiteNav() {
+  return <nav className="font-bold text-ink" aria-label="主要">主導覽</nav>;
+}
+```
+
+```jsx 06-project-init/src/layout/components/SiteHeader.jsx
+import SiteNav from './SiteNav.jsx';
+
+export default function SiteHeader() {
+  return (
+    <header className="bg-paper px-4 py-3 font-bold text-ink">
+      頁首
+      <SiteNav />
+    </header>
+  );
+}
+```
+
+頁尾用 `mt-auto` 讓它靠下，因為 `SiteLayout` 是直向的 flex。
+
+```jsx 06-project-init/src/layout/components/SiteFooter.jsx
+export default function SiteFooter() {
+  return <footer className="mt-auto bg-ink px-4 py-6 text-white">頁尾</footer>;
+}
+```
+
+外框把頁首、中間的 `Outlet` 與頁尾組起來，並在頁尾後面放上 `ScrollRestoration`。
+
+```jsx 06-project-init/src/layout/SiteLayout.jsx
+import { Outlet, ScrollRestoration } from 'react-router';
+import SiteHeader from './components/SiteHeader.jsx';
+import SiteFooter from './components/SiteFooter.jsx';
+
+export default function SiteLayout() {
+  return (
+    <div className="flex min-h-screen flex-col bg-paper font-sans text-ink">
+      <SiteHeader />
+      <div className="flex flex-1 flex-col">
+        <Outlet />
+      </div>
+      <SiteFooter />
+      <ScrollRestoration />
+    </div>
+  );
+}
+```
+
+**解析**
+
+- `SiteLayout` 先把頁首、`Outlet`、頁尾組起來。頁首、主導覽與頁尾此刻只是標記，之後再換。
+- `Outlet` 渲染子路由對上的元件，頁首與頁尾留在外面。
+- 換頁要捲到頂部，按上一頁或下一頁要還原當時的位置，所以用官方的 `ScrollRestoration`，不必自己寫 `scrollTo`。它與 `Outlet` 同層，放在 `SiteFooter` 之後。
+
+接著更新 `App.jsx`，引入 `SiteLayout`，把十二條路徑收進父路由的 `children`。這是第一次用外框包住子路由。
+
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import SiteLayout from './layout/SiteLayout.jsx';
+import Placeholder from './_shared/Placeholder.jsx';
+
+const router = createBrowserRouter([
+  {
+    element: <SiteLayout />,
+    children: [
+      { index: true, element: <Placeholder title="首頁" /> },
+      { path: 'tours', element: <Placeholder title="行程列表" /> },
+      { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
+      { path: 'booking', element: <Placeholder title="報名" /> },
+      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
+      { path: 'me', element: <Placeholder title="我的報名" /> },
+      { path: 'about', element: <Placeholder title="關於" /> },
+      { path: 'login', element: <Placeholder title="登入提示" /> },
+      { path: 'admin/login', element: <Placeholder title="後台登入" /> },
+      { path: 'admin', element: <Placeholder title="後台行程" /> },
+      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
+      { path: '*', element: <Placeholder title="找不到頁面" /> },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- 父路由的 `element` 是 `SiteLayout`。`children` 裡的路徑都畫在它的 `Outlet`。
+- 重整之後會看到頁首（含「主導覽」）、中間佔位頁的標題，以及頁尾。之後換主導覽、頁首、頁尾時，效果會出現在這個外框裡。
+
+### 步驟 2：圖示元件
+
+標記已經在畫面上。接下來逐一換成真正的元件：先做圖示，再換主導覽，然後補頁首會用到的樣式與主題，最後換頁首與頁尾。換完重整，就能在剛才的外框裡看到連結與頁尾內容。
+
+樣式那一節已經引入 Material Symbols 字型，也寫好了圖示 class。現在寫一個元件，把圖示名稱放進帶那個 class 的 `span`。
+
+```jsx 06-project-init/src/_shared/Icon.jsx
 export default function Icon({ name, className = '' }) {
   return (
     <span className={`material-symbols-outlined ${className}`.trim()} aria-hidden="true">
@@ -527,12 +833,22 @@ export default function Icon({ name, className = '' }) {
 }
 ```
 
-```jsx 06-project-init/src/components/NavLinks.jsx
+**解析**
+
+- `name` 是圖示名稱，字型會把這個名稱畫成圖。頁首的選單稍後會傳 `menu`。
+- `aria-hidden="true"` 讓輔助技術略過這顆圖。旁邊如果已經有「選單」這類文字，就不會念兩次。
+- `className` 留給呼叫端再加顏色或間距。
+
+### 步驟 3：主導覽
+
+把主導覽的 placeholder 換成真正的元件。此時它已出現在頁首裡，換完就能在畫面上看到連結。頁首的桌面列與手機選單會顯示同一組連結，所以導覽獨立成一個元件。
+
+```jsx 06-project-init/src/layout/components/SiteNav.jsx
 import { NavLink } from 'react-router';
 
 const item = ({ isActive }) => `inline-flex min-h-11 items-center rounded-full px-3 font-bold ${isActive ? 'bg-action text-white' : 'text-ink hover:bg-mist'}`;
 
-export default function NavLinks({ onNavigate, id }) {
+export default function SiteNav({ onNavigate, id }) {
   return (
     <nav id={id} className="flex flex-col gap-1 md:flex-row md:items-center" aria-label="主要">
       <NavLink to="/tours" className={item} onClick={onNavigate}>行程</NavLink>
@@ -543,13 +859,26 @@ export default function NavLinks({ onNavigate, id }) {
 }
 ```
 
-「跳到內容」的 class，以及頁首按鈕、頂列、抽屜與遮罩的覆寫，補在這一節。`shape.borderRadius` 先設成 12，按鈕再改成膠囊。
+**解析**
+
+- `NavLink` 會帶 `isActive`。目前這一項用實心膠囊，其餘維持文字。寫法見第 11 篇。
+- `item` 寫成函式而不是字串，因為 class 要依目前是不是這一頁而改變。
+- `onNavigate` 給手機選單用：點了連結就關掉選單。桌面版沒有這層選單，傳進去也不影響畫面。
+- `id` 讓外層指定這個導覽的識別。桌面導覽稍後會設成 `site-nav`。
+
+### 步驟 4：組出 SiteHeader
+
+先補「跳到內容」樣式與按鈕、頂列、手機選單的主題，再把頁首的 placeholder 換成真正的 `SiteHeader`。
+
+鍵盤使用者打開頁面時，焦點會先經過頁首一長串連結。「跳到內容」讓他們可以一次跳到正文。這個連結平常移出畫面，只有焦點進來才顯示。
 
 ```diff 06-project-init/src/index.css
  // ...
  }
  
 +@layer components {
++  /* 「跳到內容」連結：平常藏起來，鍵盤焦點進來才顯示在左上角。
++     不用 display: none，否則焦點進不去、鍵盤也按不到。 */
 +  .skip {
 +    position: absolute;
 +    width: 1px;
@@ -581,6 +910,13 @@ export default function NavLinks({ onNavigate, id }) {
  .material-symbols-outlined {
  // ...
 ```
+
+**解析**
+
+- 這段樣式的用意寫在 `index.css` 的註解裡。
+- 連結本身寫在稍後的頁首元件裡；這裡只負責它出現與隱藏的樣子。
+
+頁首會用到 MUI 的頂列、按鈕與手機選單（`Drawer`）。這些元件的長相集中寫在 `theme.js`，之後都會跟著套用，不必在每個元件裡再寫一遍。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -631,14 +967,26 @@ export default function NavLinks({ onNavigate, id }) {
  // ...
 ```
 
-```jsx 06-project-init/src/components/SiteHeader.jsx
+**解析**
+
+- `shape.borderRadius` 先設成 12，作為元件的預設圓角。
+- `MuiButton` 的 `root` 把圓角改成 999，按鈕變成膠囊。
+- `disableElevation` 設成 true，按鈕預設不再帶陰影。
+- 實心主按鈕與次按鈕的顏色來自 `tokens`，和 Tailwind 看到的是同一組色票。
+- `MuiAppBar` 設成半透明、貼在上緣、沒有陰影，底邊加一條分隔線。
+- `MuiDrawer` 從右側打開，紙張左側做成圓角。
+- `MuiBackdrop` 是手機選單後面那層半透明遮罩。
+
+接著把頁首的 placeholder 換成真正的 `SiteHeader`。左邊是站名，右邊是導覽與登入；窄螢幕改成一顆選單按鈕，點了之後從右側抽出同一組連結。
+
+```jsx 06-project-init/src/layout/components/SiteHeader.jsx
 import { useState } from 'react';
 import { Link } from 'react-router';
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
-import NavLinks from './NavLinks.jsx';
-import Icon from './Icon.jsx';
+import SiteNav from './SiteNav.jsx';
+import Icon from '../../_shared/Icon.jsx';
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -651,13 +999,13 @@ export default function SiteHeader() {
         <Link to="/" className="font-serif text-2xl font-semibold text-ink">洛奇旅行</Link>
         <Button id="nav-toggle" className="md:hidden" variant="outlined" startIcon={<Icon name="menu" />} aria-expanded={open} aria-controls="site-drawer" onClick={() => setOpen(true)}>選單</Button>
         <div className="hidden items-center gap-1 md:flex">
-          <NavLinks onNavigate={close} id="site-nav" />
+          <SiteNav onNavigate={close} id="site-nav" />
           <Button component={Link} to="/login" onClick={close}>登入</Button>
         </div>
       </div>
       <Drawer anchor="right" open={open} onClose={close}>
         <div id="site-drawer" className="flex flex-col gap-2 p-4">
-          <NavLinks onNavigate={close} />
+          <SiteNav onNavigate={close} />
           <Button component={Link} to="/login" onClick={close}>登入</Button>
         </div>
       </Drawer>
@@ -666,9 +1014,21 @@ export default function SiteHeader() {
 }
 ```
 
-```jsx 06-project-init/src/components/SiteFooter.jsx
+**解析**
+
+- 頂列設成 sticky，捲動時貼在視窗上緣。加上 `component="header"` 之後，輸出的是 header 元素，id 是 `site-header`。
+- 第一個子元素是「跳到內容」，class 用剛才寫的 `skip`，並指向 `#content`。這個錨點已經加在佔位頁的正文上。
+- 桌面版用 `hidden` 搭配 `md:flex` 顯示導覽與登入鈕。選單按鈕加上 `md:hidden`，只在窄螢幕出現。
+- 登入鈕寫成 `component={Link}`，並指定連到 `/login`。看起來像按鈕，行為是路由連結。這一版還沒有登入狀態。
+- 手機選單是否打開由 `useState` 控制。導覽的 `onNavigate` 接到 `close`，點了連結就關選單。手機選單按鈕的 id 是 `nav-toggle`。
+
+### 步驟 5：組出 SiteFooter
+
+把頁尾的 placeholder 換成真正的 `SiteFooter`。內容是站名、聯絡方式與探索連結。後台入口放在頁尾最底下，不放進前台選單。
+
+```jsx 06-project-init/src/layout/components/SiteFooter.jsx
 import { Link } from 'react-router';
-import Icon from './Icon.jsx';
+import Icon from '../../_shared/Icon.jsx';
 
 export default function SiteFooter() {
   return (
@@ -707,218 +1067,51 @@ export default function SiteFooter() {
 
 **解析**
 
-- `NavLink` 會帶 `isActive`。目前這一項用實心膠囊，其餘維持文字。寫法見第 11 篇。
-- 頁首的 id 是 `site-header`，手機選單按鈕的 id 是 `nav-toggle`。
-- 頁尾另放一條「後台登入」，前台選單不放後台連結。
-- `skip` 這個 class 把「跳到內容」移出畫面，鍵盤焦點進來才顯示。
-- 按鈕改成膠囊、去掉陰影。頂列半透明貼在上緣，抽屜從右側打開，後面的遮罩是 Backdrop。
-
-### 佔位頁
-
-佔位元件只顯示頁名，讓整站先能點來點去。版面這一版還沒有提示訊息，`notice` 等報名頁再接。
-
-```jsx 06-project-init/src/components/Placeholder.jsx
-export default function Placeholder({ title }) {
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <h1 className="font-serif text-4xl font-bold text-ink">{title}</h1>
-    </main>
-  );
-}
-```
-
-```jsx 06-project-init/src/layouts/SiteLayout.jsx
-import { Outlet } from 'react-router';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
-
-export default function SiteLayout() {
-  return (
-    <div className="flex min-h-screen flex-col bg-paper font-sans text-ink">
-      <SiteHeader />
-      <div className="flex flex-1 flex-col">
-        <Outlet />
-      </div>
-      <SiteFooter />
-    </div>
-  );
-}
-```
-
-**解析**
-
-- `Outlet` 渲染子路由對上的元件，頁首與頁尾留在外面。
-- 每個佔位頁都有 `id="content"`，對應頁首那個跳到內容的錨點。
-- 十二頁都換成真正的元件之後，刪掉 `Placeholder.jsx`。
-
-## 路由表
-
-巢狀在 `SiteLayout` 底下的路徑共用頁首頁尾。星號也留在版面裡，找不到頁時頁首頁尾還在。
-
-{% mermaid graph LR %}
-  layout["SiteLayout"] --> home["/ HomePage"]
-  layout --> tours["/tours ToursPage"]
-  layout --> detail["/tours/:id TourDetailPage"]
-  layout --> booking["/booking BookingPage"]
-  layout --> done["/booking/done BookingDonePage"]
-  layout --> me["/me MyBookingsPage"]
-  layout --> about["/about AboutPage"]
-  layout --> login["/login LoginPage"]
-  layout --> aLogin["/admin/login AdminLoginPage"]
-  layout --> aTours["/admin AdminToursPage"]
-  layout --> aBooks["/admin/bookings AdminBookingsPage"]
-  layout --> miss["* NotFoundPage"]
-{% endmermaid %}
-
-`Routes` 要包在 `BrowserRouter` 裡才讀得到網址。上一步那顆按鈕從這裡換成路由表。
-
-```diff 06-project-init/src/main.jsx
- // ...
- import CssBaseline from '@mui/material/CssBaseline';
-+import { BrowserRouter } from 'react-router';
- import App from './App.jsx';
- // ...
-         <CssBaseline />
--        <App />
-+        <BrowserRouter>
-+          <App />
-+        </BrowserRouter>
-       </ThemeProvider>
- // ...
-```
-
-```jsx 06-project-init/src/App.jsx
-import { Route, Routes } from 'react-router';
-import SiteLayout from './layouts/SiteLayout.jsx';
-import Placeholder from './components/Placeholder.jsx';
-
-export default function App() {
-  return (
-    <Routes>
-      <Route element={<SiteLayout />}>
-        <Route index element={<Placeholder title="首頁" />} />
-        <Route path="tours" element={<Placeholder title="行程列表" />} />
-        <Route path="tours/:id" element={<Placeholder title="行程詳情" />} />
-        <Route path="booking" element={<Placeholder title="報名" />} />
-        <Route path="booking/done" element={<Placeholder title="報名完成" />} />
-        <Route path="me" element={<Placeholder title="我的報名" />} />
-        <Route path="about" element={<Placeholder title="關於" />} />
-        <Route path="login" element={<Placeholder title="登入提示" />} />
-        <Route path="admin/login" element={<Placeholder title="後台登入" />} />
-        <Route path="admin" element={<Placeholder title="後台行程" />} />
-        <Route path="admin/bookings" element={<Placeholder title="後台報名" />} />
-        <Route path="*" element={<Placeholder title="找不到頁面" />} />
-      </Route>
-    </Routes>
-  );
-}
-```
-
-**解析**
-
-- `index` 就是 `/`。`booking/done` 與 `admin/login` 和較短的 path 寫在同一層，各自對自己的網址。
-- `tours/:id` 的 `id` 等詳情頁才用 `useParams` 讀取。路徑參數見第 11 篇。
-- 星號放在最後，前面的路徑都沒對上才會進來。
-- `BrowserRouter` 提供目前網址。`App` 裡的 `Routes` 靠它把路徑對到佔位頁。
+- 頁尾用深色背景 `bg-ink`。中等寬度以上分成三欄。
+- 電話與地址前面的圖示呼叫剛才的 `Icon`，名稱分別是 `call` 與 `location_on`。
+- 「探索」放行程與關於兩條連結。後台登入單獨放在最底下，前台選單不放後台連結。
 
 # 前台頁面
 
-每個小節把對應的佔位元件換成真正的頁面，並且只補這一頁要讀的欄位。共用狀態等到第一個用到它的頁面才加。React 狀態與 context 的寫法見 {% post_link lokiTech-15day-10-react-advanced %}，這裡不再展開。
+先建立各頁要共用的行程資料，再把對應的佔位元件換成真正的頁面，並且只補這一頁要讀的欄位。React 狀態與 context 的寫法見 {% post_link lokiTech-15day-10-react-advanced %}，這裡不再展開語法。
 
-## 首頁
+前台目錄的放法如下：
 
-首頁讀精選行程、主題圖、三則理由與四則評價。列表才要的價格區間、詳情才要的每日行程，先不寫進資料檔。
+- 各頁放進 `features/`：頁面檔在功能目錄下，該頁的零件進 `components/`；沒有零件的功能就不必建空資料夾。
+- 每個功能的假資料放在自己的 `mock.data.js`。
+- 行程和篩選選項放在 `features/*/mock.data.js`，其他功能要共用時再 import，做法與稍後首頁引用 `TourCard` 相同。
+- 共用的行程狀態放在 `src/store.jsx`。
+- 下面各頁會先用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件。
 
-```js 06-project-init/src/format.js
-export const ntd = (value) => `NT$${Number(value).toLocaleString('zh-Hant-TW')}`;
+{% mermaid graph TD %}
+  app["App"] --> store["store.jsx 共用狀態"]
+  app --> layout["SiteLayout 外框"]
+  layout --> home["home 首頁"]
+  layout --> tours["tours 行程"]
+  layout --> booking["booking 報名"]
+  layout --> about["about 關於"]
+  layout --> auth["auth 登入"]
+  store -.-> home
+  store -.-> tours
+  store -.-> booking
+  style store fill:#fff3bf,stroke:#d97706,color:#422006
+{% endmermaid %}
 
-export const perPerson = (tour) => (tour?.id === 'kyoto-nara' ? '/ 人，不含國際機票' : '/ 人');
-```
+## StoreContext
 
-```js 06-project-init/src/data/tours.js
-export const tours = [
-  {
-    id: 'taipei-beitou',
-    title: '台北大稻埕與北投溫泉三日',
-    region: '台北',
-    days: 3,
-    price: 18600,
-    cover: 'https://images.unsplash.com/photo-1519320993082-43a535317ddc?auto=format&fit=crop&w=1600&q=80',
-    intro: '第一天沿迪化街走到大稻埕碼頭，第二天北投泡湯，下午不排景點。',
-    departures: [{ id: '2026-12-04', date: '2026-12-04' }],
-    featured: true,
-  },
-  {
-    id: 'hualien-taroko',
-    title: '花蓮太魯閣與七星潭四日',
-    region: '花蓮',
-    days: 4,
-    price: 26800,
-    cover: 'https://images.unsplash.com/photo-1604214896221-b13d964b214a?auto=format&fit=crop&w=1600&q=80',
-    intro: '第一天沿七星潭走路，第二天進太魯閣只排燕子口與九曲洞，下午留白。',
-    departures: [{ id: '2026-12-18', date: '2026-12-18' }],
-    featured: true,
-  },
-  {
-    id: 'taitung-chishang',
-    title: '台東池上與成功海岸三日',
-    region: '台東',
-    days: 3,
-    price: 21400,
-    cover: 'https://images.unsplash.com/photo-1761549849498-8cf23a31329d?auto=format&fit=crop&w=1600&q=80',
-    intro: '第一天在池上騎一段田邊的路，第二天去成功看漁港，不把兩個地方排在同一天。',
-    departures: [{ id: '2027-01-15', date: '2027-01-15' }],
-    featured: true,
-  },
-  {
-    id: 'kyoto-nara',
-    title: '京都嵐山、伏見與奈良五日',
-    region: '京都',
-    days: 5,
-    price: 52800,
-    cover: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80',
-    intro: '嵐山、伏見、奈良各一天，中間留一天在市內走。四晚不換飯店。',
-    departures: [{ id: '2027-04-06', date: '2027-04-06' }],
-    featured: true,
-  },
-];
-```
+上圖可以看到，首頁、行程、報名都會讀同一份行程資料，後台之後也是，所以不能只放在某一頁的區域狀態裡。若從最外層用 props 往下傳，中間的 `SiteLayout` 與 `Outlet` 自己不用這份資料，卻得一路轉手。{% post_link lokiTech-15day-10-react-advanced %} 的 Context 就是為了這種情況：上層提供資料，真正要用的元件自己讀。這裡沿用那篇的寫法，建立 `store.jsx`，用 `StoreContext` 提供行程，頁面用 `useStore` 讀取。
 
-```js 06-project-init/src/data/options.js
-export const regions = ['台北', '基隆', '花蓮', '台東', '台南', '高雄', '金門', '京都'];
+### 步驟 1：建立 store
 
-export const dayOptions = [2, 3, 4, 5];
+初始值來自 `features/tours/mock.data.js` 的 `tours`。現在先放空陣列，精選行程等首頁輪播那步再補。
 
-const shot = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1600&q=80`;
-
-export const themeLinks = [
-  { theme: '城市', places: '大稻埕、鹽埕', image: shot('1598935898639-81586f7d2129') },
-  { theme: '海岸', places: '北海岸、九份', image: shot('1507525428034-b723cf961d3e') },
-  { theme: '山海', places: '花蓮、台東', image: shot('1464822759023-fed622ff2c3b') },
-  { theme: '古都', places: '台南府城、安平', image: shot('1633228491597-b39f823e0541') },
-  { theme: '離島', places: '金門聚落', image: shot('1505118380757-91f5f5632de0') },
-  { theme: '日本', places: '京都、奈良', image: shot('1526481280693-3bfa7568e0f3') },
-];
-
-export const reasons = [
-  { title: '每團 8 人', body: '人數少，嚮導叫得出名字。不會把兩台車的人併成一團。' },
-  { title: '一天不排滿', body: '上午走路，下午留白。景點之間不靠購物站填時間。' },
-  { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
-];
-```
-
-```js 06-project-init/src/data/reviews.js
-export const reviews = [
-  { id: 'r1', tourId: 'hualien-taroko', author: '林可', rating: 5, body: '太魯閣沒有被排進行程表以外的停靠點。' },
-  { id: 'r2', tourId: 'taipei-beitou', author: '陳予安', rating: 5, body: '迪化街走得很慢，嚮導沒有把我們推進店裡。' },
-  { id: 'r3', tourId: 'kyoto-nara', author: '周以寧', rating: 4, body: '伏見只排了兩間酒造，下午自己走回到宿。' },
-  { id: 'r4', tourId: 'taitung-chishang', author: '何品', rating: 5, body: '池上的田沒有被排成打卡點，成功漁港是傍晚去的。' },
-];
+```js 06-project-init/src/features/tours/mock.data.js
+export const tours = [];
 ```
 
 ```jsx 06-project-init/src/store.jsx
 import { createContext, useContext, useState } from 'react';
-import { tours as seedTours } from './data/tours.js';
+import { tours as seedTours } from './features/tours/mock.data.js';
 
 const StoreContext = createContext(null);
 
@@ -934,364 +1127,109 @@ export function StoreProvider({ children }) {
 export const useStore = () => useContext(StoreContext);
 ```
 
-Select 的箭頭改成圖示字型。`ms` 產生一顆帶圖示名稱的 `span`，`MuiSelect` 用它取代預設的 SVG。
+**解析**
 
-```diff 06-project-init/src/theme.js
-+import { createElement } from 'react';
- import { createTheme } from '@mui/material/styles';
+- `seedTours` 當初始值，目前只提供 `tours`；現在是空陣列，之後補上行程，讀這份資料的頁面會一起更新。報名陣列等詳情頁要算剩餘名額再放進來。
+- `useStore` 讀同一個 context。
+
+### 步驟 2：接到 App
+
+用 `StoreProvider` 包住 `RouterProvider`，之後各頁都能呼叫 `useStore`。此刻行程還是空陣列，畫面看起來不會變。
+
+```diff 06-project-init/src/App.jsx
+ import { createBrowserRouter, RouterProvider } from 'react-router';
++import { StoreProvider } from './store.jsx';
+ import SiteLayout from './layout/SiteLayout.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-   });
- };
- 
-+
-+/** Material Symbols 字型 icon（取代 MUI 內建 SVG）。 */
-+const ms = (name, props = {}) => createElement('span', { 'aria-hidden': 'true', ...props, className: `material-symbols-outlined ${props.className || ''}`.trim() }, name);
-+const SelectArrow = ({ className }) => ms('expand_more', { className });
-+
- const theme = createTheme({
- // ...
-     MuiBackdrop: {
-       styleOverrides: { root: { backgroundColor: 'rgb(31 42 68 / 45%)' } },
-     },
-+    MuiSelect: {
-+      defaultProps: { IconComponent: SelectArrow },
-+    },
-   },
- // ...
-```
-
-```jsx 06-project-init/src/components/FieldSelect.jsx
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-
-export default function FieldSelect({ id, label, value, onChange, options, hiddenLabel = false }) {
-  return (
-    <FormControl className="w-full">
-      <InputLabel id={`${id}-label`} className={hiddenLabel ? 'sr-only' : undefined}>{label}</InputLabel>
-      <Select labelId={`${id}-label`} id={id} label={hiddenLabel ? undefined : label} value={value} onChange={(event) => onChange(event.target.value)}>
-        {options.map((option) => <MenuItem key={option.value || 'all'} value={option.value}>{option.label}</MenuItem>)}
-      </Select>
-    </FormControl>
-  );
-}
-```
-
-搜尋表單用 `.panel`，文字連結用 `.text-link`。兩個 class 從這裡加進 `components` 層。
-
-```diff 06-project-init/src/index.css
- // ...
-     padding: 0.5rem 0.75rem;
-   }
-+
-+  .panel {
-+    border-radius: 24px;
-+    background: var(--loki-white);
-+    box-shadow: var(--shadow-card);
-+  }
-+
-+  .text-link {
-+    font-weight: 700;
-+    color: var(--loki-action);
-+    text-decoration-line: underline;
-+    text-decoration-color: color-mix(in srgb, var(--loki-action) 45%, transparent);
-+    text-underline-offset: 4px;
-+  }
-+
-+  .text-link:hover {
-+    color: var(--loki-actionHover);
-+  }
+ export default function App() {
+-  return <RouterProvider router={router} />;
++  return (
++    <StoreProvider>
++      <RouterProvider router={router} />
++    </StoreProvider>
++  );
  }
- // ...
 ```
 
-```jsx 06-project-init/src/components/HeroSearch.jsx
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { dayOptions, regions } from '../data/options.js';
-import FieldSelect from './FieldSelect.jsx';
+**解析**
 
+- `StoreProvider` 包住 `RouterProvider`，所以 `SiteLayout` 與各頁都在同一棵樹上，之後呼叫 `useStore` 讀得到行程。
+- 路由表這一刻還沒換，各路徑仍是佔位頁。
+
+## 首頁
+
+首頁讀精選行程、主題圖、三則理由與四則評價。假資料寫到該區塊用到時，再補進對應的 `mock.data.js`。列表才要的價格區間、詳情才要的每日行程，這一節先不寫。
+
+這一節要組出 `HomePage`。
+
+{% mermaid graph TD %}
+  page["HomePage 首頁"] --> slider["HeroSlider 輪播"]
+  page --> search["HeroSearch 搜尋表單"]
+  page --> card["TourCard 行程卡片"]
+  page --> themes["ThemeGrid 主題列表"]
+  page --> reasons["ReasonList 理由列表"]
+  page --> reviews["ReviewList 評價列表"]
+  search --> field["FieldSelect 下拉選單"]
+{% endmermaid %}
+
+### 步驟 1：組出 HomePage
+
+先把首頁組起來並接到路由，後面寫零件時才能在畫面上對照。下層元件先用 placeholder 標出區塊位置。
+
+```jsx 06-project-init/src/features/home/components/HeroSlider.jsx
+export default function HeroSlider() {
+  return <section className="flex min-h-[70svh] items-center justify-center bg-ink text-2xl text-white">輪播</section>;
+}
+```
+
+```jsx 06-project-init/src/features/home/components/HeroSearch.jsx
 export default function HeroSearch() {
-  const navigate = useNavigate();
-  const [region, setRegion] = useState('');
-  const [days, setDays] = useState('');
-  const submit = (event) => {
-    event.preventDefault();
-    const params = new URLSearchParams();
-    if (region) params.set('region', region);
-    if (days) params.set('days', days);
-    navigate(`/tours?${params.toString()}`);
-  };
-
-  return (
-    <form className="panel p-6 md:p-8" onSubmit={submit}>
-      <Typography variant="h2">找一趟慢一點的行程</Typography>
-      <p className="mt-2 text-muted">選地區與天數，或直接看全部。</p>
-      <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
-        <FieldSelect id="hero-region" label="地區" value={region} onChange={setRegion} options={[{ value: '', label: '不限' }, ...regions.map((item) => ({ value: item, label: item }))]} />
-        <FieldSelect id="hero-days" label="天數" value={days} onChange={setDays} options={[{ value: '', label: '不限' }, ...dayOptions.map((item) => ({ value: String(item), label: `${item} 天` }))]} />
-        <Button type="submit" variant="contained" className="min-h-14 md:min-w-40">搜尋行程</Button>
-      </div>
-      <p className="mt-5"><Link className="text-link" to="/tours">看全部行程</Link></p>
-    </form>
-  );
+  return <p className="rounded-card bg-white p-6 shadow-card">搜尋表單</p>;
 }
 ```
 
-價格膠囊是 `.price-tag`。左右切換的 IconButton 改成圓形。
-
-```diff 06-project-init/src/index.css
- // ...
-     box-shadow: var(--shadow-card);
-   }
-+
-+  .price-tag {
-+    display: inline-block;
-+    border-radius: 999px;
-+    background: var(--loki-accent);
-+    color: var(--loki-ink);
-+    font-weight: 700;
-+    line-height: 1.15;
-+    padding: 0.12em 0.55em;
-+  }
- 
-   .text-link {
- // ...
-```
-
-```diff 06-project-init/src/theme.js
- // ...
-         outlined: { borderColor: tokens.line, color: tokens.ink, '&:hover': { borderColor: tokens.action, backgroundColor: tokens.mist } },
-       },
-     },
-+    MuiIconButton: {
-+      styleOverrides: { root: { borderRadius: 999 } },
-+    },
-     MuiAppBar: {
- // ...
-```
-
-```jsx 06-project-init/src/components/HeroSlider.jsx
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Icon from './Icon.jsx';
-import { ntd } from '../format.js';
-
-export default function HeroSlider({ slides }) {
-  const [index, setIndex] = useState(0);
-  const count = slides.length;
-
-  useEffect(() => {
-    if (!count || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
-    const timer = setInterval(() => setIndex((current) => (current + 1) % count), 4500);
-    return () => clearInterval(timer);
-  }, [count]);
-
-  if (!count) return null;
-  const go = (next) => setIndex(((next % count) + count) % count);
-  const slide = slides[index % count];
-  const bookTo = `/booking?tourId=${slide.id}&departureId=${slide.departures[0].id}`;
-
-  return (
-    <section className="relative flex min-h-[70svh] items-end overflow-hidden lg:h-[70vh]" aria-roledescription="carousel" aria-label="熱門風景">
-      {slides.map((item, itemIndex) => (
-        <img
-          key={item.id}
-          src={item.cover}
-          alt={itemIndex === index ? item.title : ''}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none ${itemIndex === index ? 'opacity-100' : 'opacity-0'}`}
-        />
-      ))}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/45 to-ink/25" />
-      <IconButton aria-label="上一張" onClick={() => go(index - 1)} className="absolute top-1/2 left-3 z-20 -translate-y-1/2 bg-white text-ink shadow-card md:left-6"><Icon name="chevron_left" /></IconButton>
-      <IconButton aria-label="下一張" onClick={() => go(index + 1)} className="absolute top-1/2 right-3 z-20 -translate-y-1/2 bg-white text-ink shadow-card md:right-6"><Icon name="chevron_right" /></IconButton>
-      <div className="relative z-10 w-full px-5 pt-24 pb-14 sm:px-8 lg:pb-28 lg:pl-20">
-        <p className="font-serif text-3xl"><span className="price-tag">{ntd(slide.price)}</span></p>
-        <p className="mt-3 text-base font-medium text-foam">{slide.region} · {slide.days} 天</p>
-        <h1 className="mt-2 max-w-3xl font-serif text-4xl font-bold text-balance text-white md:text-6xl">{slide.title}</h1>
-        <p className="mt-3 max-w-xl text-base leading-relaxed text-white md:text-lg">{slide.intro}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Button component={Link} to={bookTo} variant="contained">立即報名</Button>
-          <Button component={Link} to={`/tours/${slide.id}`} variant="contained" color="secondary">看行程</Button>
-        </div>
-      </div>
-      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 lg:bottom-24">
-        {slides.map((item, itemIndex) => (
-          <button
-            key={item.id}
-            type="button"
-            aria-label={`顯示${item.title}`}
-            aria-current={itemIndex === index ? 'true' : undefined}
-            onClick={() => go(itemIndex)}
-            className={`h-3 w-3 rounded-full ${itemIndex === index ? 'bg-accent' : 'bg-white'}`}
-          />
-        ))}
-      </div>
-    </section>
-  );
+```jsx 06-project-init/src/features/tours/components/TourCard.jsx
+export default function TourCard() {
+  return <article className="rounded-card bg-white p-6 shadow-card">行程卡片</article>;
 }
 ```
 
-卡片的圓角與陰影、Chip 的配色與刪除圖示，補進主題。
-
-```diff 06-project-init/src/theme.js
- // ...
-     MuiIconButton: {
-       styleOverrides: { root: { borderRadius: 999 } },
-     },
-+    MuiCard: {
-+      styleOverrides: {
-+        root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
-+      },
-+    },
-+    MuiChip: {
-+      defaultProps: { deleteIcon: ms('cancel') },
-+      styleOverrides: {
-+        root: { borderRadius: 999, fontWeight: 700 },
-+        colorSecondary: { backgroundColor: tokens.accent, color: tokens.ink },
-+        colorPrimary: { backgroundColor: tokens.action, color: tokens.white },
-+      },
-+    },
-     MuiAppBar: {
- // ...
-```
-
-```jsx 06-project-init/src/components/TourCard.jsx
-import { Link } from 'react-router';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import Chip from '@mui/material/Chip';
-import Typography from '@mui/material/Typography';
-import { ntd, perPerson } from '../format.js';
-
-export default function TourCard({ tour, showTheme = false }) {
-  return (
-    <Card component={Link} to={`/tours/${tour.id}`} className="group flex h-full flex-col overflow-hidden text-inherit no-underline">
-      <CardMedia component="img" image={tour.cover} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex flex-wrap gap-2">
-          <Chip size="small" color="secondary" label={tour.region} />
-          {showTheme ? <Chip size="small" variant="outlined" label={tour.theme} /> : null}
-          <Chip size="small" variant="outlined" label={`${tour.days} 天`} />
-        </div>
-        <Typography variant="h3" className="mt-3 text-ink">{tour.title}</Typography>
-        <p className="mt-2 text-base leading-relaxed text-muted">{tour.intro}</p>
-        <p className="mt-auto pt-5 font-serif text-2xl font-bold text-ink">{ntd(tour.price)} <span className="font-sans text-base font-normal text-muted">{perPerson(tour)}</span></p>
-        <Button component="span" variant="contained" className="mt-4 w-full" tabIndex={-1}>看詳情</Button>
-      </div>
-    </Card>
-  );
-}
-```
-
-```jsx 06-project-init/src/components/ThemeGrid.jsx
-import { Link } from 'react-router';
-import { themeLinks } from '../data/options.js';
-
+```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
 export default function ThemeGrid() {
-  return (
-    <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {themeLinks.map((item) => (
-        <li key={item.theme}>
-          <Link to={`/tours?theme=${item.theme}`} className="group relative flex min-h-52 overflow-hidden rounded-card shadow-card">
-            <img src={item.image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
-            <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
-            <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
-              <span className="font-serif text-3xl font-semibold">{item.theme}</span>
-              <span className="text-foam">{item.places}</span>
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
+  return <p className="mt-8">主題列表</p>;
 }
 ```
 
-```jsx 06-project-init/src/components/ReasonList.jsx
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import Icon from './Icon.jsx';
-import { reasons } from '../data/options.js';
-
-const icons = ['groups', 'wb_sunny', 'hotel'];
-
+```jsx 06-project-init/src/features/home/components/ReasonList.jsx
 export default function ReasonList() {
-  return (
-    <div className="mt-8 grid gap-6 lg:grid-cols-3">
-      {reasons.map((item, index) => {
-        const iconName = icons[index];
-        return (
-          <Card key={item.title} className="p-6 md:p-8">
-            <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-mist text-action">
-              <Icon name={iconName} />
-            </span>
-            <Typography variant="h3">{item.title}</Typography>
-            <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
-          </Card>
-        );
-      })}
-    </div>
-  );
+  return <p className="mt-8">理由列表</p>;
 }
 ```
 
-星星改用圖示字型。實心星加上 `FILL` 1，空心星維持線框。
-
-```diff 06-project-init/src/theme.js
- // ...
-     MuiSelect: {
-       defaultProps: { IconComponent: SelectArrow },
-     },
-+    MuiRating: {
-+      defaultProps: {
-+        icon: ms('star', { style: { fontVariationSettings: "'FILL' 1" } }),
-+        emptyIcon: ms('star'),
-+      },
-+    },
-   },
- // ...
-```
-
-```jsx 06-project-init/src/components/ReviewList.jsx
-import Card from '@mui/material/Card';
-import Rating from '@mui/material/Rating';
-import { reviews } from '../data/reviews.js';
-import { tours } from '../data/tours.js';
-
-const titleOf = (tourId) => tours.find((tour) => tour.id === tourId)?.title ?? '';
-
+```jsx 06-project-init/src/features/home/components/ReviewList.jsx
 export default function ReviewList() {
-  return (
-    <div className="mt-8 grid gap-4 lg:grid-cols-2">
-      {reviews.map((review) => (
-        <Card key={review.id} component="figure" className="p-6 md:p-8">
-          <Rating value={review.rating} readOnly aria-label={`${review.rating} 分`} />
-          <blockquote className="mt-3 max-w-prose leading-relaxed">「{review.body}」</blockquote>
-          <figcaption className="mt-3 text-muted">{review.author} · {review.rating} 分 · {titleOf(review.tourId)}</figcaption>
-        </Card>
-      ))}
-    </div>
-  );
+  return <p className="mt-8">評價列表</p>;
 }
 ```
 
-```jsx 06-project-init/src/pages/HomePage.jsx
+**解析**
+
+- 每個檔案先回傳標記文字，讓頁面組起來就能看到各區塊位置。
+- `HomePage` 稍後傳入的 `slides`、`tour` 先不必接收，多餘的 props 會被忽略。
+
+接著把零件組進 `HomePage`。行程用剛才的 `useStore` 讀取。
+
+```jsx 06-project-init/src/features/home/HomePage.jsx
 import { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
-import HeroSearch from '../components/HeroSearch.jsx';
-import HeroSlider from '../components/HeroSlider.jsx';
-import ReasonList from '../components/ReasonList.jsx';
-import ReviewList from '../components/ReviewList.jsx';
-import ThemeGrid from '../components/ThemeGrid.jsx';
-import TourCard from '../components/TourCard.jsx';
-import { useStore } from '../store.jsx';
+import HeroSearch from './components/HeroSearch.jsx';
+import HeroSlider from './components/HeroSlider.jsx';
+import ReasonList from './components/ReasonList.jsx';
+import ReviewList from './components/ReviewList.jsx';
+import ThemeGrid from './components/ThemeGrid.jsx';
+import TourCard from '../tours/components/TourCard.jsx';
+import { useStore } from '../../store.jsx';
 
 export default function HomePage() {
   const { tours } = useStore();
@@ -1341,71 +1279,639 @@ export default function HomePage() {
 }
 ```
 
-```jsx 06-project-init/src/App.jsx
-import { Route, Routes } from 'react-router';
-import { StoreProvider } from './store.jsx';
-import SiteLayout from './layouts/SiteLayout.jsx';
-import HomePage from './pages/HomePage.jsx';
-import Placeholder from './components/Placeholder.jsx';
+**解析**
 
-export default function App() {
+- `featured` 是標成精選的行程，同時送給輪播與熱門區。一筆精選都沒有時，輪播改拿陣列前面四筆，避免主視覺是空的。
+- `HeroSearch` 接在輪播後面。一般寬度在下方留空隙；大螢幕加上負邊距與較高的層級，讓搜尋表單往上疊在輪播底部。
+- 熱門行程、主題、理由與評價各是一個區塊，標題與導讀寫在頁面上，列表元件自己讀資料或接收 props。
+
+接著把路由表裡的首頁佔位換成 `HomePage`。
+
+```diff 06-project-init/src/App.jsx
+ import { StoreProvider } from './store.jsx';
+ import SiteLayout from './layout/SiteLayout.jsx';
++import HomePage from './features/home/HomePage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+     children: [
+-      { index: true, element: <Placeholder title="首頁" /> },
++      { index: true, element: <HomePage /> },
+       { path: 'tours', element: <Placeholder title="行程列表" /> },
+ // ...
+```
+
+**解析**
+
+- 首頁換成 `HomePage`，其他路徑仍用 `Placeholder`。`StoreProvider` 上一節已經包在外層，這裡不必再加。
+
+### 步驟 2：搜尋表單
+
+先抽出各頁會共用的下拉選單，再把首頁的搜尋表單 placeholder 換成真正的元件。
+
+#### 共用的 FieldSelect
+
+首頁下拉選單、行程列表的篩選、報名表和後台表單都會用到下拉選單。MUI 的 `Select` 每次都要搭配 `FormControl`、`InputLabel`，再把選項做成 `MenuItem`；這段包法若在各頁重寫，之後要改標籤或無障礙對應就要改很多處。所以先抽一個共用的 `FieldSelect` 放在 `src/_shared`，呼叫端只傳 `id`、`label`、`value`、`onChange` 與 `options`。
+
+Select 的箭頭改成圖示字型。`ms` 產生一顆帶圖示名稱的 `span`，`MuiSelect` 用它取代預設的 SVG。
+
+```diff 06-project-init/src/theme.js
++import { createElement } from 'react';
+ import { createTheme } from '@mui/material/styles';
+ // ...
+   });
+ };
+ 
++
++/** Material Symbols 字型 icon（取代 MUI 內建 SVG）。 */
++const ms = (name, props = {}) => createElement('span', { 'aria-hidden': 'true', ...props, className: `material-symbols-outlined ${props.className || ''}`.trim() }, name);
++const SelectArrow = ({ className }) => ms('expand_more', { className });
++
+ const theme = createTheme({
+ // ...
+     MuiBackdrop: {
+       styleOverrides: { root: { backgroundColor: 'rgb(31 42 68 / 45%)' } },
+     },
++    MuiSelect: {
++      defaultProps: { IconComponent: SelectArrow },
++    },
+   },
+ // ...
+```
+
+**解析**
+
+- `ms` 會產生一顆帶 `material-symbols-outlined` 的 `span`，文字就是圖示名稱；`aria-hidden` 標成裝飾，螢幕閱讀器不會再讀一次。
+- `SelectArrow` 固定用 `expand_more`。MUI 開啟選單時會把 class 傳進來，箭頭才能跟著旋轉。
+- `IconComponent` 寫在 `MuiSelect` 的 `defaultProps`，全站 Select 都會換成這支箭頭，不必每個元件再傳一次。
+
+接著把 `FormControl`、標籤與選項收進 `FieldSelect`。
+
+```jsx 06-project-init/src/_shared/FieldSelect.jsx
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+
+export default function FieldSelect({ id, label, value, onChange, options, hiddenLabel = false }) {
   return (
-    <StoreProvider>
-      <Routes>
-        <Route element={<SiteLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="tours" element={<Placeholder title="行程列表" />} />
-          <Route path="tours/:id" element={<Placeholder title="行程詳情" />} />
-          <Route path="booking" element={<Placeholder title="報名" />} />
-          <Route path="booking/done" element={<Placeholder title="報名完成" />} />
-          <Route path="me" element={<Placeholder title="我的報名" />} />
-          <Route path="about" element={<Placeholder title="關於" />} />
-          <Route path="login" element={<Placeholder title="登入提示" />} />
-          <Route path="admin/login" element={<Placeholder title="後台登入" />} />
-          <Route path="admin" element={<Placeholder title="後台行程" />} />
-          <Route path="admin/bookings" element={<Placeholder title="後台報名" />} />
-          <Route path="*" element={<Placeholder title="找不到頁面" />} />
-        </Route>
-      </Routes>
-    </StoreProvider>
+    <FormControl className="w-full">
+      <InputLabel id={`${id}-label`} className={hiddenLabel ? 'sr-only' : undefined}>{label}</InputLabel>
+      <Select labelId={`${id}-label`} id={id} label={hiddenLabel ? undefined : label} value={value} onChange={(event) => onChange(event.target.value)}>
+        {options.map((option) => <MenuItem key={option.value || 'all'} value={option.value}>{option.label}</MenuItem>)}
+      </Select>
+    </FormControl>
   );
 }
 ```
 
 **解析**
 
-- `featured` 為真的行程同時進輪播與熱門區。一筆精選都沒有時，輪播改拿陣列前面的行程。
-- 輪播只切換圖片的 `opacity`。系統偏好減少動態時，不設那個 4.5 秒的計時器。
-- 搜尋把地區與天數寫進查詢字串，導到 `/tours`。真正的篩選留在列表頁。
-- 評價只存 `tourId`，標題從行程陣列回查，兩處標題才不會各寫一份。
-- `Store` 目前只提供 `tours`。報名陣列等詳情頁要算剩餘名額再放進來。
-- `.panel`、`.text-link`、`.price-tag` 寫在 `components` 層。Select 箭頭、圓形 IconButton、卡片、Chip 與星星的覆寫寫進 `theme.js`。
+- `FormControl` 包住標籤與選單，並加上 `w-full`，讓它在格子裡拉滿寬度。
+- `InputLabel` 的 `id` 和 Select 的 `labelId` 對上，點標籤或用輔助技術時才知道這個選單叫什麼。
+- `hiddenLabel` 為真時，標籤加上 `sr-only` 只留給螢幕閱讀器，畫面上不再顯示；Select 也不再傳 `label`，避免為了騰出標籤空間而多出一截空白。
+- `onChange` 只把 `event.target.value` 往外傳，呼叫端收到的是字串，不必自己拆事件。
+- `options` 是 `{ value, label }` 陣列。`value` 送給表單，`label` 顯示給使用者；空白的 `value` 用 `'all'` 當 key，避免 React 收到空字串 key。
 
-{% note success %}
-**換你試試：**
-把輪播間隔從 4.5 秒改成 8 秒。偏好減少動態時維持不自動播放。
-{% endnote %}
+#### 搜尋表單的 HeroSearch
 
-<details>
-<summary>參考答案</summary>
+接著把搜尋表單的 placeholder 換成真正的元件。地區與天數用剛剛的 `FieldSelect`，送出後把條件寫進網址，導到行程列表。
 
-只改間隔的毫秒數。偏好減少動態的那個判斷留著。
+下拉選單要用地區與天數的選項，補進剛才的 `mock.data.js`。行程本體等輪播用到再補。
 
-```diff 06-project-init/src/components/HeroSlider.jsx
+```diff 06-project-init/src/features/tours/mock.data.js
+ export const tours = [];
++
++export const regions = ['台北', '基隆', '花蓮', '台東', '台南', '高雄', '金門', '京都'];
++
++export const dayOptions = [2, 3, 4, 5];
+```
+
+```jsx 06-project-init/src/features/home/components/HeroSearch.jsx
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { dayOptions, regions } from '../../tours/mock.data.js';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
+
+export default function HeroSearch() {
+  const navigate = useNavigate();
+  const [region, setRegion] = useState('');
+  const [days, setDays] = useState('');
+  const submit = (event) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (region) params.set('region', region);
+    if (days) params.set('days', days);
+    navigate(`/tours?${params.toString()}`);
+  };
+
+  return (
+    <form className="rounded-card bg-white shadow-card p-6 md:p-8" onSubmit={submit}>
+      <Typography variant="h2">找一趟慢一點的行程</Typography>
+      <p className="mt-2 text-muted">選地區與天數，或直接看全部。</p>
+      <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+        <FieldSelect id="hero-region" label="地區" value={region} onChange={setRegion} options={[{ value: '', label: '不限' }, ...regions.map((item) => ({ value: item, label: item }))]} />
+        <FieldSelect id="hero-days" label="天數" value={days} onChange={setDays} options={[{ value: '', label: '不限' }, ...dayOptions.map((item) => ({ value: String(item), label: `${item} 天` }))]} />
+        <Button type="submit" variant="contained" className="min-h-14 md:min-w-40">搜尋行程</Button>
+      </div>
+      <p className="mt-5"><Link className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover" to="/tours">看全部行程</Link></p>
+    </form>
+  );
+}
+```
+
+**解析**
+
+- 地區與天數各用一組 `useState`，預設是空字串，對應選項裡的「不限」。
+- `regions` 與 `dayOptions` 從行程的 `mock.data.js` 引入，再對成 `{ value, label }`。天數的 `value` 轉成字串，因為 Select 的值是字串；畫面標籤寫成「3 天」這種格式。
+- 送出時先 `preventDefault`，再用 `URLSearchParams` 組查詢字串。有選到地區或天數才寫進參數，然後導到 `/tours`。真正比對篩選條件是列表頁的工作。
+- 「看全部行程」是 `Link`，不帶查詢字串，直接進列表。
+
+### 步驟 3：輪播
+
+左右切換的 IconButton 改成圓形。
+
+價格要顯示成貨幣格式，先寫 `format.js`。輪播會用到行程的封面、標題與出團日，把空的 `tours` 換成四筆精選。
+
+```js 06-project-init/src/format.js
+export const ntd = (value) => `NT$${Number(value).toLocaleString('zh-Hant-TW')}`;
+```
+
+**解析**
+
+- `ntd` 把數字依台灣地區習慣加上千分位，並在前面寫上 `NT$`。
+
+把空的 `tours` 換成這四筆。後面仍接著已有的 `regions` 與 `dayOptions`。
+
+```diff 06-project-init/src/features/tours/mock.data.js
+-export const tours = [];
++export const tours = [
++  {
++    id: 'taipei-beitou',
++    title: '台北大稻埕與北投溫泉三日',
++    region: '台北',
++    days: 3,
++    price: 18600,
++    cover: 'https://images.unsplash.com/photo-1519320993082-43a535317ddc?auto=format&fit=crop&w=1600&q=80',
++    intro: '第一天沿迪化街走到大稻埕碼頭，第二天北投泡湯，下午不排景點。',
++    departures: [{ id: '2026-12-04', date: '2026-12-04' }],
++    featured: true,
++  },
++  {
++    id: 'hualien-taroko',
++    title: '花蓮太魯閣與七星潭四日',
++    region: '花蓮',
++    days: 4,
++    price: 26800,
++    cover: 'https://images.unsplash.com/photo-1604214896221-b13d964b214a?auto=format&fit=crop&w=1600&q=80',
++    intro: '第一天沿七星潭走路，第二天進太魯閣只排燕子口與九曲洞，下午留白。',
++    departures: [{ id: '2026-12-18', date: '2026-12-18' }],
++    featured: true,
++  },
++  {
++    id: 'taitung-chishang',
++    title: '台東池上與成功海岸三日',
++    region: '台東',
++    days: 3,
++    price: 21400,
++    cover: 'https://images.unsplash.com/photo-1761549849498-8cf23a31329d?auto=format&fit=crop&w=1600&q=80',
++    intro: '第一天在池上騎一段田邊的路，第二天去成功看漁港，不把兩個地方排在同一天。',
++    departures: [{ id: '2027-01-15', date: '2027-01-15' }],
++    featured: true,
++  },
++  {
++    id: 'kyoto-nara',
++    title: '京都嵐山、伏見與奈良五日',
++    region: '京都',
++    days: 5,
++    price: 52800,
++    cover: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80',
++    intro: '嵐山、伏見、奈良各一天，中間留一天在市內走。四晚不換飯店。',
++    departures: [{ id: '2027-04-06', date: '2027-04-06' }],
++    featured: true,
++  },
++];
+ 
+ export const regions = ['台北', '基隆', '花蓮', '台東', '台南', '高雄', '金門', '京都'];
+ 
+ export const dayOptions = [2, 3, 4, 5];
+```
+
+接著把 IconButton 改成圓形。
+
+```diff 06-project-init/src/theme.js
  // ...
-     if (!count || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
--    const timer = setInterval(() => setIndex((current) => (current + 1) % count), 4500);
-+    const timer = setInterval(() => setIndex((current) => (current + 1) % count), 8000);
-     return () => clearInterval(timer);
+         outlined: { borderColor: tokens.line, color: tokens.ink, '&:hover': { borderColor: tokens.action, backgroundColor: tokens.mist } },
+       },
+     },
++    MuiIconButton: {
++      styleOverrides: { root: { borderRadius: 999 } },
++    },
+     MuiAppBar: {
  // ...
 ```
-</details>
+
+**解析**
+
+- 圓角 `999` 讓按鈕變圓，輪播左右鍵會用到，之後其他 IconButton 也會變成圓形。
+
+接著把輪播的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/home/components/HeroSlider.jsx
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Icon from '../../../_shared/Icon.jsx';
+import { ntd } from '../../../format.js';
+
+export default function HeroSlider({ slides }) {
+  const [index, setIndex] = useState(0);
+  const count = slides.length;
+
+  useEffect(() => {
+    if (!count || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const timer = setInterval(() => setIndex((current) => (current + 1) % count), 4500);
+    return () => clearInterval(timer);
+  }, [count]);
+
+  if (!count) return null;
+  const go = (next) => setIndex(((next % count) + count) % count);
+  const slide = slides[index % count];
+  const bookTo = `/booking?tourId=${slide.id}&departureId=${slide.departures[0].id}`;
+
+  return (
+    <section className="relative flex min-h-[70svh] items-end overflow-hidden lg:h-[70vh]" aria-roledescription="carousel" aria-label="熱門風景">
+      {slides.map((item, itemIndex) => (
+        <img
+          key={item.id}
+          src={item.cover}
+          alt={itemIndex === index ? item.title : ''}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none ${itemIndex === index ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/45 to-ink/25" />
+      <IconButton aria-label="上一張" onClick={() => go(index - 1)} className="absolute top-1/2 left-3 z-20 -translate-y-1/2 bg-white text-ink shadow-card md:left-6"><Icon name="chevron_left" /></IconButton>
+      <IconButton aria-label="下一張" onClick={() => go(index + 1)} className="absolute top-1/2 right-3 z-20 -translate-y-1/2 bg-white text-ink shadow-card md:right-6"><Icon name="chevron_right" /></IconButton>
+      <div className="relative z-10 w-full px-5 pt-24 pb-14 sm:px-8 lg:pb-28 lg:pl-20">
+        <p className="font-serif text-3xl"><span className="inline-block rounded-full bg-accent text-ink font-bold leading-[1.15] py-[0.12em] px-[0.55em]">{ntd(slide.price)}</span></p>
+        <p className="mt-3 text-base font-medium text-foam">{slide.region} · {slide.days} 天</p>
+        <h1 className="mt-2 max-w-3xl font-serif text-4xl font-bold text-balance text-white md:text-6xl">{slide.title}</h1>
+        <p className="mt-3 line-clamp-2 h-[2lh] max-w-xl text-base leading-relaxed text-white md:text-lg">{slide.intro}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Button component={Link} to={bookTo} variant="contained">立即報名</Button>
+          <Button component={Link} to={`/tours/${slide.id}`} variant="contained" color="secondary">看行程</Button>
+        </div>
+      </div>
+      <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 lg:bottom-24">
+        {slides.map((item, itemIndex) => (
+          <button
+            key={item.id}
+            type="button"
+            aria-label={`顯示${item.title}`}
+            aria-current={itemIndex === index ? 'true' : undefined}
+            onClick={() => go(itemIndex)}
+            className={`h-3 w-3 rounded-full ${itemIndex === index ? 'bg-accent' : 'bg-white'}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 輪播只切換圖片的 `opacity`：當前那張是完全不透明，其餘是全透明，圖片都疊在同一層，不會左右滑動整張圖。
+- `useEffect` 每 4.5 秒把編號往後加一。系統偏好減少動態時不設這個計時器；元件卸載時清掉 interval，避免畫面消失後還在改狀態。
+- `go` 用取餘數包住編號，從最後一張再往後會回到第一張，從第一張再往前會到最後一張。
+- 「立即報名」連到報名頁，帶上這筆行程與第一個出團日。「看行程」連到該筆詳情。
+- 底部圓點與左右鈕都會呼叫 `go`。當前那張的圓點換成強調色，並加上 `aria-current`。
+
+### 步驟 4：熱門行程
+
+熱門行程在步驟 1 已經用 placeholder 接到 `TourCard`。這一節只補卡片與標籤的主題，先不寫真正的行程卡片。等到行程列表再換成真正的元件，首頁這裡會一起更新。
+
+卡片的圓角與陰影、Chip 的配色與刪除圖示，補進主題。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiIconButton: {
+       styleOverrides: { root: { borderRadius: 999 } },
+     },
++    MuiCard: {
++      styleOverrides: {
++        root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
++      },
++    },
++    MuiChip: {
++      defaultProps: { deleteIcon: ms('cancel') },
++      styleOverrides: {
++        root: { borderRadius: 999, fontWeight: 700 },
++        colorSecondary: { backgroundColor: tokens.accent, color: tokens.ink },
++        colorPrimary: { backgroundColor: tokens.action, color: tokens.white },
++      },
++    },
+     MuiAppBar: {
+ // ...
+```
+
+**解析**
+
+- `MuiCard` 覆寫圓角、陰影與白底，並去掉預設的背景漸層，之後的行程卡片與理由、評價卡片都會套到。
+- `MuiChip` 預設的刪除圖示改成圖示字型的 `cancel`，之後可刪除的標籤會用到。次要色用強調色底、主要色用操作色底，讓標籤跟網站色票一致。
+
+### 步驟 5：依主題找路
+
+主題圖是首頁自己的資料，寫在 `features/home/mock.data.js`。
+
+```js 06-project-init/src/features/home/mock.data.js
+const shot = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1600&q=80`;
+
+export const themeLinks = [
+  { theme: '城市', places: '大稻埕、鹽埕', image: shot('1598935898639-81586f7d2129') },
+  { theme: '海岸', places: '北海岸、九份', image: shot('1507525428034-b723cf961d3e') },
+  { theme: '山海', places: '花蓮、台東', image: shot('1464822759023-fed622ff2c3b') },
+  { theme: '古都', places: '台南府城、安平', image: shot('1633228491597-b39f823e0541') },
+  { theme: '離島', places: '金門聚落', image: shot('1505118380757-91f5f5632de0') },
+  { theme: '日本', places: '京都、奈良', image: shot('1526481280693-3bfa7568e0f3') },
+];
+```
+
+接著把主題列表的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
+import { Link } from 'react-router';
+import { themeLinks } from '../mock.data.js';
+
+export default function ThemeGrid() {
+  return (
+    <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {themeLinks.map((item) => (
+        <li key={item.theme}>
+          <Link to={`/tours?theme=${item.theme}`} className="group relative flex min-h-52 overflow-hidden rounded-card shadow-card">
+            <img src={item.image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+            <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
+            <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
+              <span className="font-serif text-3xl font-semibold">{item.theme}</span>
+              <span className="text-foam">{item.places}</span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+**解析**
+
+- 每個主題是連到 `/tours` 的 `Link`，查詢字串帶上 `theme`。
+- 圖片鋪滿連結，下方漸層把文字托出來。
+- 游標移上去圖片會放大。系統偏好減少動態時關掉過渡與縮放。
+
+### 步驟 6：為什麼選我們
+
+把三則理由追加進同一份檔。
+
+```diff 06-project-init/src/features/home/mock.data.js
+ // ...
+   { theme: '日本', places: '京都、奈良', image: shot('1526481280693-3bfa7568e0f3') },
+ ];
++
++export const reasons = [
++  { title: '每團 8 人', body: '人數少，嚮導叫得出名字。不會把兩台車的人併成一團。' },
++  { title: '一天不排滿', body: '上午走路，下午留白。景點之間不靠購物站填時間。' },
++  { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
++];
+```
+
+接著把理由列表的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/home/components/ReasonList.jsx
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
+import Icon from '../../../_shared/Icon.jsx';
+import { reasons } from '../mock.data.js';
+
+const icons = ['groups', 'wb_sunny', 'hotel'];
+
+export default function ReasonList() {
+  return (
+    <div className="mt-8 grid gap-6 lg:grid-cols-3">
+      {reasons.map((item, index) => {
+        const iconName = icons[index];
+        return (
+          <Card key={item.title} className="p-6 md:p-8">
+            <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-mist text-action">
+              <Icon name={iconName} />
+            </span>
+            <Typography variant="h3">{item.title}</Typography>
+            <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+**解析**
+
+- `icons` 用下標對三則理由，資料不必存圖示名。
+- 每則是一張 `Card`，上方圓形底放圖示，再接標題與說明。
+
+### 步驟 7：旅客怎麼說
+
+星星改用圖示字型。實心星加上 `FILL` 1，空心星維持線框。
+
+把四則評價追加進 `features/home/mock.data.js`。
+
+```diff 06-project-init/src/features/home/mock.data.js
+ // ...
+   { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
+ ];
++
++export const reviews = [
++  { id: 'r1', tourId: 'hualien-taroko', author: '林可', rating: 5, body: '太魯閣沒有被排進行程表以外的停靠點。' },
++  { id: 'r2', tourId: 'taipei-beitou', author: '陳予安', rating: 5, body: '迪化街走得很慢，嚮導沒有把我們推進店裡。' },
++  { id: 'r3', tourId: 'kyoto-nara', author: '周以寧', rating: 4, body: '伏見只排了兩間酒造，下午自己走回到宿。' },
++  { id: 'r4', tourId: 'taitung-chishang', author: '何品', rating: 5, body: '池上的田沒有被排成打卡點，成功漁港是傍晚去的。' },
++];
+```
+
+接著把星星換成圖示字型。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiSelect: {
+       defaultProps: { IconComponent: SelectArrow },
+     },
++    MuiRating: {
++      defaultProps: {
++        icon: ms('star', { style: { fontVariationSettings: "'FILL' 1" } }),
++        emptyIcon: ms('star'),
++      },
++    },
+   },
+ // ...
+```
+
+**解析**
+
+- 實心與空心都用圖示字型 `star`，實心再加上 `fontVariationSettings` 的 `FILL` 1。
+- 寫在 `MuiRating` 的 `defaultProps`，之後的 Rating 都會換成這組。
+
+接著把評價列表的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/home/components/ReviewList.jsx
+import Card from '@mui/material/Card';
+import Rating from '@mui/material/Rating';
+import { reviews } from '../mock.data.js';
+import { tours } from '../../tours/mock.data.js';
+
+const titleOf = (tourId) => tours.find((tour) => tour.id === tourId)?.title ?? '';
+
+export default function ReviewList() {
+  return (
+    <div className="mt-8 grid gap-4 lg:grid-cols-2">
+      {reviews.map((review) => (
+        <Card key={review.id} component="figure" className="p-6 md:p-8">
+          <Rating value={review.rating} readOnly aria-label={`${review.rating} 分`} />
+          <blockquote className="mt-3 max-w-prose leading-relaxed">「{review.body}」</blockquote>
+          <figcaption className="mt-3 text-muted">{review.author} · {review.rating} 分 · {titleOf(review.tourId)}</figcaption>
+        </Card>
+      ))}
+    </div>
+  );
+}
+```
+
+**解析**
+
+- `titleOf` 用行程編號回查標題，找不到就空字串。
+- 每則是 `figure` 卡片：只讀的星星、引言，以及說明列出作者、分數與標題。
 
 ## 行程列表
 
-列表要八筆，並依網址上的查詢參數篩選、排序。主題、價格區間與排序選項是這一頁才補進資料的。
+列表要八筆，並依網址上的查詢參數篩選、排序。主題、價格區間與排序選項是這一頁才補進 `features/tours/mock.data.js`。
 
-```diff 06-project-init/src/data/tours.js
+這一節要組出 `ToursPage`。畫面拆成篩選列 `TourFilters`，以及首頁已接到的 `TourCard`。篩選列再用共用的 `FieldSelect`。下面先組出這一頁並接到路由，篩選列先放標記，再補資料、換成真正的篩選列，最後把行程卡片的 placeholder 換成真正的元件。
+
+{% mermaid graph TD %}
+  page["ToursPage"] --> filters["TourFilters"]
+  page --> card["TourCard"]
+  filters --> field["FieldSelect"]
+{% endmermaid %}
+
+### 步驟 1：組出 ToursPage
+
+先把列表頁組起來並接到路由，後面寫篩選列時才能在畫面上對照。篩選列先放標記。價格比對先一律當成符合，下一節再換成區間算法，列表頁才編譯得過。主題與價格區間也等下一節再補，這一步先看到標題與行程卡片。
+
+```jsx 06-project-init/src/features/tours/components/TourFilters.jsx
+export default function TourFilters() {
+  return <p className="mt-8">篩選列</p>;
+}
+```
+
+```diff 06-project-init/src/format.js
+ // ...
+ export const ntd = (value) => `NT$${Number(value).toLocaleString('zh-Hant-TW')}`;
++
++export const matchPrice = () => true;
+```
+
+接著組出列表頁。
+
+```jsx 06-project-init/src/features/tours/ToursPage.jsx
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TourCard from './components/TourCard.jsx';
+import TourFilters from './components/TourFilters.jsx';
+import { matchPrice } from '../../format.js';
+import { useStore } from '../../store.jsx';
+
+export default function ToursPage() {
+  const { tours } = useStore();
+  const [params, setParams] = useSearchParams();
+  useEffect(() => { document.title = '行程 · 洛奇旅行'; }, []);
+
+  const region = params.get('region') ?? '';
+  const days = params.get('days') ?? '';
+  const price = params.get('price') ?? '';
+  const theme = params.get('theme') ?? '';
+  const sort = params.get('sort') || 'price-asc';
+  const list = tours.filter((tour) => (
+    (!region || tour.region === region)
+    && (!days || String(tour.days) === days)
+    && (!theme || tour.theme === theme)
+    && matchPrice(tour.price, price)
+  ));
+  const rank = {
+    'price-asc': (a, b) => a.price - b.price,
+    'price-desc': (a, b) => b.price - a.price,
+    'days-asc': (a, b) => a.days - b.days || a.price - b.price,
+  };
+  const visible = [...list].sort(rank[sort] || rank['price-asc']);
+
+  return (
+    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <Typography variant="h1">行程</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">依地區、天數與預算挑選。價格為每人，以新台幣計。</p>
+      <TourFilters />
+      <div id="tour-list">
+      {visible.length ? (
+        <>
+          <Typography variant="h2" className="mt-10">{visible.length} 筆行程</Typography>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((tour) => <TourCard key={tour.id} tour={tour} showTheme />)}
+          </div>
+        </>
+      ) : (
+        <section id="tour-empty" className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card" aria-labelledby="empty-title">
+          <Typography id="empty-title" variant="h2">沒有符合的行程</Typography>
+          <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
+          <Button className="mt-6" variant="contained" onClick={() => setParams(new URLSearchParams())}>清除條件</Button>
+        </section>
+      )}
+      </div>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- `visible` 在 render 時依網址的地區、天數、主題，以及 `matchPrice`，濾出行程再排序。
+- 沒寫排序時用價格由低到高。天數由短到長時，天數相同再比價格。
+- 有結果時顯示筆數，每張卡片傳 `showTheme`，主題 Chip 才會出現。
+- 沒有結果時，同一個 `id="tour-list"` 裡改顯示空狀態：標題、說明，以及會清空查詢參數的按鈕。空狀態才不會落在這個節點外面。
+
+接著把 `/tours` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import HomePage from './features/home/HomePage.jsx';
++import ToursPage from './features/tours/ToursPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { index: true, element: <HomePage /> },
+-      { path: 'tours', element: <Placeholder title="行程列表" /> },
++      { path: 'tours', element: <ToursPage /> },
+       { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
+ // ...
+```
+
+**解析**
+
+- `/tours` 從 `Placeholder` 換成 `ToursPage`，其他路徑仍用佔位。
+
+### 步驟 2：這一頁要用的資料
+
+```diff 06-project-init/src/features/tours/mock.data.js
  // ...
      region: '台北',
 +    theme: '城市',
@@ -1479,7 +1985,7 @@ export default function App() {
  // ...
 ```
 
-```diff 06-project-init/src/data/options.js
+```diff 06-project-init/src/features/tours/mock.data.js
  // ...
  export const dayOptions = [2, 3, 4, 5];
  
@@ -1500,10 +2006,10 @@ export default function App() {
  // ...
 ```
 
+價格區間怎麼算符合，寫在 `format.js`。
+
 ```diff 06-project-init/src/format.js
- // ...
- export const perPerson = (tour) => (tour?.id === 'kyoto-nara' ? '/ 人，不含國際機票' : '/ 人');
-+
+-export const matchPrice = () => true;
 +export const matchPrice = (price, band) => {
 +  if (!band) return true;
 +  if (band === 'lt10000') return price < 10000;
@@ -1514,230 +2020,432 @@ export default function App() {
 +};
 ```
 
-手風琴的圓角、邊線與展開圖示補進主題。展開圖示沿用 `ms`。
+**解析**
 
-```diff 06-project-init/src/theme.js
- // ...
-         root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
-       },
-     },
-+    MuiAccordion: {
-+      styleOverrides: {
-+        root: {
-+          borderRadius: 24,
-+          boxShadow: 'none',
-+          border: `1px solid ${tokens.line}`,
-+          backgroundColor: tokens.white,
-+          '&:before': { display: 'none' },
-+          '&.Mui-expanded': { margin: 0 },
-+          '&:first-of-type, &:last-of-type': { borderRadius: 24 },
-+        },
-+      },
-+    },
-+    MuiAccordionSummary: {
-+      defaultProps: { expandIcon: ms('expand_more') },
-+      styleOverrides: { root: { minHeight: 56, paddingInline: 20, '&.Mui-expanded': { minHeight: 56 } } },
-+    },
-     MuiChip: {
- // ...
-```
+- 沒有帶區間時直接回傳 true，這筆價格算符合。
+- `lt10000` 是小於一萬；`10000-20000` 從一萬起、不到兩萬；`20000-30000` 與 `gt30000` 同樣用各自的上下界。
+- 不認得的區間也回傳 true。
 
-```jsx 06-project-init/src/components/TourFilters.jsx
-import { useEffect, useState } from 'react';
+### 步驟 3：篩選列
+
+把篩選列的 placeholder 換成真正的元件。每個下拉一改，就把該項條件寫進或移出網址，列表會跟著更新。地區、天數、價格與排序直向排列，`md` 以上改成四欄，選取的值都會看得到。
+
+```jsx 06-project-init/src/features/tours/components/TourFilters.jsx
 import { useSearchParams } from 'react-router';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import { dayOptions, priceBands, regions, sortOptions } from '../data/options.js';
-import FieldSelect from './FieldSelect.jsx';
+import { dayOptions, priceBands, regions, sortOptions } from '../mock.data.js';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 const regionOptions = [{ value: '', label: '不限' }, ...regions.map((item) => ({ value: item, label: item }))];
 const dayChoices = [{ value: '', label: '不限' }, ...dayOptions.map((item) => ({ value: String(item), label: `${item} 天` }))];
 
-const read = (params) => ({
-  region: params.get('region') ?? '',
-  days: params.get('days') ?? '',
-  price: params.get('price') ?? '',
-  sort: params.get('sort') || 'price-asc',
-});
-
 export default function TourFilters() {
   const [params, setParams] = useSearchParams();
-  const query = params.toString();
-  const [draft, setDraft] = useState(() => read(params));
-  useEffect(() => { setDraft(read(new URLSearchParams(query))); }, [query]);
-  const [open, setOpen] = useState('region');
   const theme = params.get('theme') ?? '';
-  const set = (key) => (value) => setDraft((current) => ({ ...current, [key]: value }));
+  const region = params.get('region') ?? '';
+  const days = params.get('days') ?? '';
+  const price = params.get('price') ?? '';
+  const sort = params.get('sort') || 'price-asc';
 
-  const apply = (event) => {
-    event.preventDefault();
-    const next = new URLSearchParams();
-    if (draft.region) next.set('region', draft.region);
-    if (draft.days) next.set('days', draft.days);
-    if (draft.price) next.set('price', draft.price);
-    if (draft.sort && draft.sort !== 'price-asc') next.set('sort', draft.sort);
-    if (theme) next.set('theme', theme);
+  const set = (key, value) => {
+    const next = new URLSearchParams(params);
+    if (!value || (key === 'sort' && value === 'price-asc')) {
+      next.delete(key);
+    } else {
+      next.set(key, value);
+    }
     setParams(next);
   };
 
-  const fields = [
-    { key: 'region', label: '地區', options: regionOptions },
-    { key: 'days', label: '天數', options: dayChoices },
-    { key: 'price', label: '價格', options: priceBands },
-    { key: 'sort', label: '排序', options: sortOptions },
-  ];
+  const clear = () => setParams(new URLSearchParams());
+
+  const clearTheme = () => {
+    const next = new URLSearchParams(params);
+    next.delete('theme');
+    setParams(next);
+  };
 
   return (
-    <form className="mt-8" onSubmit={apply}>
-      <div className="md:hidden">
-        {fields.map((field) => (
-          <Accordion key={field.key} expanded={open === field.key} onChange={(_, expanded) => setOpen(expanded ? field.key : '')} className="mb-2">
-            <AccordionSummary>{field.label}</AccordionSummary>
-            <AccordionDetails>
-              <FieldSelect id={`m-${field.key}`} label={field.label} hiddenLabel value={draft[field.key]} onChange={set(field.key)} options={field.options} />
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      </div>
-      <div className="hidden gap-4 md:grid md:grid-cols-4">
-        {fields.map((field) => (
-          <FieldSelect key={field.key} id={field.key} label={field.label} value={draft[field.key]} onChange={set(field.key)} options={field.options} />
-        ))}
+    <div className="mt-8">
+      <div className="grid gap-4 md:grid-cols-4">
+        <FieldSelect id="region" label="地區" value={region} onChange={(value) => set('region', value)} options={regionOptions} />
+        <FieldSelect id="days" label="天數" value={days} onChange={(value) => set('days', value)} options={dayChoices} />
+        <FieldSelect id="price" label="價格" value={price} onChange={(value) => set('price', value)} options={priceBands} />
+        <FieldSelect id="sort" label="排序" value={sort} onChange={(value) => set('sort', value)} options={sortOptions} />
       </div>
       <div className="mt-4 flex flex-wrap gap-3">
-        <Button type="submit" variant="contained">套用條件</Button>
-        <Button type="button" variant="outlined" onClick={() => { setDraft({ region: '', days: '', price: '', sort: 'price-asc' }); setParams(new URLSearchParams()); }}>清除</Button>
+        <Button type="button" variant="outlined" onClick={clear}>清除</Button>
       </div>
-      {theme ? <Chip className="mt-4" color="primary" label={`主題：${theme}`} onDelete={() => { const next = new URLSearchParams(params); next.delete('theme'); setParams(next); }} /> : null}
-    </form>
+      {theme ? <Chip className="mt-4" color="primary" label={`主題：${theme}`} onDelete={clearTheme} /> : null}
+    </div>
   );
 }
 ```
 
-提示框的圓角、成功色與圖示補進主題。關閉鈕也改成圖示字型。
+**解析**
 
-```diff 06-project-init/src/theme.js
+- 篩選條件放在查詢參數，重新整理還在。
+- 地區、天數、價格與排序都從目前的網址讀出來，四個下拉各自對上這些值。
+- 沒寫排序時當成 `price-asc`。
+- `set` 會從現有的查詢參數複製一份再改。選到值就寫進對應的鍵；選回不限就刪掉該鍵。其他條件維持原樣，網址上已有的 `theme` 也會留著。
+- 排序仍是價格低到高時也刪掉 `sort`，網址就不必每筆都帶這個預設值。
+- 四個 `FieldSelect` 直向排列，`md` 以上改成四欄（`grid gap-4 md:grid-cols-4`）。
+- 「清除」會清空查詢參數，主題也會一起從網址拿掉。有主題時，下方多一顆 Chip，`clearTheme` 只刪掉 `theme`。
+
+### 步驟 4：行程卡片
+
+把步驟 1 留下的行程卡片 placeholder 換成真正的元件。價格後面要標單位，京都那筆還要註明不含國際機票，先把 `perPerson` 補進 `format.js`。
+
+{% note info %}
+首頁的熱門行程已經引用 `features/tours/components/TourCard.jsx`，當時先放 placeholder。這一節換成真正的卡片後，首頁那裡也會一起更新。首頁與行程列表都會用到它，但它是行程卡片，所以留在 `tours`，不必搬到 `_shared`。
+{% endnote %}
+
+```diff 06-project-init/src/format.js
  // ...
- const SelectArrow = ({ className }) => ms('expand_more', { className });
-+const CloseIcon = () => ms('close');
+ export const ntd = (value) => `NT$${Number(value).toLocaleString('zh-Hant-TW')}`;
++
++export const perPerson = (tour) => (tour?.id === 'kyoto-nara' ? '/ 人，不含國際機票' : '/ 人');
+```
+
+**解析**
+
+- `perPerson` 回傳價格後面的單位文字。京都那筆另加「不含國際機票」，其他行程只寫「/ 人」。
+
+接著換成真正的行程卡片。
+
+```jsx 06-project-init/src/features/tours/components/TourCard.jsx
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
+import { ntd, perPerson } from '../../../format.js';
+
+export default function TourCard({ tour, showTheme = false }) {
+  return (
+    <Card component={Link} to={`/tours/${tour.id}`} className="group flex h-full flex-col overflow-hidden text-inherit no-underline">
+      <CardMedia component="img" image={tour.cover} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <div className="flex flex-wrap gap-2">
+          <Chip size="small" color="secondary" label={tour.region} />
+          {showTheme ? <Chip size="small" variant="outlined" label={tour.theme} /> : null}
+          <Chip size="small" variant="outlined" label={`${tour.days} 天`} />
+        </div>
+        <Typography variant="h3" className="mt-3 text-ink">{tour.title}</Typography>
+        <p className="mt-2 text-base leading-relaxed text-muted">{tour.intro}</p>
+        <p className="mt-auto pt-5 font-serif text-2xl font-bold text-ink">{ntd(tour.price)} <span className="font-sans text-base font-normal text-muted">{perPerson(tour)}</span></p>
+        <Button component="span" variant="contained" className="mt-4 w-full" tabIndex={-1}>看詳情</Button>
+      </div>
+    </Card>
+  );
+}
+```
+
+**解析**
+
+- 整張 `Card` 本身就是連到詳情頁的 `Link`，所以內層按鈕寫成 `span` 並加上 `tabIndex={-1}`，鍵盤只需對卡片聚焦一次，不會再對內層按鈕停一次。
+- 封面用 `CardMedia`。游標移上去會稍微放大；系統偏好減少動態時關掉過渡與縮放。
+- 地區用次要色 Chip，天數用框線 Chip。`showTheme` 預設是關閉的；列表頁若要顯示主題再傳 `true`。
+- 價格用 `ntd` 格式化，後面跟著 `perPerson` 的單位文字。
+
+## 行程詳情
+
+詳情頁補上圖集、亮點、每日行程、費用與每一梯的名額，並用報名種子計算剩餘人數。未登入按報名，會先去登入頁，原本要去的網址放在 `next`。
+
+這一節要組出 `TourDetailPage`。先組出這一頁並接到路由，四個零件先放標記，再補齊行程欄位，最後逐一換成真正的元件。畫面拆成這些零件：
+
+- `Gallery`
+- `Itinerary`
+- `FareBox`
+- `DepartureList`
+
+{% mermaid graph TD %}
+  page["TourDetailPage"] --> gallery["Gallery"]
+  page --> itinerary["Itinerary"]
+  page --> fare["FareBox"]
+  page --> departures["DepartureList"]
+{% endmermaid %}
+
+### 步驟 1：組出 TourDetailPage
+
+先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。圖集、每日行程、費用說明與出團梯次先放標記。登入狀態這一步就要有，否則頁面讀不到 session。
+
+```jsx 06-project-init/src/features/tours/components/Gallery.jsx
+export default function Gallery() {
+  return <p className="mt-8">圖集</p>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
+export default function Itinerary() {
+  return <div className="mt-5">每日行程</div>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/FareBox.jsx
+export default function FareBox() {
+  return <div className="mt-14">費用說明</div>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
+export default function DepartureList() {
+  return <p className="mt-4">出團梯次</p>;
+}
+```
+
+詳情頁會對 `highlights` 做 `map`。每一筆行程的 `featured` 前面先補上 `highlights: []`，否則開到詳情會中斷。八筆都要補。下一步整檔換成有圖集與每日行程的版本時，這行會被蓋掉。
+
+```diff 06-project-init/src/features/tours/mock.data.js
+     departures: [{ id: '2026-12-04', date: '2026-12-04' }],
++    highlights: [],
+     featured: true,
+```
+
+```js 06-project-init/src/features/booking/mock.data.js
+export const bookings = [];
+```
+
+剩餘名額先固定回 0，下一節換成真正的算法。
+
+```diff 06-project-init/src/format.js
+ // ...
+ export const perPerson = (tour) => (tour?.id === 'kyoto-nara' ? '/ 人，不含國際機票' : '/ 人');
++
++export const seatsLeft = () => 0;
+```
+
+接著寫登入狀態。詳情頁用它分辨有沒有登入。
+
+```jsx 06-project-init/src/session.jsx
+import { createContext, useContext, useMemo, useState } from 'react';
+
+const KEY = 'loki-travel-session';
+const SessionContext = createContext(null);
+
+const readUser = () => {
+  try {
+    return JSON.parse(sessionStorage.getItem(KEY) || 'null');
+  } catch {
+    return null;
+  }
+};
+
+export function SessionProvider({ children }) {
+  const [user, setUser] = useState(readUser);
+  const api = useMemo(() => ({
+    user,
+    signIn() {
+      const next = { name: '林可', email: 'lin@example.com', role: 'member' };
+      sessionStorage.setItem(KEY, JSON.stringify(next));
+      setUser(next);
+    },
+    signInAdmin() {
+      const next = { name: '管理員', email: 'admin@gmail.com', role: 'admin' };
+      sessionStorage.setItem(KEY, JSON.stringify(next));
+      setUser(next);
+    },
+    signOut() {
+      sessionStorage.removeItem(KEY);
+      setUser(null);
+    },
+  }), [user]);
+  return <SessionContext.Provider value={api}>{children}</SessionContext.Provider>;
+}
+
+export const useSession = () => useContext(SessionContext);
+```
+
+**解析**
+
+- `KEY` 是 `loki-travel-session`。`readUser` 用 `JSON.parse` 讀 `sessionStorage`，沒有值或解析失敗就當成沒有登入。關掉分頁就消失，重新整理還在。
+- `signIn` 寫入旅客林可，`role` 是 `member`。`signInAdmin` 寫入管理員，信箱是 `admin@gmail.com`，`role` 是 `admin`。兩個方法共用這個鍵，後來寫入的會蓋掉前一個。後台頁才會呼叫管理員那個。
+- `signOut` 刪掉這個鍵，並把 state 設回 `null`。
+- `api` 用 `useMemo` 包住，`user` 變了才換新物件。`useSession` 讀同一個 context。
+
+Store 要一併提供報名種子，詳情頁才算得出剩餘人數。
+
+```diff 06-project-init/src/store.jsx
+ // ...
+ import { tours as seedTours } from './features/tours/mock.data.js';
++import { bookings as seedBookings } from './features/booking/mock.data.js';
  
- const theme = createTheme({
  // ...
-         emptyIcon: ms('star'),
-       },
-     },
-+    MuiAlert: {
-+      defaultProps: {
-+        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
-+        slots: { closeIcon: CloseIcon },
-+      },
-+      styleOverrides: {
-+        root: { borderRadius: 16, alignItems: 'center' },
-+        standardSuccess: {
-+          backgroundColor: tokens.mist,
-+          color: tokens.action,
-+          '& .MuiAlert-icon': { color: tokens.action },
-+        },
-+      },
-+    },
-   },
+   const [tours] = useState(seedTours);
++  const [bookings] = useState(seedBookings);
+   return (
+-    <StoreContext.Provider value={{ tours }}>
++    <StoreContext.Provider value={{ tours, bookings }}>
+       {children}
  // ...
 ```
 
-```jsx 06-project-init/src/pages/ToursPage.jsx
-import { useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router';
-import Alert from '@mui/material/Alert';
+**解析**
+
+- `bookings` 放進 context，和 `tours` 一起讀。種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。
+
+接著把圖集、每日行程、費用與出團梯次組進詳情頁。這四個目前是標記。然後把路由表裡的詳情佔位換掉。
+
+```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import TourCard from '../components/TourCard.jsx';
-import TourFilters from '../components/TourFilters.jsx';
-import { matchPrice } from '../format.js';
-import { useStore } from '../store.jsx';
+import DepartureList from './components/DepartureList.jsx';
+import FareBox from './components/FareBox.jsx';
+import Gallery from './components/Gallery.jsx';
+import Itinerary from './components/Itinerary.jsx';
+import Placeholder from '../../_shared/Placeholder.jsx';
+import { ntd, seatsLeft } from '../../format.js';
+import { useSession } from '../../session.jsx';
+import { useStore } from '../../store.jsx';
 
-export default function ToursPage() {
-  const { tours } = useStore();
-  const [params, setParams] = useSearchParams();
-  useEffect(() => { document.title = '行程 · 洛奇旅行'; }, []);
+export default function TourDetailPage() {
+  const { id } = useParams();
+  const { tours, bookings } = useStore();
+  const { user } = useSession();
+  const tour = tours.find((item) => item.id === id);
+  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
+  useEffect(() => { document.title = tour ? `${tour.title} · 洛奇旅行` : '找不到頁面 · 洛奇旅行'; }, [tour]);
+  useEffect(() => { setDepartureId(tour?.departures[0]?.id ?? ''); }, [tour]);
+  if (!tour) return <Placeholder title="找不到頁面" />;
 
-  const visible = useMemo(() => {
-    const region = params.get('region') ?? '';
-    const days = params.get('days') ?? '';
-    const price = params.get('price') ?? '';
-    const theme = params.get('theme') ?? '';
-    const sort = params.get('sort') || 'price-asc';
-    const list = tours.filter((tour) => (
-      (!region || tour.region === region)
-      && (!days || String(tour.days) === days)
-      && (!theme || tour.theme === theme)
-      && matchPrice(tour.price, price)
-    ));
-    const rank = {
-      'price-asc': (a, b) => a.price - b.price,
-      'price-desc': (a, b) => b.price - a.price,
-      'days-asc': (a, b) => a.days - b.days || a.price - b.price,
-    };
-    return [...list].sort(rank[sort] || rank['price-asc']);
-  }, [params, tours]);
+  const selected = tour.departures.find((item) => item.id === departureId) ?? tour.departures[0];
+  const next = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
+  const bookTo = user ? next : `/login?next=${encodeURIComponent(next)}`;
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <Typography variant="h1">行程</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">依地區、天數與預算挑選。價格為每人，以新台幣計。</p>
-      <TourFilters />
-      <div id="tour-list">
-      {visible.length ? (
-        <>
-          <Typography variant="h2" className="mt-10">{visible.length} 筆行程</Typography>
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((tour) => <TourCard key={tour.id} tour={tour} showTheme />)}
+    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
+        <div className="min-w-0">
+          <p><Link className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover" to="/tours">回行程列表</Link></p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Chip color="secondary" label={tour.region} />
+            <Chip variant="outlined" label={tour.theme} />
+            <Chip variant="outlined" label={`${tour.days} 天`} />
           </div>
-        </>
-      ) : (
-        <section id="tour-empty" className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card" aria-labelledby="empty-title">
-          <Alert severity="info">沒有符合的條件。</Alert>
-          <Typography id="empty-title" variant="h2" className="mt-3">沒有符合的行程</Typography>
-          <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
-          <Button className="mt-6" variant="contained" onClick={() => setParams(new URLSearchParams())}>清除條件</Button>
-        </section>
-      )}
+          <Typography variant="h1" className="mt-4">{tour.title}</Typography>
+          <p className="mt-4 font-serif text-4xl font-bold text-ink lg:hidden">{ntd(tour.price)}<span className="font-sans text-base font-normal text-muted"> / 人</span></p>
+          <Gallery images={tour.images} title={tour.title} />
+          <p className="mt-8 text-lg leading-relaxed">{tour.intro}</p>
+          <Typography variant="h2" className="mt-14">亮點</Typography>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-3">
+            {tour.highlights.map((item) => <li key={item} className="rounded-card bg-mist px-5 py-4 text-base">{item}</li>)}
+          </ul>
+          <Typography variant="h2" className="mt-14">每日行程</Typography>
+          <p className="mt-3 text-base text-muted">展開每一天，看當天去哪裡、晚上住哪裡。</p>
+          <Itinerary days={tour.itinerary} />
+          <FareBox includes={tour.includes} excludes={tour.excludes} />
+          <div className="mt-14 lg:hidden">
+            <Typography variant="h2">出發日</Typography>
+            <p className="mt-3 text-base text-muted">最近一梯 {tour.departures[0].date} 尚餘 {seatsLeft(bookings, tour.id, tour.departures[0])} 人。</p>
+            <DepartureList tour={tour} bookings={bookings} />
+          </div>
+          <Typography variant="h2" className="mt-14">取消與退款</Typography>
+          <p className="mt-3 text-base leading-relaxed text-muted">出團前以 email 確認。未成行全額退回。成行後若要改期，請來信或來電，由我們為你調整。常見問題也寫在關於頁。</p>
+        </div>
+        <aside className="rounded-card bg-white shadow-card sticky top-24 mt-12 hidden self-start p-8 lg:mt-0 lg:block">
+          <p className="flex items-baseline gap-1.5 whitespace-nowrap font-serif text-4xl"><span className="inline-block rounded-full bg-accent text-ink font-bold leading-[1.15] py-[0.12em] px-[0.55em]">{ntd(tour.price)}</span><span className="font-sans text-base font-normal text-muted">/ 人</span></p>
+          {tour.id === 'kyoto-nara' ? <p className="mt-3 text-base text-muted">不含國際機票</p> : null}
+          <dl className="mt-6 grid gap-3 text-base">
+            <div className="flex justify-between gap-4"><dt className="text-muted">天數</dt><dd>{tour.days} 天</dd></div>
+            <div className="flex justify-between gap-4"><dt className="text-muted">團體上限</dt><dd>{tour.departures[0]?.capacity ?? 8} 人</dd></div>
+          </dl>
+          <div className="mt-6 grid gap-3" role="radiogroup" aria-label="選擇梯次">
+            {tour.departures.map((departure) => {
+              const on = departure.id === selected.id;
+              return (
+                <button
+                  key={departure.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setDepartureId(departure.id)}
+                  className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
+                >
+                  <span className="block font-medium">{departure.date}</span>
+                  <span className="text-base text-muted">剩餘 {seatsLeft(bookings, tour.id, departure)} 人</span>
+                </button>
+              );
+            })}
+          </div>
+          <Button component={Link} to={bookTo} variant="contained" className="mt-8 w-full">立即報名</Button>
+        </aside>
+      </div>
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
+          <p className="font-serif text-2xl font-bold text-ink">{ntd(tour.price)}</p>
+          <Button component={Link} to={bookTo} variant="contained">立即報名</Button>
+        </div>
       </div>
     </main>
   );
 }
 ```
 
-```diff 06-project-init/src/App.jsx
- // ...
- import HomePage from './pages/HomePage.jsx';
-+import ToursPage from './pages/ToursPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
- // ...
-           <Route index element={<HomePage />} />
--          <Route path="tours" element={<Placeholder title="行程列表" />} />
-+          <Route path="tours" element={<ToursPage />} />
-           <Route path="tours/:id" element={<Placeholder title="行程詳情" />} />
- // ...
+**解析**
+
+- `useParams` 的 `id` 對不到行程時，先渲染佔位頁。找不到頁的元件留到最後一節再換上。
+- 分頁標題用行程名稱。選中的梯次預設第一筆，行程換了再重設。
+- 左欄是回列表的連結、地區與主題標籤、圖集、亮點、每日行程與費用。寬螢幕右欄用 `sticky` 停在離頂一段的位置；id 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
+- 右欄用 `role="radiogroup"` 選一梯，每顆按鈕寫出剩餘人數。窄螢幕改渲染 `DepartureList`，底部另外固定一條價格與報名列。
+- 右側選梯與底部固定列的報名連結，使用跟 `DepartureList` 相同的 `next` 規則。
+
+接著把詳情路徑換上，並在路由外面包上 `SessionProvider`。
+
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import { SessionProvider } from './session.jsx';
+import { StoreProvider } from './store.jsx';
+import SiteLayout from './layout/SiteLayout.jsx';
+import HomePage from './features/home/HomePage.jsx';
+import ToursPage from './features/tours/ToursPage.jsx';
+import TourDetailPage from './features/tours/TourDetailPage.jsx';
+import Placeholder from './_shared/Placeholder.jsx';
+
+const router = createBrowserRouter([
+  {
+    element: <SiteLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'tours', element: <ToursPage /> },
+      { path: 'tours/:id', element: <TourDetailPage /> },
+      { path: 'booking', element: <Placeholder title="報名" /> },
+      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
+      { path: 'me', element: <Placeholder title="我的報名" /> },
+      { path: 'about', element: <Placeholder title="關於" /> },
+      { path: 'login', element: <Placeholder title="登入提示" /> },
+      { path: 'admin/login', element: <Placeholder title="後台登入" /> },
+      { path: 'admin', element: <Placeholder title="後台行程" /> },
+      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
+      { path: '*', element: <Placeholder title="找不到頁面" /> },
+    ],
+  },
+]);
+
+export default function App() {
+  return (
+    <SessionProvider>
+      <StoreProvider>
+        <RouterProvider router={router} />
+      </StoreProvider>
+    </SessionProvider>
+  );
+}
 ```
 
 **解析**
 
-- 篩選條件放在查詢參數，重新整理還在。表單先改草稿，按「套用條件」才寫回網址。
-- `theme` 由首頁的主題圖帶入。清除地區與價格時要留著它，拿掉主題用 Chip 的 `onDelete`。
-- 網址沒寫排序時，當成價格由低到高，網址就不必每筆都帶預設值。
-- `id="tour-list"` 同時包住有結果與沒結果，空狀態才不會落在這個節點外面。
-- 手風琴的外框與 Alert 的圖示在這一節寫進 `theme.js`。關於頁的常見問題沿用同一組手風琴。
+- `SessionProvider` 包在 `StoreProvider` 外面，裡面是 `RouterProvider`。`/tours/:id` 換成 `TourDetailPage`，其餘仍是佔位。
 
-## 行程詳情
+### 步驟 2：這一頁要用的資料
 
-詳情頁補上圖集、亮點、每日行程、費用與每一梯的名額，並用報名種子計算剩餘人數。未登入按報名，會先去登入頁，原本要去的網址放在 `next`。
+上一步為了讓詳情頁先畫出來，亮點先是空陣列，報名種子先是空陣列，剩餘名額先固定回 0。這一節換成完整內容。八筆都要補上同一組欄位，diff 不會比整檔短，這裡直接換成這一步的 `features/tours/mock.data.js`。
 
-八筆都要補上同一組欄位，diff 不會比整檔短，這裡直接換成完成後的 `tours.js`。
-
-```js 06-project-init/src/data/tours.js
+```js 06-project-init/src/features/tours/mock.data.js
 const shot = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1600&q=80`;
 
 const stay = (nights, ride, tickets) => [nights, ride, tickets];
@@ -1937,9 +2645,29 @@ export const tours = [
     featured: true,
   },
 ];
+
+export const regions = ['台北', '基隆', '花蓮', '台東', '台南', '高雄', '金門', '京都'];
+
+export const dayOptions = [2, 3, 4, 5];
+
+export const priceBands = [
+  { value: '', label: '不限' },
+  { value: 'lt10000', label: '一萬以下' },
+  { value: '10000-20000', label: '一到兩萬' },
+  { value: '20000-30000', label: '二到三萬' },
+  { value: 'gt30000', label: '三萬以上' },
+];
+
+export const sortOptions = [
+  { value: 'price-asc', label: '價格低到高' },
+  { value: 'price-desc', label: '價格高到低' },
+  { value: 'days-asc', label: '天數短到長' },
+];
 ```
 
-```js 06-project-init/src/data/bookings.js
+把上一步的空陣列換成這四筆。
+
+```js 06-project-init/src/features/booking/mock.data.js
 /** 後台清單。姓名與「我的報名」範例不一致，兩頁各自照靜態模板。 */
 export const bookings = [
   {
@@ -1961,75 +2689,28 @@ export const bookings = [
 ];
 ```
 
-```jsx 06-project-init/src/session.jsx
-import { createContext, useContext, useMemo, useState } from 'react';
-
-const KEY = 'loki-travel-session';
-const SessionContext = createContext(null);
-
-const readUser = () => {
-  try {
-    return JSON.parse(sessionStorage.getItem(KEY) || 'null');
-  } catch {
-    return null;
-  }
-};
-
-export function SessionProvider({ children }) {
-  const [user, setUser] = useState(readUser);
-  const api = useMemo(() => ({
-    user,
-    signIn() {
-      const next = { name: '林可', email: 'lin@example.com', role: 'member' };
-      sessionStorage.setItem(KEY, JSON.stringify(next));
-      setUser(next);
-    },
-    signInAdmin() {
-      const next = { name: '管理員', email: 'admin@gmail.com', role: 'admin' };
-      sessionStorage.setItem(KEY, JSON.stringify(next));
-      setUser(next);
-    },
-    signOut() {
-      sessionStorage.removeItem(KEY);
-      setUser(null);
-    },
-  }), [user]);
-  return <SessionContext.Provider value={api}>{children}</SessionContext.Provider>;
-}
-
-export const useSession = () => useContext(SessionContext);
-```
+接著把剩餘名額換成真正的算法。
 
 ```diff 06-project-init/src/format.js
- // ...
- export const perPerson = (tour) => (tour?.id === 'kyoto-nara' ? '/ 人，不含國際機票' : '/ 人');
- 
+-export const seatsLeft = () => 0;
 +export const seatsLeft = (bookings, tourId, departure) => Math.max(
 +  0,
 +  departure.capacity - bookings
 +    .filter((item) => item.tourId === tourId && item.departureId === departure.id && item.status !== 'cancelled')
 +    .reduce((sum, item) => sum + Number(item.people), 0),
 +);
-+
- // ...
 ```
 
-```diff 06-project-init/src/store.jsx
- // ...
- import { tours as seedTours } from './data/tours.js';
-+import { bookings as seedBookings } from './data/bookings.js';
- 
- // ...
-   const [tours] = useState(seedTours);
-+  const [bookings] = useState(seedBookings);
-   return (
--    <StoreContext.Provider value={{ tours }}>
-+    <StoreContext.Provider value={{ tours, bookings }}>
-       {children}
- // ...
-```
+**解析**
 
-```jsx 06-project-init/src/components/Gallery.jsx
+- `seatsLeft` 用該梯 `capacity` 減去同一行程、同一梯、狀態不是 `cancelled` 的人數加總。
+- `Math.max(0, …)` 讓結果不會小於 0。人數先用 `Number` 轉過再加。
+
+### 步驟 3：圖集
+
+把圖集的 placeholder 換成真正的元件。圖集用一張大圖加一排縮圖，點縮圖就換大圖。
+
+```jsx 06-project-init/src/features/tours/components/Gallery.jsx
 import { useState } from 'react';
 
 export default function Gallery({ images, title }) {
@@ -2040,7 +2721,7 @@ export default function Gallery({ images, title }) {
   return (
     <div className="mt-8">
       <img className="aspect-[3/2] w-full rounded-card object-cover shadow-card" src={current} width="1200" height="800" alt={title} />
-      <div className="mt-3 flex gap-3 overflow-x-auto pb-1">
+      <div className="mt-3 flex gap-3 overflow-x-auto p-1">
         {images.map((src, index) => (
           <button
             key={`${src}-${index}`}
@@ -2048,9 +2729,9 @@ export default function Gallery({ images, title }) {
             aria-label={`顯示${title}第 ${index + 1} 張`}
             aria-current={index === active ? 'true' : undefined}
             onClick={() => setActive(index)}
-            className={`h-20 w-28 shrink-0 overflow-hidden rounded-2xl ring-2 ring-offset-2 ring-offset-paper ${index === active ? 'ring-action' : 'ring-transparent'}`}
+            className={`h-20 w-28 shrink-0 rounded-2xl ring-2 ring-offset-2 ring-offset-paper focus-visible:outline-none focus-visible:ring-action ${index === active ? 'ring-action' : 'ring-transparent'}`}
           >
-            <img className="h-full w-full object-cover" src={src} alt="" width="160" height="106" />
+            <img className="h-full w-full rounded-2xl object-cover" src={src} alt="" width="160" height="106" />
           </button>
         ))}
       </div>
@@ -2059,7 +2740,54 @@ export default function Gallery({ images, title }) {
 }
 ```
 
-```jsx 06-project-init/src/components/Itinerary.jsx
+**解析**
+
+- `active` 記住目前大圖的索引。沒有圖片時不渲染。
+- 大圖的 alt 用 `title`。縮圖的 alt 留空，按鈕用 `aria-label` 說出第幾張；當前那張加上 `aria-current`，外框換成操作色。
+- 全站的鍵盤焦點會再畫一圈外框。縮圖按鈕已有圓角 ring，兩圈疊在一起會撐破橫向捲動列，所以焦點改跟選中狀態用同一圈 ring，不再疊預設外框。
+- 縮圖列超出寬度時可以橫向捲動。
+
+### 步驟 4：每日行程
+
+把每日行程的 placeholder 換成真正的元件。每一天收成一組手風琴，一次只展開一則。
+
+手風琴的圓角、邊線與展開圖示補進主題。展開圖示沿用 `ms`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+         root: { borderRadius: 24, boxShadow: '0 10px 28px rgb(31 42 68 / 8%)', backgroundColor: tokens.white, backgroundImage: 'none' },
+       },
+     },
++    MuiAccordion: {
++      styleOverrides: {
++        root: {
++          borderRadius: 24,
++          boxShadow: 'none',
++          border: `1px solid ${tokens.line}`,
++          backgroundColor: tokens.white,
++          '&:before': { display: 'none' },
++          '&.Mui-expanded': { margin: 0 },
++          '&:first-of-type, &:last-of-type': { borderRadius: 24 },
++        },
++      },
++    },
++    MuiAccordionSummary: {
++      defaultProps: { expandIcon: ms('expand_more') },
++      styleOverrides: { root: { minHeight: 56, paddingInline: 20, '&.Mui-expanded': { minHeight: 56 } } },
++    },
+     MuiChip: {
+ // ...
+```
+
+**解析**
+
+- `MuiAccordion` 覆寫圓角、白底與邊線，並去掉陰影。展開時不再往外推 margin，第一個與最後一個維持同樣圓角。
+- `MuiAccordionSummary` 的展開圖示沿用 `ms('expand_more')`。摘要列的最小高度與左右留白寫在 `styleOverrides`。
+- 關於頁的常見問題會沿用同一組手風琴。
+
+接著換成真正的每日行程元件。每一天收成一組手風琴，一次只展開一則。摘要列會寫出第幾天與當天標題，收合時仍看得到這一天在做什麼。
+
+```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
 import { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -2080,7 +2808,16 @@ export default function Itinerary({ days }) {
 }
 ```
 
-```jsx 06-project-init/src/components/FareBox.jsx
+**解析**
+
+- `open` 記目前展開的天數。再開另一天時，前一則會合上。
+- 摘要列寫「第 N 天 · 標題」，內容是當天說明。外觀套用剛剛寫進主題的手風琴覆寫。
+
+### 步驟 5：費用說明
+
+把費用說明的 placeholder 換成真正的元件。費用包含與不含各成一欄。
+
+```jsx 06-project-init/src/features/tours/components/FareBox.jsx
 import Typography from '@mui/material/Typography';
 
 const Column = ({ title, items }) => (
@@ -2094,7 +2831,7 @@ const Column = ({ title, items }) => (
 
 export default function FareBox({ includes, excludes }) {
   return (
-    <div className="panel mt-14 grid gap-8 p-6 sm:grid-cols-2 md:gap-12 md:p-8">
+    <div className="rounded-card bg-white shadow-card mt-14 grid gap-8 p-6 sm:grid-cols-2 md:gap-12 md:p-8">
       <Column title="費用包含" items={includes} />
       <Column title="費用不含" items={excludes} />
     </div>
@@ -2102,16 +2839,24 @@ export default function FareBox({ includes, excludes }) {
 }
 ```
 
-```jsx 06-project-init/src/components/DepartureList.jsx
+**解析**
+
+- `Column` 把標題與條列收成一欄。兩欄在窄螢幕改成上下排，較寬時並排。
+
+### 步驟 6：出團梯次
+
+把出團梯次的 placeholder 換成真正的元件。每一梯列出日期與剩餘名額。按鈕依有沒有登入，決定直接去報名或先去登入。
+
+```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
-import { seatsLeft } from '../format.js';
-import { useSession } from '../session.jsx';
+import { seatsLeft } from '../../../format.js';
+import { useSession } from '../../../session.jsx';
 
 export default function DepartureList({ tour, bookings }) {
   const { user } = useSession();
   return (
-    <ul className="panel mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
+    <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
       {tour.departures.map((departure) => {
         const left = seatsLeft(bookings, tour.id, departure);
         const next = `/booking?tourId=${tour.id}&departureId=${departure.id}`;
@@ -2131,154 +2876,271 @@ export default function DepartureList({ tour, bookings }) {
 }
 ```
 
-```jsx 06-project-init/src/pages/TourDetailPage.jsx
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Typography from '@mui/material/Typography';
-import DepartureList from '../components/DepartureList.jsx';
-import FareBox from '../components/FareBox.jsx';
-import Gallery from '../components/Gallery.jsx';
-import Itinerary from '../components/Itinerary.jsx';
-import Placeholder from '../components/Placeholder.jsx';
-import { ntd, seatsLeft } from '../format.js';
-import { useSession } from '../session.jsx';
-import { useStore } from '../store.jsx';
-
-export default function TourDetailPage() {
-  const { id } = useParams();
-  const { tours, bookings } = useStore();
-  const { user } = useSession();
-  const tour = tours.find((item) => item.id === id);
-  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
-  useEffect(() => { document.title = tour ? `${tour.title} · 洛奇旅行` : '找不到頁面 · 洛奇旅行'; }, [tour]);
-  useEffect(() => { setDepartureId(tour?.departures[0]?.id ?? ''); }, [tour]);
-  if (!tour) return <Placeholder title="找不到頁面" />;
-
-  const selected = tour.departures.find((item) => item.id === departureId) ?? tour.departures[0];
-  const next = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
-  const bookTo = user ? next : `/login?next=${encodeURIComponent(next)}`;
-
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24">
-      <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
-        <div className="min-w-0">
-          <p><Link className="text-link" to="/tours">回行程列表</Link></p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Chip color="secondary" label={tour.region} />
-            <Chip variant="outlined" label={tour.theme} />
-            <Chip variant="outlined" label={`${tour.days} 天`} />
-          </div>
-          <Typography variant="h1" className="mt-4">{tour.title}</Typography>
-          <p className="mt-4 font-serif text-4xl font-bold text-ink lg:hidden">{ntd(tour.price)}<span className="font-sans text-base font-normal text-muted"> / 人</span></p>
-          <Gallery images={tour.images} title={tour.title} />
-          <p className="mt-8 text-lg leading-relaxed">{tour.intro}</p>
-          <Typography variant="h2" className="mt-14">亮點</Typography>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-3">
-            {tour.highlights.map((item) => <li key={item} className="rounded-card bg-mist px-5 py-4 text-base">{item}</li>)}
-          </ul>
-          <Typography variant="h2" className="mt-14">每日行程</Typography>
-          <p className="mt-3 text-base text-muted">展開每一天，看當天去哪裡、晚上住哪裡。</p>
-          <Itinerary days={tour.itinerary} />
-          <FareBox includes={tour.includes} excludes={tour.excludes} />
-          <div className="mt-14 lg:hidden">
-            <Typography variant="h2">出發日</Typography>
-            <p className="mt-3 text-base text-muted">最近一梯 {tour.departures[0].date} 尚餘 {seatsLeft(bookings, tour.id, tour.departures[0])} 人。</p>
-            <DepartureList tour={tour} bookings={bookings} />
-          </div>
-          <Typography variant="h2" className="mt-14">取消與退款</Typography>
-          <p className="mt-3 text-base leading-relaxed text-muted">出團前以 email 確認。未成行全額退回。成行後若要改期，請來信或來電，由我們為你調整。常見問題也寫在關於頁。</p>
-        </div>
-        <aside className="panel sticky top-24 mt-12 hidden self-start p-8 lg:mt-0 lg:block">
-          <p className="flex items-baseline gap-1.5 whitespace-nowrap font-serif text-4xl"><span className="price-tag">{ntd(tour.price)}</span><span className="font-sans text-base font-normal text-muted">/ 人</span></p>
-          {tour.id === 'kyoto-nara' ? <p className="mt-3 text-base text-muted">不含國際機票</p> : null}
-          <dl className="mt-6 grid gap-3 text-base">
-            <div className="flex justify-between gap-4"><dt className="text-muted">天數</dt><dd>{tour.days} 天</dd></div>
-            <div className="flex justify-between gap-4"><dt className="text-muted">團體上限</dt><dd>{tour.departures[0]?.capacity ?? 8} 人</dd></div>
-          </dl>
-          <div className="mt-6 grid gap-3" role="radiogroup" aria-label="選擇梯次">
-            {tour.departures.map((departure) => {
-              const on = departure.id === selected.id;
-              return (
-                <button
-                  key={departure.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setDepartureId(departure.id)}
-                  className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
-                >
-                  <span className="block font-medium">{departure.date}</span>
-                  <span className="text-base text-muted">剩餘 {seatsLeft(bookings, tour.id, departure)} 人</span>
-                </button>
-              );
-            })}
-          </div>
-          <Button component={Link} to={bookTo} variant="contained" className="mt-8 w-full">立即報名</Button>
-        </aside>
-      </div>
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
-          <p className="font-serif text-2xl font-bold text-ink">{ntd(tour.price)}</p>
-          <Button component={Link} to={bookTo} variant="contained">立即報名</Button>
-        </div>
-      </div>
-    </main>
-  );
-}
-```
-
-```jsx 06-project-init/src/App.jsx
-import { Route, Routes } from 'react-router';
-import { SessionProvider } from './session.jsx';
-import { StoreProvider } from './store.jsx';
-import SiteLayout from './layouts/SiteLayout.jsx';
-import HomePage from './pages/HomePage.jsx';
-import ToursPage from './pages/ToursPage.jsx';
-import TourDetailPage from './pages/TourDetailPage.jsx';
-import Placeholder from './components/Placeholder.jsx';
-
-export default function App() {
-  return (
-    <SessionProvider>
-      <StoreProvider>
-        <Routes>
-          <Route element={<SiteLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path="tours" element={<ToursPage />} />
-            <Route path="tours/:id" element={<TourDetailPage />} />
-            <Route path="booking" element={<Placeholder title="報名" />} />
-            <Route path="booking/done" element={<Placeholder title="報名完成" />} />
-            <Route path="me" element={<Placeholder title="我的報名" />} />
-            <Route path="about" element={<Placeholder title="關於" />} />
-            <Route path="login" element={<Placeholder title="登入提示" />} />
-            <Route path="admin/login" element={<Placeholder title="後台登入" />} />
-            <Route path="admin" element={<Placeholder title="後台行程" />} />
-            <Route path="admin/bookings" element={<Placeholder title="後台報名" />} />
-            <Route path="*" element={<Placeholder title="找不到頁面" />} />
-          </Route>
-        </Routes>
-      </StoreProvider>
-    </SessionProvider>
-  );
-}
-```
-
 **解析**
 
-- 網址上的 id 對不到行程時，先渲染佔位頁。找不到頁的元件留到最後一節再換上。
-- 未登入時，報名連結的 `next` 是原本要去的 `/booking?tourId=...`。登入頁只接受站內路徑。
-- `seatsLeft` 用名額減去未取消的人數，結果不會小於 0。寬螢幕把梯次放在右欄，窄螢幕改用 `DepartureList`，底部另外固定一條報名列。
-- `session` 在這一頁第一次用到，所以 `App` 從這裡才包上 `SessionProvider`。兩個登入方法先一起放進 context，後台頁才會呼叫管理員那個。
+- 每一梯用 `seatsLeft` 算出剩餘人數，畫面上寫名額與剩餘。
+- 已登入時按鈕連到 `/booking`，帶上這筆行程與這一梯。未登入則先去 `/login`，`next` 是原本要去的報名網址。
 
 ## 報名
 
 未登入進 `/booking` 會被送到 `/login?next=`。姓名與 email 來自 session，電話才讓使用者填，小計隨著人數變。
 
-```jsx 06-project-init/src/components/MemberGate.jsx
+這一節要組出 `BookingPage`。畫面拆成擋未登入者的 `MemberGate`，以及填寫與送出的 `BookingForm`。下面先組出這一頁並接到路由，閘道與表單先放標記，再逐一換成真正的元件。
+
+{% mermaid graph TD %}
+  page["BookingPage"] --> gate["MemberGate"]
+  page --> form["BookingForm"]
+{% endmermaid %}
+
+### 步驟 1：組出 BookingPage
+
+先把報名頁組起來並接到路由。登入閘道會把裡面的頁面畫出來，所以這個 placeholder 接收 `children`；表單先只顯示標記。
+
+```jsx 06-project-init/src/features/booking/components/MemberGate.jsx
+export default function MemberGate({ children }) {
+  return (
+    <>
+      <p className="mx-auto w-full max-w-6xl px-4 pt-6 font-bold text-action">登入閘道</p>
+      {children}
+    </>
+  );
+}
+```
+
+```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
+export default function BookingForm() {
+  return <form id="booking-form" className="rounded-card bg-white p-6 shadow-card">報名表單</form>;
+}
+```
+
+登入閘道與報名表單先放 placeholder。送出報名要寫進 Store，提示訊息要經過 `SiteLayout`，步驟圓點也在這一步換上；表單之後換成真正的元件時就能送出。
+
+```diff 06-project-init/src/store.jsx
+ // ...
+   const [tours] = useState(seedTours);
+-  const [bookings] = useState(seedBookings);
++  const [bookings, setBookings] = useState(seedBookings);
++  const [lastBooking, setLastBooking] = useState(null);
++  const [notice, setNotice] = useState('');
++
++  const createBooking = (input) => {
++    const row = { id: `local-${Date.now()}`, status: 'pending', uid: 'demo-local', ...input };
++    setBookings((list) => [row, ...list]);
++    setLastBooking(row);
++    setNotice('報名已送出，狀態是待確認');
++    return row;
++  };
++
+   return (
+-    <StoreContext.Provider value={{ tours, bookings }}>
++    <StoreContext.Provider value={{ tours, bookings, lastBooking, notice, clearNotice: () => setNotice(''), createBooking }}>
+       {children}
+ // ...
+```
+
+**解析**
+
+- `createBooking` 組出新的一筆：`id` 是 `local-` 加時間戳，狀態是 `pending`，再插到陣列最前面。
+- 同一筆寫進 `lastBooking`，完成頁才讀得到剛送出的內容，並把 `notice` 設成「報名已送出，狀態是待確認」。
+- 這些狀態都在記憶體。重新整理後報名回到種子，`notice` 也回到空字串。
+
+提示要出現在每一頁，所以接到 `SiteLayout`。
+
+```diff 06-project-init/src/layout/SiteLayout.jsx
+ import { Outlet, ScrollRestoration } from 'react-router';
++import Alert from '@mui/material/Alert';
++import Snackbar from '@mui/material/Snackbar';
+ import SiteHeader from './components/SiteHeader.jsx';
+ import SiteFooter from './components/SiteFooter.jsx';
++import { useStore } from '../store.jsx';
+ 
+ export default function SiteLayout() {
++  const { notice, clearNotice } = useStore();
+   return (
+ // ...
+       <SiteFooter />
++      <Snackbar open={Boolean(notice)} autoHideDuration={3200} onClose={clearNotice} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
++        <Alert severity="success" variant="filled" onClose={clearNotice}>{notice}</Alert>
++      </Snackbar>
+       <ScrollRestoration />
+     </div>
+ // ...
+```
+
+**解析**
+
+- `notice` 有字時打開 Snackbar，約 3.2 秒後或按下關閉會呼叫 `clearNotice`。位置在畫面下方置中。
+- 裡面是一則填色的成功 `Alert`，文字就是 `notice`。
+- Snackbar 加在 `SiteFooter` 與 `ScrollRestoration` 之間。換頁捲動仍交給 `ScrollRestoration`。
+
+提示框的圓角、色票與圖示補進主題。關閉鈕也改成圖示字型。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const SelectArrow = ({ className }) => ms('expand_more', { className });
++const CloseIcon = () => ms('close');
+ 
+ const theme = createTheme({
+   cssVariables: true,
+   palette: {
+ // ...
+     error: { main: tokens.alert, contrastText: tokens.white },
++    info: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
++    success: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
++    Alert: {
++      infoColor: tokens.ink,
++      infoStandardBg: tokens.mist,
++      infoIconColor: tokens.action,
++      successColor: tokens.action,
++      successStandardBg: tokens.mist,
++      successIconColor: tokens.action,
++    },
+     text: { primary: tokens.ink, secondary: tokens.muted },
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
++    MuiAlert: {
++      defaultProps: {
++        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
++        slots: { closeIcon: CloseIcon },
++      },
++      styleOverrides: {
++        root: { borderRadius: 16, alignItems: 'center' },
++      },
++    },
+   },
+ // ...
+```
+
+**解析**
+
+- `iconMapping` 把成功、資訊、警告、錯誤換成 `check_circle`、`info`、`warning`、`error`。關閉鈕用 `ms('close')`。
+- 外框圓角 16，內容垂直置中。
+- 這份主題開了 `cssVariables`，標準提示的底色、文字與圖示色來自 `palette.Alert`。資訊用 mist 底、ink 字、操作色圖示；成功用 mist 底、操作色字與圖示。這些色票會蓋掉 Material UI 預設的資訊藍。
+- 這一則填色的成功提示，以及之後頁面的警告與錯誤提示，都會套到這組。
+
+步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const CloseIcon = () => ms('close');
++const StepIcon = ({ active, completed, icon }) => {
++  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
++  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
++  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
++};
+ 
+ const theme = createTheme({
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
++    MuiStepLabel: {
++      defaultProps: { slots: { stepIcon: StepIcon } },
++    },
+     MuiAlert: {
+ // ...
+```
+
+**解析**
+
+- 完成的步驟是操作色圓底，裡面是 `check`。進行中的步驟同樣是操作色圓底，文字是步驟編號；還沒到的用線條底與 muted 字。
+- 寫在 `MuiStepLabel` 的 `slots.stepIcon`，之後的 Stepper 都會換成這組。
+
+接著組出報名頁。
+
+```jsx 06-project-init/src/features/booking/BookingPage.jsx
+import { useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router';
+import Alert from '@mui/material/Alert';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import Typography from '@mui/material/Typography';
+import BookingForm from './components/BookingForm.jsx';
+import MemberGate from './components/MemberGate.jsx';
+import { ntd } from '../../format.js';
+import { useSession } from '../../session.jsx';
+import { useStore } from '../../store.jsx';
+
+const steps = ['選出發日', '填寫資料', '送出確認'];
+
+function BookingBody() {
+  const { user } = useSession();
+  const { tours } = useStore();
+  const [params] = useSearchParams();
+  const tour = tours.find((item) => item.id === (params.get('tourId') || 'hualien-taroko'));
+  const departure = tour?.departures.find((item) => item.id === params.get('departureId')) || tour?.departures[0];
+  useEffect(() => { document.title = '報名 · 洛奇旅行'; }, []);
+
+  return (
+    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <Stepper activeStep={1} alternativeLabel className="mb-10" sx={{ '& .MuiStepLabel-label': { fontSize: '1.125rem', fontWeight: 700, marginTop: '8px' } }}>
+        {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
+      </Stepper>
+      <Typography variant="h1">報名</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">姓名與 email 由登入帳號帶入。請留下電話，我們會用 email 確認。</p>
+      {!tour || !departure ? (
+        <Alert className="mt-8" severity="warning">找不到這趟行程或出發日。<Link className="ml-2 underline" to="/tours">回行程</Link></Alert>
+      ) : (
+        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
+          <BookingForm tour={tour} departure={departure} user={user} />
+          <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
+            <Typography variant="h2">這趟行程</Typography>
+            <dl className="mt-5 grid gap-4 text-base">
+              <div><dt className="text-muted">行程</dt><dd className="mt-1 text-lg font-medium">{tour.title}</dd></div>
+              <div><dt className="text-muted">出發日</dt><dd className="mt-1 text-lg">{departure.date}</dd></div>
+              <div><dt className="text-muted">天數</dt><dd className="mt-1 text-lg">{tour.days} 天</dd></div>
+              <div>
+                <dt className="text-muted">每人</dt>
+                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">{ntd(tour.price)}<span className="font-sans text-base font-normal text-muted"> / 人</span></dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+      )}
+    </main>
+  );
+}
+
+export default function BookingPage() {
+  return <MemberGate><BookingBody /></MemberGate>;
+}
+```
+
+**解析**
+
+- 整頁包在 `MemberGate`。Stepper 的 `activeStep` 是 1，停在「填寫資料」。
+- 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程或梯次缺一，就顯示警告與回行程的連結。
+- 有資料時左欄是 `BookingForm`，右欄列出標題、出發日、天數與每人價格。大螢幕右欄用 `sticky` 停在離頂一段的位置。
+
+接著把 `/booking` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import TourDetailPage from './features/tours/TourDetailPage.jsx';
++import BookingPage from './features/booking/BookingPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'tours/:id', element: <TourDetailPage /> },
+-      { path: 'booking', element: <Placeholder title="報名" /> },
++      { path: 'booking', element: <BookingPage /> },
+       { path: 'booking/done', element: <Placeholder title="報名完成" /> },
+ // ...
+```
+
+**解析**
+
+- `/booking` 從 `Placeholder` 換成 `BookingPage`。完成頁仍是佔位。
+
+### 步驟 2：登入閘道
+
+把登入閘道的 placeholder 換成真正的元件。沒有登入就改去登入頁，並把現在的網址放進 `next`。
+
+```jsx 06-project-init/src/features/booking/components/MemberGate.jsx
 import { Navigate, useLocation } from 'react-router';
-import { useSession } from '../session.jsx';
+import { useSession } from '../../../session.jsx';
 
 export default function MemberGate({ children }) {
   const { user } = useSession();
@@ -2287,6 +3149,13 @@ export default function MemberGate({ children }) {
   return children;
 }
 ```
+
+**解析**
+
+- 沒有 `user` 時用 `Navigate` 去 `/login`，`next` 是目前路徑加上查詢字串，並用 `replace` 換掉這一筆歷史紀錄。
+- 有使用者就渲染 `children`。
+
+### 步驟 3：報名表單
 
 文字欄的外框圓角補進主題。
 
@@ -2304,16 +3173,22 @@ export default function MemberGate({ children }) {
  // ...
 ```
 
-```jsx 06-project-init/src/components/BookingForm.jsx
+**解析**
+
+- `MuiOutlinedInput` 覆寫圓角 16 與白底，報名表的文字欄會套到。
+
+接著把報名表單的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { ntd } from '../format.js';
-import { useStore } from '../store.jsx';
-import FieldSelect from './FieldSelect.jsx';
+import { ntd } from '../../../format.js';
+import { useStore } from '../../../store.jsx';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 export default function BookingForm({ tour, departure, user }) {
   const navigate = useNavigate();
@@ -2350,7 +3225,7 @@ export default function BookingForm({ tour, departure, user }) {
   };
 
   return (
-    <form id="booking-form" noValidate className="panel grid gap-4 p-6 md:p-8" onSubmit={submit}>
+    <form id="booking-form" noValidate className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8" onSubmit={submit}>
       <Typography variant="h2">填寫資料</Typography>
       <Alert severity="success">已登入 · {name} · {user.email}</Alert>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -2378,175 +3253,28 @@ export default function BookingForm({ tour, departure, user }) {
 }
 ```
 
-```diff 06-project-init/src/store.jsx
- // ...
-   const [tours] = useState(seedTours);
--  const [bookings] = useState(seedBookings);
-+  const [bookings, setBookings] = useState(seedBookings);
-+  const [lastBooking, setLastBooking] = useState(null);
-+  const [notice, setNotice] = useState('');
-+
-+  const createBooking = (input) => {
-+    const row = { id: `local-${Date.now()}`, status: 'pending', uid: 'demo-local', ...input };
-+    setBookings((list) => [row, ...list]);
-+    setLastBooking(row);
-+    setNotice('報名已送出，狀態是待確認');
-+    return row;
-+  };
-+
-   return (
--    <StoreContext.Provider value={{ tours, bookings }}>
-+    <StoreContext.Provider value={{ tours, bookings, lastBooking, notice, clearNotice: () => setNotice(''), createBooking }}>
-       {children}
- // ...
-```
-
-```diff 06-project-init/src/layouts/SiteLayout.jsx
- import { Outlet } from 'react-router';
-+import Alert from '@mui/material/Alert';
-+import Snackbar from '@mui/material/Snackbar';
- import SiteHeader from '../components/SiteHeader.jsx';
- import SiteFooter from '../components/SiteFooter.jsx';
-+import { useStore } from '../store.jsx';
- 
- export default function SiteLayout() {
-+  const { notice, clearNotice } = useStore();
-   return (
- // ...
-       <SiteFooter />
-+      <Snackbar open={Boolean(notice)} autoHideDuration={3200} onClose={clearNotice} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-+        <Alert severity="success" variant="filled" onClose={clearNotice}>{notice}</Alert>
-+      </Snackbar>
-     </div>
- // ...
-```
-
-步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
-
-```diff 06-project-init/src/theme.js
- // ...
- const CloseIcon = () => ms('close');
-+const StepIcon = ({ active, completed, icon }) => {
-+  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
-+  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
-+  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
-+};
- 
- const theme = createTheme({
- // ...
-         emptyIcon: ms('star'),
-       },
-     },
-+    MuiStepLabel: {
-+      defaultProps: { slots: { stepIcon: StepIcon } },
-+    },
-     MuiAlert: {
- // ...
-```
-
-```jsx 06-project-init/src/pages/BookingPage.jsx
-import { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router';
-import Alert from '@mui/material/Alert';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
-import Typography from '@mui/material/Typography';
-import BookingForm from '../components/BookingForm.jsx';
-import MemberGate from '../components/MemberGate.jsx';
-import { ntd } from '../format.js';
-import { useSession } from '../session.jsx';
-import { useStore } from '../store.jsx';
-
-const steps = ['選出發日', '填寫資料', '送出確認'];
-
-function BookingBody() {
-  const { user } = useSession();
-  const { tours } = useStore();
-  const [params] = useSearchParams();
-  const tour = tours.find((item) => item.id === (params.get('tourId') || 'hualien-taroko'));
-  const departure = tour?.departures.find((item) => item.id === params.get('departureId')) || tour?.departures[0];
-  useEffect(() => { document.title = '報名 · 洛奇旅行'; }, []);
-
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <Stepper activeStep={1} alternativeLabel className="mb-10" sx={{ '& .MuiStepLabel-label': { fontSize: '1.125rem', fontWeight: 700, marginTop: '8px' } }}>
-        {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
-      </Stepper>
-      <Typography variant="h1">報名</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">姓名與 email 由登入帳號帶入。請留下電話，我們會用 email 確認。</p>
-      {!tour || !departure ? (
-        <Alert className="mt-8" severity="warning">找不到這趟行程或出發日。<Link className="ml-2 underline" to="/tours">回行程</Link></Alert>
-      ) : (
-        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
-          <BookingForm tour={tour} departure={departure} user={user} />
-          <aside className="panel p-6 md:p-8 lg:sticky lg:top-24">
-            <Typography variant="h2">這趟行程</Typography>
-            <dl className="mt-5 grid gap-4 text-base">
-              <div><dt className="text-muted">行程</dt><dd className="mt-1 text-lg font-medium">{tour.title}</dd></div>
-              <div><dt className="text-muted">出發日</dt><dd className="mt-1 text-lg">{departure.date}</dd></div>
-              <div><dt className="text-muted">天數</dt><dd className="mt-1 text-lg">{tour.days} 天</dd></div>
-              <div>
-                <dt className="text-muted">每人</dt>
-                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">{ntd(tour.price)}<span className="font-sans text-base font-normal text-muted"> / 人</span></dd>
-              </div>
-            </dl>
-          </aside>
-        </div>
-      )}
-    </main>
-  );
-}
-
-export default function BookingPage() {
-  return <MemberGate><BookingBody /></MemberGate>;
-}
-```
-
-```diff 06-project-init/src/App.jsx
- // ...
- import TourDetailPage from './pages/TourDetailPage.jsx';
-+import BookingPage from './pages/BookingPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
- // ...
-             <Route path="tours/:id" element={<TourDetailPage />} />
--            <Route path="booking" element={<Placeholder title="報名" />} />
-+            <Route path="booking" element={<BookingPage />} />
-             <Route path="booking/done" element={<Placeholder title="報名完成" />} />
- // ...
-```
-
 **解析**
 
-- `MemberGate` 沒有使用者時，把目前路徑與查詢參數放進 `next`，並用 `replace` 換掉這一筆歷史紀錄。
-- 姓名與 email 唯讀。電話是空的就不能送出，`id="booking-form"` 留在這張表單上。
-- `createBooking` 把新的一筆插到陣列最前面，並記下 `lastBooking`，完成頁才讀得到剛送出的內容。
-- 提示文字放在 `notice`。版面用 Snackbar 顯示，重新整理就回到種子，提示也跟著消失。
-- 輸入框圓角與步驟圖示在這一節補進 `theme.js`。
-
-{% note success %}
-**換你試試：**
-把人數的起始值從 2 改成 1，打開報名頁時小計應等於一人的價格。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改 `useState` 的起始字串。送出時仍會用當時選到的人數去算小計。
-
-```diff 06-project-init/src/components/BookingForm.jsx
- // ...
-   const { createBooking } = useStore();
--  const [people, setPeople] = useState('2');
-+  const [people, setPeople] = useState('1');
-   const [phone, setPhone] = useState('');
- // ...
-```
-</details>
+- 姓名與 email 唯讀。姓名是空的時，用 email 的 `@` 前段。人數預設 `'2'`，小計用單價乘上人數，再交給 `ntd`。
+- 電話去掉空白後是空的就不能送出。失焦或按過送出才把欄位標成錯誤；電話一旦有內容，上方的錯誤提示會清掉。
+- 送出時先 `preventDefault`。通過檢查後呼叫 `createBooking`，帶上行程、梯次、人數、電話與小計，再導到 `/booking/done`。
+- 表單的 `id` 是 `booking-form`。上方的成功 `Alert` 顯示目前登入的姓名與 email。
 
 ## 報名完成
 
 直接打開完成頁、記憶體裡還沒有剛送出的那一筆時，畫面用寫在頁面裡的範例，狀態是待確認。
+
+這一節沒有再拆新的畫面零件。`BookingDonePage` 沿用上一節的 `MemberGate`。
+
+{% mermaid graph TD %}
+  page["BookingDonePage"] --> gate["MemberGate"]
+{% endmermaid %}
+
+### 步驟 1：組出 BookingDonePage
+
+狀態對照先寫進 `format.js`，再寫完成頁。寫完後下一步接到路由，重整就能看到這一頁。
+
+三個狀態代碼對到中文，完成頁和後面的報名清單都讀這一份。
 
 ```diff 06-project-init/src/format.js
  // ...
@@ -2557,7 +3285,9 @@ export default function BookingPage() {
  // ...
 ```
 
-```jsx 06-project-init/src/pages/BookingDonePage.jsx
+接著寫完成頁。
+
+```jsx 06-project-init/src/features/booking/BookingDonePage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
@@ -2567,9 +3297,9 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import MemberGate from '../components/MemberGate.jsx';
-import { ntd, statusLabel } from '../format.js';
-import { useStore } from '../store.jsx';
+import MemberGate from './components/MemberGate.jsx';
+import { ntd, statusLabel } from '../../format.js';
+import { useStore } from '../../store.jsx';
 
 const steps = ['選出發日', '填寫資料', '送出確認'];
 const sample = {
@@ -2590,7 +3320,7 @@ function DoneBody() {
       <Typography variant="h1" className="mt-3 max-w-[10em]">報名已送出</Typography>
       <Alert className="mt-4 max-w-prose" severity="success">我們會用 email 再跟你確認。目前狀態為待確認。</Alert>
       <Typography variant="h2" className="mt-10">這筆內容</Typography>
-      <dl className="panel mt-4 max-w-prose divide-y divide-line px-5">
+      <dl className="rounded-card bg-white shadow-card mt-4 max-w-prose divide-y divide-line px-5">
         {[['行程', row.tourTitle], ['出發日', row.date], ['人數', row.people], ['電話', row.phone], ['小計', ntd(row.subtotal)], ['狀態', statusLabel[row.status] || row.status]].map(([label, value]) => (
           <div key={label} className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]"><dt className="text-muted">{label}</dt><dd className={label === '小計' ? 'font-serif text-2xl font-bold text-action' : undefined}>{value}</dd></div>
         ))}
@@ -2608,30 +3338,49 @@ export default function BookingDonePage() {
 }
 ```
 
+**解析**
+
+- 有 `lastBooking` 就顯示那一筆，否則用頁內的 `sample`，狀態是待確認。這筆範例不寫進 `mock.data.js`。
+- Stepper 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。
+- 明細列出行程、日期、人數與小計。小計那一列用較大的操作色數字；狀態對不到對照表時，明細改顯示原本的代碼。
+- 整頁包在 `MemberGate`。兩顆按鈕分別去我的報名與行程列表。
+
+### 步驟 2：接到路由
+
+接著把 `/booking/done` 換成這一頁。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import BookingPage from './pages/BookingPage.jsx';
-+import BookingDonePage from './pages/BookingDonePage.jsx';
- import Placeholder from './components/Placeholder.jsx';
+ import BookingPage from './features/booking/BookingPage.jsx';
++import BookingDonePage from './features/booking/BookingDonePage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-             <Route path="booking" element={<BookingPage />} />
--            <Route path="booking/done" element={<Placeholder title="報名完成" />} />
-+            <Route path="booking/done" element={<BookingDonePage />} />
-             <Route path="me" element={<Placeholder title="我的報名" />} />
+       { path: 'booking', element: <BookingPage /> },
+-      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
++      { path: 'booking/done', element: <BookingDonePage /> },
+       { path: 'me', element: <Placeholder title="我的報名" /> },
  // ...
 ```
 
 **解析**
 
-- 有 `lastBooking` 就顯示那一筆，否則用頁內的 `sample`。這筆範例不寫進 `data/`。
-- Stepper 停在第三步。三個狀態代碼共用 `statusLabel`，後面的報名清單也讀這一份。
-- 這一頁同樣套 `MemberGate`。`FieldSelect` 已在首頁寫過，報名表直接沿用。
+- `/booking/done` 從 `Placeholder` 換成 `BookingDonePage`。
 
 ## 我的報名
 
 林可看得到四筆範例，欄位比後台那四筆少，而且不放進同一個匯出。這次在瀏覽器裡送出的報名會排在範例上面。
 
-```diff 06-project-init/src/data/bookings.js
+這一節沒有再拆新的畫面零件。`MyBookingsPage` 沿用已經寫好的 `MemberGate`。
+
+{% mermaid graph TD %}
+  page["MyBookingsPage"] --> gate["MemberGate"]
+{% endmermaid %}
+
+### 步驟 1：組出 MyBookingsPage
+
+範例先寫進 `mock.data.js`，再寫我的報名頁。寫完後下一步接到路由，重整就能看到這一頁。
+
+```diff 06-project-init/src/features/booking/mock.data.js
  // ...
  ];
 +
@@ -2644,17 +3393,19 @@ export default function BookingDonePage() {
 +];
 ```
 
-```jsx 06-project-init/src/pages/MyBookingsPage.jsx
+接著寫我的報名頁。
+
+```jsx 06-project-init/src/features/booking/MyBookingsPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import MemberGate from '../components/MemberGate.jsx';
-import { mySamples } from '../data/bookings.js';
-import { ntd, statusLabel } from '../format.js';
-import { useSession } from '../session.jsx';
-import { useStore } from '../store.jsx';
+import MemberGate from './components/MemberGate.jsx';
+import { mySamples } from './mock.data.js';
+import { ntd, statusLabel } from '../../format.js';
+import { useSession } from '../../session.jsx';
+import { useStore } from '../../store.jsx';
 
 const chipColor = { pending: 'primary', confirmed: 'secondary', cancelled: 'error' };
 
@@ -2687,7 +3438,7 @@ function MeBody() {
       {fresh.length || samples.length ? (
         <>
           <Typography variant="h2" className="mt-10">你的報名</Typography>
-          <div className="panel mt-6 max-w-3xl divide-y divide-line px-5">
+          <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
             {fresh.map((item) => <Row key={item.id} status={item.status} title={item.tourTitle} date={item.date} people={item.people} phone={item.phone} subtotal={item.subtotal} />)}
             {samples.map((item) => <Row key={`${item.title}-${item.date}`} status={item.status} title={item.title} date={item.date} people={item.people} phone={item.phone} subtotal={item.subtotal} />)}
           </div>
@@ -2709,30 +3460,45 @@ export default function MyBookingsPage() {
 }
 ```
 
+**解析**
+
+- `fresh` 留下 email 與目前使用者相同、且 `id` 以 `local-` 開頭的報名，排在範例前面。
+- `mySamples` 只在信箱是 `lin@example.com` 時接上。後台那四筆種子不會出現在這一頁。
+- `chipColor` 把 `pending`、`confirmed`、`cancelled` 對到 `primary`、`secondary`、`error`。標籤文字用 `statusLabel`。
+- 有剛送出的報名或範例時列出來。兩種都是空的才顯示空狀態與「去看行程」。這一頁沒有取消按鈕。
+
+### 步驟 2：接到路由
+
+接著把 `/me` 換成這一頁。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import BookingDonePage from './pages/BookingDonePage.jsx';
-+import MyBookingsPage from './pages/MyBookingsPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
+ import BookingDonePage from './features/booking/BookingDonePage.jsx';
++import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-             <Route path="booking/done" element={<BookingDonePage />} />
--            <Route path="me" element={<Placeholder title="我的報名" />} />
-+            <Route path="me" element={<MyBookingsPage />} />
-             <Route path="about" element={<Placeholder title="關於" />} />
+       { path: 'booking/done', element: <BookingDonePage /> },
+-      { path: 'me', element: <Placeholder title="我的報名" /> },
++      { path: 'me', element: <MyBookingsPage /> },
+       { path: 'about', element: <Placeholder title="關於" /> },
  // ...
 ```
 
 **解析**
 
-- 這次送出的報名，用 `id` 前綴 `local-` 再加上 email，對上目前的使用者。
-- `mySamples` 只在信箱是林可時接上。後台清單讀的是另一個 `bookings` 匯出，兩頁的姓名不必相同。
-- 兩種都是空的時候顯示空狀態。這一頁沒有取消按鈕。
+- `/me` 從 `Placeholder` 換成 `MyBookingsPage`。
 
 ## 關於
 
 關於頁是一段品牌說明、一組虛構的執照字號，以及六則常見問題。它不讀 Store，也不檢查登入。
 
-```js 06-project-init/src/data/faqs.js
+這一節沒有再拆畫面零件。常見問題放在 `mock.data.js`，由 `AboutPage` 自己渲染。
+
+### 步驟 1：組出 AboutPage
+
+常見問題先寫進 `mock.data.js`，再寫關於頁。寫完後下一步接到路由，重整就能看到這一頁。
+
+```js 06-project-init/src/features/about/mock.data.js
 export const faqs = [
   { q: '一個團幾個人？', a: '每團 8 人。報名時人數選 1 到 8。' },
   { q: '費用包含什麼？', a: '台灣團包含表定住宿、當地車資與行程表上的門票。午餐與個人消費不含。' },
@@ -2743,13 +3509,15 @@ export const faqs = [
 ];
 ```
 
-```jsx 06-project-init/src/pages/AboutPage.jsx
+接著寫關於頁。
+
+```jsx 06-project-init/src/features/about/AboutPage.jsx
 import { useEffect, useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import { faqs } from '../data/faqs.js';
+import { faqs } from './mock.data.js';
 
 export default function AboutPage() {
   const [open, setOpen] = useState(null);
@@ -2759,7 +3527,7 @@ export default function AboutPage() {
     <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <Typography variant="h1" className="max-w-[10em]">關於洛奇旅行</Typography>
       <p className="mt-4 max-w-prose text-lg leading-relaxed">洛奇旅行安排台灣本島與一條日本關西短團。我們把一天怎麼過寫清楚：具體地名、走路的時段、晚上住哪裡。每團 8 人，不催促、不加購物站。</p>
-      <section className="panel mt-12 max-w-3xl px-6 py-8" aria-labelledby="license-title">
+      <section className="rounded-card bg-white shadow-card mt-12 max-w-3xl px-6 py-8" aria-labelledby="license-title">
         <Typography id="license-title" variant="h2">執照與品保</Typography>
         <p className="mt-4">交通部觀光署旅行業執照交觀甲 999999 號</p>
         <p className="mt-3 text-muted">出團前以 email 確認。未成行，團費全額退回。</p>
@@ -2780,28 +3548,41 @@ export default function AboutPage() {
 }
 ```
 
+**解析**
+
+- `open` 記目前展開的索引，一次只開一則；再開另一則時前一則會合上。
+- 手風琴外觀沿用主題裡已經設過的覆寫，這裡只傳問題與答案。
+- 上方是一段品牌說明。執照區塊的字號「交觀甲 999999 號」是教材用的虛構號碼。
+- 這一頁不讀 Store，也不檢查登入。
+
+### 步驟 2：接到路由
+
+接著把 `/about` 換成這一頁。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import MyBookingsPage from './pages/MyBookingsPage.jsx';
-+import AboutPage from './pages/AboutPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
+ import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
++import AboutPage from './features/about/AboutPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-             <Route path="me" element={<MyBookingsPage />} />
--            <Route path="about" element={<Placeholder title="關於" />} />
-+            <Route path="about" element={<AboutPage />} />
-             <Route path="login" element={<Placeholder title="登入提示" />} />
+       { path: 'me', element: <MyBookingsPage /> },
+-      { path: 'about', element: <Placeholder title="關於" /> },
++      { path: 'about', element: <AboutPage /> },
+       { path: 'login', element: <Placeholder title="登入提示" /> },
  // ...
 ```
 
 **解析**
 
-- 常見問題一次只展開一則。狀態記的是目前打開的索引，再開另一則時前一則會合上。
-- 手風琴的外觀已在 `theme.js` 設過，這一頁只傳問題與答案。
-- 執照字號「交觀甲 999999 號」是教材用的虛構號碼。
+- `/about` 從 `Placeholder` 換成 `AboutPage`。
 
 ## 登入
 
 按下按鈕寫入的是固定的旅客林可，沒有接上 Google。`next` 只接受站內路徑，通過之後頁首要改顯示姓名與登出。
+
+這一節先寫 `LoginPage`，再讓已經存在的 `SiteHeader` 依登入狀態改顯示。它們不是上下層關係。
+
+### 步驟 1：登入頁
 
 登入對話框的圓角補進主題。
 
@@ -2817,7 +3598,13 @@ export default function AboutPage() {
  // ...
 ```
 
-```jsx 06-project-init/src/pages/LoginPage.jsx
+**解析**
+
+- `MuiDialog` 的紙張圓角設成 24，登入對話框會套到。
+
+接著寫登入頁。
+
+```jsx 06-project-init/src/features/auth/LoginPage.jsx
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import Button from '@mui/material/Button';
@@ -2825,7 +3612,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useSession } from '../session.jsx';
+import { useSession } from '../../session.jsx';
 
 export default function LoginPage() {
   const { user, signIn } = useSession();
@@ -2858,7 +3645,36 @@ export default function LoginPage() {
 }
 ```
 
-```jsx 06-project-init/src/components/SiteHeader.jsx
+**解析**
+
+- `next` 預設是 `/`。要以單一斜線開頭；`//` 開頭會被瀏覽器當成協定相對網址，這種值退回首頁。
+- 按下按鈕時，還沒有使用者才呼叫 `signIn`，然後前往 `next`。已經登入就沿用目前帳號，不再寫入一次。
+- Dialog 維持打開。關閉或「返回首頁」都導回 `/`。已登入時，內文多一行目前的姓名。
+
+接著把 `/login` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import AboutPage from './features/about/AboutPage.jsx';
++import LoginPage from './features/auth/LoginPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'about', element: <AboutPage /> },
+-      { path: 'login', element: <Placeholder title="登入提示" /> },
++      { path: 'login', element: <LoginPage /> },
+       { path: 'admin/login', element: <Placeholder title="後台登入" /> },
+ // ...
+```
+
+**解析**
+
+- `/login` 從 `Placeholder` 換成 `LoginPage`。後台登入仍是佔位。
+
+### 步驟 2：更新頁首
+
+登入頁已經接上。這一節改已經存在的 `SiteHeader`：有登入時顯示姓名與登出，沒有登入時仍是連到登入頁的按鈕。
+
+```jsx 06-project-init/src/layout/components/SiteHeader.jsx
 import { useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router';
 import AppBar from '@mui/material/AppBar';
@@ -2867,9 +3683,9 @@ import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import NavLinks from './NavLinks.jsx';
-import Icon from './Icon.jsx';
-import { useSession } from '../session.jsx';
+import SiteNav from './SiteNav.jsx';
+import Icon from '../../_shared/Icon.jsx';
+import { useSession } from '../../session.jsx';
 
 const item = ({ isActive }) => `inline-flex min-h-11 items-center rounded-full px-3 font-bold ${isActive ? 'bg-action text-white' : 'text-ink hover:bg-mist'}`;
 
@@ -2897,7 +3713,7 @@ export default function SiteHeader() {
       <NavLink to="/admin" end className={item} onClick={close}>行程管理</NavLink>
       <NavLink to="/admin/bookings" className={item} onClick={close}>報名清單</NavLink>
     </nav>
-  ) : <NavLinks onNavigate={close} id={id} />);
+  ) : <SiteNav onNavigate={close} id={id} />);
 
   return (
     <AppBar id="site-header" position="sticky" component="header">
@@ -2930,36 +3746,40 @@ export default function SiteHeader() {
 }
 ```
 
-```diff 06-project-init/src/App.jsx
- // ...
- import AboutPage from './pages/AboutPage.jsx';
-+import LoginPage from './pages/LoginPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
- // ...
-             <Route path="about" element={<AboutPage />} />
--            <Route path="login" element={<Placeholder title="登入提示" />} />
-+            <Route path="login" element={<LoginPage />} />
-             <Route path="admin/login" element={<Placeholder title="後台登入" />} />
- // ...
-```
-
 **解析**
 
-- `signIn` 把林可寫進 `sessionStorage`，鍵名是 `loki-travel-session`。關掉分頁就消失，重新整理還在。
-- `next` 要以單一斜線開頭。`//` 開頭會被瀏覽器當成協定相對網址，這種值退回首頁。
-- 已經登入時不再呼叫 `signIn`，直接前往 `next`。
-- 頁首從這一節起讀 session。路徑以 `/admin` 開頭時，商標與選單改成後台那一組。
-- 登入 Dialog 的圓角在這一節補進 `theme.js`。
+- 從這一節起讀 session。有使用者時，按鈕顯示姓名與頭像首字，點開選單可到「我的報名」或登出。沒有使用者時，前台連到 `/login`。
+- `logout` 呼叫 `signOut`，關掉抽屜與選單，再回首頁。
+- 路徑以 `/admin` 開頭時，商標改成「洛奇旅行 · 後台」，站名連到 `/admin`，導覽換成行程管理與報名清單，登入按鈕連到 `/admin/login`。後台的帳號選單只留「登出」。
+- 窄螢幕用 Drawer 放同一組連結。`close` 會同時收起抽屜與帳號選單。
 
 # 後台與部署
 
 這一章把切版收尾。後台兩頁先確認 `role` 為 `admin`，旅客進得了網址時畫面只留警告與前往後台登入的按鈕。找不到的路徑換成正式頁面，打包時再讓靜態主機接得住重新整理後的網址。
 
+後台同樣放在 `features/admin/`。下面每一節也會先說明該頁拆哪些元件，再用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件，以便在畫面上對照。
+
+```
+src/features/admin/
+├── AdminLoginPage.jsx
+├── AdminToursPage.jsx
+├── AdminBookingsPage.jsx
+└── components/
+    ├── AdminGate.jsx
+    ├── AdminTabs.jsx
+    ├── TourForm.jsx
+    └── BookingTable.jsx
+```
+
 ## 後台登入
 
 管理員是另一組寫進同一個 session 的身份。按下之後前往 `/admin`，擋人的邏輯放在後台頁，不放在這一頁。
 
-`Paper` 的圓角補進主題。白底與陰影仍用已經寫好的 `.panel`。
+這一節沒有再拆畫面零件，直接寫 `AdminLoginPage`。
+
+### 步驟 1：組出 AdminLoginPage
+
+`Paper` 的圓角補進主題。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -2973,13 +3793,19 @@ export default function SiteHeader() {
  // ...
 ```
 
-```jsx 06-project-init/src/pages/AdminLoginPage.jsx
+**解析**
+
+- `MuiPaper` 的 `rounded` 圓角設成 24。
+
+接著寫後台登入頁。白底與陰影仍用這三個 utility。
+
+```jsx 06-project-init/src/features/admin/AdminLoginPage.jsx
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { useSession } from '../session.jsx';
+import { useSession } from '../../session.jsx';
 
 export default function AdminLoginPage() {
   const { signInAdmin } = useSession();
@@ -2988,7 +3814,7 @@ export default function AdminLoginPage() {
 
   return (
     <main id="content" className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24">
-      <Paper elevation={0} className="panel max-w-md p-6 md:p-8">
+      <Paper elevation={0} className="rounded-card bg-white shadow-card max-w-md p-6 md:p-8">
         <Typography variant="h1">後台登入</Typography>
         <p className="mt-4 text-lg leading-relaxed">行程與報名只有管理員可以進入。</p>
         <Button className="mt-6 w-full" variant="contained" onClick={() => { signInAdmin(); navigate('/admin'); }}>用 Google 帳號繼續</Button>
@@ -2998,37 +3824,228 @@ export default function AdminLoginPage() {
 }
 ```
 
+**解析**
+
+- 按下按鈕呼叫 `signInAdmin`，再前往 `/admin`。
+- 這一頁不檢查目前是誰。已經是管理員時再按一次，仍然前往 `/admin`。擋人的邏輯不在這一頁。
+- `Paper` 的 `elevation` 設成 0，避免再疊一層預設陰影。
+
+### 步驟 2：接到路由
+
+接著把 `/admin/login` 換成這一頁。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import LoginPage from './pages/LoginPage.jsx';
-+import AdminLoginPage from './pages/AdminLoginPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
+ import LoginPage from './features/auth/LoginPage.jsx';
++import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-             <Route path="login" element={<LoginPage />} />
--            <Route path="admin/login" element={<Placeholder title="後台登入" />} />
-+            <Route path="admin/login" element={<AdminLoginPage />} />
-             <Route path="admin" element={<Placeholder title="後台行程" />} />
+       { path: 'login', element: <LoginPage /> },
+-      { path: 'admin/login', element: <Placeholder title="後台登入" /> },
++      { path: 'admin/login', element: <AdminLoginPage /> },
+       { path: 'admin', element: <Placeholder title="後台行程" /> },
  // ...
 ```
 
 **解析**
 
-- `signInAdmin` 寫入的 `role` 是 `admin`，信箱是 `admin@gmail.com`。與旅客共用同一個儲存鍵，後來登入的會蓋掉前一個。
-- 這一頁不檢查目前是誰。已經是管理員時再按一次，仍然前往 `/admin`。
-- 頁首在後台路徑會顯示「後台登入」，連到的就是這一頁。
-- `Paper` 的圓角在這一節補進 `theme.js`。
+- `/admin/login` 從 `Placeholder` 換成 `AdminLoginPage`。
 
 ## 行程管理
 
-表單沒有出現的每日行程、圖集與費用，儲存時留在原本那筆上。主題選項這一頁才補進 `options.js`。
+表單沒有出現的每日行程、圖集與費用，儲存時留在原本那筆上。主題選項這一頁才補進 `features/tours/mock.data.js`。
 
-```diff 06-project-init/src/data/options.js
+這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，三個零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
+
+- `AdminGate`
+- `AdminTabs`
+- `TourForm`
+
+{% mermaid graph TD %}
+  page["AdminToursPage"] --> gate["AdminGate"]
+  page --> tabs["AdminTabs"]
+  page --> form["TourForm"]
+{% endmermaid %}
+
+### 步驟 1：組出 AdminToursPage
+
+先把行程管理組起來並接到路由。閘道會把裡面的頁面畫出來，所以這個 placeholder 接收 `children`。表單檔要先匯出 `empty` 與 `draftFromTour`，頁面才編譯得過；真正的表單下一節再換，這兩個匯出會留著。
+
+```jsx 06-project-init/src/features/admin/components/AdminGate.jsx
+export default function AdminGate({ children }) {
+  return (
+    <>
+      <p className="mx-auto w-full max-w-6xl px-4 pt-6 font-bold text-action">後台閘道</p>
+      {children}
+    </>
+  );
+}
+```
+
+```jsx 06-project-init/src/features/admin/components/AdminTabs.jsx
+export default function AdminTabs() {
+  return <p className="mt-4 font-bold">後台分頁</p>;
+}
+```
+
+```jsx 06-project-init/src/features/admin/components/TourForm.jsx
+const empty = { id: '', title: '', region: '', theme: '城市', days: 2, price: 0, cover: '', intro: '', highlights: '', date: '', capacity: 8 };
+
+export const draftFromTour = () => empty;
+
+export default function TourForm() {
+  return <form id="admin-form" className="rounded-card bg-white p-6 shadow-card">行程表單</form>;
+}
+
+export { empty };
+```
+
+表頭鋪上 mist，分隔線用色票的 `line`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiAlert: {
+ // ...
+       },
+     },
++    MuiTableCell: {
++      styleOverrides: {
++        root: { borderColor: tokens.line },
++        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
++      },
++    },
+     MuiTab: {
+ // ...
+```
+
+**解析**
+
+- 儲存格的分隔線用色票的 `line`。表頭字重 700、mist 底、文字用 ink。桌機表格會套到。
+
+接著組出行程管理頁。
+
+```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
+import { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import AdminGate from './components/AdminGate.jsx';
+import AdminTabs from './components/AdminTabs.jsx';
+import TourForm, { draftFromTour, empty } from './components/TourForm.jsx';
+import { ntd } from '../../format.js';
+import { useStore } from '../../store.jsx';
+
+function AdminToursBody() {
+  const { tours } = useStore();
+  const initial = tours.find((item) => item.id === 'hualien-taroko') || tours[0];
+  const [editingId, setEditingId] = useState(initial?.id ?? null);
+  const [draft, setDraft] = useState(() => (initial ? draftFromTour(initial) : empty));
+  useEffect(() => { document.title = '行程管理 · 洛奇旅行'; }, []);
+
+  const edit = (tour) => {
+    setEditingId(tour.id);
+    setDraft(draftFromTour(tour));
+    document.getElementById('admin-form')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <p className="font-bold text-action">管理員</p>
+      <Typography variant="h1" className="mt-2">行程管理</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">新增、修改或下架行程。列表會立刻更新。</p>
+      <AdminTabs />
+      <div className="mt-4">
+        <Button variant="outlined" onClick={() => { setEditingId(null); setDraft(empty); document.getElementById('admin-form')?.scrollIntoView({ behavior: 'smooth' }); }}>新增行程</Button>
+      </div>
+      <TableContainer elevation={0} className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block">
+        <Table>
+          <TableHead>
+            <TableRow>
+              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => <TableCell key={label} className="px-4 py-3">{label}</TableCell>)}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tours.map((tour) => (
+              <TableRow key={tour.id}>
+                <TableCell className="px-4 py-4">{tour.title}</TableCell>
+                <TableCell className="px-4 py-4">{tour.region}</TableCell>
+                <TableCell className="px-4 py-4">{tour.theme}</TableCell>
+                <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
+                <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
+                <TableCell className="px-4 py-4"><Button onClick={() => edit(tour)}>編輯</Button></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <div className="mt-8 grid gap-4 md:hidden">
+        {tours.map((tour) => (
+          <Card key={tour.id} className="p-6">
+            <h3 className="font-serif text-2xl font-semibold">{tour.title}</h3>
+            <p className="mt-2 text-muted">{tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}</p>
+            <Button className="mt-3" onClick={() => edit(tour)}>編輯</Button>
+          </Card>
+        ))}
+      </div>
+      <TourForm
+        editingId={editingId}
+        draft={draft}
+        setDraft={setDraft}
+        onSaved={(id) => setEditingId(id)}
+        onClear={() => { setEditingId(null); setDraft(empty); }}
+      />
+    </main>
+  );
+}
+
+export default function AdminToursPage() {
+  return <AdminGate><AdminToursBody /></AdminGate>;
+}
+```
+
+**解析**
+
+- 整頁包在 `AdminGate`。一進來編輯 id 為 `hualien-taroko` 的那筆，找不到就用陣列第一筆。
+- 「編輯」把該筆灌進草稿，並平滑捲到 `#admin-form`。「新增行程」清掉 `editingId`、草稿改回 `empty`，同樣捲到表單。
+- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯按鈕。價格用 `ntd`。
+- 上方沿用 `AdminTabs`。儲存成功時 `onSaved` 把 `editingId` 設成新編號。
+
+接著把 `/admin` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
++import AdminToursPage from './features/admin/AdminToursPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'admin/login', element: <AdminLoginPage /> },
+-      { path: 'admin', element: <Placeholder title="後台行程" /> },
++      { path: 'admin', element: <AdminToursPage /> },
+       { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
+ // ...
+```
+
+**解析**
+
+- `/admin` 從 `Placeholder` 換成 `AdminToursPage`。報名清單仍是佔位。
+
+### 步驟 2：這一頁要用的資料
+
+```diff 06-project-init/src/features/tours/mock.data.js
  export const regions = ['台北', '基隆', '花蓮', '台東', '台南', '高雄', '金門', '京都'];
  
 +export const themes = ['城市', '海岸', '山海', '古都', '離島', '日本'];
 +
  // ...
 ```
+
+接著讓 Store 能儲存與刪除行程。
 
 ```diff 06-project-init/src/store.jsx
  // ...
@@ -3099,11 +4116,23 @@ export default function AdminLoginPage() {
  // ...
 ```
 
-```jsx 06-project-init/src/components/AdminGate.jsx
+**解析**
+
+- `highlightsOf` 把亮點文字依換行拆開，去掉空白行。
+- 編號或標題去掉空白後是空的，回傳「編號和標題要填」，不寫入。編輯時用 `editingId` 找到舊的那筆；新編號若已被另一筆占用，回傳「這個編號已經有了」。
+- 找到舊資料時，以舊的那筆為底，只改表單上有的欄位。圖集、每日行程與費用留在原本那筆上。第一個出發日改成表單的日期與名額，其餘梯次保留。
+- 找不到舊資料就新增：圖集先放封面那一張，每日行程與費用是空陣列，`featured` 為 false，並插到陣列最前面。
+- 成功時把 `notice` 設成「已儲存這筆行程」，回傳空字串。`deleteTour` 依編號濾掉那一筆，並把提示設成「已刪除這筆行程」。
+
+### 步驟 3：後台閘道
+
+把後台閘道的 placeholder 換成真正的元件。只有 `role` 為 `admin` 才看得到後面的內容。其他身份只留警告與前往後台登入的按鈕。
+
+```jsx 06-project-init/src/features/admin/components/AdminGate.jsx
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { useSession } from '../session.jsx';
+import { useSession } from '../../../session.jsx';
 
 export default function AdminGate({ children }) {
   const { user } = useSession();
@@ -3117,12 +4146,18 @@ export default function AdminGate({ children }) {
 }
 ```
 
+**解析**
+
+- `user.role` 是 `admin` 就渲染 `children`。
+- 其餘情況留下警告與連到 `/admin/login` 的按鈕，網址不變。
+
+### 步驟 4：後台分頁
+
 分頁取消大寫，高度改成 48。
 
 ```diff 06-project-init/src/theme.js
  // ...
-           '& .MuiAlert-icon': { color: tokens.action },
-         },
+         root: { borderRadius: 16, alignItems: 'center' },
        },
      },
 +    MuiTab: {
@@ -3132,7 +4167,13 @@ export default function AdminGate({ children }) {
  // ...
 ```
 
-```jsx 06-project-init/src/components/AdminTabs.jsx
+**解析**
+
+- `MuiTab` 讓英文維持原本大小寫，字重 700，最小高度 48。行程與報名清單的分頁都會套到。
+
+接著把後台分頁的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/admin/components/AdminTabs.jsx
 import { useLocation, useNavigate } from 'react-router';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -3150,7 +4191,16 @@ export default function AdminTabs() {
 }
 ```
 
-```jsx 06-project-init/src/components/TourForm.jsx
+**解析**
+
+- 路徑以 `/admin/bookings` 開頭時，選到的值是 `/admin/bookings`，否則是 `/admin`。
+- 切換分頁時用 `navigate` 換頁。報名清單那一頁會再沿用這個元件。
+
+### 步驟 5：行程表單
+
+把行程表單的 placeholder 換成真正的元件。`empty` 與 `draftFromTour` 仍從這個檔案匯出，頁面不用改 import。
+
+```jsx 06-project-init/src/features/admin/components/TourForm.jsx
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -3160,9 +4210,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { themes } from '../data/options.js';
-import { useStore } from '../store.jsx';
-import FieldSelect from './FieldSelect.jsx';
+import { themes } from '../../tours/mock.data.js';
+import { useStore } from '../../../store.jsx';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 const empty = { id: '', title: '', region: '', theme: '城市', days: 2, price: 0, cover: '', intro: '', highlights: '', date: '', capacity: 8 };
 
@@ -3194,7 +4244,7 @@ export default function TourForm({ editingId, draft, setDraft, onClear, onSaved 
   };
 
   return (
-    <form id="admin-form" className="panel mt-12 grid max-w-3xl gap-4 p-6 sm:grid-cols-2 md:p-8" onSubmit={submit}>
+    <form id="admin-form" className="rounded-card bg-white shadow-card mt-12 grid max-w-3xl gap-4 p-6 sm:grid-cols-2 md:p-8" onSubmit={submit}>
       <Typography variant="h2" className="sm:col-span-2">{editingId ? '編輯行程' : '新增行程'}</Typography>
       <p className="text-muted sm:col-span-2">每日行程、圖集與費用說明若未出現在表單中，儲存時會一併保留。</p>
       {error ? <Alert className="sm:col-span-2" severity="error">{error}</Alert> : null}
@@ -3229,133 +4279,117 @@ export default function TourForm({ editingId, draft, setDraft, onClear, onSaved 
 export { empty };
 ```
 
-表頭鋪上 mist，分隔線用色票的 `line`。
+**解析**
 
-```diff 06-project-init/src/theme.js
- // ...
-     MuiAlert: {
- // ...
-       },
-     },
-+    MuiTableCell: {
-+      styleOverrides: {
-+        root: { borderColor: tokens.line },
-+        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
-+      },
-+    },
-     MuiTab: {
- // ...
+- `empty` 是新增用的空白草稿，主題預設「城市」，名額預設 8。`draftFromTour` 把行程轉成表單：亮點用換行接回一段文字，出發日與名額取第一梯。
+- 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。
+- 送出時把 `saveTour` 的回傳當成錯誤訊息。空字串代表成功，再呼叫 `onSaved`。
+- 刪除鈕在沒有 `editingId` 時停用。按下先開 Dialog，確認後才 `deleteTour`，並清掉表單。
+- 表單 `id` 是 `admin-form`。標題在有 `editingId` 時寫「編輯行程」，否則寫「新增行程」。
+
+## 報名清單
+
+清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。狀態用下拉改變，重新整理就回到種子。
+
+這一節要組出 `AdminBookingsPage`。畫面拆成已經寫好的 `AdminGate`、`AdminTabs`，以及這一節才寫的 `BookingTable`。下面先組出這一頁並接到路由，表格先放標記，再補改狀態的方法，最後換成真正的表格。
+
+{% mermaid graph TD %}
+  page["AdminBookingsPage"] --> gate["AdminGate"]
+  page --> tabs["AdminTabs"]
+  page --> table["BookingTable"]
+{% endmermaid %}
+
+### 步驟 1：組出 AdminBookingsPage
+
+先把報名清單組起來並接到路由。`AdminGate` 與 `AdminTabs` 上一節已經換成真正的元件，這裡只把表格先放標記。
+
+```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
+export default function BookingTable() {
+  return <p className="mt-8">報名表格</p>;
+}
 ```
 
-```jsx 06-project-init/src/pages/AdminToursPage.jsx
+接著寫報名清單。表格目前仍是標記。
+
+```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
 import { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import AdminGate from '../components/AdminGate.jsx';
-import AdminTabs from '../components/AdminTabs.jsx';
-import TourForm, { draftFromTour, empty } from '../components/TourForm.jsx';
-import { ntd } from '../format.js';
-import { useStore } from '../store.jsx';
+import AdminGate from './components/AdminGate.jsx';
+import AdminTabs from './components/AdminTabs.jsx';
+import BookingTable from './components/BookingTable.jsx';
+import { statusLabel } from '../../format.js';
+import { useStore } from '../../store.jsx';
 
-function AdminToursBody() {
-  const { tours } = useStore();
-  const initial = tours.find((item) => item.id === 'hualien-taroko') || tours[0];
-  const [editingId, setEditingId] = useState(initial?.id ?? null);
-  const [draft, setDraft] = useState(() => (initial ? draftFromTour(initial) : empty));
-  useEffect(() => { document.title = '行程管理 · 洛奇旅行'; }, []);
+const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
-  const edit = (tour) => {
-    setEditingId(tour.id);
-    setDraft(draftFromTour(tour));
-    document.getElementById('admin-form')?.scrollIntoView({ behavior: 'smooth' });
-  };
+function AdminBookingsBody() {
+  const { bookings } = useStore();
+  const [status, setStatus] = useState('all');
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState('date-desc');
+  useEffect(() => { document.title = '報名清單 · 洛奇旅行'; }, []);
+
+  const keyword = query.trim();
+  const shown = bookings
+    .filter((booking) => status === 'all' || booking.status === status)
+    .filter((booking) => !keyword || booking.name.includes(keyword))
+    .sort((a, b) => (sort === 'date-asc' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
 
   return (
     <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <p className="font-bold text-action">管理員</p>
-      <Typography variant="h1" className="mt-2">行程管理</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">新增、修改或下架行程。列表會立刻更新。</p>
+      <Typography variant="h1" className="mt-2">報名清單</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">查看所有報名，並把狀態改為待確認、已確認或已取消。</p>
       <AdminTabs />
-      <div className="mt-4">
-        <Button variant="outlined" onClick={() => { setEditingId(null); setDraft(empty); document.getElementById('admin-form')?.scrollIntoView({ behavior: 'smooth' }); }}>新增行程</Button>
+      <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
+        <TextField select label="狀態" value={status} onChange={(event) => setStatus(event.target.value)}>
+          {statusOptions.map((value) => <MenuItem key={value} value={value}>{value === 'all' ? '全部' : statusLabel[value]}</MenuItem>)}
+        </TextField>
+        <TextField label="搜尋姓名" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="輸入姓名" />
+        <TextField select label="日期排序" value={sort} onChange={(event) => setSort(event.target.value)}>
+          <MenuItem value="date-desc">出發日新到舊</MenuItem>
+          <MenuItem value="date-asc">出發日舊到新</MenuItem>
+        </TextField>
       </div>
-      <TableContainer elevation={0} className="panel mt-8 hidden overflow-x-auto md:block">
-        <Table>
-          <TableHead>
-            <TableRow>
-              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => <TableCell key={label} className="px-4 py-3">{label}</TableCell>)}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tours.map((tour) => (
-              <TableRow key={tour.id}>
-                <TableCell className="px-4 py-4">{tour.title}</TableCell>
-                <TableCell className="px-4 py-4">{tour.region}</TableCell>
-                <TableCell className="px-4 py-4">{tour.theme}</TableCell>
-                <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
-                <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
-                <TableCell className="px-4 py-4"><Button onClick={() => edit(tour)}>編輯</Button></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div className="mt-8 grid gap-4 md:hidden">
-        {tours.map((tour) => (
-          <Card key={tour.id} className="p-6">
-            <h3 className="font-serif text-2xl font-semibold">{tour.title}</h3>
-            <p className="mt-2 text-muted">{tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}</p>
-            <Button className="mt-3" onClick={() => edit(tour)}>編輯</Button>
-          </Card>
-        ))}
-      </div>
-      <TourForm
-        editingId={editingId}
-        draft={draft}
-        setDraft={setDraft}
-        onSaved={(id) => setEditingId(id)}
-        onClear={() => { setEditingId(null); setDraft(empty); }}
-      />
+      {shown.length ? <BookingTable bookings={shown} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
     </main>
   );
 }
 
-export default function AdminToursPage() {
-  return <AdminGate><AdminToursBody /></AdminGate>;
+export default function AdminBookingsPage() {
+  return <AdminGate><AdminBookingsBody /></AdminGate>;
 }
 ```
 
+**解析**
+
+- 整頁包在 `AdminGate`，上方沿用 `AdminTabs`。
+- 狀態、姓名關鍵字與日期排序都是這一頁自己的 state，不寫進網址。狀態預設 `all`，排序預設 `date-desc`。
+- `shown` 先依狀態再依姓名過濾。姓名用去掉空白後的關鍵字做 `includes`。日期用 `localeCompare`，`date-asc` 由舊到新，其餘由新到舊。
+- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。
+
+接著把 `/admin/bookings` 換成這一頁。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import AdminLoginPage from './pages/AdminLoginPage.jsx';
-+import AdminToursPage from './pages/AdminToursPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
+ import AdminToursPage from './features/admin/AdminToursPage.jsx';
++import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
-             <Route path="admin/login" element={<AdminLoginPage />} />
--            <Route path="admin" element={<Placeholder title="後台行程" />} />
-+            <Route path="admin" element={<AdminToursPage />} />
-             <Route path="admin/bookings" element={<Placeholder title="後台報名" />} />
+       { path: 'admin', element: <AdminToursPage /> },
+-      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
++      { path: 'admin/bookings', element: <AdminBookingsPage /> },
+       { path: '*', element: <Placeholder title="找不到頁面" /> },
  // ...
 ```
 
 **解析**
 
-- `AdminGate` 只放行 `role` 為 `admin` 的使用者。其餘情況留下警告與按鈕，網址不變。
-- `saveTour` 找到舊資料時，保留表單沒有的圖集、每日行程與費用。編號已存在，或編號、標題是空的，函式回傳錯誤字串。
-- 刪除前先開 Dialog。桌機用表格，窄螢幕改成一筆一張卡片。
-- `AdminTabs` 用目前路徑決定選到哪一頁，報名清單那一頁會再沿用它。
-- 分頁與表頭的覆寫在這一節補進 `theme.js`。
+- `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`。星號路由仍是佔位。
 
-## 報名清單
-
-清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。狀態用下拉改變，重新整理就回到種子。
+### 步驟 2：更新 Store
 
 ```diff 06-project-init/src/store.jsx
  // ...
@@ -3374,7 +4408,16 @@ export default function AdminToursPage() {
  // ...
 ```
 
-```jsx 06-project-init/src/components/BookingTable.jsx
+**解析**
+
+- `setBookingStatus` 依 `id` 找到那一筆，只改 `status`，其他欄位原樣。
+- 接著把 `notice` 設成「已更新報名狀態」。重新整理會回到種子，這次的改動不會寫進檔案。
+
+### 步驟 3：報名表格
+
+把報名表格的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -3384,9 +4427,9 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { ntd, statusLabel } from '../format.js';
-import { useStore } from '../store.jsx';
-import { tokens } from '../theme.js';
+import { ntd, statusLabel } from '../../../format.js';
+import { useStore } from '../../../store.jsx';
+import { tokens } from '../../../theme.js';
 
 const statuses = ['pending', 'confirmed', 'cancelled'];
 
@@ -3423,7 +4466,7 @@ function StatusSelect({ booking }) {
 export default function BookingTable({ bookings }) {
   return (
     <>
-      <TableContainer elevation={0} className="panel mt-8 hidden overflow-x-auto md:block">
+      <TableContainer elevation={0} className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block">
         <Table>
           <TableHead>
             <TableRow>
@@ -3465,83 +4508,21 @@ export default function BookingTable({ bookings }) {
 }
 ```
 
-```jsx 06-project-init/src/pages/AdminBookingsPage.jsx
-import { useEffect, useMemo, useState } from 'react';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import AdminGate from '../components/AdminGate.jsx';
-import AdminTabs from '../components/AdminTabs.jsx';
-import BookingTable from '../components/BookingTable.jsx';
-import { statusLabel } from '../format.js';
-import { useStore } from '../store.jsx';
-
-const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
-
-function AdminBookingsBody() {
-  const { bookings } = useStore();
-  const [status, setStatus] = useState('all');
-  const [query, setQuery] = useState('');
-  const [sort, setSort] = useState('date-desc');
-  useEffect(() => { document.title = '報名清單 · 洛奇旅行'; }, []);
-
-  const shown = useMemo(() => {
-    const keyword = query.trim();
-    return bookings
-      .filter((booking) => status === 'all' || booking.status === status)
-      .filter((booking) => !keyword || booking.name.includes(keyword))
-      .sort((a, b) => (sort === 'date-asc' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
-  }, [bookings, status, query, sort]);
-
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <p className="font-bold text-action">管理員</p>
-      <Typography variant="h1" className="mt-2">報名清單</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">查看所有報名，並把狀態改為待確認、已確認或已取消。</p>
-      <AdminTabs />
-      <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
-        <TextField select label="狀態" value={status} onChange={(event) => setStatus(event.target.value)}>
-          {statusOptions.map((value) => <MenuItem key={value} value={value}>{value === 'all' ? '全部' : statusLabel[value]}</MenuItem>)}
-        </TextField>
-        <TextField label="搜尋姓名" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="輸入姓名" />
-        <TextField select label="日期排序" value={sort} onChange={(event) => setSort(event.target.value)}>
-          <MenuItem value="date-desc">出發日新到舊</MenuItem>
-          <MenuItem value="date-asc">出發日舊到新</MenuItem>
-        </TextField>
-      </div>
-      {shown.length ? <BookingTable bookings={shown} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
-    </main>
-  );
-}
-
-export default function AdminBookingsPage() {
-  return <AdminGate><AdminBookingsBody /></AdminGate>;
-}
-```
-
-```diff 06-project-init/src/App.jsx
- // ...
- import AdminToursPage from './pages/AdminToursPage.jsx';
-+import AdminBookingsPage from './pages/AdminBookingsPage.jsx';
- import Placeholder from './components/Placeholder.jsx';
- // ...
-             <Route path="admin" element={<AdminToursPage />} />
--            <Route path="admin/bookings" element={<Placeholder title="後台報名" />} />
-+            <Route path="admin/bookings" element={<AdminBookingsPage />} />
-             <Route path="*" element={<Placeholder title="找不到頁面" />} />
- // ...
-```
-
 **解析**
 
-- 狀態、姓名與日期排序都是這一頁自己的 state，不寫進網址，也不會把種子從檔案裡刪掉。
-- `setBookingStatus` 只改記憶體裡那一筆的 `status`。`AdminGate` 與 `AdminTabs` 沿用上一節。
-- 狀態顏色要畫在 Select 的外框上，這個元件沒有對應的 class 可以換色，所以只有這裡使用 `sx`。
-- 桌機是表格，窄螢幕是卡片，兩邊的欄位相同。
+- `StatusSelect` 的選項是 `pending`、`confirmed`、`cancelled`，文字用 `statusLabel`。變更時呼叫 `setBookingStatus`。
+- `aria-label` 帶上這筆的姓名。外框顏色依狀態換：待確認用強調色邊、墨色字；已確認用操作色；已取消用另外一組灰。選單沒有對應的 class 可以換色，所以只有這裡使用 `sx`。
+- `md` 以上是表格，窄螢幕是卡片。兩邊都有出發日、人數、姓名與 email、電話、小計，以及同一個狀態選單。
 
 ## 找不到頁面
 
 星號路由與詳情頁對不到 id 的情況，都渲染同一個找不到頁。佔位元件至此沒有人引用。
+
+這一節沒有再拆畫面零件，直接寫 `NotFoundPage`，再讓詳情頁對不到編號時也渲染它。
+
+### 步驟 1：組出 NotFoundPage
+
+這一頁只放標題、說明，以及回首頁、去行程兩個連結。
 
 ```jsx 06-project-init/src/pages/NotFoundPage.jsx
 import { useEffect } from 'react';
@@ -3564,12 +4545,20 @@ export default function NotFoundPage() {
 }
 ```
 
-```diff 06-project-init/src/pages/TourDetailPage.jsx
+**解析**
+
+- 進頁時把分頁標題設成「找不到頁面 · 洛奇旅行」。
+- 標題是「這頁不在路線上」，內文說明這個網址沒有對應的頁面。
+- 兩顆按鈕分別連到 `/` 與 `/tours`。
+
+### 步驟 2：接到詳情頁與路由
+
+```diff 06-project-init/src/features/tours/TourDetailPage.jsx
  // ...
- import Itinerary from '../components/Itinerary.jsx';
--import Placeholder from '../components/Placeholder.jsx';
-+import NotFoundPage from './NotFoundPage.jsx';
- import { ntd, seatsLeft } from '../format.js';
+ import Itinerary from './components/Itinerary.jsx';
+-import Placeholder from '../../_shared/Placeholder.jsx';
++import NotFoundPage from '../../pages/NotFoundPage.jsx';
+ import { ntd, seatsLeft } from '../../format.js';
  // ...
    useEffect(() => { setDepartureId(tour?.departures[0]?.id ?? ''); }, [tour]);
 -  if (!tour) return <Placeholder title="找不到頁面" />;
@@ -3578,25 +4567,29 @@ export default function NotFoundPage() {
  // ...
 ```
 
+**解析**
+
+- 對不到 id 時改渲染 `NotFoundPage`，和星號路由用同一份文案。
+
+接著把星號路由也換成這個元件。
+
 ```diff 06-project-init/src/App.jsx
  // ...
- import AdminBookingsPage from './pages/AdminBookingsPage.jsx';
--import Placeholder from './components/Placeholder.jsx';
+ import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
+-import Placeholder from './_shared/Placeholder.jsx';
 +import NotFoundPage from './pages/NotFoundPage.jsx';
  
  // ...
-             <Route path="admin/bookings" element={<AdminBookingsPage />} />
--            <Route path="*" element={<Placeholder title="找不到頁面" />} />
-+            <Route path="*" element={<NotFoundPage />} />
-           </Route>
+       { path: 'admin/bookings', element: <AdminBookingsPage /> },
+-      { path: '*', element: <Placeholder title="找不到頁面" /> },
++      { path: '*', element: <NotFoundPage /> },
  // ...
 ```
 
 **解析**
 
-- `NotFoundPage` 仍放在 `SiteLayout` 裡面，頁首與頁尾還在，並提供回首頁與去行程兩條路。
-- 詳情頁把原先的佔位換成這個元件，兩處文案才會一致。
-- 刪掉 `src/components/Placeholder.jsx`。十二條路徑到這裡都已換成完成品裡的頁面。
+- 星號路由換成 `NotFoundPage`，而且仍放在 `SiteLayout` 裡面，頁首與頁尾還在。`Placeholder` 的 import 也拿掉。
+- 十二條路徑到這裡都已換成完成品裡的頁面，自行評估刪掉 `src/_shared/Placeholder.jsx`。
 
 ## 靜態部署
 
@@ -3639,16 +4632,16 @@ export default function NotFoundPage() {
 - `pnpm build` 先產出 `dist/`，再複製一份 `404.html`，靜態主機才接得住重新整理後的路徑。
 - `server` 與 `preview` 只聽 localhost，不對區網開放。
 - `manualChunks` 只拆檔，不改變路由或樣式。
-- 網站從 `/` 開始時，`BrowserRouter` 維持預設，不必加 `basename`。
+- 網站從 `/` 開始，`createBrowserRouter` 不必傳 `basename`（與第 11 篇筆記站不同；旅行社站從 `/` 開始）。
 - 做完後的原始碼應與 `05-project-prototype` 一致，包含這條 build 指令，以及 `vite.config.js` 的 localhost 與 `manualChunks`。
 
 切版到此為止。同一份畫面怎麼接上資料層、Hooks、Firestore 與管理員登入，見 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 # 本篇重點回顧
 
-- Vite 專案先清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
+- Vite 專案先自己加上 `jsconfig.json`、清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
 - `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
-- 十二條路由先用佔位元件接通，頁首頁尾經由 `Outlet` 共用。
+- 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的元件。
 - 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。
 - 旅客與管理員是兩種 session。報名頁與後台頁各自先檢查身份。
 - 打包沿用第 11 篇：`vite build` 之後複製一份 `404.html`。
@@ -3660,25 +4653,33 @@ export default function NotFoundPage() {
 
 - 建置工具（Vite）
 - 套件管理器（pnpm）
+- jsconfig.json
+- 網站圖示（favicon）
 - 依賴（dependency）
 - 開發依賴（devDependency）
 - 元件庫（Material UI）
 - 主題提供者（ThemeProvider）
 - 基準樣式（CssBaseline）
 - 樣式引擎（StyledEngineProvider）
+- 全域樣式（GlobalStyles）
 - 層疊層級（cascade layer）
 - 預設樣式（preflight）
 - 主題（theme）
-- 設計代幣（design token）
+- design token
 - 對比度（contrast ratio）
 - 圖示字型（icon font）
 
 ## 路由與版面
 
 - 路由（route）
-- 巢狀路由（nested route）
 - 版面（layout）
 - 出口（outlet）
+- 捲動還原（ScrollRestoration）
+- 巢狀路由（nested route）
+- createBrowserRouter
+- RouterProvider
+- 子路由（children）
+- 索引路由（index route）
 - 路徑參數（route parameter）
 - 查詢參數（search parameter）
 - 佔位元件（placeholder）
