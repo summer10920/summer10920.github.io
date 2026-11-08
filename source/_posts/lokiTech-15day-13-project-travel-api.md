@@ -10,7 +10,7 @@ date: 2026-08-30 10:12:00
 
 ![](assets/images/banner/react.png)
 
-切版做完之後，這一章把同一份洛奇旅行的行程與報名接到雲端。前台不設會員，訪客直接填表。只有後台使用 Firebase Authentication 的 email 與密碼。資料放在 Cloud Firestore。下面的路徑寫 `07-project-final`。人還在自己的 `06-project-init` 裡時，資料夾名稱換成那一份，檔案相對位置相同。
+切版做完之後，這一章把同一份洛奇旅行的行程與報名接到雲端。前台用 Google 登入報名，並查詢自己的訂單。後台使用 Firebase Authentication 的 email 與密碼。資料放在 Cloud Firestore。下面的路徑寫 `07-project-final`。人還在自己的 `06-project-init` 裡時，資料夾名稱換成那一份，檔案相對位置相同。
 
 <!-- more -->
 
@@ -82,31 +82,31 @@ pnpm dev
 {% mermaid graph LR %}
   seed["features/tours/mock.data.js"] --> store["StoreProvider"]
   store --> pages["頁面"]
-  session["sessionStorage"] --> gate["假的登入"]
 {% endmermaid %}
 
-前台不建立會員。訪客選好出發日就填姓名、email 與電話，報名寫進訂單。後台才登入，而且只用 email 與密碼。行程改從雲端讀。後台的新增與編輯行程這一章拿掉，清單只讀雲端上已經寫入的行程。剩餘名額要掃過所有訂單才算得出來，訂單稍後只准登入者讀，所以前台改顯示每團名額。
+前台用 Google 登入。報名寫進訂單，文件帶上 `uid`。我的報名只查這個 `uid`。後台用 email 與密碼登入。行程改從雲端讀。後台的新增與編輯行程這一章拿掉，清單只讀雲端上已經寫入的行程。剩餘名額要掃過所有訂單才算得出來，旅客不能讀別人的訂單，所以前台改顯示每團名額。
 
-這一章結束時，頁面呼叫同一組服務函式。服務函式再呼叫 Firestore。管理員的身份由 Authentication 回報，後台畫面在確認有登入者之後才渲染訂單。
+這一章結束時，頁面呼叫同一組服務函式。服務函式再呼叫 Firestore。同一套 `AuthProvider` 用 `onAuthStateChanged` 服務前台與後台。後台畫面在確認登入方式是密碼之後才渲染訂單。
 
 {% mermaid graph LR %}
   page["頁面"] --> api["api.js"]
   api --> fs["Cloud Firestore"]
-  admin["管理員"] --> authn["Authentication"]
-  authn --> gate["後台畫面"]
+  google["前台 Google"] --> authn["Authentication"]
+  admin["後台 email／密碼"] --> authn
+  authn --> gate["畫面閘門"]
   gate --> api
 {% endmermaid %}
 
 **解析**
 
-- 切版的 `sessionStorage` 鍵 `loki-travel-session` 這一章不再讀取。關掉分頁就消失的那組假帳號，換成 Authentication 自己保存的登入狀態。
+- 切版的登入對話框沒有接 Authentication。這一章前台改為 `signInWithPopup`，後台改為 `signInWithEmailAndPassword`。
 - 行程文件用原本的 id，例如 `hualien-taroko`，詳情網址不用改。
-- 訂單由 Firestore 編號。集合名稱是 `orders`。
+- 訂單由 Firestore 編號。集合名稱是 `orders`。每筆帶登入者的 `uid`。
 - 色票與十二條既有路由維持不變。多出來的只有種子頁 `/seed`。
 
 # 認識 Firebase
 
-Firebase 是 Google 提供的後端服務，專案在瀏覽器裡用它的 JavaScript SDK 呼叫。這一章只用其中兩項：Cloud Firestore 存文件，Authentication 確認管理員是誰。先知道這兩項各自負責什麼，再建立專案、把設定交給 Vite。
+Firebase 是 Google 提供的後端服務，專案在瀏覽器裡用它的 JavaScript SDK 呼叫。這一章只用其中兩項：Cloud Firestore 存文件，Authentication 同時用於前台 Google 登入與後台 email／密碼。先知道這兩項各自負責什麼，再建立專案、把設定交給 Vite。
 
 ## Firestore 與 Authentication
 
@@ -119,7 +119,9 @@ Firestore 是文件資料庫。資料分成集合與文件。集合是一疊文�
 
 讀寫發生在瀏覽器。SDK 送出請求，畫面接著等結果。失敗時（沒有網路、規則拒絕）會丟出錯誤，頁面要自己顯示，不能假設種子還在記憶體裡。
 
-Authentication 管的是「這個人是誰」。這一章只用 email 與密碼。它不負責這個人能不能讀某一筆訂單。能不能讀寫是 Firestore 安全規則的事，留到最後一節。規則生效之前，資料庫先放在測試模式，種子才寫得進去。
+Authentication 管的是「這個人是誰」。前台用 Google 登入，後台用 email 與密碼。它不負責這個人能不能讀某一筆訂單。能不能讀寫是 Firestore 安全規則的事，留到最後一節。規則用 token 裡的 `sign_in_provider` 分辨這兩種登入。規則生效之前，資料庫先放在測試模式，種子才寫得進去。
+
+Spark 方案的「Other Authentication services」包含 email／密碼與 Google 這類登入，這兩項在免費用量內，不必另外付費購買 Google 登入，也不必綁付款方式。不要啟用電話驗證：簡訊按則計費，而且 Spark 不能用。不要升級 Firebase Authentication with Identity Platform。升級後計費方式不同：Spark 改為每日活躍使用者上限，Blaze 超過免費用量才計費。這一章不用多重要素驗證、SAML、blocking functions。
 
 {% note info %}
 **金鑰會出現在前端**
@@ -143,7 +145,7 @@ Authentication 管的是「這個人是誰」。這一章只用 email 與密碼�
 
 專案建好後，進入 Firestore Database，建立資料庫。地點建立後不能改，選離自己近的，例如 `asia-east1`。模式先選測試模式，讓後面的種子頁寫得進去。正式規則在最後一節才貼上，這裡先不要自訂規則。
 
-Authentication 的開關先不要開。管理員帳號留到登入那一節，避免同一項設定寫兩次。
+Authentication 的登入方式先不要開。Google 留到前台登入那一節，電子郵件／密碼留到後台登入那一節，避免同一項設定寫兩次。主控台若出現升級 Identity Platform 的按鈕，不要按。
 
 ### 步驟 2：註冊網頁應用程式
 
@@ -216,11 +218,16 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-export const missingFirebaseMessage = '尚未設定 Firebase。請依 .env.example 建立 .env.local，存檔後重新啟動開發伺服器。';
+export const missingFirebaseMessage =
+  '尚未設定 Firebase。請依 .env.example 建立 .env.local，存檔後重新啟動開發伺服器。';
 
-export const firebaseReady = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
+export const firebaseReady = Boolean(
+  firebaseConfig.apiKey && firebaseConfig.projectId,
+);
 
-const app = firebaseReady ? (getApps()[0] ?? initializeApp(firebaseConfig)) : null;
+const app = firebaseReady
+  ? (getApps()[0] ?? initializeApp(firebaseConfig))
+  : null;
 
 export const db = app ? getFirestore(app) : null;
 export const auth = app ? getAuth(app) : null;
@@ -245,7 +252,19 @@ export const auth = app ? getAuth(app) : null;
 種子函式走訪 `src/features/tours/mock.data.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。
 
 ```js 07-project-final/src/api.js
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import { tours } from './features/tours/mock.data.js';
 import { db, missingFirebaseMessage } from './firebase.js';
 
@@ -256,7 +275,9 @@ const database = () => {
 
 export const listTours = async () => {
   const snap = await getDocs(collection(database(), 'tours'));
-  return snap.docs.map((item) => ({ id: item.id, ...item.data() })).sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
+  return snap.docs
+    .map((item) => ({ id: item.id, ...item.data() }))
+    .sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'));
 };
 
 export const getTour = async (id) => {
@@ -277,13 +298,28 @@ export const seedTours = async () => {
 };
 
 export const createOrder = async (input) => {
-  const ref = await addDoc(collection(database(), 'orders'), { ...input, status: 'pending', createdAt: serverTimestamp() });
+  const ref = await addDoc(collection(database(), 'orders'), {
+    ...input,
+    status: 'pending',
+    createdAt: serverTimestamp(),
+  });
   return { id: ref.id, status: 'pending', ...input };
 };
 
 export const listOrders = async () => {
-  const snap = await getDocs(query(collection(database(), 'orders'), orderBy('createdAt', 'desc')));
+  const snap = await getDocs(
+    query(collection(database(), 'orders'), orderBy('createdAt', 'desc')),
+  );
   return snap.docs.map((item) => ({ id: item.id, ...item.data() }));
+};
+
+export const listMyOrders = async (uid) => {
+  const snap = await getDocs(
+    query(collection(database(), 'orders'), where('uid', '==', uid)),
+  );
+  return snap.docs
+    .map((item) => ({ id: item.id, ...item.data() }))
+    .sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
 };
 
 export const updateOrderStatus = async (id, status) => {
@@ -295,8 +331,9 @@ export const updateOrderStatus = async (id, status) => {
 
 - 回傳的物件帶上 `id`。畫面的 `key` 與網址用的是這個欄位，不是 Firestore 內部另存的一份。
 - `getTour` 找不到文件時回傳 `null`，詳情頁把它畫成找不到頁面。
-- `createOrder` 回傳的物件還不含伺服器時間戳。完成頁只用這份回傳，不立刻再讀一次訂單。
-- `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。
+- `createOrder` 把呼叫端傳來的欄位原樣寫入，其中包含 `uid`。回傳的物件還不含伺服器時間戳。完成頁只用這份回傳。
+- `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。管理員清單用這個函式。
+- `listMyOrders` 只下 `uid` 條件。`where` 再加 `orderBy` 會要複合索引，所以新到舊的排序放在瀏覽器。
 
 ## 自訂 Hook
 
@@ -304,11 +341,11 @@ export const updateOrderStatus = async (id, status) => {
 
 抓取開始時先清掉上一筆資料並進入讀取中。清理函式把 `active` 設成假，元件卸載後不再 `setState`。
 
-`useTours`、`useTour`、`useOrders` 是這三個畫面專用的薄包裝。`LoadGate` 在讀取中或失敗時畫 `#content`，成功才把孩子交回去。跳到內容的連結仍然找得到這個 id。
+`useTours`、`useTour`、`useOrders`、`useMyOrders` 是這幾個畫面專用的薄包裝。`LoadGate` 在讀取中或失敗時畫 `#content`，成功才把孩子交回去。跳到內容的連結仍然找得到這個 id。
 
 ```js 07-project-final/src/useAsync.js
 import { useEffect, useState } from 'react';
-import { getTour, listOrders, listTours } from './api.js';
+import { getTour, listMyOrders, listOrders, listTours } from './api.js';
 
 export function useAsync(load, deps) {
   const [data, setData] = useState(null);
@@ -323,10 +360,18 @@ export function useAsync(load, deps) {
     setError(null);
     setData(null);
     load()
-      .then((value) => { if (active) setData(value); })
-      .catch((err) => { if (active) setError(err); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+      .then((value) => {
+        if (active) setData(value);
+      })
+      .catch((err) => {
+        if (active) setError(err);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [tick, ...deps]);
 
   return { data, error, loading, reload: () => setTick((n) => n + 1) };
@@ -335,6 +380,7 @@ export function useAsync(load, deps) {
 export const useTours = () => useAsync(listTours, []);
 export const useTour = (id) => useAsync(() => getTour(id), [id]);
 export const useOrders = () => useAsync(listOrders, []);
+export const useMyOrders = (uid) => useAsync(() => listMyOrders(uid), [uid]);
 ```
 
 ```jsx 07-project-final/src/LoadGate.jsx
@@ -343,8 +389,18 @@ import Alert from '@mui/material/Alert';
 const frame = 'mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24';
 
 export default function LoadGate({ loading, error, children }) {
-  if (loading) return <main id="content" className={frame}><p className="text-lg text-muted">讀取中…</p></main>;
-  if (error) return <main id="content" className={frame}><Alert severity="error">{error.message}</Alert></main>;
+  if (loading)
+    return (
+      <main id="content" className={frame}>
+        <p className="text-lg text-muted">讀取中…</p>
+      </main>
+    );
+  if (error)
+    return (
+      <main id="content" className={frame}>
+        <Alert severity="error">{error.message}</Alert>
+      </main>
+    );
   return children;
 }
 ```
@@ -354,15 +410,16 @@ export default function LoadGate({ loading, error, children }) {
 - `loading` 一開始是 `true`。第一個畫面是「讀取中…」，不是空的行程列表。
 - 失敗時 `data` 維持 `null`，`LoadGate` 顯示 `error.message`。沒填環境變數時，這句就是 `missingFirebaseMessage`。
 - `useTour` 的依賴是 `[id]`。網址上的 id 變了才重抓那一筆。
+- `useMyOrders` 的依賴是 `[uid]`。登入者換了才重抓自己的訂單。
 - 每個頁面各自呼叫 Hook，各自讀一次。這一章先不把結果放進全站共用的快取。
 
 # 接到畫面
 
-服務函式與 Hook 就緒之後，把首頁、列表、詳情改成讀雲端，再用一頁把種子寫上去。報名表接著改為新增訂單。
+服務函式與 Hook 就緒之後，把首頁、列表、詳情改成讀雲端，再用一頁把種子寫上去。接著接上 Google 登入，報名表再改為新增帶 `uid` 的訂單。
 
 ## 行程讀取與種子
 
-列表與首頁用 `useTours`。詳情用 `useTour`，讀取結束仍沒有文件才畫找不到頁面。讀取中不要先畫 404。出發日不再計算剩餘人數，連結直接到報名頁，不再繞去 `/login`。
+列表與首頁用 `useTours`。詳情用 `useTour`，讀取結束仍沒有文件才畫找不到頁面。讀取中不要先畫 404。出發日不再計算剩餘人數。報名連結維持 `/booking?tourId=...&departureId=...`。
 
 ### 步驟 1：三個頁面改讀雲端
 
@@ -423,7 +480,6 @@ export default function LoadGate({ loading, error, children }) {
 ```diff 07-project-final/src/features/tours/TourDetailPage.jsx
  import NotFoundPage from '../../pages/NotFoundPage.jsx';
 -import { ntd, seatsLeft } from '../../format.js';
--import { useSession } from '../../session.jsx';
 -import { useStore } from '../../store.jsx';
 +import LoadGate from '../../LoadGate.jsx';
 +import { ntd } from '../../format.js';
@@ -432,7 +488,6 @@ export default function LoadGate({ loading, error, children }) {
  export default function TourDetailPage() {
    const { id } = useParams();
 -  const { tours, bookings } = useStore();
--  const { user } = useSession();
 -  const tour = tours.find((item) => item.id === id);
 -  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
 +  const { data: tour, loading, error } = useTour(id);
@@ -441,10 +496,6 @@ export default function LoadGate({ loading, error, children }) {
    useEffect(() => { setDepartureId(tour?.departures[0]?.id ?? ''); }, [tour]);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
    if (!tour) return <NotFoundPage />;
- // ...
--  const next = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
--  const bookTo = user ? next : `/login?next=${encodeURIComponent(next)}`;
-+  const bookTo = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
  // ...
 -            <p className="mt-3 text-base text-muted">最近一梯 {tour.departures[0].date} 尚餘 {seatsLeft(bookings, tour.id, tour.departures[0])} 人。</p>
 -            <DepartureList tour={tour} bookings={bookings} />
@@ -466,12 +517,22 @@ export default function DepartureList({ tour }) {
   return (
     <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
       {tour.departures.map((departure) => (
-        <li key={departure.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <li
+          key={departure.id}
+          className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <p className="font-medium">{departure.date}</p>
             <p className="text-muted">名額 {departure.capacity} 人</p>
           </div>
-          <Button component={Link} to={`/booking?tourId=${tour.id}&departureId=${departure.id}`} variant="contained" className="w-full sm:w-auto">立即報名</Button>
+          <Button
+            component={Link}
+            to={`/booking?tourId=${tour.id}&departureId=${departure.id}`}
+            variant="contained"
+            className="w-full sm:w-auto"
+          >
+            立即報名
+          </Button>
         </li>
       ))}
     </ul>
@@ -483,8 +544,8 @@ export default function DepartureList({ tour }) {
 
 - 首頁在讀取中整頁交給 `LoadGate`，輪播不會先用空陣列畫一幀。
 - 集合是空的時，首頁與列表都指向 `/seed`。種子頁下一小節才掛上路由，這時點進去會落到找不到頁面，寫完下一步就通了。
-- 詳情的 `bookTo` 不再看 session。未登入的訪客進得了報名頁。
-- `seatsLeft` 還留在 `format.js`，前台不再呼叫。訂單不能公開讀，減完的人數也不會準。
+- 詳情的 `bookTo` 維持 `/booking?tourId=` 與 `departureId=`。這一節拿掉剩餘人數。閘門放在報名頁。
+- `seatsLeft` 還留在 `format.js`，前台不再呼叫。旅客不能讀全部訂單，所以不在前台用訂單減出名額。
 
 ### 步驟 2：種子頁
 
@@ -505,7 +566,9 @@ export default function SeedPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  useEffect(() => { document.title = '寫入行程種子 · 洛奇旅行'; }, []);
+  useEffect(() => {
+    document.title = '寫入行程種子 · 洛奇旅行';
+  }, []);
 
   const run = async () => {
     setBusy(true);
@@ -513,7 +576,9 @@ export default function SeedPage() {
     setMessage('');
     try {
       const created = await seedTours();
-      setMessage(created ? `已寫入 ${created} 筆行程。` : '行程都已存在，沒有覆寫。');
+      setMessage(
+        created ? `已寫入 ${created} 筆行程。` : '行程都已存在，沒有覆寫。',
+      );
     } catch (err) {
       setError(err.message);
     } finally {
@@ -522,22 +587,48 @@ export default function SeedPage() {
   };
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
       <Typography variant="h1">寫入行程種子</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">把專案裡的行程寫進 Firestore 的 tours。已經存在的文件會略過，可以重複按。</p>
-      {firebaseReady ? null : <Alert className="mt-8" severity="warning">{missingFirebaseMessage}</Alert>}
-      {message ? <Alert className="mt-8" severity="success">{message}</Alert> : null}
-      {error ? <Alert className="mt-8" severity="error">{error}</Alert> : null}
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        把專案裡的行程寫進 Firestore 的
+        tours。已經存在的文件會略過，可以重複按。
+      </p>
+      {firebaseReady ? null : (
+        <Alert className="mt-8" severity="warning">
+          {missingFirebaseMessage}
+        </Alert>
+      )}
+      {message ? (
+        <Alert className="mt-8" severity="success">
+          {message}
+        </Alert>
+      ) : null}
+      {error ? (
+        <Alert className="mt-8" severity="error">
+          {error}
+        </Alert>
+      ) : null}
       <div className="mt-8 flex flex-wrap gap-3">
-        <Button variant="contained" disabled={!firebaseReady || busy} onClick={run}>{busy ? '寫入中…' : '寫入種子'}</Button>
-        <Button component={Link} to="/tours" variant="outlined">看行程</Button>
+        <Button
+          variant="contained"
+          disabled={!firebaseReady || busy}
+          onClick={run}
+        >
+          {busy ? '寫入中…' : '寫入種子'}
+        </Button>
+        <Button component={Link} to="/tours" variant="outlined">
+          看行程
+        </Button>
       </div>
     </main>
   );
 }
 ```
 
-路由先加在現有的 `SessionProvider` 裡面。登入提供者下一節才換成 Authentication。
+路由加在現有的 `App` 裡。Google 登入下一節才包上 `AuthProvider`。
 
 ```diff 07-project-final/src/App.jsx
  import LoginPage from './features/auth/LoginPage.jsx';
@@ -559,11 +650,295 @@ export default function SeedPage() {
 - 文件 id 用行程 id，詳情路由 `/tours/hualien-taroko` 對得上雲端那一份。
 - 這一頁能寫入，是因為資料庫仍在測試模式。它不是正式規則的一部分。
 
+## 前台 Google 登入
+
+切版的 `/login` 已是 Google 對話框，按鈕還沒有呼叫 SDK。這一節啟用 Google 登入方式，建立 `auth.jsx`，用 [Sign in with Google on Web](https://firebase.google.com/docs/auth/web/google-signin) 的 `GoogleAuthProvider` 與 `signInWithPopup` 接上那個按鈕。頁首未登入仍顯示「登入」。
+
+### 步驟 1：啟用 Google
+
+Firebase 主控台打開 Authentication，進入登入方式。
+
+- 啟用「Google」。支援電子郵件填這個專案要收信的 email。
+- 不要啟用「電話」。
+- 不要按升級 Firebase Authentication with Identity Platform。
+- 「電子郵件／密碼」這一節先不要開，後台那一節再啟用。
+
+授權網域預設包含 `localhost`。本機開發伺服器的彈出視窗用得到。之後若把靜態網站放到自訂網域，再把那個網域加進授權網域。
+
+### 步驟 2：AuthProvider
+
+`auth.jsx` 訂閱登入狀態，並提供 `signInWithGoogle` 與 `signOut`。`provider` 讀 `user.providerData[0].providerId`。這一章每個帳號只用一種登入方式，這個值與 token 的 `firebase.sign_in_provider` 相同：Google 是 `google.com`，密碼是 `password`。沒有初始化時，`signInWithGoogle` 拒絕並帶上同一句尚未設定。`ready` 在第一次回報之後才是真。沒有 Firebase 時不必等，直接視為已確認、使用者是 `null`。
+
+`signIn(email, password)` 留到後台那一節再補。
+
+```jsx 07-project-final/src/auth.jsx
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+} from 'firebase/auth';
+import { auth, firebaseReady, missingFirebaseMessage } from './firebase.js';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [ready, setReady] = useState(!firebaseReady);
+
+  useEffect(() => {
+    if (!auth) return undefined;
+    return onAuthStateChanged(auth, (next) => {
+      setUser(next);
+      setReady(true);
+    });
+  }, []);
+
+  const api = useMemo(
+    () => ({
+      user,
+      provider: user?.providerData?.[0]?.providerId ?? null,
+      ready,
+      firebaseReady,
+      signInWithGoogle() {
+        if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
+        return signInWithPopup(auth, new GoogleAuthProvider());
+      },
+      signOut() {
+        return auth ? signOut(auth) : Promise.resolve();
+      },
+    }),
+    [user, ready],
+  );
+
+  return <AuthContext.Provider value={api}>{children}</AuthContext.Provider>;
+}
+
+export const useAuth = () => useContext(AuthContext);
+```
+
+`App` 在原有的 `StoreProvider` 外面包一層。種子路由留著。`StoreProvider` 還要留給行程管理頁，訂單清單那一節改完再拿掉。
+
+```diff 07-project-final/src/App.jsx
++import { AuthProvider } from './auth.jsx';
+ import { StoreProvider } from './store.jsx';
+ // ...
+ export default function App() {
+   return (
++    <AuthProvider>
+       <StoreProvider>
+         <RouterProvider router={router} />
+       </StoreProvider>
++    </AuthProvider>
+   );
+ }
+```
+
+### 步驟 3：對話框與頁首
+
+`next` 來自查詢字串。只接受以 `/` 開頭、且不是 `//` 的站內路徑。登入成功後前往這個路徑，沒有或不合法就去 `/`。已經有登入者時，打開這一頁也直接過去。
+
+```jsx 07-project-final/src/features/auth/LoginPage.jsx
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useAuth } from '../../auth.jsx';
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = params.get('next');
+  const back = next?.startsWith('/') && !next.startsWith('//') ? next : '/';
+  const { user, ready, signInWithGoogle } = useAuth();
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    document.title = '用 Google 帳號繼續 · 洛奇旅行';
+  }, []);
+  useEffect(() => {
+    if (ready && user) navigate(back, { replace: true });
+  }, [ready, user, back, navigate]);
+
+  const submit = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      await signInWithGoogle();
+      navigate(back, { replace: true });
+    } catch (err) {
+      const closed =
+        err.code === 'auth/popup-closed-by-user' ||
+        err.code === 'auth/cancelled-popup-request';
+      setError(
+        closed
+          ? '已關閉登入視窗。'
+          : err.code === 'auth/popup-blocked'
+            ? '瀏覽器擋住了登入視窗。'
+            : err.message,
+      );
+      setBusy(false);
+    }
+  };
+
+  return (
+    <main id="content" className="flex-1">
+      <Dialog
+        open
+        onClose={() => navigate('/')}
+        fullWidth
+        maxWidth="xs"
+        aria-labelledby="login-title"
+      >
+        <DialogTitle
+          id="login-title"
+          className="font-serif text-4xl leading-tight"
+        >
+          用 Google 帳號繼續
+        </DialogTitle>
+        <DialogContent>
+          <p>
+            報名和我的報名會使用 Google 的姓名與 email。我們不另外設定密碼。
+          </p>
+          {error ? (
+            <Alert className="mt-4" severity="error">
+              {error}
+            </Alert>
+          ) : null}
+        </DialogContent>
+        <DialogActions className="flex flex-col items-stretch gap-3 px-6 pb-6">
+          <Button
+            type="button"
+            variant="contained"
+            disabled={busy}
+            onClick={submit}
+          >
+            {busy ? '登入中…' : '用 Google 帳號繼續'}
+          </Button>
+          <Button type="button" onClick={() => navigate('/')}>
+            返回首頁
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </main>
+  );
+}
+```
+
+頁首：前台未登入顯示「登入」，連到 `/login`。已登入顯示 `displayName`，沒有名稱就顯示 email。選單裡「我的報名」連到 `/me`，另一項是登出。後台路徑只有 `provider === 'password'` 才把這個人畫成已登入，否則仍是「後台登入」。
+
+```diff 07-project-final/src/layout/components/SiteHeader.jsx
+ import { useState } from 'react';
+-import { Link, NavLink, useLocation } from 'react-router';
++import { Link, NavLink, useLocation, useNavigate } from 'react-router';
+ import AppBar from '@mui/material/AppBar';
++import Avatar from '@mui/material/Avatar';
+ import Button from '@mui/material/Button';
+ import Drawer from '@mui/material/Drawer';
++import Menu from '@mui/material/Menu';
++import MenuItem from '@mui/material/MenuItem';
+ import SiteNav from './SiteNav.jsx';
+ import Icon from '../../_shared/Icon.jsx';
++import { useAuth } from '../../auth.jsx';
+ // ...
+ export default function SiteHeader() {
++  const { user, provider, ready, signOut } = useAuth();
++  const navigate = useNavigate();
+   const { pathname } = useLocation();
+   const admin = pathname.startsWith('/admin');
+   const [open, setOpen] = useState(false);
+-  const close = () => setOpen(false);
+-  const account = <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>;
++  const [anchor, setAnchor] = useState(null);
++  const close = () => { setOpen(false); setAnchor(null); };
++  const logout = () => { signOut(); close(); navigate('/'); };
++  const session = admin ? provider === 'password' : Boolean(user);
++  const label = user?.displayName || user?.email || '';
++  const account = (extra = '') => (!ready ? null : session ? (
++    <Button type="button" aria-expanded={Boolean(anchor)} onClick={(event) => setAnchor(event.currentTarget)} className={`gap-2 text-ink ${extra}`}>
++      <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{label.slice(0, 1).toUpperCase()}</Avatar>
++      {label}
++    </Button>
++  ) : <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>);
+ // ...
+           {links('site-nav')}
+-          {account}
++          {account()}
+         </div>
+       </div>
++      <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
++        {admin ? null : <MenuItem component={Link} to="/me" onClick={close}>我的報名</MenuItem>}
++        <MenuItem onClick={logout}>登出</MenuItem>
++      </Menu>
+       <Drawer anchor="right" open={open} onClose={close}>
+         <div id="site-drawer" className="flex flex-col gap-2 p-4">
+           {links(undefined)}
+-          {account}
++          {account('justify-start')}
+         </div>
+       </Drawer>
+ // ...
+```
+
+按下「用 Google 帳號繼續」會跳出 Google 視窗。完成後頁首出現名稱或 email，選單可以到 `/me`。
+
+**解析**
+
+- `signInWithPopup` 使用 Firebase Authentication SDK。這一章不自幹 OAuth，也不換另一套登入介面。
+- `onAuthStateChanged` 在重新整理後再回報一次。`ready` 還是假的時候，頁首先不要把人當成未登入。
+- `provider` 這一節先讀得出來。後台閘門下一節才拿 `password` 來擋畫面。
+- 前台的「登入」留著。未登入連到 `/login`，已登入才換成名稱與登出。
+
 ## 報名表寫入訂單
 
-報名不再包 `MemberGate`。姓名與 email 改成可填。送出時呼叫 `createOrder`，成功後把回傳的那一筆放進路由的 `state`，導到完成頁。完成頁重新整理後，`state` 消失。訂單不能公開讀，所以這一頁不再向雲端要那一筆。
+未登入打開 `/booking` 或 `/me`，`MemberGate` 導向 `/login?next=...`。`next` 是原本要去的網址，含查詢字串。姓名與 email 來自 `user.displayName`、`user.email`，欄位唯讀。電話手填。送出時 `createOrder` 帶 `uid: user.uid`。成功後把回傳放進路由 `state`，導到完成頁。完成頁重新整理後 `state` 消失，這一筆改到「我的報名」再讀。
 
-`/login` 與 `/me` 留著路由，內容改成說明。頁首的「登入」下一節才拿掉。刪掉已經沒有人 import 的 `src/features/booking/components/MemberGate.jsx`。
+```jsx 07-project-final/src/features/booking/components/MemberGate.jsx
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import Alert from '@mui/material/Alert';
+import { useAuth } from '../../../auth.jsx';
+import { missingFirebaseMessage } from '../../../firebase.js';
+
+export default function MemberGate({ children }) {
+  const { user, ready, firebaseReady } = useAuth();
+  const { pathname, search } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (firebaseReady && ready && !user)
+      navigate(`/login?next=${encodeURIComponent(`${pathname}${search}`)}`, {
+        replace: true,
+      });
+  }, [firebaseReady, ready, user, pathname, search, navigate]);
+
+  if (!firebaseReady) {
+    return (
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+      >
+        <Alert severity="warning">{missingFirebaseMessage}</Alert>
+      </main>
+    );
+  }
+  if (!ready || !user)
+    return (
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-lg text-muted sm:px-6 md:py-24"
+      >
+        確認身份…
+      </main>
+    );
+  return children;
+}
+```
 
 ```jsx 07-project-final/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
@@ -572,17 +947,19 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { createOrder } from '../../../api.js';
+import { useAuth } from '../../../auth.jsx';
 import { ntd } from '../../../format.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 export default function BookingForm({ tour, departure, onDone }) {
+  const { user } = useAuth();
   const [people, setPeople] = useState('2');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const name = user?.displayName || '';
+  const email = user?.email || '';
   const subtotal = tour.price * Number(people);
   const invalid = !name.trim() || !email.includes('@') || !phone.trim();
 
@@ -590,13 +967,18 @@ export default function BookingForm({ tour, departure, onDone }) {
     event.preventDefault();
     setSubmitted(true);
     if (invalid) {
-      setError('請填姓名、有效的 email 與電話');
+      setError(
+        name.trim() && email.includes('@')
+          ? '請填電話'
+          : '請確認 Google 帳號帶有姓名與 email，並填電話',
+      );
       return;
     }
     setBusy(true);
     setError('');
     try {
       const row = await createOrder({
+        uid: user.uid,
         tourId: tour.id,
         tourTitle: tour.title,
         departureId: departure.id,
@@ -615,18 +997,59 @@ export default function BookingForm({ tour, departure, onDone }) {
   };
 
   return (
-    <form id="booking-form" noValidate className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8" onSubmit={submit}>
+    <form
+      id="booking-form"
+      noValidate
+      className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8"
+      onSubmit={submit}
+    >
       <Typography variant="h2">填寫資料</Typography>
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField label="姓名" required value={name} error={submitted && !name.trim()} onChange={(event) => setName(event.target.value)} />
-        <TextField label="Email" type="email" required value={email} error={submitted && !email.includes('@')} onChange={(event) => setEmail(event.target.value)} />
+        <TextField
+          label="姓名"
+          value={name}
+          slotProps={{ input: { readOnly: true } }}
+          error={submitted && !name.trim()}
+        />
+        <TextField
+          label="Email"
+          type="email"
+          value={email}
+          slotProps={{ input: { readOnly: true } }}
+          error={submitted && !email.includes('@')}
+        />
       </div>
-      <FieldSelect id="people" label="人數" value={people} onChange={setPeople} options={[1, 2, 3, 4, 5, 6, 7, 8].map((count) => ({ value: String(count), label: String(count) }))} />
-      <TextField label="電話" type="tel" required placeholder="0912000111" value={phone} error={submitted && !phone.trim()} helperText=" " onChange={(event) => setPhone(event.target.value)} />
+      <FieldSelect
+        id="people"
+        label="人數"
+        value={people}
+        onChange={setPeople}
+        options={[1, 2, 3, 4, 5, 6, 7, 8].map((count) => ({
+          value: String(count),
+          label: String(count),
+        }))}
+      />
+      <TextField
+        label="電話"
+        type="tel"
+        required
+        placeholder="0912000111"
+        value={phone}
+        error={submitted && !phone.trim()}
+        helperText=" "
+        onChange={(event) => setPhone(event.target.value)}
+      />
       {error ? <Alert severity="error">{error}</Alert> : null}
-      <p>小計 <span className="font-serif text-2xl font-bold text-action">{ntd(subtotal)}</span></p>
+      <p>
+        小計{' '}
+        <span className="font-serif text-2xl font-bold text-action">
+          {ntd(subtotal)}
+        </span>
+      </p>
       <p className="text-muted">小計會依人數更新。送出後我們用 email 確認。</p>
-      <Button type="submit" variant="contained" disabled={busy}>{busy ? '送出中…' : '送出報名'}</Button>
+      <Button type="submit" variant="contained" disabled={busy}>
+        {busy ? '送出中…' : '送出報名'}
+      </Button>
     </form>
   );
 }
@@ -641,49 +1064,108 @@ import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
+import MemberGate from './components/MemberGate.jsx';
 import LoadGate from '../../LoadGate.jsx';
 import { ntd } from '../../format.js';
 import { useTours } from '../../useAsync.js';
 
 const steps = ['選出發日', '填寫資料', '送出確認'];
 
-export default function BookingPage() {
+function BookingBody() {
   const { data, loading, error } = useTours();
   const tours = data ?? [];
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const tour = tours.find((item) => item.id === (params.get('tourId') || 'hualien-taroko'));
-  const departure = tour?.departures.find((item) => item.id === params.get('departureId')) || tour?.departures[0];
-  useEffect(() => { document.title = '報名 · 洛奇旅行'; }, []);
+  const tour = tours.find(
+    (item) => item.id === (params.get('tourId') || 'hualien-taroko'),
+  );
+  const departure =
+    tour?.departures.find((item) => item.id === params.get('departureId')) ||
+    tour?.departures[0];
+  useEffect(() => {
+    document.title = '報名 · 洛奇旅行';
+  }, []);
   if (loading || error) return <LoadGate loading={loading} error={error} />;
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <Stepper activeStep={1} alternativeLabel className="mb-10" sx={{ '& .MuiStepLabel-label': { fontSize: '1.125rem', fontWeight: 700, marginTop: '8px' } }}>
-        {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
+      <Stepper
+        activeStep={1}
+        alternativeLabel
+        className="mb-10"
+        sx={{
+          '& .MuiStepLabel-label': {
+            fontSize: '1.125rem',
+            fontWeight: 700,
+            marginTop: '8px',
+          },
+        }}
+      >
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
       </Stepper>
       <Typography variant="h1">報名</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">不用登入。留下姓名、email 與電話，送出後會寫進訂單。</p>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        姓名與 email 來自 Google 帳號。請留下電話，送出後會寫進訂單。
+      </p>
       {!tour || !departure ? (
-        <Alert className="mt-8" severity="warning">找不到這趟行程或出發日。<Link className="ml-2 underline" to="/tours">回行程</Link></Alert>
+        <Alert className="mt-8" severity="warning">
+          找不到這趟行程或出發日。
+          <Link className="ml-2 underline" to="/tours">
+            回行程
+          </Link>
+        </Alert>
       ) : (
         <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
-          <BookingForm tour={tour} departure={departure} onDone={(row) => navigate('/booking/done', { state: row })} />
+          <BookingForm
+            tour={tour}
+            departure={departure}
+            onDone={(row) => navigate('/booking/done', { state: row })}
+          />
           <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
             <Typography variant="h2">這趟行程</Typography>
             <dl className="mt-5 grid gap-4 text-base">
-              <div><dt className="text-muted">行程</dt><dd className="mt-1 text-lg font-medium">{tour.title}</dd></div>
-              <div><dt className="text-muted">出發日</dt><dd className="mt-1 text-lg">{departure.date}</dd></div>
-              <div><dt className="text-muted">天數</dt><dd className="mt-1 text-lg">{tour.days} 天</dd></div>
+              <div>
+                <dt className="text-muted">行程</dt>
+                <dd className="mt-1 text-lg font-medium">{tour.title}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">出發日</dt>
+                <dd className="mt-1 text-lg">{departure.date}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">天數</dt>
+                <dd className="mt-1 text-lg">{tour.days} 天</dd>
+              </div>
               <div>
                 <dt className="text-muted">每人</dt>
-                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">{ntd(tour.price)}<span className="font-sans text-base font-normal text-muted"> / 人</span></dd>
+                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">
+                  {ntd(tour.price)}
+                  <span className="font-sans text-base font-normal text-muted">
+                    {' '}
+                    / 人
+                  </span>
+                </dd>
               </div>
             </dl>
           </aside>
         </div>
       )}
     </main>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <MemberGate>
+      <BookingBody />
+    </MemberGate>
   );
 }
 ```
@@ -705,49 +1187,76 @@ const steps = ['選出發日', '填寫資料', '送出確認'];
 export default function BookingDonePage() {
   const { state } = useLocation();
   const row = state?.id ? state : null;
-  useEffect(() => { document.title = '報名已送出 · 洛奇旅行'; }, []);
+  useEffect(() => {
+    document.title = '報名已送出 · 洛奇旅行';
+  }, []);
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
       <Stepper activeStep={2} alternativeLabel className="mb-8">
-        {steps.map((label) => <Step key={label}><StepLabel>{label}</StepLabel></Step>)}
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
       </Stepper>
       <Chip color="primary" label={statusLabel[row?.status] || '待確認'} />
-      <Typography variant="h1" className="mt-3 max-w-[10em]">報名已送出</Typography>
-      <Alert className="mt-4 max-w-prose" severity="success">我們會用 email 再跟你確認。訂單內容只有管理員讀得到，重新整理後這一頁不再從雲端把資料讀回來。</Alert>
+      <Typography variant="h1" className="mt-3 max-w-[10em]">
+        報名已送出
+      </Typography>
+      <Alert className="mt-4 max-w-prose" severity="success">
+        我們會用 email
+        再跟你確認。到「我的報名」可以查看這一筆。重新整理後，這一頁不再帶著剛送出的明細。
+      </Alert>
       {row ? (
         <>
-          <Typography variant="h2" className="mt-10">這筆內容</Typography>
+          <Typography variant="h2" className="mt-10">
+            這筆內容
+          </Typography>
           <dl className="rounded-card bg-white shadow-card mt-4 max-w-prose divide-y divide-line px-5">
-            {[['行程', row.tourTitle], ['出發日', row.date], ['人數', row.people], ['姓名', row.name], ['電話', row.phone], ['小計', ntd(row.subtotal)], ['狀態', statusLabel[row.status] || row.status]].map(([label, value]) => (
-              <div key={label} className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]"><dt className="text-muted">{label}</dt><dd className={label === '小計' ? 'font-serif text-2xl font-bold text-action' : undefined}>{value}</dd></div>
+            {[
+              ['行程', row.tourTitle],
+              ['出發日', row.date],
+              ['人數', row.people],
+              ['姓名', row.name],
+              ['電話', row.phone],
+              ['小計', ntd(row.subtotal)],
+              ['狀態', statusLabel[row.status] || row.status],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]"
+              >
+                <dt className="text-muted">{label}</dt>
+                <dd
+                  className={
+                    label === '小計'
+                      ? 'font-serif text-2xl font-bold text-action'
+                      : undefined
+                  }
+                >
+                  {value}
+                </dd>
+              </div>
             ))}
           </dl>
         </>
-      ) : <p className="mt-8 max-w-prose text-lg text-muted">這一頁只保留剛送出的那一筆。請從行程重新報名。</p>}
+      ) : (
+        <p className="mt-8 max-w-prose text-lg text-muted">
+          這一頁只保留剛送出的那一筆。請到我的報名查看，或從行程重新報名。
+        </p>
+      )}
       <div className="mt-8 flex flex-wrap gap-3">
-        <Button component={Link} to="/tours" variant="contained">回行程</Button>
-        <Button component={Link} to="/" variant="outlined">回首頁</Button>
+        <Button component={Link} to="/me" variant="contained">
+          看我的報名
+        </Button>
+        <Button component={Link} to="/tours" variant="outlined">
+          回行程
+        </Button>
       </div>
-    </main>
-  );
-}
-```
-
-```jsx 07-project-final/src/features/auth/LoginPage.jsx
-import { useEffect } from 'react';
-import { Link } from 'react-router';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-
-export default function LoginPage() {
-  useEffect(() => { document.title = '報名不必登入 · 洛奇旅行'; }, []);
-
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <Typography variant="h1">報名不必登入</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">前台沒有會員。選好出發日後直接填表。管理員登入在頁尾。</p>
-      <Button className="mt-8" component={Link} to="/tours" variant="contained">去看行程</Button>
     </main>
   );
 }
@@ -757,105 +1266,168 @@ export default function LoginPage() {
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
+import MemberGate from './components/MemberGate.jsx';
+import LoadGate from '../../LoadGate.jsx';
+import { useAuth } from '../../auth.jsx';
+import { ntd, statusLabel } from '../../format.js';
+import { useMyOrders } from '../../useAsync.js';
 
-export default function MyBookingsPage() {
-  useEffect(() => { document.title = '我的報名 · 洛奇旅行'; }, []);
+const chipColor = {
+  pending: 'primary',
+  confirmed: 'secondary',
+  cancelled: 'error',
+};
+
+function Row({ status, title, date, people, phone, subtotal }) {
+  return (
+    <article className="py-6">
+      <Chip
+        size="small"
+        color={chipColor[status] || 'primary'}
+        label={statusLabel[status] || status}
+      />
+      <Typography variant="h3" className="mt-3">
+        {title}
+      </Typography>
+      <dl className="mt-3 grid gap-3 sm:grid-cols-4">
+        <div>
+          <dt className="text-muted">出發日</dt>
+          <dd>{date}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">人數</dt>
+          <dd>{people}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">電話</dt>
+          <dd>{phone}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">小計</dt>
+          <dd className="font-serif text-2xl font-bold text-action">
+            {ntd(subtotal)}
+          </dd>
+        </div>
+      </dl>
+    </article>
+  );
+}
+
+function MyBookingsBody() {
+  const { user } = useAuth();
+  const { data, loading, error } = useMyOrders(user.uid);
+  const rows = data ?? [];
+  useEffect(() => {
+    document.title = '我的報名 · 洛奇旅行';
+  }, []);
+  if (loading || error) return <LoadGate loading={loading} error={error} />;
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
       <Typography variant="h1">我的報名</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">這一章沒有會員，瀏覽器也不能讀訂單。確認信走 email，名單只出現在後台。</p>
-      <Button className="mt-8" component={Link} to="/tours" variant="contained">去看行程</Button>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        這裡列出這個 Google 帳號的訂單。如需改期或取消，請來信或來電。
+      </p>
+      {rows.length ? (
+        <>
+          <Typography variant="h2" className="mt-10">
+            你的報名
+          </Typography>
+          <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
+            {rows.map((item) => (
+              <Row
+                key={item.id}
+                status={item.status}
+                title={item.tourTitle}
+                date={item.date}
+                people={item.people}
+                phone={item.phone}
+                subtotal={item.subtotal}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <section className="mt-10 max-w-3xl">
+          <Typography id="empty-title" variant="h2">
+            還沒有報名
+          </Typography>
+          <p className="mt-3 max-w-prose">選一個行程，挑一個出發日。</p>
+          <Button
+            className="mt-6"
+            component={Link}
+            to="/tours"
+            variant="contained"
+          >
+            去看行程
+          </Button>
+        </section>
+      )}
     </main>
+  );
+}
+
+export default function MyBookingsPage() {
+  return (
+    <MemberGate>
+      <MyBookingsBody />
+    </MemberGate>
   );
 }
 ```
 
-送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`。重新整理完成頁，明細消失，Firestore 裡的文件還在。`src/features/booking/mock.data.js` 不再被頁面 import。
+送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`，`uid` 是目前這個 Google 帳號。重新整理完成頁，明細消失。打開 `/me` 仍看得到這一筆。`src/features/booking/mock.data.js` 不再被頁面 import。
 
 **解析**
 
-- `onDone` 用路由 state 把剛寫入的欄位帶過去。這份 state 只活在這一次導頁。雲端那一筆由管理員在訂單清單讀取。
-- 表單的 `id="booking-form"` 維持契約。驗證在送出前做完，不合就不呼叫 `createOrder`。
-- 測試模式允許未登入者新增訂單。正式規則仍會保留「任何人可新增」。
-- `/me` 不再列出假資料。公開讀取訂單會把電話暴露給每一個訪客，下一節的規則會擋住。
+- `MemberGate` 等 `ready`。沒有使用者就帶著目前網址去 `/login`。報名連結維持 `/booking?tourId=...&departureId=...`，閘門在報名頁。
+- `onDone` 用路由 state 把剛寫入的欄位帶過去。這份 state 只活在這一次導頁。自己的訂單由 `listMyOrders` 再讀。
+- 表單的 `id="booking-form"` 維持契約。姓名與 email 不開放手改。電話仍手填。
+- `useMyOrders(user.uid)` 寫在閘門裡面。沒有通過閘門就不會拿 `uid` 去查訂單。
+
 
 # 管理員、規則與部署
 
-前台已經能讀行程、能寫訂單。這一節把後台的假 session 換成 Authentication，清單改讀 `orders`，最後貼上安全規則，並沿用第 12 篇的靜態打包。
+前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，清單改讀 `orders`，最後貼上安全規則，並沿用第 12 篇的靜態打包。
 
 ## 登入與受保護畫面
 
-Authentication 只回答「現在有沒有登入者」。這一章不開放註冊，所以登入者就是你在主控台建立的那位管理員。規則用 `request.auth != null` 表示已登入，沒有另外的角色欄位。
+`request.auth != null` 現在只代表有人登入。Google 登入的旅客也會得到這個值，不能拿它放行全部訂單。規則改看 token 內建欄位 `request.auth.token.firebase.sign_in_provider`。旅客是 `google.com`。管理員是主控台手動新增的 email／密碼帳號，值是 `password`。
 
-畫面上的閘門是 `AdminGate`。它先等 `onAuthStateChanged` 回報，再決定要畫孩子還是登入提示。不等的話，重新整理的第一幀會把已登入的人當成訪客。
+畫面上的 `AdminGate` 先等 `ready`。未登入顯示後台登入提示。已登入但 `provider` 不是 `password` 時不能進後台。只判斷 `user` 有沒有值會放行進來的 Google 帳號。
+
+網站上不要做 email 註冊表單。自行註冊的密碼帳號會得到 `sign_in_provider == 'password'`，規則會把它當成管理員。
 
 ### 步驟 1：建立管理員帳號
 
-在 Firebase 主控台打開 Authentication，登入方式啟用電子郵件／密碼。在使用者分頁手動新增一位使用者，email 與密碼自己留著，不要寫進專案。
+在 Firebase 主控台打開 Authentication 的登入方式，啟用「電子郵件／密碼」。不要啟用「電話」。不要按升級 Identity Platform。在使用者分頁手動新增一位使用者，email 與密碼自己留著，不要寫進專案。
 
 應用程式沒有註冊表單。別人不能自己在網站上變成管理員。
 
-### 步驟 2：AuthProvider
+### 步驟 2：補上密碼登入
 
-`auth.jsx` 訂閱登入狀態，並提供 `signIn` 與 `signOut`。沒有初始化時，`signIn` 拒絕並帶上同一句尚未設定。`ready` 在第一次回報之後才是真。沒有 Firebase 時不必等，直接視為已確認、使用者是 `null`。
+前台那一節的 `auth.jsx` 已有 `onAuthStateChanged`、`signInWithGoogle` 與 `signOut`。這裡只補 `signIn`。
 
-```jsx 07-project-final/src/auth.jsx
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { auth, firebaseReady, missingFirebaseMessage } from './firebase.js';
-
-const AuthContext = createContext(null);
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(!firebaseReady);
-
-  useEffect(() => {
-    if (!auth) return undefined;
-    return onAuthStateChanged(auth, (next) => {
-      setUser(next);
-      setReady(true);
-    });
-  }, []);
-
-  const api = useMemo(() => ({
-    user,
-    ready,
-    firebaseReady,
-    signIn(email, password) {
-      if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
-      return signInWithEmailAndPassword(auth, email, password);
-    },
-    signOut() {
-      return auth ? signOut(auth) : Promise.resolve();
-    },
-  }), [user, ready]);
-
-  return <AuthContext.Provider value={api}>{children}</AuthContext.Provider>;
-}
-
-export const useAuth = () => useContext(AuthContext);
-```
-
-`App` 先在原有的 provider 外面包一層 `AuthProvider`。`StoreProvider` 還要留給行程管理頁，訂單那一節改完再拿掉。種子路由留著。
-
-```diff 07-project-final/src/App.jsx
-+import { AuthProvider } from './auth.jsx';
- import SiteLayout from './layout/SiteLayout.jsx';
+```diff 07-project-final/src/auth.jsx
+-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
++import { GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
  // ...
- export default function App() {
-   return (
-+    <AuthProvider>
-     <SessionProvider>
-       <StoreProvider>
-         <RouterProvider router={router} />
-       </StoreProvider>
-     </SessionProvider>
-+    </AuthProvider>
-   );
- }
+     signInWithGoogle() {
+       if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
+       return signInWithPopup(auth, new GoogleAuthProvider());
+     },
++    signIn(email, password) {
++      if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
++      return signInWithEmailAndPassword(auth, email, password);
++    },
+     signOut() {
+       return auth ? signOut(auth) : Promise.resolve();
+     },
 ```
 
 版面裡的成功提示原本來自 `store`。訂單狀態改由清單頁自己顯示錯誤，這個 Snackbar 拿掉，`ScrollRestoration` 留在頁尾後面。
@@ -879,47 +1451,11 @@ export default function SiteLayout() {
 }
 ```
 
-頁首只在後台路徑顯示「後台登入」。已登入時顯示 email。前台不再放會員登入按鈕。
-
-```diff 07-project-final/src/layout/components/SiteHeader.jsx
--import { useSession } from '../../session.jsx';
-+import { useAuth } from '../../auth.jsx';
- // ...
- export default function SiteHeader() {
--  const { user, signOut } = useSession();
-+  const { user, signOut } = useAuth();
- // ...
--  const account = (
--    user ? (
--      <Button type="button" aria-haspopup="true" aria-expanded={Boolean(anchor)} onClick={(event) => setAnchor(event.currentTarget)} className="gap-2 text-ink">
--        <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{user.name.slice(0, 1)}</Avatar>
--        {user.name}
--      </Button>
--    ) : <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>
--  );
-+  const label = user?.email ?? '';
-+  const account = user ? (
-+    <Button type="button" aria-haspopup="true" aria-expanded={Boolean(anchor)} onClick={(event) => setAnchor(event.currentTarget)} className="gap-2 text-ink">
-+      <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{label.slice(0, 1).toUpperCase()}</Avatar>
-+      {label}
-+    </Button>
-+  ) : admin ? <Button component={Link} to="/admin/login" onClick={close}>後台登入</Button> : null;
- // ...
-           {user ? (
-             <Button type="button" aria-haspopup="true" onClick={(event) => setAnchor(event.currentTarget)} className="justify-start gap-2 text-ink">
--              <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{user.name.slice(0, 1)}</Avatar>
--              {user.name}
-+              <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{label.slice(0, 1).toUpperCase()}</Avatar>
-+              {label}
-             </Button>
--          ) : <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>}
-+          ) : admin ? <Button component={Link} to="/admin/login" onClick={close}>後台登入</Button> : null}
- // ...
-```
+頁首已在前台登入那一節接上 `useAuth`。前台未登入仍是「登入」。後台路徑只有 `password` 才顯示帳號。
 
 ### 步驟 3：登入表單與閘門
 
-密碼錯誤時，Firebase 的代碼是 `auth/invalid-credential`。這一種改寫成中文。其他失敗仍顯示 `err.message`，尚未設定 Firebase 時就是那句固定文字。
+密碼錯誤時，Firebase 的代碼是 `auth/invalid-credential`。這一種改寫成中文。其他失敗仍顯示 `err.message`，尚未設定 Firebase 時就是那句固定文字。已經以密碼登入的人打開這一頁，直接去報名清單。Google 登入者留在這一頁，不會被當成管理員送進去。
 
 ```jsx 07-project-final/src/features/admin/AdminLoginPage.jsx
 import { useEffect, useState } from 'react';
@@ -932,14 +1468,18 @@ import Typography from '@mui/material/Typography';
 import { useAuth } from '../../auth.jsx';
 
 export default function AdminLoginPage() {
-  const { signIn, user } = useAuth();
+  const { signIn, provider } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  useEffect(() => { document.title = '後台登入 · 洛奇旅行'; }, []);
-  useEffect(() => { if (user) navigate('/admin/bookings'); }, [user, navigate]);
+  useEffect(() => {
+    document.title = '後台登入 · 洛奇旅行';
+  }, []);
+  useEffect(() => {
+    if (provider === 'password') navigate('/admin/bookings');
+  }, [provider, navigate]);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -949,20 +1489,50 @@ export default function AdminLoginPage() {
       await signIn(email.trim(), password);
       navigate('/admin/bookings');
     } catch (err) {
-      setError(err.code === 'auth/invalid-credential' ? 'email 或密碼不對。請用主控台建立的那一組。' : err.message);
+      setError(
+        err.code === 'auth/invalid-credential'
+          ? 'email 或密碼不對。請用主控台建立的那一組。'
+          : err.message,
+      );
       setBusy(false);
     }
   };
 
   return (
-    <main id="content" className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24">
-      <Paper component="form" elevation={0} className="rounded-card bg-white shadow-card grid max-w-md gap-4 p-6 md:p-8" onSubmit={submit}>
+    <main
+      id="content"
+      className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24"
+    >
+      <Paper
+        component="form"
+        elevation={0}
+        className="rounded-card bg-white shadow-card grid max-w-md gap-4 p-6 md:p-8"
+        onSubmit={submit}
+      >
         <Typography variant="h1">後台登入</Typography>
-        <p className="text-lg leading-relaxed">使用 Firebase Authentication 的 email 與密碼。前台報名不需要登入。</p>
-        <TextField label="Email" type="email" autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} required />
-        <TextField label="密碼" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+        <p className="text-lg leading-relaxed">
+          使用主控台建立的 email 與密碼。網站上沒有註冊表單。
+        </p>
+        <TextField
+          label="Email"
+          type="email"
+          autoComplete="username"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
+        <TextField
+          label="密碼"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
         {error ? <Alert severity="error">{error}</Alert> : null}
-        <Button type="submit" variant="contained" disabled={busy}>{busy ? '登入中…' : '登入'}</Button>
+        <Button type="submit" variant="contained" disabled={busy}>
+          {busy ? '登入中…' : '登入'}
+        </Button>
       </Paper>
     </main>
   );
@@ -977,31 +1547,76 @@ import { useAuth } from '../../../auth.jsx';
 import { missingFirebaseMessage } from '../../../firebase.js';
 
 export default function AdminGate({ children }) {
-  const { user, ready, firebaseReady } = useAuth();
+  const { user, provider, ready, firebaseReady } = useAuth();
   if (!firebaseReady) {
     return (
-      <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+      >
         <Alert severity="warning">{missingFirebaseMessage}</Alert>
       </main>
     );
   }
-  if (!ready) return <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-lg text-muted sm:px-6 md:py-24">確認身份…</main>;
-  if (user) return children;
-  return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
-      <Alert severity="warning">訂單只有管理員可以看。</Alert>
-      <Button className="mt-6" component={Link} to="/admin/login" variant="contained">到後台登入</Button>
-    </main>
-  );
+  if (!ready)
+    return (
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-lg text-muted sm:px-6 md:py-24"
+      >
+        確認身份…
+      </main>
+    );
+  if (!user) {
+    return (
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+      >
+        <Alert severity="warning">
+          請用主控台建立的 email 與密碼登入後台。
+        </Alert>
+        <Button
+          className="mt-6"
+          component={Link}
+          to="/admin/login"
+          variant="contained"
+        >
+          到後台登入
+        </Button>
+      </main>
+    );
+  }
+  if (provider !== 'password') {
+    return (
+      <main
+        id="content"
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+      >
+        <Alert severity="warning">
+          這個帳號不能進入後台。請改用主控台建立的 email 與密碼。
+        </Alert>
+        <Button
+          className="mt-6"
+          component={Link}
+          to="/admin/login"
+          variant="contained"
+        >
+          到後台登入
+        </Button>
+      </main>
+    );
+  }
+  return children;
 }
 ```
 
 **解析**
 
-- `signInWithEmailAndPassword` 成功後，`onAuthStateChanged` 會更新 `user`。表單另外 `navigate` 一次，已登入者重新打開登入頁也會被帶去清單。
-- `AdminGate` 的三種畫面依序是：沒有設定、還在確認、沒有使用者。有使用者才渲染孩子。
-- 閘門只擋畫面。沒有登入的人仍可從瀏覽器直接呼叫 SDK。下一節的規則才擋讀取。
-- 頁首已經改接 `useAuth`。`session.jsx` 等訂單頁也離開 `store` 再一起刪。
+- `signInWithEmailAndPassword` 成功後，`onAuthStateChanged` 會更新 `user`，`provider` 變成 `password`。表單另外 `navigate` 一次。
+- `AdminGate` 先看有沒有設定、再等 `ready`。沒有使用者時請去後台登入。有使用者但不是 `password` 時停在說明，不渲染孩子。
+- 閘門只擋畫面。沒有通過的人仍可從瀏覽器直接呼叫 SDK。安全規則那一節才擋讀取。
+- 頁首已經接上 `useAuth`。訂單頁離開 `store` 之後，再刪 `store.jsx`。
 
 ## 訂單清單與狀態
 
@@ -1028,23 +1643,42 @@ import { useTours } from '../../useAsync.js';
 function AdminToursBody() {
   const { data, loading, error } = useTours();
   const tours = data ?? [];
-  useEffect(() => { document.title = '行程管理 · 洛奇旅行'; }, []);
+  useEffect(() => {
+    document.title = '行程管理 · 洛奇旅行';
+  }, []);
   if (loading || error) return <LoadGate loading={loading} error={error} />;
 
   return (
-    <main id="content" className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
       <p className="font-bold text-action">管理員</p>
-      <Typography variant="h1" className="mt-2">行程管理</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">清單來自 Firestore。這一章只讀，不在後台新增或修改。還沒有資料時，先寫入種子。</p>
+      <Typography variant="h1" className="mt-2">
+        行程管理
+      </Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        清單來自
+        Firestore。這一章只讀，不在後台新增或修改。還沒有資料時，先寫入種子。
+      </p>
       <AdminTabs />
-      <Button className="mt-4" component={Link} to="/seed" variant="outlined">寫入種子</Button>
+      <Button className="mt-4" component={Link} to="/seed" variant="outlined">
+        寫入種子
+      </Button>
       {tours.length ? (
         <>
-          <TableContainer elevation={0} className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block">
+          <TableContainer
+            elevation={0}
+            className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block"
+          >
             <Table>
               <TableHead>
                 <TableRow>
-                  {['標題', '地區', '主題', '天數', '價格'].map((label) => <TableCell key={label} className="px-4 py-3">{label}</TableCell>)}
+                  {['標題', '地區', '主題', '天數', '價格'].map((label) => (
+                    <TableCell key={label} className="px-4 py-3">
+                      {label}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -1054,7 +1688,9 @@ function AdminToursBody() {
                     <TableCell className="px-4 py-4">{tour.region}</TableCell>
                     <TableCell className="px-4 py-4">{tour.theme}</TableCell>
                     <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
-                    <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
+                    <TableCell className="px-4 py-4">
+                      {ntd(tour.price)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -1063,19 +1699,30 @@ function AdminToursBody() {
           <div className="mt-8 grid gap-4 md:hidden">
             {tours.map((tour) => (
               <Card key={tour.id} className="p-6">
-                <h3 className="font-serif text-2xl font-semibold">{tour.title}</h3>
-                <p className="mt-2 text-muted">{tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}</p>
+                <h3 className="font-serif text-2xl font-semibold">
+                  {tour.title}
+                </h3>
+                <p className="mt-2 text-muted">
+                  {tour.region} · {tour.theme} · {tour.days} 天 ·{' '}
+                  {ntd(tour.price)}
+                </p>
               </Card>
             ))}
           </div>
         </>
-      ) : <p className="mt-8 text-base text-muted">還沒有行程。</p>}
+      ) : (
+        <p className="mt-8 text-base text-muted">還沒有行程。</p>
+      )}
     </main>
   );
 }
 
 export default function AdminToursPage() {
-  return <AdminGate><AdminToursBody /></AdminGate>;
+  return (
+    <AdminGate>
+      <AdminToursBody />
+    </AdminGate>
+  );
 }
 ```
 
@@ -1110,6 +1757,9 @@ export default function AdminToursPage() {
 +import Alert from '@mui/material/Alert';
  import MenuItem from '@mui/material/MenuItem';
  // ...
+ import Typography from '@mui/material/Typography';
++import AdminGate from './components/AdminGate.jsx';
+ import AdminTabs from './components/AdminTabs.jsx';
  import BookingTable from './components/BookingTable.jsx';
 +import LoadGate from '../../LoadGate.jsx';
 +import { updateOrderStatus } from '../../api.js';
@@ -1117,7 +1767,8 @@ export default function AdminToursPage() {
 -import { useStore } from '../../store.jsx';
 +import { useOrders } from '../../useAsync.js';
  // ...
- function AdminBookingsBody() {
+-export default function AdminBookingsPage() {
++function AdminBookingsBody() {
 -  const { bookings } = useStore();
 +  const { data, loading, error, reload } = useOrders();
 +  const bookings = data ?? [];
@@ -1152,35 +1803,36 @@ export default function AdminToursPage() {
  // ...
 -      {shown.length ? <BookingTable bookings={shown} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
 +      {shown.length ? <BookingTable bookings={shown} onStatus={changeStatus} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
- // ...
+     </main>
+   );
+ }
++
++export default function AdminBookingsPage() {
++  return <AdminGate><AdminBookingsBody /></AdminGate>;
++}
 ```
 
-頁面換成上面的寫法之後，`App` 拿掉記憶體那兩層。
+頁面換成上面的寫法之後，`App` 拿掉記憶體那一層。
 
 ```diff 07-project-final/src/App.jsx
--import { SessionProvider } from './session.jsx';
 -import { StoreProvider } from './store.jsx';
  import { AuthProvider } from './auth.jsx';
  // ...
  export default function App() {
    return (
      <AuthProvider>
--    <SessionProvider>
 -      <StoreProvider>
          <RouterProvider router={router} />
 -      </StoreProvider>
--    </SessionProvider>
      </AuthProvider>
    );
  }
 ```
 
-接著刪掉這四個檔：
+接著刪掉這兩個檔：
 
 - `src/store.jsx`
-- `src/session.jsx`
 - `src/features/admin/components/TourForm.jsx`
-- `src/features/booking/components/MemberGate.jsx`（報名那一節若已刪，這裡不用再刪）
 
 未登入時打開 `/admin/bookings`，應停在閘門，不應出現訂單。登入後看得到剛才那一筆。把狀態改成已確認，重新整理後仍是已確認。主控台裡同一份文件的 `status` 一起變。
 
@@ -1206,46 +1858,65 @@ export default function AdminToursPage() {
 
 ### 步驟 1：貼上規則
 
-`tours` 任何人可讀，任何人不可寫。種子必須在貼上之前寫完。`orders` 任何人可新增。讀取與更新要 `request.auth != null`。刪除不開放。
-
-已登入就代表管理員，是因為網站沒有註冊。若以後加上註冊，這條規則會讓每一位註冊使用者讀到全部訂單，那時要改成自訂聲明或管理員清單，這一章不做。
+`tours` 任何人可讀，任何人不可寫。種子必須在貼上之前寫完。`orders` 的新增要已登入，而且新文件的 `uid` 等於 `request.auth.uid`，`status` 是 `pending`，姓名、email、電話是字串，人數是 1 到 8 的整數。讀取限文件主人或密碼登入的管理員。更新只限管理員。刪除不開放。
 
 ```text 07-project-final/firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider == 'password';
+    }
+    function isOwner() {
+      return signedIn() && resource.data.uid == request.auth.uid;
+    }
+
     match /tours/{tourId} {
       allow read: if true;
       allow write: if false;
     }
     match /orders/{orderId} {
-      allow create: if true;
-      allow read, update: if request.auth != null;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.name is string
+        && request.resource.data.email is string
+        && request.resource.data.phone is string
+        && request.resource.data.people is int
+        && request.resource.data.people >= 1
+        && request.resource.data.people <= 8;
+      allow read: if isOwner() || isAdmin();
+      allow update: if isAdmin();
       allow delete: if false;
     }
   }
 }
 ```
 
-Firestore 主控台打開規則分頁，用這份取代測試模式的內容，發布。發布後做三件事確認：
+Firestore 主控台打開規則分頁，用這份取代測試模式的內容，發布。發布後做這些事確認：
 
 - 未登入時，行程列表仍看得到。
-- 未登入時，報名仍送得出去。
-- 未登入時，`/admin/bookings` 進不了清單。登出後，主控台以外的讀取會被拒絕。`/seed` 再按會失敗。
+- 未登入時，`/booking` 會到 `/login?next=...`。Google 登入後送出的訂單帶有自己的 `uid`。
+- Google 登入者打不開 `/admin/bookings` 的清單。email／密碼登入後看得到全部訂單，也能改狀態。
+- `/me` 只列出自己的 `uid`。`/seed` 再按會失敗。
 
 {% mermaid graph TD %}
   guest["未登入"] --> readTours["可讀 tours"]
-  guest --> createOrder["可新增 orders"]
-  guest --> deny["不可讀、不可改 orders"]
-  signed["已登入"] --> readOrders["可讀、可改 orders"]
+  guest --> deny["不可新增、不可讀 orders"]
+  google["google.com"] --> own["可新增自己的 uid，可讀自己的訂單"]
+  google --> denyAdmin["不可讀全部、不可改狀態"]
+  password["password"] --> all["可讀全部訂單，可改狀態"]
 {% endmermaid %}
 
 **解析**
 
 - `allow write` 涵蓋建立、更新與刪除。行程用 `write: if false` 一次擋住。
-- 訂單把 `create` 與 `read, update` 拆開。訪客只能新增，不能回頭讀自己剛寫的那筆。完成頁才改走路由 state。
-- `request.auth` 是 Authentication 帶上來的身分。沒登入時是 `null`。
-- 規則沒有檢查欄位形狀。表單負責少送空的姓名，規則負責誰可以碰到集合。
+- `isOwner` 比對文件上的 `uid` 與 `request.auth.uid`。`isAdmin` 再要求 `sign_in_provider == 'password'`。
+- `request.auth` 是 Authentication 帶上來的身分。沒登入時是 `null`。Google 登入時它不是 `null`，所以不能再用「有登入」代表管理員。
+- 新增時多檢查 `status`、姓名、email、電話與人數。表單仍先擋空的電話。規則擋的是直接呼叫 SDK 的請求。
 
 ### 步驟 2：打包
 
@@ -1283,12 +1954,14 @@ pnpm build
 
 # 本篇重點回顧
 
-- 前台不設會員。訪客直接把報名寫進 `orders`。只有後台使用 email 與密碼。
+- 前台用 `signInWithPopup` 做 Google 登入。訂單寫入 `uid`。`/me` 用 `where('uid', '==', user.uid)` 讀自己的訂單。
+- 後台用 `signInWithEmailAndPassword`。管理員帳號在主控台手動新增。網站沒有 email 註冊表單。
+- 主控台啟用「Google」與「電子郵件／密碼」。不要啟用電話。不要升級 Identity Platform。
 - Firebase 的網頁設定放在 `.env.local`，以 `VITE_` 開頭。範例檔是 `.env.example`。金鑰不要 commit。
 - `src/api.js` 集中 Firestore 讀寫。`useAsync` 把等待、失敗與結果留在頁面。
 - `/seed` 在測試模式把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。
-- `AdminGate` 等 Authentication 回報之後才畫訂單。閘門擋的是畫面。
-- `firestore.rules` 讓行程公開可讀、不可寫，訂單公開可新增、僅登入者可讀可改。
+- `MemberGate` 把未登入者帶到 `/login?next=...`。`AdminGate` 等 `ready`，並且只放行 `password`。閘門擋的是畫面。
+- `firestore.rules` 讓行程公開可讀、不可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者。
 - 打包沿用第 12 篇。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
 
 # 專有名詞中英對照
@@ -1299,7 +1972,6 @@ pnpm build
 - 開發伺服器（dev server）
 - 種子資料（seed data）
 - 記憶體狀態（in-memory state）
-- 工作階段儲存（sessionStorage）
 
 ## 認識 Firebase
 
@@ -1326,12 +1998,18 @@ pnpm build
 
 - 查詢快照（query snapshot）
 - 文件識別碼（document id）
+- 使用者識別碼（uid）
+- 彈出視窗登入（signInWithPopup）
+- Google 登入（Google sign-in）
 - 路由狀態（history state）
+- 登入閘門（MemberGate）
 
 ## 管理員、規則與部署
 
 - 受保護畫面（protected view）
 - 登入狀態監聽（onAuthStateChanged）
+- 登入提供者（sign_in_provider）
+- 密碼登入（password）
 - 授權（authorization）
 - 靜態部署（static hosting）
 - 程式碼分割（code splitting）

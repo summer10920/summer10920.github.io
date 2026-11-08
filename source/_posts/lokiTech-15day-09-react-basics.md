@@ -596,9 +596,21 @@ pnpm lint
 
 **觀念**
 
-設定只放專案裡的 `.prettierrc`。存檔時要排版，並讓 ESLint 能一併修可自動修的問題。這份編輯器設定放在專案的 `.vscode`，不要寫進個人的使用者設定。
+設定只放專案裡的 `.prettierrc`。存檔時要排版，並讓 ESLint 能一併修可自動修的問題。編輯器設定放在專案的 `.vscode`，不要寫進個人的使用者設定。
 
 規則跟專案走。不要在使用者的 `settings.json` 另外寫 `prettier.semi` 這一類鍵。
+
+課堂練習 repo 的根目錄已經有一份 `.vscode`。在 `03-react` 裡建立 `.vscode` 資料夾，再把這兩個檔複製進來：
+
+- `settings.json`：存檔時用 Prettier 排版，並修 ESLint 能自動修的問題。
+- `extensions.json`：建議安裝 Prettier 與 ESLint 等擴充。打開專案時編輯器會提示安裝。
+
+Cursor 或 VS Code 只會讀你打開的那個資料夾裡的 `.vscode`。把 `03-react` 當專案開啟時，要用專案內這一份。可略過複製 `placeholder.code-snippets`。
+
+```bash
+mkdir -p .vscode
+cp ../.vscode/settings.json ../.vscode/extensions.json .vscode/
+```
 
 ```json 03-react/.prettierrc
 {
@@ -610,9 +622,64 @@ pnpm lint
 
 ```json 03-react/.vscode/settings.json
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.linkedEditing": true,
+  "editor.guides.bracketPairs": true,
+  "files.autoSave": "afterDelay",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
   }
+}
+```
+
+```json 03-react/.vscode/extensions.json
+{
+  "recommendations": [
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "mhutchie.git-graph",
+    "MS-CEINTL.vscode-language-pack-zh-hant",
+    "dbaeumer.vscode-eslint",
+    "christian-kohler.path-intellisense",
+    "kisstkondoros.vscode-gutter-preview",
+    "GitHub.copilot"
+  ]
 }
 ```
 
@@ -622,7 +689,11 @@ pnpm lint
 
 - `singleQuote` 只管 JavaScript 字串。標籤屬性維持雙引號，讀起來才跟 HTML 一致。
 - `tabWidth` 是縮排幾個空格。這門課用 2。
-- 存檔修 ESLint 用的是專案設定。別人 clone 同一份專案，會套到同一套。
+- `editor.formatOnSave` 設成 true，存檔時交給 Prettier 排版。
+- `editor.defaultFormatter` 指定用 Prettier 擴充來排版。各語言區塊也寫了同一套，HTML、CSS、JavaScript 與 JSON 都會走 Prettier。
+- `source.fixAll.eslint` 設成 `explicit`，存檔時一併修 ESLint 能自動修的問題。
+- `extensions.json` 列出建議安裝的擴充。打開這個資料夾時，編輯器會提示安裝清單裡還沒有的項目。
+- 存檔修 ESLint 與排版用的都是專案設定。別人 clone 同一份專案，會套到同一套。
 - 排版問題不要寫進 ESLint 規則。空格與引號只交給 Prettier。
 
 {% note success %}

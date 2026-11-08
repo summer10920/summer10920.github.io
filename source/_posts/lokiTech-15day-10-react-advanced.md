@@ -10,7 +10,7 @@ date: 2026-08-30 10:09:00
 
 ![](assets/images/banner/react.png)
 
-畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態，並用 Context 處理中間層只為轉傳 props 的麻煩。ref、reducer 與表單 Actions 放在選讀。換頁留到 React Router。
+畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態，並用 Context 處理中間層只為轉傳 props 的麻煩。useMemo、ref、reducer 與表單 Actions 放在選讀。換頁留到 React Router。
 
 <!-- more -->
 
@@ -2462,6 +2462,167 @@ export default function DefaultDemo() {
 
 </details>
 
+## 選讀：useMemo
+
+先看沒有包起來時，改留言也會把評語再算一次。再看 `useMemo` 怎麼把算過的結果記住。
+
+### 沒有使用 useMemo 時
+
+元件每次重渲染，寫在函式裡的計算會再做一次。
+
+下面用評價留言當例子。`text` 是留言內容，`star` 是一到五的星等。評語只看星等：四顆以上是「值得推薦」，否則是「普通」。計算時印出「計算中」。
+
+```jsx
+import { useState } from 'react';
+
+export default function MemoDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(3);
+
+  console.log('計算中');
+  const label = star >= 4 ? '值得推薦' : '普通';
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>星等 {star}</p>
+      <button
+        type="button"
+        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={() => setStar(Math.max(1, star - 1))}
+      >
+        減一顆
+      </button>
+      <button
+        type="button"
+        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={() => setStar(Math.min(5, star + 1))}
+      >
+        加一顆
+      </button>
+      <p>評語 {label}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 按星等加減會重渲染，重算評語，這是應該的。
+- 在留言欄打字也會重渲染。星等沒變，評語卻又算一次，Console 每次按鍵都印「計算中」。這就是浪費。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> renderNode["元件重渲染"]
+  renderNode --> calcNode["評語又算一次"]
+  style textNode fill:#e3f2fd
+  style renderNode fill:#fff3e0
+  style calcNode fill:#ffcdd2
+{% endmermaid %}
+
+### 使用 useMemo
+
+`useMemo` 記住上一次算出來的值，並看依賴陣列。依賴沒變就沿用上次的值，不再執行計算。依賴變了才重算，並記住新的結果。
+
+- `useMemo` 記住一次計算出來的值。
+- `useCallback` 只記住某個函式。
+
+要記住計算結果用 `useMemo`；只有單一個函式要記住才用 `useCallback`。
+
+同一支範例把評語放進 `useMemo`，依賴是 `[star]`。
+
+```jsx 03-react/src/demos/84-memo.jsx
+import { useMemo, useState } from 'react';
+
+export default function MemoDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(3);
+  const label = useMemo(() => {
+    console.log('計算中');
+    return star >= 4 ? '值得推薦' : '普通';
+  }, [star]);
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>星等 {star}</p>
+      <button
+        type="button"
+        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={() => setStar(Math.max(1, star - 1))}
+      >
+        減一顆
+      </button>
+      <button
+        type="button"
+        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
+        onClick={() => setStar(Math.min(5, star + 1))}
+      >
+        加一顆
+      </button>
+      <p>評語 {label}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 留言打字仍會重渲染，但星等沒變，`useMemo` 沿用上次的值，Console 不再印「計算中」。
+- 按星等加減時，依賴變了，才重算並再印一次。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> renderNode["元件重渲染"]
+  renderNode --> sameNode["依賴沒變"]
+  sameNode --> keepNode["沿用上次的評語"]
+  starNode["星等改變"] --> redoNode["重新計算"]
+  style textNode fill:#e3f2fd
+  style renderNode fill:#fff3e0
+  style sameNode fill:#fff3e0
+  style keepNode fill:#e8f5e9
+  style starNode fill:#e3f2fd
+  style redoNode fill:#ffcdd2
+{% endmermaid %}
+
+{% note success %}
+**換你試試：**
+在同一支元件再記住一串星號，`'★'.repeat(star)`，依賴仍是 `[star]`。評語下面顯示這串星號。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+星號的數量跟星等一樣，依賴仍是 `[star]`。星等是 3 時，畫面是 ★★★。改留言不重算；按加減讓星等改變時，星號才跟著變。
+
+```diff 03-react/src/demos/84-memo.jsx
+ // ...
+   }, [star]);
++  const stars = useMemo(() => '★'.repeat(star), [star]);
+ // ...
+       <p>評語 {label}</p>
++      <p>{stars}</p>
+ // ...
+```
+
+</details>
+
+{% note info %}
+React Compiler 可以在建置時自動記住這類計算結果。這份專案沒有啟用它。
+{% endnote %}
+
 ## 選讀：useRef
 
 有時你要的不是畫面上顯示的文字，而是那顆真正的 DOM 節點，例如按下按鈕時呼叫 `focus()`、量尺寸，或捲到某個位置。這些是瀏覽器對節點提供的方法；只靠狀態描述「現在顯示什麼」，拿不到那顆節點。
@@ -3514,7 +3675,7 @@ export default function OptimisticDemo() {
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
 - 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。分檔時把同一示範收進資料夾，`createContext` 只建一次再 import。
-- ref、reducer 與表單 Actions 是選讀。`const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
+- useMemo、ref、reducer 與表單 Actions 是選讀。依賴沒變時 `useMemo` 沿用上次的值；ref 與 reducer 則是 `const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
 
@@ -3534,6 +3695,7 @@ export default function OptimisticDemo() {
 - 狀態提升（lifting state up）
 - 屬性鑽孔（prop drilling）
 - 情境（context）
+- 記憶化（memoization）
 - 參考（ref）
 - 歸納函式（reducer）
 - 動作（action）
