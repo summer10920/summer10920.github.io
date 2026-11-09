@@ -2464,20 +2464,22 @@ export default function DefaultDemo() {
 
 ## 選讀：useMemo
 
-先看沒有包起來時，改留言也會把評語再算一次。再看 `useMemo` 怎麼把算過的結果記住。
+元件每次重新渲染，函式裡的程式都會從頭再跑一次，包括那些算出畫面資料的計算。很多次渲染其實跟某個計算無關，例如輸入框只是多打了一個字，算出來的結果卻和上次一模一樣，這種重算就是白做工。`useMemo` 的作用是把計算結果記住，只有計算用到的值改變時才重算，其他時候的渲染直接沿用上次的結果，減少無效的運算。它不會讓元件少渲染一次，省下的是每次渲染裡重複的計算；要跳過整段元件的重渲染，用下一節的 `memo`。
+
+下面先看沒有使用 `useMemo` 時浪費在哪裡，再把同一支範例改成 `useMemo` 對照效果。
 
 ### 沒有使用 useMemo 時
 
 元件每次重渲染，寫在函式裡的計算會再做一次。
 
-下面用評價留言當例子。`text` 是留言內容，`star` 是一到五的星等。評語只看星等：四顆以上是「值得推薦」，否則是「普通」。計算時印出「計算中」。
+下面用評價留言當例子。`text` 是留言內容，畫面會顯示輸入字數。`star` 是星等，預設五顆星，點第幾顆星就改成幾顆，範圍一到五。評語只看星等：四顆以上是「值得推薦」，否則是「普通」。計算時印出「計算中」。
 
 ```jsx
 import { useState } from 'react';
 
 export default function MemoDemo() {
   const [text, setText] = useState('');
-  const [star, setStar] = useState(3);
+  const [star, setStar] = useState(5);
 
   console.log('計算中');
   const label = star >= 4 ? '值得推薦' : '普通';
@@ -2492,21 +2494,20 @@ export default function MemoDemo() {
           className="rounded border px-2 py-1"
         />
       </label>
+      <p>輸入字數 {text.length}</p>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            className="text-2xl text-amber-500"
+            onClick={() => setStar(n)}
+          >
+            {n <= star ? '★' : '☆'}
+          </button>
+        ))}
+      </div>
       <p>星等 {star}</p>
-      <button
-        type="button"
-        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setStar(Math.max(1, star - 1))}
-      >
-        減一顆
-      </button>
-      <button
-        type="button"
-        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setStar(Math.min(5, star + 1))}
-      >
-        加一顆
-      </button>
       <p>評語 {label}</p>
     </section>
   );
@@ -2515,8 +2516,15 @@ export default function MemoDemo() {
 
 **解析**
 
-- 按星等加減會重渲染，重算評語，這是應該的。
-- 在留言欄打字也會重渲染。星等沒變，評語卻又算一次，Console 每次按鍵都印「計算中」。這就是浪費。
+- 五顆星是用 `map` 畫出的五顆按鈕。編號小於等於目前星等的顯示 ★，其餘顯示 ☆，點哪一顆就把星等設成那個編號。
+- 點星星改星等會重渲染，重算評語，這是應該的。
+- 在留言欄打字會呼叫 `setText`，元件重渲染，`MemoDemo` 整個函式從頭再跑一次。
+- 這時星等沒變，`const label = star >= 4 ? '值得推薦' : '普通';` 這行卻又執行一次，Console 每次按鍵都印「計算中」。結果和上次一樣，這次計算就是浪費。
+- `useState` 本身不是負擔。它只是交出目前的值，花時間的是函式裡那些算畫面資料的程式。
+
+{% note info %}
+這裡的評語只是一個比大小再選字串的判斷，就算每次都重算，負擔也很小，實務上不必為它加 `useMemo`。若計算很複雜，例如對上千筆資料做篩選、排序或統計，每打一個字都重跑一次就會拖慢畫面，這時用 `useMemo` 記住結果才有明顯效果。範例故意用簡單的計算，是為了看清楚什麼時候會重算。
+{% endnote %}
 
 {% mermaid graph TD %}
   textNode["留言改變"] --> renderNode["元件重渲染"]
@@ -2531,9 +2539,10 @@ export default function MemoDemo() {
 `useMemo` 記住上一次算出來的值，並看依賴陣列。依賴沒變就沿用上次的值，不再執行計算。依賴變了才重算，並記住新的結果。
 
 - `useMemo` 記住一次計算出來的值。
-- `useCallback` 只記住某個函式。
+- `memo` 包住元件，props 沒變就跳過重渲染，見下一節選讀。
+- `useCallback` 記住某個函式，搭配 `memo` 使用，見再下一節選讀。
 
-要記住計算結果用 `useMemo`；只有單一個函式要記住才用 `useCallback`。
+要記住計算結果用 `useMemo`；要讓子元件少渲染用 `memo`；要記住函式本身用 `useCallback`。
 
 同一支範例把評語放進 `useMemo`，依賴是 `[star]`。
 
@@ -2542,7 +2551,7 @@ import { useMemo, useState } from 'react';
 
 export default function MemoDemo() {
   const [text, setText] = useState('');
-  const [star, setStar] = useState(3);
+  const [star, setStar] = useState(5);
   const label = useMemo(() => {
     console.log('計算中');
     return star >= 4 ? '值得推薦' : '普通';
@@ -2558,21 +2567,20 @@ export default function MemoDemo() {
           className="rounded border px-2 py-1"
         />
       </label>
+      <p>輸入字數 {text.length}</p>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            className="text-2xl text-amber-500"
+            onClick={() => setStar(n)}
+          >
+            {n <= star ? '★' : '☆'}
+          </button>
+        ))}
+      </div>
       <p>星等 {star}</p>
-      <button
-        type="button"
-        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setStar(Math.max(1, star - 1))}
-      >
-        減一顆
-      </button>
-      <button
-        type="button"
-        className="w-fit rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setStar(Math.min(5, star + 1))}
-      >
-        加一顆
-      </button>
       <p>評語 {label}</p>
     </section>
   );
@@ -2582,7 +2590,7 @@ export default function MemoDemo() {
 **解析**
 
 - 留言打字仍會重渲染，但星等沒變，`useMemo` 沿用上次的值，Console 不再印「計算中」。
-- 按星等加減時，依賴變了，才重算並再印一次。
+- 點星星改了星等，依賴變了，才重算並再印一次。
 
 {% mermaid graph TD %}
   textNode["留言改變"] --> renderNode["元件重渲染"]
@@ -2599,21 +2607,21 @@ export default function MemoDemo() {
 
 {% note success %}
 **換你試試：**
-在同一支元件再記住一串星號，`'★'.repeat(star)`，依賴仍是 `[star]`。評語下面顯示這串星號。
+在同一支元件再記住一段分數文字，`${star * 20} 分`，依賴仍是 `[star]`。評語下面顯示這段分數。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-星號的數量跟星等一樣，依賴仍是 `[star]`。星等是 3 時，畫面是 ★★★。改留言不重算；按加減讓星等改變時，星號才跟著變。
+分數只看星等，依賴仍是 `[star]`。預設五顆星時，畫面是「100 分」。改留言不重算；點星星讓星等改變時，分數才跟著變。
 
 ```diff 03-react/src/demos/84-memo.jsx
  // ...
    }, [star]);
-+  const stars = useMemo(() => '★'.repeat(star), [star]);
++  const score = useMemo(() => `${star * 20} 分`, [star]);
  // ...
        <p>評語 {label}</p>
-+      <p>{stars}</p>
++      <p>{score}</p>
  // ...
 ```
 
@@ -2622,6 +2630,365 @@ export default function MemoDemo() {
 {% note info %}
 React Compiler 可以在建置時自動記住這類計算結果。這份專案沒有啟用它。
 {% endnote %}
+
+## 選讀：memo
+
+父層一重渲染，子元件預設也會跟著重渲染，就算交給它的 props 跟上次一模一樣。`memo` 把元件包起來之後，父層重渲染時會先比對 props；每一個 props 都和上次相同，就跳過這次渲染，沿用上次的畫面。
+
+下面先看沒有使用 `memo` 時子元件怎麼被拖著重渲染，再把同一支範例改成 `memo` 對照效果。
+
+### 沒有使用 memo 時
+
+父層重渲染時，子元件會一起重渲染，即使 props 沒變。
+
+下面繼續用評價留言。父層有留言輸入框與五顆星按鈕；`StarView` 是子元件，只接收目前的星等，畫出五顆亮暗星星，每次渲染印出「星星列渲染」。
+
+```jsx
+import { useState } from 'react';
+
+function StarView({ star }) {
+  console.log('星星列渲染');
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span key={n} className="text-2xl text-amber-500">
+          {n <= star ? '★' : '☆'}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export default function MemoComponentDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(5);
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>輸入字數 {text.length}</p>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            className="text-2xl text-amber-500"
+            onClick={() => setStar(n)}
+          >
+            {n <= star ? '★' : '☆'}
+          </button>
+        ))}
+      </div>
+      <StarView star={star} />
+      <p>星等 {star}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- `StarView` 只看 `star` 決定哪幾顆亮。點父層的星星按鈕會改星等，子元件跟著重渲染，這是應該的。
+- 在留言欄打字會呼叫 `setText`，父層 `MemoComponentDemo` 重渲染。
+- 星等沒變，`StarView` 收到的 props 也沒變，卻還是一起重渲染，Console 每次按鍵都印「星星列渲染」。這就是浪費。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> parentNode["父層重渲染"]
+  parentNode --> childNode["星星列又渲染一次"]
+  style textNode fill:#e3f2fd
+  style parentNode fill:#fff3e0
+  style childNode fill:#ffcdd2
+{% endmermaid %}
+
+### 使用 memo
+
+`memo` 包起來的元件，在父層重渲染時會先比對 props。每一個 props 都和上次相同，就跳過這次渲染，沿用上次的畫面。
+
+同一支範例把 `StarView` 用 `memo` 包起來。
+
+```jsx 03-react/src/demos/86-memo-component.jsx
+import { memo, useState } from 'react';
+
+const StarView = memo(function StarView({ star }) {
+  console.log('星星列渲染');
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <span key={n} className="text-2xl text-amber-500">
+          {n <= star ? '★' : '☆'}
+        </span>
+      ))}
+    </div>
+  );
+});
+
+export default function MemoComponentDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(5);
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>輸入字數 {text.length}</p>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            className="text-2xl text-amber-500"
+            onClick={() => setStar(n)}
+          >
+            {n <= star ? '★' : '☆'}
+          </button>
+        ))}
+      </div>
+      <StarView star={star} />
+      <p>星等 {star}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 留言打字時父層仍會重渲染，但 `star` 沒變，`memo` 判定 props 相同，星星列跳過渲染，Console 不再印「星星列渲染」。
+- 點星星改了星等，`star` 這個 props 變了，星星列才重渲染並再印一次。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> parentNode["父層重渲染"]
+  parentNode --> sameNode["props 沒變"]
+  sameNode --> skipNode["星星列跳過渲染"]
+  starNode["星等改變"] --> redoNode["星星列重渲染"]
+  style textNode fill:#e3f2fd
+  style parentNode fill:#fff3e0
+  style sameNode fill:#fff3e0
+  style skipNode fill:#e8f5e9
+  style starNode fill:#e3f2fd
+  style redoNode fill:#ffcdd2
+{% endmermaid %}
+
+{% note info %}
+`useMemo` 記住的是元件裡面算出來的值，少的是重算，元件本身還是會渲染。`memo` 包的是整個元件，props 沒變就連渲染都跳過。`memo` 比對 props 時用的是 `Object.is`：數字、字串相同就算過，但每次渲染都新建的物件或函式，即使內容一樣，也會被判定成不同，`memo` 就擋不住。下一節的 `useCallback` 就是用來記住函式，避免這種情況。
+{% endnote %}
+
+{% note success %}
+**換你試試：**
+在 `StarView` 再傳一個每次都新建的 `style` 物件（顏色設成 orange），再到留言欄打字，看 Console 怎麼印。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+每次父層渲染都會做出一個新的物件，`memo` 用 `Object.is` 比對時判定 props 不同，星星列又跟著重渲染，每打一個字都印「星星列渲染」。
+
+```diff 03-react/src/demos/86-memo-component.jsx
+ // ...
+-      <StarView star={star} />
++      <StarView star={star} style={{ color: 'orange' }} />
+ // ...
+```
+
+</details>
+
+## 選讀：useCallback
+
+上一節的 `memo` 靠比對 props 決定要不要跳過渲染。元件每次重新渲染，寫在函式裡的事件處理函式也會重新建立一份；內容一樣，卻是新的函式。把它當 props 交給 `memo` 包起來的子元件時，子元件每次都會收到「不同的」props，`memo` 就擋不住。`useCallback` 的作用是把函式記住，依賴沒變就交出同一個函式，讓子元件判斷 props 沒變，跳過不必要的重渲染。
+
+下面先看沒有使用 `useCallback` 時子元件怎麼被拖著重渲染，再把同一支範例改成 `useCallback` 對照效果。
+
+### 沒有使用 useCallback 時
+
+下面把星星按鈕拆成子元件 `StarPicker`，用上一節的 `memo` 包起來，並交給它 `star` 與點選時要呼叫的 `onPick`。子元件每次渲染時印出「星星列渲染」。
+
+```jsx
+import { memo, useState } from 'react';
+
+const StarPicker = memo(function StarPicker({ star, onPick }) {
+  console.log('星星列渲染');
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          className="text-2xl text-amber-500"
+          onClick={() => onPick(n)}
+        >
+          {n <= star ? '★' : '☆'}
+        </button>
+      ))}
+    </div>
+  );
+});
+
+export default function UseCallbackDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(5);
+  const handlePick = (n) => {
+    setStar(n);
+  };
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>輸入字數 {text.length}</p>
+      <StarPicker star={star} onPick={handlePick} />
+      <p>星等 {star}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- `StarPicker` 收到 `star` 決定哪幾顆亮，點按鈕時呼叫 `onPick(n)`，由父層的 `handlePick` 把星等設成 `n`。
+- 在留言欄打字會呼叫 `setText`，父層 `UseCallbackDemo` 重渲染，`const handlePick = (n) => { ... }` 這行又建立一個新的函式。
+- `memo` 比對 props 時，`star` 沒變，`onPick` 卻是新的函式，所以判定 props 不同。星星列跟著重渲染，Console 每次按鍵都印「星星列渲染」。這就是浪費。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> parentNode["父層重渲染"]
+  parentNode --> fnNode["handlePick 變成新的函式"]
+  fnNode --> childNode["星星列又渲染一次"]
+  style textNode fill:#e3f2fd
+  style parentNode fill:#fff3e0
+  style fnNode fill:#fff3e0
+  style childNode fill:#ffcdd2
+{% endmermaid %}
+
+### 使用 useCallback
+
+`useCallback` 記住一個函式，並看依賴陣列。依賴沒變就交出上次那一個函式；依賴變了才換成這次的新函式。
+
+```jsx
+/**
+ * @param {function} fn 要記住的函式
+ * @param {Array} deps 依賴陣列。裡面的值變了才換成新的函式
+ * @returns {function} 依賴沒變時是上次那一個函式
+ */
+const handlePick = useCallback(fn, deps);
+```
+
+同一支範例把 `handlePick` 放進 `useCallback`，依賴是 `[]`。
+
+```jsx 03-react/src/demos/85-callback.jsx
+import { memo, useCallback, useState } from 'react';
+
+const StarPicker = memo(function StarPicker({ star, onPick }) {
+  console.log('星星列渲染');
+
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          className="text-2xl text-amber-500"
+          onClick={() => onPick(n)}
+        >
+          {n <= star ? '★' : '☆'}
+        </button>
+      ))}
+    </div>
+  );
+});
+
+export default function UseCallbackDemo() {
+  const [text, setText] = useState('');
+  const [star, setStar] = useState(5);
+  const handlePick = useCallback((n) => {
+    setStar(n);
+  }, []);
+
+  return (
+    <section className="grid max-w-sm gap-3">
+      <label className="grid gap-1">
+        留言
+        <input
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          className="rounded border px-2 py-1"
+        />
+      </label>
+      <p>輸入字數 {text.length}</p>
+      <StarPicker star={star} onPick={handlePick} />
+      <p>星等 {star}</p>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- `handlePick` 只呼叫 `setStar`。React 保證 `setStar` 每次渲染都是同一個函式，不必放進依賴，所以依賴是 `[]`。
+- 留言打字時父層仍會重渲染，但 `handlePick` 還是同一個函式。`memo` 比對到 `star` 和 `onPick` 都沒變，星星列跳過渲染，Console 不再印「星星列渲染」。
+- 點星星改了星等，`star` 這個 props 變了，星星列才重渲染並再印一次。
+
+{% mermaid graph TD %}
+  textNode["留言改變"] --> parentNode["父層重渲染"]
+  parentNode --> sameNode["handlePick 還是同一個"]
+  sameNode --> skipNode["星星列跳過渲染"]
+  starNode["星等改變"] --> redoNode["星星列重渲染"]
+  style textNode fill:#e3f2fd
+  style parentNode fill:#fff3e0
+  style sameNode fill:#fff3e0
+  style skipNode fill:#e8f5e9
+  style starNode fill:#e3f2fd
+  style redoNode fill:#ffcdd2
+{% endmermaid %}
+
+{% note info %}
+`useCallback` 要搭配 `memo` 包起來的子元件才有效果。子元件沒有 `memo` 時，父層一重渲染它就跟著重渲染，函式是不是同一個都沒差。這裡的星星列只有五顆按鈕，重渲染的負擔很小，實務上不必為它加 `memo` 與 `useCallback`。子元件畫的是很長的清單或很重的畫面時，跳過渲染才有明顯效果。
+{% endnote %}
+
+{% note success %}
+**換你試試：**
+把 `StarPicker` 外面的 `memo` 拿掉，`useCallback` 保留，再到留言欄打字，看 Console 怎麼印。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+拿掉 `memo` 後，父層一重渲染，星星列就跟著重渲染，每打一個字都印「星星列渲染」。`handlePick` 雖然還是同一個函式，但沒有人去比對 props，`useCallback` 就沒有效果。
+
+```diff 03-react/src/demos/85-callback.jsx
+-import { memo, useCallback, useState } from 'react';
++import { useCallback, useState } from 'react';
+
+-const StarPicker = memo(function StarPicker({ star, onPick }) {
++function StarPicker({ star, onPick }) {
+   console.log('星星列渲染');
+ // ...
+   );
+-});
++}
+ // ...
+```
+
+</details>
 
 ## 選讀：useRef
 
@@ -3675,7 +4042,7 @@ export default function OptimisticDemo() {
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
 - 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
 - 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。分檔時把同一示範收進資料夾，`createContext` 只建一次再 import。
-- useMemo、ref、reducer 與表單 Actions 是選讀。依賴沒變時 `useMemo` 沿用上次的值；ref 與 reducer 則是 `const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
+- useMemo、memo、useCallback、ref、reducer 與表單 Actions 是選讀。`useMemo` 記住計算結果，元件仍會渲染；`memo` 在 props 沒變時讓子元件跳過重渲染；`useCallback` 記住函式，避免新建的函式把 `memo` 弄失效。ref 與 reducer 則是 `const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
 
@@ -3696,6 +4063,7 @@ export default function OptimisticDemo() {
 - 屬性鑽孔（prop drilling）
 - 情境（context）
 - 記憶化（memoization）
+- 記憶化元件（memo）
 - 參考（ref）
 - 歸納函式（reducer）
 - 動作（action）

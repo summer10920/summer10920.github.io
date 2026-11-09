@@ -2685,9 +2685,6 @@ export default function TourDetailPage() {
       ? `${tour.title} · 洛奇旅行`
       : '找不到頁面 · 洛奇旅行';
   }, [tour]);
-  useEffect(() => {
-    setDepartureId(tour?.departures[0]?.id ?? '');
-  }, [tour]);
   if (!tour) return <Placeholder title="找不到頁面" />;
 
   const selected =
@@ -2832,49 +2829,24 @@ export default function TourDetailPage() {
 **解析**
 
 - `useParams` 的 `id` 對不到行程時，先渲染佔位頁。找不到頁的元件留到最後一節再換上。
-- 分頁標題用行程名稱。選中的梯次預設第一筆，行程換了再重設。
+- 分頁標題用行程名稱。選中的梯次預設第一筆。
 - 左欄是回列表的連結、地區與主題標籤、圖集、亮點、每日行程與費用。寬螢幕右欄用 `sticky` 停在離頂一段的位置；id 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
 - 右欄用按鈕選一個出發日，每顆按鈕寫出剩餘人數。選中那顆換成操作色邊與 mist 底。窄螢幕改渲染 `DepartureList`，底部另外固定一條價格與報名列。
 - 右側選梯與底部固定列的「立即報名」使用 `bookTo`，網址是 `/booking?tourId=` 加上這筆行程 id，以及 `departureId=` 加上選到的梯次。
 
 接著把詳情路徑換上。
 
-```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import { StoreProvider } from './store.jsx';
-import SiteLayout from './layout/SiteLayout.jsx';
-import HomePage from './features/home/HomePage.jsx';
-import ToursPage from './features/tours/ToursPage.jsx';
-import TourDetailPage from './features/tours/TourDetailPage.jsx';
-import Placeholder from './_shared/Placeholder.jsx';
-
-const router = createBrowserRouter([
-  {
-    element: <SiteLayout />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: 'tours', element: <ToursPage /> },
-      { path: 'tours/:id', element: <TourDetailPage /> },
-      { path: 'booking', element: <Placeholder title="報名" /> },
-      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
-      { path: 'me', element: <Placeholder title="我的報名" /> },
-      { path: 'about', element: <Placeholder title="關於" /> },
-      { path: 'login', element: <Placeholder title="登入提示" /> },
-      { path: 'admin/login', element: <Placeholder title="後台登入" /> },
-      { path: 'admin', element: <Placeholder title="後台行程" /> },
-      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
-      { path: '*', element: <Placeholder title="找不到頁面" /> },
-    ],
-  },
-]);
-
-export default function App() {
-  return (
-    <StoreProvider>
-      <RouterProvider router={router} />
-    </StoreProvider>
-  );
-}
+```diff 06-project-init/src/App.jsx
+ // ...
+ import ToursPage from './features/tours/ToursPage.jsx';
++import TourDetailPage from './features/tours/TourDetailPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'tours', element: <ToursPage /> },
+-      { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
++      { path: 'tours/:id', element: <TourDetailPage /> },
+       { path: 'booking', element: <Placeholder title="報名" /> },
+ // ...
 ```
 
 **解析**
@@ -5582,7 +5554,6 @@ export default function NotFoundPage() {
 +import NotFoundPage from '../../pages/NotFoundPage.jsx';
  import { ntd, seatsLeft } from '../../format.js';
  // ...
-   useEffect(() => { setDepartureId(tour?.departures[0]?.id ?? ''); }, [tour]);
 -  if (!tour) return <Placeholder title="找不到頁面" />;
 +  if (!tour) return <NotFoundPage />;
  
