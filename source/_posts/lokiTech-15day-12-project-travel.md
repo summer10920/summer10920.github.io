@@ -3258,7 +3258,8 @@ export default function Gallery({ images, title }) {
             type="button"
             aria-label={`顯示${title}第 ${index + 1} 張`}
             onClick={() => setActive(index)}
-            className={`h-20 w-28 shrink-0 rounded-2xl ring-2 ring-offset-2 ring-offset-paper focus-visible:outline-none focus-visible:ring-action ${index === active ? 'ring-action' : 'ring-transparent'}`}
+            disabled={index === active}
+            className="h-20 w-28 shrink-0 opacity-60 disabled:opacity-100"
           >
             <img
               className="h-full w-full rounded-2xl object-cover"
@@ -3278,8 +3279,7 @@ export default function Gallery({ images, title }) {
 **解析**
 
 - `active` 記住目前大圖的索引。沒有圖片時不渲染。
-- 大圖的 alt 用 `title`。縮圖的 alt 留空；點一張就換成大圖，當前那張外框換成操作色。
-- 全站的鍵盤焦點會再畫一圈外框。縮圖按鈕已有圓角 ring，兩圈疊在一起會撐破橫向捲動列，所以焦點改跟選中狀態用同一圈 ring，不再疊預設外框。
+- 大圖的 alt 用 `title`。縮圖的 alt 留空；點一張就換成大圖，縮圖預設調暗成 `opacity-60`；目前那張設為 `disabled`（已經在看，不必再按），由 `disabled:opacity-100` 恢復全亮，看得出目前顯示的是哪一張。
 - 縮圖列超出寬度時可以橫向捲動。
 
 ### 步驟 4：每日行程
@@ -3439,15 +3439,27 @@ export default function DepartureList({ tour, bookings }) {
 
 直接打開 `/booking` 就看得到這一頁。姓名與 email 先用範例「林可／lin@example.com」畫成唯讀欄位，成品會改由 Google 帳號帶入。電話才讓使用者填，小計隨著人數變。
 
-這一節要組出 `BookingPage` 與 `BookingForm`。下面先組出這一頁並接到路由，表單先放標記，再換成真正的元件。
+這一節要組出 `BookingPage`。先組出這一頁並接到路由，三個零件先放標記，再逐一換成真正的元件。畫面拆成這些零件：
+
+- `BookingSteps`
+- `BookingForm`
+- `BookingSummary`
 
 {% mermaid graph TD %}
-  page["BookingPage"] --> form["BookingForm"]
+  page["BookingPage"] --> steps["BookingSteps"]
+  page --> form["BookingForm"]
+  page --> summary["BookingSummary"]
 {% endmermaid %}
 
 ### 步驟 1：組出 BookingPage
 
-先把報名頁組起來並接到路由。表單先只顯示標記。
+先把報名頁組起來並接到路由，後面換零件時才能在畫面上對照。步驟條、表單與右側摘要先放標記。
+
+```jsx 06-project-init/src/features/booking/components/BookingSteps.jsx
+export default function BookingSteps() {
+  return <p>步驟條</p>;
+}
+```
 
 ```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
 export default function BookingForm() {
@@ -3459,7 +3471,13 @@ export default function BookingForm() {
 }
 ```
 
-報名表單先放 placeholder。送出報名要寫進 Store，提示訊息要經過 `SiteLayout`，步驟圓點也在這一步換上；表單之後換成真正的元件時就能送出。
+```jsx 06-project-init/src/features/booking/components/BookingSummary.jsx
+export default function BookingSummary() {
+  return <aside>這趟行程</aside>;
+}
+```
+
+送出報名要寫進 Store，提示訊息要經過 `SiteLayout`；表單之後換成真正的元件時就能送出。
 
 ```diff 06-project-init/src/store.jsx
  // ...
@@ -3516,99 +3534,19 @@ export default function BookingForm() {
 **解析**
 
 - `notice` 有字時打開 Snackbar，約 3.2 秒後或按下關閉會呼叫 `clearNotice`。位置在畫面下方置中。
-- 裡面是一則填色的成功 `Alert`，文字就是 `notice`。
+- 裡面是一則填色的成功 `Alert`，文字就是 `notice`。提示框的外觀等本節最後一步再補進主題。
 - Snackbar 加在 `SiteFooter` 與 `ScrollRestoration` 之間。換頁捲動仍交給 `ScrollRestoration`。
 
-提示框的圓角、色票與圖示補進主題。關閉鈕也改成圖示字型。
-
-```diff 06-project-init/src/theme.js
- // ...
- const SelectArrow = ({ className }) => ms('expand_more', { className });
-+const CloseIcon = () => ms('close');
- 
- const theme = createTheme({
-   cssVariables: true,
-   palette: {
- // ...
-     error: { main: tokens.alert, contrastText: tokens.white },
-+    info: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
-+    success: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
-+    Alert: {
-+      infoColor: tokens.ink,
-+      infoStandardBg: tokens.mist,
-+      infoIconColor: tokens.action,
-+      successColor: tokens.action,
-+      successStandardBg: tokens.mist,
-+      successIconColor: tokens.action,
-+    },
-     text: { primary: tokens.ink, secondary: tokens.muted },
- // ...
-         emptyIcon: ms('star'),
-       },
-     },
-+    MuiAlert: {
-+      defaultProps: {
-+        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
-+        slots: { closeIcon: CloseIcon },
-+      },
-+      styleOverrides: {
-+        root: { borderRadius: 16, alignItems: 'center' },
-+      },
-+    },
-   },
- // ...
-```
-
-**解析**
-
-- `iconMapping` 把成功、資訊、警告、錯誤換成 `check_circle`、`info`、`warning`、`error`。關閉鈕用 `ms('close')`。
-- 外框圓角 16，內容垂直置中。
-- 這份主題開了 `cssVariables`，標準提示的底色、文字與圖示色來自 `palette.Alert`。資訊用 mist 底、ink 字、操作色圖示；成功用 mist 底、操作色字與圖示。這些色票會蓋掉 Material UI 預設的資訊藍。
-- 這一則填色的成功提示，以及之後頁面的警告與錯誤提示，都會套到這組。
-
-步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
-
-```diff 06-project-init/src/theme.js
- // ...
- const CloseIcon = () => ms('close');
-+const StepIcon = ({ active, completed, icon }) => {
-+  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
-+  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
-+  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
-+};
- 
- const theme = createTheme({
- // ...
-         emptyIcon: ms('star'),
-       },
-     },
-+    MuiStepLabel: {
-+      defaultProps: { slots: { stepIcon: StepIcon } },
-+    },
-     MuiAlert: {
- // ...
-```
-
-**解析**
-
-- 完成的步驟是操作色圓底，裡面是 `check`。進行中的步驟同樣是操作色圓底，文字是步驟編號；還沒到的用線條底與 muted 字。
-- 寫在 `MuiStepLabel` 的 `slots.stepIcon`，之後的 Stepper 都會換成這組。
-
-接著組出報名頁。
+接著把步驟條、表單與摘要組進報名頁。這三個目前是標記。然後把路由表裡的報名佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingPage.jsx
 import { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router';
-import Alert from '@mui/material/Alert';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
+import { useSearchParams } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
-import { ntd } from '../../format.js';
+import BookingSteps from './components/BookingSteps.jsx';
+import BookingSummary from './components/BookingSummary.jsx';
 import { useStore } from '../../store.jsx';
-
-const steps = ['選出發日', '填寫資料', '送出確認'];
 
 export default function BookingPage() {
   const { tours } = useStore();
@@ -3628,68 +3566,16 @@ export default function BookingPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
-      <Stepper
-        activeStep={1}
-        alternativeLabel
-        className="mb-10"
-        sx={{
-          '& .MuiStepLabel-label': {
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            marginTop: '8px',
-          },
-        }}
-      >
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <BookingSteps activeStep={1} />
       <Typography variant="h1">報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         這一章先用範例資料畫出姓名與 email。成品會用 Google
         帳號帶入。請留下電話，我們會用 email 確認。
       </p>
-      {!tour || !departure ? (
-        <Alert className="mt-8" severity="warning">
-          找不到這趟行程或出發日。
-          <Link className="ml-2 underline" to="/tours">
-            回行程
-          </Link>
-        </Alert>
-      ) : (
-        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
-          <BookingForm tour={tour} departure={departure} />
-          <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
-            <Typography variant="h2">這趟行程</Typography>
-            <dl className="mt-5 grid gap-4 text-base">
-              <div>
-                <dt className="text-muted">行程</dt>
-                <dd className="mt-1 text-lg font-medium">{tour.title}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">出發日</dt>
-                <dd className="mt-1 text-lg">{departure.date}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">天數</dt>
-                <dd className="mt-1 text-lg">{tour.days} 天</dd>
-              </div>
-              <div>
-                <dt className="text-muted">每人</dt>
-                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">
-                  {ntd(tour.price)}
-                  <span className="font-sans text-base font-normal text-muted">
-                    {' '}
-                    / 人
-                  </span>
-                </dd>
-              </div>
-            </dl>
-          </aside>
-        </div>
-      )}
+      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
+        <BookingForm tour={tour} departure={departure} />
+        <BookingSummary tour={tour} departure={departure} />
+      </div>
     </main>
   );
 }
@@ -3697,9 +3583,8 @@ export default function BookingPage() {
 
 **解析**
 
-- Stepper 的 `activeStep` 是 1，停在「填寫資料」。直接打開 `/booking` 就看得到這一頁。
-- 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程或梯次缺一，就顯示警告與回行程的連結。
-- 有資料時左欄是 `BookingForm`，右欄列出標題、出發日、天數與每人價格。大螢幕右欄用 `sticky` 停在離頂一段的位置。
+- 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。
+- 左欄是 `BookingForm`，右欄是 `BookingSummary`。大螢幕右欄用 `sticky` 停在離頂一段的位置，等換成真正的摘要就能對照。
 
 接著把 `/booking` 換成這一頁。
 
@@ -3720,9 +3605,79 @@ export default function BookingPage() {
 
 - `/booking` 從 `Placeholder` 換成 `BookingPage`。完成頁仍是佔位。
 
-### 步驟 2：報名表單
+### 步驟 2：步驟條
 
-文字欄的外框圓角補進主題。
+把步驟條的 placeholder 換成真正的元件。報名頁與完成頁共用同一組步驟文字與樣式。
+
+步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const SelectArrow = ({ className }) => ms('expand_more', { className });
++const StepIcon = ({ active, completed, icon }) => {
++  const base = 'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold';
++  if (completed) return createElement('span', { className: `${base} bg-action text-white` }, ms('check', { style: { fontSize: 20 } }));
++  return createElement('span', { className: `${base} ${active ? 'bg-action text-white' : 'bg-line text-muted'}` }, icon);
++};
+ 
+ const theme = createTheme({
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
++    MuiStepLabel: {
++      defaultProps: { slots: { stepIcon: StepIcon } },
++    },
+ // ...
+```
+
+**解析**
+
+- 完成的步驟是操作色圓底，裡面是 `check`。進行中的步驟同樣是操作色圓底，文字是步驟編號；還沒到的用線條底與 muted 字。
+- 寫在 `MuiStepLabel` 的 `slots.stepIcon`，之後的 Stepper 都會換成這組。
+
+接著換成真正的步驟條元件。
+
+```jsx 06-project-init/src/features/booking/components/BookingSteps.jsx
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+
+const steps = ['選出發日', '填寫資料', '送出確認'];
+
+export default function BookingSteps({ activeStep }) {
+  return (
+    <Stepper
+      activeStep={activeStep}
+      alternativeLabel
+      className="mb-10"
+      sx={{
+        '& .MuiStepLabel-label': {
+          fontSize: '1.125rem',
+          fontWeight: 700,
+          marginTop: '8px',
+        },
+      }}
+    >
+      {steps.map((label) => (
+        <Step key={label}>
+          <StepLabel>{label}</StepLabel>
+        </Step>
+      ))}
+    </Stepper>
+  );
+}
+```
+
+**解析**
+
+- `steps` 是「選出發日」「填寫資料」「送出確認」三步，寫在這個元件裡。報名頁與完成頁共用同一組文字與樣式。
+- 父層傳入 `activeStep`。第一步「選出發日」已在詳情頁選梯次時完成，所以報名頁的 `activeStep` 是 1，停在「填寫資料」。
+- 標籤的字級與字重寫在 `sx` 裡。
+
+### 步驟 3：報名表單
+
+把報名表單的 placeholder 換成真正的元件。文字欄的外框圓角補進主題。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -3742,7 +3697,7 @@ export default function BookingPage() {
 
 - `MuiOutlinedInput` 覆寫圓角 16 與白底，報名表的文字欄會套到。
 
-接著把報名表單的 placeholder 換成真正的元件。
+接著換成真正的報名表單。
 
 ```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
@@ -3861,15 +3816,149 @@ export default function BookingForm({ tour, departure }) {
 - 送出時先 `preventDefault`。通過檢查後呼叫 `createBooking`，帶上行程、梯次、人數、預覽姓名與 email、電話與小計，再導到 `/booking/done`。
 - 表單的 `id` 是 `booking-form`。上方的成功 `Alert` 寫出同一組預覽姓名與 email。
 
+### 步驟 4：這趟行程
+
+把右側摘要的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/booking/components/BookingSummary.jsx
+import Typography from '@mui/material/Typography';
+import { ntd } from '../../../format.js';
+
+export default function BookingSummary({ tour, departure }) {
+  return (
+    <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
+      <Typography variant="h2">這趟行程</Typography>
+      <dl className="mt-5 grid gap-4 text-base">
+        <div>
+          <dt className="text-muted">行程</dt>
+          <dd className="mt-1 text-lg font-medium">{tour.title}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">出發日</dt>
+          <dd className="mt-1 text-lg">{departure.date}</dd>
+        </div>
+        <div>
+          <dt className="text-muted">天數</dt>
+          <dd className="mt-1 text-lg">{tour.days} 天</dd>
+        </div>
+        <div>
+          <dt className="text-muted">每人</dt>
+          <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">
+            {ntd(tour.price)}
+            <span className="font-sans text-base font-normal text-muted">
+              {' '}
+              / 人
+            </span>
+          </dd>
+        </div>
+      </dl>
+    </aside>
+  );
+}
+```
+
+**解析**
+
+- 右側列出標題、出發日、天數與每人價格。大螢幕用 `sticky` 停在離頂一段的位置。
+- 行程與梯次由父層傳入，這一層只負責畫摘要。
+
+### 步驟 5：找不到行程
+
+提示框的圓角、色票與圖示補進主題。關閉鈕也改成圖示字型。接著為報名頁補上防呆：網址對不到行程時，改顯示警告與回行程的連結。
+
+```diff 06-project-init/src/theme.js
+ // ...
+ const SelectArrow = ({ className }) => ms('expand_more', { className });
++const CloseIcon = () => ms('close');
+ const StepIcon = ({ active, completed, icon }) => {
+ // ...
+     error: { main: tokens.alert, contrastText: tokens.white },
++    info: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
++    success: { main: tokens.action, light: tokens.mist, dark: tokens.actionHover, contrastText: tokens.white },
++    Alert: {
++      infoColor: tokens.ink,
++      infoStandardBg: tokens.mist,
++      infoIconColor: tokens.action,
++      successColor: tokens.action,
++      successStandardBg: tokens.mist,
++      successIconColor: tokens.action,
++    },
+     text: { primary: tokens.ink, secondary: tokens.muted },
+ // ...
+         emptyIcon: ms('star'),
+       },
+     },
+     MuiStepLabel: {
+       defaultProps: { slots: { stepIcon: StepIcon } },
+     },
++    MuiAlert: {
++      defaultProps: {
++        iconMapping: { success: ms('check_circle'), info: ms('info'), warning: ms('warning'), error: ms('error') },
++        slots: { closeIcon: CloseIcon },
++      },
++      styleOverrides: {
++        root: { borderRadius: 16, alignItems: 'center' },
++      },
++    },
+ // ...
+```
+
+**解析**
+
+- `iconMapping` 把成功、資訊、警告、錯誤換成 `check_circle`、`info`、`warning`、`error`。關閉鈕用 `ms('close')`。
+- 外框圓角 16，內容垂直置中。
+- 這份主題開了 `cssVariables`，標準提示的底色、文字與圖示色來自 `palette.Alert`。資訊用 mist 底、ink 字、操作色圖示；成功用 mist 底、操作色字與圖示。這些色票會蓋掉 Material UI 預設的資訊藍。
+- 報名頁接下來這則警告、表單裡的成功與錯誤提示，以及 `SiteLayout` 那則填色成功提示，都會套到這組。完成頁的成功提示也會沿用。
+
+```diff 06-project-init/src/features/booking/BookingPage.jsx
+ import { useEffect } from 'react';
+-import { useSearchParams } from 'react-router';
++import { Link, useSearchParams } from 'react-router';
++import Alert from '@mui/material/Alert';
+ import Typography from '@mui/material/Typography';
+ // ...
+       </p>
+-      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
+-        <BookingForm tour={tour} departure={departure} />
+-        <BookingSummary tour={tour} departure={departure} />
+-      </div>
++      {!tour || !departure ? (
++        <Alert className="mt-8" severity="warning">
++          找不到這趟行程或出發日。
++          <Link className="ml-2 underline" to="/tours">
++            回行程
++          </Link>
++        </Alert>
++      ) : (
++        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
++          <BookingForm tour={tour} departure={departure} />
++          <BookingSummary tour={tour} departure={departure} />
++        </div>
++      )}
+     </main>
+ // ...
+```
+
+**解析**
+
+- 網址沒帶 `tourId` 時，仍用預設的 `hualien-taroko`，會畫出那一筆的表單，不會進到這則警告。
+- 有帶 `tourId` 但對不到任何行程時，例如手動改過網址，才顯示警告 `Alert`，並附上回行程的連結。
+- 沒帶 `departureId`，或帶了但對不到時，出發日改用第一梯，不會因此顯示警告。只有對到的行程本身沒有出發日時，才會和找不到行程走同一則警告。
+
 ## 報名完成
 
 直接打開 `/booking/done` 也看得到這一頁。記憶體裡還沒有剛送出的那一筆時，畫面用寫在頁面裡的範例，狀態是待確認。
 
-這一節沒有再拆畫面零件。
+這一節要組出 `BookingDonePage`。步驟條沿用上一節的 `BookingSteps`，明細先放標記，再換成 `BookingReceipt`。
+
+{% mermaid graph TD %}
+  page["BookingDonePage"] --> steps["BookingSteps"]
+  page --> receipt["BookingReceipt"]
+{% endmermaid %}
 
 ### 步驟 1：組出 BookingDonePage
 
-狀態對照先寫進 `format.js`，再寫完成頁。寫完後下一步接到路由，重整就能看到這一頁。
+先把完成頁組起來並接到路由，後面換零件時才能在畫面上對照。狀態對照先寫進 `format.js`，明細先放標記。步驟條沿用上一節已經換成的 `BookingSteps`。
 
 三個狀態代碼對到中文，完成頁和後面的報名清單都讀這一份。
 
@@ -3882,7 +3971,15 @@ export default function BookingForm({ tour, departure }) {
  // ...
 ```
 
-接著寫完成頁。
+明細先放標記。
+
+```jsx 06-project-init/src/features/booking/components/BookingReceipt.jsx
+export default function BookingReceipt() {
+  return <div>這筆內容</div>;
+}
+```
+
+接著組出完成頁。步驟條沿用 `BookingSteps`，`activeStep` 是 2。明細目前是標記。然後把路由表裡的完成頁佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingDonePage.jsx
 import { useEffect } from 'react';
@@ -3890,14 +3987,12 @@ import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import { ntd, statusLabel } from '../../format.js';
+import BookingReceipt from './components/BookingReceipt.jsx';
+import BookingSteps from './components/BookingSteps.jsx';
+import { statusLabel } from '../../format.js';
 import { useStore } from '../../store.jsx';
 
-const steps = ['選出發日', '填寫資料', '送出確認'];
 const sample = {
   tourTitle: '花蓮太魯閣與七星潭四日',
   date: '2026-12-18',
@@ -3919,13 +4014,7 @@ export default function BookingDonePage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
-      <Stepper activeStep={2} alternativeLabel className="mb-8">
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
       <Typography variant="h1" className="mt-3 max-w-[10em]">
         報名已送出
@@ -3933,6 +4022,56 @@ export default function BookingDonePage() {
       <Alert className="mt-4 max-w-prose" severity="success">
         我們會用 email 再跟你確認。目前狀態為待確認。
       </Alert>
+      <BookingReceipt row={row} />
+      <div className="mt-8 flex flex-wrap gap-3">
+        <Button component={Link} to="/me" variant="contained">
+          看我的報名
+        </Button>
+        <Button component={Link} to="/tours" variant="outlined">
+          回行程
+        </Button>
+      </div>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- 有 `lastBooking` 就顯示那一筆，否則用頁內的 `sample`，狀態是待確認。這筆範例不寫進 `mock.data.js`。直接打開 `/booking/done` 也看得到這筆範例。
+- `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。
+- 成功 `Alert` 沿用上一節補進主題的提示框外觀。明細目前是標記，下一步再換成 `BookingReceipt`。兩顆按鈕分別去我的報名與行程列表。
+
+接著把 `/booking/done` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import BookingPage from './features/booking/BookingPage.jsx';
++import BookingDonePage from './features/booking/BookingDonePage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'booking', element: <BookingPage /> },
+-      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
++      { path: 'booking/done', element: <BookingDonePage /> },
+       { path: 'me', element: <Placeholder title="我的報名" /> },
+ // ...
+```
+
+**解析**
+
+- `/booking/done` 從 `Placeholder` 換成 `BookingDonePage`。
+
+### 步驟 2：這筆內容
+
+把明細的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/booking/components/BookingReceipt.jsx
+import Typography from '@mui/material/Typography';
+import { ntd, statusLabel } from '../../../format.js';
+
+export default function BookingReceipt({ row }) {
+  return (
+    <>
       <Typography variant="h2" className="mt-10">
         這筆內容
       </Typography>
@@ -3959,56 +4098,31 @@ export default function BookingDonePage() {
           </div>
         ))}
       </dl>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Button component={Link} to="/me" variant="contained">
-          看我的報名
-        </Button>
-        <Button component={Link} to="/tours" variant="outlined">
-          回行程
-        </Button>
-      </div>
-    </main>
+    </>
   );
 }
 ```
 
 **解析**
 
-- 有 `lastBooking` 就顯示那一筆，否則用頁內的 `sample`，狀態是待確認。這筆範例不寫進 `mock.data.js`。直接打開 `/booking/done` 也看得到這筆範例。
-- Stepper 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。
-- 明細列出行程、日期、人數與小計。小計那一列用較大的操作色數字；狀態對不到對照表時，明細改顯示原本的代碼。
-- 兩顆按鈕分別去我的報名與行程列表。
-
-### 步驟 2：接到路由
-
-接著把 `/booking/done` 換成這一頁。
-
-```diff 06-project-init/src/App.jsx
- // ...
- import BookingPage from './features/booking/BookingPage.jsx';
-+import BookingDonePage from './features/booking/BookingDonePage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'booking', element: <BookingPage /> },
--      { path: 'booking/done', element: <Placeholder title="報名完成" /> },
-+      { path: 'booking/done', element: <BookingDonePage /> },
-       { path: 'me', element: <Placeholder title="我的報名" /> },
- // ...
-```
-
-**解析**
-
-- `/booking/done` 從 `Placeholder` 換成 `BookingDonePage`。
+- 明細列出行程、日期、人數、電話與小計。小計那一列用較大的操作色數字。
+- 狀態用 `statusLabel` 換成中文；對不到對照表時，明細改顯示原本的代碼。
 
 ## 我的報名
 
 直接打開 `/me` 就列出 `mySamples`。這四筆是預覽清單，欄位比後台那四筆少，而且不放進同一個匯出。
 
-這一節沒有再拆畫面零件。
+這一節要組出 `MyBookingsPage`。先組出這一頁並接到路由，單筆列先放標記，再換成真正的元件，最後再補還沒有報名時的提示。畫面拆成這個零件：
+
+- `MyBookingRow`
+
+{% mermaid graph TD %}
+  page["MyBookingsPage"] --> row["MyBookingRow"]
+{% endmermaid %}
 
 ### 步驟 1：組出 MyBookingsPage
 
-範例先寫進 `mock.data.js`，再寫我的報名頁。寫完後下一步接到路由，重整就能看到這一頁。
+範例先寫進 `mock.data.js`，再把單筆列先放標記，組出我的報名頁並接到路由。
 
 ```diff 06-project-init/src/features/booking/mock.data.js
  // ...
@@ -4023,16 +4137,93 @@ export default function BookingDonePage() {
 +];
 ```
 
-接著寫我的報名頁。
+單筆列先放標記。
+
+```jsx 06-project-init/src/features/booking/components/MyBookingRow.jsx
+export default function MyBookingRow() {
+  return <article className="py-6">單筆報名</article>;
+}
+```
+
+接著組出我的報名頁。單筆列目前是標記。清單先一律畫出來。
 
 ```jsx 06-project-init/src/features/booking/MyBookingsPage.jsx
 import { useEffect } from 'react';
-import { Link } from 'react-router';
-import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import MyBookingRow from './components/MyBookingRow.jsx';
+import { mySamples } from './mock.data.js';
+
+export default function MyBookingsPage() {
+  useEffect(() => {
+    document.title = '我的報名 · 洛奇旅行';
+  }, []);
+
+  return (
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
+      <Typography variant="h1">我的報名</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        這一頁用範例清單預覽報名長什麼樣子。成品會依 Google
+        帳號讀自己的報名。如需改期或取消，請來信或來電。
+      </p>
+      <Typography variant="h2" className="mt-10">
+        你的報名
+      </Typography>
+      <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
+        {mySamples.map((item) => (
+          <MyBookingRow
+            key={`${item.title}-${item.date}`}
+            status={item.status}
+            title={item.title}
+            date={item.date}
+            people={item.people}
+            phone={item.phone}
+            subtotal={item.subtotal}
+          />
+        ))}
+      </div>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- 清單就是 `mySamples`，不依 email 過濾，也不讀 Store 裡剛送出的那幾筆。
+- 後台那四筆種子不會出現在這一頁。
+- 標題「你的報名」與列表外框先組在頁面上。每一筆先渲染 `MyBookingRow` 標記。
+- 清單目前一律畫出來。空陣列時的提示，最後一步再補。
+- 副標是靜態說明。這一頁沒有取消按鈕。
+
+接著把 `/me` 換成這一頁。
+
+```diff 06-project-init/src/App.jsx
+ // ...
+ import BookingDonePage from './features/booking/BookingDonePage.jsx';
++import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
+ // ...
+       { path: 'booking/done', element: <BookingDonePage /> },
+-      { path: 'me', element: <Placeholder title="我的報名" /> },
++      { path: 'me', element: <MyBookingsPage /> },
+       { path: 'about', element: <Placeholder title="關於" /> },
+ // ...
+```
+
+**解析**
+
+- `/me` 從 `Placeholder` 換成 `MyBookingsPage`。
+
+### 步驟 2：單筆報名
+
+把單筆列的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/booking/components/MyBookingRow.jsx
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import { mySamples } from './mock.data.js';
-import { ntd, statusLabel } from '../../format.js';
+import { ntd, statusLabel } from '../../../format.js';
 
 const chipColor = {
   pending: 'primary',
@@ -4040,7 +4231,14 @@ const chipColor = {
   cancelled: 'error',
 };
 
-function Row({ status, title, date, people, phone, subtotal }) {
+export default function MyBookingRow({
+  status,
+  title,
+  date,
+  people,
+  phone,
+  subtotal,
+}) {
   return (
     <article className="py-6">
       <Chip
@@ -4074,89 +4272,83 @@ function Row({ status, title, date, people, phone, subtotal }) {
     </article>
   );
 }
-
-export default function MyBookingsPage() {
-  useEffect(() => {
-    document.title = '我的報名 · 洛奇旅行';
-  }, []);
-
-  return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
-      <Typography variant="h1">我的報名</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        這一頁用範例清單預覽報名長什麼樣子。成品會依 Google
-        帳號讀自己的報名。如需改期或取消，請來信或來電。
-      </p>
-      {mySamples.length ? (
-        <>
-          <Typography variant="h2" className="mt-10">
-            你的報名
-          </Typography>
-          <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
-            {mySamples.map((item) => (
-              <Row
-                key={`${item.title}-${item.date}`}
-                status={item.status}
-                title={item.title}
-                date={item.date}
-                people={item.people}
-                phone={item.phone}
-                subtotal={item.subtotal}
-              />
-            ))}
-          </div>
-        </>
-      ) : (
-        <section className="mt-10 max-w-3xl">
-          <Typography id="empty-title" variant="h2">
-            還沒有報名
-          </Typography>
-          <p className="mt-3 max-w-prose">選一個行程，挑一個出發日。</p>
-          <Button
-            className="mt-6"
-            component={Link}
-            to="/tours"
-            variant="contained"
-          >
-            去看行程
-          </Button>
-        </section>
-      )}
-    </main>
-  );
-}
 ```
 
 **解析**
 
-- 清單就是 `mySamples`，不依 email 過濾，也不讀 Store 裡剛送出的那幾筆。
-- 後台那四筆種子不會出現在這一頁。
-- `chipColor` 把 `pending`、`confirmed`、`cancelled` 對到 `primary`、`secondary`、`error`。標籤文字用 `statusLabel`。
-- `mySamples` 是空陣列時才顯示空狀態與「去看行程」。這一頁沒有取消按鈕。副標是靜態說明。
+- `chipColor` 把 `pending`、`confirmed`、`cancelled` 對到 `primary`、`secondary`、`error`。標籤文字用 `statusLabel`，對不到時顯示原來的狀態碼。
+- 出發日、人數、電話與小計排成一列定義列表。小計用 serif、操作色，並用 `ntd` 格式化。
 
-### 步驟 2：接到路由
+### 步驟 3：還沒有報名
 
-接著把 `/me` 換成這一頁。
+清單是空陣列時，不要畫空的列表外框。
 
-```diff 06-project-init/src/App.jsx
+```diff 06-project-init/src/features/booking/MyBookingsPage.jsx
+ import { useEffect } from 'react';
++import { Link } from 'react-router';
++import Button from '@mui/material/Button';
+ import Typography from '@mui/material/Typography';
  // ...
- import BookingDonePage from './features/booking/BookingDonePage.jsx';
-+import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'booking/done', element: <BookingDonePage /> },
--      { path: 'me', element: <Placeholder title="我的報名" /> },
-+      { path: 'me', element: <MyBookingsPage /> },
-       { path: 'about', element: <Placeholder title="關於" /> },
+       </p>
+-      <Typography variant="h2" className="mt-10">
+-        你的報名
+-      </Typography>
+-      <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
+-        {mySamples.map((item) => (
+-          <MyBookingRow
+-            key={`${item.title}-${item.date}`}
+-            status={item.status}
+-            title={item.title}
+-            date={item.date}
+-            people={item.people}
+-            phone={item.phone}
+-            subtotal={item.subtotal}
+-          />
+-        ))}
+-      </div>
++      {mySamples.length ? (
++        <>
++          <Typography variant="h2" className="mt-10">
++            你的報名
++          </Typography>
++          <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
++            {mySamples.map((item) => (
++              <MyBookingRow
++                key={`${item.title}-${item.date}`}
++                status={item.status}
++                title={item.title}
++                date={item.date}
++                people={item.people}
++                phone={item.phone}
++                subtotal={item.subtotal}
++              />
++            ))}
++          </div>
++        </>
++      ) : (
++        <section className="mt-10 max-w-3xl">
++          <Typography id="empty-title" variant="h2">
++            還沒有報名
++          </Typography>
++          <p className="mt-3 max-w-prose">選一個行程，挑一個出發日。</p>
++          <Button
++            className="mt-6"
++            component={Link}
++            to="/tours"
++            variant="contained"
++          >
++            去看行程
++          </Button>
++        </section>
++      )}
+     </main>
  // ...
 ```
 
 **解析**
 
-- `/me` 從 `Placeholder` 換成 `MyBookingsPage`。
+- `mySamples` 是空陣列時才顯示「還沒有報名」與「去看行程」。把 `mySamples` 暫時改成空陣列就能看到這段提示。
+- 有資料時維持標題「你的報名」與列表。
 
 ## 關於
 
@@ -4487,6 +4679,7 @@ src/features/admin/
 ├── AdminBookingsPage.jsx
 └── components/
     ├── AdminTabs.jsx
+    ├── TourTable.jsx
     ├── TourForm.jsx
     └── BookingTable.jsx
 ```
@@ -4603,23 +4796,31 @@ export default function AdminLoginPage() {
 
 表單沒有出現的每日行程、圖集與費用，儲存時留在原本那筆上。主題選項這一頁才補進 `features/tours/mock.data.js`。
 
-這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，兩個零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
+這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，三個零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
 
 - `AdminTabs`
+- `TourTable`
 - `TourForm`
 
 {% mermaid graph TD %}
   page["AdminToursPage"] --> tabs["AdminTabs"]
+  page --> table["TourTable"]
   page --> form["TourForm"]
 {% endmermaid %}
 
 ### 步驟 1：組出 AdminToursPage
 
-先把行程管理組起來並接到路由。表單檔要先匯出 `empty` 與 `draftFromTour`，頁面才編譯得過；真正的表單下一節再換，這兩個匯出會留著。
+先把行程管理組起來並接到路由。分頁、表格與表單先放標記。表單檔要先匯出 `empty` 與 `draftFromTour`，頁面才編譯得過；這兩個匯出會留著。
 
 ```jsx 06-project-init/src/features/admin/components/AdminTabs.jsx
 export default function AdminTabs() {
   return <p className="mt-4 font-bold">後台分頁</p>;
+}
+```
+
+```jsx 06-project-init/src/features/admin/components/TourTable.jsx
+export default function TourTable() {
+  return <p className="mt-8">行程表格</p>;
 }
 ```
 
@@ -4651,44 +4852,15 @@ export default function TourForm() {
 export { empty };
 ```
 
-表頭鋪上 mist，分隔線用色票的 `line`。
-
-```diff 06-project-init/src/theme.js
- // ...
-     MuiAlert: {
- // ...
-       },
-     },
-+    MuiTableCell: {
-+      styleOverrides: {
-+        root: { borderColor: tokens.line },
-+        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
-+      },
-+    },
-     MuiTab: {
- // ...
-```
-
-**解析**
-
-- 儲存格的分隔線用色票的 `line`。表頭字重 700、mist 底、文字用 ink。桌機表格會套到。
-
-接著組出行程管理頁。
+接著組出行程管理頁。分頁、表格與表單目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import AdminTabs from './components/AdminTabs.jsx';
+import TourTable from './components/TourTable.jsx';
 import TourForm, { draftFromTour, empty } from './components/TourForm.jsx';
-import { ntd } from '../../format.js';
 import { useStore } from '../../store.jsx';
 
 export default function AdminToursPage() {
@@ -4738,49 +4910,7 @@ export default function AdminToursPage() {
           新增行程
         </Button>
       </div>
-      <TableContainer
-        elevation={0}
-        className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block"
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => (
-                <TableCell key={label} className="px-4 py-3">
-                  {label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {tours.map((tour) => (
-              <TableRow key={tour.id}>
-                <TableCell className="px-4 py-4">{tour.title}</TableCell>
-                <TableCell className="px-4 py-4">{tour.region}</TableCell>
-                <TableCell className="px-4 py-4">{tour.theme}</TableCell>
-                <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
-                <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
-                <TableCell className="px-4 py-4">
-                  <Button onClick={() => edit(tour)}>編輯</Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div className="mt-8 grid gap-4 md:hidden">
-        {tours.map((tour) => (
-          <Card key={tour.id} className="p-6">
-            <h3 className="font-serif text-2xl font-semibold">{tour.title}</h3>
-            <p className="mt-2 text-muted">
-              {tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}
-            </p>
-            <Button className="mt-3" onClick={() => edit(tour)}>
-              編輯
-            </Button>
-          </Card>
-        ))}
-      </div>
+      <TourTable tours={tours} onEdit={edit} />
       <TourForm
         editingId={editingId}
         draft={draft}
@@ -4799,9 +4929,8 @@ export default function AdminToursPage() {
 **解析**
 
 - 直接打開 `/admin` 就看得到這一頁。一進來編輯 id 為 `hualien-taroko` 的那筆，找不到就用陣列第一筆。
-- 「編輯」把該筆灌進草稿，並平滑捲到 `#admin-form`。「新增行程」清掉 `editingId`、草稿改回 `empty`，同樣捲到表單。
-- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯按鈕。價格用 `ntd`。
-- 上方沿用 `AdminTabs`。儲存成功時 `onSaved` 把 `editingId` 設成新編號。
+- 「新增行程」清掉 `editingId`、草稿改回 `empty`，並平滑捲到 `#admin-form`。頁面先準備好 `edit`，傳給表格的 `onEdit`；表格還是標記時不會用到。
+- 分頁、表格與表單目前是標記。儲存成功時 `onSaved` 把 `editingId` 設成新編號。
 
 接著把 `/admin` 換成這一頁。
 
@@ -4821,6 +4950,7 @@ export default function AdminToursPage() {
 **解析**
 
 - `/admin` 從 `Placeholder` 換成 `AdminToursPage`。報名清單仍是佔位。
+- `/admin` 與 `/admin/bookings` 這一章不檢查身份。打開網址就看得到行程管理與報名清單。身份檢查留到下一篇。
 
 ### 步驟 2：這一頁要用的資料
 
@@ -4911,17 +5041,14 @@ export default function AdminToursPage() {
 - 找不到舊資料就新增：圖集先放封面那一張，每日行程與費用是空陣列，`featured` 為 false，並插到陣列最前面。
 - 成功時把 `notice` 設成「已儲存這筆行程」，回傳空字串。`deleteTour` 依編號濾掉那一筆，並把提示設成「已刪除這筆行程」。
 
-### 步驟 3：後台頁可直接打開
-
-`/admin` 與 `/admin/bookings` 這一章不檢查身份。打開網址就看得到行程管理與報名清單。身份檢查留到下一篇。
-
-### 步驟 4：後台分頁
+### 步驟 3：後台分頁
 
 分頁取消大寫，高度改成 48。
 
 ```diff 06-project-init/src/theme.js
  // ...
-         root: { borderRadius: 16, alignItems: 'center' },
+     MuiAlert: {
+ // ...
        },
      },
 +    MuiTab: {
@@ -4962,7 +5089,102 @@ export default function AdminTabs() {
 - 路徑以 `/admin/bookings` 開頭時，選到的值是 `/admin/bookings`，否則是 `/admin`。
 - 切換分頁時用 `navigate` 換頁。報名清單那一頁會再沿用這個元件。
 
+### 步驟 4：行程表格
+
+表頭鋪上 mist，分隔線用色票的 `line`。
+
+```diff 06-project-init/src/theme.js
+ // ...
+     MuiAlert: {
+ // ...
+       },
+     },
++    MuiTableCell: {
++      styleOverrides: {
++        root: { borderColor: tokens.line },
++        head: { fontWeight: 700, backgroundColor: tokens.mist, color: tokens.ink },
++      },
++    },
+     MuiTab: {
+ // ...
+```
+
+**解析**
+
+- 儲存格的分隔線用色票的 `line`。表頭字重 700、mist 底、文字用 ink。桌機表格會套到。
+
+接著把行程表格的 placeholder 換成真正的元件。頁面不用改 import。
+
+```jsx 06-project-init/src/features/admin/components/TourTable.jsx
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { ntd } from '../../../format.js';
+
+export default function TourTable({ tours, onEdit }) {
+  return (
+    <>
+      <TableContainer
+        elevation={0}
+        className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block"
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => (
+                <TableCell key={label} className="px-4 py-3">
+                  {label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {tours.map((tour) => (
+              <TableRow key={tour.id}>
+                <TableCell className="px-4 py-4">{tour.title}</TableCell>
+                <TableCell className="px-4 py-4">{tour.region}</TableCell>
+                <TableCell className="px-4 py-4">{tour.theme}</TableCell>
+                <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
+                <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
+                <TableCell className="px-4 py-4">
+                  <Button onClick={() => onEdit(tour)}>編輯</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <div className="mt-8 grid gap-4 md:hidden">
+        {tours.map((tour) => (
+          <Card key={tour.id} className="p-6">
+            <h3 className="font-serif text-2xl font-semibold">{tour.title}</h3>
+            <p className="mt-2 text-muted">
+              {tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}
+            </p>
+            <Button className="mt-3" onClick={() => onEdit(tour)}>
+              編輯
+            </Button>
+          </Card>
+        ))}
+      </div>
+    </>
+  );
+}
+```
+
+**解析**
+
+- `tours` 是這一頁傳進來的清單，`onEdit` 是「編輯」要呼叫的函式。
+- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯按鈕。價格用 `ntd`。
+- 「編輯」把該筆交給 `onEdit`。頁面上的 `edit` 會把該筆灌進草稿，並平滑捲到 `#admin-form`。
+
 ### 步驟 5：行程表單
+
 
 把行程表單的 placeholder 換成真正的元件。`empty` 與 `draftFromTour` 仍從這個檔案匯出，頁面不用改 import。
 
@@ -5173,7 +5395,7 @@ export { empty };
 
 清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。狀態用下拉改變，重新整理就回到種子。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成已經寫好的 `AdminTabs`，以及這一節才寫的 `BookingTable`。下面先組出這一頁並接到路由，表格先放標記，再補改狀態的方法，最後換成真正的表格。
+這一節要組出 `AdminBookingsPage`。畫面拆成已經寫好的 `AdminTabs`，以及這一節才寫的 `BookingTable`。下面先組出這一頁並接到路由，表格先放標記，再補改狀態的方法，接著換成真正的表格，最後再補沒有符合結果時的提示。
 
 {% mermaid graph TD %}
   page["AdminBookingsPage"] --> tabs["AdminTabs"]
@@ -5265,11 +5487,7 @@ export default function AdminBookingsPage() {
           <MenuItem value="date-asc">出發日舊到新</MenuItem>
         </TextField>
       </div>
-      {shown.length ? (
-        <BookingTable bookings={shown} />
-      ) : (
-        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
-      )}
+      <BookingTable bookings={shown} />
     </main>
   );
 }
@@ -5280,7 +5498,7 @@ export default function AdminBookingsPage() {
 - 直接打開 `/admin/bookings` 就看得到這一頁。上方沿用 `AdminTabs`。
 - 狀態、姓名關鍵字與日期排序都是這一頁自己的 state，不寫進網址。狀態預設 `all`，排序預設 `date-desc`。
 - `shown` 先依狀態再依姓名過濾。姓名用去掉空白後的關鍵字做 `includes`。日期用 `localeCompare`，`date-asc` 由舊到新，其餘由新到舊。
-- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。
+- 表格先一律畫出來。沒有符合結果時的提示，最後一步再補。
 
 接著把 `/admin/bookings` 換成這一頁。
 
@@ -5494,6 +5712,27 @@ export default function BookingTable({ bookings }) {
 - `StatusSelect` 的選項是 `pending`、`confirmed`、`cancelled`，文字用 `statusLabel`。變更時呼叫 `setBookingStatus`。
 - 外框顏色依狀態換：待確認用強調色邊、墨色字；已確認用操作色；已取消用另外一組灰。選單沒有對應的 class 可以換色，所以只有這裡使用 `sx`。
 - `md` 以上是表格，窄螢幕是卡片。兩邊都有出發日、人數、姓名與 email、電話、小計，以及同一個狀態選單。
+
+### 步驟 4：沒有符合的報名
+
+篩選後沒有結果時，不要畫空表格。
+
+```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
+ // ...
+       </div>
+-      <BookingTable bookings={shown} />
++      {shown.length ? (
++        <BookingTable bookings={shown} />
++      ) : (
++        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
++      )}
+     </main>
+ // ...
+```
+
+**解析**
+
+- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
 
 ## 找不到頁面
 

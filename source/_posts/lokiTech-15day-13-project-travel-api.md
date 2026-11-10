@@ -1058,17 +1058,13 @@ export default function BookingForm({ tour, departure, onDone }) {
 import { useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import Alert from '@mui/material/Alert';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
+import BookingSteps from './components/BookingSteps.jsx';
+import BookingSummary from './components/BookingSummary.jsx';
 import MemberGate from './components/MemberGate.jsx';
 import LoadGate from '../../LoadGate.jsx';
-import { ntd } from '../../format.js';
 import { useTours } from '../../useAsync.js';
-
-const steps = ['選出發日', '填寫資料', '送出確認'];
 
 function BookingBody() {
   const { data, loading, error } = useTours();
@@ -1091,24 +1087,7 @@ function BookingBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
-      <Stepper
-        activeStep={1}
-        alternativeLabel
-        className="mb-10"
-        sx={{
-          '& .MuiStepLabel-label': {
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            marginTop: '8px',
-          },
-        }}
-      >
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <BookingSteps activeStep={1} />
       <Typography variant="h1">報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         姓名與 email 來自 Google 帳號。請留下電話，送出後會寫進訂單。
@@ -1127,33 +1106,7 @@ function BookingBody() {
             departure={departure}
             onDone={(row) => navigate('/booking/done', { state: row })}
           />
-          <aside className="rounded-card bg-white shadow-card p-6 md:p-8 lg:sticky lg:top-24">
-            <Typography variant="h2">這趟行程</Typography>
-            <dl className="mt-5 grid gap-4 text-base">
-              <div>
-                <dt className="text-muted">行程</dt>
-                <dd className="mt-1 text-lg font-medium">{tour.title}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">出發日</dt>
-                <dd className="mt-1 text-lg">{departure.date}</dd>
-              </div>
-              <div>
-                <dt className="text-muted">天數</dt>
-                <dd className="mt-1 text-lg">{tour.days} 天</dd>
-              </div>
-              <div>
-                <dt className="text-muted">每人</dt>
-                <dd className="mt-1 whitespace-nowrap font-serif text-3xl font-bold text-ink">
-                  {ntd(tour.price)}
-                  <span className="font-sans text-base font-normal text-muted">
-                    {' '}
-                    / 人
-                  </span>
-                </dd>
-              </div>
-            </dl>
-          </aside>
+          <BookingSummary tour={tour} departure={departure} />
         </div>
       )}
     </main>
@@ -1175,13 +1128,10 @@ import { Link, useLocation } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import { ntd, statusLabel } from '../../format.js';
-
-const steps = ['選出發日', '填寫資料', '送出確認'];
+import BookingReceipt from './components/BookingReceipt.jsx';
+import BookingSteps from './components/BookingSteps.jsx';
+import { statusLabel } from '../../format.js';
 
 export default function BookingDonePage() {
   const { state } = useLocation();
@@ -1195,13 +1145,7 @@ export default function BookingDonePage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
-      <Stepper activeStep={2} alternativeLabel className="mb-8">
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row?.status] || '待確認'} />
       <Typography variant="h1" className="mt-3 max-w-[10em]">
         報名已送出
@@ -1211,38 +1155,7 @@ export default function BookingDonePage() {
         再跟你確認。到「我的報名」可以查看這一筆。重新整理後，這一頁不再帶著剛送出的明細。
       </Alert>
       {row ? (
-        <>
-          <Typography variant="h2" className="mt-10">
-            這筆內容
-          </Typography>
-          <dl className="rounded-card bg-white shadow-card mt-4 max-w-prose divide-y divide-line px-5">
-            {[
-              ['行程', row.tourTitle],
-              ['出發日', row.date],
-              ['人數', row.people],
-              ['姓名', row.name],
-              ['電話', row.phone],
-              ['小計', ntd(row.subtotal)],
-              ['狀態', statusLabel[row.status] || row.status],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]"
-              >
-                <dt className="text-muted">{label}</dt>
-                <dd
-                  className={
-                    label === '小計'
-                      ? 'font-serif text-2xl font-bold text-action'
-                      : undefined
-                  }
-                >
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </>
+        <BookingReceipt row={row} />
       ) : (
         <p className="mt-8 max-w-prose text-lg text-muted">
           這一頁只保留剛送出的那一筆。請到我的報名查看，或從行程重新報名。
@@ -1261,58 +1174,18 @@ export default function BookingDonePage() {
 }
 ```
 
+單筆列沿用 `MyBookingRow`。Firestore 那筆的標題欄是 `tourTitle`，傳給 `title`。
+
 ```jsx 07-project-final/src/features/booking/MyBookingsPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import MemberGate from './components/MemberGate.jsx';
+import MyBookingRow from './components/MyBookingRow.jsx';
 import LoadGate from '../../LoadGate.jsx';
 import { useAuth } from '../../auth.jsx';
-import { ntd, statusLabel } from '../../format.js';
 import { useMyOrders } from '../../useAsync.js';
-
-const chipColor = {
-  pending: 'primary',
-  confirmed: 'secondary',
-  cancelled: 'error',
-};
-
-function Row({ status, title, date, people, phone, subtotal }) {
-  return (
-    <article className="py-6">
-      <Chip
-        size="small"
-        color={chipColor[status] || 'primary'}
-        label={statusLabel[status] || status}
-      />
-      <Typography variant="h3" className="mt-3">
-        {title}
-      </Typography>
-      <dl className="mt-3 grid gap-3 sm:grid-cols-4">
-        <div>
-          <dt className="text-muted">出發日</dt>
-          <dd>{date}</dd>
-        </div>
-        <div>
-          <dt className="text-muted">人數</dt>
-          <dd>{people}</dd>
-        </div>
-        <div>
-          <dt className="text-muted">電話</dt>
-          <dd>{phone}</dd>
-        </div>
-        <div>
-          <dt className="text-muted">小計</dt>
-          <dd className="font-serif text-2xl font-bold text-action">
-            {ntd(subtotal)}
-          </dd>
-        </div>
-      </dl>
-    </article>
-  );
-}
 
 function MyBookingsBody() {
   const { user } = useAuth();
@@ -1339,7 +1212,7 @@ function MyBookingsBody() {
           </Typography>
           <div className="rounded-card bg-white shadow-card mt-6 max-w-3xl divide-y divide-line px-5">
             {rows.map((item) => (
-              <Row
+              <MyBookingRow
                 key={item.id}
                 status={item.status}
                 title={item.tourTitle}
@@ -1388,6 +1261,7 @@ export default function MyBookingsPage() {
 - `onDone` 用路由 state 把剛寫入的欄位帶過去。這份 state 只活在這一次導頁。自己的訂單由 `listMyOrders` 再讀。
 - 表單的 `id="booking-form"` 維持契約。姓名與 email 不開放手改。電話仍手填。
 - `useMyOrders(user.uid)` 寫在閘門裡面。沒有通過閘門就不會拿 `uid` 去查訂單。
+- 單筆列沿用 `MyBookingRow`。訂單的標題欄是 `tourTitle`，傳給 `title`。每一筆用 `item.id` 當 `key`。
 
 
 # 管理員、規則與部署
@@ -1619,24 +1493,47 @@ export default function AdminGate({ children }) {
 
 ## 訂單清單與狀態
 
-後台行程頁改成只讀。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面與表格都換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
+後台行程頁改成只讀。清單改讀 `useTours`，表格沿用 `TourTable`，拿掉操作欄與編輯。還沒有資料時顯示「還沒有行程」，並提供寫入種子的按鈕。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面與表格都換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
+
+表格不再提供編輯。`TourTable` 只接收 `tours`。
+
+```diff 07-project-final/src/features/admin/components/TourTable.jsx
+-import Button from '@mui/material/Button';
+ import Card from '@mui/material/Card';
+ // ...
+ import { ntd } from '../../../format.js';
+
+-export default function TourTable({ tours, onEdit }) {
++export default function TourTable({ tours }) {
+ // ...
+-              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => (
++              {['標題', '地區', '主題', '天數', '價格'].map((label) => (
+ // ...
+                 <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
+-                <TableCell className="px-4 py-4">
+-                  <Button onClick={() => onEdit(tour)}>編輯</Button>
+-                </TableCell>
+               </TableRow>
+ // ...
+             <p className="mt-2 text-muted">
+               {tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}
+             </p>
+-            <Button className="mt-3" onClick={() => onEdit(tour)}>
+-              編輯
+-            </Button>
+           </Card>
+ // ...
+```
 
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import AdminGate from './components/AdminGate.jsx';
 import AdminTabs from './components/AdminTabs.jsx';
+import TourTable from './components/TourTable.jsx';
 import LoadGate from '../../LoadGate.jsx';
-import { ntd } from '../../format.js';
 import { useTours } from '../../useAsync.js';
 
 function AdminToursBody() {
@@ -1665,50 +1562,7 @@ function AdminToursBody() {
         寫入種子
       </Button>
       {tours.length ? (
-        <>
-          <TableContainer
-            elevation={0}
-            className="rounded-card bg-white shadow-card mt-8 hidden overflow-x-auto md:block"
-          >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {['標題', '地區', '主題', '天數', '價格'].map((label) => (
-                    <TableCell key={label} className="px-4 py-3">
-                      {label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tours.map((tour) => (
-                  <TableRow key={tour.id}>
-                    <TableCell className="px-4 py-4">{tour.title}</TableCell>
-                    <TableCell className="px-4 py-4">{tour.region}</TableCell>
-                    <TableCell className="px-4 py-4">{tour.theme}</TableCell>
-                    <TableCell className="px-4 py-4">{tour.days} 天</TableCell>
-                    <TableCell className="px-4 py-4">
-                      {ntd(tour.price)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <div className="mt-8 grid gap-4 md:hidden">
-            {tours.map((tour) => (
-              <Card key={tour.id} className="p-6">
-                <h3 className="font-serif text-2xl font-semibold">
-                  {tour.title}
-                </h3>
-                <p className="mt-2 text-muted">
-                  {tour.region} · {tour.theme} · {tour.days} 天 ·{' '}
-                  {ntd(tour.price)}
-                </p>
-              </Card>
-            ))}
-          </div>
-        </>
+        <TourTable tours={tours} />
       ) : (
         <p className="mt-8 text-base text-muted">還沒有行程。</p>
       )}
