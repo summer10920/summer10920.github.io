@@ -479,64 +479,113 @@ export default function LoadGate({ loading, error, children }) {
 
 ```diff 07-project-final/src/features/tours/TourDetailPage.jsx
  import NotFoundPage from '../../pages/NotFoundPage.jsx';
--import { ntd, seatsLeft } from '../../format.js';
 -import { useStore } from '../../store.jsx';
 +import LoadGate from '../../LoadGate.jsx';
-+import { ntd } from '../../format.js';
 +import { useTour } from '../../useAsync.js';
 
  export default function TourDetailPage() {
    const { id } = useParams();
 -  const { tours, bookings } = useStore();
 -  const tour = tours.find((item) => item.id === id);
--  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
 +  const { data: tour, loading, error } = useTour(id);
-+  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
+   const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
    useEffect(() => { document.title = tour ? `${tour.title} · 洛奇旅行` : '找不到頁面 · 洛奇旅行'; }, [tour]);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
    if (!tour) return <NotFoundPage />;
  // ...
--            <p className="mt-3 text-base text-muted">最近一梯 {tour.departures[0].date} 尚餘 {seatsLeft(bookings, tour.id, tour.departures[0])} 人。</p>
--            <DepartureList tour={tour} bookings={bookings} />
-+            <p className="mt-3 text-base text-muted">最近一梯 {tour.departures[0].date}，每團 {tour.departures[0].capacity} 人。名額不在前台計算。</p>
-+            <DepartureList tour={tour} />
+-          <MobileDepartures tour={tour} bookings={bookings} />
++          <MobileDepartures tour={tour} />
  // ...
--                  <span className="text-base text-muted">剩餘 {seatsLeft(bookings, tour.id, departure)} 人</span>
-+                  <span className="text-base text-muted">名額 {departure.capacity} 人</span>
+         <BookingCard
+           tour={tour}
+-          bookings={bookings}
+           selected={selected}
+           onSelect={setDepartureId}
+           bookTo={bookTo}
  // ...
 ```
 
-手機上的出發日列表改成只收行程，按鈕直接前往報名。
+窄螢幕出發日與右側報名卡片不再計算剩餘人數。出發日列表只收行程。
 
-```jsx 07-project-final/src/features/tours/components/DepartureList.jsx
-import { Link } from 'react-router';
-import Button from '@mui/material/Button';
+```diff 07-project-final/src/features/tours/components/MobileDepartures.jsx
+ import Typography from '@mui/material/Typography';
+ import DepartureList from './DepartureList.jsx';
+-import { seatsLeft } from '../../../format.js';
+ 
+-export default function MobileDepartures({ tour, bookings }) {
++export default function MobileDepartures({ tour }) {
+ // ...
+       <p className="mt-3 text-base text-muted">
+-        最近一梯 {tour.departures[0].date} 尚餘{' '}
+-        {seatsLeft(bookings, tour.id, tour.departures[0])} 人。
++        最近一梯 {tour.departures[0].date}，每團 {tour.departures[0].capacity}{' '}
++        人。名額不在前台計算。
+       </p>
+-      <DepartureList tour={tour} bookings={bookings} />
++      <DepartureList tour={tour} />
+ // ...
+```
 
-export default function DepartureList({ tour }) {
-  return (
-    <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
-      {tour.departures.map((departure) => (
-        <li
-          key={departure.id}
-          className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
-        >
-          <div>
-            <p className="font-medium">{departure.date}</p>
-            <p className="text-muted">名額 {departure.capacity} 人</p>
-          </div>
-          <Button
-            component={Link}
-            to={`/booking?tourId=${tour.id}&departureId=${departure.id}`}
-            variant="contained"
-            className="w-full sm:w-auto"
-          >
-            立即報名
-          </Button>
-        </li>
-      ))}
-    </ul>
-  );
-}
+```diff 07-project-final/src/features/tours/components/BookingCard.jsx
+ import { Link } from 'react-router';
+ import Button from '@mui/material/Button';
+-import { ntd, seatsLeft } from '../../../format.js';
++import { ntd } from '../../../format.js';
+ 
+-export default function BookingCard({
+-  tour,
+-  bookings,
+-  selected,
+-  onSelect,
+-  bookTo,
+-}) {
++export default function BookingCard({ tour, selected, onSelect, bookTo }) {
+ // ...
+               <span className="text-base text-muted">
+-                剩餘 {seatsLeft(bookings, tour.id, departure)} 人
++                名額 {departure.capacity} 人
+               </span>
+ // ...
+```
+
+```diff 07-project-final/src/features/tours/components/DepartureList.jsx
+ import { Link } from 'react-router';
+ import Button from '@mui/material/Button';
+-import { seatsLeft } from '../../../format.js';
+ 
+-export default function DepartureList({ tour, bookings }) {
++export default function DepartureList({ tour }) {
+   return (
+     <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
+-      {tour.departures.map((departure) => {
+-        const left = seatsLeft(bookings, tour.id, departure);
+-        return (
++      {tour.departures.map((departure) => (
+         <li
+           key={departure.id}
+           className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+         >
+           <div>
+             <p className="font-medium">{departure.date}</p>
+-              <p className="text-muted">
+-                名額 {departure.capacity} 人，剩餘 {left} 人
+-              </p>
++            <p className="text-muted">名額 {departure.capacity} 人</p>
+           </div>
+           <Button
+             component={Link}
+             to={`/booking?tourId=${tour.id}&departureId=${departure.id}`}
+             variant="contained"
+             className="w-full sm:w-auto"
+           >
+             立即報名
+           </Button>
+         </li>
+-        );
+-      })}
++      ))}
+     </ul>
+ // ...
 ```
 
 **解析**

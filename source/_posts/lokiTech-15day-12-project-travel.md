@@ -2575,23 +2575,58 @@ export default function TourCard({ tour, showTheme = false }) {
 
 詳情頁補上圖集、亮點、每日行程、費用與每一梯的名額，並用報名種子計算剩餘人數。「立即報名」直接連到 `/booking`，並帶上這筆行程與選到的出發日。
 
-這一節要組出 `TourDetailPage`。先組出這一頁並接到路由，四個零件先放標記，再補齊行程欄位，最後逐一換成真正的元件。畫面拆成這些零件：
+這一節要組出 `TourDetailPage`。先組出這一頁並接到路由，各個畫面區塊先放標記，再補齊行程欄位，最後逐一換成真正的元件。取消與退款仍寫在頁面上，不另拆元件。畫面拆成這些零件：
 
+- `TourHeader`
 - `Gallery`
+- `TourHighlights`
 - `Itinerary`
 - `FareBox`
+- `MobileDepartures`
 - `DepartureList`
+- `BookingCard`
+- `MobileBookingBar`
+
+```
+src/features/tours/
+├── ToursPage.jsx
+├── TourDetailPage.jsx
+├── mock.data.js
+└── components/
+    ├── TourCard.jsx
+    ├── TourFilters.jsx
+    ├── TourHeader.jsx
+    ├── Gallery.jsx
+    ├── TourHighlights.jsx
+    ├── Itinerary.jsx
+    ├── FareBox.jsx
+    ├── DepartureList.jsx
+    ├── MobileDepartures.jsx
+    ├── BookingCard.jsx
+    └── MobileBookingBar.jsx
+```
 
 {% mermaid graph TD %}
-  page["TourDetailPage"] --> gallery["Gallery"]
+  page["TourDetailPage"] --> header["TourHeader"]
+  page --> gallery["Gallery"]
+  page --> highlights["TourHighlights"]
   page --> itinerary["Itinerary"]
   page --> fare["FareBox"]
-  page --> departures["DepartureList"]
+  page --> mobileDep["MobileDepartures"]
+  page --> card["BookingCard"]
+  page --> bar["MobileBookingBar"]
+  mobileDep --> list["DepartureList"]
 {% endmermaid %}
 
 ### 步驟 1：組出 TourDetailPage
 
-先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。圖集、每日行程、費用說明與出團梯次先放標記。
+先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。頁首、圖集、亮點、每日行程、費用說明、出發日、報名卡片與底部報名列先放標記。出團梯次的標記給出發日使用。
+
+```jsx 06-project-init/src/features/tours/components/TourHeader.jsx
+export default function TourHeader() {
+  return <p>頁首</p>;
+}
+```
 
 ```jsx 06-project-init/src/features/tours/components/Gallery.jsx
 export default function Gallery() {
@@ -2599,9 +2634,15 @@ export default function Gallery() {
 }
 ```
 
+```jsx 06-project-init/src/features/tours/components/TourHighlights.jsx
+export default function TourHighlights() {
+  return <div className="mt-8">亮點</div>;
+}
+```
+
 ```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
 export default function Itinerary() {
-  return <div className="mt-5">每日行程</div>;
+  return <div className="mt-14">每日行程</div>;
 }
 ```
 
@@ -2614,6 +2655,24 @@ export default function FareBox() {
 ```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
 export default function DepartureList() {
   return <p className="mt-4">出團梯次</p>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/MobileDepartures.jsx
+export default function MobileDepartures() {
+  return <div className="mt-14 lg:hidden">出發日</div>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/BookingCard.jsx
+export default function BookingCard() {
+  return <aside className="mt-12 hidden lg:mt-0 lg:block">報名卡片</aside>;
+}
+```
+
+```jsx 06-project-init/src/features/tours/components/MobileBookingBar.jsx
+export default function MobileBookingBar() {
+  return <div className="fixed inset-x-0 bottom-0 lg:hidden">底部報名列</div>;
 }
 ```
 
@@ -2659,20 +2718,20 @@ Store 要一併提供報名種子，詳情頁才算得出剩餘人數。
 
 - `bookings` 放進 context，和 `tours` 一起讀。種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。
 
-接著把圖集、每日行程、費用與出團梯次組進詳情頁。這四個目前是標記。然後把路由表裡的詳情佔位換掉。
+接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時的處理最後一步再補。然後把路由表裡的詳情佔位換掉。
 
 ```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
+import { useParams } from 'react-router';
 import Typography from '@mui/material/Typography';
-import DepartureList from './components/DepartureList.jsx';
+import BookingCard from './components/BookingCard.jsx';
 import FareBox from './components/FareBox.jsx';
 import Gallery from './components/Gallery.jsx';
 import Itinerary from './components/Itinerary.jsx';
-import Placeholder from '../../_shared/Placeholder.jsx';
-import { ntd, seatsLeft } from '../../format.js';
+import MobileBookingBar from './components/MobileBookingBar.jsx';
+import MobileDepartures from './components/MobileDepartures.jsx';
+import TourHeader from './components/TourHeader.jsx';
+import TourHighlights from './components/TourHighlights.jsx';
 import { useStore } from '../../store.jsx';
 
 export default function TourDetailPage() {
@@ -2685,8 +2744,6 @@ export default function TourDetailPage() {
       ? `${tour.title} · 洛奇旅行`
       : '找不到頁面 · 洛奇旅行';
   }, [tour]);
-  if (!tour) return <Placeholder title="找不到頁面" />;
-
   const selected =
     tour.departures.find((item) => item.id === departureId) ??
     tour.departures[0];
@@ -2699,60 +2756,12 @@ export default function TourDetailPage() {
     >
       <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
         <div className="min-w-0">
-          <p>
-            <Link
-              className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover"
-              to="/tours"
-            >
-              回行程列表
-            </Link>
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Chip color="secondary" label={tour.region} />
-            <Chip variant="outlined" label={tour.theme} />
-            <Chip variant="outlined" label={`${tour.days} 天`} />
-          </div>
-          <Typography variant="h1" className="mt-4">
-            {tour.title}
-          </Typography>
-          <p className="mt-4 font-serif text-4xl font-bold text-ink lg:hidden">
-            {ntd(tour.price)}
-            <span className="font-sans text-base font-normal text-muted">
-              {' '}
-              / 人
-            </span>
-          </p>
+          <TourHeader tour={tour} />
           <Gallery images={tour.images} title={tour.title} />
-          <p className="mt-8 text-lg leading-relaxed">{tour.intro}</p>
-          <Typography variant="h2" className="mt-14">
-            亮點
-          </Typography>
-          <ul className="mt-5 grid gap-3 sm:grid-cols-3">
-            {tour.highlights.map((item) => (
-              <li
-                key={item}
-                className="rounded-card bg-mist px-5 py-4 text-base"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-          <Typography variant="h2" className="mt-14">
-            每日行程
-          </Typography>
-          <p className="mt-3 text-base text-muted">
-            展開每一天，看當天去哪裡、晚上住哪裡。
-          </p>
+          <TourHighlights intro={tour.intro} highlights={tour.highlights} />
           <Itinerary days={tour.itinerary} />
           <FareBox includes={tour.includes} excludes={tour.excludes} />
-          <div className="mt-14 lg:hidden">
-            <Typography variant="h2">出發日</Typography>
-            <p className="mt-3 text-base text-muted">
-              最近一梯 {tour.departures[0].date} 尚餘{' '}
-              {seatsLeft(bookings, tour.id, tour.departures[0])} 人。
-            </p>
-            <DepartureList tour={tour} bookings={bookings} />
-          </div>
+          <MobileDepartures tour={tour} bookings={bookings} />
           <Typography variant="h2" className="mt-14">
             取消與退款
           </Typography>
@@ -2761,66 +2770,15 @@ export default function TourDetailPage() {
             確認。未成行全額退回。成行後若要改期，請來信或來電，由我們為你調整。常見問題也寫在關於頁。
           </p>
         </div>
-        <aside className="rounded-card bg-white shadow-card sticky top-24 mt-12 hidden self-start p-8 lg:mt-0 lg:block">
-          <p className="flex items-baseline gap-1.5 whitespace-nowrap font-serif text-4xl">
-            <span className="inline-block rounded-full bg-accent text-ink font-bold leading-[1.15] py-[0.12em] px-[0.55em]">
-              {ntd(tour.price)}
-            </span>
-            <span className="font-sans text-base font-normal text-muted">
-              / 人
-            </span>
-          </p>
-          {tour.id === 'kyoto-nara' ? (
-            <p className="mt-3 text-base text-muted">不含國際機票</p>
-          ) : null}
-          <dl className="mt-6 grid gap-3 text-base">
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted">天數</dt>
-              <dd>{tour.days} 天</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted">團體上限</dt>
-              <dd>{tour.departures[0]?.capacity ?? 8} 人</dd>
-            </div>
-          </dl>
-          <div className="mt-6 grid gap-3">
-            {tour.departures.map((departure) => {
-              const on = departure.id === selected.id;
-              return (
-                <button
-                  key={departure.id}
-                  type="button"
-                  onClick={() => setDepartureId(departure.id)}
-                  className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
-                >
-                  <span className="block font-medium">{departure.date}</span>
-                  <span className="text-base text-muted">
-                    剩餘 {seatsLeft(bookings, tour.id, departure)} 人
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <Button
-            component={Link}
-            to={bookTo}
-            variant="contained"
-            className="mt-8 w-full"
-          >
-            立即報名
-          </Button>
-        </aside>
+        <BookingCard
+          tour={tour}
+          bookings={bookings}
+          selected={selected}
+          onSelect={setDepartureId}
+          bookTo={bookTo}
+        />
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
-          <p className="font-serif text-2xl font-bold text-ink">
-            {ntd(tour.price)}
-          </p>
-          <Button component={Link} to={bookTo} variant="contained">
-            立即報名
-          </Button>
-        </div>
-      </div>
+      <MobileBookingBar price={tour.price} bookTo={bookTo} />
     </main>
   );
 }
@@ -2828,11 +2786,10 @@ export default function TourDetailPage() {
 
 **解析**
 
-- `useParams` 的 `id` 對不到行程時，先渲染佔位頁。找不到頁的元件留到最後一節再換上。
-- 分頁標題用行程名稱。選中的梯次預設第一筆。
-- 左欄是回列表的連結、地區與主題標籤、圖集、亮點、每日行程與費用。寬螢幕右欄用 `sticky` 停在離頂一段的位置；id 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
-- 右欄用按鈕選一個出發日，每顆按鈕寫出剩餘人數。選中那顆換成操作色邊與 mist 底。窄螢幕改渲染 `DepartureList`，底部另外固定一條價格與報名列。
-- 右側選梯與底部固定列的「立即報名」使用 `bookTo`，網址是 `/booking?tourId=` 加上這筆行程 id，以及 `departureId=` 加上選到的梯次。
+- `useParams` 讀網址上的行程 id，再到 Store 找對應的那一筆。分頁標題用行程名稱。選中的梯次預設第一筆。
+- 左欄依序組上頁首、圖集、亮點、每日行程、費用與出發日。取消與退款仍寫在頁面上。
+- 寬螢幕右欄是報名卡片，用 `sticky` 停在離頂一段的位置。窄螢幕另外固定一條底部報名列。
+- 右側選梯與底部固定列的「立即報名」使用 `bookTo`，網址是 `/booking?tourId=` 加上這筆行程 id，以及 `departureId=` 加上選到的梯次。這一頁把選中的出發日與 `bookTo` 算好，再傳給報名卡片與底部報名列。
 
 接著把詳情路徑換上。
 
@@ -3230,7 +3187,53 @@ export const bookings = [
 - `seatsLeft` 用該梯 `capacity` 減去同一行程、同一梯、狀態不是 `cancelled` 的人數加總。
 - `Math.max(0, …)` 讓結果不會小於 0。人數先用 `Number` 轉過再加。
 
-### 步驟 3：圖集
+### 步驟 3：頁首
+
+把頁首的 placeholder 換成真正的元件。這裡放回列表的連結、地區與主題標籤、標題，以及只在窄螢幕出現的價格。
+
+```jsx 06-project-init/src/features/tours/components/TourHeader.jsx
+import { Link } from 'react-router';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
+import { ntd } from '../../../format.js';
+
+export default function TourHeader({ tour }) {
+  return (
+    <>
+      <p>
+        <Link
+          className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover"
+          to="/tours"
+        >
+          回行程列表
+        </Link>
+      </p>
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Chip color="secondary" label={tour.region} />
+        <Chip variant="outlined" label={tour.theme} />
+        <Chip variant="outlined" label={`${tour.days} 天`} />
+      </div>
+      <Typography variant="h1" className="mt-4">
+        {tour.title}
+      </Typography>
+      <p className="mt-4 font-serif text-4xl font-bold text-ink lg:hidden">
+        {ntd(tour.price)}
+        <span className="font-sans text-base font-normal text-muted">
+          {' '}
+          / 人
+        </span>
+      </p>
+    </>
+  );
+}
+```
+
+**解析**
+
+- 連結回到 `/tours`。三個標籤分別是地區、主題與天數。地區用填色，另外兩個用外框。
+- 標題是這筆行程的名稱。價格只在 `lg` 以下顯示，後面加「/ 人」。寬螢幕的價格寫在右側報名卡片。
+
+### 步驟 4：圖集
 
 把圖集的 placeholder 換成真正的元件。圖集用一張大圖加一排縮圖，點縮圖就換大圖。
 
@@ -3282,9 +3285,40 @@ export default function Gallery({ images, title }) {
 - 大圖的 alt 用 `title`。縮圖的 alt 留空；點一張就換成大圖，縮圖預設調暗成 `opacity-60`；目前那張設為 `disabled`（已經在看，不必再按），由 `disabled:opacity-100` 恢復全亮，看得出目前顯示的是哪一張。
 - 縮圖列超出寬度時可以橫向捲動。
 
-### 步驟 4：每日行程
+### 步驟 5：亮點
 
-把每日行程的 placeholder 換成真正的元件。每一天收成一組手風琴，一次只展開一則。
+把亮點的 placeholder 換成真正的元件。介紹段落與亮點列表寫在一起。
+
+```jsx 06-project-init/src/features/tours/components/TourHighlights.jsx
+import Typography from '@mui/material/Typography';
+
+export default function TourHighlights({ intro, highlights }) {
+  return (
+    <>
+      <p className="mt-8 text-lg leading-relaxed">{intro}</p>
+      <Typography variant="h2" className="mt-14">
+        亮點
+      </Typography>
+      <ul className="mt-5 grid gap-3 sm:grid-cols-3">
+        {highlights.map((item) => (
+          <li key={item} className="rounded-card bg-mist px-5 py-4 text-base">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+**解析**
+
+- 介紹是一行較大的正文，接在圖集後面。
+- 「亮點」標題下面用三欄網格列出每一則。窄螢幕改成上下排。每一則鋪上 mist 底。
+
+### 步驟 6：每日行程
+
+把每日行程的 placeholder 換成真正的元件。標題與說明寫進這個元件，每一天收成一組手風琴，一次只展開一則。
 
 手風琴的圓角、邊線與展開圖示補進主題。展開圖示沿用 `ms`。
 
@@ -3320,46 +3354,58 @@ export default function Gallery({ images, title }) {
 - `MuiAccordionSummary` 的展開圖示沿用 `ms('expand_more')`。摘要列的最小高度與左右留白寫在 `styleOverrides`。
 - 關於頁的常見問題會沿用同一組手風琴。
 
-接著換成真正的每日行程元件。每一天收成一組手風琴，一次只展開一則。摘要列會寫出第幾天與當天標題，收合時仍看得到這一天在做什麼。
+接著換成真正的每日行程元件。標題「每日行程」與下面那行說明寫在元件裡面，頁面不必再放這個標題。摘要列會寫出第幾天與當天標題，收合時仍看得到這一天在做什麼。
 
 ```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
 import { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
 
 export default function Itinerary({ days }) {
   const [open, setOpen] = useState(null);
   return (
-    <div className="mt-5">
-      {days.map((item) => (
-        <Accordion
-          key={item.day}
-          expanded={open === item.day}
-          onChange={(_, expanded) => setOpen(expanded ? item.day : null)}
-          className="mb-2"
-        >
-          <AccordionSummary>
-            第 {item.day} 天 · {item.title}
-          </AccordionSummary>
-          <AccordionDetails>
-            <p className="text-base leading-relaxed text-muted">{item.body}</p>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </div>
+    <>
+      <Typography variant="h2" className="mt-14">
+        每日行程
+      </Typography>
+      <p className="mt-3 text-base text-muted">
+        展開每一天，看當天去哪裡、晚上住哪裡。
+      </p>
+      <div className="mt-5">
+        {days.map((item) => (
+          <Accordion
+            key={item.day}
+            expanded={open === item.day}
+            onChange={(_, expanded) => setOpen(expanded ? item.day : null)}
+            className="mb-2"
+          >
+            <AccordionSummary>
+              第 {item.day} 天 · {item.title}
+            </AccordionSummary>
+            <AccordionDetails>
+              <p className="text-base leading-relaxed text-muted">
+                {item.body}
+              </p>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </div>
+    </>
   );
 }
 ```
 
 **解析**
 
+- 標題與「展開每一天，看當天去哪裡、晚上住哪裡。」寫在這個元件裡，詳情頁不再另外放這個標題。
 - `open` 記目前展開的天數。再開另一天時，前一則會合上。
 - 摘要列寫「第 N 天 · 標題」，內容是當天說明。外觀套用剛剛寫進主題的手風琴覆寫。
 
-### 步驟 5：費用說明
+### 步驟 7：費用說明
 
-把費用說明的 placeholder 換成真正的元件。費用包含與不含各成一欄。
+把費用說明的 placeholder 換成真正的元件。費用包含與不含各成一欄。這一頁沒有再為費用加標題，兩個欄位的標題已經寫在元件裡。
 
 ```jsx 06-project-init/src/features/tours/components/FareBox.jsx
 import Typography from '@mui/material/Typography';
@@ -3388,10 +3434,11 @@ export default function FareBox({ includes, excludes }) {
 **解析**
 
 - `Column` 把標題與條列收成一欄。兩欄在窄螢幕改成上下排，較寬時並排。
+- 元件本身帶了 `mt-14`，詳情頁直接放上來即可，不必再加 h2。
 
-### 步驟 6：出團梯次
+### 步驟 8：出團梯次
 
-把出團梯次的 placeholder 換成真正的元件。每一梯列出日期與剩餘名額。按鈕直接連到報名頁。
+把出團梯次的 placeholder 換成真正的元件。每一梯列出日期與剩餘名額。按鈕直接連到報名頁。出發日區塊下一步再組進來。
 
 ```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
 import { Link } from 'react-router';
@@ -3434,6 +3481,159 @@ export default function DepartureList({ tour, bookings }) {
 
 - 每一梯用 `seatsLeft` 算出剩餘人數，畫面上寫名額與剩餘。
 - 按鈕連到 `/booking`，查詢參數是這筆行程的 `tourId` 與這一梯的 `departureId`。
+
+### 步驟 9：出發日
+
+把窄螢幕的出發日區塊換成真正的元件。標題與說明寫在這裡，列表沿用剛剛的 `DepartureList`。
+
+```jsx 06-project-init/src/features/tours/components/MobileDepartures.jsx
+import Typography from '@mui/material/Typography';
+import DepartureList from './DepartureList.jsx';
+import { seatsLeft } from '../../../format.js';
+
+export default function MobileDepartures({ tour, bookings }) {
+  return (
+    <div className="mt-14 lg:hidden">
+      <Typography variant="h2">出發日</Typography>
+      <p className="mt-3 text-base text-muted">
+        最近一梯 {tour.departures[0].date} 尚餘{' '}
+        {seatsLeft(bookings, tour.id, tour.departures[0])} 人。
+      </p>
+      <DepartureList tour={tour} bookings={bookings} />
+    </div>
+  );
+}
+```
+
+**解析**
+
+- 這個區塊只在 `lg` 以下出現。寬螢幕改在右側報名卡片選出發日。
+- 說明寫出最近一梯的日期與剩餘人數。下面沿用 `DepartureList`，把 `tour` 與 `bookings` 傳下去。
+
+### 步驟 10：報名卡片
+
+把右側報名卡片的 placeholder 換成真正的元件。寬螢幕才顯示，並用 `sticky` 停在離頂一段的位置。
+
+```jsx 06-project-init/src/features/tours/components/BookingCard.jsx
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+import { ntd, seatsLeft } from '../../../format.js';
+
+export default function BookingCard({
+  tour,
+  bookings,
+  selected,
+  onSelect,
+  bookTo,
+}) {
+  return (
+    <aside className="rounded-card bg-white shadow-card sticky top-24 mt-12 hidden self-start p-8 lg:mt-0 lg:block">
+      <p className="flex items-baseline gap-1.5 whitespace-nowrap font-serif text-4xl">
+        <span className="inline-block rounded-full bg-accent text-ink font-bold leading-[1.15] py-[0.12em] px-[0.55em]">
+          {ntd(tour.price)}
+        </span>
+        <span className="font-sans text-base font-normal text-muted">/ 人</span>
+      </p>
+      {tour.id === 'kyoto-nara' ? (
+        <p className="mt-3 text-base text-muted">不含國際機票</p>
+      ) : null}
+      <dl className="mt-6 grid gap-3 text-base">
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">天數</dt>
+          <dd>{tour.days} 天</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">團體上限</dt>
+          <dd>{tour.departures[0]?.capacity ?? 8} 人</dd>
+        </div>
+      </dl>
+      <div className="mt-6 grid gap-3">
+        {tour.departures.map((departure) => {
+          const on = departure.id === selected.id;
+          return (
+            <button
+              key={departure.id}
+              type="button"
+              onClick={() => onSelect(departure.id)}
+              className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
+            >
+              <span className="block font-medium">{departure.date}</span>
+              <span className="text-base text-muted">
+                剩餘 {seatsLeft(bookings, tour.id, departure)} 人
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <Button
+        component={Link}
+        to={bookTo}
+        variant="contained"
+        className="mt-8 w-full"
+      >
+        立即報名
+      </Button>
+    </aside>
+  );
+}
+```
+
+**解析**
+
+- 價格用強調色圓底。id 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
+- 定義列表寫出天數與團體上限。團體上限取第一梯的 `capacity`，沒有時用 8。
+- 每一梯是一顆按鈕。選中那顆換成操作色邊與 mist 底，並寫出剩餘人數。按下時呼叫 `onSelect`，把該梯 id 交回詳情頁。
+- 「立即報名」連到頁面算好的 `bookTo`。
+
+### 步驟 11：底部報名列
+
+把窄螢幕底部固定列的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/tours/components/MobileBookingBar.jsx
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+import { ntd } from '../../../format.js';
+
+export default function MobileBookingBar({ price, bookTo }) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
+        <p className="font-serif text-2xl font-bold text-ink">{ntd(price)}</p>
+        <Button component={Link} to={bookTo} variant="contained">
+          立即報名
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
+
+**解析**
+
+- 這一列固定在畫面底部，只在 `lg` 以下出現。左邊是價格，右邊是「立即報名」，連到同一個 `bookTo`。
+- `price` 是尚未格式化的數字，元件裡面再用 `ntd` 顯示。
+
+### 步驟 12：找不到行程
+
+網址上的 id 對不到任何行程時，先渲染佔位頁。找不到頁的元件留到最後一節再換上。
+
+```diff 06-project-init/src/features/tours/TourDetailPage.jsx
+ import TourHighlights from './components/TourHighlights.jsx';
++import Placeholder from '../../_shared/Placeholder.jsx';
+ import { useStore } from '../../store.jsx';
+ // ...
+   }, [tour]);
++  if (!tour) return <Placeholder title="找不到頁面" />;
+
+   const selected =
+ // ...
+```
+
+**解析**
+
+- `useState` 與設定分頁標題的 `useEffect` 留在提前返回之前。對不到行程時，先渲染佔位頁，標題已設成「找不到頁面 · 洛奇旅行」。
+- 手改網址、對不上任何一筆時就會進到這裡。找不到頁的真正文案，最後一節再換成 `NotFoundPage`。
+
 
 ## 報名
 
@@ -5788,10 +5988,10 @@ export default function NotFoundPage() {
 
 ```diff 06-project-init/src/features/tours/TourDetailPage.jsx
  // ...
- import Itinerary from './components/Itinerary.jsx';
+ import TourHighlights from './components/TourHighlights.jsx';
 -import Placeholder from '../../_shared/Placeholder.jsx';
 +import NotFoundPage from '../../pages/NotFoundPage.jsx';
- import { ntd, seatsLeft } from '../../format.js';
+ import { useStore } from '../../store.jsx';
  // ...
 -  if (!tour) return <Placeholder title="找不到頁面" />;
 +  if (!tour) return <NotFoundPage />;
