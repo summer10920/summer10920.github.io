@@ -1572,7 +1572,7 @@ export default function AdminGate({ children }) {
 
 ## 訂單清單與狀態
 
-後台行程頁改讀 `useTours`，表單沿用第 12 篇的 `TourForm`、`DraftRows` 與 `tourDraft.js`。儲存與刪除改呼叫 `api.js` 的 `saveTour`、`deleteTour`，成功後 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁沿用第 12 篇的 `BookingTable` 與 `BookingForm`，改讀 `useOrders`；在 Dialog 裡按「儲存」才呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
+後台行程頁改讀 `useTours`，表單與列表沿用第 12 篇的 `TourForm`、`TourTable`、`DraftRows` 與 `tourDraft.js`。儲存改呼叫 `api.js` 的 `saveTour`，列表操作欄確認刪除後呼叫 `deleteTour`，成功後都 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁沿用第 12 篇的 `BookingTable` 與 `BookingForm`，改讀 `useOrders`；在 Dialog 裡按「儲存」才呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
 
 先在 `api.js` 補上寫入與刪除行程。`setDoc` 寫完整一份文件。若編輯時改了編號，先寫到新 id，再刪掉舊文件。
 
@@ -1622,6 +1622,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import AdminGate from './components/AdminGate.jsx';
@@ -1637,6 +1641,7 @@ function AdminToursBody() {
   const tours = data ?? [];
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
+  const [deletingTour, setDeletingTour] = useState(null);
   const [notice, setNotice] = useState('');
   useEffect(() => {
     document.title = '行程管理 · 洛奇旅行';
@@ -1654,11 +1659,6 @@ function AdminToursBody() {
     } catch (err) {
       return err.message;
     }
-  };
-
-  const onDelete = async (id) => {
-    await deleteTour(id);
-    reload();
   };
 
   if (error) return <LoadGate loading={false} error={error} />;
@@ -1698,6 +1698,7 @@ function AdminToursBody() {
             setTour(item);
             setOpen(true);
           }}
+          onDelete={setDeletingTour}
         />
       ) : (
         <p className="mt-8 text-base text-muted">還沒有行程。</p>
@@ -1708,9 +1709,31 @@ function AdminToursBody() {
         tour={tour}
         onClose={close}
         onSave={onSave}
-        onDelete={onDelete}
         onNotice={setNotice}
       />
+      <Dialog
+        open={Boolean(deletingTour)}
+        onClose={() => setDeletingTour(null)}
+        aria-labelledby="delete-title"
+      >
+        <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
+        <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
+        <DialogActions className="gap-2 p-4">
+          <Button onClick={() => setDeletingTour(null)}>留下</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={async () => {
+              await deleteTour(deletingTour.id);
+              reload();
+              setDeletingTour(null);
+              setNotice('已刪除這筆行程');
+            }}
+          >
+            刪除
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar
         open={Boolean(notice)}
         autoHideDuration={3200}
@@ -1919,7 +1942,7 @@ export default function AdminBookingsPage() {
 **解析**
 
 - `AdminToursBody` 與 `AdminBookingsBody` 都寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫寫入或 `listOrders`。
-- 行程表單沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。新增、編輯與刪除仍用同一組 Dialog 與 Snackbar。
+- 行程表單與列表沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。新增與編輯仍用同一個 Dialog 與頁面上的 Snackbar。刪除在列表操作欄，確認 Dialog 寫在頁面上，確認後才呼叫 `deleteTour`，並提示「已刪除這筆行程」。
 - 報名明細同樣沿用第 12 篇的 Dialog。按「儲存」才呼叫 `updateOrderStatus`。若改成「已取消」，儲存前仍先確認。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
 - `reload` 之後清單會換成雲端上的新內容。第一次讀取才整頁交給 `LoadGate`；之後若仍有舊資料，不整頁換成讀取中，避免正在開的 Dialog 或提示被拆掉。
 - 行程頁的「寫入種子」連到 `/seed`。規則改成管理員可寫之後，要先用後台帳號登入再按。
