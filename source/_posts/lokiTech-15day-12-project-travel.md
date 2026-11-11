@@ -5302,7 +5302,6 @@ export default function TourTable() {
 
 ```js 06-project-init/src/features/admin/components/tourDraft.js
 export const empty = {
-  id: '',
   title: '',
   region: '',
   theme: '城市',
@@ -5452,7 +5451,6 @@ const linesOf = (text) =>
     .filter(Boolean);
 
 export const empty = {
-  id: '',
   title: '',
   region: '',
   theme: '城市',
@@ -5471,8 +5469,7 @@ export const empty = {
 export const draftFromTour = () => empty;
 
 export const tourFromDraft = (draft) => {
-  const id = draft.id.trim();
-  if (!id || !draft.title.trim()) return { error: '編號和標題要填' };
+  if (!draft.title.trim()) return { error: '標題要填' };
   const images = (draft.images ?? [])
     .map((item) => String(item).trim())
     .filter(Boolean);
@@ -5501,7 +5498,6 @@ export const tourFromDraft = (draft) => {
   return {
     error: '',
     tour: {
-      id,
       title: draft.title.trim(),
       region: draft.region.trim(),
       theme: draft.theme,
@@ -5532,14 +5528,15 @@ export const tourFromDraft = (draft) => {
 +  const saveTour = (editingId, draft) => {
 +    const { error, tour } = tourFromDraft(draft);
 +    if (error) return error;
-+    const prev = tours.find((item) => item.id === (editingId || tour.id));
-+    if (tours.some((item) => item.id === tour.id && item !== prev))
-+      return '這個編號已經有了';
-+    setTours(
-+      prev
-+        ? tours.map((item) => (item.id === prev.id ? tour : item))
-+        : [tour, ...tours],
-+    );
++    if (editingId) {
++      setTours(
++        tours.map((item) =>
++          item.id === editingId ? { ...tour, id: editingId } : item,
++        ),
++      );
++    } else {
++      setTours([{ ...tour, id: `tour-${Date.now()}` }, ...tours]);
++    }
 +    return '';
 +  };
 +
@@ -5559,7 +5556,7 @@ export const tourFromDraft = (draft) => {
 **解析**
 
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
-- 編號或標題去掉空白後是空的，回傳「編號和標題要填」，不寫入。Store 用 `editingId` 找到舊的那筆；新編號若已被另一筆占用，回傳「這個編號已經有了」。
+- 標題去掉空白後是空的，回傳「標題要填」，不寫入。編號不由表單填，新增時 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
 - 新增與編輯都寫完整結構。新增時插到陣列最前面。
 - 成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。提示訊息下一步寫在頁面自己的狀態裡。
 
@@ -5759,7 +5756,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
  
 -export const draftFromTour = () => empty;
 +export const draftFromTour = (tour) => ({
-+  id: tour.id,
 +  title: tour.title,
 +  region: tour.region,
 +  theme: tour.theme,
@@ -5894,8 +5890,12 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
               {error}
             </Alert>
           ) : null}
-          <TextField label="編號" value={draft.id} onChange={set('id')} />
-          <TextField label="標題" value={draft.title} onChange={set('title')} />
+          <TextField
+            className="sm:col-span-2"
+            label="標題"
+            value={draft.title}
+            onChange={set('title')}
+          />
           <TextField
             label="地區"
             value={draft.region}

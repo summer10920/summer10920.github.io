@@ -1574,7 +1574,7 @@ export default function AdminGate({ children }) {
 
 後台行程頁改讀 `useTours`，表單與列表沿用第 12 篇的 `TourForm`、`TourTable`、`DraftRows` 與 `tourDraft.js`。儲存改呼叫 `api.js` 的 `saveTour`，列表操作欄確認刪除後呼叫 `deleteTour`，成功後都 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁沿用第 12 篇的 `BookingTable` 與 `BookingForm`，改讀 `useOrders`；在 Dialog 裡按「儲存」才呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
 
-先在 `api.js` 補上寫入與刪除行程。`setDoc` 寫完整一份文件。若編輯時改了編號，先寫到新 id，再刪掉舊文件。
+先在 `api.js` 補上寫入與刪除行程。新增用 `addDoc` 讓 Firestore 產生 id，編輯用 `setDoc` 覆寫原來那份文件。編號不寫進文件內容，讀取時再把文件 id 接回去。
 
 ```diff 07-project-final/src/api.js
  import {
@@ -1597,13 +1597,10 @@ export default function AdminGate({ children }) {
 +
 +export const saveTour = async (editingId, tour) => {
 +  const base = database();
-+  const ref = doc(base, 'tours', tour.id);
-+  if (!editingId || editingId !== tour.id) {
-+    if ((await getDoc(ref)).exists()) throw new Error('這個編號已經有了');
-+  }
-+  await setDoc(ref, tour);
-+  if (editingId && editingId !== tour.id) {
-+    await deleteDoc(doc(base, 'tours', editingId));
++  if (editingId) {
++    await setDoc(doc(base, 'tours', editingId), tour);
++  } else {
++    await addDoc(collection(base, 'tours'), tour);
 +  }
 +};
 +
@@ -1942,7 +1939,7 @@ export default function AdminBookingsPage() {
 **解析**
 
 - `AdminToursBody` 與 `AdminBookingsBody` 都寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫寫入或 `listOrders`。
-- 行程表單與列表沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。新增與編輯仍用同一個 Dialog 與頁面上的 Snackbar。刪除在列表操作欄，確認 Dialog 寫在頁面上，確認後才呼叫 `deleteTour`，並提示「已刪除這筆行程」。
+- 行程表單與列表沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。新增時 Firestore 產生 id，編輯時覆寫原來那份文件；切版那一章是用當下時間做成 id。編號自動產生後，`/tours/:id` 與報名的 `tourId` 才會保持穩定。新增與編輯仍用同一個 Dialog 與頁面上的 Snackbar。刪除在列表操作欄，確認 Dialog 寫在頁面上，確認後才呼叫 `deleteTour`，並提示「已刪除這筆行程」。
 - 報名明細同樣沿用第 12 篇的 Dialog。按「儲存」才呼叫 `updateOrderStatus`。若改成「已取消」，儲存前仍先確認。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
 - `reload` 之後清單會換成雲端上的新內容。第一次讀取才整頁交給 `LoadGate`；之後若仍有舊資料，不整頁換成讀取中，避免正在開的 Dialog 或提示被拆掉。
 - 行程頁的「寫入種子」連到 `/seed`。規則改成管理員可寫之後，要先用後台帳號登入再按。
