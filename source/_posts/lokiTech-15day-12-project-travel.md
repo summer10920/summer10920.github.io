@@ -5149,12 +5149,12 @@ src/features/admin/
 ├── AdminToursPage.jsx
 ├── AdminBookingsPage.jsx
 └── components/
-    ├── AdminTabs.jsx
     ├── TourTable.jsx
     ├── TourForm.jsx
     ├── DraftRows.jsx
     ├── tourDraft.js
-    └── BookingTable.jsx
+    ├── BookingTable.jsx
+    └── BookingForm.jsx
 ```
 
 ## 後台登入
@@ -5273,31 +5273,25 @@ export default function AdminLoginPage() {
 
 ## 行程管理
 
-後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項這一頁才補進 `features/tours/mock.data.js`。
+後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項這一頁才補進 `features/tours/mock.data.js`。頁首在後台路徑已經換成「行程管理」與「報名清單」，兩頁用頁首切換，不再另做分頁列。
+
+新增與編輯共用同一個 Dialog。沒有帶入行程是新增，有帶入是編輯。用這一頁的 state 控制開關，不另開路由。
 
 這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
 
-- `AdminTabs`
 - `TourTable`
-- `TourForm`
+- `TourForm`：新增與編輯共用的 Dialog
 - `DraftRows`：圖庫、每日行程與出發梯次共用的多列輸入
 
 {% mermaid graph TD %}
-  page["AdminToursPage"] --> tabs["AdminTabs"]
-  page --> table["TourTable"]
+  page["AdminToursPage"] --> table["TourTable"]
   page --> form["TourForm"]
   form --> rows["DraftRows"]
 {% endmermaid %}
 
 ### 步驟 1：組出 AdminToursPage
 
-先把行程管理組起來並接到路由。分頁、表格與表單先放標記。空白草稿與轉換函式放在 `tourDraft.js`，不要和表單元件寫在同一個檔。
-
-```jsx 06-project-init/src/features/admin/components/AdminTabs.jsx
-export default function AdminTabs() {
-  return <p className="mt-4 font-bold">後台分頁</p>;
-}
-```
+先把行程管理組起來並接到路由。表格與表單先放標記。表單先做成 Dialog 外殼，依有沒有帶入行程區分標題。空白草稿與轉換函式放在 `tourDraft.js`，不要和表單元件寫在同一個檔。
 
 ```jsx 06-project-init/src/features/admin/components/TourTable.jsx
 export default function TourTable() {
@@ -5327,46 +5321,37 @@ export const draftFromTour = () => empty;
 ```
 
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
-export default function TourForm() {
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
+export default function TourForm({ open, tour, onClose }) {
   return (
-    <form id="admin-form" className="rounded-card bg-white p-6 shadow-card">
-      行程表單
-    </form>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{tour ? '編輯行程' : '新增行程'}</DialogTitle>
+      <DialogContent>行程表單</DialogContent>
+    </Dialog>
   );
 }
 ```
 
-接著組出行程管理頁。分頁、表格與表單目前是標記。
+接著組出行程管理頁。表格與表單目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import AdminTabs from './components/AdminTabs.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
-import { draftFromTour, empty } from './components/tourDraft.js';
 import { useStore } from '../../store-context.js';
 
 export default function AdminToursPage() {
   const { tours } = useStore();
-  const initial =
-    tours.find((item) => item.id === 'hualien-taroko') || tours[0];
-  const [editingId, setEditingId] = useState(initial?.id ?? null);
-  const [draft, setDraft] = useState(() =>
-    initial ? draftFromTour(initial) : empty,
-  );
+  const [open, setOpen] = useState(false);
+  const [tour, setTour] = useState(null);
   useEffect(() => {
     document.title = '行程管理 · 洛奇旅行';
   }, []);
-
-  const edit = (tour) => {
-    setEditingId(tour.id);
-    setDraft(draftFromTour(tour));
-    document
-      .getElementById('admin-form')
-      ?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   return (
     <main
@@ -5378,34 +5363,27 @@ export default function AdminToursPage() {
         行程管理
       </Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        新增、修改或下架行程。列表會立刻更新。
+        新增、修改或下架行程。列表會立刻更新。兩頁用頁首切換。
       </p>
-      <AdminTabs />
-      <div className="mt-4">
+      <div className="mt-8">
         <Button
           variant="outlined"
           onClick={() => {
-            setEditingId(null);
-            setDraft(empty);
-            document
-              .getElementById('admin-form')
-              ?.scrollIntoView({ behavior: 'smooth' });
+            setTour(null);
+            setOpen(true);
           }}
         >
           新增行程
         </Button>
       </div>
-      <TourTable tours={tours} onEdit={edit} />
-      <TourForm
-        editingId={editingId}
-        draft={draft}
-        setDraft={setDraft}
-        onSaved={(id) => setEditingId(id)}
-        onClear={() => {
-          setEditingId(null);
-          setDraft(empty);
+      <TourTable
+        tours={tours}
+        onEdit={(item) => {
+          setTour(item);
+          setOpen(true);
         }}
       />
+      <TourForm open={open} tour={tour} onClose={() => setOpen(false)} />
     </main>
   );
 }
@@ -5413,9 +5391,9 @@ export default function AdminToursPage() {
 
 **解析**
 
-- 直接打開 `/admin` 就看得到這一頁。一進來編輯 id 為 `hualien-taroko` 的那筆，找不到就用陣列第一筆。
-- 「新增行程」清掉 `editingId`、草稿改回 `empty`，並平滑捲到 `#admin-form`。頁面先準備好 `edit`，傳給表格的 `onEdit`；表格還是標記時不會用到。
-- 分頁、表格與表單目前是標記。儲存成功時 `onSaved` 把 `editingId` 設成新編號。
+- 直接打開 `/admin` 就看得到這一頁。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
+- 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
+- 表格與表單目前是標記。兩頁用頁首切換，這一頁不再放分頁列。
 
 接著把 `/admin` 換成這一頁。
 
@@ -5576,59 +5554,9 @@ export const tourFromDraft = (draft) => {
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
 - 編號或標題去掉空白後是空的，回傳「編號和標題要填」，不寫入。Store 用 `editingId` 找到舊的那筆；新編號若已被另一筆占用，回傳「這個編號已經有了」。
 - 新增與編輯都寫完整結構。新增時插到陣列最前面。
-- 成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。提示訊息下一步寫在表單自己的狀態裡。
+- 成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。提示訊息下一步寫在頁面自己的狀態裡。
 
-### 步驟 3：後台分頁
-
-分頁取消大寫，高度改成 48。
-
-```diff 06-project-init/src/theme.js
- // ...
-     MuiAlert: {
- // ...
-       },
-     },
-+    MuiTab: {
-+      styleOverrides: {
-+        root: { textTransform: 'none', fontWeight: 700, minHeight: 48 },
-+      },
-+    },
-   },
- // ...
-```
-
-**解析**
-
-- `MuiTab` 讓英文維持原本大小寫，字重 700，最小高度 48。行程與報名清單的分頁都會套到。
-
-接著把後台分頁的 placeholder 換成真正的元件。
-
-```jsx 06-project-init/src/features/admin/components/AdminTabs.jsx
-import { useLocation, useNavigate } from 'react-router';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-
-export default function AdminTabs() {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const value = pathname.startsWith('/admin/bookings')
-    ? '/admin/bookings'
-    : '/admin';
-  return (
-    <Tabs value={value} onChange={(_, next) => navigate(next)} className="mt-4">
-      <Tab value="/admin" label="行程" />
-      <Tab value="/admin/bookings" label="報名清單" />
-    </Tabs>
-  );
-}
-```
-
-**解析**
-
-- 路徑以 `/admin/bookings` 開頭時，選到的值是 `/admin/bookings`，否則是 `/admin`。
-- 切換分頁時用 `navigate` 換頁。報名清單那一頁會再沿用這個元件。
-
-### 步驟 4：行程表格
+### 步驟 3：行程表格
 
 表頭鋪上 mist，分隔線用色票的 `line`。
 
@@ -5648,7 +5576,7 @@ export default function AdminTabs() {
 +        },
 +      },
 +    },
-     MuiTab: {
+   },
  // ...
 ```
 
@@ -5726,9 +5654,9 @@ export default function TourTable({ tours, onEdit }) {
 - `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯按鈕。價格用 `ntd`。
 - 「編輯」把該筆交給 `onEdit`。頁面上的 `edit` 會把該筆灌進草稿，並平滑捲到 `#admin-form`。
 
-### 步驟 5：行程表單
+### 步驟 4：行程表單
 
-把行程表單的 placeholder 換成真正的元件，並把 `draftFromTour` 換成會帶入行程欄位的寫法。多列輸入抽成 `DraftRows`，避免圖庫、每日行程與出發梯次各寫一套新增與刪除。頁面補上 `onSave` 與 `onDelete`，import 不用改路徑。
+把行程表單的 placeholder 換成真正的元件，並把 `draftFromTour` 換成會帶入行程欄位的寫法。多列輸入抽成 `DraftRows`，避免圖庫、每日行程與出發梯次各寫一套新增與刪除。草稿留在表單裡。頁面補上 `onSave`、`onDelete`、`onNotice` 與成功提示。
 
 ```diff 06-project-init/src/features/admin/components/tourDraft.js
  // ...
@@ -5816,7 +5744,6 @@ export default function DraftRows({
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
@@ -5825,22 +5752,24 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { themes } from '../../tours/mock.data.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
 import DraftRows from './DraftRows.jsx';
+import { draftFromTour, empty } from './tourDraft.js';
 
 export default function TourForm({
-  editingId,
-  draft,
-  setDraft,
-  onClear,
-  onSaved,
+  open,
+  tour,
+  onClose,
   onSave,
   onDelete,
+  onNotice,
 }) {
+  const editingId = tour?.id ?? null;
+  const [draft, setDraft] = useState(() =>
+    tour ? draftFromTour(tour) : empty,
+  );
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const set = (key) => (event) =>
     setDraft((current) => ({ ...current, [key]: event.target.value }));
@@ -5852,208 +5781,219 @@ export default function TourForm({
     const message = await onSave(editingId, draft);
     setError(message);
     if (!message) {
-      setNotice('已儲存這筆行程');
-      onSaved(draft.id.trim());
+      onNotice('已儲存這筆行程');
+      onClose();
     }
   };
 
   return (
-    <form
-      id="admin-form"
-      className="rounded-card bg-white shadow-card mt-12 grid max-w-3xl gap-4 p-6 sm:grid-cols-2 md:p-8"
-      onSubmit={submit}
-    >
-      <Typography variant="h2" className="sm:col-span-2">
-        {editingId ? '編輯行程' : '新增行程'}
-      </Typography>
-      <p className="text-muted sm:col-span-2">
-        圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
-      </p>
-      {error ? (
-        <Alert className="sm:col-span-2" severity="error">
-          {error}
-        </Alert>
-      ) : null}
-      <TextField label="編號" value={draft.id} onChange={set('id')} />
-      <TextField label="標題" value={draft.title} onChange={set('title')} />
-      <TextField label="地區" value={draft.region} onChange={set('region')} />
-      <FieldSelect
-        id="theme"
-        label="主題"
-        value={draft.theme}
-        onChange={(value) =>
-          setDraft((current) => ({ ...current, theme: value }))
-        }
-        options={themes.map((item) => ({ value: item, label: item }))}
-      />
-      <TextField
-        label="天數"
-        type="number"
-        slotProps={{ htmlInput: { min: 1 } }}
-        value={draft.days}
-        onChange={set('days')}
-      />
-      <TextField
-        label="價格"
-        type="number"
-        slotProps={{ htmlInput: { min: 0 } }}
-        value={draft.price}
-        onChange={set('price')}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="簡介"
-        multiline
-        minRows={3}
-        value={draft.intro}
-        onChange={set('intro')}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="亮點"
-        multiline
-        minRows={3}
-        helperText="一行一則"
-        value={draft.highlights}
-        onChange={set('highlights')}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="費用包含"
-        multiline
-        minRows={3}
-        helperText="一行一則"
-        value={draft.includes}
-        onChange={set('includes')}
-      />
-      <TextField
-        className="sm:col-span-2"
-        label="費用不含"
-        multiline
-        minRows={3}
-        helperText="一行一則"
-        value={draft.excludes}
-        onChange={set('excludes')}
-      />
-      <DraftRows
-        title="圖庫網址"
-        items={draft.images}
-        blank=""
-        addLabel="新增一張"
-        onChange={setList('images')}
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="md"
+        scroll="paper"
+        aria-labelledby="tour-form-title"
       >
-        {(item, index, update) => (
-          <TextField
-            className="sm:col-span-2"
-            label={`第 ${index + 1} 張網址`}
-            type="url"
-            helperText={
-              index === 0 ? '第一張會當作列表與輪播的封面' : undefined
-            }
-            value={item}
-            onChange={(event) => update(index, event.target.value)}
-          />
-        )}
-      </DraftRows>
-      <DraftRows
-        title="每日行程"
-        items={draft.itinerary}
-        blank={{ title: '', body: '' }}
-        addLabel="新增一天"
-        onChange={setList('itinerary')}
-      >
-        {(item, index, update) => (
-          <>
-            <p className="text-muted sm:col-span-2">第 {index + 1} 天</p>
+        <form id="admin-form" onSubmit={submit}>
+          <DialogTitle id="tour-form-title">
+            {tour ? '編輯行程' : '新增行程'}
+          </DialogTitle>
+          <DialogContent className="grid gap-4 pt-2 sm:grid-cols-2">
+            <p className="text-muted sm:col-span-2">
+              圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
+            </p>
+            {error ? (
+              <Alert className="sm:col-span-2" severity="error">
+                {error}
+              </Alert>
+            ) : null}
+            <TextField label="編號" value={draft.id} onChange={set('id')} />
             <TextField
-              className="sm:col-span-2"
-              label="當日標題"
-              value={item.title}
-              onChange={(event) =>
-                update(index, { ...item, title: event.target.value })
-              }
+              label="標題"
+              value={draft.title}
+              onChange={set('title')}
             />
             <TextField
-              className="sm:col-span-2"
-              label="當日說明"
-              multiline
-              minRows={2}
-              value={item.body}
-              onChange={(event) =>
-                update(index, { ...item, body: event.target.value })
-              }
+              label="地區"
+              value={draft.region}
+              onChange={set('region')}
             />
-          </>
-        )}
-      </DraftRows>
-      <DraftRows
-        title="出發梯次"
-        items={draft.departures}
-        blank={{ date: '', capacity: 8 }}
-        addLabel="新增一梯"
-        onChange={setList('departures')}
-      >
-        {(item, index, update) => (
-          <>
-            <TextField
-              label="出發日"
-              type="date"
-              slotProps={{ inputLabel: { shrink: true } }}
-              value={item.date}
-              onChange={(event) =>
-                update(index, { ...item, date: event.target.value })
+            <FieldSelect
+              id="theme"
+              label="主題"
+              value={draft.theme}
+              onChange={(value) =>
+                setDraft((current) => ({ ...current, theme: value }))
               }
+              options={themes.map((item) => ({ value: item, label: item }))}
             />
             <TextField
-              label="名額"
+              label="天數"
               type="number"
               slotProps={{ htmlInput: { min: 1 } }}
-              value={item.capacity}
-              onChange={(event) =>
-                update(index, { ...item, capacity: event.target.value })
-              }
+              value={draft.days}
+              onChange={set('days')}
             />
-          </>
-        )}
-      </DraftRows>
-      <FormControlLabel
-        className="sm:col-span-2"
-        control={
-          <Checkbox
-            checked={draft.featured}
-            onChange={(event) =>
-              setDraft((current) => ({
-                ...current,
-                featured: event.target.checked,
-              }))
-            }
-          />
-        }
-        label="精選，出現在首頁輪播與熱門"
-      />
-      <div className="flex flex-wrap gap-3 sm:col-span-2">
-        <Button type="submit" variant="contained">
-          儲存
-        </Button>
-        <Button
-          type="button"
-          color="error"
-          variant="outlined"
-          disabled={!editingId}
-          onClick={() => setConfirmDelete(true)}
-        >
-          刪除
-        </Button>
-        <Button
-          type="button"
-          onClick={() => {
-            setError('');
-            onClear();
-          }}
-        >
-          清空，改為新增
-        </Button>
-      </div>
+            <TextField
+              label="價格"
+              type="number"
+              slotProps={{ htmlInput: { min: 0 } }}
+              value={draft.price}
+              onChange={set('price')}
+            />
+            <TextField
+              className="sm:col-span-2"
+              label="簡介"
+              multiline
+              minRows={3}
+              value={draft.intro}
+              onChange={set('intro')}
+            />
+            <TextField
+              className="sm:col-span-2"
+              label="亮點"
+              multiline
+              minRows={3}
+              helperText="一行一則"
+              value={draft.highlights}
+              onChange={set('highlights')}
+            />
+            <TextField
+              className="sm:col-span-2"
+              label="費用包含"
+              multiline
+              minRows={3}
+              helperText="一行一則"
+              value={draft.includes}
+              onChange={set('includes')}
+            />
+            <TextField
+              className="sm:col-span-2"
+              label="費用不含"
+              multiline
+              minRows={3}
+              helperText="一行一則"
+              value={draft.excludes}
+              onChange={set('excludes')}
+            />
+            <DraftRows
+              title="圖庫網址"
+              items={draft.images}
+              blank=""
+              addLabel="新增一張"
+              onChange={setList('images')}
+            >
+              {(item, index, update) => (
+                <TextField
+                  className="sm:col-span-2"
+                  label={`第 ${index + 1} 張網址`}
+                  type="url"
+                  helperText={
+                    index === 0 ? '第一張會當作列表與輪播的封面' : undefined
+                  }
+                  value={item}
+                  onChange={(event) => update(index, event.target.value)}
+                />
+              )}
+            </DraftRows>
+            <DraftRows
+              title="每日行程"
+              items={draft.itinerary}
+              blank={{ title: '', body: '' }}
+              addLabel="新增一天"
+              onChange={setList('itinerary')}
+            >
+              {(item, index, update) => (
+                <>
+                  <p className="text-muted sm:col-span-2">第 {index + 1} 天</p>
+                  <TextField
+                    className="sm:col-span-2"
+                    label="當日標題"
+                    value={item.title}
+                    onChange={(event) =>
+                      update(index, { ...item, title: event.target.value })
+                    }
+                  />
+                  <TextField
+                    className="sm:col-span-2"
+                    label="當日說明"
+                    multiline
+                    minRows={2}
+                    value={item.body}
+                    onChange={(event) =>
+                      update(index, { ...item, body: event.target.value })
+                    }
+                  />
+                </>
+              )}
+            </DraftRows>
+            <DraftRows
+              title="出發梯次"
+              items={draft.departures}
+              blank={{ date: '', capacity: 8 }}
+              addLabel="新增一梯"
+              onChange={setList('departures')}
+            >
+              {(item, index, update) => (
+                <>
+                  <TextField
+                    label="出發日"
+                    type="date"
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    value={item.date}
+                    onChange={(event) =>
+                      update(index, { ...item, date: event.target.value })
+                    }
+                  />
+                  <TextField
+                    label="名額"
+                    type="number"
+                    slotProps={{ htmlInput: { min: 1 } }}
+                    value={item.capacity}
+                    onChange={(event) =>
+                      update(index, { ...item, capacity: event.target.value })
+                    }
+                  />
+                </>
+              )}
+            </DraftRows>
+            <FormControlLabel
+              className="sm:col-span-2"
+              control={
+                <Checkbox
+                  checked={draft.featured}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      featured: event.target.checked,
+                    }))
+                  }
+                />
+              }
+              label="精選，出現在首頁輪播與熱門"
+            />
+          </DialogContent>
+          <DialogActions className="flex-wrap gap-2 p-4">
+            <Button type="submit" variant="contained">
+              儲存
+            </Button>
+            <Button
+              type="button"
+              color="error"
+              variant="outlined"
+              disabled={!tour}
+              onClick={() => setConfirmDelete(true)}
+            >
+              刪除
+            </Button>
+            <Button type="button" onClick={onClose}>
+              取消
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
       <Dialog
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
@@ -6070,8 +6010,8 @@ export default function TourForm({
               try {
                 await onDelete(editingId);
                 setConfirmDelete(false);
-                setNotice('已刪除這筆行程');
-                onClear();
+                onNotice('已刪除這筆行程');
+                onClose();
               } catch (err) {
                 setConfirmDelete(false);
                 setError(err.message);
@@ -6082,66 +6022,85 @@ export default function TourForm({
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
-    </form>
+    </>
   );
 }
 ```
 
 ```diff 06-project-init/src/features/admin/AdminToursPage.jsx
+ import { useEffect, useState } from 'react';
++import Alert from '@mui/material/Alert';
+ import Button from '@mui/material/Button';
++import Snackbar from '@mui/material/Snackbar';
+ import Typography from '@mui/material/Typography';
+ // ...
  export default function AdminToursPage() {
 -  const { tours } = useStore();
 +  const { tours, saveTour, deleteTour } = useStore();
-   const initial =
+   const [open, setOpen] = useState(false);
+   const [tour, setTour] = useState(null);
++  const [notice, setNotice] = useState('');
+   useEffect(() => {
+     document.title = '行程管理 · 洛奇旅行';
+   }, []);
++
++  const close = () => setOpen(false);
+ 
+   return (
  // ...
-       <TourForm
-         editingId={editingId}
-         draft={draft}
-         setDraft={setDraft}
-         onSaved={(id) => setEditingId(id)}
+-      <TourForm open={open} tour={tour} onClose={() => setOpen(false)} />
++      <TourForm
++        key={open ? (tour?.id ?? 'create') : 'closed'}
++        open={open}
++        tour={tour}
++        onClose={close}
 +        onSave={saveTour}
 +        onDelete={deleteTour}
-         onClear={() => {
++        onNotice={setNotice}
++      />
++      <Snackbar
++        open={Boolean(notice)}
++        autoHideDuration={3200}
++        onClose={() => setNotice('')}
++        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
++      >
++        <Alert
++          severity="success"
++          variant="filled"
++          onClose={() => setNotice('')}
++        >
++          {notice}
++        </Alert>
++      </Snackbar>
+     </main>
  // ...
 ```
 
 **解析**
 
 - `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty` 是新增用的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。`draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
+- `TourForm` 是同一個 Dialog。沒有帶入行程時標題是「新增行程」，有帶入時是「編輯行程」，刪除鈕也只在編輯時可用。草稿在表單裡面初始化；頁面用 `key` 在每次打開時重新掛載，才會依當下的行程重算。
 - `DraftRows` 負責多列輸入的新增與刪除。圖庫、每日行程與出發梯次都用它，各列的欄位由 `TourForm` 傳進去。
 - 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
-- 送出時把 `onSave` 的回傳當成錯誤訊息。`onSave` 由頁面傳入，這一章是 Store 的 `saveTour`。空字串代表成功，把 `notice` 設成「已儲存這筆行程」，再呼叫 `onSaved`。
-- 刪除鈕在沒有 `editingId` 時停用。按下先開 Dialog，確認後才 `onDelete`，把提示設成「已刪除這筆行程」，並清掉表單。
-- `notice` 有字時打開 Snackbar，約 3.2 秒後或按下關閉會清掉。位置在畫面下方置中，裡面是一則填色的成功 `Alert`。這則提示留在表單自己的狀態，不經過 Store。
-- 表單 `id` 是 `admin-form`。標題在有 `editingId` 時寫「編輯行程」，否則寫「新增行程」。說明寫空的網址列會略過，封面用圖庫第一張。
+- 送出時把 `onSave` 的回傳當成錯誤訊息。`onSave` 由頁面傳入，這一章是 Store 的 `saveTour`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已儲存這筆行程」。
+- 刪除鈕在沒有帶入行程時停用。按下先開確認 Dialog，確認後才 `onDelete`，同樣先關窗再提示「已刪除這筆行程」。
+- `notice` 放在頁面。有字時打開 Snackbar，約 3.2 秒後或按下關閉會清掉。位置在畫面下方置中，裡面是一則填色的成功 `Alert`。提示留在頁面，關窗後才看得到。
+- 說明寫空的網址列會略過，封面用圖庫第一張。
 
 ## 報名清單
 
-清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。狀態用下拉改變，重新整理就回到種子。
+清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態。按「儲存」才送出。重新整理就回到種子。兩頁用頁首切換，模式跟行程管理相同。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成已經寫好的 `AdminTabs`，以及這一節才寫的 `BookingTable`。下面先組出這一頁並接到路由，表格先放標記，再補改狀態的方法，接著換成真正的表格，最後再補沒有符合結果時的提示。
+這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingTable` 與 `BookingForm`。下面先組出這一頁並接到路由，表格與明細先放標記，再補改狀態的方法，接著換成真正的元件。
 
 {% mermaid graph TD %}
-  page["AdminBookingsPage"] --> tabs["AdminTabs"]
-  page --> table["BookingTable"]
+  page["AdminBookingsPage"] --> table["BookingTable"]
+  page --> form["BookingForm"]
 {% endmermaid %}
 
 ### 步驟 1：組出 AdminBookingsPage
 
-先把報名清單組起來並接到路由。`AdminTabs` 上一節已經換成真正的元件，這裡只把表格先放標記。直接打開 `/admin/bookings` 就看得到這一頁。
+先把報名清單組起來並接到路由。表格與明細先放標記。直接打開 `/admin/bookings` 就看得到這一頁。
 
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 export default function BookingTable() {
@@ -6149,15 +6108,30 @@ export default function BookingTable() {
 }
 ```
 
-接著寫報名清單。表格目前仍是標記。
+```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
+export default function BookingForm({ open, onClose }) {
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>報名明細</DialogTitle>
+      <DialogContent>報名表單</DialogContent>
+    </Dialog>
+  );
+}
+```
+
+接著寫報名清單。表格與明細目前仍是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
 import { useEffect, useState } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import AdminTabs from './components/AdminTabs.jsx';
 import BookingTable from './components/BookingTable.jsx';
+import BookingForm from './components/BookingForm.jsx';
 import { statusLabel } from '../../format.js';
 import { useStore } from '../../store-context.js';
 
@@ -6168,14 +6142,16 @@ export default function AdminBookingsPage() {
   const [status, setStatus] = useState('all');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('date-desc');
+  const [open, setOpen] = useState(false);
+  const [booking, setBooking] = useState(null);
   useEffect(() => {
     document.title = '報名清單 · 洛奇旅行';
   }, []);
 
   const keyword = query.trim();
   const shown = bookings
-    .filter((booking) => status === 'all' || booking.status === status)
-    .filter((booking) => !keyword || booking.name.includes(keyword))
+    .filter((item) => status === 'all' || item.status === status)
+    .filter((item) => !keyword || item.name.includes(keyword))
     .sort((a, b) =>
       sort === 'date-asc'
         ? a.date.localeCompare(b.date)
@@ -6192,9 +6168,8 @@ export default function AdminBookingsPage() {
         報名清單
       </Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        查看所有報名，並把狀態改為待確認、已確認或已取消。
+        查看所有報名，點一筆看明細並改狀態。兩頁用頁首切換。
       </p>
-      <AdminTabs />
       <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
         <TextField
           select
@@ -6224,7 +6199,22 @@ export default function AdminBookingsPage() {
           <MenuItem value="date-asc">出發日舊到新</MenuItem>
         </TextField>
       </div>
-      <BookingTable bookings={shown} />
+      {shown.length ? (
+        <BookingTable
+          bookings={shown}
+          onView={(item) => {
+            setBooking(item);
+            setOpen(true);
+          }}
+        />
+      ) : (
+        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
+      )}
+      <BookingForm
+        open={open}
+        booking={booking}
+        onClose={() => setOpen(false)}
+      />
     </main>
   );
 }
@@ -6232,10 +6222,10 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- 直接打開 `/admin/bookings` 就看得到這一頁。上方沿用 `AdminTabs`。
-- 狀態、姓名關鍵字與日期排序都是這一頁自己的 state，不寫進網址。狀態預設 `all`，排序預設 `date-desc`。
-- `shown` 先依狀態再依姓名過濾。姓名用去掉空白後的關鍵字做 `includes`。日期用 `localeCompare`，`date-asc` 由舊到新，其餘由新到舊。
-- 表格先一律畫出來。沒有符合結果時的提示，最後一步再補。
+- 直接打開 `/admin/bookings` 就看得到這一頁。上方的狀態、姓名與日期用來篩選與排序。
+- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
+- `open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
+- 兩頁用頁首切換，這一頁不再放分頁列。
 
 接著把 `/admin/bookings` 換成這一頁。
 
@@ -6244,7 +6234,7 @@ export default function AdminBookingsPage() {
  import AdminToursPage from './features/admin/AdminToursPage.jsx';
 +import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
  import NotFoundPage from './pages/NotFoundPage.jsx';
--import Placeholder from './_shared/Placeholder.jsx';
+ import Placeholder from './_shared/Placeholder.jsx';
  // ...
        { path: 'admin', element: <AdminToursPage /> },
 -      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
@@ -6256,7 +6246,16 @@ export default function AdminBookingsPage() {
 **解析**
 
 - `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`。星號路由先前已接上 `NotFoundPage`。
-- 十二條路徑到這裡都已換成完成品裡的頁面，`Placeholder` 至此沒有人引用，自行評估刪掉 `src/_shared/Placeholder.jsx`。
+- 十二條路徑到這裡都已換成完成品裡的頁面。`Placeholder` 至此沒有人引用，把 import 拿掉。檔案本身自行評估刪掉。
+
+```diff 06-project-init/src/App.jsx
+ import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
+ import NotFoundPage from './pages/NotFoundPage.jsx';
+-import Placeholder from './_shared/Placeholder.jsx';
+ 
+ const router = createBrowserRouter([
+ // ...
+```
 
 ### 步驟 2：更新 Store
 
@@ -6293,78 +6292,24 @@ export default function AdminBookingsPage() {
 **解析**
 
 - `setBookingStatus` 依 `id` 找到那一筆，只改 `status`，其他欄位原樣。重新整理會回到種子，這次的改動不會寫進檔案。
-- 提示訊息寫在下一步的表格裡，不經過 Store。
+- 提示訊息下一步寫在頁面自己的狀態裡，不經過 Store。
 
-### 步驟 3：報名表格
+### 步驟 3：報名表格與明細
 
-把報名表格的 placeholder 換成真正的元件。
+把報名表格與明細的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog，看完整欄位，並用下拉選狀態；按「儲存」才送出，「取消」關閉。
 
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
-import { useState } from 'react';
-import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Snackbar from '@mui/material/Snackbar';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { ntd, statusLabel } from '../../../format.js';
-import { useStore } from '../../../store-context.js';
-import { tokens } from '../../../theme.js';
+import { statusLabel } from '../../../format.js';
 
-const statuses = ['pending', 'confirmed', 'cancelled'];
-
-const statusTone = {
-  pending: { border: tokens.accent, color: tokens.ink },
-  confirmed: { border: tokens.action, color: tokens.action },
-  cancelled: { border: '#C5C2B8', color: '#6E756E' },
-};
-
-function StatusSelect({ booking, onStatus }) {
-  const tone = statusTone[booking.status] || statusTone.pending;
-  return (
-    <Select
-      size="small"
-      value={booking.status}
-      onChange={(event) => onStatus(booking.id, event.target.value)}
-      sx={{
-        width: 148,
-        color: tone.color,
-        backgroundColor: tokens.white,
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: tone.border,
-          borderWidth: 2,
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-          borderColor: tone.border,
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: tone.border,
-        },
-        '& .MuiSelect-icon': { color: tone.color },
-      }}
-    >
-      {statuses.map((status) => (
-        <MenuItem key={status} value={status}>
-          {statusLabel[status]}
-        </MenuItem>
-      ))}
-    </Select>
-  );
-}
-
-export default function BookingTable({ bookings }) {
-  const { setBookingStatus } = useStore();
-  const [notice, setNotice] = useState('');
-  const onStatus = (id, status) => {
-    setBookingStatus(id, status);
-    setNotice('已更新報名狀態');
-  };
-
+export default function BookingTable({ bookings, onView }) {
   return (
     <>
       <TableContainer
@@ -6374,20 +6319,8 @@ export default function BookingTable({ bookings }) {
         <Table>
           <TableHead>
             <TableRow>
-              {[
-                ['行程', 'left'],
-                ['出發日', 'left'],
-                ['人數', 'right'],
-                ['姓名', 'left'],
-                ['電話', 'left'],
-                ['小計', 'right'],
-                ['狀態', 'left'],
-              ].map(([label, align]) => (
-                <TableCell
-                  key={label}
-                  align={align}
-                  className="whitespace-nowrap px-4 py-3"
-                >
+              {['行程', '出發日', '姓名', '狀態', '操作'].map((label) => (
+                <TableCell key={label} className="whitespace-nowrap px-4 py-3">
                   {label}
                 </TableCell>
               ))}
@@ -6400,25 +6333,12 @@ export default function BookingTable({ bookings }) {
                 <TableCell className="whitespace-nowrap px-4 py-4">
                   {booking.date}
                 </TableCell>
-                <TableCell align="right" className="px-4 py-4">
-                  {booking.people}
-                </TableCell>
-                <TableCell className="px-4 py-4">
-                  {booking.name}
-                  <br />
-                  {booking.email}
-                </TableCell>
+                <TableCell className="px-4 py-4">{booking.name}</TableCell>
                 <TableCell className="whitespace-nowrap px-4 py-4">
-                  {booking.phone}
-                </TableCell>
-                <TableCell
-                  align="right"
-                  className="whitespace-nowrap px-4 py-4"
-                >
-                  {ntd(booking.subtotal)}
+                  {statusLabel[booking.status] || booking.status}
                 </TableCell>
                 <TableCell className="px-4 py-4">
-                  <StatusSelect booking={booking} onStatus={onStatus} />
+                  <Button onClick={() => onView(booking)}>查看</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -6431,85 +6351,210 @@ export default function BookingTable({ bookings }) {
             <h3 className="font-serif text-2xl font-semibold">
               {booking.tourTitle}
             </h3>
-            <dl className="mt-3 grid gap-2 text-base">
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">出發日</dt>
-                <dd>{booking.date}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">人數</dt>
-                <dd className="text-right">{booking.people}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">姓名</dt>
-                <dd className="text-right">
-                  {booking.name}
-                  <br />
-                  {booking.email}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">電話</dt>
-                <dd>{booking.phone}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-muted">小計</dt>
-                <dd className="text-right">{ntd(booking.subtotal)}</dd>
-              </div>
-            </dl>
-            <div className="mt-3">
-              <StatusSelect booking={booking} onStatus={onStatus} />
-            </div>
+            <p className="mt-2 text-muted">
+              {booking.date} · {booking.name} ·{' '}
+              {statusLabel[booking.status] || booking.status}
+            </p>
+            <Button className="mt-3" onClick={() => onView(booking)}>
+              查看
+            </Button>
           </Card>
         ))}
       </div>
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
     </>
   );
 }
 ```
 
-**解析**
+```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
+import { useState } from 'react';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
+import { ntd, statusLabel } from '../../../format.js';
 
-- `StatusSelect` 的選項是 `pending`、`confirmed`、`cancelled`，文字用 `statusLabel`。變更時呼叫從表格傳下來的 `onStatus`，由表格改 Store 並把 `notice` 設成「已更新報名狀態」。
-- 狀態改成「已取消」就是這筆報名的刪除。訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
-- `notice` 有字時打開 Snackbar，寫法和行程表單同一套：約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。
-- 外框顏色依狀態換：待確認用強調色邊、墨色字；已確認用操作色；已取消用另外一組灰。選單沒有對應的 class 可以換色，所以只有這裡使用 `sx`。
-- `md` 以上是表格，窄螢幕是卡片。兩邊都有出發日、人數、姓名與 email、電話、小計，以及同一個狀態選單。
+const statuses = ['pending', 'confirmed', 'cancelled'];
 
-### 步驟 4：沒有符合的報名
+const Row = ({ label, value }) => (
+  <div className="flex justify-between gap-4">
+    <dt className="text-muted">{label}</dt>
+    <dd className="text-right">{value}</dd>
+  </div>
+);
 
-篩選後沒有結果時，不要畫空表格。
+export default function BookingForm({
+  open,
+  booking,
+  onClose,
+  onSave,
+  onNotice,
+}) {
+  const [status, setStatus] = useState(booking?.status ?? 'pending');
+  const [error, setError] = useState('');
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
+  const commit = async () => {
+    const message = await onSave(booking.id, status);
+    setError(message);
+    if (!message) {
+      onNotice('已更新報名狀態');
+      onClose();
+    }
+  };
+
+  const submit = async (event) => {
+    event.preventDefault();
+    if (status === 'cancelled' && booking.status !== 'cancelled') {
+      setConfirmCancel(true);
+      return;
+    }
+    await commit();
+  };
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        scroll="paper"
+        aria-labelledby="booking-form-title"
+      >
+        <form onSubmit={submit}>
+          <DialogTitle id="booking-form-title">報名明細</DialogTitle>
+          <DialogContent className="grid gap-4 pt-2">
+            {booking ? (
+              <dl className="grid gap-2 text-base">
+                <Row label="行程" value={booking.tourTitle} />
+                <Row label="出發日" value={booking.date} />
+                <Row label="聯絡人" value={booking.name} />
+                <Row label="Email" value={booking.email} />
+                <Row label="電話" value={booking.phone} />
+                <Row label="人數" value={booking.people} />
+                <Row label="金額" value={ntd(booking.subtotal)} />
+              </dl>
+            ) : null}
+            {error ? <Alert severity="error">{error}</Alert> : null}
+            <FieldSelect
+              id="booking-status"
+              label="狀態"
+              value={status}
+              onChange={setStatus}
+              options={statuses.map((item) => ({
+                value: item,
+                label: statusLabel[item],
+              }))}
+            />
+          </DialogContent>
+          <DialogActions className="flex-wrap gap-2 p-4">
+            <Button type="submit" variant="contained">
+              儲存
+            </Button>
+            <Button type="button" onClick={onClose}>
+              取消
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Dialog
+        open={confirmCancel}
+        onClose={() => setConfirmCancel(false)}
+        aria-labelledby="cancel-title"
+      >
+        <DialogTitle id="cancel-title">改為已取消？</DialogTitle>
+        <DialogContent>
+          紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
+        </DialogContent>
+        <DialogActions className="gap-2 p-4">
+          <Button onClick={() => setConfirmCancel(false)}>返回</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={async () => {
+              setConfirmCancel(false);
+              await commit();
+            }}
+          >
+            確認取消
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
+```
 
 ```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
+ import { useEffect, useState } from 'react';
++import Alert from '@mui/material/Alert';
+ import MenuItem from '@mui/material/MenuItem';
++import Snackbar from '@mui/material/Snackbar';
+ import TextField from '@mui/material/TextField';
  // ...
-       </div>
--      <BookingTable bookings={shown} />
-+      {shown.length ? (
-+        <BookingTable bookings={shown} />
-+      ) : (
-+        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
-+      )}
+ export default function AdminBookingsPage() {
+-  const { bookings } = useStore();
++  const { bookings, setBookingStatus } = useStore();
+   const [status, setStatus] = useState('all');
+   const [query, setQuery] = useState('');
+   const [sort, setSort] = useState('date-desc');
+   const [open, setOpen] = useState(false);
+   const [booking, setBooking] = useState(null);
++  const [notice, setNotice] = useState('');
+   useEffect(() => {
+     document.title = '報名清單 · 洛奇旅行';
+   }, []);
+ // ...
++  const close = () => setOpen(false);
++
++  const onSave = (id, next) => {
++    setBookingStatus(id, next);
++    return '';
++  };
++
+   return (
+ // ...
+       <BookingForm
+-        open={open}
+-        booking={booking}
+-        onClose={() => setOpen(false)}
+-      />
++        key={open ? booking.id : 'closed'}
++        open={open}
++        booking={booking}
++        onClose={close}
++        onSave={onSave}
++        onNotice={setNotice}
++      />
++      <Snackbar
++        open={Boolean(notice)}
++        autoHideDuration={3200}
++        onClose={() => setNotice('')}
++        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
++      >
++        <Alert
++          severity="success"
++          variant="filled"
++          onClose={() => setNotice('')}
++        >
++          {notice}
++        </Alert>
++      </Snackbar>
      </main>
  // ...
 ```
 
 **解析**
 
-- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
+- 列表只放行程、出發日、姓名、狀態與「查看」。完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。
+- 狀態下拉在 Dialog 底部。按「儲存」才呼叫頁面傳入的 `onSave`，這一章是 Store 的 `setBookingStatus`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已更新報名狀態」。
+- 若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
+- `notice` 放在頁面，寫法和行程表單同一套：約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
+- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。
 
 # 打包與預覽
 
@@ -6569,7 +6614,7 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - Vite 專案先自己加上 `jsconfig.json`、清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
 - `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
 - 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的元件。
-- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程表單寫入完整欄位；圖庫是網址列，封面用第一張。訂單把狀態改為已取消即軟刪，不從清單移除那一筆。
+- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程與報名都是列表加同一個 Dialog，用頁面 state 控制開關，不另開路由。圖庫是網址列，封面用第一張。訂單改為已取消即軟刪，不從清單移除那一筆。兩頁用頁首切換。
 - `/login`、`/booking`、`/booking/:id`、`/me`、`/admin`、`/admin/login`、`/admin/bookings` 都能直接打開。對不到的路徑與錯誤的 id 都渲染 `NotFoundPage`。登入與讀自己的訂單留到下一篇。
 - `pnpm build` 產出 `dist/` 裡的 HTML、CSS 與 JS。用 Live Server 預覽時，內頁重新整理會拿到靜態伺服器的 404，下一篇部署再處理。
 - 切版在這一章結束。資料層、Hooks、Firestore、管理員登入與 Firebase Hosting 寫在下一篇。
@@ -6623,10 +6668,10 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 ## 後台
 
 - 後台（admin）
-- 分頁（tabs）
 - 草稿（draft）
 - 圖庫（gallery）
 - 精選（featured）
+- 對話框（Dialog）
 - 提示條（Snackbar）
 - 軟刪除（soft delete）
 

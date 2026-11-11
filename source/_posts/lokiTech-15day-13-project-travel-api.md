@@ -1572,7 +1572,7 @@ export default function AdminGate({ children }) {
 
 ## 訂單清單與狀態
 
-後台行程頁改讀 `useTours`，表單沿用第 12 篇的 `TourForm`、`DraftRows` 與 `tourDraft.js`。儲存與刪除改呼叫 `api.js` 的 `saveTour`、`deleteTour`，成功後 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
+後台行程頁改讀 `useTours`，表單沿用第 12 篇的 `TourForm`、`DraftRows` 與 `tourDraft.js`。儲存與刪除改呼叫 `api.js` 的 `saveTour`、`deleteTour`，成功後 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁沿用第 12 篇的 `BookingTable` 與 `BookingForm`，改讀 `useOrders`；在 Dialog 裡按「儲存」才呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
 
 先在 `api.js` 補上寫入與刪除行程。`setDoc` 寫完整一份文件。若編輯時改了編號，先寫到新 id，再刪掉舊文件。
 
@@ -1615,18 +1615,19 @@ export default function AdminGate({ children }) {
  // ...
 ```
 
-`TourTable` 沿用第 12 篇，仍有編輯按鈕。行程管理頁改成這樣：
+`TourTable`、`TourForm`、`BookingTable` 與 `BookingForm` 沿用第 12 篇，不必改。行程管理頁與報名清單頁改成這樣：
 
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import AdminGate from './components/AdminGate.jsx';
-import AdminTabs from './components/AdminTabs.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
-import { draftFromTour, empty, tourFromDraft } from './components/tourDraft.js';
+import { tourFromDraft } from './components/tourDraft.js';
 import LoadGate from '../../LoadGate.jsx';
 import { deleteTour, saveTour } from '../../api.js';
 import { useTours } from '../../useAsync.js';
@@ -1634,37 +1635,20 @@ import { useTours } from '../../useAsync.js';
 function AdminToursBody() {
   const { data, loading, error, reload } = useTours();
   const tours = data ?? [];
-  const [editingId, setEditingId] = useState(null);
-  const [draft, setDraft] = useState(empty);
-  const [started, setStarted] = useState(false);
-
+  const [open, setOpen] = useState(false);
+  const [tour, setTour] = useState(null);
+  const [notice, setNotice] = useState('');
   useEffect(() => {
     document.title = '行程管理 · 洛奇旅行';
   }, []);
 
-  if (!started && data) {
-    const initial =
-      tours.find((item) => item.id === 'hualien-taroko') || tours[0];
-    if (initial) {
-      setEditingId(initial.id);
-      setDraft(draftFromTour(initial));
-    }
-    setStarted(true);
-  }
+  const close = () => setOpen(false);
 
-  const edit = (tour) => {
-    setEditingId(tour.id);
-    setDraft(draftFromTour(tour));
-    document
-      .getElementById('admin-form')
-      ?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const onSave = async (id, current) => {
-    const { error: message, tour } = tourFromDraft(current);
+  const onSave = async (id, draft) => {
+    const { error: message, tour: next } = tourFromDraft(draft);
     if (message) return message;
     try {
-      await saveTour(id, tour);
+      await saveTour(id, next);
       reload();
       return '';
     } catch (err) {
@@ -1690,18 +1674,15 @@ function AdminToursBody() {
         行程管理
       </Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        新增、修改或下架行程。清單來自 Firestore。還沒有資料時，先寫入種子。
+        新增、修改或下架行程。清單來自
+        Firestore。還沒有資料時，先寫入種子。兩頁用頁首切換。
       </p>
-      <AdminTabs />
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-8 flex flex-wrap gap-3">
         <Button
           variant="outlined"
           onClick={() => {
-            setEditingId(null);
-            setDraft(empty);
-            document
-              .getElementById('admin-form')
-              ?.scrollIntoView({ behavior: 'smooth' });
+            setTour(null);
+            setOpen(true);
           }}
         >
           新增行程
@@ -1711,22 +1692,39 @@ function AdminToursBody() {
         </Button>
       </div>
       {tours.length ? (
-        <TourTable tours={tours} onEdit={edit} />
+        <TourTable
+          tours={tours}
+          onEdit={(item) => {
+            setTour(item);
+            setOpen(true);
+          }}
+        />
       ) : (
         <p className="mt-8 text-base text-muted">還沒有行程。</p>
       )}
       <TourForm
-        editingId={editingId}
-        draft={draft}
-        setDraft={setDraft}
-        onSaved={(id) => setEditingId(id)}
+        key={open ? (tour?.id ?? 'create') : 'closed'}
+        open={open}
+        tour={tour}
+        onClose={close}
         onSave={onSave}
         onDelete={onDelete}
-        onClear={() => {
-          setEditingId(null);
-          setDraft(empty);
-        }}
+        onNotice={setNotice}
       />
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={3200}
+        onClose={() => setNotice('')}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setNotice('')}
+        >
+          {notice}
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
@@ -1740,108 +1738,146 @@ export default function AdminToursPage() {
 }
 ```
 
-表格不再自己碰 store，也不再自己顯示成功提示。狀態變更由清單頁傳進來。失敗時的提示改由清單頁的錯誤 `Alert` 負責。
+```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
+import { useEffect, useState } from 'react';
+import Alert from '@mui/material/Alert';
+import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import AdminGate from './components/AdminGate.jsx';
+import BookingTable from './components/BookingTable.jsx';
+import BookingForm from './components/BookingForm.jsx';
+import LoadGate from '../../LoadGate.jsx';
+import { updateOrderStatus } from '../../api.js';
+import { statusLabel } from '../../format.js';
+import { useOrders } from '../../useAsync.js';
 
-```diff 07-project-final/src/features/admin/components/BookingTable.jsx
--import { useState } from 'react';
--import Alert from '@mui/material/Alert';
- import Card from '@mui/material/Card';
- import MenuItem from '@mui/material/MenuItem';
- import Select from '@mui/material/Select';
--import Snackbar from '@mui/material/Snackbar';
- import Table from '@mui/material/Table';
- // ...
- import { ntd, statusLabel } from '../../../format.js';
--import { useStore } from '../../../store-context.js';
- import { tokens } from '../../../theme.js';
- // ...
--export default function BookingTable({ bookings }) {
--  const { setBookingStatus } = useStore();
--  const [notice, setNotice] = useState('');
--  const onStatus = (id, status) => {
--    setBookingStatus(id, status);
--    setNotice('已更新報名狀態');
--  };
-+export default function BookingTable({ bookings, onStatus }) {
-   return (
- // ...
-       </div>
--      <Snackbar
--        open={Boolean(notice)}
--        autoHideDuration={3200}
--        onClose={() => setNotice('')}
--        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
--      >
--        <Alert
--          severity="success"
--          variant="filled"
--          onClose={() => setNotice('')}
--        >
--          {notice}
--        </Alert>
--      </Snackbar>
-     </>
- // ...
-```
+const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
-```diff 07-project-final/src/features/admin/AdminBookingsPage.jsx
- import { useEffect, useState } from 'react';
-+import Alert from '@mui/material/Alert';
- import MenuItem from '@mui/material/MenuItem';
- // ...
- import Typography from '@mui/material/Typography';
-+import AdminGate from './components/AdminGate.jsx';
- import AdminTabs from './components/AdminTabs.jsx';
- import BookingTable from './components/BookingTable.jsx';
-+import LoadGate from '../../LoadGate.jsx';
-+import { updateOrderStatus } from '../../api.js';
- import { statusLabel } from '../../format.js';
--import { useStore } from '../../store-context.js';
-+import { useOrders } from '../../useAsync.js';
- // ...
--export default function AdminBookingsPage() {
-+function AdminBookingsBody() {
--  const { bookings } = useStore();
-+  const { data, loading, error, reload } = useOrders();
-+  const bookings = data ?? [];
-   const [status, setStatus] = useState('all');
-   const [query, setQuery] = useState('');
-   const [sort, setSort] = useState('date-desc');
-+  const [notice, setNotice] = useState('');
-   useEffect(() => { document.title = '報名清單 · 洛奇旅行'; }, []);
- // ...
--      .filter((booking) => !keyword || booking.name.includes(keyword))
-+      .filter((booking) => !keyword || booking.name?.includes(keyword))
-       .sort((a, b) => (sort === 'date-asc' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)));
-+
-+  const changeStatus = async (id, next) => {
-+    setNotice('');
-+    try {
-+      await updateOrderStatus(id, next);
-+      reload();
-+    } catch (err) {
-+      setNotice(err.message);
-+    }
-+  };
-+
-+  if (loading || error) return <LoadGate loading={loading} error={error} />;
+function AdminBookingsBody() {
+  const { data, loading, error, reload } = useOrders();
+  const bookings = data ?? [];
+  const [status, setStatus] = useState('all');
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState('date-desc');
+  const [open, setOpen] = useState(false);
+  const [booking, setBooking] = useState(null);
+  const [notice, setNotice] = useState('');
+  useEffect(() => {
+    document.title = '報名清單 · 洛奇旅行';
+  }, []);
 
-   return (
- // ...
--      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">查看所有報名，並把狀態改為待確認、已確認或已取消。</p>
-+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">查看所有訂單，並把狀態改為待確認、已確認或已取消。</p>
-       <AdminTabs />
-+      {notice ? <Alert className="mt-6" severity="error">{notice}</Alert> : null}
- // ...
--      {shown.length ? <BookingTable bookings={shown} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
-+      {shown.length ? <BookingTable bookings={shown} onStatus={changeStatus} /> : <p className="mt-8 text-base text-muted">沒有符合的報名。</p>}
-     </main>
-   );
- }
-+
-+export default function AdminBookingsPage() {
-+  return <AdminGate><AdminBookingsBody /></AdminGate>;
-+}
+  const keyword = query.trim();
+  const shown = bookings
+    .filter((item) => status === 'all' || item.status === status)
+    .filter((item) => !keyword || item.name?.includes(keyword))
+    .sort((a, b) =>
+      sort === 'date-asc'
+        ? a.date.localeCompare(b.date)
+        : b.date.localeCompare(a.date),
+    );
+
+  const close = () => setOpen(false);
+
+  const onSave = async (id, next) => {
+    try {
+      await updateOrderStatus(id, next);
+      reload();
+      return '';
+    } catch (err) {
+      return err.message;
+    }
+  };
+
+  if (error) return <LoadGate loading={false} error={error} />;
+  if (loading && !data) return <LoadGate loading error={null} />;
+
+  return (
+    <main
+      id="content"
+      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+    >
+      <p className="font-bold text-action">管理員</p>
+      <Typography variant="h1" className="mt-2">
+        報名清單
+      </Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        查看所有訂單，點一筆看明細並改狀態。兩頁用頁首切換。
+      </p>
+      <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
+        <TextField
+          select
+          label="狀態"
+          value={status}
+          onChange={(event) => setStatus(event.target.value)}
+        >
+          {statusOptions.map((value) => (
+            <MenuItem key={value} value={value}>
+              {value === 'all' ? '全部' : statusLabel[value]}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          label="搜尋姓名"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="輸入姓名"
+        />
+        <TextField
+          select
+          label="日期排序"
+          value={sort}
+          onChange={(event) => setSort(event.target.value)}
+        >
+          <MenuItem value="date-desc">出發日新到舊</MenuItem>
+          <MenuItem value="date-asc">出發日舊到新</MenuItem>
+        </TextField>
+      </div>
+      {shown.length ? (
+        <BookingTable
+          bookings={shown}
+          onView={(item) => {
+            setBooking(item);
+            setOpen(true);
+          }}
+        />
+      ) : (
+        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
+      )}
+      <BookingForm
+        key={open ? booking.id : 'closed'}
+        open={open}
+        booking={booking}
+        onClose={close}
+        onSave={onSave}
+        onNotice={setNotice}
+      />
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={3200}
+        onClose={() => setNotice('')}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setNotice('')}
+        >
+          {notice}
+        </Alert>
+      </Snackbar>
+    </main>
+  );
+}
+
+export default function AdminBookingsPage() {
+  return (
+    <AdminGate>
+      <AdminBookingsBody />
+    </AdminGate>
+  );
+}
 ```
 
 頁面換成上面的寫法之後，`App` 拿掉記憶體那一層。
@@ -1861,7 +1897,7 @@ export default function AdminToursPage() {
  }
 ```
 
-接著刪掉這些檔。`TourForm.jsx`、`DraftRows.jsx` 與 `tourDraft.js` 還在用，不要刪。
+接著刪掉這些檔。`TourForm.jsx`、`DraftRows.jsx`、`tourDraft.js`、`BookingTable.jsx` 與 `BookingForm.jsx` 還在用，不要刪。
 
 - `src/store.jsx`
 - `src/store-context.js`
@@ -1875,17 +1911,17 @@ export default function AdminToursPage() {
   gate --> list["listOrders"]
   tours --> fsTours["tours"]
   list --> fs["orders"]
-  select["狀態下拉"] --> update["updateOrderStatus"]
+  view["查看"] --> dialog["BookingForm"]
+  dialog --> update["updateOrderStatus"]
   update --> fs
 {% endmermaid %}
 
 **解析**
 
 - `AdminToursBody` 與 `AdminBookingsBody` 都寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫寫入或 `listOrders`。
-- 表單沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。刪除仍用同一組確認 Dialog 與 Snackbar。
-- 第一次進頁時，資料到了才把花蓮那筆放進草稿。之後 `reload` 只更新清單，不會清掉正在編的表單。
-- 狀態改成「已取消」就是這筆訂單的刪除。訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
-- `reload` 之後清單會換成雲端上的新內容。行程表單在仍有舊資料時不整頁換成讀取中，避免提示被拆掉。
+- 行程表單沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。新增、編輯與刪除仍用同一組 Dialog 與 Snackbar。
+- 報名明細同樣沿用第 12 篇的 Dialog。按「儲存」才呼叫 `updateOrderStatus`。若改成「已取消」，儲存前仍先確認。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
+- `reload` 之後清單會換成雲端上的新內容。第一次讀取才整頁交給 `LoadGate`；之後若仍有舊資料，不整頁換成讀取中，避免正在開的 Dialog 或提示被拆掉。
 - 行程頁的「寫入種子」連到 `/seed`。規則改成管理員可寫之後，要先用後台帳號登入再按。
 - 篩選與排序仍在瀏覽器做。Firestore 這一章只負責把訂單整份拿回來。
 
