@@ -5152,6 +5152,8 @@ src/features/admin/
     ├── AdminTabs.jsx
     ├── TourTable.jsx
     ├── TourForm.jsx
+    ├── DraftRows.jsx
+    ├── tourDraft.js
     └── BookingTable.jsx
 ```
 
@@ -5271,18 +5273,20 @@ export default function AdminLoginPage() {
 
 ## 行程管理
 
-表單沒有出現的每日行程、圖集與費用，儲存時留在原本那筆上。主題選項這一頁才補進 `features/tours/mock.data.js`。
+後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項這一頁才補進 `features/tours/mock.data.js`。
 
-這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，三個零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
+這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
 
 - `AdminTabs`
 - `TourTable`
 - `TourForm`
+- `DraftRows`：圖庫、每日行程與出發梯次共用的多列輸入
 
 {% mermaid graph TD %}
   page["AdminToursPage"] --> tabs["AdminTabs"]
   page --> table["TourTable"]
   page --> form["TourForm"]
+  form --> rows["DraftRows"]
 {% endmermaid %}
 
 ### 步驟 1：組出 AdminToursPage
@@ -5309,11 +5313,14 @@ export const empty = {
   theme: '城市',
   days: 2,
   price: 0,
-  cover: '',
+  images: [''],
   intro: '',
   highlights: '',
-  date: '',
-  capacity: 8,
+  itinerary: [{ title: '', body: '' }],
+  includes: '',
+  excludes: '',
+  departures: [{ date: '', capacity: 8 }],
+  featured: false,
 };
 
 export const draftFromTour = () => empty;
@@ -5450,85 +5457,103 @@ export default function AdminToursPage() {
  // ...
 ```
 
-接著讓 Store 能儲存與刪除行程。
+接著補上草稿轉行程的函式，並讓 Store 能儲存與刪除行程。`draftFromTour` 下一步再換成會帶入行程欄位的寫法。
+
+```js 06-project-init/src/features/admin/components/tourDraft.js
+const linesOf = (text) =>
+  String(text)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+export const empty = {
+  id: '',
+  title: '',
+  region: '',
+  theme: '城市',
+  days: 2,
+  price: 0,
+  images: [''],
+  intro: '',
+  highlights: '',
+  itinerary: [{ title: '', body: '' }],
+  includes: '',
+  excludes: '',
+  departures: [{ date: '', capacity: 8 }],
+  featured: false,
+};
+
+export const draftFromTour = () => empty;
+
+export const tourFromDraft = (draft) => {
+  const id = draft.id.trim();
+  if (!id || !draft.title.trim()) return { error: '編號和標題要填' };
+  const images = (draft.images ?? [])
+    .map((item) => String(item).trim())
+    .filter(Boolean);
+  const itinerary = (draft.itinerary ?? [])
+    .map((item) => ({
+      title: String(item.title ?? '').trim(),
+      body: String(item.body ?? '').trim(),
+    }))
+    .filter((item) => item.title || item.body)
+    .map((item, index) => ({
+      day: index + 1,
+      title: item.title,
+      body: item.body,
+    }));
+  const departures = (draft.departures ?? [])
+    .map((item) => ({
+      date: String(item.date ?? '').trim(),
+      capacity: Number(item.capacity) || 8,
+    }))
+    .filter((item) => item.date)
+    .map((item) => ({
+      id: item.date,
+      date: item.date,
+      capacity: item.capacity,
+    }));
+  return {
+    error: '',
+    tour: {
+      id,
+      title: draft.title.trim(),
+      region: draft.region.trim(),
+      theme: draft.theme,
+      days: Number(draft.days),
+      price: Number(draft.price),
+      cover: images[0] || '',
+      images,
+      intro: draft.intro.trim(),
+      highlights: linesOf(draft.highlights),
+      itinerary,
+      includes: linesOf(draft.includes),
+      excludes: linesOf(draft.excludes),
+      departures,
+      featured: Boolean(draft.featured),
+    },
+  };
+};
+```
 
 ```diff 06-project-init/src/store.jsx
  import { StoreContext } from './store-context.js';
-+
-+const highlightsOf = (text) =>
-+  String(text)
-+    .split('\n')
-+    .map((line) => line.trim())
-+    .filter(Boolean);
++import { tourFromDraft } from './features/admin/components/tourDraft.js';
 
  export function StoreProvider({ children }) {
 -  const [tours] = useState(seedTours);
 +  const [tours, setTours] = useState(seedTours);
    const [bookings, setBookings] = useState(seedBookings);
 +  const saveTour = (editingId, draft) => {
-+    const id = draft.id.trim();
-+    if (!id || !draft.title.trim()) return '編號和標題要填';
-+    const prev = tours.find((item) => item.id === (editingId || id));
-+    if (tours.some((item) => item.id === id && item !== prev))
++    const { error, tour } = tourFromDraft(draft);
++    if (error) return error;
++    const prev = tours.find((item) => item.id === (editingId || tour.id));
++    if (tours.some((item) => item.id === tour.id && item !== prev))
 +      return '這個編號已經有了';
-+    const highlights = highlightsOf(draft.highlights);
-+    const next = prev
-+      ? {
-+          ...prev,
-+          id,
-+          title: draft.title.trim(),
-+          region: draft.region.trim(),
-+          theme: draft.theme,
-+          days: Number(draft.days),
-+          price: Number(draft.price),
-+          cover: draft.cover.trim(),
-+          intro: draft.intro.trim(),
-+          highlights,
-+          departures: prev.departures.length
-+            ? [
-+                {
-+                  ...prev.departures[0],
-+                  id: draft.date,
-+                  date: draft.date,
-+                  capacity: Number(draft.capacity),
-+                },
-+                ...prev.departures.slice(1),
-+              ]
-+            : [
-+                {
-+                  id: draft.date,
-+                  date: draft.date,
-+                  capacity: Number(draft.capacity),
-+                },
-+              ],
-+        }
-+      : {
-+          id,
-+          title: draft.title.trim(),
-+          region: draft.region.trim(),
-+          theme: draft.theme,
-+          days: Number(draft.days),
-+          price: Number(draft.price),
-+          cover: draft.cover.trim(),
-+          images: [draft.cover.trim()],
-+          intro: draft.intro.trim(),
-+          highlights,
-+          itinerary: [],
-+          includes: [],
-+          excludes: [],
-+          departures: [
-+            {
-+              id: draft.date,
-+              date: draft.date,
-+              capacity: Number(draft.capacity),
-+            },
-+          ],
-+          featured: false,
-+        };
 +    setTours(
 +      prev
-+        ? tours.map((item) => (item.id === prev.id ? next : item))
-+        : [next, ...tours],
++        ? tours.map((item) => (item.id === prev.id ? tour : item))
++        : [tour, ...tours],
 +    );
 +    return '';
 +  };
@@ -5548,10 +5573,9 @@ export default function AdminToursPage() {
 
 **解析**
 
-- `highlightsOf` 把亮點文字依換行拆開，去掉空白行。
-- 編號或標題去掉空白後是空的，回傳「編號和標題要填」，不寫入。編輯時用 `editingId` 找到舊的那筆；新編號若已被另一筆占用，回傳「這個編號已經有了」。
-- 找到舊資料時，以舊的那筆為底，只改表單上有的欄位。圖集、每日行程與費用留在原本那筆上。第一個出發日改成表單的日期與名額，其餘梯次保留。
-- 找不到舊資料就新增：圖集先放封面那一張，每日行程與費用是空陣列，`featured` 為 false，並插到陣列最前面。
+- `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
+- 編號或標題去掉空白後是空的，回傳「編號和標題要填」，不寫入。Store 用 `editingId` 找到舊的那筆；新編號若已被另一筆占用，回傳「這個編號已經有了」。
+- 新增與編輯都寫完整結構。新增時插到陣列最前面。
 - 成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。提示訊息下一步寫在表單自己的狀態裡。
 
 ### 步驟 3：後台分頁
@@ -5704,54 +5728,107 @@ export default function TourTable({ tours, onEdit }) {
 
 ### 步驟 5：行程表單
 
+把行程表單的 placeholder 換成真正的元件，並把 `draftFromTour` 換成會帶入行程欄位的寫法。多列輸入抽成 `DraftRows`，避免圖庫、每日行程與出發梯次各寫一套新增與刪除。頁面補上 `onSave` 與 `onDelete`，import 不用改路徑。
 
-把行程表單的 placeholder 換成真正的元件，並把 `draftFromTour` 換成會帶入行程欄位的寫法。頁面的 import 不用改。
+```diff 06-project-init/src/features/admin/components/tourDraft.js
+ // ...
+   featured: false,
+ };
+ 
+-export const draftFromTour = () => empty;
++export const draftFromTour = (tour) => ({
++  id: tour.id,
++  title: tour.title,
++  region: tour.region,
++  theme: tour.theme,
++  days: tour.days,
++  price: tour.price,
++  images: tour.images?.length ? [...tour.images] : [''],
++  intro: tour.intro,
++  highlights: (tour.highlights ?? []).join('\n'),
++  itinerary: tour.itinerary?.length
++    ? tour.itinerary.map(({ title, body }) => ({ title, body }))
++    : [{ title: '', body: '' }],
++  includes: (tour.includes ?? []).join('\n'),
++  excludes: (tour.excludes ?? []).join('\n'),
++  departures: tour.departures?.length
++    ? tour.departures.map(({ date, capacity }) => ({ date, capacity }))
++    : [{ date: '', capacity: 8 }],
++  featured: Boolean(tour.featured),
++});
 
-```js 06-project-init/src/features/admin/components/tourDraft.js
-export const empty = {
-  id: '',
-  title: '',
-  region: '',
-  theme: '城市',
-  days: 2,
-  price: 0,
-  cover: '',
-  intro: '',
-  highlights: '',
-  date: '',
-  capacity: 8,
-};
-
-export const draftFromTour = (tour) => ({
-  id: tour.id,
-  title: tour.title,
-  region: tour.region,
-  theme: tour.theme,
-  days: tour.days,
-  price: tour.price,
-  cover: tour.cover,
-  intro: tour.intro,
-  highlights: tour.highlights.join('\n'),
-  date: tour.departures[0]?.date ?? '',
-  capacity: tour.departures[0]?.capacity ?? 8,
-});
+ export const tourFromDraft = (draft) => {
+ // ...
 ```
 
+```jsx 06-project-init/src/features/admin/components/DraftRows.jsx
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
+export default function DraftRows({
+  title,
+  items,
+  blank,
+  addLabel,
+  onChange,
+  children,
+}) {
+  const update = (index, next) =>
+    onChange(items.map((item, current) => (current === index ? next : item)));
+  const remove = (index) =>
+    onChange(items.filter((_, current) => current !== index));
+
+  return (
+    <div className="sm:col-span-2 grid gap-4">
+      <Typography variant="h3">{title}</Typography>
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            {children(item, index, update)}
+          </div>
+          <Button
+            type="button"
+            color="error"
+            variant="outlined"
+            onClick={() => remove(index)}
+          >
+            刪除
+          </Button>
+        </div>
+      ))}
+      <div>
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={() => onChange([...items, blank])}
+        >
+          {addLabel}
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
 
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
 import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { themes } from '../../tours/mock.data.js';
-import { useStore } from '../../../store-context.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
+import DraftRows from './DraftRows.jsx';
 
 export default function TourForm({
   editingId,
@@ -5759,17 +5836,20 @@ export default function TourForm({
   setDraft,
   onClear,
   onSaved,
+  onSave,
+  onDelete,
 }) {
-  const { saveTour, deleteTour } = useStore();
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const set = (key) => (event) =>
     setDraft((current) => ({ ...current, [key]: event.target.value }));
+  const setList = (key) => (items) =>
+    setDraft((current) => ({ ...current, [key]: items }));
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    const message = saveTour(editingId, draft);
+    const message = await onSave(editingId, draft);
     setError(message);
     if (!message) {
       setNotice('已儲存這筆行程');
@@ -5787,7 +5867,7 @@ export default function TourForm({
         {editingId ? '編輯行程' : '新增行程'}
       </Typography>
       <p className="text-muted sm:col-span-2">
-        每日行程、圖集與費用說明若未出現在表單中，儲存時會一併保留。
+        圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
       </p>
       {error ? (
         <Alert className="sm:col-span-2" severity="error">
@@ -5822,13 +5902,6 @@ export default function TourForm({
       />
       <TextField
         className="sm:col-span-2"
-        label="封面圖網址"
-        type="url"
-        value={draft.cover}
-        onChange={set('cover')}
-      />
-      <TextField
-        className="sm:col-span-2"
         label="簡介"
         multiline
         minRows={3}
@@ -5845,18 +5918,118 @@ export default function TourForm({
         onChange={set('highlights')}
       />
       <TextField
-        label="出發日"
-        type="date"
-        slotProps={{ inputLabel: { shrink: true } }}
-        value={draft.date}
-        onChange={set('date')}
+        className="sm:col-span-2"
+        label="費用包含"
+        multiline
+        minRows={3}
+        helperText="一行一則"
+        value={draft.includes}
+        onChange={set('includes')}
       />
       <TextField
-        label="名額"
-        type="number"
-        slotProps={{ htmlInput: { min: 1 } }}
-        value={draft.capacity}
-        onChange={set('capacity')}
+        className="sm:col-span-2"
+        label="費用不含"
+        multiline
+        minRows={3}
+        helperText="一行一則"
+        value={draft.excludes}
+        onChange={set('excludes')}
+      />
+      <DraftRows
+        title="圖庫網址"
+        items={draft.images}
+        blank=""
+        addLabel="新增一張"
+        onChange={setList('images')}
+      >
+        {(item, index, update) => (
+          <TextField
+            className="sm:col-span-2"
+            label={`第 ${index + 1} 張網址`}
+            type="url"
+            helperText={
+              index === 0 ? '第一張會當作列表與輪播的封面' : undefined
+            }
+            value={item}
+            onChange={(event) => update(index, event.target.value)}
+          />
+        )}
+      </DraftRows>
+      <DraftRows
+        title="每日行程"
+        items={draft.itinerary}
+        blank={{ title: '', body: '' }}
+        addLabel="新增一天"
+        onChange={setList('itinerary')}
+      >
+        {(item, index, update) => (
+          <>
+            <p className="text-muted sm:col-span-2">第 {index + 1} 天</p>
+            <TextField
+              className="sm:col-span-2"
+              label="當日標題"
+              value={item.title}
+              onChange={(event) =>
+                update(index, { ...item, title: event.target.value })
+              }
+            />
+            <TextField
+              className="sm:col-span-2"
+              label="當日說明"
+              multiline
+              minRows={2}
+              value={item.body}
+              onChange={(event) =>
+                update(index, { ...item, body: event.target.value })
+              }
+            />
+          </>
+        )}
+      </DraftRows>
+      <DraftRows
+        title="出發梯次"
+        items={draft.departures}
+        blank={{ date: '', capacity: 8 }}
+        addLabel="新增一梯"
+        onChange={setList('departures')}
+      >
+        {(item, index, update) => (
+          <>
+            <TextField
+              label="出發日"
+              type="date"
+              slotProps={{ inputLabel: { shrink: true } }}
+              value={item.date}
+              onChange={(event) =>
+                update(index, { ...item, date: event.target.value })
+              }
+            />
+            <TextField
+              label="名額"
+              type="number"
+              slotProps={{ htmlInput: { min: 1 } }}
+              value={item.capacity}
+              onChange={(event) =>
+                update(index, { ...item, capacity: event.target.value })
+              }
+            />
+          </>
+        )}
+      </DraftRows>
+      <FormControlLabel
+        className="sm:col-span-2"
+        control={
+          <Checkbox
+            checked={draft.featured}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                featured: event.target.checked,
+              }))
+            }
+          />
+        }
+        label="精選，出現在首頁輪播與熱門"
       />
       <div className="flex flex-wrap gap-3 sm:col-span-2">
         <Button type="submit" variant="contained">
@@ -5893,11 +6066,16 @@ export default function TourForm({
           <Button
             color="error"
             variant="contained"
-            onClick={() => {
-              deleteTour(editingId);
-              setConfirmDelete(false);
-              setNotice('已刪除這筆行程');
-              onClear();
+            onClick={async () => {
+              try {
+                await onDelete(editingId);
+                setConfirmDelete(false);
+                setNotice('已刪除這筆行程');
+                onClear();
+              } catch (err) {
+                setConfirmDelete(false);
+                setError(err.message);
+              }
             }}
           >
             刪除
@@ -5923,14 +6101,32 @@ export default function TourForm({
 }
 ```
 
+```diff 06-project-init/src/features/admin/AdminToursPage.jsx
+ export default function AdminToursPage() {
+-  const { tours } = useStore();
++  const { tours, saveTour, deleteTour } = useStore();
+   const initial =
+ // ...
+       <TourForm
+         editingId={editingId}
+         draft={draft}
+         setDraft={setDraft}
+         onSaved={(id) => setEditingId(id)}
++        onSave={saveTour}
++        onDelete={deleteTour}
+         onClear={() => {
+ // ...
+```
+
 **解析**
 
-- `empty` 與 `draftFromTour` 留在 `tourDraft.js`。`empty` 是新增用的空白草稿，主題預設「城市」，名額預設 8。`draftFromTour` 把行程轉成表單：亮點用換行接回一段文字，出發日與名額取第一梯。
-- 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。
-- 送出時把 `saveTour` 的回傳當成錯誤訊息。空字串代表成功，把 `notice` 設成「已儲存這筆行程」，再呼叫 `onSaved`。
-- 刪除鈕在沒有 `editingId` 時停用。按下先開 Dialog，確認後才 `deleteTour`，把提示設成「已刪除這筆行程」，並清掉表單。
+- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty` 是新增用的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。`draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
+- `DraftRows` 負責多列輸入的新增與刪除。圖庫、每日行程與出發梯次都用它，各列的欄位由 `TourForm` 傳進去。
+- 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
+- 送出時把 `onSave` 的回傳當成錯誤訊息。`onSave` 由頁面傳入，這一章是 Store 的 `saveTour`。空字串代表成功，把 `notice` 設成「已儲存這筆行程」，再呼叫 `onSaved`。
+- 刪除鈕在沒有 `editingId` 時停用。按下先開 Dialog，確認後才 `onDelete`，把提示設成「已刪除這筆行程」，並清掉表單。
 - `notice` 有字時打開 Snackbar，約 3.2 秒後或按下關閉會清掉。位置在畫面下方置中，裡面是一則填色的成功 `Alert`。這則提示留在表單自己的狀態，不經過 Store。
-- 表單 `id` 是 `admin-form`。標題在有 `editingId` 時寫「編輯行程」，否則寫「新增行程」。
+- 表單 `id` 是 `admin-form`。標題在有 `editingId` 時寫「編輯行程」，否則寫「新增行程」。說明寫空的網址列會略過，封面用圖庫第一張。
 
 ## 報名清單
 
@@ -6289,6 +6485,7 @@ export default function BookingTable({ bookings }) {
 **解析**
 
 - `StatusSelect` 的選項是 `pending`、`confirmed`、`cancelled`，文字用 `statusLabel`。變更時呼叫從表格傳下來的 `onStatus`，由表格改 Store 並把 `notice` 設成「已更新報名狀態」。
+- 狀態改成「已取消」就是這筆報名的刪除。訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
 - `notice` 有字時打開 Snackbar，寫法和行程表單同一套：約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。
 - 外框顏色依狀態換：待確認用強調色邊、墨色字；已確認用操作色；已取消用另外一組灰。選單沒有對應的 class 可以換色，所以只有這裡使用 `sx`。
 - `md` 以上是表格，窄螢幕是卡片。兩邊都有出發日、人數、姓名與 email、電話、小計，以及同一個狀態選單。
@@ -6372,7 +6569,7 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - Vite 專案先自己加上 `jsconfig.json`、清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
 - `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
 - 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的元件。
-- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。
+- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程表單寫入完整欄位；圖庫是網址列，封面用第一張。訂單把狀態改為已取消即軟刪，不從清單移除那一筆。
 - `/login`、`/booking`、`/booking/:id`、`/me`、`/admin`、`/admin/login`、`/admin/bookings` 都能直接打開。對不到的路徑與錯誤的 id 都渲染 `NotFoundPage`。登入與讀自己的訂單留到下一篇。
 - `pnpm build` 產出 `dist/` 裡的 HTML、CSS 與 JS。用 Live Server 預覽時，內頁重新整理會拿到靜態伺服器的 404，下一篇部署再處理。
 - 切版在這一章結束。資料層、Hooks、Firestore、管理員登入與 Firebase Hosting 寫在下一篇。
@@ -6428,7 +6625,10 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - 後台（admin）
 - 分頁（tabs）
 - 草稿（draft）
+- 圖庫（gallery）
+- 精選（featured）
 - 提示條（Snackbar）
+- 軟刪除（soft delete）
 
 ## 打包與預覽
 

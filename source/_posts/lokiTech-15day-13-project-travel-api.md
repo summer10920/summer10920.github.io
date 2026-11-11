@@ -84,7 +84,7 @@ pnpm dev
   store --> pages["頁面"]
 {% endmermaid %}
 
-前台用 Google 登入。報名寫進訂單，文件帶上 `uid`。我的報名只查這個 `uid`。後台用 email 與密碼登入。行程改從雲端讀。後台的新增與編輯行程這一章拿掉，清單只讀雲端上已經寫入的行程。剩餘名額要掃過所有訂單才算得出來，旅客不能讀別人的訂單，所以前台改顯示每團名額。
+前台用 Google 登入。報名寫進訂單，文件帶上 `uid`。我的報名只查這個 `uid`。後台用 email 與密碼登入。行程改從雲端讀寫，新增、修改與刪除都寫進 Firestore。剩餘名額要掃過所有訂單才算得出來，旅客不能讀別人的訂單，所以前台改顯示每團名額。訂單不提供實體刪除，把狀態改為已取消就是軟刪。
 
 這一章結束時，頁面呼叫同一組服務函式。服務函式再呼叫 Firestore。同一套 `AuthProvider` 用 `onAuthStateChanged` 服務前台與後台。後台畫面在確認登入方式是密碼之後才渲染訂單。
 
@@ -623,7 +623,7 @@ export default function LoadGate({ loading, error, children }) {
 
 種子頁不放進頁首。網址是 `/seed`。按下之後呼叫 `seedTours`。測試模式底下，八筆行程會出現在主控台的 `tours` 集合。已經寫過再按，筆數是 0，畫面寫「沒有覆寫」。
 
-規則換成最後一節的內容之後，這個按鈕會被拒絕。那是預期的：正式規則不允許瀏覽器寫行程。
+規則換成最後一節的內容之後，寫入只限管理員。請先用後台帳號登入再按。
 
 ```jsx 07-project-final/src/features/admin/SeedPage.jsx
 import { useEffect, useState } from 'react';
@@ -666,7 +666,7 @@ export default function SeedPage() {
       <Typography variant="h1">寫入行程種子</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         把專案裡的行程寫進 Firestore 的
-        tours。已經存在的文件會略過，可以重複按。
+        tours。已經存在的文件會略過，可以重複按。規則允許管理員寫入後才能按，請先用後台帳號登入。
       </p>
       {firebaseReady ? null : (
         <Alert className="mt-8" severity="warning">
@@ -720,7 +720,7 @@ export default function SeedPage() {
 - 種子頁在按下時才寫入，打開網址本身不會改資料。
 - `firebaseReady` 為假時按鈕停用，並顯示同一句尚未設定。
 - 文件 id 用行程 id，詳情路由 `/tours/hualien-taroko` 對得上雲端那一份。
-- 這一頁能寫入，是因為資料庫仍在測試模式。它不是正式規則的一部分。
+- 這一節先在測試模式寫入。規則改成管理員可寫之後，要先用後台帳號登入再按。
 
 ## 前台 Google 登入
 
@@ -1572,56 +1572,113 @@ export default function AdminGate({ children }) {
 
 ## 訂單清單與狀態
 
-後台行程頁改成只讀。清單改讀 `useTours`，表格沿用 `TourTable`，拿掉操作欄與編輯。還沒有資料時顯示「還沒有行程」，並提供寫入種子的按鈕。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面與表格都換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
+後台行程頁改讀 `useTours`，表單沿用第 12 篇的 `TourForm`、`DraftRows` 與 `tourDraft.js`。儲存與刪除改呼叫 `api.js` 的 `saveTour`、`deleteTour`，成功後 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁用 `useOrders`，狀態下拉改呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
 
-表格不再提供編輯。`TourTable` 只接收 `tours`。
+先在 `api.js` 補上寫入與刪除行程。`setDoc` 寫完整一份文件。若編輯時改了編號，先寫到新 id，再刪掉舊文件。
 
-```diff 07-project-final/src/features/admin/components/TourTable.jsx
--import Button from '@mui/material/Button';
- import Card from '@mui/material/Card';
+```diff 07-project-final/src/api.js
+ import {
+   addDoc,
+   collection,
++  deleteDoc,
+   doc,
+   getDoc,
+   getDocs,
+   orderBy,
+   query,
+   serverTimestamp,
+   setDoc,
+   updateDoc,
+   where,
+ } from 'firebase/firestore';
  // ...
- import { ntd } from '../../../format.js';
-
--export default function TourTable({ tours, onEdit }) {
-+export default function TourTable({ tours }) {
- // ...
--              {['標題', '地區', '主題', '天數', '價格', '操作'].map((label) => (
-+              {['標題', '地區', '主題', '天數', '價格'].map((label) => (
- // ...
-                 <TableCell className="px-4 py-4">{ntd(tour.price)}</TableCell>
--                <TableCell className="px-4 py-4">
--                  <Button onClick={() => onEdit(tour)}>編輯</Button>
--                </TableCell>
-               </TableRow>
- // ...
-             <p className="mt-2 text-muted">
-               {tour.region} · {tour.theme} · {tour.days} 天 · {ntd(tour.price)}
-             </p>
--            <Button className="mt-3" onClick={() => onEdit(tour)}>
--              編輯
--            </Button>
-           </Card>
+   return created;
+ };
++
++export const saveTour = async (editingId, tour) => {
++  const base = database();
++  const ref = doc(base, 'tours', tour.id);
++  if (!editingId || editingId !== tour.id) {
++    if ((await getDoc(ref)).exists()) throw new Error('這個編號已經有了');
++  }
++  await setDoc(ref, tour);
++  if (editingId && editingId !== tour.id) {
++    await deleteDoc(doc(base, 'tours', editingId));
++  }
++};
++
++export const deleteTour = async (id) => {
++  await deleteDoc(doc(database(), 'tours', id));
++};
+ 
+ export const getOrder = async (id) => {
  // ...
 ```
 
+`TourTable` 沿用第 12 篇，仍有編輯按鈕。行程管理頁改成這樣：
+
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import AdminGate from './components/AdminGate.jsx';
 import AdminTabs from './components/AdminTabs.jsx';
 import TourTable from './components/TourTable.jsx';
+import TourForm from './components/TourForm.jsx';
+import { draftFromTour, empty, tourFromDraft } from './components/tourDraft.js';
 import LoadGate from '../../LoadGate.jsx';
+import { deleteTour, saveTour } from '../../api.js';
 import { useTours } from '../../useAsync.js';
 
 function AdminToursBody() {
-  const { data, loading, error } = useTours();
+  const { data, loading, error, reload } = useTours();
   const tours = data ?? [];
+  const [editingId, setEditingId] = useState(null);
+  const [draft, setDraft] = useState(empty);
+  const [started, setStarted] = useState(false);
+
   useEffect(() => {
     document.title = '行程管理 · 洛奇旅行';
   }, []);
-  if (loading || error) return <LoadGate loading={loading} error={error} />;
+
+  if (!started && data) {
+    const initial =
+      tours.find((item) => item.id === 'hualien-taroko') || tours[0];
+    if (initial) {
+      setEditingId(initial.id);
+      setDraft(draftFromTour(initial));
+    }
+    setStarted(true);
+  }
+
+  const edit = (tour) => {
+    setEditingId(tour.id);
+    setDraft(draftFromTour(tour));
+    document
+      .getElementById('admin-form')
+      ?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const onSave = async (id, current) => {
+    const { error: message, tour } = tourFromDraft(current);
+    if (message) return message;
+    try {
+      await saveTour(id, tour);
+      reload();
+      return '';
+    } catch (err) {
+      return err.message;
+    }
+  };
+
+  const onDelete = async (id) => {
+    await deleteTour(id);
+    reload();
+  };
+
+  if (error) return <LoadGate loading={false} error={error} />;
+  if (loading && !data) return <LoadGate loading error={null} />;
 
   return (
     <main
@@ -1633,18 +1690,43 @@ function AdminToursBody() {
         行程管理
       </Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        清單來自
-        Firestore。這一章只讀，不在後台新增或修改。還沒有資料時，先寫入種子。
+        新增、修改或下架行程。清單來自 Firestore。還沒有資料時，先寫入種子。
       </p>
       <AdminTabs />
-      <Button className="mt-4" component={Link} to="/seed" variant="outlined">
-        寫入種子
-      </Button>
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setEditingId(null);
+            setDraft(empty);
+            document
+              .getElementById('admin-form')
+              ?.scrollIntoView({ behavior: 'smooth' });
+          }}
+        >
+          新增行程
+        </Button>
+        <Button component={Link} to="/seed" variant="outlined">
+          寫入種子
+        </Button>
+      </div>
       {tours.length ? (
-        <TourTable tours={tours} />
+        <TourTable tours={tours} onEdit={edit} />
       ) : (
         <p className="mt-8 text-base text-muted">還沒有行程。</p>
       )}
+      <TourForm
+        editingId={editingId}
+        draft={draft}
+        setDraft={setDraft}
+        onSaved={(id) => setEditingId(id)}
+        onSave={onSave}
+        onDelete={onDelete}
+        onClear={() => {
+          setEditingId(null);
+          setDraft(empty);
+        }}
+      />
     </main>
   );
 }
@@ -1779,19 +1861,19 @@ export default function AdminToursPage() {
  }
 ```
 
-接著刪掉這些檔：
+接著刪掉這些檔。`TourForm.jsx`、`DraftRows.jsx` 與 `tourDraft.js` 還在用，不要刪。
 
 - `src/store.jsx`
 - `src/store-context.js`
-- `src/features/admin/components/TourForm.jsx`
-- `src/features/admin/components/tourDraft.js`
 
 未登入時打開 `/admin/bookings`，應停在閘門，不應出現訂單。登入後看得到剛才那一筆。把狀態改成已確認，重新整理後仍是已確認。主控台裡同一份文件的 `status` 一起變。
 
 {% mermaid graph LR %}
   form["登入表單"] --> authn["Authentication"]
   authn --> gate["AdminGate"]
+  gate --> tours["saveTour／deleteTour"]
   gate --> list["listOrders"]
+  tours --> fsTours["tours"]
   list --> fs["orders"]
   select["狀態下拉"] --> update["updateOrderStatus"]
   update --> fs
@@ -1799,9 +1881,12 @@ export default function AdminToursPage() {
 
 **解析**
 
-- `AdminBookingsBody` 寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫 `listOrders`。
-- `reload` 會再進入讀取中。清單會閃一下，換來的是雲端上的新狀態。
-- 行程頁的「寫入種子」只是連到 `/seed`。規則收緊之後，那個按鈕會失敗，清單仍可讀。
+- `AdminToursBody` 與 `AdminBookingsBody` 都寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫寫入或 `listOrders`。
+- 表單沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。`setDoc` 會覆寫該份文件。刪除仍用同一組確認 Dialog 與 Snackbar。
+- 第一次進頁時，資料到了才把花蓮那筆放進草稿。之後 `reload` 只更新清單，不會清掉正在編的表單。
+- 狀態改成「已取消」就是這筆訂單的刪除。訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
+- `reload` 之後清單會換成雲端上的新內容。行程表單在仍有舊資料時不整頁換成讀取中，避免提示被拆掉。
+- 行程頁的「寫入種子」連到 `/seed`。規則改成管理員可寫之後，要先用後台帳號登入再按。
 - 篩選與排序仍在瀏覽器做。Firestore 這一章只負責把訂單整份拿回來。
 
 ## 安全規則與 Firebase Hosting
@@ -1810,7 +1895,7 @@ export default function AdminToursPage() {
 
 ### 步驟 1：貼上規則
 
-`tours` 任何人可讀，任何人不可寫。種子必須在貼上之前寫完。`orders` 的新增要已登入，而且新文件的 `uid` 等於 `request.auth.uid`，`status` 是 `pending`，姓名、email、電話是字串，人數是 1 到 8 的整數。讀取限文件主人或密碼登入的管理員。更新只限管理員。刪除不開放。
+`tours` 任何人可讀，管理員可寫。種子與後台表單都走這條規則，所以要先用後台帳號登入再寫入。`orders` 的新增要已登入，而且新文件的 `uid` 等於 `request.auth.uid`，`status` 是 `pending`，姓名、email、電話是字串，人數是 1 到 8 的整數。讀取限文件主人或密碼登入的管理員。更新只限管理員。刪除不開放；把狀態改為已取消就是訂單的軟刪。
 
 ```text 07-project-final/firestore.rules
 rules_version = '2';
@@ -1828,7 +1913,7 @@ service cloud.firestore {
 
     match /tours/{tourId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
     }
     match /orders/{orderId} {
       allow create: if signedIn()
@@ -1852,20 +1937,21 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 
 - 未登入時，行程列表仍看得到。
 - 未登入時，`/booking` 會到 `/login?next=...`。Google 登入後送出的訂單帶有自己的 `uid`。
-- Google 登入者打不開 `/admin/bookings` 的清單。email／密碼登入後看得到全部訂單，也能改狀態。
-- `/me` 只列出自己的 `uid`。`/seed` 再按會失敗。
+- Google 登入者打不開 `/admin` 的表單，也打不開 `/admin/bookings` 的清單。email／密碼登入後可以新增、修改、刪除行程，也看得到全部訂單並能改狀態。
+- `/me` 只列出自己的 `uid`。未登入或 Google 登入時，`/seed` 會失敗；後台帳號登入後可以寫入種子。
 
 {% mermaid graph TD %}
   guest["未登入"] --> readTours["可讀 tours"]
-  guest --> deny["不可新增、不可讀 orders"]
+  guest --> deny["不可寫 tours、不可讀 orders"]
   google["google.com"] --> own["可新增自己的 uid，可讀自己的訂單"]
-  google --> denyAdmin["不可讀全部、不可改狀態"]
-  password["password"] --> all["可讀全部訂單，可改狀態"]
+  google --> denyAdmin["不可寫 tours、不可讀全部、不可改狀態"]
+  password["password"] --> writeTours["可寫 tours"]
+  password --> all["可讀全部訂單，可改狀態"]
 {% endmermaid %}
 
 **解析**
 
-- `allow write` 涵蓋建立、更新與刪除。行程用 `write: if false` 一次擋住。
+- `allow write` 涵蓋建立、更新與刪除。行程公開可讀，寫入限 `isAdmin()`。訂單的 `delete` 仍是 `false`，因為訂單是帳務紀錄，改為已取消即軟刪。
 - `isOwner` 比對文件上的 `uid` 與 `request.auth.uid`。`isAdmin` 再要求 `sign_in_provider == 'password'`。
 - `request.auth` 是 Authentication 帶上來的身分。沒登入時是 `null`。Google 登入時它不是 `null`，所以不能再用「有登入」代表管理員。
 - 新增時多檢查 `status`、姓名、email、電話與人數。表單仍先擋空的電話。規則擋的是直接呼叫 SDK 的請求。
@@ -1970,9 +2056,9 @@ firebase deploy
 - 主控台啟用「Google」與「電子郵件／密碼」。不要啟用電話。不要升級 Identity Platform。
 - Firebase 的網頁設定放在 `.env.local`，以 `VITE_` 開頭。範例檔是 `.env.example`。金鑰不要 commit。
 - `src/api.js` 集中 Firestore 讀寫。`useAsync` 把等待、失敗與結果留在頁面。
-- `/seed` 在測試模式把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。
+- `/seed` 把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。規則允許管理員寫入後，要先用後台帳號登入再按。
 - `MemberGate` 把未登入者帶到 `/login?next=...`。`AdminGate` 等 `ready`，並且只放行 `password`。閘門擋的是畫面。
-- `firestore.rules` 讓行程公開可讀、不可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者。
+- `firestore.rules` 讓行程公開可讀、管理員可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者，刪除不開放；改為已取消即軟刪。
 - 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到或沒有權限就渲染 `NotFoundPage`。
 - 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`manualChunks` 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
 
@@ -2022,6 +2108,7 @@ firebase deploy
 - 登入提供者（sign_in_provider）
 - 密碼登入（password）
 - 授權（authorization）
+- 軟刪除（soft delete）
 - Firebase Hosting
 - 轉送（rewrite）
 - 程式碼分割（code splitting）
