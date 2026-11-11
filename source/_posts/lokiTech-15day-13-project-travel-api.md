@@ -249,7 +249,7 @@ export const auth = app ? getAuth(app) : null;
 
 `getDocs` 讀整個集合，`getDoc` 讀一份文件。`setDoc` 寫到指定 id，行程用這個，id 就是切版裡的 `tour.id`。`addDoc` 讓 Firestore 產生 id，訂單用這個。`updateDoc` 只改帶上去的欄位。`serverTimestamp` 由伺服器填寫入時間，清單依它由新到舊。
 
-種子函式走訪 `src/features/tours/mock.data.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。
+種子函式走訪 `src/features/tours/mock.data.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。主題選項仍寫在程式裡的同一份清單，行程文件只存 `theme` 字串，不必另做主題資料表。
 
 ```js 07-project-final/src/api.js
 import {

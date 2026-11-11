@@ -5273,7 +5273,7 @@ export default function AdminLoginPage() {
 
 ## 行程管理
 
-後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項這一頁才補進 `features/tours/mock.data.js`。頁首在後台路徑已經換成「行程管理」與「報名清單」，兩頁用頁首切換，不再另做分頁列。
+後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項跟首頁主題卡片用同一份清單，這一頁才從 `themeLinks` 導出 `themes`。頁首在後台路徑已經換成「行程管理」與「報名清單」，兩頁用頁首切換，不再另做分頁列。
 
 新增與編輯共用同一個 Dialog。沒有帶入行程是新增，有帶入是編輯。用這一頁的 state 控制開關，不另開路由。刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
 
@@ -5420,6 +5420,10 @@ export default function AdminToursPage() {
 ### 步驟 2：這一頁要用的資料
 
 ```diff 06-project-init/src/features/tours/mock.data.js
++import { themeLinks } from '../home/mock.data.js';
++
+ const shot = (id) =>
+ // ...
  export const regions = [
    '台北',
    '基隆',
@@ -5431,10 +5435,12 @@ export default function AdminToursPage() {
    '京都',
  ];
  
-+export const themes = ['城市', '海岸', '山海', '古都', '離島', '日本'];
++export const themes = themeLinks.map((item) => item.theme);
 +
  // ...
 ```
+
+主題名稱只寫在首頁的 `themeLinks`。這裡用同一份清單做成 `themes`，後台表單的下拉直接用它。每筆行程只存 `theme` 字串，不必再做主題的增刪或另建資料表。
 
 接著補上草稿轉行程的函式，並讓 Store 能儲存與刪除行程。`draftFromTour` 下一步再換成會帶入行程欄位的寫法。
 
@@ -5627,7 +5633,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="contained"
-                      size="small"
                       disableElevation
                       color="primary"
                       onClick={() => onEdit(tour)}
@@ -5636,7 +5641,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
                     </Button>
                     <Button
                       variant="contained"
-                      size="small"
                       disableElevation
                       color="error"
                       onClick={() => onDelete(tour)}
@@ -5660,7 +5664,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
                 variant="contained"
-                size="small"
                 disableElevation
                 color="primary"
                 onClick={() => onEdit(tour)}
@@ -5669,7 +5672,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
               </Button>
               <Button
                 variant="contained"
-                size="small"
                 disableElevation
                 color="error"
                 onClick={() => onDelete(tour)}
@@ -5742,7 +5744,7 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 
 - `tours` 是這一頁傳進來的清單。`onEdit` 是「編輯」要呼叫的函式，`onDelete` 是「刪除」要呼叫的函式。
 - `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯與刪除。價格用 `ntd`。
-- 操作欄的按鈕用實心小鈕、沒有陰影。「編輯」與報名清單的「查看」用主色，「刪除」用錯誤色，不用輪廓樣式。
+- 操作欄的按鈕用實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，不加 `size="small"`。「編輯」與報名清單的「查看」用主色，「刪除」用錯誤色，不用輪廓樣式。
 - 「編輯」把該筆交給 `onEdit`，頁面會打開同一個 Dialog。
 - 「刪除」把該筆交給頁面的 `deletingTour`。先出現確認 Dialog，確認後才呼叫 Store 的 `deleteTour`，這筆會從列表消失。
 
@@ -6407,7 +6409,6 @@ export default function BookingTable({ bookings, onView }) {
                 <TableCell className="px-4 py-4">
                   <Button
                     variant="contained"
-                    size="small"
                     disableElevation
                     color="primary"
                     onClick={() => onView(booking)}
@@ -6433,7 +6434,6 @@ export default function BookingTable({ bookings, onView }) {
             <Button
               className="mt-3"
               variant="contained"
-              size="small"
               disableElevation
               color="primary"
               onClick={() => onView(booking)}
@@ -6636,7 +6636,7 @@ export default function BookingForm({
 - 狀態下拉在 Dialog 底部。按「儲存」才呼叫頁面傳入的 `onSave`，這一章是 Store 的 `setBookingStatus`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已更新報名狀態」。
 - 若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
 - `notice` 放在頁面，寫法和行程表單同一套：約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
-- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心小鈕、沒有陰影，用主色。
+- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，用主色。
 
 # 打包與預覽
 
