@@ -2546,7 +2546,7 @@ export default function MemoDemo() {
 
 同一支範例把評語放進 `useMemo`，依賴是 `[star]`。
 
-```jsx 03-react/src/demos/84-memo.jsx
+```jsx 03-react/src/demos/73-memo.jsx
 import { useMemo, useState } from 'react';
 
 export default function MemoDemo() {
@@ -2615,7 +2615,7 @@ export default function MemoDemo() {
 
 分數只看星等，依賴仍是 `[star]`。預設五顆星時，畫面是「100 分」。改留言不重算；點星星讓星等改變時，分數才跟著變。
 
-```diff 03-react/src/demos/84-memo.jsx
+```diff 03-react/src/demos/73-memo.jsx
  // ...
    }, [star]);
 +  const score = useMemo(() => `${star * 20} 分`, [star]);
@@ -2714,7 +2714,7 @@ export default function MemoComponentDemo() {
 
 同一支範例把 `StarView` 用 `memo` 包起來。
 
-```jsx 03-react/src/demos/86-memo-component.jsx
+```jsx 03-react/src/demos/74-memo-component.jsx
 import { memo, useState } from 'react';
 
 const StarView = memo(function StarView({ star }) {
@@ -2797,7 +2797,7 @@ export default function MemoComponentDemo() {
 
 每次父層渲染都會做出一個新的物件，`memo` 用 `Object.is` 比對時判定 props 不同，星星列又跟著重渲染，每打一個字都印「星星列渲染」。
 
-```diff 03-react/src/demos/86-memo-component.jsx
+```diff 03-react/src/demos/74-memo-component.jsx
  // ...
 -      <StarView star={star} />
 +      <StarView star={star} style={{ color: 'orange' }} />
@@ -2894,7 +2894,7 @@ const handlePick = useCallback(fn, deps);
 
 同一支範例把 `handlePick` 放進 `useCallback`，依賴是 `[]`。
 
-```jsx 03-react/src/demos/85-callback.jsx
+```jsx 03-react/src/demos/75-callback.jsx
 import { memo, useCallback, useState } from 'react';
 
 const StarPicker = memo(function StarPicker({ star, onPick }) {
@@ -2974,7 +2974,7 @@ export default function UseCallbackDemo() {
 
 拿掉 `memo` 後，父層一重渲染，星星列就跟著重渲染，每打一個字都印「星星列渲染」。`handlePick` 雖然還是同一個函式，但沒有人去比對 props，`useCallback` 就沒有效果。
 
-```diff 03-react/src/demos/85-callback.jsx
+```diff 03-react/src/demos/75-callback.jsx
 -import { memo, useCallback, useState } from 'react';
 +import { useCallback, useState } from 'react';
 
@@ -3027,7 +3027,7 @@ const inputRef = useRef(initialValue);
 以前用 JavaScript 直接改節點（找元素、改屬性、呼叫 `focus()`），覺得很理所當然。現在日常畫面多半靠 JSX 告訴 React「這次要長成什麼」，再由它去算差、更新 DOM；要碰真正的節點時，才透過 `ref` 伸手進去。多繞這一層，心智負擔會比較大，但畫面的來源就集中在描述裡。
 {% endnote %}
 
-```jsx 03-react/src/demos/73-ref.jsx
+```jsx 03-react/src/demos/76-ref.jsx
 import { useRef } from 'react';
 
 export default function RefDemo() {
@@ -3080,7 +3080,7 @@ export default function RefDemo() {
 
 清空 DOM 的值不會通知 React。這一則本來就沒有受控，所以這樣做看得到格子被清掉。
 
-```diff 03-react/src/demos/73-ref.jsx
+```diff 03-react/src/demos/76-ref.jsx
  // ...
    const onFocus = () => {
      inputRef.current?.focus();
@@ -3185,7 +3185,7 @@ function ClickCount() {
 
 這用來分辨「要記住」與「要畫出來」。要畫出來的值用狀態。
 
-```jsx 03-react/src/demos/74-ref-count.jsx
+```jsx 03-react/src/demos/77-ref-count.jsx
 import { useRef, useState } from 'react';
 
 export default function RefCountDemo() {
@@ -3282,7 +3282,7 @@ const [state, dispatch] = useReducer(reducer, initialArg);
 
 起始狀態是 `0`。三種按鈕各送一種 `type`；數字的加減與歸零都寫在 `reducer` 裡，元件只負責送出動作。
 
-```jsx 03-react/src/demos/75-reducer-count.jsx
+```jsx 03-react/src/demos/78-reducer-count.jsx
 import { useReducer } from 'react';
 
 function reducer(count, action) {
@@ -3357,7 +3357,7 @@ export default function ReducerCountDemo() {
 
 三種改法各自一個函式，裡面都要自己展開或對應陣列。
 
-```jsx 03-react/src/demos/76-reducer-state.jsx
+```jsx 03-react/src/demos/79-reducer-state.jsx
 import { useState } from 'react';
 
 export default function ReducerStateDemo() {
@@ -3431,7 +3431,7 @@ export default function ReducerStateDemo() {
 
 同一組行為改由 `reducer` 集中處理。元件只 `dispatch`，陣列怎麼複製留在 `switch` 裡。
 
-```jsx 03-react/src/demos/77-reducer.jsx
+```jsx 03-react/src/demos/80-reducer.jsx
 import { useReducer } from 'react';
 
 const reducer = (todos, action) => {
@@ -3514,9 +3514,9 @@ export default function ReducerDemo() {
 
 把上一則的新增按鈕拆成 `AddButton`，把列表拆成 `TodoList`。`useReducer` 還是在最外層的 `TodoPropsDemo`，所以 `todos` 和 `dispatch` 要從父層一個個當 props 交給子元件：新增按鈕只要 `dispatch`，列表要 `todos` 來畫，也要 `dispatch` 來切換與刪除。
 
-檔案拆成資料夾 `78-propsDemo/`：`AddButton.jsx`、`TodoList.jsx` 各放一個子元件，`index.jsx` 放 reducer、持有 `useReducer` 並組合畫面。reducer 跟持有狀態的元件放在同一個檔案，是小專案最常見的寫法。
+檔案拆成資料夾 `81-propsDemo/`：`AddButton.jsx`、`TodoList.jsx` 各放一個子元件，`index.jsx` 放 reducer、持有 `useReducer` 並組合畫面。reducer 跟持有狀態的元件放在同一個檔案，是小專案最常見的寫法。
 
-```jsx 03-react/src/demos/78-propsDemo/AddButton.jsx
+```jsx 03-react/src/demos/81-propsDemo/AddButton.jsx
 export default function AddButton({ dispatch }) {
   return (
     <button
@@ -3530,7 +3530,7 @@ export default function AddButton({ dispatch }) {
 }
 ```
 
-```jsx 03-react/src/demos/78-propsDemo/TodoList.jsx
+```jsx 03-react/src/demos/81-propsDemo/TodoList.jsx
 export default function TodoList({ todos, dispatch }) {
   return (
     <ul className="mt-3 grid gap-2">
@@ -3558,7 +3558,7 @@ export default function TodoList({ todos, dispatch }) {
 }
 ```
 
-```jsx 03-react/src/demos/78-propsDemo/index.jsx
+```jsx 03-react/src/demos/81-propsDemo/index.jsx
 import { useReducer } from 'react';
 import AddButton from './AddButton.jsx';
 import TodoList from './TodoList.jsx';
@@ -3606,12 +3606,25 @@ export default function TodoPropsDemo() {
 
 做法跟主題色那節一樣：把 `useReducer` 搬進 `TodoProvider`，再把 `{ todos, dispatch }` 放進 `value`。子元件不再從參數拿資料，而是呼叫 `useTodos`（包一層 `useContext`）自己取需要的欄位。若外層忘了包 Provider，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
 
-照上一則 `78-propsDemo/` 的資料夾複製成 `79-providerDemo/`，一個檔案一個檔案看改了什麼。
+照上一則 `81-propsDemo/` 的資料夾複製成 `82-providerDemo/`，一個檔案一個檔案看改了什麼。
 
-先新增 `TodoContext.jsx`，把 reducer 和 `useReducer` 從 `index.jsx` 一起搬進來交給 `TodoProvider`，並提供 `useTodos` 給子元件取用。狀態、reducer、Provider 與取用的 hook 收在同一個檔案，也是 React 官方文件的做法：
+先新增 `todo-context.js`，只放 context 物件與 `useTodos`。這個檔沒有元件。再新增 `TodoContext.jsx`，把 reducer 和 `useReducer` 從 `index.jsx` 搬進來交給 `TodoProvider`。元件檔只匯出元件，Fast Refresh 才不會被 hook 或常數擋住：
 
-```jsx 03-react/src/demos/79-providerDemo/TodoContext.jsx
-import { createContext, useContext, useReducer } from 'react';
+```js 03-react/src/demos/82-providerDemo/todo-context.js
+import { createContext, useContext } from 'react';
+
+export const TodoContext = createContext(null);
+
+export const useTodos = () => {
+  const value = useContext(TodoContext);
+  if (!value) throw new Error('缺少 TodoProvider');
+  return value;
+};
+```
+
+```jsx 03-react/src/demos/82-providerDemo/TodoContext.jsx
+import { useReducer } from 'react';
+import { TodoContext } from './todo-context.js';
 
 const reducer = (todos, action) => {
   switch (action.type) {
@@ -3628,8 +3641,6 @@ const reducer = (todos, action) => {
   }
 };
 
-const TodoContext = createContext(null);
-
 export function TodoProvider({ children }) {
   const [todos, dispatch] = useReducer(reducer, [
     { id: 1, title: '台北城市漫遊', done: false },
@@ -3640,18 +3651,12 @@ export function TodoProvider({ children }) {
     </TodoContext.Provider>
   );
 }
-
-export function useTodos() {
-  const value = useContext(TodoContext);
-  if (!value) throw new Error('缺少 TodoProvider');
-  return value;
-}
 ```
 
 兩個子元件拿掉參數，改由 `useTodos()` 取自己要的欄位：
 
-```diff 03-react/src/demos/79-providerDemo/AddButton.jsx
-+import { useTodos } from './TodoContext.jsx';
+```diff 03-react/src/demos/82-providerDemo/AddButton.jsx
++import { useTodos } from './todo-context.js';
 +
 -export default function AddButton({ dispatch }) {
 +export default function AddButton() {
@@ -3660,8 +3665,8 @@ export function useTodos() {
  // ...
 ```
 
-```diff 03-react/src/demos/79-providerDemo/TodoList.jsx
-+import { useTodos } from './TodoContext.jsx';
+```diff 03-react/src/demos/82-providerDemo/TodoList.jsx
++import { useTodos } from './todo-context.js';
 +
 -export default function TodoList({ todos, dispatch }) {
 +export default function TodoList() {
@@ -3672,7 +3677,7 @@ export function useTodos() {
 
 `index.jsx` 不再持有狀態，只負責用 Provider 把畫面包起來：
 
-```diff 03-react/src/demos/79-providerDemo/index.jsx
+```diff 03-react/src/demos/82-providerDemo/index.jsx
 -import { useReducer } from 'react';
 +import { TodoProvider } from './TodoContext.jsx';
  import AddButton from './AddButton.jsx';
@@ -3703,12 +3708,15 @@ export function useTodos() {
  }
 ```
 
-`// ...` 的地方跟 `78-propsDemo/` 裡對應的檔案相同，也就是按鈕與列表的 JSX。
+`// ...` 的地方跟 `81-propsDemo/` 裡對應的檔案相同，也就是按鈕與列表的 JSX。
 
 畫面和操作跟上一則相同。差在父層的 JSX 不再寫 `dispatch={dispatch}`，子元件自己從 context 取資料。
 
 **解析**
 
+- `TodoContext` 與 `useTodos` 放在 `todo-context.js`。這個檔沒有元件。
+- `TodoProvider` 單獨放在 `TodoContext.jsx`。元件檔只匯出元件，Fast Refresh 才不會被 hook 或常數擋住。
+- 子元件從 `todo-context.js` import `useTodos`。
 - Provider 包在兩顆子元件外面。少了這層，`useTodos` 會丟出錯誤。
 - `dispatch` 的身份是穩定的，可以放進 context。
 - 子元件各自取自己要的欄位。`AddButton` 只拿 `dispatch`，`TodoList` 兩個都拿。
@@ -3724,7 +3732,7 @@ export function useTodos() {
 
 空狀態看的是 context 裡的陣列長度。按鈕不用知道這句話。
 
-```diff 03-react/src/demos/79-providerDemo/TodoList.jsx
+```diff 03-react/src/demos/82-providerDemo/TodoList.jsx
  // ...
    const { todos, dispatch } = useTodos();
 +  if (todos.length === 0) return <p className="mt-3">沒有待辦</p>;
@@ -3764,7 +3772,7 @@ React 19 可以把送出函式交給 `<form action>`。這次送出被當成一�
 
 送出函式用 `formData.get('title')` 讀行程名稱，組成「已收到詢問：」加上該名稱，再放進狀態。函式可以是 async。這一則沒有真的打網路，只模擬留下這次詢問。
 
-```jsx 03-react/src/demos/80-action.jsx
+```jsx 03-react/src/demos/83-action.jsx
 import { useState } from 'react';
 
 export default function ActionDemo() {
@@ -3812,7 +3820,7 @@ export default function ActionDemo() {
 
 兩個 `get` 都來自同一份 FormData。日期欄位要有 `name` 和 `type="date"`。
 
-```diff 03-react/src/demos/80-action.jsx
+```diff 03-react/src/demos/83-action.jsx
  // ...
    const send = async (formData) => {
 -    setMessage('已收到詢問：' + String(formData.get('title') || '未填'));
@@ -3869,7 +3877,7 @@ const [state, formAction, isPending] = useActionState(send, initialState);
 
 `send` 不要自己呼叫，交給 `useActionState`，再把拿到的 `formAction` 放進 `action` 即可。
 
-```jsx 03-react/src/demos/81-action-state.jsx
+```jsx 03-react/src/demos/84-action-state.jsx
 import { useActionState } from 'react';
 import { createItem } from '../api/fake-api.js';
 
@@ -3921,7 +3929,7 @@ export default function ActionStateDemo() {
 
 忽略 `previous`，只回傳這一次的「已報名：」加上假 API 回來的行程名稱。
 
-```diff 03-react/src/demos/81-action-state.jsx
+```diff 03-react/src/demos/84-action-state.jsx
  // ...
    const title = item.title;
 -  return previous === '尚未報名' ? '已報名：' + title : previous + '、' + title;
@@ -3965,7 +3973,7 @@ const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
 
 送出時先 `setOptimisticName`，再等待，最後才 `setName`。等待的那 3 秒，畫面已經是新的旅程名稱。這裡故意不用 fake-api，因為它回得太快，看不出樂觀更新的差別。
 
-```jsx 03-react/src/demos/82-optimistic.jsx
+```jsx 03-react/src/demos/85-optimistic.jsx
 import { useOptimistic, useState } from 'react';
 
 export default function OptimisticDemo() {
@@ -4018,7 +4026,7 @@ export default function OptimisticDemo() {
 
 只改等待時間。先顯示、後落地的順序不變。
 
-```diff 03-react/src/demos/82-optimistic.jsx
+```diff 03-react/src/demos/85-optimistic.jsx
  // ...
      setOptimisticName(next);
      // 故意不用 fake-api：模擬伺服器 3 秒後才返回，讓先顯示、後更新的差別看得出來

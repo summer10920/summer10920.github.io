@@ -149,7 +149,7 @@ Authentication 的登入方式先不要開。Google 留到前台登入那一節�
 
 ### 步驟 2：註冊網頁應用程式
 
-在專案設定裡新增網頁應用程式。不要勾選 Firebase Hosting。註冊完成後，主控台給一份設定物件。先留在主控台，下一步才抄進本機。
+在專案設定裡新增網頁應用程式。這裡先不必勾選 Firebase Hosting，設定寫在本章最後的 `firebase.json`。註冊完成後，主控台給一份設定物件。先留在主控台，下一步才抄進本機。
 
 ### 步驟 3：環境變數
 
@@ -297,6 +297,11 @@ export const seedTours = async () => {
   return created;
 };
 
+export const getOrder = async (id) => {
+  const snap = await getDoc(doc(database(), 'orders', id));
+  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+};
+
 export const createOrder = async (input) => {
   const ref = await addDoc(collection(database(), 'orders'), {
     ...input,
@@ -331,56 +336,75 @@ export const updateOrderStatus = async (id, status) => {
 
 - 回傳的物件帶上 `id`。畫面的 `key` 與網址用的是這個欄位，不是 Firestore 內部另存的一份。
 - `getTour` 找不到文件時回傳 `null`，詳情頁把它畫成找不到頁面。
-- `createOrder` 把呼叫端傳來的欄位原樣寫入，其中包含 `uid`。回傳的物件還不含伺服器時間戳。完成頁只用這份回傳。
+- `getOrder` 寫法相同，讀的是 `orders` 集合。文件不存在時回傳 `null`。規則不允許讀時，`getDoc` 會失敗，完成頁同樣畫成找不到頁。`id` 是 `addDoc` 產生的文件編號，能不能讀由規則把關：主人或管理員才讀得到。
+- `createOrder` 把呼叫端傳來的欄位原樣寫入，其中包含 `uid`。回傳的物件帶上 `addDoc` 產生的 `id`，還不含伺服器時間戳。完成頁用這個 id 再呼叫 `getOrder` 讀一次。
 - `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。管理員清單用這個函式。
 - `listMyOrders` 只下 `uid` 條件。`where` 再加 `orderBy` 會要複合索引，所以新到舊的排序放在瀏覽器。
 
 ## 自訂 Hook
 
-服務函式回傳 Promise。頁面要的是三件事：還在等、失敗了、最新一筆結果。`useAsync` 把這三件事留在 state。第二個參數是真正會變的值，例如行程 id。`load` 每次 render 都是新函式，不放進依賴，否則詳情頁會不停重抓。`reload` 只把 `tick` 加一，效果函式就再跑一次。
+服務函式回傳 Promise。頁面要的是三件事：還在等、失敗了、最新一筆結果。`useAsync` 把這三件事留在 state。第一個參數是 `api.js` 裡穩定的函式，第二個參數 `key` 決定什麼時候重抓，例如行程 id。`reload` 只把 `tick` 加一，`requestKey` 就變了，效果函式再跑一次。
 
-抓取開始時先清掉上一筆資料並進入讀取中。清理函式把 `active` 設成假，元件卸載後不再 `setState`。
+`key` 或 `tick` 變了時，在 render 階段把上一筆資料清掉並進入讀取中。這是依參數重設 state 的寫法，不必寫進 effect。effect 只負責呼叫 `load(key)`，在 then 與 catch 裡更新結果。清理函式把 `active` 設成假，元件卸載後不再 `setState`。清單函式不吃參數，多傳一個 `key` 也沒關係。
 
-`useTours`、`useTour`、`useOrders`、`useMyOrders` 是這幾個畫面專用的薄包裝。`LoadGate` 在讀取中或失敗時畫 `#content`，成功才把孩子交回去。跳到內容的連結仍然找得到這個 id。
+`useTours`、`useTour`、`useOrder`、`useOrders`、`useMyOrders` 是這幾個畫面專用的薄包裝。`LoadGate` 在讀取中或失敗時畫 `#content`，成功才把孩子交回去。跳到內容的連結仍然找得到這個 id。
 
 ```js 07-project-final/src/useAsync.js
 import { useEffect, useState } from 'react';
-import { getTour, listMyOrders, listOrders, listTours } from './api.js';
+import {
+  getOrder,
+  getTour,
+  listMyOrders,
+  listOrders,
+  listTours,
+} from './api.js';
 
-export function useAsync(load, deps) {
+export function useAsync(load, key) {
+  const [tick, setTick] = useState(0);
+  const requestKey = `${key ?? ''}:${tick}`;
+
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [tick, setTick] = useState(0);
+  const [seenKey, setSeenKey] = useState(requestKey);
+
+  if (seenKey !== requestKey) {
+    setSeenKey(requestKey);
+    setData(null);
+    setError(null);
+    setLoading(true);
+  }
 
   useEffect(() => {
     let active = true;
-    // load 每次 render 都是新函式，不放進依賴；真正會變的是 deps 與 tick。
-    setLoading(true);
-    setError(null);
-    setData(null);
-    load()
+    load(key)
       .then((value) => {
-        if (active) setData(value);
+        if (active) {
+          setData(value);
+          setError(null);
+          setLoading(false);
+        }
       })
       .catch((err) => {
-        if (active) setError(err);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
+        if (active) {
+          setData(null);
+          setError(err);
+          setLoading(false);
+        }
       });
     return () => {
       active = false;
     };
-  }, [tick, ...deps]);
+  }, [requestKey, load, key]);
 
   return { data, error, loading, reload: () => setTick((n) => n + 1) };
 }
 
-export const useTours = () => useAsync(listTours, []);
-export const useTour = (id) => useAsync(() => getTour(id), [id]);
-export const useOrders = () => useAsync(listOrders, []);
-export const useMyOrders = (uid) => useAsync(() => listMyOrders(uid), [uid]);
+export const useTours = () => useAsync(listTours, 'tours');
+export const useTour = (id) => useAsync(getTour, id);
+export const useOrder = (id) => useAsync(getOrder, id);
+export const useOrders = () => useAsync(listOrders, 'orders');
+export const useMyOrders = (uid) => useAsync(listMyOrders, uid);
 ```
 
 ```jsx 07-project-final/src/LoadGate.jsx
@@ -423,7 +447,7 @@ export default function LoadGate({ loading, error, children }) {
 
 ### 步驟 1：三個頁面改讀雲端
 
-`store.jsx` 先留著。報名與後台下一節才脫離它。
+`store.jsx` 與 `store-context.js` 先留著。報名與後台下一節才脫離它們。
 
 ```diff 07-project-final/src/features/home/HomePage.jsx
  import { useEffect } from 'react';
@@ -431,7 +455,7 @@ export default function LoadGate({ loading, error, children }) {
  import Typography from '@mui/material/Typography';
  // ...
  import TourCard from '../tours/components/TourCard.jsx';
--import { useStore } from '../../store.jsx';
+-import { useStore } from '../../store-context.js';
 +import LoadGate from '../../LoadGate.jsx';
 +import { useTours } from '../../useAsync.js';
 
@@ -456,7 +480,7 @@ export default function LoadGate({ loading, error, children }) {
  import TourFilters from './components/TourFilters.jsx';
 +import LoadGate from '../../LoadGate.jsx';
  import { matchPrice } from '../../format.js';
--import { useStore } from '../../store.jsx';
+-import { useStore } from '../../store-context.js';
 +import { useTours } from '../../useAsync.js';
 
  export default function ToursPage() {
@@ -479,7 +503,7 @@ export default function LoadGate({ loading, error, children }) {
 
 ```diff 07-project-final/src/features/tours/TourDetailPage.jsx
  import NotFoundPage from '../../pages/NotFoundPage.jsx';
--import { useStore } from '../../store.jsx';
+-import { useStore } from '../../store-context.js';
 +import LoadGate from '../../LoadGate.jsx';
 +import { useTour } from '../../useAsync.js';
 
@@ -715,12 +739,20 @@ Firebase 主控台打開 Authentication，進入登入方式。
 
 ### 步驟 2：AuthProvider
 
-`auth.jsx` 訂閱登入狀態，並提供 `signInWithGoogle` 與 `signOut`。`provider` 讀 `user.providerData[0].providerId`。這一章每個帳號只用一種登入方式，這個值與 token 的 `firebase.sign_in_provider` 相同：Google 是 `google.com`，密碼是 `password`。沒有初始化時，`signInWithGoogle` 拒絕並帶上同一句尚未設定。`ready` 在第一次回報之後才是真。沒有 Firebase 時不必等，直接視為已確認、使用者是 `null`。
+`auth-context.js` 放 context 與 `useAuth`。`auth.jsx` 只放 `AuthProvider`，訂閱登入狀態，並提供 `signInWithGoogle` 與 `signOut`。`provider` 讀 `user.providerData[0].providerId`。這一章每個帳號只用一種登入方式，這個值與 token 的 `firebase.sign_in_provider` 相同：Google 是 `google.com`，密碼是 `password`。沒有初始化時，`signInWithGoogle` 拒絕並帶上同一句尚未設定。`ready` 在第一次回報之後才是真。沒有 Firebase 時不必等，直接視為已確認、使用者是 `null`。
 
 `signIn(email, password)` 留到後台那一節再補。
 
+```js 07-project-final/src/auth-context.js
+import { createContext, useContext } from 'react';
+
+export const AuthContext = createContext(null);
+
+export const useAuth = () => useContext(AuthContext);
+```
+
 ```jsx 07-project-final/src/auth.jsx
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -728,8 +760,7 @@ import {
   signOut,
 } from 'firebase/auth';
 import { auth, firebaseReady, missingFirebaseMessage } from './firebase.js';
-
-const AuthContext = createContext(null);
+import { AuthContext } from './auth-context.js';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -762,8 +793,6 @@ export function AuthProvider({ children }) {
 
   return <AuthContext.Provider value={api}>{children}</AuthContext.Provider>;
 }
-
-export const useAuth = () => useContext(AuthContext);
 ```
 
 `App` 在原有的 `StoreProvider` 外面包一層。種子路由留著。`StoreProvider` 還要留給行程管理頁，訂單清單那一節改完再拿掉。
@@ -796,7 +825,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useAuth } from '../../auth.jsx';
+import { useAuth } from '../../auth-context.js';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -892,7 +921,7 @@ export default function LoginPage() {
 +import MenuItem from '@mui/material/MenuItem';
  import SiteNav from './SiteNav.jsx';
  import Icon from '../../_shared/Icon.jsx';
-+import { useAuth } from '../../auth.jsx';
++import { useAuth } from '../../auth-context.js';
  // ...
  export default function SiteHeader() {
 +  const { user, provider, ready, signOut } = useAuth();
@@ -944,13 +973,13 @@ export default function LoginPage() {
 
 ## 報名表寫入訂單
 
-未登入打開 `/booking` 或 `/me`，`MemberGate` 導向 `/login?next=...`。`next` 是原本要去的網址，含查詢字串。姓名與 email 來自 `user.displayName`、`user.email`，欄位唯讀。電話手填。送出時 `createOrder` 帶 `uid: user.uid`。成功後把回傳放進路由 `state`，導到完成頁。完成頁重新整理後 `state` 消失，這一筆改到「我的報名」再讀。
+未登入打開 `/booking`、`/booking/:id` 或 `/me`，`MemberGate` 導向 `/login?next=...`。`next` 是原本要去的網址，含查詢字串。姓名與 email 來自 `user.displayName`、`user.email`，欄位唯讀。電話手填。送出時 `createOrder` 帶 `uid: user.uid`。成功後用回傳的 id 導到 `/booking/:id`，並用 `replace: true` 蓋掉表單頁的瀏覽紀錄。完成頁再以 `getOrder` 讀這一筆；讀不到或沒有權限就渲染 `NotFoundPage`。
 
 ```jsx 07-project-final/src/features/booking/components/MemberGate.jsx
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Alert from '@mui/material/Alert';
-import { useAuth } from '../../../auth.jsx';
+import { useAuth } from '../../../auth-context.js';
 import { missingFirebaseMessage } from '../../../firebase.js';
 
 export default function MemberGate({ children }) {
@@ -990,16 +1019,18 @@ export default function MemberGate({ children }) {
 
 ```jsx 07-project-final/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { createOrder } from '../../../api.js';
-import { useAuth } from '../../../auth.jsx';
+import { useAuth } from '../../../auth-context.js';
 import { ntd } from '../../../format.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
-export default function BookingForm({ tour, departure, onDone }) {
+export default function BookingForm({ tour, departure }) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [people, setPeople] = useState('2');
   const [phone, setPhone] = useState('');
@@ -1037,7 +1068,7 @@ export default function BookingForm({ tour, departure, onDone }) {
         phone: phone.trim(),
         subtotal,
       });
-      onDone(row);
+      navigate(`/booking/${row.id}`, { replace: true });
     } catch (err) {
       setError(err.message);
       setBusy(false);
@@ -1105,21 +1136,20 @@ export default function BookingForm({ tour, departure, onDone }) {
 
 ```jsx 07-project-final/src/features/booking/BookingPage.jsx
 import { useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router';
-import Alert from '@mui/material/Alert';
+import { useSearchParams } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
 import BookingSteps from './components/BookingSteps.jsx';
 import BookingSummary from './components/BookingSummary.jsx';
 import MemberGate from './components/MemberGate.jsx';
 import LoadGate from '../../LoadGate.jsx';
+import NotFoundPage from '../../pages/NotFoundPage.jsx';
 import { useTours } from '../../useAsync.js';
 
 function BookingBody() {
   const { data, loading, error } = useTours();
   const tours = data ?? [];
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const tour = tours.find(
     (item) => item.id === (params.get('tourId') || 'hualien-taroko'),
   );
@@ -1130,6 +1160,7 @@ function BookingBody() {
     document.title = '報名 · 洛奇旅行';
   }, []);
   if (loading || error) return <LoadGate loading={loading} error={error} />;
+  if (!tour || !departure) return <NotFoundPage />;
 
   return (
     <main
@@ -1141,23 +1172,10 @@ function BookingBody() {
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         姓名與 email 來自 Google 帳號。請留下電話，送出後會寫進訂單。
       </p>
-      {!tour || !departure ? (
-        <Alert className="mt-8" severity="warning">
-          找不到這趟行程或出發日。
-          <Link className="ml-2 underline" to="/tours">
-            回行程
-          </Link>
-        </Alert>
-      ) : (
-        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
-          <BookingForm
-            tour={tour}
-            departure={departure}
-            onDone={(row) => navigate('/booking/done', { state: row })}
-          />
-          <BookingSummary tour={tour} departure={departure} />
-        </div>
-      )}
+      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
+        <BookingForm tour={tour} departure={departure} />
+        <BookingSummary tour={tour} departure={departure} />
+      </div>
     </main>
   );
 }
@@ -1171,23 +1189,29 @@ export default function BookingPage() {
 }
 ```
 
-```jsx 07-project-final/src/features/booking/BookingDonePage.jsx
+```jsx 07-project-final/src/features/booking/BookingResultPage.jsx
 import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useParams } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import BookingReceipt from './components/BookingReceipt.jsx';
 import BookingSteps from './components/BookingSteps.jsx';
+import MemberGate from './components/MemberGate.jsx';
+import LoadGate from '../../LoadGate.jsx';
+import NotFoundPage from '../../pages/NotFoundPage.jsx';
 import { statusLabel } from '../../format.js';
+import { useOrder } from '../../useAsync.js';
 
-export default function BookingDonePage() {
-  const { state } = useLocation();
-  const row = state?.id ? state : null;
+function BookingResultBody() {
+  const { id } = useParams();
+  const { data: row, loading, error } = useOrder(id);
   useEffect(() => {
-    document.title = '報名已送出 · 洛奇旅行';
-  }, []);
+    document.title = row ? '報名已送出 · 洛奇旅行' : '找不到頁面 · 洛奇旅行';
+  }, [row]);
+  if (loading) return <LoadGate loading={loading} />;
+  if (error || !row) return <NotFoundPage />;
 
   return (
     <main
@@ -1195,21 +1219,14 @@ export default function BookingDonePage() {
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
       <BookingSteps activeStep={2} />
-      <Chip color="primary" label={statusLabel[row?.status] || '待確認'} />
+      <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
       <Typography variant="h1" className="mt-3 max-w-[10em]">
         報名已送出
       </Typography>
       <Alert className="mt-4 max-w-prose" severity="success">
-        我們會用 email
-        再跟你確認。到「我的報名」可以查看這一筆。重新整理後，這一頁不再帶著剛送出的明細。
+        我們會用 email 再跟你確認。到「我的報名」可以查看這一筆。
       </Alert>
-      {row ? (
-        <BookingReceipt row={row} />
-      ) : (
-        <p className="mt-8 max-w-prose text-lg text-muted">
-          這一頁只保留剛送出的那一筆。請到我的報名查看，或從行程重新報名。
-        </p>
-      )}
+      <BookingReceipt row={row} />
       <div className="mt-8 flex flex-wrap gap-3">
         <Button component={Link} to="/me" variant="contained">
           看我的報名
@@ -1219,6 +1236,14 @@ export default function BookingDonePage() {
         </Button>
       </div>
     </main>
+  );
+}
+
+export default function BookingResultPage() {
+  return (
+    <MemberGate>
+      <BookingResultBody />
+    </MemberGate>
   );
 }
 ```
@@ -1233,7 +1258,7 @@ import Typography from '@mui/material/Typography';
 import MemberGate from './components/MemberGate.jsx';
 import MyBookingRow from './components/MyBookingRow.jsx';
 import LoadGate from '../../LoadGate.jsx';
-import { useAuth } from '../../auth.jsx';
+import { useAuth } from '../../auth-context.js';
 import { useMyOrders } from '../../useAsync.js';
 
 function MyBookingsBody() {
@@ -1302,12 +1327,12 @@ export default function MyBookingsPage() {
 }
 ```
 
-送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`，`uid` 是目前這個 Google 帳號。重新整理完成頁，明細消失。打開 `/me` 仍看得到這一筆。`src/features/booking/mock.data.js` 不再被頁面 import。
+送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`，`uid` 是目前這個 Google 帳號，網址會變成 `/booking/` 加上這份文件的 id。重新整理完成頁仍看得到這一筆。打開 `/me` 也看得到。對不到或沒有權限讀的 id 會看到 `NotFoundPage`。`src/features/booking/mock.data.js` 不再被頁面 import。
 
 **解析**
 
 - `MemberGate` 等 `ready`。沒有使用者就帶著目前網址去 `/login`。報名連結維持 `/booking?tourId=...&departureId=...`，閘門在報名頁。
-- `onDone` 用路由 state 把剛寫入的欄位帶過去。這份 state 只活在這一次導頁。自己的訂單由 `listMyOrders` 再讀。
+- 表單送出後用回傳的 `row.id` 導到完成頁，並加上 `replace: true`。完成頁用 `useOrder(id)` 讀單筆；讀取中用 `LoadGate`，失敗或沒有資料就渲染 `NotFoundPage`。`id` 是 Firestore `addDoc` 隨機產生的，能不能讀由規則 `isOwner || isAdmin` 把關。自己的訂單清單仍由 `listMyOrders` 再讀。
 - 表單的 `id="booking-form"` 維持契約。姓名與 email 不開放手改。電話仍手填。
 - `useMyOrders(user.uid)` 寫在閘門裡面。沒有通過閘門就不會拿 `uid` 去查訂單。
 - 單筆列沿用 `MyBookingRow`。訂單的標題欄是 `tourTitle`，傳給 `title`。每一筆用 `item.id` 當 `key`。
@@ -1315,7 +1340,7 @@ export default function MyBookingsPage() {
 
 # 管理員、規則與部署
 
-前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，清單改讀 `orders`，最後貼上安全規則，並沿用第 12 篇的靜態打包。
+前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，清單改讀 `orders`，最後貼上安全規則，並把網站部署到 Firebase Hosting。
 
 ## 登入與受保護畫面
 
@@ -1336,8 +1361,13 @@ export default function MyBookingsPage() {
 前台那一節的 `auth.jsx` 已有 `onAuthStateChanged`、`signInWithGoogle` 與 `signOut`。這裡只補 `signIn`。
 
 ```diff 07-project-final/src/auth.jsx
--import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-+import { GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+ import {
+   GoogleAuthProvider,
+   onAuthStateChanged,
++  signInWithEmailAndPassword,
+   signInWithPopup,
+   signOut,
+ } from 'firebase/auth';
  // ...
      signInWithGoogle() {
        if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
@@ -1387,7 +1417,7 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useAuth } from '../../auth.jsx';
+import { useAuth } from '../../auth-context.js';
 
 export default function AdminLoginPage() {
   const { signIn, provider } = useAuth();
@@ -1465,7 +1495,7 @@ export default function AdminLoginPage() {
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { useAuth } from '../../../auth.jsx';
+import { useAuth } from '../../../auth-context.js';
 import { missingFirebaseMessage } from '../../../firebase.js';
 
 export default function AdminGate({ children }) {
@@ -1538,7 +1568,7 @@ export default function AdminGate({ children }) {
 - `signInWithEmailAndPassword` 成功後，`onAuthStateChanged` 會更新 `user`，`provider` 變成 `password`。表單另外 `navigate` 一次。
 - `AdminGate` 先看有沒有設定、再等 `ready`。沒有使用者時請去後台登入。有使用者但不是 `password` 時停在說明，不渲染孩子。
 - 閘門只擋畫面。沒有通過的人仍可從瀏覽器直接呼叫 SDK。安全規則那一節才擋讀取。
-- 頁首已經接上 `useAuth`。訂單頁離開 `store` 之後，再刪 `store.jsx`。
+- 頁首已經接上 `useAuth`。訂單頁離開 store 之後，再刪 `store.jsx` 與 `store-context.js`。
 
 ## 訂單清單與狀態
 
@@ -1628,29 +1658,47 @@ export default function AdminToursPage() {
 }
 ```
 
-表格不再自己碰 store。狀態變更由清單頁傳進來。
+表格不再自己碰 store，也不再自己顯示成功提示。狀態變更由清單頁傳進來。失敗時的提示改由清單頁的錯誤 `Alert` 負責。
 
 ```diff 07-project-final/src/features/admin/components/BookingTable.jsx
+-import { useState } from 'react';
+-import Alert from '@mui/material/Alert';
+ import Card from '@mui/material/Card';
+ import MenuItem from '@mui/material/MenuItem';
+ import Select from '@mui/material/Select';
+-import Snackbar from '@mui/material/Snackbar';
+ import Table from '@mui/material/Table';
+ // ...
  import { ntd, statusLabel } from '../../../format.js';
--import { useStore } from '../../../store.jsx';
+-import { useStore } from '../../../store-context.js';
  import { tokens } from '../../../theme.js';
  // ...
--function StatusSelect({ booking }) {
--  const { setBookingStatus } = useStore();
-+function StatusSelect({ booking, onStatus }) {
-   const tone = statusTone[booking.status] || statusTone.pending;
- // ...
--      onChange={(event) => setBookingStatus(booking.id, event.target.value)}
-+      onChange={(event) => onStatus(booking.id, event.target.value)}
- // ...
 -export default function BookingTable({ bookings }) {
+-  const { setBookingStatus } = useStore();
+-  const [notice, setNotice] = useState('');
+-  const onStatus = (id, status) => {
+-    setBookingStatus(id, status);
+-    setNotice('已更新報名狀態');
+-  };
 +export default function BookingTable({ bookings, onStatus }) {
+   return (
  // ...
--                <TableCell className="px-4 py-4"><StatusSelect booking={booking} /></TableCell>
-+                <TableCell className="px-4 py-4"><StatusSelect booking={booking} onStatus={onStatus} /></TableCell>
- // ...
--            <div className="mt-3"><StatusSelect booking={booking} /></div>
-+            <div className="mt-3"><StatusSelect booking={booking} onStatus={onStatus} /></div>
+       </div>
+-      <Snackbar
+-        open={Boolean(notice)}
+-        autoHideDuration={3200}
+-        onClose={() => setNotice('')}
+-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+-      >
+-        <Alert
+-          severity="success"
+-          variant="filled"
+-          onClose={() => setNotice('')}
+-        >
+-          {notice}
+-        </Alert>
+-      </Snackbar>
+     </>
  // ...
 ```
 
@@ -1666,7 +1714,7 @@ export default function AdminToursPage() {
 +import LoadGate from '../../LoadGate.jsx';
 +import { updateOrderStatus } from '../../api.js';
  import { statusLabel } from '../../format.js';
--import { useStore } from '../../store.jsx';
+-import { useStore } from '../../store-context.js';
 +import { useOrders } from '../../useAsync.js';
  // ...
 -export default function AdminBookingsPage() {
@@ -1731,10 +1779,12 @@ export default function AdminToursPage() {
  }
 ```
 
-接著刪掉這兩個檔：
+接著刪掉這些檔：
 
 - `src/store.jsx`
+- `src/store-context.js`
 - `src/features/admin/components/TourForm.jsx`
+- `src/features/admin/components/tourDraft.js`
 
 未登入時打開 `/admin/bookings`，應停在閘門，不應出現訂單。登入後看得到剛才那一筆。把狀態改成已確認，重新整理後仍是已確認。主控台裡同一份文件的 `status` 一起變。
 
@@ -1754,7 +1804,7 @@ export default function AdminToursPage() {
 - 行程頁的「寫入種子」只是連到 `/seed`。規則收緊之後，那個按鈕會失敗，清單仍可讀。
 - 篩選與排序仍在瀏覽器做。Firestore 這一章只負責把訂單整份拿回來。
 
-## 安全規則與靜態部署
+## 安全規則與 Firebase Hosting
 
 規則是伺服器上的判斷，跟 React 的閘門各寫一次。閘門決定畫不畫。規則決定 SDK 的請求過不過。這一節的規則全文只放在 `firestore.rules`，主控台貼上同一份，不要在別處再寫一套。
 
@@ -1820,39 +1870,98 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 - `request.auth` 是 Authentication 帶上來的身分。沒登入時是 `null`。Google 登入時它不是 `null`，所以不能再用「有登入」代表管理員。
 - 新增時多檢查 `status`、姓名、email、電話與人數。表單仍先擋空的電話。規則擋的是直接呼叫 SDK 的請求。
 
-### 步驟 2：打包
+### 步驟 2：部署到 Firebase Hosting
 
-打包指令仍是第 12 篇那一條：`vite build` 之後把 `index.html` 複製成 `404.html`。網站掛在網域根目錄時，路由維持預設。
+第 12 篇用 Live Server 打開 `dist/` 時，內頁重新整理會拿到伺服器自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有 `index.html` 一張進入點，內頁的網址是前端路由。Firebase Hosting 用轉送把任意路徑都交給 `index.html`，由前端路由接著畫，這就是 SPA 要的設定。
 
-Firebase 的程式會打成單獨一包，體積超過 Vite 預設的 500 kB 警告線。`chunkSizeWarningLimit` 只把警告門檻調到 600，不改變檔案內容。金鑰在建置當下寫進這包。要發布能連線的版本，就在填好 `.env.local` 的電腦上執行 `pnpm build`。
+在專案根目錄加上 `firebase.json`。`public` 指向打包後的 `dist`。`rewrites` 把所有路徑轉到 `/index.html`。
 
-這一章不上 Firebase Hosting。靜態檔仍照第 12 篇放到 GitHub Pages。發布前確認 `.env.local` 沒有被 commit。
+```json 07-project-final/firebase.json
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+**解析**
+
+- `public` 是 Hosting 對外提供的目錄，必須是 `pnpm build` 產出的 `dist/`，不是 `src/`。
+- `rewrites` 的 `source` 是 `**`，`destination` 是 `/index.html`。無論是 `/tours` 還是 `/booking/某段 id`，Hosting 都回這張進入點，不會先回 404。
+- 忽略清單把設定檔、隱藏檔與 `node_modules` 排除在上傳之外。`.env.local` 本來就不會進 `dist/`，發布前仍要確認它沒有被 commit。
+
+第 12 篇打包後的 JS 超過 500 kB，終端機會出現體積警告。這一節把 React、MUI 與 Firebase 拆成獨立檔，畫面不變。Firebase 那包大約 570 kB，`chunkSizeWarningLimit` 只把警告門檻調到 600，不改變檔案內容。金鑰在建置當下寫進這包。要發布能連線的版本，就在填好 `.env.local` 的電腦上執行 `pnpm build`。
 
 ```diff 07-project-final/vite.config.js
-   build: {
+ export default defineConfig({
+   plugins: [react(), tailwindcss()],
+   server: { host: 'localhost' },
+   preview: { host: 'localhost' },
++  build: {
 +    chunkSizeWarningLimit: 600,
-     rollupOptions: {
-       output: {
-         manualChunks(id) {
-           if (!id.includes('node_modules')) return undefined;
-           if (id.includes('@mui') || id.includes('@emotion')) return 'mui';
++    rollupOptions: {
++      output: {
++        manualChunks(id) {
++          if (!id.includes('node_modules')) return undefined;
++          if (id.includes('@mui') || id.includes('@emotion')) return 'mui';
 +          if (id.includes('firebase')) return 'firebase';
-           if (id.includes('react-dom') || id.includes('react-router') || id.includes('/react/')) return 'react';
-           return undefined;
-         },
- // ...
++          if (
++            id.includes('react-dom') ||
++            id.includes('react-router') ||
++            id.includes('/react/')
++          )
++            return 'react';
++          return undefined;
++        },
++      },
++    },
++  },
+ });
 ```
 
 ```bash
 pnpm build
 ```
 
+終端機會印出類似下面的內容。檔名後面的雜湊會隨內容改變。
+
+```
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 753 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                             1.28 kB │ gzip:   0.59 kB
+dist/assets/index-DN8BqvV-.css             26.99 kB │ gzip:   5.87 kB
+dist/assets/rolldown-runtime-WkwZ5CU-.js    0.59 kB │ gzip:   0.36 kB
+dist/assets/index-tv_4qAQo.js              67.89 kB │ gzip:  19.56 kB
+dist/assets/react-DvrgipTh.js             304.79 kB │ gzip:  96.20 kB
+dist/assets/mui-HmigsoZj.js               314.62 kB │ gzip:  95.16 kB
+dist/assets/firebase-D9Cpe2Kg.js          569.15 kB │ gzip: 170.61 kB
+
+✓ built in 521ms
+```
+
+若專案根目錄還沒有 `.firebaserc`，先用 Firebase CLI 對到這個專案，再部署：
+
+```bash
+firebase deploy
+```
+
 **解析**
 
-- `manualChunks` 只拆檔。畫面與規則都不會因為拆檔改變。
-- 警告門檻設在 `vite.config.js` 這一處。Firebase 那包大約 570 kB。
-- `dist/` 已在 `.gitignore`。要更新線上網站時，用建置結果覆蓋 Pages，不要把 `node_modules` 推進去。
+- `manualChunks` 只拆檔。畫面與規則都不會因為拆檔改變。React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。
+- 警告門檻設在 `vite.config.js` 這一處。Firebase 那包大約 570 kB，所以門檻調到 600。
+- `dist/` 已在 `.gitignore`。要更新線上網站時，先 `pnpm build` 再 `firebase deploy`，不要把 `node_modules` 推進去。
 - 空的環境變數也能建置成功。那種產物打開後，行程頁會顯示尚未設定。
+- 授權網域預設包含 `localhost`。發布後若使用 Firebase 給的網域或自訂網域，再把那個網域加進 Authentication 的授權網域。
 
 # 本篇重點回顧
 
@@ -1864,7 +1973,8 @@ pnpm build
 - `/seed` 在測試模式把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。
 - `MemberGate` 把未登入者帶到 `/login?next=...`。`AdminGate` 等 `ready`，並且只放行 `password`。閘門擋的是畫面。
 - `firestore.rules` 讓行程公開可讀、不可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者。
-- 打包沿用第 12 篇。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
+- 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到或沒有權限就渲染 `NotFoundPage`。
+- 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`manualChunks` 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
 
 # 專有名詞中英對照
 
@@ -1903,7 +2013,6 @@ pnpm build
 - 使用者識別碼（uid）
 - 彈出視窗登入（signInWithPopup）
 - Google 登入（Google sign-in）
-- 路由狀態（history state）
 - 登入閘門（MemberGate）
 
 ## 管理員、規則與部署
@@ -1913,5 +2022,6 @@ pnpm build
 - 登入提供者（sign_in_provider）
 - 密碼登入（password）
 - 授權（authorization）
-- 靜態部署（static hosting）
+- Firebase Hosting
+- 轉送（rewrite）
 - 程式碼分割（code splitting）
