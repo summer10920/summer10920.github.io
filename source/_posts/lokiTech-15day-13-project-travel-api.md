@@ -489,13 +489,13 @@ export default function SiteLayout() {
 ```jsx 07-project-final/src/features/home/HomePage.jsx
 import { useLoaderData } from 'react-router';
 import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
+import FeaturedTours from './components/FeaturedTours.jsx';
 import HeroSearch from './components/HeroSearch.jsx';
 import HeroSlider from './components/HeroSlider.jsx';
-import ReasonList from './components/ReasonList.jsx';
-import ReviewList from './components/ReviewList.jsx';
-import ThemeGrid from './components/ThemeGrid.jsx';
-import TourCard from '../tours/components/TourCard.jsx';
+import IntroBanner from './components/IntroBanner.jsx';
+import ReasonSection from './components/ReasonSection.jsx';
+import ReviewSection from './components/ReviewSection.jsx';
+import ThemeSection from './components/ThemeSection.jsx';
 import { listTours } from '../../api.js';
 import { MissingFirebase } from '../../AccessNotice.jsx';
 import { firebaseReady } from '../../firebase.js';
@@ -519,69 +519,12 @@ export default function HomePage() {
         </div>
       )}
       <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
-      <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
-        <HeroSearch />
-      </div>
-      <section className="mt-12 bg-ink text-white md:mt-20">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography
-            variant="h2"
-            className="text-balance text-4xl leading-snug text-white md:text-5xl"
-          >
-            <span className="whitespace-nowrap">把日子排鬆，</span>
-            <br />
-            <span className="whitespace-nowrap">把路走慢。</span>
-          </Typography>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foam">
-            每團最多 8
-            人。地名寫清楚，一天只排一段路，下午留給自己。京都五日不含國際機票。
-          </p>
-        </div>
-      </section>
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <Typography id="featured-title" variant="h2">
-          熱門行程
-        </Typography>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-          這幾趟最常被選走。價格為每人，以新台幣計。
-        </p>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {featured.map((tour) => (
-            <TourCard key={tour.id} tour={tour} />
-          ))}
-        </div>
-      </section>
-      <section className="bg-mist">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography id="theme-title" variant="h2">
-            依主題找路
-          </Typography>
-          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-            城市、海岸、山海、古都、離島，或飛一趟京都。
-          </p>
-          <ThemeGrid />
-        </div>
-      </section>
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <Typography id="reason-title" variant="h2">
-          為什麼選我們
-        </Typography>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-          人少、不排滿、盡量住同一間飯店。
-        </p>
-        <ReasonList />
-      </section>
-      <section className="bg-foam">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography id="review-title" variant="h2">
-            旅客怎麼說
-          </Typography>
-          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-            出發回來之後，旅客留下的話。
-          </p>
-          <ReviewList />
-        </div>
-      </section>
+      <HeroSearch />
+      <IntroBanner />
+      <FeaturedTours tours={featured} />
+      <ThemeSection />
+      <ReasonSection />
+      <ReviewSection />
     </main>
   );
 }
@@ -596,9 +539,9 @@ export default function HomePage() {
 
 ```jsx 07-project-final/src/features/tours/ToursPage.jsx
 import { useLoaderData, useSearchParams } from 'react-router';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TourCard from './components/TourCard.jsx';
+import TourEmpty from './components/TourEmpty.jsx';
 import TourFilters from './components/TourFilters.jsx';
 import { listTours } from '../../api.js';
 import { MissingFirebase } from '../../AccessNotice.jsx';
@@ -655,26 +598,14 @@ export default function ToursPage() {
             </div>
           </>
         ) : (
-          <section
-            id="tour-empty"
-            className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card"
-          >
-            <Typography id="empty-title" variant="h2">
-              沒有符合的行程
-            </Typography>
-            <p className="mt-3 max-w-prose">
-              {tours.length
+          <TourEmpty
+            onClear={() => setParams(new URLSearchParams())}
+            message={
+              tours.length
                 ? '換一個地區或天數，或清掉價格條件。'
-                : '還沒有行程。請先打開 /seed 寫入種子。'}
-            </p>
-            <Button
-              className="mt-6"
-              variant="contained"
-              onClick={() => setParams(new URLSearchParams())}
-            >
-              清除條件
-            </Button>
-          </section>
+                : '還沒有行程。請先打開 /seed 寫入種子。'
+            }
+          />
         )}
       </div>
     </main>
@@ -1965,16 +1896,12 @@ export default function AdminLoginPage() {
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
 import { useState } from 'react';
 import { Link, useFetcher, useLoaderData } from 'react-router';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
+import DeleteTourDialog from './components/DeleteTourDialog.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
+import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
 import { tourFromDraft } from './components/tourDraft.js';
 import { deleteTour, listTours, saveTour } from '../../api.js';
 import { AdminDenied, MissingFirebase } from '../../AccessNotice.jsx';
@@ -2084,44 +2011,18 @@ export default function AdminToursPage() {
         onClose={close}
         onNotice={setNotice}
       />
-      <Dialog
-        open={Boolean(deletingTour)}
+      <DeleteTourDialog
+        tour={deletingTour}
+        busy={remove.state !== 'idle'}
         onClose={() => setDeletingTour(null)}
-        aria-labelledby="delete-title"
-      >
-        <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
-        <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
-        <DialogActions className="gap-2 p-4">
-          <Button onClick={() => setDeletingTour(null)}>留下</Button>
-          <Button
-            color="error"
-            variant="contained"
-            disabled={remove.state !== 'idle'}
-            onClick={() =>
-              remove.submit(
-                { intent: 'delete', id: deletingTour.id },
-                { method: 'post' },
-              )
-            }
-          >
-            刪除
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
+        onConfirm={() =>
+          remove.submit(
+            { intent: 'delete', id: deletingTour.id },
+            { method: 'post' },
+          )
+        }
+      />
+      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }
@@ -2130,7 +2031,7 @@ export default function AdminToursPage() {
 **解析**
 
 - `requireAdmin` 先經過 `requireUser`。未登入的人會離開這個網址；登入方式不對的人留在原頁，看到警告。
-- 刪除用 `fetcher.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 裡的 `fetcher` 送出草稿。成功後 `loader` 再讀清單，Snackbar 仍是頁面自己的狀態。
+- 刪除用 `fetcher.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 裡的 `fetcher` 送出草稿。成功後 `loader` 再讀清單，提示仍由頁面的 `notice` 交給 `NoticeSnackbar`。
 
 ## 訂單清單與狀態
 
@@ -2139,20 +2040,15 @@ export default function AdminToursPage() {
 ```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
 import { useLoaderData } from 'react-router';
-import Alert from '@mui/material/Alert';
-import MenuItem from '@mui/material/MenuItem';
-import Snackbar from '@mui/material/Snackbar';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import BookingFilters from './components/BookingFilters.jsx';
 import BookingTable from './components/BookingTable.jsx';
 import BookingForm from './components/BookingForm.jsx';
+import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
 import { listOrders, updateOrderStatus } from '../../api.js';
 import { AdminDenied, MissingFirebase } from '../../AccessNotice.jsx';
 import { requireAdmin } from '../../auth.js';
 import { missingFirebaseMessage } from '../../firebase.js';
-import { statusLabel } from '../../format.js';
-
-const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
 export const loader = async ({ request }) => {
   const gate = await requireAdmin(request);
@@ -2215,35 +2111,14 @@ export default function AdminBookingsPage() {
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         查看所有訂單，點一筆看明細並改狀態。兩頁用頁首切換。
       </p>
-      <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
-        <TextField
-          select
-          label="狀態"
-          value={status}
-          onChange={(event) => setStatus(event.target.value)}
-        >
-          {statusOptions.map((value) => (
-            <MenuItem key={value} value={value}>
-              {value === 'all' ? '全部' : statusLabel[value]}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="搜尋姓名"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="輸入姓名"
-        />
-        <TextField
-          select
-          label="日期排序"
-          value={sort}
-          onChange={(event) => setSort(event.target.value)}
-        >
-          <MenuItem value="date-desc">出發日新到舊</MenuItem>
-          <MenuItem value="date-asc">出發日舊到新</MenuItem>
-        </TextField>
-      </div>
+      <BookingFilters
+        status={status}
+        query={query}
+        sort={sort}
+        onStatusChange={setStatus}
+        onQueryChange={setQuery}
+        onSortChange={setSort}
+      />
       {shown.length ? (
         <BookingTable
           bookings={shown}
@@ -2262,20 +2137,7 @@ export default function AdminBookingsPage() {
         onClose={close}
         onNotice={setNotice}
       />
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
+      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }

@@ -1587,16 +1587,18 @@ export const createBooking = (input) => {
 
 首頁讀精選行程、主題圖、三則理由與四則評價。假資料寫到該區塊用到時，再補進對應的 `mock.data.js`。列表才要的價格區間、詳情才要的每日行程，這一節先不寫。
 
-這一節要組出 `HomePage`。
+這一節要組出 `HomePage`。頁面只組區塊元件，標題與內容寫在各區塊裡。
 
 {% mermaid graph TD %}
   page["HomePage 首頁"] --> slider["HeroSlider 輪播"]
   page --> search["HeroSearch 搜尋表單"]
-  page --> card["TourCard 行程卡片"]
-  page --> themes["ThemeGrid 主題列表"]
-  page --> reasons["ReasonList 理由列表"]
-  page --> reviews["ReviewList 評價列表"]
+  page --> intro["IntroBanner 把日子排鬆"]
+  page --> featured["FeaturedTours 熱門行程"]
+  page --> themes["ThemeSection 依主題找路"]
+  page --> reasons["ReasonSection 為什麼選我們"]
+  page --> reviews["ReviewSection 旅客怎麼說"]
   search --> field["FieldSelect 下拉選單"]
+  featured --> card["TourCard 行程卡片"]
 {% endmermaid %}
 
 ### 步驟 1：組出 HomePage
@@ -1631,7 +1633,7 @@ export default function HeroSearch() {
 
 - 先回傳標記文字，標出搜尋表單的位置。
 
-行程卡片先放標記，之後首頁與列表都會用到。
+行程卡片先放標記，之後熱門行程與列表都會用到。
 
 ```jsx 06-project-init/src/features/tours/components/TourCard.jsx
 export default function TourCard() {
@@ -1647,11 +1649,35 @@ export default function TourCard() {
 
 - 先回傳標記文字。稍後傳入的 `tour` 此刻先不必接收。
 
-主題列表先放標記。
+「把日子排鬆」先放標記。
 
-```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
-export default function ThemeGrid() {
-  return <p className="mt-8">主題列表</p>;
+```jsx 06-project-init/src/features/home/components/IntroBanner.jsx
+export default function IntroBanner() {
+  return <p className="mt-12">把日子排鬆</p>;
+}
+```
+
+**解析**
+
+- 先回傳標記文字，標出這塊深色區的位置。
+
+熱門行程先放標記。
+
+```jsx 06-project-init/src/features/home/components/FeaturedTours.jsx
+export default function FeaturedTours() {
+  return <p className="mt-8">熱門行程</p>;
+}
+```
+
+**解析**
+
+- 先回傳標記文字，標出熱門行程的位置。稍後傳入的 `tours` 此刻先不必接收。
+
+「依主題找路」先放標記。
+
+```jsx 06-project-init/src/features/home/components/ThemeSection.jsx
+export default function ThemeSection() {
+  return <p className="mt-8">依主題找路</p>;
 }
 ```
 
@@ -1661,39 +1687,39 @@ export default function ThemeGrid() {
 
 「為什麼選我們」先放標記。
 
-```jsx 06-project-init/src/features/home/components/ReasonList.jsx
-export default function ReasonList() {
-  return <p className="mt-8">理由列表</p>;
+```jsx 06-project-init/src/features/home/components/ReasonSection.jsx
+export default function ReasonSection() {
+  return <p className="mt-8">為什麼選我們</p>;
 }
 ```
 
 **解析**
 
-- 先回傳標記文字，標出理由列表的位置。
+- 先回傳標記文字，標出為什麼選我們的位置。
 
-評價列表先放標記。
+「旅客怎麼說」先放標記。
 
-```jsx 06-project-init/src/features/home/components/ReviewList.jsx
-export default function ReviewList() {
-  return <p className="mt-8">評價列表</p>;
+```jsx 06-project-init/src/features/home/components/ReviewSection.jsx
+export default function ReviewSection() {
+  return <p className="mt-8">旅客怎麼說</p>;
 }
 ```
 
 **解析**
 
-- 先回傳標記文字，標出評價列表的位置。
+- 先回傳標記文字，標出旅客怎麼說的位置。
 
-接著把零件組進 `HomePage`。行程由這一頁的 `loader` 呼叫 `getTours`，元件用 `useLoaderData` 讀取。
+接著把零件組進 `HomePage`。行程由這一頁的 `loader` 呼叫 `getTours`，元件用 `useLoaderData` 讀取。頁面只組區塊，不寫各區的標題與內容。
 
 ```jsx 06-project-init/src/features/home/HomePage.jsx
-import Typography from '@mui/material/Typography';
+import { useLoaderData } from 'react-router';
+import FeaturedTours from './components/FeaturedTours.jsx';
 import HeroSearch from './components/HeroSearch.jsx';
 import HeroSlider from './components/HeroSlider.jsx';
-import ReasonList from './components/ReasonList.jsx';
-import ReviewList from './components/ReviewList.jsx';
-import ThemeGrid from './components/ThemeGrid.jsx';
-import { useLoaderData } from 'react-router';
-import TourCard from '../tours/components/TourCard.jsx';
+import IntroBanner from './components/IntroBanner.jsx';
+import ReasonSection from './components/ReasonSection.jsx';
+import ReviewSection from './components/ReviewSection.jsx';
+import ThemeSection from './components/ThemeSection.jsx';
 import { getTours } from '../../store.js';
 
 export const loader = () => ({ tours: getTours() });
@@ -1706,69 +1732,12 @@ export default function HomePage() {
     <main>
       <title>洛奇旅行</title>
       <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
-      <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
-        <HeroSearch />
-      </div>
-      <section className="mt-12 bg-ink text-white md:mt-20">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography
-            variant="h2"
-            className="text-balance text-4xl leading-snug text-white md:text-5xl"
-          >
-            <span className="whitespace-nowrap">把日子排鬆，</span>
-            <br />
-            <span className="whitespace-nowrap">把路走慢。</span>
-          </Typography>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foam">
-            每團最多 8
-            人。地名寫清楚，一天只排一段路，下午留給自己。京都五日不含國際機票。
-          </p>
-        </div>
-      </section>
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <Typography id="featured-title" variant="h2">
-          熱門行程
-        </Typography>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-          這幾趟最常被選走。價格為每人，以新台幣計。
-        </p>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {featured.map((tour) => (
-            <TourCard key={tour.id} tour={tour} />
-          ))}
-        </div>
-      </section>
-      <section className="bg-mist">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography id="theme-title" variant="h2">
-            依主題找路
-          </Typography>
-          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-            城市、海岸、山海、古都、離島，或飛一趟京都。
-          </p>
-          <ThemeGrid />
-        </div>
-      </section>
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-        <Typography id="reason-title" variant="h2">
-          為什麼選我們
-        </Typography>
-        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-          人少、不排滿、盡量住同一間飯店。
-        </p>
-        <ReasonList />
-      </section>
-      <section className="bg-foam">
-        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <Typography id="review-title" variant="h2">
-            旅客怎麼說
-          </Typography>
-          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-            出發回來之後，旅客留下的話。
-          </p>
-          <ReviewList />
-        </div>
-      </section>
+      <HeroSearch />
+      <IntroBanner />
+      <FeaturedTours tours={featured} />
+      <ThemeSection />
+      <ReasonSection />
+      <ReviewSection />
     </main>
   );
 }
@@ -1776,9 +1745,8 @@ export default function HomePage() {
 
 **解析**
 
-- `featured` 是標成精選的行程，同時送給輪播與熱門區。一筆精選都沒有時，輪播改拿陣列前面四筆，避免主視覺是空的。
-- `HeroSearch` 接在輪播後面。一般寬度在下方留空隙；大螢幕加上負邊距與較高的層級，讓搜尋表單往上疊在輪播底部。
-- 熱門行程、主題、理由與評價各是一個區塊，標題與導讀寫在頁面上，列表元件自己讀資料或接收 props。
+- `featured` 是標成精選的行程，同時送給輪播與 `FeaturedTours`。一筆精選都沒有時，輪播改拿陣列前面四筆，避免主視覺是空的。
+- `HeroSearch` 接在輪播後面。把日子排鬆、熱門行程、依主題找路、為什麼選我們、旅客怎麼說，各由對應的區塊元件自己畫標題與內容。
 
 接著把路由表裡的首頁佔位換成 `HomePage`。
 
@@ -1935,53 +1903,55 @@ export default function HeroSearch() {
   };
 
   return (
-    <form
-      className="rounded-card bg-white shadow-card p-6 md:p-8"
-      onSubmit={submit}
-    >
-      <Typography variant="h2">找一趟慢一點的行程</Typography>
-      <p className="mt-2 text-muted">選地區與天數，或直接看全部。</p>
-      <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
-        <FieldSelect
-          id="hero-region"
-          label="地區"
-          value={region}
-          onChange={setRegion}
-          options={[
-            { value: '', label: '不限' },
-            ...regions.map((item) => ({ value: item, label: item })),
-          ]}
-        />
-        <FieldSelect
-          id="hero-days"
-          label="天數"
-          value={days}
-          onChange={setDays}
-          options={[
-            { value: '', label: '不限' },
-            ...dayOptions.map((item) => ({
-              value: String(item),
-              label: `${item} 天`,
-            })),
-          ]}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          className="min-h-14 md:min-w-40"
-        >
-          搜尋行程
-        </Button>
-      </div>
-      <p className="mt-5">
-        <Link
-          className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover"
-          to="/tours"
-        >
-          看全部行程
-        </Link>
-      </p>
-    </form>
+    <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
+      <form
+        className="rounded-card bg-white shadow-card p-6 md:p-8"
+        onSubmit={submit}
+      >
+        <Typography variant="h2">找一趟慢一點的行程</Typography>
+        <p className="mt-2 text-muted">選地區與天數，或直接看全部。</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+          <FieldSelect
+            id="hero-region"
+            label="地區"
+            value={region}
+            onChange={setRegion}
+            options={[
+              { value: '', label: '不限' },
+              ...regions.map((item) => ({ value: item, label: item })),
+            ]}
+          />
+          <FieldSelect
+            id="hero-days"
+            label="天數"
+            value={days}
+            onChange={setDays}
+            options={[
+              { value: '', label: '不限' },
+              ...dayOptions.map((item) => ({
+                value: String(item),
+                label: `${item} 天`,
+              })),
+            ]}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            className="min-h-14 md:min-w-40"
+          >
+            搜尋行程
+          </Button>
+        </div>
+        <p className="mt-5">
+          <Link
+            className="font-bold text-action underline decoration-action/45 underline-offset-4 hover:text-action-hover"
+            to="/tours"
+          >
+            看全部行程
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }
 ```
@@ -1992,6 +1962,7 @@ export default function HeroSearch() {
 - `regions` 與 `dayOptions` 從行程的 `mock.data.js` 引入，再對成 `{ value, label }`。天數的 `value` 轉成字串，因為 Select 的值是字串；畫面標籤寫成「3 天」這種格式。
 - 送出時先 `preventDefault`，再用 `URLSearchParams` 組查詢字串。有選到地區或天數才寫進參數，然後導到 `/tours`。真正比對篩選條件是列表頁的工作。
 - 「看全部行程」是 `Link`，不帶查詢字串，直接進列表。
+- 外層的定位與負邊距寫在這個元件裡。一般寬度在輪播下方留空隙；大螢幕加上負邊距與較高的層級，讓搜尋表單往上疊在輪播底部。
 
 ### 步驟 3：輪播
 
@@ -2201,9 +2172,68 @@ export default function HeroSlider({ slides }) {
 - 「立即報名」連到報名頁，帶上這筆行程與第一個出團日。「看行程」連到該筆詳情。
 - 底部圓點與左右鈕都會呼叫 `go`。當前那張的圓點換成強調色。
 
-### 步驟 4：熱門行程
+### 步驟 4：把日子排鬆
 
-熱門行程在步驟 1 已經用 placeholder 接到 `TourCard`。這一節只補卡片與標籤的主題，先不寫真正的行程卡片。等到行程列表再換成真正的元件，首頁這裡會一起更新。
+把「把日子排鬆」的 placeholder 換成真正的元件。
+
+```jsx 06-project-init/src/features/home/components/IntroBanner.jsx
+import Typography from '@mui/material/Typography';
+
+export default function IntroBanner() {
+  return (
+    <section className="mt-12 bg-ink text-white md:mt-20">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+        <Typography
+          variant="h2"
+          className="text-balance text-4xl leading-snug text-white md:text-5xl"
+        >
+          <span className="whitespace-nowrap">把日子排鬆，</span>
+          <br />
+          <span className="whitespace-nowrap">把路走慢。</span>
+        </Typography>
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foam">
+          每團最多 8
+          人。地名寫清楚，一天只排一段路，下午留給自己。京都五日不含國際機票。
+        </p>
+      </div>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 深色底區塊，標題與說明寫在這個元件裡。標題拆成兩行，各包 `whitespace-nowrap`，避免被切開。
+
+### 步驟 5：熱門行程
+
+把熱門行程的 placeholder 換成 `FeaturedTours`，並補卡片與標籤的主題。真正的行程卡片等到列表再換，首頁這裡會一起更新。
+
+```jsx 06-project-init/src/features/home/components/FeaturedTours.jsx
+import Typography from '@mui/material/Typography';
+import TourCard from '../../tours/components/TourCard.jsx';
+
+export default function FeaturedTours({ tours }) {
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <Typography variant="h2">熱門行程</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        這幾趟最常被選走。價格為每人，以新台幣計。
+      </p>
+      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {tours.map((tour) => (
+          <TourCard key={tour.id} tour={tour} />
+        ))}
+      </div>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 標題、導讀與精選卡片的格子都寫在這個元件裡。`tours` 由首頁傳入，已是精選清單。
+- 每張卡片仍是步驟 1 的 `TourCard` 標記。等到行程列表換成真正的卡片，首頁這裡會一起更新。
 
 卡片的圓角與陰影、Chip 的配色與刪除圖示，補進主題。
 
@@ -2239,7 +2269,7 @@ export default function HeroSlider({ slides }) {
 - `MuiCard` 覆寫圓角、陰影與白底，並去掉預設的背景漸層，之後的行程卡片與理由、評價卡片都會套到。
 - `MuiChip` 預設的刪除圖示改成圖示字型的 `cancel`，之後可刪除的標籤會用到。次要色用強調色底、主要色用操作色底，讓標籤跟網站色票一致。
 
-### 步驟 5：依主題找路
+### 步驟 6：依主題找路
 
 主題圖是首頁自己的資料，寫在 `features/home/mock.data.js`。
 
@@ -2285,48 +2315,58 @@ export const themeLinks = [
 
 - 每個主題有標題、說明與圖片路徑，供下一步的列表使用。
 
-接著把主題列表的 placeholder 換成真正的元件。
+接著把「依主題找路」的 placeholder 換成真正的元件。
 
-```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
+```jsx 06-project-init/src/features/home/components/ThemeSection.jsx
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router';
 import { themeLinks } from '../mock.data.js';
 
-export default function ThemeGrid() {
+export default function ThemeSection() {
   return (
-    <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {themeLinks.map((item) => (
-        <li key={item.theme}>
-          <Link
-            to={`/tours?theme=${item.theme}`}
-            className="group relative flex min-h-52 overflow-hidden rounded-card shadow-card"
-          >
-            <img
-              src={item.image}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            />
-            <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
-            <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
-              <span className="font-serif text-3xl font-semibold">
-                {item.theme}
-              </span>
-              <span className="text-foam">{item.places}</span>
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <section className="bg-mist">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+        <Typography variant="h2">依主題找路</Typography>
+        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+          城市、海岸、山海、古都、離島，或飛一趟京都。
+        </p>
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {themeLinks.map((item) => (
+            <li key={item.theme}>
+              <Link
+                to={`/tours?theme=${item.theme}`}
+                className="group relative flex min-h-52 overflow-hidden rounded-card shadow-card"
+              >
+                <img
+                  src={item.image}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+                <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
+                <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
+                  <span className="font-serif text-3xl font-semibold">
+                    {item.theme}
+                  </span>
+                  <span className="text-foam">{item.places}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
 ```
 
 **解析**
 
+- 標題「依主題找路」與導讀寫在這個元件裡。
 - 每個主題是連到 `/tours` 的 `Link`，查詢字串帶上 `theme`。
 - 圖片鋪滿連結，下方漸層把文字托出來。
 - 游標移上去圖片會放大。系統偏好減少動態時關掉過渡與縮放。
 
-### 步驟 6：為什麼選我們
+### 步驟 7：為什麼選我們
 
 把三則理由追加進同一份檔。
 
@@ -2355,9 +2395,9 @@ export default function ThemeGrid() {
 
 - 三則理由追加在 `features/home/mock.data.js`，與主題資料放在同一份檔。
 
-接著把理由列表的 placeholder 換成真正的元件。
+接著把「為什麼選我們」的 placeholder 換成真正的元件。
 
-```jsx 06-project-init/src/features/home/components/ReasonList.jsx
+```jsx 06-project-init/src/features/home/components/ReasonSection.jsx
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import Icon from '../../../_shared/Icon.jsx';
@@ -2365,32 +2405,39 @@ import { reasons } from '../mock.data.js';
 
 const icons = ['groups', 'wb_sunny', 'hotel'];
 
-export default function ReasonList() {
+export default function ReasonSection() {
   return (
-    <div className="mt-8 grid gap-6 lg:grid-cols-3">
-      {reasons.map((item, index) => {
-        const iconName = icons[index];
-        return (
-          <Card key={item.title} className="p-6 md:p-8">
-            <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-mist text-action">
-              <Icon name={iconName} />
-            </span>
-            <Typography variant="h3">{item.title}</Typography>
-            <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
-          </Card>
-        );
-      })}
-    </div>
+    <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <Typography variant="h2">為什麼選我們</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        人少、不排滿、盡量住同一間飯店。
+      </p>
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        {reasons.map((item, index) => {
+          const iconName = icons[index];
+          return (
+            <Card key={item.title} className="p-6 md:p-8">
+              <span className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-mist text-action">
+                <Icon name={iconName} />
+              </span>
+              <Typography variant="h3">{item.title}</Typography>
+              <p className="mt-3 leading-relaxed text-muted">{item.body}</p>
+            </Card>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 ```
 
 **解析**
 
+- 標題「為什麼選我們」與導讀寫在這個元件裡。
 - `icons` 用下標對三則理由，資料不必存圖示名。
 - 每則是一張 `Card`，上方圓形底放圖示，再接標題與說明。
 
-### 步驟 7：旅客怎麼說
+### 步驟 8：旅客怎麼說
 
 星星改用圖示字型。實心星加上 `FILL` 1，空心星維持線框。
 
@@ -2504,38 +2551,48 @@ export const themeLinks = [
 - 實心與空心都用圖示字型 `star`，實心再加上 `fontVariationSettings` 的 `FILL` 1。
 - 寫在 `MuiRating` 的 `defaultProps`，之後的 Rating 都會換成這組。
 
-接著把評價列表的 placeholder 換成真正的元件。
+接著把「旅客怎麼說」的 placeholder 換成真正的元件。
 
-```jsx 06-project-init/src/features/home/components/ReviewList.jsx
+```jsx 06-project-init/src/features/home/components/ReviewSection.jsx
 import Card from '@mui/material/Card';
 import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
 import { reviews } from '../mock.data.js';
 import { tours } from '../../tours/mock.data.js';
 
 const titleOf = (tourId) =>
   tours.find((tour) => tour.id === tourId)?.title ?? '';
 
-export default function ReviewList() {
+export default function ReviewSection() {
   return (
-    <div className="mt-8 grid gap-4 lg:grid-cols-2">
-      {reviews.map((review) => (
-        <Card key={review.id} component="figure" className="p-6 md:p-8">
-          <Rating value={review.rating} readOnly />
-          <blockquote className="mt-3 max-w-prose leading-relaxed">
-            「{review.body}」
-          </blockquote>
-          <figcaption className="mt-3 text-muted">
-            {review.author} · {review.rating} 分 · {titleOf(review.tourId)}
-          </figcaption>
-        </Card>
-      ))}
-    </div>
+    <section className="bg-foam">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+        <Typography variant="h2">旅客怎麼說</Typography>
+        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+          出發回來之後，旅客留下的話。
+        </p>
+        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          {reviews.map((review) => (
+            <Card key={review.id} component="figure" className="p-6 md:p-8">
+              <Rating value={review.rating} readOnly />
+              <blockquote className="mt-3 max-w-prose leading-relaxed">
+                「{review.body}」
+              </blockquote>
+              <figcaption className="mt-3 text-muted">
+                {review.author} · {review.rating} 分 · {titleOf(review.tourId)}
+              </figcaption>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 ```
 
 **解析**
 
+- 標題「旅客怎麼說」與導讀寫在這個元件裡。
 - `titleOf` 用行程編號回查標題，找不到就空字串。
 - 每則是 `figure` 卡片：只讀的星星、引言，以及說明列出作者、分數與標題。
 
@@ -2543,11 +2600,12 @@ export default function ReviewList() {
 
 列表要八筆，並依網址上的查詢參數篩選、排序。主題、價格區間與排序選項是這一頁才補進 `features/tours/mock.data.js`。
 
-這一節要組出 `ToursPage`。畫面拆成篩選列 `TourFilters`，以及首頁已接到的 `TourCard`。篩選列再用共用的 `FieldSelect`。下面先組出這一頁並接到路由，篩選列先放標記，再補資料、換成真正的篩選列，最後把行程卡片的 placeholder 換成真正的元件。
+這一節要組出 `ToursPage`。畫面拆成篩選列 `TourFilters`、沒有結果時的 `TourEmpty`，以及首頁已接到的 `TourCard`。篩選列再用共用的 `FieldSelect`。下面先組出這一頁並接到路由，篩選列先放標記，再補資料、換成真正的篩選列，最後把行程卡片的 placeholder 換成真正的元件。
 
 {% mermaid graph TD %}
   page["ToursPage"] --> filters["TourFilters"]
   page --> card["TourCard"]
+  page --> empty["TourEmpty"]
   filters --> field["FieldSelect"]
 {% endmermaid %}
 
@@ -2567,6 +2625,29 @@ export default function TourFilters() {
 
 - 先回傳標記文字，標出篩選列的位置。真正的下拉下一步再換。
 
+沒有符合條件時的空狀態寫成 `TourEmpty`。
+
+```jsx 06-project-init/src/features/tours/components/TourEmpty.jsx
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
+export default function TourEmpty({ onClear }) {
+  return (
+    <section className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card">
+      <Typography variant="h2">沒有符合的行程</Typography>
+      <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
+      <Button className="mt-6" variant="contained" onClick={onClear}>
+        清除條件
+      </Button>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 標題、說明與清除條件的按鈕都寫在這個元件裡。按下按鈕時呼叫頁面傳入的 `onClear`。
+
 價格比對先一律當成符合，列表頁才編譯得過。
 
 ```diff 06-project-init/src/format.js
@@ -2585,9 +2666,9 @@ export default function TourFilters() {
 
 ```jsx 06-project-init/src/features/tours/ToursPage.jsx
 import { useLoaderData, useSearchParams } from 'react-router';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TourCard from './components/TourCard.jsx';
+import TourEmpty from './components/TourEmpty.jsx';
 import TourFilters from './components/TourFilters.jsx';
 import { matchPrice } from '../../format.js';
 import { getTours } from '../../store.js';
@@ -2638,24 +2719,7 @@ export default function ToursPage() {
             </div>
           </>
         ) : (
-          <section
-            id="tour-empty"
-            className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card"
-          >
-            <Typography id="empty-title" variant="h2">
-              沒有符合的行程
-            </Typography>
-            <p className="mt-3 max-w-prose">
-              換一個地區或天數，或清掉價格條件。
-            </p>
-            <Button
-              className="mt-6"
-              variant="contained"
-              onClick={() => setParams(new URLSearchParams())}
-            >
-              清除條件
-            </Button>
-          </section>
+          <TourEmpty onClear={() => setParams(new URLSearchParams())} />
         )}
       </div>
     </main>
@@ -2668,7 +2732,7 @@ export default function ToursPage() {
 - `visible` 在 render 時依網址的地區、天數、主題，以及 `matchPrice`，濾出行程再排序。
 - 沒寫排序時用價格由低到高。天數由短到長時，天數相同再比價格。
 - 有結果時顯示筆數，每張卡片傳 `showTheme`，主題 Chip 才會出現。
-- 沒有結果時，同一個 `id="tour-list"` 裡改顯示空狀態：標題、說明，以及會清空查詢參數的按鈕。空狀態才不會落在這個節點外面。
+- 沒有結果時，同一個 `id="tour-list"` 裡改顯示 `TourEmpty`。空狀態才不會落在這個節點外面。
 
 接著把 `/tours` 換成這一頁。
 
@@ -3032,6 +3096,7 @@ src/features/tours/
 ├── mock.data.js
 └── components/
     ├── TourCard.jsx
+    ├── TourEmpty.jsx
     ├── TourFilters.jsx
     ├── TourHeader.jsx
     ├── Gallery.jsx
@@ -5404,8 +5469,10 @@ src/features/admin/
 └── components/
     ├── TourTable.jsx
     ├── TourForm.jsx
+    ├── DeleteTourDialog.jsx
     ├── DraftRows.jsx
     ├── tourDraft.js
+    ├── BookingFilters.jsx
     ├── BookingTable.jsx
     └── BookingForm.jsx
 ```
@@ -5525,12 +5592,15 @@ export default function AdminLoginPage() {
 
 - `TourTable`
 - `TourForm`：新增與編輯共用的 Dialog
+- `DeleteTourDialog`：刪除確認
+- `NoticeSnackbar`：兩頁共用的成功提示，放在 `src/_shared`
 - `DraftRows`：圖庫、每日行程與出發梯次共用的多列輸入
 
 {% mermaid graph TD %}
   page["AdminToursPage"] --> table["TourTable"]
   page --> form["TourForm"]
-  page --> confirm["刪除確認"]
+  page --> confirm["DeleteTourDialog"]
+  page --> notice["NoticeSnackbar"]
   form --> rows["DraftRows"]
 {% endmermaid %}
 
@@ -5597,21 +5667,77 @@ export default function TourForm({ open, tour, onClose }) {
 
 - 此刻只畫出對話框標題與關閉。真正的欄位留到草稿工具與 `TourForm` 再換。
 
-接著組出行程管理頁。表格與表單目前是標記。
+刪除確認寫成 `DeleteTourDialog`。
 
-```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
-import { useState } from 'react';
-import { useFetcher, useLoaderData } from 'react-router';
-import Alert from '@mui/material/Alert';
+```jsx 06-project-init/src/features/admin/components/DeleteTourDialog.jsx
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+
+export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
+  return (
+    <Dialog open={Boolean(tour)} onClose={onClose}>
+      <DialogTitle>刪除這筆行程？</DialogTitle>
+      <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
+      <DialogActions className="gap-2 p-4">
+        <Button onClick={onClose}>留下</Button>
+        <Button
+          color="error"
+          variant="contained"
+          disabled={busy}
+          onClick={onConfirm}
+        >
+          刪除
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+```
+
+**解析**
+
+- 有要刪的行程才打開。按下「刪除」時呼叫頁面傳入的 `onConfirm`；`busy` 為真時按鈕不能再按。
+
+兩頁都會用到成功提示，抽成 `NoticeSnackbar`，放在 `src/_shared`。
+
+```jsx 06-project-init/src/_shared/NoticeSnackbar.jsx
+import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+
+export default function NoticeSnackbar({ notice, onClose }) {
+  return (
+    <Snackbar
+      open={Boolean(notice)}
+      autoHideDuration={3200}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert severity="success" variant="filled" onClose={onClose}>
+        {notice}
+      </Alert>
+    </Snackbar>
+  );
+}
+```
+
+**解析**
+
+- `notice` 有字才打開，約 3.2 秒後或按下關閉會呼叫 `onClose`。位置在畫面下方置中。
+
+接著組出行程管理頁。表格與表單目前是標記。
+
+```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
+import { useState } from 'react';
+import { useFetcher, useLoaderData } from 'react-router';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import DeleteTourDialog from './components/DeleteTourDialog.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
+import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
 import { deleteTour, getTours, saveTour } from '../../store.js';
 
 export const loader = () => ({ tours: getTours() });
@@ -5683,44 +5809,18 @@ export default function AdminToursPage() {
         onClose={close}
         onNotice={setNotice}
       />
-      <Dialog
-        open={Boolean(deletingTour)}
+      <DeleteTourDialog
+        tour={deletingTour}
+        busy={remove.state !== 'idle'}
         onClose={() => setDeletingTour(null)}
-        aria-labelledby="delete-title"
-      >
-        <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
-        <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
-        <DialogActions className="gap-2 p-4">
-          <Button onClick={() => setDeletingTour(null)}>留下</Button>
-          <Button
-            color="error"
-            variant="contained"
-            disabled={remove.state !== 'idle'}
-            onClick={() =>
-              remove.submit(
-                { intent: 'delete', id: deletingTour.id },
-                { method: 'post' },
-              )
-            }
-          >
-            刪除
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
+        onConfirm={() =>
+          remove.submit(
+            { intent: 'delete', id: deletingTour.id },
+            { method: 'post' },
+          )
+        }
+      />
+      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }
@@ -5730,7 +5830,7 @@ export default function AdminToursPage() {
 
 - 直接打開 `/admin` 就看得到這一頁。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
 - 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
-- 這一頁的 `action` 已經會處理儲存與刪除，成功時把 `notice` 交給 Snackbar。表格與表單目前是標記。兩頁用頁首切換。
+- 這一頁的 `action` 已經會處理儲存與刪除，成功時把 `notice` 交給 `NoticeSnackbar`。刪除確認是 `DeleteTourDialog`。表格與表單目前是標記。兩頁用頁首切換。
 
 接著把 `/admin` 換成這一頁。
 
@@ -5865,7 +5965,7 @@ export const tourFromDraft = (draft) => {
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
 - 標題去掉空白後是空的，回傳「標題要填」，不寫入。編號不由表單填，新增時 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
 - 新增與編輯都寫完整結構。新增時插到陣列最前面。成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。
-- 這些函式已經在 `store.js`，這一節不必再改那個檔。提示訊息由步驟 1 的頁面用 `notice` 與 Snackbar 顯示。
+- 這些函式已經在 `store.js`，這一節不必再改那個檔。提示訊息由步驟 1 的頁面用 `notice` 與 `NoticeSnackbar` 顯示。
 
 ### 步驟 3：行程表格
 
@@ -6147,7 +6247,7 @@ export default function DraftRows({
 
 ### 步驟 6：行程表單
 
-把行程表單的 placeholder 換成真正的元件。草稿留在表單裡，送出走 `useFetcher`。步驟 1 的頁面已經傳入 `onNotice`，並用 Snackbar 顯示成功提示。
+把行程表單的 placeholder 換成真正的元件。草稿留在表單裡，送出走 `useFetcher`。步驟 1 的頁面已經傳入 `onNotice`，並用 `NoticeSnackbar` 顯示成功提示。
 
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
 import { useEffect, useRef, useState } from 'react';
@@ -6414,18 +6514,20 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
 - 圖庫、每日行程與出發梯次都用剛才的 `DraftRows`，各列的欄位由這裡傳進去。
 - 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
 - 送出時 `fetcher.submit` 把 `intent: 'save'`、`editingId` 與 JSON 草稿送到這一頁的 `action`。成功後 `useEffect` 呼叫 `onNotice` 並關窗。錯誤時用 `fetcher.data.error` 顯示在 Dialog 裡。
-- 步驟 1 的頁面已經把 `onNotice` 接到 `setNotice`，用 Snackbar 顯示成功提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。刪除仍在列表操作欄，確認後也走同一則 `notice`，文案是「已刪除這筆行程」。提示留在頁面，關窗後才看得到。
+- 步驟 1 的頁面已經把 `onNotice` 接到 `setNotice`，用 `NoticeSnackbar` 顯示成功提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。刪除仍在列表操作欄，確認後也走同一則 `notice`，文案是「已刪除這筆行程」。提示留在頁面，關窗後才看得到。
 - 說明寫空的網址列會略過，封面用圖庫第一張。
 
 ## 報名清單
 
 清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態。按「儲存」才送出。重新整理就回到種子。兩頁用頁首切換，模式跟行程管理相同。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingTable` 與 `BookingForm`。下面先組出這一頁並接到路由，表格與明細先放標記，再補改狀態的方法，接著換成真正的元件。
+這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。下面先組出這一頁並接到路由，表格與明細先放標記，再補改狀態的方法，接著換成真正的元件。
 
 {% mermaid graph TD %}
-  page["AdminBookingsPage"] --> table["BookingTable"]
+  page["AdminBookingsPage"] --> filters["BookingFilters"]
+  page --> table["BookingTable"]
   page --> form["BookingForm"]
+  page --> notice["NoticeSnackbar"]
 {% endmermaid %}
 
 ### 步驟 1：組出 AdminBookingsPage
@@ -6465,22 +6567,72 @@ export default function BookingForm({ open, onClose }) {
 
 - 先回傳標記文字，標出查看明細的 Dialog 位置。
 
+狀態、姓名與日期的篩選寫成 `BookingFilters`。
+
+```jsx 06-project-init/src/features/admin/components/BookingFilters.jsx
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import { statusLabel } from '../../../format.js';
+
+const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
+
+export default function BookingFilters({
+  status,
+  query,
+  sort,
+  onStatusChange,
+  onQueryChange,
+  onSortChange,
+}) {
+  return (
+    <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
+      <TextField
+        select
+        label="狀態"
+        value={status}
+        onChange={(event) => onStatusChange(event.target.value)}
+      >
+        {statusOptions.map((value) => (
+          <MenuItem key={value} value={value}>
+            {value === 'all' ? '全部' : statusLabel[value]}
+          </MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        label="搜尋姓名"
+        value={query}
+        onChange={(event) => onQueryChange(event.target.value)}
+        placeholder="輸入姓名"
+      />
+      <TextField
+        select
+        label="日期排序"
+        value={sort}
+        onChange={(event) => onSortChange(event.target.value)}
+      >
+        <MenuItem value="date-desc">出發日新到舊</MenuItem>
+        <MenuItem value="date-asc">出發日舊到新</MenuItem>
+      </TextField>
+    </div>
+  );
+}
+```
+
+**解析**
+
+- 三個欄位的值與變更都由頁面傳入。狀態選項的標籤沿用 `statusLabel`，「全部」對應 `all`。
+
 接著寫報名清單。表格與明細目前仍是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
 import { useLoaderData } from 'react-router';
-import Alert from '@mui/material/Alert';
-import MenuItem from '@mui/material/MenuItem';
-import Snackbar from '@mui/material/Snackbar';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import BookingFilters from './components/BookingFilters.jsx';
 import BookingTable from './components/BookingTable.jsx';
 import BookingForm from './components/BookingForm.jsx';
-import { statusLabel } from '../../format.js';
+import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
 import { getBookings, setBookingStatus } from '../../store.js';
-
-const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
 export const loader = () => ({ bookings: getBookings() });
 
@@ -6521,35 +6673,14 @@ export default function AdminBookingsPage() {
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         查看所有報名，點一筆看明細並改狀態。兩頁用頁首切換。
       </p>
-      <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
-        <TextField
-          select
-          label="狀態"
-          value={status}
-          onChange={(event) => setStatus(event.target.value)}
-        >
-          {statusOptions.map((value) => (
-            <MenuItem key={value} value={value}>
-              {value === 'all' ? '全部' : statusLabel[value]}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="搜尋姓名"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="輸入姓名"
-        />
-        <TextField
-          select
-          label="日期排序"
-          value={sort}
-          onChange={(event) => setSort(event.target.value)}
-        >
-          <MenuItem value="date-desc">出發日新到舊</MenuItem>
-          <MenuItem value="date-asc">出發日舊到新</MenuItem>
-        </TextField>
-      </div>
+      <BookingFilters
+        status={status}
+        query={query}
+        sort={sort}
+        onStatusChange={setStatus}
+        onQueryChange={setQuery}
+        onSortChange={setSort}
+      />
       {shown.length ? (
         <BookingTable
           bookings={shown}
@@ -6568,20 +6699,7 @@ export default function AdminBookingsPage() {
         onClose={close}
         onNotice={setNotice}
       />
-      <Snackbar
-        open={Boolean(notice)}
-        autoHideDuration={3200}
-        onClose={() => setNotice('')}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          severity="success"
-          variant="filled"
-          onClose={() => setNotice('')}
-        >
-          {notice}
-        </Alert>
-      </Snackbar>
+      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }
@@ -6589,7 +6707,7 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- 直接打開 `/admin/bookings` 就看得到這一頁。上方的狀態、姓名與日期用來篩選與排序。
+- 直接打開 `/admin/bookings` 就看得到這一頁。上方的狀態、姓名與日期由 `BookingFilters` 負責篩選與排序。
 - 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
 - `open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
 - 兩頁用頁首切換。
@@ -6938,7 +7056,7 @@ export default function BookingForm({ open, booking, onClose, onNotice }) {
 **解析**
 
 - 完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。狀態下拉在底部。
-- 按「儲存」才把新狀態送到這一頁的 `action`。成功後關窗，並請頁面把 `notice` 設成「已更新報名狀態」。步驟 1 的頁面已經用同一套 Snackbar 顯示提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
+- 按「儲存」才把新狀態送到這一頁的 `action`。成功後關窗，並請頁面把 `notice` 設成「已更新報名狀態」。步驟 1 的頁面已經用同一套 `NoticeSnackbar` 顯示提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
 - 若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
 
 # 打包與預覽
@@ -6996,7 +7114,7 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 
 - Vite 專案加上 `jsconfig.json`、React Compiler 的 Babel 外掛，再安裝 React Router、MUI、Emotion 與 Tailwind。頁面檔的 `loader` 與 `action` 用 ESLint 的 `allowExportNames` 放行。
 - `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
-- 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的元件。
+- 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的區塊元件。
 - 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程與報名都是列表加 Dialog，用頁面 state 控制開關，不另開路由。行程刪除在列表操作欄，確認後才拿掉。圖庫是網址列，封面用第一張。訂單改為已取消即軟刪，不從清單移除那一筆。後台沿用同一份 `SiteHeader`，兩頁用頁首切換，不必再做一排分頁。
 - `/login`、`/booking`、`/booking/:id`、`/me`、`/admin`、`/admin/login`、`/admin/bookings` 都能直接打開。對不到的路徑與錯誤的 id 都渲染 `NotFoundPage`。登入與讀自己的訂單留到下一篇。
 - `pnpm build` 產出 `dist/` 裡的 HTML、CSS 與 JS。用 Live Server 預覽時，內頁重新整理會拿到靜態伺服器的 404，下一篇部署再處理。
