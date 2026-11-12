@@ -2884,6 +2884,7 @@ export default function ActionDemo() {
 **解析**
 
 - 填一個標題再按「新增」，畫面出現伺服器回傳的 id 與標題。網址仍是 `/demos/87-action`。
+- `<Form>` 是 React Router 的元件，會自己攔下瀏覽器預設的整頁送出，改把欄位交給 `action`，所以不用寫 `event.preventDefault()`。只有想在送出前擋下來（例如先跳確認）時，才在 `onSubmit` 裡呼叫它。
 - `form.get('title')` 是 FormData 的方法，用來讀取欄位名為 `title` 的值，不是向伺服器發 HTTP GET。
 - jsonplaceholder 接受 POST 後會回傳一筆帶 id 的物件，但不會真的存下來，所以這一則不用 `loader` 列清單，也不會看到列表變長。
 - 標題留白就送出時，`useActionData` 讀到 `error`，輸入框下面出現「請填標題」。
