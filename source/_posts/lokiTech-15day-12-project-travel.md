@@ -1393,6 +1393,12 @@ import { isRouteErrorResponse, useRouteError } from 'react-router';
 import Typography from '@mui/material/Typography';
 import NotFoundPage from './NotFoundPage.jsx';
 
+/**
+ * 子路由的 loader 或 action throw 之後，路由器往上找到最近的 errorElement 就畫這一頁。
+ * useRouteError 讀到被丟出的值。
+ * isRouteErrorResponse 為真且 status 是 404 時，渲染 NotFoundPage，頁首頁尾留著。
+ * 其他的路由錯誤回應顯示 error.data；一般的 Error 顯示 error.message。
+ */
 export default function RouteErrorPage() {
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404)
@@ -1415,6 +1421,7 @@ export default function RouteErrorPage() {
 **解析**
 
 - `RouteErrorPage` 看 `error.status === 404` 就渲染 `NotFoundPage`。其他錯誤顯示「發生錯誤」。
+- 子路由的 `loader` `throw data(...)` 之後，路由器往上找到這一層的 `errorElement` 才畫這一頁，頁面元件不會先渲染。`isRouteErrorResponse(error)` 用來分辨這是 `throw data()` 的回應（看 `.status` 與 `.data`），還是一般的 `Error`（看 `.message`）。機制見[第十一篇〈redirect 與 errorElement〉](/2026/08-30/lokiTech-15day-11-react-router/#redirect-與-errorElement)。
 
 再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
 

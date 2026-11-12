@@ -2952,7 +2952,15 @@ export default function ActionDemo() {
 
 **觀念**
 
-`/demos/88-redirect-error` 與 `/demos/88-redirect-error/notes/:noteId` 共用同一個 `loader`：沒有 `params.noteId` 時回傳清單，有 `noteId` 時用 `getNote`，沒有這筆就丟 404。路徑 `demos/88-redirect-error/notes/:noteId` 會對上 `notes/` 後面的任何一段，因此 `/demos/88-redirect-error/notes/not-found` 就是同一條路由，`params.noteId` 為 `'not-found'`，不必再宣告一條路徑。`NoteMissing` 用 `useRouteError` 讀錯誤，`isRouteErrorResponse` 為真時顯示 `error.data`。
+`/demos/88-redirect-error` 與 `/demos/88-redirect-error/notes/:noteId` 共用同一個 `loader`：沒有 `params.noteId` 時回傳清單，有 `noteId` 時用 `getNote`，沒有這筆就丟 404。路徑 `demos/88-redirect-error/notes/:noteId` 會對上 `notes/` 後面的任何一段，因此 `/demos/88-redirect-error/notes/not-found` 就是同一條路由，`params.noteId` 為 `'not-found'`，不必再宣告一條路徑。
+
+`data(body, { status })` 把一份資料和狀態碼包成路由錯誤回應。在 `loader` 裡要 `throw`，不能 `return`：函式在這裡停住，頁面元件不會渲染，路由器往上找到最近一個有 `errorElement` 的路由。那個元件用 `useRouteError()` 讀到被丟出的值。
+
+`isRouteErrorResponse(error)` 用來分辨這是 `throw data()` 的回應（有 `.status` 與 `.data`），還是程式自己丟出的 `Error`（有 `.message`）。驗證錯誤是 `return` 給 `useActionData` 留在原頁顯示；資料找不到則是 `throw`，改畫 `errorElement`。
+
+{% note info %}
+資料模式下，這個 404 只作用在畫面上，瀏覽器拿到的仍是 SPA 的 HTTP 200。只有框架模式的伺服器端渲染，才會把這個狀態碼當成真正的回應狀態送出。
+{% endnote %}
 
 ```diff 04-react-router/src/App.jsx
  import ActionDemo, {
@@ -3005,8 +3013,10 @@ import { addNote, getNote, listNotes } from './notes-db.js';
 /**
  * 列表與明細共用。params 是路徑參數，明細路由才有 noteId。
  * 沒有 noteId 時回傳清單；有 noteId 時回傳那一筆。
- * 找不到就 throw data(message, { status })。第一個引數會成為 error.data，
- * status 是狀態碼。丟出後這條路由改畫 errorElement，不畫原本的元件。
+ * 找不到就 throw data(body, { status })。data 把資料和狀態碼包成路由錯誤回應，
+ * 第一個引數會成為 error.data，status 是狀態碼。
+ * 在 loader 裡必須 throw，不能 return：函式在這裡停住，頁面元件不會渲染，
+ * 路由器往上找到最近一個有 errorElement 的路由來畫。
  * @param {{ params: { noteId?: string }, request: Request }} args
  * @returns {{ notes: { id: string, title: string, done: boolean }[] } | { note: { id: string, title: string, done: boolean } }}
  */
@@ -3102,12 +3112,14 @@ export function NoteDetail() {
   );
 }
 
-/** 明細路由的 errorElement。列表那一條沒有掛這個元件。 */
+/**
+ * 明細路由的 errorElement。列表那一條沒有掛這個元件。
+ * useRouteError 讀取被丟出的值。
+ * isRouteErrorResponse 為 true 時，這是 throw data() 的回應，有 .status 與 .data；
+ * 否則是一般的 Error，改看 .message。這一則找不到時顯示 error.data。
+ */
 export function NoteMissing() {
   /**
-   * useRouteError 讀取這條路由丟出的錯誤。
-   * isRouteErrorResponse 為 true 時，error.data 是 throw data() 的第一個引數；
-   * 否則改顯示備用文字。
    * @returns {unknown}
    */
   const error = useRouteError();
@@ -3129,7 +3141,7 @@ export function NoteMissing() {
 **解析**
 
 - 填標題並送出後，`action` 回傳 `redirect`，網址變成 `/demos/88-redirect-error/notes/` 加上新筆記的 id，畫面是那一筆的標題與完成狀態。
-- 「打開一筆不存在的筆記」連到 `/demos/88-redirect-error/notes/not-found`。`loader` 丟出狀態 404，主區換成 `NoteMissing` 的「找不到」與「找不到這則筆記」。
+- 「打開一筆不存在的筆記」連到 `/demos/88-redirect-error/notes/not-found`。`loader` `throw data(...)` 之後，`NoteDetail` 不會渲染，主區換成 `NoteMissing`。`isRouteErrorResponse(error)` 為真，畫面出現「找不到」與 `error.data` 的「找不到這則筆記」。
 
 {% note success %}
 **換你試試：**
@@ -3529,7 +3541,7 @@ const router = createHashRouter(routes, { basename });
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
 - 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
 - `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目，或依欄位回傳的錯誤。後面幾則寫入後，`loader` 會自動重跑。
-- `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，由 `errorElement` 畫找不到。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
+- `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由最近的 `errorElement` 用 `useRouteError` 讀取。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
 - `demos/86-loader` 到 `demos/90-navigation` 要寫在 `demos/:slug` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
 
