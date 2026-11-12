@@ -482,7 +482,7 @@ export default function SiteLayout() {
 
 ## 行程讀取與種子
 
-首頁、列表與詳情的 `loader` 先看 `firebaseReady`。還沒設定就回傳空清單或 `null`，頁面改畫 `MissingFirebase`。詳情找不到文件時 `throw data('找不到頁面', { status: 404 })`，由 `RouteErrorPage` 畫找不到頁。種子頁的 `loader` 使用 `requireAdmin`。不是密碼登入時回傳 `denied: true`，頁面顯示警告與前往後台登入的按鈕。
+首頁、列表與詳情的 `loader` 先看 `firebaseReady`。還沒設定就回傳空清單或 `null`，頁面改畫 `MissingFirebase`。詳情找不到文件時丟 404，導向路由上最近的 `errorElement`。種子頁的 `loader` 使用 `requireAdmin`。不是密碼登入時回傳 `denied: true`，頁面顯示警告與前往後台登入的按鈕。
 
 先改首頁的 `loader` 與畫面。
 
@@ -686,7 +686,7 @@ export default function TourDetailPage() {
 
 **解析**
 
-- 詳情的 `loader` 只回傳這一筆行程。對不到 id 時丟 404，元件裡不再判斷空行程。還沒設定時畫 `MissingFirebase`。
+- 詳情的 `loader` 只回傳這一筆行程。對不到 id 時丟 404，導向路由上最近的 `errorElement`。還沒設定時畫 `MissingFirebase`。
 
 種子頁把 `mock.data.js` 寫進 `tours`，而且要先通過管理員檢查。
 
@@ -1565,7 +1565,7 @@ export default function BookingResultPage() {
 
 **解析**
 
-- `loader` 用 `getOrder`。文件不存在就丟 404，由 `RouteErrorPage` 畫找不到頁。
+- `loader` 用 `getOrder`。找不到時丟 404，導向路由上最近的 `errorElement`。
 
 明細跟著改讀這一筆訂單。
 

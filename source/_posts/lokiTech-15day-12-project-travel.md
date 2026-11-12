@@ -1332,9 +1332,25 @@ export default function SiteFooter() {
 
 ## 找不到頁面
 
-星號路由對不到前面任何一條時，渲染這個找不到頁。它仍在 `SiteLayout` 裡面，頁首與頁尾還在。之後詳情頁、報名頁若對不到編號，也直接渲染同一份元件。
+星號路由對不到前面任何一條時，渲染 `NotFoundPage`。對不到資料的 `loader` 則 `throw data('找不到頁面', { status: 404 })`。兩者都要留著頁首與頁尾，所以 `errorElement` 不掛在 `SiteLayout`，而掛在版型與各頁之間那層沒有 `path` 的路由。
 
-這一節沒有再拆畫面零件，直接寫 `NotFoundPage`，並接到星號路由。
+{% mermaid graph TD %}
+  layout["SiteLayout 頁首、Outlet、頁尾"] --> gate["沒有 path 的那一層"]
+  gate --> pages["各頁"]
+  pages -->|"loader throw 404"| gate
+  gate -->|"errorElement"| err["RouteErrorPage"]
+  err -->|"isRouteErrorResponse 且 404"| notFound["NotFoundPage"]
+  err -->|"其他錯誤"| other["發生錯誤"]
+  style layout fill:#e8f5e9
+  style gate fill:#fff3e0
+  style err fill:#fff3e0
+  style notFound fill:#e8f5e9
+  style other fill:#ffebee
+{% endmermaid %}
+
+頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著。若把 `errorElement` 掛在 `SiteLayout` 上，整份版型會被換掉。`RouteErrorPage` 在 `isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈redirect 與 errorElement〉](/2026/08-30/lokiTech-15day-11-react-router/#redirect-與-errorElement)。
+
+這一節寫 `NotFoundPage` 與 `RouteErrorPage`，並接到路由。
 
 ### 步驟 1：組出 NotFoundPage
 
@@ -1384,9 +1400,7 @@ React 19 把元件裡的 `<title>` 提升到文件的 `<head>`。元件卸載時
 
 ### 步驟 2：接到路由
 
-星號路由換成 `NotFoundPage`，仍放在版型裡面。對不到資料的 `loader` 會 `throw data('找不到頁面', { status: 404 })`。這種錯誤若冒到版型本身，頁首會一起被換掉，所以在版型與各頁之間加一層沒有 `path` 的路由，把 `errorElement` 設成 `RouteErrorPage`。狀態 404 仍畫 `NotFoundPage`，頁首與頁尾留著。其他錯誤顯示「發生錯誤」。
-
-先寫負責判斷錯誤的頁面。
+先寫負責判斷錯誤的 `RouteErrorPage`，再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
 
 ```jsx 06-project-init/src/pages/RouteErrorPage.jsx
 import { isRouteErrorResponse, useRouteError } from 'react-router';
@@ -1420,8 +1434,7 @@ export default function RouteErrorPage() {
 
 **解析**
 
-- `RouteErrorPage` 看 `error.status === 404` 就渲染 `NotFoundPage`。其他錯誤顯示「發生錯誤」。
-- 子路由的 `loader` `throw data(...)` 之後，路由器往上找到這一層的 `errorElement` 才畫這一頁，頁面元件不會先渲染。`isRouteErrorResponse(error)` 用來分辨這是 `throw data()` 的回應（看 `.status` 與 `.data`），還是一般的 `Error`（看 `.message`）。機制見[第十一篇〈redirect 與 errorElement〉](/2026/08-30/lokiTech-15day-11-react-router/#redirect-與-errorElement)。
+- `useRouteError` 讀到被丟出的值。`isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`；其他路由錯誤顯示 `error.data`，一般的 `Error` 顯示 `error.message`。
 
 再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
 
@@ -1465,8 +1478,8 @@ export default function App() {
 **解析**
 
 - 星號路由仍是 `NotFoundPage`，包在版型裡。網址對不上任何路徑時，頁首與頁尾還在。
-- 沒有 `path` 的那一層只負責 `errorElement`。子路由的 `loader` 丟出 404 時，由剛才的 `RouteErrorPage` 處理。
-- 其他還沒寫的頁仍用佔位。之後各頁的 `loader` 對不到資料時丟 404，不再在元件裡 `return <NotFoundPage />`。
+- 沒有 `path` 的那一層只掛 `errorElement`。子路由的 `loader` 丟出 404 時停在這裡，只換 `Outlet` 裡的畫面，頁首與頁尾留著。
+- 其他還沒寫的頁仍用佔位。之後各頁的 `loader` 對不到資料時丟 404，不在元件裡 `return <NotFoundPage />`。
 
 # 前台頁面
 
@@ -3276,7 +3289,7 @@ export const bookings = [];
 
 - `seatsLeft` 此刻固定回傳 0，詳情頁才編譯得過。下一節再依訂單人數換成真正的算法。
 
-接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時的處理最後一步再補。然後把路由表裡的詳情佔位換掉。
+接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時，`loader` 丟出 404，由稍早接到路由的 `RouteErrorPage` 處理。然後把路由表裡的詳情佔位換掉。
 
 ```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
 import { useState } from 'react';
@@ -3342,7 +3355,8 @@ export default function TourDetailPage() {
 
 **解析**
 
-- `useParams` 讀網址上的行程 id，再到 Store 找對應的那一筆。分頁標題用行程名稱。選中的梯次預設第一筆。
+- `loader` 用 `params.id` 呼叫 `getTour`，頁面用 `useLoaderData` 讀行程。分頁標題用行程名稱。選中的梯次預設第一筆。
+- 對不到行程時 `throw data('找不到頁面', { status: 404 })`。錯誤停在沒有 `path` 的那一層，`RouteErrorPage` 畫出 `NotFoundPage`，頁首與頁尾留著。說明見[找不到頁面](#找不到頁面)。
 - 左欄依序組上頁首、圖集、亮點、每日行程、費用與出發日。取消與退款仍寫在頁面上。
 - 寬螢幕右欄是報名卡片，用 `sticky` 停在離頂一段的位置。窄螢幕另外固定一條底部報名列。
 - 右側選梯與底部固定列的「立即報名」使用 `bookTo`，網址是 `/booking?tourId=` 加上這筆行程 id，以及 `departureId=` 加上選到的梯次。這一頁把選中的出發日與 `bookTo` 算好，再傳給報名卡片與底部報名列。
@@ -4194,12 +4208,7 @@ export default function MobileBookingBar({ price, bookTo }) {
 
 ### 步驟 12：找不到行程
 
-網址上的 id 對不到任何行程時，`loader` 丟出 `data('找不到頁面', { status: 404 })`。沒有 `path` 的那層 `errorElement` 接到之後，`RouteErrorPage` 仍渲染 `NotFoundPage`，所以頁首與頁尾留著，文案與星號路由相同。
-
-**解析**
-
-- 對不到行程時不會進入 `TourDetailPage` 的函式本體。404 由 `RouteErrorPage` 畫成 `NotFoundPage`。
-- 對得到時，這一頁的 `<title>` 用模板字串接上行程名稱。手改網址、對不上任何一筆時就會進到找不到頁。
+對不到行程時，步驟 1 的 `loader` 會丟 404，導向路由上最近的 `errorElement`。手改網址、對不上任何一筆時就能看到找不到頁，頁首與頁尾留著。說明見[找不到頁面](#找不到頁面)。
 
 
 ## 報名
@@ -4325,7 +4334,7 @@ export default function BookingPage() {
 **解析**
 
 - 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程與梯次走查詢字串，路徑仍是 `/booking`，不會和完成頁的 `/booking/:id` 撞在一起。
-- 網址沒帶 `tourId` 時，`loader` 用 `hualien-taroko`。沒帶 `departureId` 或對不到時，出發日用第一梯。有帶 `tourId` 但對不到行程，或行程沒有出發日時，`loader` 丟出 404，由 `RouteErrorPage` 畫 `NotFoundPage`。
+- 有帶 `tourId` 但對不到行程，或行程沒有出發日時，找不到就丟 404，導向路由上最近的 `errorElement`。
 - 左欄是 `BookingForm`，右欄是 `BookingSummary`。大螢幕右欄用 `sticky` 停在離頂一段的位置，等換成真正的摘要就能對照。
 
 接著把 `/booking` 換成這一頁。
@@ -4783,7 +4792,7 @@ export default function BookingResultPage() {
 
 **解析**
 
-- `loader` 用網址上的 `id` 呼叫 `getBooking`。找不到就丟出 404，由 `RouteErrorPage` 畫 `NotFoundPage`。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
+- `loader` 用網址上的 `id` 呼叫 `getBooking`。找不到時丟 404，導向路由上最近的 `errorElement`。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
 - `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文。狀態仍是 `pending`、`confirmed`、`cancelled`，沒有另外的草稿狀態。
 - 成功 `Alert` 套用剛才補進主題的提示框外觀。明細目前是標記，下一步再換成 `BookingReceipt`。兩顆按鈕分別去我的報名與行程列表。
 

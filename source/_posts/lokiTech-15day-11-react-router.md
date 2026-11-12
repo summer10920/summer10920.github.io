@@ -2958,6 +2958,23 @@ export default function ActionDemo() {
 
 `isRouteErrorResponse(error)` 用來分辨這是 `throw data()` 的回應（有 `.status` 與 `.data`），還是程式自己丟出的 `Error`（有 `.message`）。驗證錯誤是 `return` 給 `useActionData` 留在原頁顯示；資料找不到則是 `throw`，改畫 `errorElement`。
 
+被丟出的錯誤會往上走到最近一個有 `errorElement` 的路由。那個 `errorElement` 只替換該路由的 element 及其下方，上方帶 `Outlet` 的版型會留著。
+
+{% mermaid graph TD %}
+  subgraph keep["errorElement 掛在子路由"]
+    layoutKeep["版型，裡面是 Outlet"] --> pageKeep["子路由 loader throw"]
+    pageKeep --> outKeep["只換 Outlet 裡的畫面"]
+  end
+  subgraph drop["errorElement 只掛在版型，或沒有掛"]
+    layoutDrop["版型，裡面是 Outlet"] --> pageDrop["子路由 loader throw"]
+    pageDrop --> outDrop["整份版型被換掉"]
+  end
+  style layoutKeep fill:#e8f5e9
+  style outKeep fill:#e8f5e9
+  style layoutDrop fill:#ffebee
+  style outDrop fill:#ffebee
+{% endmermaid %}
+
 {% note info %}
 資料模式下，這個 404 只作用在畫面上，瀏覽器拿到的仍是 SPA 的 HTTP 200。只有框架模式的伺服器端渲染，才會把這個狀態碼當成真正的回應狀態送出。
 {% endnote %}
@@ -3541,7 +3558,7 @@ const router = createHashRouter(routes, { basename });
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
 - 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
 - `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目，或依欄位回傳的錯誤。後面幾則寫入後，`loader` 會自動重跑。
-- `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由最近的 `errorElement` 用 `useRouteError` 讀取。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
+- `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由最近的 `errorElement` 用 `useRouteError` 讀取；它只替換該路由及其下方，上方的版型會留著。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
 - `demos/86-loader` 到 `demos/90-navigation` 要寫在 `demos/:slug` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
 
