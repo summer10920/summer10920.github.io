@@ -1348,7 +1348,7 @@ export default function SiteFooter() {
   style other fill:#ffebee
 {% endmermaid %}
 
-頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著。若把 `errorElement` 掛在 `SiteLayout` 上，整份版型會被換掉。`RouteErrorPage` 在 `isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈redirect 與 errorElement〉](/2026/08-30/lokiTech-15day-11-react-router/#redirect-與-errorElement)。
+頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著。若把 `errorElement` 掛在 `SiteLayout` 上，整份版型會被換掉。`RouteErrorPage` 在 `isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈errorElement：拿不到資料時〉](/2026/08-30/lokiTech-15day-11-react-router/#errorElement：拿不到資料時)。
 
 這一節寫 `NotFoundPage` 與 `RouteErrorPage`，並接到路由。
 
