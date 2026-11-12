@@ -117,11 +117,13 @@ Next.js 依檔案結構決定路徑（檔案路由，file-based routing），用
 
 ### 資料模式
 
-課堂與結業專案用資料模式。路由寫成物件陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 渲染。可以先不寫 loader。專案骨架仍是一般的 Vite 與 React。下面先看資料夾怎麼分，再看程式怎麼對網址。這一堂把路由器寫在 `App.jsx`；專案變大時可以再拆成 `router.jsx`。
+課堂與結業專案用資料模式的 `createBrowserRouter`。路由寫成物件陣列，交給這個函式，再由 `RouterProvider` 渲染。專案骨架仍是一般的 Vite 與 React。這一堂把路由器寫在 `App.jsx`；專案變大時可以再拆成 `router.jsx`。
+
+loader、action、`Form`、`redirect`、`errorElement` 在路由與連結接好之後寫，見後面的「讀取與送出資料」。
 
 #### 目錄架構
 
-資料模式不改變 Vite 專案的骨架。入口與還沒接路由時相同，直接渲染 `App`；路由器物件放在 `App.jsx`。共用版型放在 `layouts`，每個網址對應 `pages` 裡的一個頁面元件。`loader` 可以在進頁前讀資料，課堂練習與後面切版先不寫，頁面仍在掛上之後自己讀。
+資料模式不改變 Vite 專案的骨架。入口直接渲染 `App`；路由器物件放在 `App.jsx`。共用版型放在 `layouts`，每個網址對應 `pages` 裡的一個頁面元件。進頁前要讀的資料寫在該路由的 `loader`，頁面用 `useLoaderData` 接。
 
 {% mermaid graph LR %}
 root["專案根目錄"] --> html["index.html<br/>網頁外殼，掛載點 #root"]
@@ -129,112 +131,20 @@ root --> pkg["package.json<br/>相依套件，含 react-router"]
 root --> vite["vite.config.js<br/>Vite 設定"]
 root --> src["src/"]
 src --> main["main.jsx<br/>入口：createRoot，直接渲染 App"]
-src --> app["App.jsx<br/>課堂：createBrowserRouter 與 RouterProvider"]
+src --> app["App.jsx<br/>createBrowserRouter 與 RouterProvider"]
 src --> layouts["layouts/"]
 layouts --> layout["MainLayout.jsx<br/>共用版型：選單、Outlet、ScrollRestoration"]
 src --> pages["pages/"]
 pages --> home["Home.jsx<br/>路徑 /"]
-pages --> list["TripList.jsx<br/>路徑 /trips；loader 只出現在觀念示範"]
-src --> api["api/"]
-api --> fake["fake-api.js<br/>getItems；課堂由頁面呼叫，觀念示範才提前呼叫"]
+pages --> demo["DemoPage.jsx<br/>路徑 /demos/:id"]
+src --> examples["examples/<br/>編號示範，含 loader 與 action"]
 classDef router fill:#fff3e0,stroke:#fb8c00
 class pkg,main,app,layout router
 {% endmermaid %}
 
-較大的專案可以把 `createBrowserRouter` 從 `App.jsx` 再拆到 `router.jsx`。下面的觀念示範就是拆開、並加上 `loader` 的寫法，路徑沒有 `04-react-router/` 前綴，不是這份練習的完成檔。版型圖裡的 `ScrollRestoration` 留到啟用路由再寫，這組示範沒有放。
-
 #### 觀念
 
-資料模式把路由表寫成陣列，交給 `createBrowserRouter`。清單的 `loader` 在進入該路徑之前執行，元件用 `useLoaderData` 接結果，自己不再寫第一次的 `useEffect`。那是資料模式還能做的事。課堂練習把同一套路由器寫在 `App.jsx`，用 `element` 放進已經建立的元素，先不寫 `loader`、`action` 與 `useLoaderData`。這裡的 `Component` 與課堂的 `element` 都是指定要畫的元件。
-
-```jsx src/main.jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-/** 觀念示範把路由器拆出去，入口直接渲染 RouterProvider。課堂的 main.jsx 仍渲染 App。 */
-import { RouterProvider } from 'react-router';
-import router from './router.jsx';
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
-```
-
-```jsx src/router.jsx
-/** createBrowserRouter 把路由陣列變成路由器物件。 */
-import { createBrowserRouter } from 'react-router';
-import { getItems } from './api/fake-api.js';
-import MainLayout from './layouts/MainLayout.jsx';
-import Home from './pages/Home.jsx';
-import TripList from './pages/TripList.jsx';
-
-/**
- * 父路由畫版型，children 畫進版型的 Outlet。
- * index 是首頁；trips 多掛 loader，進頁前呼叫 getItems，回傳值交給頁面。
- * 同一層還可以加 action（表單送出）與 errorElement（錯誤頁），這裡先不掛。
- */
-const router = createBrowserRouter([
-  {
-    path: '/',
-    Component: MainLayout,
-    children: [
-      { index: true, Component: Home },
-      { path: 'trips', loader: () => getItems(), Component: TripList },
-    ],
-  },
-]);
-
-export default router;
-```
-
-```jsx src/layouts/MainLayout.jsx
-/** Link 換頁不重新載入；Outlet 是子路由頁面要畫進來的位置。 */
-import { Link, Outlet } from 'react-router';
-
-/** 共用版型。頁首與選單每頁都在，中間的 Outlet 依網址換成首頁或清單。 */
-export default function MainLayout() {
-  return (
-    <>
-      <header>
-        <nav>
-          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
-        </nav>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </>
-  );
-}
-```
-
-```jsx src/pages/Home.jsx
-/** 路徑 / 要畫的頁面。 */
-export default function Home() {
-  return <h1>首頁</h1>;
-}
-```
-
-```jsx src/pages/TripList.jsx
-/** useLoaderData 取得這條路由 loader 的回傳值。 */
-import { useLoaderData } from 'react-router';
-
-/** 行程清單。資料在進頁前已經拿到，頁面裡沒有 useEffect。 */
-export default function TripList() {
-  const items = useLoaderData();
-
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-進入清單路徑之前就執行 `getItems`，清單元件接到的是 `loader` 的回傳值。上面這組檔是觀念對照，不要抄進 `04-react-router`。課堂與後面切版先不寫 `loader`。
+`createBrowserRouter` 收到的是路由物件陣列。每一筆用 `path` 對網址，用 `element` 或 `Component` 指定要畫的元件。`loader` 在進入該路徑之前執行，回傳值交給 `useLoaderData`。`action` 接收 `Form` 送出的請求。同一層還可以加 `errorElement`。筆記站先把路徑、連結與星號 404 接上，讀取與送出放到那一章的編號示範。
 
 {% note info %}
 **舊的套件名稱**
@@ -474,7 +384,7 @@ export default function TripList() {
 
 三種接法都能把網址對上元件。路由表可以寫成路由物件、寫在元件樹，或交給框架的設定檔；資料可以等頁面掛上再讀，也可以在進頁前由路由先讀好。
 
-後面的練習都在從 `03-react` 複製出來的 `04-react-router` 上，用資料模式往下加，不為另外兩種各開一個專案。先學 `createBrowserRouter`。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`。要做完整的伺服器端渲染，再看框架模式或 Next.js。
+後面的練習都在從 `03-react` 複製出來的 `04-react-router` 上，用資料模式往下加，不為另外兩種各開一個專案。先學 `createBrowserRouter`。路由與連結接好之後，loader 與 action 寫在「讀取與送出資料」。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`。要做完整的伺服器端渲染，再看框架模式或 Next.js。
 
 # 啟用路由
 
@@ -1995,6 +1905,575 @@ const central = createBrowserRouter([
 
 </details>
 
+# 讀取與送出資料
+
+路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。這一章的五則都掛在 `04-react-router` 的 `/demos/86` 到 `/demos/90`，而且都排在 `demos/:id` 前面，編號才不會被路徑參數吃掉。
+
+筆記先放在模組裡的陣列，五則共用 `notes-db.js`。重新整理開發伺服器會回到最初的兩筆。
+
+## 用 loader 讀資料
+
+`loader` 是路由物件上的函式，在這個網址的元件畫出來之前執行。回傳的值由頁面裡的 `useLoaderData` 讀取。這一則只讀清單，還沒有表單。
+
+**觀念**
+
+`notes-db.js` 把陣列留在模組作用域，匯出讀取與寫入函式。`86-loader.jsx` 的 `loader` 呼叫 `listNotes`，把陣列放進 `notes`。頁面解構同一份結果，用 `map` 畫出標題。
+
+```js 04-react-router/src/examples/notes-db.js
+let notes = [
+  { id: '1', title: '看海', done: false },
+  { id: '2', title: '寫筆記', done: true },
+];
+
+export const listNotes = () => notes;
+
+export const getNote = (id) => notes.find((item) => item.id === id) ?? null;
+
+export const addNote = (title) => {
+  const note = { id: String(Date.now()), title, done: false };
+  notes = [note, ...notes];
+  return note;
+};
+
+export const toggleNote = (id) => {
+  notes = notes.map((item) =>
+    item.id === id ? { ...item, done: !item.done } : item,
+  );
+};
+```
+
+```jsx 04-react-router/src/examples/86-loader.jsx
+import { useLoaderData } from 'react-router';
+import { listNotes } from './notes-db.js';
+
+/** loader 在畫面前把筆記讀好，頁面用 useLoaderData 拿標題。 */
+export const loader = () => ({ notes: listNotes() });
+
+export default function LoaderDemo() {
+  const { notes } = useLoaderData();
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">86 loader 讀資料</h1>
+      <ul className="mt-4 grid gap-2">
+        {notes.map((note) => (
+          <li key={note.id}>{note.title}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+路由要註冊在 `demos/:id` 前面。`App.jsx` 用具名匯入把 `loader` 掛到 `demos/86`。
+
+```diff 04-react-router/src/App.jsx
+ import WherePage from './pages/WherePage.jsx';
++import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
+ // ...
++        { path: 'demos/86', loader: loader86, Component: LoaderDemo },
+         { path: 'demos/:id', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 打開 `/demos/86` 會先跑 `loader`，畫面上是「看海」與「寫筆記」兩列，沒有另外的讀取中文字。
+- `useLoaderData` 拿到的就是 `loader` 的回傳值。這一則沒有 `useEffect`。
+- `demos/86` 比 `demos/:id` 更具體，所以這一則不會掉進單則筆記頁。
+
+{% note success %}
+**換你試試：**
+在標題下面加一行，顯示目前有幾筆筆記。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+筆數用 `notes.length`。路由與 `loader` 不用改。
+
+```diff 04-react-router/src/examples/86-loader.jsx
+ // ...
+       <h1 className="text-2xl font-bold">86 loader 讀資料</h1>
++      <p className="mt-2">目前 {notes.length} 筆</p>
+       <ul className="mt-4 grid gap-2">
+ // ...
+```
+
+</details>
+
+## 用 action 與 Form 送出
+
+`<Form method="post">` 把欄位送到這條路由的 `action`，不會整頁換成另一份文件。`action` 寫進同一份筆記之後，React Router 會自動再跑這條路由的 `loader`，清單跟著更新，不必自己呼叫重新整理或 `useEffect`。標題是空的時，`action` 回傳錯誤物件，頁面用 `useActionData` 顯示。
+
+**觀念**
+
+`request.formData()` 讀取欄位 `title`。去掉空白後是空字串就回 `{ error: '請填標題' }`，有字才呼叫 `addNote`。成功時回 `{ error: '' }`，畫面上不顯示紅字。
+
+```jsx 04-react-router/src/examples/87-action.jsx
+import { Form, useActionData, useLoaderData } from 'react-router';
+import { addNote, listNotes } from './notes-db.js';
+
+/** Form 送到這條路由的 action，寫進同一份筆記後 loader 會自己重跑。 */
+export const loader = () => ({ notes: listNotes() });
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const title = String(form.get('title') ?? '').trim();
+  if (!title) return { error: '請填標題' };
+  addNote(title);
+  return { error: '' };
+};
+
+export default function ActionDemo() {
+  const { notes } = useLoaderData();
+  const result = useActionData();
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">87 action 與 Form</h1>
+      <Form method="post" className="mt-4 grid max-w-sm gap-3">
+        <input
+          name="title"
+          className="rounded border px-2 py-1"
+          placeholder="新的筆記標題"
+        />
+        {result?.error ? <p className="text-red-700">{result.error}</p> : null}
+        <button
+          type="submit"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+        >
+          新增
+        </button>
+      </Form>
+      <ul className="mt-4 grid gap-2">
+        {notes.map((note) => (
+          <li key={note.id}>{note.title}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+```diff 04-react-router/src/App.jsx
+ import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
++import ActionDemo, {
++  action as action87,
++  loader as loader87,
++} from './examples/87-action.jsx';
+ // ...
+         { path: 'demos/86', loader: loader86, Component: LoaderDemo },
++        {
++          path: 'demos/87',
++          loader: loader87,
++          action: action87,
++          Component: ActionDemo,
++        },
+         { path: 'demos/:id', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 填一個標題再按「新增」，新的一列出現在清單最上面。網址仍是 `/demos/87`。
+- 這次更新來自 `action` 寫入之後 `loader` 自動重跑，頁面沒有自己呼叫 `listNotes`。
+- 標題留白就送出時，`useActionData` 讀到 `error`，輸入框下面出現「請填標題」，清單筆數不變。
+
+{% note success %}
+**換你試試：**
+把空標題的錯誤改成「標題不可以空白」。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+只改 `action` 回傳的那句話。
+
+```diff 04-react-router/src/examples/87-action.jsx
+ // ...
+-  if (!title) return { error: '請填標題' };
++  if (!title) return { error: '標題不可以空白' };
+ // ...
+```
+
+</details>
+
+## redirect 與 errorElement
+
+新增成功後不一定留在原頁。`action` 回傳 `redirect` 時，路由器改去新的網址，並跑那一條的 `loader`。明細的 `loader` 找不到筆記時，用 `throw data(..., { status: 404 })` 把這次變成路由錯誤，由該路由的 `errorElement` 畫「找不到」。
+
+**觀念**
+
+`/demos/88` 與 `/demos/88/:id` 共用同一個 `loader`。沒有 `params.id` 時回傳清單；有 id 時用 `getNote`，沒有這筆就丟 404。`NoteMissing` 用 `useRouteError` 讀錯誤，`isRouteErrorResponse` 為真時顯示 `error.data`。
+
+```jsx 04-react-router/src/examples/88-redirect-error.jsx
+import {
+  data,
+  Form,
+  isRouteErrorResponse,
+  Link,
+  redirect,
+  useLoaderData,
+  useRouteError,
+} from 'react-router';
+import { addNote, getNote, listNotes } from './notes-db.js';
+
+/** 列表新增後 redirect 到明細；明細找不到時丟 404，由 errorElement 接住。 */
+export const loader = ({ params }) => {
+  if (!params.id) return { notes: listNotes() };
+  const note = getNote(params.id);
+  if (!note) throw data('找不到這則筆記', { status: 404 });
+  return { note };
+};
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const title = String(form.get('title') ?? '').trim();
+  if (!title) return { error: '請填標題' };
+  const note = addNote(title);
+  return redirect(`/demos/88/${note.id}`);
+};
+
+export default function RedirectDemo() {
+  const { notes } = useLoaderData();
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">88 redirect 與錯誤</h1>
+      <Form method="post" className="mt-4 grid max-w-sm gap-3">
+        <input
+          name="title"
+          className="rounded border px-2 py-1"
+          placeholder="新的筆記標題"
+        />
+        <button
+          type="submit"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+        >
+          新增並前往
+        </button>
+      </Form>
+      <p className="mt-4">
+        <Link className="text-teal-800 underline" to="/demos/88/missing">
+          打開一筆不存在的筆記
+        </Link>
+      </p>
+      <ul className="mt-4 grid gap-2">
+        {notes.map((note) => (
+          <li key={note.id}>
+            <Link
+              className="text-teal-800 underline"
+              to={`/demos/88/${note.id}`}
+            >
+              {note.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+export function NoteDetail() {
+  const { note } = useLoaderData();
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">{note.title}</h1>
+      <p className="mt-2">{note.done ? '已完成' : '未完成'}</p>
+      <p className="mt-4">
+        <Link className="text-teal-800 underline" to="/demos/88">
+          回列表
+        </Link>
+      </p>
+    </section>
+  );
+}
+
+export function NoteMissing() {
+  const error = useRouteError();
+  const message = isRouteErrorResponse(error) ? error.data : '找不到';
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">找不到</h1>
+      <p className="mt-2">{String(message)}</p>
+      <p className="mt-4">
+        <Link className="text-teal-800 underline" to="/demos/88">
+          回列表
+        </Link>
+      </p>
+    </section>
+  );
+}
+```
+
+```diff 04-react-router/src/App.jsx
+ import ActionDemo, {
+   action as action87,
+   loader as loader87,
+ } from './examples/87-action.jsx';
++import RedirectDemo, {
++  action as action88,
++  loader as loader88,
++  NoteDetail,
++  NoteMissing,
++} from './examples/88-redirect-error.jsx';
+ // ...
+           Component: ActionDemo,
+         },
++        {
++          path: 'demos/88',
++          loader: loader88,
++          action: action88,
++          Component: RedirectDemo,
++        },
++        {
++          path: 'demos/88/:id',
++          loader: loader88,
++          Component: NoteDetail,
++          errorElement: <NoteMissing />,
++        },
+         { path: 'demos/:id', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 在 `/demos/88` 填標題並送出後，網址變成 `/demos/88/` 加上新筆記的 id，畫面是那一筆的標題與完成狀態。
+- 「打開一筆不存在的筆記」連到 `/demos/88/missing`。`loader` 丟出狀態 404，主區換成 `NoteMissing` 的「找不到」與「找不到這則筆記」。
+- `errorElement` 掛在明細那條路由上，列表頁本身仍是原來的元件。
+
+{% note success %}
+**換你試試：**
+把 404 丟出的文字改成「沒有這筆」。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+`data` 的第一個引數就是 `error.data`。
+
+```diff 04-react-router/src/examples/88-redirect-error.jsx
+ // ...
+-  if (!note) throw data('找不到這則筆記', { status: 404 });
++  if (!note) throw data('沒有這筆', { status: 404 });
+ // ...
+```
+
+</details>
+
+## 不換頁的送出與讀取中狀態
+
+有的送出不應該改網址，例如列表上把一筆標成完成。有的送出或換頁需要讓人看見「正在進行」。這兩則都是後面專案會用到的寫法：後台對話框用 `useFetcher` 留在列表頁，讀取中的提示用 `useNavigation`。
+
+### useFetcher
+
+`useFetcher` 拿得到一組自己的 `Form` 與 `submit`。送到的仍是這一條路由的 `action`，網址留在 `/demos/89`。`action` 改完筆記後，`loader` 一樣會自己重跑。
+
+**觀念**
+
+每一列的按鈕包在 `fetcher.Form` 裡，用隱藏欄位帶 `id`。`toggleNote` 只翻轉那一筆的 `done`。
+
+```jsx 04-react-router/src/examples/89-fetcher.jsx
+import { useFetcher, useLoaderData } from 'react-router';
+import { listNotes, toggleNote } from './notes-db.js';
+
+/** useFetcher 更新完成狀態，網址留在這一頁。 */
+export const loader = () => ({ notes: listNotes() });
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  toggleNote(String(form.get('id')));
+  return { ok: true };
+};
+
+export default function FetcherDemo() {
+  const { notes } = useLoaderData();
+  const fetcher = useFetcher();
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">89 fetcher 不換頁</h1>
+      <ul className="mt-4 grid max-w-sm gap-3">
+        {notes.map((note) => (
+          <li key={note.id} className="flex items-center justify-between gap-3">
+            <span>
+              {note.title} · {note.done ? '已完成' : '未完成'}
+            </span>
+            <fetcher.Form method="post">
+              <input type="hidden" name="id" value={note.id} />
+              <button
+                type="submit"
+                className="rounded bg-teal-800 px-3 py-1 text-white"
+              >
+                {note.done ? '改回未完成' : '標成完成'}
+              </button>
+            </fetcher.Form>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+```diff 04-react-router/src/App.jsx
++import FetcherDemo, {
++  action as action89,
++  loader as loader89,
++} from './examples/89-fetcher.jsx';
+ // ...
+           errorElement: <NoteMissing />,
+         },
++        {
++          path: 'demos/89',
++          loader: loader89,
++          action: action89,
++          Component: FetcherDemo,
++        },
+         { path: 'demos/:id', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/89`。
+- 寫入的是 `action` 裡的 `toggleNote`。清單更新是因為 `loader` 在 action 之後自動重跑。
+
+{% note success %}
+**換你試試：**
+已完成時，按鈕文字改成「取消完成」。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+```diff 04-react-router/src/examples/89-fetcher.jsx
+ // ...
+-                {note.done ? '改回未完成' : '標成完成'}
++                {note.done ? '取消完成' : '標成完成'}
+ // ...
+```
+
+</details>
+
+### useNavigation
+
+`useNavigation` 描述路由器此刻在做什麼。`state` 為 `loading` 是正在跑 loader，`submitting` 是正在跑 action，`idle` 是閒置。這一則的 `loader` 與 `action` 各等 400 毫秒，只為了讓「讀取中」留在畫面上看得清楚。專案裡的記憶體讀取不必做這個延遲。
+
+**觀念**
+
+「重新讀取」用查詢 `n` 換一個網址，同一條路由的 `loader` 會再跑。送出表單時，按鈕在 `submitting` 期間停用。
+
+```jsx 04-react-router/src/examples/90-navigation.jsx
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useNavigation,
+  useSearchParams,
+} from 'react-router';
+import { addNote, listNotes } from './notes-db.js';
+
+/** 故意等 400ms，讓 useNavigation 的讀取中與送出中看得到。 */
+export const loader = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  return { notes: listNotes() };
+};
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  const title = String(form.get('title') ?? '').trim();
+  if (title) addNote(title);
+  return null;
+};
+
+export default function NavigationDemo() {
+  const { notes } = useLoaderData();
+  const navigation = useNavigation();
+  const [params] = useSearchParams();
+  const nonce = Number(params.get('n') ?? '0');
+  const pending =
+    navigation.state === 'loading' || navigation.state === 'submitting';
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">90 useNavigation</h1>
+      {pending ? <p className="mt-3">讀取中</p> : null}
+      <p className="mt-3">
+        <Link
+          className="text-teal-800 underline"
+          to={`/demos/90?n=${nonce + 1}`}
+        >
+          重新讀取
+        </Link>
+      </p>
+      <Form method="post" className="mt-4 grid max-w-sm gap-3">
+        <input
+          name="title"
+          className="rounded border px-2 py-1"
+          placeholder="新的筆記標題"
+        />
+        <button
+          type="submit"
+          className="rounded bg-teal-800 px-3 py-1 text-white disabled:opacity-40"
+          disabled={navigation.state === 'submitting'}
+        >
+          新增
+        </button>
+      </Form>
+      <ul className="mt-4 grid gap-2">
+        {notes.map((note) => (
+          <li key={note.id}>{note.title}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+```diff 04-react-router/src/App.jsx
++import NavigationDemo, {
++  action as action90,
++  loader as loader90,
++} from './examples/90-navigation.jsx';
+ // ...
+           Component: FetcherDemo,
+         },
++        {
++          path: 'demos/90',
++          loader: loader90,
++          action: action90,
++          Component: NavigationDemo,
++        },
+         { path: 'demos/:id', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 點「重新讀取」或按「新增」時，標題下面會先出現「讀取中」，大約 400 毫秒後清單才換成新的結果。
+- 這段等待只寫在這一則的 `loader` 與 `action`。記憶體裡的讀取本身很快，專案不必複製這個 `setTimeout`。
+- 送出期間按鈕停用，避免同一份表單連按兩次。
+
+{% note success %}
+**換你試試：**
+把這一則的等待改成 800 毫秒，看完再改回 400。兩處 `setTimeout` 一起改。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+```diff 04-react-router/src/examples/90-navigation.jsx
+ // ...
+-  await new Promise((resolve) => setTimeout(resolve, 400));
++  await new Promise((resolve) => setTimeout(resolve, 800));
+ // ...
+-  await new Promise((resolve) => setTimeout(resolve, 400));
++  await new Promise((resolve) => setTimeout(resolve, 800));
+ // ...
+```
+
+看完把 800 改回 400。專案的記憶體 loader 不要加這段等待。
+
+</details>
+
 # 選讀：部署到 GitHub Pages
 
 `pnpm build` 產生的 `dist` 就是一般靜態檔案，網站從 `/` 開始，首頁是 `dist/index.html`。放上 GitHub Pages 後，從首頁點左側目錄進 `/demos/01` 都正常。問題出在直接打開或重新整理 `/demos/01`：GitHub Pages 是純靜態主機，會去找 `demos/01` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
@@ -2092,14 +2571,14 @@ const router = createHashRouter(routes, { basename });
 
 # 本篇重點回顧
 
-- `04-react-router` 由 `03-react` 複製後再裝 `react-router`。課堂用資料模式的 `createBrowserRouter` 與 `RouterProvider`；宣告式的 `BrowserRouter`、`Routes` 與 `Route` 只留作選讀對照。
+- `04-react-router` 由 `03-react` 複製後再裝 `react-router`。課堂用資料模式的 `createBrowserRouter` 與 `RouterProvider`；宣告式與框架模式只留作選讀對照。
 - 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，同層的 `ScrollRestoration` 負責換頁捲動。
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
-- 單則筆記的路徑是 `/demos/:id`，`useParams` 取出字串 id，上一則與下一則用 `useNavigate`。
-- 篩選目錄用查詢 `?q=`，`useSearchParams` 讀、`setSearchParams` 寫，重新整理仍留著同一組結果。
-- 分散式把 `*` 放在版型裡，找不到時目錄還在；集中式把 `*` 與版型並列，未知網址整頁替換。
-- 選讀的 `useLocation` 讀整段位置，常用欄位是 `pathname`、`search` 與 `hash`。
-- 選讀：GitHub Pages 不會把未知路徑改送 `index.html`，建置後複製出 `404.html` 接住子路徑；`createHashRouter` 是另一條退路。網址有子路徑時才需要 `base` 與 `basename`。
+- 單則筆記的路徑是 `/demos/:id`，`useParams` 取出字串 id。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
+- `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`，寫入後 `loader` 會自動重跑；空標題用 `useActionData` 顯示。
+- `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，由 `errorElement` 畫找不到。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
+- 編號示範 `demos/86` 到 `demos/90` 要寫在 `demos/:id` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
+- 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
 
 # 專有名詞中英對照
 
@@ -2169,6 +2648,24 @@ const router = createHashRouter(routes, { basename });
 - 查詢字串（search）
 - 雜湊（hash）
 - 紀錄鍵（key）
+
+## 讀取與送出資料
+
+這一組是路由上的讀取與送出。`Form` 是元件，`data()` 用來丟出帶狀態碼的路由錯誤。
+
+- 換頁前讀取（loader）
+- useLoaderData
+- 表單送出（action）
+- 表單（Form）
+- useActionData
+- 重新驗證（revalidation）
+- 重新導向（redirect）
+- 路由錯誤資料（data()）
+- 錯誤元件（errorElement）
+- 路由錯誤回應（isRouteErrorResponse）
+- useRouteError
+- 不換頁的送出（useFetcher）
+- 導覽狀態（useNavigation）
 
 ## 找不到的頁面
 

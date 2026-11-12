@@ -58,6 +58,11 @@ pnpm install
 pnpm dev
 ```
 
+**解析**
+
+- `pnpm install` 依 `package.json` 與鎖定檔裝依賴。`pnpm dev` 啟動 Vite 開發伺服器。
+- `05-project-prototype` 與做完第 12 篇的 `06-project-init` 是同一份切版，差別只在資料夾從哪裡來。
+
 Windows（PowerShell）：
 
 ```powershell
@@ -67,12 +72,14 @@ pnpm install
 pnpm dev
 ```
 
+**解析**
+
+- 步驟與 macOS 相同，只是刪資料夾與換路徑的寫法改成 PowerShell。
+
 終端機會印出本機網址。瀏覽器打開之後，畫面應與切版完成品相同。
 
 **解析**
 
-- `05-project-prototype` 與做完第 12 篇的 `06-project-init` 是同一份切版，差別只在資料夾從哪裡來。
-- `pnpm install` 依 `package.json` 與鎖定檔裝依賴。`pnpm dev` 啟動 Vite 開發伺服器。
 - 色票、路由表與契約 id（`site-header`、`nav-toggle`、`tour-list`、`booking-form`）維持不變，後面的功能加在這些頁面之上。
 
 ## 記憶體狀態與本章範圍
@@ -80,13 +87,14 @@ pnpm dev
 切版裡的登入、報名與後台儲存只改這次開啟的記憶體。重新整理之後，畫面回到各功能 `mock.data.js` 的種子。這一章要換掉的是這一層讀寫。版面、色票與路由留在第 12 篇的結果。
 
 {% mermaid graph LR %}
-  seed["features/tours/mock.data.js"] --> store["StoreProvider"]
-  store --> pages["頁面"]
+  seed["mock.data.js"] --> mem["store.js 記憶體陣列"]
+  mem --> loader["loader / action"]
+  loader --> pages["頁面"]
 {% endmermaid %}
 
 前台用 Google 登入。報名寫進訂單，文件帶上 `uid`。我的報名只查這個 `uid`。後台用 email 與密碼登入。行程改從雲端讀寫，新增、修改與刪除都寫進 Firestore。剩餘名額要掃過所有訂單才算得出來，旅客不能讀別人的訂單，所以前台改顯示每團名額。訂單不提供實體刪除，把狀態改為已取消就是軟刪。
 
-這一章結束時，頁面呼叫同一組服務函式。服務函式再呼叫 Firestore。同一套 `AuthProvider` 用 `onAuthStateChanged` 服務前台與後台。後台畫面在確認登入方式是密碼之後才渲染訂單。
+這一章結束時，頁面的 `loader` 與 `action` 呼叫同一組服務函式，服務函式再呼叫 Firestore。登入狀態由根路由的 `loader` 讀取。未登入要進報名或後台時，`loader` 重新導向登入頁。密碼以外的帳號打開後台時，頁面顯示說明與按鈕，不把人趕去別的網址。
 
 {% mermaid graph LR %}
   page["頁面"] --> api["api.js"]
@@ -132,7 +140,7 @@ Spark 方案的「Other Authentication services」包含 email／密碼與 Googl
 
 - 集合裡可以沒有文件。第一次讀 `tours` 會得到空陣列，不是例外。
 - 文件 id 可以自己指定，也可以讓 Firestore 產生。行程用前者，訂單用後者。
-- Authentication 的登入狀態由 SDK 記在這台瀏覽器。重新整理後，`onAuthStateChanged` 會再回報一次。
+- Authentication 的登入狀態由 SDK 記在這台瀏覽器。`loader` 會先等 `auth.authStateReady()`，再讀 `currentUser`。
 - 測試模式約 30 天內允許所有讀寫。它不是這一章的正式規則。
 
 ## 建立專案與初始化
@@ -190,9 +198,30 @@ cp .env.example .env.local
 
 在專案資料夾安裝 Firebase。pnpm 12 預設不執行依賴的安裝腳本，除非在 `pnpm-workspace.yaml` 明確允許。`@firebase/util` 與 `protobufjs` 的 postinstall 是套件自己的準備步驟，允許之後 `pnpm install` 才會以成功結束。
 
+先安裝套件。
+
 ```bash
 pnpm add firebase
 ```
+
+**解析**
+
+- 在專案資料夾執行，把 Firebase SDK 加進依賴。
+
+裝完之後，`package.json` 會多出這項依賴。
+
+```diff 07-project-final/package.json
+     "@mui/material": "^9.5.0",
++    "firebase": "^13.2.0",
+     "react": "^19.3.1",
+ // ...
+```
+
+**解析**
+
+- 版本範圍與完成品相同。
+
+pnpm 12 要允許套件的 postinstall，安裝才會成功結束。
 
 ```diff 07-project-final/pnpm-workspace.yaml
  minimumReleaseAgeExclude:
@@ -201,6 +230,10 @@ pnpm add firebase
 +  '@firebase/util': true
 +  protobufjs: true
 ```
+
+**解析**
+
+- `pnpm-workspace.yaml` 明確允許 `@firebase/util` 與 `protobufjs` 的安裝腳本。
 
 初始化集中在一個檔。沒有 `apiKey` 或 `projectId` 時不呼叫 `initializeApp`，開發伺服器不會在啟動當下因空設定崩潰。熱更新會再執行這個檔，已經建立過的 App 就沿用。
 
@@ -241,7 +274,7 @@ export const auth = app ? getAuth(app) : null;
 
 # 讀寫介面
 
-頁面不要直接呼叫 Firestore。先把讀寫收成服務函式，再讓 Hook 撐住等待與失敗。頁面只看這兩個結果。
+頁面不要直接呼叫 Firestore。讀寫收成 `src/api.js` 的服務函式。路由的 `loader` 呼叫這些函式，頁面用 `useLoaderData` 接結果。非預期的失敗交給 `errorElement`。讀取中由版型的 `useNavigation` 顯示。
 
 ## 服務函式
 
@@ -255,6 +288,7 @@ export const auth = app ? getAuth(app) : null;
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -295,6 +329,19 @@ export const seedTours = async () => {
     created += 1;
   }
   return created;
+};
+
+export const saveTour = async (editingId, tour) => {
+  const base = database();
+  if (editingId) {
+    await setDoc(doc(base, 'tours', editingId), tour);
+  } else {
+    await addDoc(collection(base, 'tours'), tour);
+  }
+};
+
+export const deleteTour = async (id) => {
+  await deleteDoc(doc(database(), 'tours', id));
 };
 
 export const getOrder = async (id) => {
@@ -341,534 +388,971 @@ export const updateOrderStatus = async (id, status) => {
 - `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。管理員清單用這個函式。
 - `listMyOrders` 只下 `uid` 條件。`where` 再加 `orderBy` 會要複合索引，所以新到舊的排序放在瀏覽器。
 
-## 自訂 Hook
+## 路由上的讀取
 
-服務函式回傳 Promise。頁面要的是三件事：還在等、失敗了、最新一筆結果。`useAsync` 把這三件事留在 state。第一個參數是 `api.js` 裡穩定的函式，第二個參數 `key` 決定什麼時候重抓，例如行程 id。`reload` 只把 `tick` 加一，`requestKey` 就變了，效果函式再跑一次。
+切版的 `loader` 已經會呼叫 `store.js`。這一章把那些呼叫換成 `api.js`，並刪掉記憶體模組。等待中的畫面放在 `SiteLayout`：`useNavigation().state === 'loading'` 時，在 `Outlet` 上面顯示「讀取中」。`loader` 丟出的錯誤仍進到沒有 `path` 的那層 `errorElement`。
 
-`key` 或 `tick` 變了時，在 render 階段把上一筆資料清掉並進入讀取中。這是依參數重設 state 的寫法，不必寫進 effect。effect 只負責呼叫 `load(key)`，在 then 與 catch 裡更新結果。清理函式把 `active` 設成假，元件卸載後不再 `setState`。清單函式不吃參數，多傳一個 `key` 也沒關係。
+沒有填 Firebase 時，讀取函式回傳 `{ firebaseReady: false }`，頁面渲染 `AccessNotice` 的 `MissingFirebase`，裡面是 `missingFirebaseMessage`。這不是例外，所以不會進到錯誤頁。
 
-`useTours`、`useTour`、`useOrder`、`useOrders`、`useMyOrders` 是這幾個畫面專用的薄包裝。`LoadGate` 在讀取中或失敗時畫 `#content`，成功才把孩子交回去。跳到內容的連結仍然找得到這個 id。
+先刪掉記憶體模組。
 
-```js 07-project-final/src/useAsync.js
-import { useEffect, useState } from 'react';
-import {
-  getOrder,
-  getTour,
-  listMyOrders,
-  listOrders,
-  listTours,
-} from './api.js';
-
-export function useAsync(load, key) {
-  const [tick, setTick] = useState(0);
-  const requestKey = `${key ?? ''}:${tick}`;
-
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [seenKey, setSeenKey] = useState(requestKey);
-
-  if (seenKey !== requestKey) {
-    setSeenKey(requestKey);
-    setData(null);
-    setError(null);
-    setLoading(true);
-  }
-
-  useEffect(() => {
-    let active = true;
-    load(key)
-      .then((value) => {
-        if (active) {
-          setData(value);
-          setError(null);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (active) {
-          setData(null);
-          setError(err);
-          setLoading(false);
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [requestKey, load, key]);
-
-  return { data, error, loading, reload: () => setTick((n) => n + 1) };
-}
-
-export const useTours = () => useAsync(listTours, 'tours');
-export const useTour = (id) => useAsync(getTour, id);
-export const useOrder = (id) => useAsync(getOrder, id);
-export const useOrders = () => useAsync(listOrders, 'orders');
-export const useMyOrders = (uid) => useAsync(listMyOrders, uid);
-```
-
-```jsx 07-project-final/src/LoadGate.jsx
-import Alert from '@mui/material/Alert';
-
-const frame = 'mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24';
-
-export default function LoadGate({ loading, error, children }) {
-  if (loading)
-    return (
-      <main id="content" className={frame}>
-        <p className="text-lg text-muted">讀取中…</p>
-      </main>
-    );
-  if (error)
-    return (
-      <main id="content" className={frame}>
-        <Alert severity="error">{error.message}</Alert>
-      </main>
-    );
-  return children;
-}
+```bash
+rm src/store.js
 ```
 
 **解析**
 
-- `loading` 一開始是 `true`。第一個畫面是「讀取中…」，不是空的行程列表。
-- 失敗時 `data` 維持 `null`，`LoadGate` 顯示 `error.message`。沒填環境變數時，這句就是 `missingFirebaseMessage`。
-- `useTour` 的依賴是 `[id]`。網址上的 id 變了才重抓那一筆。
-- `useMyOrders` 的依賴是 `[uid]`。登入者換了才重抓自己的訂單。
-- 每個頁面各自呼叫 Hook，各自讀一次。這一章先不把結果放進全站共用的快取。
+- `store.js` 刪掉之後，行程與訂單只來自 Firestore。重新整理不會再回到記憶體種子。
 
-# 接到畫面
+沒有設定或沒有權限時，用這兩個畫面說明狀況。
 
-服務函式與 Hook 就緒之後，把首頁、列表、詳情改成讀雲端，再用一頁把種子寫上去。接著接上 Google 登入，報名表再改為新增帶 `uid` 的訂單。
-
-## 行程讀取與種子
-
-列表與首頁用 `useTours`。詳情用 `useTour`，讀取結束仍沒有文件才畫找不到頁面。讀取中不要先畫 404。出發日不再計算剩餘人數。報名連結維持 `/booking?tourId=...&departureId=...`。
-
-### 步驟 1：三個頁面改讀雲端
-
-`store.jsx` 與 `store-context.js` 先留著。報名與後台下一節才脫離它們。
-
-```diff 07-project-final/src/features/home/HomePage.jsx
-+import Alert from '@mui/material/Alert';
- import Typography from '@mui/material/Typography';
- // ...
- import TourCard from '../tours/components/TourCard.jsx';
--import { useStore } from '../../store-context.js';
-+import LoadGate from '../../LoadGate.jsx';
-+import { useTours } from '../../useAsync.js';
-
- export default function HomePage() {
--  const { tours } = useStore();
-+  const { data, loading, error } = useTours();
-+  const tours = data ?? [];
-   const featured = tours.filter((tour) => tour.featured);
-+  if (loading || error) return <LoadGate loading={loading} error={error} />;
-
-   return (
-     <main id="content">
-       <title>洛奇旅行</title>
-+      {tours.length ? null : <div className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6"><Alert severity="info">還沒有行程。請先打開 /seed 寫入種子。</Alert></div>}
-       <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
- // ...
-```
-
-篩選與排序仍在 render 時直接計算。`useTours` 與 `useSearchParams` 這些 Hook 要留在提前返回之前，不能寫在 `if` 後面。集合還是空的時候，空狀態的說明改提示去種子頁。篩選把已有的行程濾光時，說明仍請對方換地區、天數或價格條件。分頁標題寫在回傳的 `<title>`。
-
-```diff 07-project-final/src/features/tours/ToursPage.jsx
- import TourFilters from './components/TourFilters.jsx';
-+import LoadGate from '../../LoadGate.jsx';
- import { matchPrice } from '../../format.js';
--import { useStore } from '../../store-context.js';
-+import { useTours } from '../../useAsync.js';
-
- export default function ToursPage() {
--  const { tours } = useStore();
-+  const { data, loading, error } = useTours();
-+  const tours = data ?? [];
-   const [params, setParams] = useSearchParams();
- // ...
-   const visible = [...list].sort(rank[sort] || rank['price-asc']);
-+  if (loading || error) return <LoadGate loading={loading} error={error} />;
-
-   return (
-     <main
-       id="content"
-       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-     >
-       <title>行程 · 洛奇旅行</title>
- // ...
-           <Typography id="empty-title" variant="h2">沒有符合的行程</Typography>
--          <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
-+          <p className="mt-3 max-w-prose">{tours.length ? '換一個地區或天數，或清掉價格條件。' : '還沒有行程。請先打開 /seed 寫入種子。'}</p>
- // ...
-```
-
-```diff 07-project-final/src/features/tours/TourDetailPage.jsx
- import NotFoundPage from '../../pages/NotFoundPage.jsx';
--import { useStore } from '../../store-context.js';
-+import LoadGate from '../../LoadGate.jsx';
-+import { useTour } from '../../useAsync.js';
-
- export default function TourDetailPage() {
-   const { id } = useParams();
--  const { tours, bookings } = useStore();
--  const tour = tours.find((item) => item.id === id);
-+  const { data: tour, loading, error } = useTour(id);
-   const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
-+  if (loading || error) return <LoadGate loading={loading} error={error} />;
-   if (!tour) return <NotFoundPage />;
- // ...
-   return (
-     <main
-       id="content"
-       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24"
-     >
-       <title>{`${tour.title} · 洛奇旅行`}</title>
- // ...
--          <MobileDepartures tour={tour} bookings={bookings} />
-+          <MobileDepartures tour={tour} />
- // ...
-         <BookingCard
-           tour={tour}
--          bookings={bookings}
-           selected={selected}
-           onSelect={setDepartureId}
-           bookTo={bookTo}
- // ...
-```
-
-窄螢幕出發日與右側報名卡片不再計算剩餘人數。出發日列表只收行程。
-
-```diff 07-project-final/src/features/tours/components/MobileDepartures.jsx
- import Typography from '@mui/material/Typography';
- import DepartureList from './DepartureList.jsx';
--import { seatsLeft } from '../../../format.js';
- 
--export default function MobileDepartures({ tour, bookings }) {
-+export default function MobileDepartures({ tour }) {
- // ...
-       <p className="mt-3 text-base text-muted">
--        最近一梯 {tour.departures[0].date} 尚餘{' '}
--        {seatsLeft(bookings, tour.id, tour.departures[0])} 人。
-+        最近一梯 {tour.departures[0].date}，每團 {tour.departures[0].capacity}{' '}
-+        人。名額不在前台計算。
-       </p>
--      <DepartureList tour={tour} bookings={bookings} />
-+      <DepartureList tour={tour} />
- // ...
-```
-
-```diff 07-project-final/src/features/tours/components/BookingCard.jsx
- import { Link } from 'react-router';
- import Button from '@mui/material/Button';
--import { ntd, seatsLeft } from '../../../format.js';
-+import { ntd } from '../../../format.js';
- 
--export default function BookingCard({
--  tour,
--  bookings,
--  selected,
--  onSelect,
--  bookTo,
--}) {
-+export default function BookingCard({ tour, selected, onSelect, bookTo }) {
- // ...
-               <span className="text-base text-muted">
--                剩餘 {seatsLeft(bookings, tour.id, departure)} 人
-+                名額 {departure.capacity} 人
-               </span>
- // ...
-```
-
-```diff 07-project-final/src/features/tours/components/DepartureList.jsx
- import { Link } from 'react-router';
- import Button from '@mui/material/Button';
--import { seatsLeft } from '../../../format.js';
- 
--export default function DepartureList({ tour, bookings }) {
-+export default function DepartureList({ tour }) {
-   return (
-     <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
--      {tour.departures.map((departure) => {
--        const left = seatsLeft(bookings, tour.id, departure);
--        return (
-+      {tour.departures.map((departure) => (
-         <li
-           key={departure.id}
-           className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
-         >
-           <div>
-             <p className="font-medium">{departure.date}</p>
--              <p className="text-muted">
--                名額 {departure.capacity} 人，剩餘 {left} 人
--              </p>
-+            <p className="text-muted">名額 {departure.capacity} 人</p>
-           </div>
-           <Button
-             component={Link}
-             to={`/booking?tourId=${tour.id}&departureId=${departure.id}`}
-             variant="contained"
-             className="w-full sm:w-auto"
-           >
-             立即報名
-           </Button>
-         </li>
--        );
--      })}
-+      ))}
-     </ul>
- // ...
-```
-
-**解析**
-
-- 首頁在讀取中整頁交給 `LoadGate`，輪播不會先用空陣列畫一幀。
-- 集合是空的時，首頁與列表都指向 `/seed`。種子頁下一小節才掛上路由，這時點進去會落到找不到頁面，寫完下一步就通了。
-- 詳情的 `bookTo` 維持 `/booking?tourId=` 與 `departureId=`。這一節拿掉剩餘人數。閘門放在報名頁。
-- `seatsLeft` 還留在 `format.js`，前台不再呼叫。旅客不能讀全部訂單，所以不在前台用訂單減出名額。
-
-### 步驟 2：種子頁
-
-種子頁不放進頁首。網址是 `/seed`。按下之後呼叫 `seedTours`。測試模式底下，八筆行程會出現在主控台的 `tours` 集合。已經寫過再按，筆數是 0，畫面寫「沒有覆寫」。
-
-規則換成最後一節的內容之後，寫入只限管理員。請先用後台帳號登入再按。
-
-```jsx 07-project-final/src/features/admin/SeedPage.jsx
-import { useState } from 'react';
+```jsx 07-project-final/src/AccessNotice.jsx
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import { missingFirebaseMessage } from './firebase.js';
+
+const frame = 'mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24';
+
+export function MissingFirebase() {
+  return (
+    <main className={frame}>
+      <Alert severity="warning">{missingFirebaseMessage}</Alert>
+    </main>
+  );
+}
+
+export function AdminDenied() {
+  return (
+    <main className={frame}>
+      <Alert severity="warning">
+        這個帳號不能進入後台。請改用主控台建立的 email 與密碼。
+      </Alert>
+      <Button
+        className="mt-6"
+        component={Link}
+        to="/admin/login"
+        variant="contained"
+      >
+        到後台登入
+      </Button>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- `MissingFirebase` 與 `AdminDenied` 都畫在 `main` 裡，版型的頁首與頁尾還在。
+
+再讓版型在換頁讀取時顯示「讀取中」。
+
+```jsx 07-project-final/src/layout/SiteLayout.jsx
+import { Outlet, ScrollRestoration, useNavigation } from 'react-router';
+import SiteHeader from './components/SiteHeader.jsx';
+import SiteFooter from './components/SiteFooter.jsx';
+
+export default function SiteLayout() {
+  const navigation = useNavigation();
+  return (
+    <div className="flex min-h-screen flex-col bg-paper font-sans text-ink">
+      <SiteHeader />
+      <div className="flex flex-1 flex-col">
+        {navigation.state === 'loading' ? (
+          <p className="mx-auto w-full max-w-6xl px-4 pt-4 text-sm text-muted sm:px-6">
+            讀取中
+          </p>
+        ) : null}
+        <Outlet />
+      </div>
+      <SiteFooter />
+      <ScrollRestoration />
+    </div>
+  );
+}
+```
+
+**解析**
+
+- `SiteLayout` 在 `loading` 時多一行「讀取中」。送出表單時的 `submitting` 不在這裡顯示，按鈕自己看 `useNavigation`。
+
+# 接到畫面
+
+服務函式接上之後，首頁、行程列表與詳情改由 `loader` 呼叫 `listTours` 或 `getTour`。種子頁把 `mock.data.js` 寫進 `tours`，而且要先通過管理員檢查。報名與我的報名改走訂單文件，並帶上登入者的 `uid`。
+
+## 行程讀取與種子
+
+首頁、列表與詳情的 `loader` 先看 `firebaseReady`。還沒設定就回傳空清單或 `null`，頁面改畫 `MissingFirebase`。詳情找不到文件時 `throw data('找不到頁面', { status: 404 })`，由 `RouteErrorPage` 畫找不到頁。種子頁的 `loader` 使用 `requireAdmin`。不是密碼登入時回傳 `denied: true`，頁面顯示警告與前往後台登入的按鈕。
+
+先改首頁的 `loader` 與畫面。
+
+```jsx 07-project-final/src/features/home/HomePage.jsx
+import { useLoaderData } from 'react-router';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
-import { seedTours } from '../../api.js';
-import { firebaseReady, missingFirebaseMessage } from '../../firebase.js';
+import HeroSearch from './components/HeroSearch.jsx';
+import HeroSlider from './components/HeroSlider.jsx';
+import ReasonList from './components/ReasonList.jsx';
+import ReviewList from './components/ReviewList.jsx';
+import ThemeGrid from './components/ThemeGrid.jsx';
+import TourCard from '../tours/components/TourCard.jsx';
+import { listTours } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { firebaseReady } from '../../firebase.js';
 
-export default function SeedPage() {
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
+export const loader = async () => {
+  if (!firebaseReady) return { firebaseReady: false, tours: [] };
+  return { firebaseReady: true, tours: await listTours() };
+};
 
-  const run = async () => {
-    setBusy(true);
-    setError('');
-    setMessage('');
-    try {
-      const created = await seedTours();
-      setMessage(
-        created ? `已寫入 ${created} 筆行程。` : '行程都已存在，沒有覆寫。',
-      );
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
+export default function HomePage() {
+  const { firebaseReady: ready, tours } = useLoaderData();
+  const featured = tours.filter((tour) => tour.featured);
+  if (!ready) return <MissingFirebase />;
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
-      <title>寫入行程種子 · 洛奇旅行</title>
-      <Typography variant="h1">寫入行程種子</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        把專案裡的行程寫進 Firestore 的
-        tours。已經存在的文件會略過，可以重複按。規則允許管理員寫入後才能按，請先用後台帳號登入。
-      </p>
-      {firebaseReady ? null : (
-        <Alert className="mt-8" severity="warning">
-          {missingFirebaseMessage}
-        </Alert>
+    <main>
+      <title>洛奇旅行</title>
+      {tours.length ? null : (
+        <div className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6">
+          <Alert severity="info">還沒有行程。請先打開 /seed 寫入種子。</Alert>
+        </div>
       )}
-      {message ? (
-        <Alert className="mt-8" severity="success">
-          {message}
-        </Alert>
-      ) : null}
-      {error ? (
-        <Alert className="mt-8" severity="error">
-          {error}
-        </Alert>
-      ) : null}
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Button
-          variant="contained"
-          disabled={!firebaseReady || busy}
-          onClick={run}
-        >
-          {busy ? '寫入中…' : '寫入種子'}
-        </Button>
-        <Button component={Link} to="/tours" variant="outlined">
-          看行程
-        </Button>
+      <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
+      <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
+        <HeroSearch />
+      </div>
+      <section className="mt-12 bg-ink text-white md:mt-20">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+          <Typography
+            variant="h2"
+            className="text-balance text-4xl leading-snug text-white md:text-5xl"
+          >
+            <span className="whitespace-nowrap">把日子排鬆，</span>
+            <br />
+            <span className="whitespace-nowrap">把路走慢。</span>
+          </Typography>
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foam">
+            每團最多 8
+            人。地名寫清楚，一天只排一段路，下午留給自己。京都五日不含國際機票。
+          </p>
+        </div>
+      </section>
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+        <Typography id="featured-title" variant="h2">
+          熱門行程
+        </Typography>
+        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+          這幾趟最常被選走。價格為每人，以新台幣計。
+        </p>
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {featured.map((tour) => (
+            <TourCard key={tour.id} tour={tour} />
+          ))}
+        </div>
+      </section>
+      <section className="bg-mist">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+          <Typography id="theme-title" variant="h2">
+            依主題找路
+          </Typography>
+          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+            城市、海岸、山海、古都、離島，或飛一趟京都。
+          </p>
+          <ThemeGrid />
+        </div>
+      </section>
+      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+        <Typography id="reason-title" variant="h2">
+          為什麼選我們
+        </Typography>
+        <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+          人少、不排滿、盡量住同一間飯店。
+        </p>
+        <ReasonList />
+      </section>
+      <section className="bg-foam">
+        <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+          <Typography id="review-title" variant="h2">
+            旅客怎麼說
+          </Typography>
+          <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+            出發回來之後，旅客留下的話。
+          </p>
+          <ReviewList />
+        </div>
+      </section>
+    </main>
+  );
+}
+```
+
+**解析**
+
+- 資料改由 `listTours()` 讀取。還沒設定時畫 `MissingFirebase`。
+- 首頁在沒有行程時顯示「還沒有行程。請先打開 /seed 寫入種子。」輪播仍用精選，沒有精選就拿前四筆。
+
+列表頁同樣改走 `listTours()`。
+
+```jsx 07-project-final/src/features/tours/ToursPage.jsx
+import { useLoaderData, useSearchParams } from 'react-router';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import TourCard from './components/TourCard.jsx';
+import TourFilters from './components/TourFilters.jsx';
+import { listTours } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { firebaseReady } from '../../firebase.js';
+import { matchPrice } from '../../format.js';
+
+export const loader = async () => {
+  if (!firebaseReady) return { firebaseReady: false, tours: [] };
+  return { firebaseReady: true, tours: await listTours() };
+};
+
+export default function ToursPage() {
+  const { firebaseReady: ready, tours } = useLoaderData();
+  const [params, setParams] = useSearchParams();
+
+  const region = params.get('region') ?? '';
+  const days = params.get('days') ?? '';
+  const price = params.get('price') ?? '';
+  const theme = params.get('theme') ?? '';
+  const sort = params.get('sort') || 'price-asc';
+  const list = tours.filter(
+    (tour) =>
+      (!region || tour.region === region) &&
+      (!days || String(tour.days) === days) &&
+      (!theme || tour.theme === theme) &&
+      matchPrice(tour.price, price),
+  );
+  const rank = {
+    'price-asc': (a, b) => a.price - b.price,
+    'price-desc': (a, b) => b.price - a.price,
+    'days-asc': (a, b) => a.days - b.days || a.price - b.price,
+  };
+  const visible = [...list].sort(rank[sort] || rank['price-asc']);
+  if (!ready) return <MissingFirebase />;
+
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <title>行程 · 洛奇旅行</title>
+      <Typography variant="h1">行程</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        依地區、天數與預算挑選。價格為每人，以新台幣計。
+      </p>
+      <TourFilters />
+      <div id="tour-list">
+        {visible.length ? (
+          <>
+            <Typography variant="h2" className="mt-10">
+              {visible.length} 筆行程
+            </Typography>
+            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {visible.map((tour) => (
+                <TourCard key={tour.id} tour={tour} showTheme />
+              ))}
+            </div>
+          </>
+        ) : (
+          <section
+            id="tour-empty"
+            className="mt-16 rounded-card bg-foam px-6 py-10 shadow-card"
+          >
+            <Typography id="empty-title" variant="h2">
+              沒有符合的行程
+            </Typography>
+            <p className="mt-3 max-w-prose">
+              {tours.length
+                ? '換一個地區或天數，或清掉價格條件。'
+                : '還沒有行程。請先打開 /seed 寫入種子。'}
+            </p>
+            <Button
+              className="mt-6"
+              variant="contained"
+              onClick={() => setParams(new URLSearchParams())}
+            >
+              清除條件
+            </Button>
+          </section>
+        )}
       </div>
     </main>
   );
 }
 ```
 
-路由加在現有的 `App` 裡。Google 登入下一節才包上 `AuthProvider`。
-
-```diff 07-project-final/src/App.jsx
- import LoginPage from './features/auth/LoginPage.jsx';
-+import SeedPage from './features/admin/SeedPage.jsx';
- import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
- // ...
-       { path: 'login', element: <LoginPage /> },
-+      { path: 'seed', element: <SeedPage /> },
-       { path: 'admin/login', element: <AdminLoginPage /> },
- // ...
-```
-
-寫入成功後打開 `/tours`。八筆行程應來自 Firestore，重新整理還在。主控台的 `tours` 集合也能看到相同的文件 id。
-
 **解析**
 
-- 種子頁在按下時才寫入，打開網址本身不會改資料。
-- `firebaseReady` 為假時按鈕停用，並顯示同一句尚未設定。
-- 文件 id 用行程 id，詳情路由 `/tours/hualien-taroko` 對得上雲端那一份。
-- 這一節先在測試模式寫入。規則改成管理員可寫之後，要先用後台帳號登入再按。
+- 列表的篩選仍讀查詢字串。資料來源從 `getTours()` 改成 `listTours()`。還沒設定時畫 `MissingFirebase`。
 
-## 前台 Google 登入
+詳情頁的 `loader` 改呼叫 `getTour`。
 
-切版的 `/login` 已是 Google 對話框，按鈕還沒有呼叫 SDK。這一節啟用 Google 登入方式，建立 `auth.jsx`，用 [Sign in with Google on Web](https://firebase.google.com/docs/auth/web/google-signin) 的 `GoogleAuthProvider` 與 `signInWithPopup` 接上那個按鈕。頁首未登入仍顯示「登入」。
+```jsx 07-project-final/src/features/tours/TourDetailPage.jsx
+import { useState } from 'react';
+import { data, useLoaderData } from 'react-router';
+import Typography from '@mui/material/Typography';
+import BookingCard from './components/BookingCard.jsx';
+import FareBox from './components/FareBox.jsx';
+import Gallery from './components/Gallery.jsx';
+import Itinerary from './components/Itinerary.jsx';
+import MobileBookingBar from './components/MobileBookingBar.jsx';
+import MobileDepartures from './components/MobileDepartures.jsx';
+import TourHeader from './components/TourHeader.jsx';
+import TourHighlights from './components/TourHighlights.jsx';
+import { getTour } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { firebaseReady } from '../../firebase.js';
 
-### 步驟 1：啟用 Google
+export const loader = async ({ params }) => {
+  if (!firebaseReady) return { firebaseReady: false, tour: null };
+  const tour = await getTour(params.id);
+  if (!tour) throw data('找不到頁面', { status: 404 });
+  return { firebaseReady: true, tour };
+};
 
-Firebase 主控台打開 Authentication，進入登入方式。
+export default function TourDetailPage() {
+  const { firebaseReady: ready, tour } = useLoaderData();
+  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
+  if (!ready) return <MissingFirebase />;
 
-- 啟用「Google」。支援電子郵件填這個專案要收信的 email。
-- 不要啟用「電話」。
-- 不要按升級 Firebase Authentication with Identity Platform。
-- 「電子郵件／密碼」這一節先不要開，後台那一節再啟用。
+  const selected =
+    tour.departures.find((item) => item.id === departureId) ??
+    tour.departures[0];
+  const bookTo = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
 
-授權網域預設包含 `localhost`。本機開發伺服器的彈出視窗用得到。之後若把靜態網站放到自訂網域，再把那個網域加進授權網域。
-
-### 步驟 2：AuthProvider
-
-`auth-context.js` 放 context 與 `useAuth`。`auth.jsx` 只放 `AuthProvider`，訂閱登入狀態，並提供 `signInWithGoogle` 與 `signOut`。`provider` 讀 `user.providerData[0].providerId`。這一章每個帳號只用一種登入方式，這個值與 token 的 `firebase.sign_in_provider` 相同：Google 是 `google.com`，密碼是 `password`。沒有初始化時，`signInWithGoogle` 拒絕並帶上同一句尚未設定。`ready` 在第一次回報之後才是真。沒有 Firebase 時不必等，直接視為已確認、使用者是 `null`。
-
-`signIn(email, password)` 留到後台那一節再補。
-
-```js 07-project-final/src/auth-context.js
-import { createContext, useContext } from 'react';
-
-export const AuthContext = createContext(null);
-
-export const useAuth = () => useContext(AuthContext);
-```
-
-```jsx 07-project-final/src/auth.jsx
-import { useEffect, useMemo, useState } from 'react';
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth';
-import { auth, firebaseReady, missingFirebaseMessage } from './firebase.js';
-import { AuthContext } from './auth-context.js';
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(!firebaseReady);
-
-  useEffect(() => {
-    if (!auth) return undefined;
-    return onAuthStateChanged(auth, (next) => {
-      setUser(next);
-      setReady(true);
-    });
-  }, []);
-
-  const api = useMemo(
-    () => ({
-      user,
-      provider: user?.providerData?.[0]?.providerId ?? null,
-      ready,
-      firebaseReady,
-      signInWithGoogle() {
-        if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
-        return signInWithPopup(auth, new GoogleAuthProvider());
-      },
-      signOut() {
-        return auth ? signOut(auth) : Promise.resolve();
-      },
-    }),
-    [user, ready],
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24">
+      <title>{`${tour.title} · 洛奇旅行`}</title>
+      <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
+        <div className="min-w-0">
+          <TourHeader tour={tour} />
+          <Gallery images={tour.images} title={tour.title} />
+          <TourHighlights intro={tour.intro} highlights={tour.highlights} />
+          <Itinerary days={tour.itinerary} />
+          <FareBox includes={tour.includes} excludes={tour.excludes} />
+          <MobileDepartures tour={tour} />
+          <Typography variant="h2" className="mt-14">
+            取消與退款
+          </Typography>
+          <p className="mt-3 text-base leading-relaxed text-muted">
+            出團前以 email
+            確認。未成行全額退回。成行後若要改期，請來信或來電，由我們為你調整。常見問題也寫在關於頁。
+          </p>
+        </div>
+        <BookingCard
+          tour={tour}
+          selected={selected}
+          onSelect={setDepartureId}
+          bookTo={bookTo}
+        />
+      </div>
+      <MobileBookingBar price={tour.price} bookTo={bookTo} />
+    </main>
   );
-
-  return <AuthContext value={api}>{children}</AuthContext>;
 }
 ```
 
-`App` 在原有的 `StoreProvider` 外面包一層。種子路由留著。`StoreProvider` 還要留給行程管理頁，訂單清單那一節改完再拿掉。
+**解析**
 
-```diff 07-project-final/src/App.jsx
-+import { AuthProvider } from './auth.jsx';
- import { StoreProvider } from './store.jsx';
- // ...
- export default function App() {
-   return (
-+    <AuthProvider>
-       <StoreProvider>
-         <RouterProvider router={router} />
-       </StoreProvider>
-+    </AuthProvider>
-   );
- }
+- 詳情的 `loader` 只回傳這一筆行程。對不到 id 時丟 404，元件裡不再判斷空行程。還沒設定時畫 `MissingFirebase`。
+
+種子頁把 `mock.data.js` 寫進 `tours`，而且要先通過管理員檢查。
+
+```jsx 07-project-final/src/features/admin/SeedPage.jsx
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+} from 'react-router';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { seedTours } from '../../api.js';
+import { AdminDenied, MissingFirebase } from '../../AccessNotice.jsx';
+import { requireAdmin } from '../../auth.js';
+import { missingFirebaseMessage } from '../../firebase.js';
+
+export const loader = async ({ request }) => {
+  const gate = await requireAdmin(request);
+  return { firebaseReady: gate.firebaseReady, denied: Boolean(gate.denied) };
+};
+
+export const action = async ({ request }) => {
+  const gate = await requireAdmin(request);
+  if (!gate.firebaseReady) return { error: missingFirebaseMessage };
+  if (gate.denied) return { error: '請先用後台帳號登入。' };
+  try {
+    return { created: await seedTours() };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+export default function SeedPage() {
+  const { firebaseReady: ready, denied } = useLoaderData();
+  const result = useActionData();
+  const navigation = useNavigation();
+  const busy = navigation.state === 'submitting';
+  if (!ready) return <MissingFirebase />;
+  if (denied) return <AdminDenied />;
+  const message =
+    result?.created == null
+      ? ''
+      : result.created
+        ? `已寫入 ${result.created} 筆行程。`
+        : '行程都已存在，沒有覆寫。';
+
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <title>寫入行程種子 · 洛奇旅行</title>
+      <Typography variant="h1">寫入行程種子</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        把專案裡的行程寫進 Firestore 的
+        tours。已經存在的文件會略過，可以重複按。規則允許管理員寫入後才能按，請先用後台帳號登入。
+      </p>
+      {message ? (
+        <Alert className="mt-8" severity="success">
+          {message}
+        </Alert>
+      ) : null}
+      {result?.error ? (
+        <Alert className="mt-8" severity="error">
+          {result.error}
+        </Alert>
+      ) : null}
+      <Form method="post" className="mt-8 flex flex-wrap gap-3">
+        <Button type="submit" variant="contained" disabled={busy}>
+          {busy ? '寫入中…' : '寫入種子'}
+        </Button>
+        <Button component={Link} to="/tours" variant="outlined">
+          看行程
+        </Button>
+      </Form>
+    </main>
+  );
+}
 ```
 
-### 步驟 3：對話框與頁首
+**解析**
 
-`next` 來自查詢字串。只接受以 `/` 開頭、且不是 `//` 的站內路徑。登入成功後前往這個路徑，沒有或不合法就去 `/`。已經有登入者時，打開這一頁也直接過去。
+- `/seed` 的 `action` 呼叫 `seedTours`。已存在的文件略過。未登入會被 `requireAdmin` 帶到 `/login?next=...`。
+- Google 帳號進得了種子網址，但 `denied` 為真，畫面停在說明，不會呼叫寫入。
+
+詳情頁的名額不再掃訂單。梯次、報名卡與手機出發日改顯示每團名額。
+
+出發日列表改顯示每團名額。
+
+```jsx 07-project-final/src/features/tours/components/DepartureList.jsx
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+
+export default function DepartureList({ tour }) {
+  return (
+    <ul className="rounded-card bg-white shadow-card mt-4 max-w-3xl divide-y divide-line overflow-hidden px-5">
+      {tour.departures.map((departure) => (
+        <li
+          key={departure.id}
+          className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <p className="font-medium">{departure.date}</p>
+            <p className="text-muted">名額 {departure.capacity} 人</p>
+          </div>
+          <Button
+            component={Link}
+            to={`/booking?tourId=${tour.id}&departureId=${departure.id}`}
+            variant="contained"
+            className="w-full sm:w-auto"
+          >
+            立即報名
+          </Button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+**解析**
+
+- 不再呼叫 `seatsLeft` 去掃訂單。畫面上的名額改讀梯次自己的 `capacity`。
+
+報名卡同樣改顯示每團名額。
+
+```jsx 07-project-final/src/features/tours/components/BookingCard.jsx
+import { Link } from 'react-router';
+import Button from '@mui/material/Button';
+import { ntd } from '../../../format.js';
+
+export default function BookingCard({ tour, selected, onSelect, bookTo }) {
+  return (
+    <aside className="rounded-card bg-white shadow-card sticky top-24 mt-12 hidden self-start p-8 lg:mt-0 lg:block">
+      <p className="flex items-baseline gap-1.5 whitespace-nowrap font-serif text-4xl">
+        <span className="inline-block rounded-full bg-accent text-ink font-bold leading-[1.15] py-[0.12em] px-[0.55em]">
+          {ntd(tour.price)}
+        </span>
+        <span className="font-sans text-base font-normal text-muted">/ 人</span>
+      </p>
+      {tour.id === 'kyoto-nara' ? (
+        <p className="mt-3 text-base text-muted">不含國際機票</p>
+      ) : null}
+      <dl className="mt-6 grid gap-3 text-base">
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">天數</dt>
+          <dd>{tour.days} 天</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt className="text-muted">團體上限</dt>
+          <dd>{tour.departures[0]?.capacity ?? 8} 人</dd>
+        </div>
+      </dl>
+      <div className="mt-6 grid gap-3">
+        {tour.departures.map((departure) => {
+          const on = departure.id === selected.id;
+          return (
+            <button
+              key={departure.id}
+              type="button"
+              onClick={() => onSelect(departure.id)}
+              className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
+            >
+              <span className="block font-medium">{departure.date}</span>
+              <span className="text-base text-muted">
+                名額 {departure.capacity} 人
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      <Button
+        component={Link}
+        to={bookTo}
+        variant="contained"
+        className="mt-8 w-full"
+      >
+        立即報名
+      </Button>
+    </aside>
+  );
+}
+```
+
+**解析**
+
+- 名額來源與出發日列表相同，改讀該梯的 `capacity`。
+
+手機出發日一併對齊。
+
+```jsx 07-project-final/src/features/tours/components/MobileDepartures.jsx
+import Typography from '@mui/material/Typography';
+import DepartureList from './DepartureList.jsx';
+
+export default function MobileDepartures({ tour }) {
+  return (
+    <div className="mt-14 lg:hidden">
+      <Typography variant="h2">出發日</Typography>
+      <p className="mt-3 text-base text-muted">
+        最近一梯 {tour.departures[0].date}，每團 {tour.departures[0].capacity}{' '}
+        人。名額不在前台計算。
+      </p>
+      <DepartureList tour={tour} />
+    </div>
+  );
+}
+```
+
+**解析**
+
+- 窄螢幕的出發日也改顯示每團名額，不再掃訂單。
+
+## 登入、頁首與報名
+
+根路由的 `id` 是 `root`，`loader` 是 `auth.js` 的 `rootLoader`。它等待 `auth.authStateReady()`，回傳目前的使用者快照。頁首用 `useRouteLoaderData('root')` 讀這份結果。登出是對 `/logout` 的 `fetcher` POST，`action` 呼叫 `signOut` 再 `redirect('/')`。
+
+`requireUser` 在沒有使用者時丟出 `redirect` 到 `/login?next=...`。`safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑。登入頁的 `action` 呼叫 `signInWithPopup`，成功後 `redirect` 到 `next`。頁面沒有在 effect 裡 `navigate`。
+
+報名頁的 `loader` 同樣先 `requireUser`。表單改為唯讀的姓名與 email，電話仍手填。`action` 呼叫 `createOrder`，帶上 `uid`，再 `redirect` 到 `/booking/${id}`。
+
+先寫驗證相關的服務函式。
+
+```js 07-project-final/src/auth.js
+import { redirect } from 'react-router';
+import { signOut } from 'firebase/auth';
+import { auth, firebaseReady } from './firebase.js';
+
+const snapshot = (user) =>
+  user
+    ? {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        provider: user.providerData?.[0]?.providerId ?? null,
+      }
+    : null;
+
+export const session = async () => {
+  if (!firebaseReady || !auth) return { firebaseReady: false, user: null };
+  await auth.authStateReady();
+  return { firebaseReady: true, user: snapshot(auth.currentUser) };
+};
+
+export const requireUser = async (request) => {
+  const current = await session();
+  if (!current.firebaseReady) return current;
+  if (!current.user) {
+    const url = new URL(request.url);
+    throw redirect(
+      `/login?next=${encodeURIComponent(`${url.pathname}${url.search}`)}`,
+    );
+  }
+  return current;
+};
+
+export const requireAdmin = async (request) => {
+  const current = await requireUser(request);
+  if (!current.firebaseReady) return { ...current, denied: false };
+  if (current.user.provider !== 'password') return { ...current, denied: true };
+  return { ...current, denied: false };
+};
+
+export const safeNext = (value) =>
+  typeof value === 'string' && value.startsWith('/') && !value.startsWith('//')
+    ? value
+    : '/';
+
+export const rootLoader = () => session();
+
+export const logoutLoader = () => redirect('/');
+
+export const logoutAction = async () => {
+  if (auth) await signOut(auth);
+  return redirect('/');
+};
+```
+
+**解析**
+
+- `session` 在沒有初始化時回傳 `firebaseReady: false` 與 `user: null`。有初始化才等 auth 狀態。
+- `requireUser` 未登入時丟出 `redirect('/login?next=...')`。`requireAdmin` 先經過 `requireUser`，再檢查 `provider === 'password'`。
+- `safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑。`rootLoader` 回傳目前的使用者快照。登出的 `action` 呼叫 `signOut` 再 `redirect('/')`。
+
+根路由補上 `id: 'root'`、`rootLoader`，並加上 `/logout`。
+
+```jsx 07-project-final/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import { logoutAction, logoutLoader, rootLoader } from './auth.js';
+import SiteLayout from './layout/SiteLayout.jsx';
+import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
+import ToursPage, {
+  loader as toursLoader,
+} from './features/tours/ToursPage.jsx';
+import TourDetailPage, {
+  loader as tourLoader,
+} from './features/tours/TourDetailPage.jsx';
+import BookingPage, {
+  action as bookingAction,
+  loader as bookingLoader,
+} from './features/booking/BookingPage.jsx';
+import BookingResultPage, {
+  loader as bookingResultLoader,
+} from './features/booking/BookingResultPage.jsx';
+import MyBookingsPage, {
+  loader as myBookingsLoader,
+} from './features/booking/MyBookingsPage.jsx';
+import AboutPage from './features/about/AboutPage.jsx';
+import LoginPage, {
+  action as loginAction,
+  loader as loginLoader,
+} from './features/auth/LoginPage.jsx';
+import SeedPage, {
+  action as seedAction,
+  loader as seedLoader,
+} from './features/admin/SeedPage.jsx';
+import AdminLoginPage, {
+  action as adminLoginAction,
+  loader as adminLoginLoader,
+} from './features/admin/AdminLoginPage.jsx';
+import AdminToursPage, {
+  action as adminToursAction,
+  loader as adminToursLoader,
+} from './features/admin/AdminToursPage.jsx';
+import AdminBookingsPage, {
+  action as adminBookingsAction,
+  loader as adminBookingsLoader,
+} from './features/admin/AdminBookingsPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import RouteErrorPage from './pages/RouteErrorPage.jsx';
+
+const router = createBrowserRouter([
+  {
+    id: 'root',
+    loader: rootLoader,
+    Component: SiteLayout,
+    children: [
+      {
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, loader: homeLoader, Component: HomePage },
+          { path: 'tours', loader: toursLoader, Component: ToursPage },
+          { path: 'tours/:id', loader: tourLoader, Component: TourDetailPage },
+          {
+            path: 'booking',
+            loader: bookingLoader,
+            action: bookingAction,
+            Component: BookingPage,
+          },
+          {
+            path: 'booking/:id',
+            loader: bookingResultLoader,
+            Component: BookingResultPage,
+          },
+          { path: 'me', loader: myBookingsLoader, Component: MyBookingsPage },
+          { path: 'about', Component: AboutPage },
+          {
+            path: 'login',
+            loader: loginLoader,
+            action: loginAction,
+            Component: LoginPage,
+          },
+          {
+            path: 'seed',
+            loader: seedLoader,
+            action: seedAction,
+            Component: SeedPage,
+          },
+          {
+            path: 'admin/login',
+            loader: adminLoginLoader,
+            action: adminLoginAction,
+            Component: AdminLoginPage,
+          },
+          {
+            path: 'admin',
+            loader: adminToursLoader,
+            action: adminToursAction,
+            Component: AdminToursPage,
+          },
+          {
+            path: 'admin/bookings',
+            loader: adminBookingsLoader,
+            action: adminBookingsAction,
+            Component: AdminBookingsPage,
+          },
+          { path: 'logout', loader: logoutLoader, action: logoutAction },
+          { path: '*', Component: NotFoundPage },
+        ],
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- 頁首稍後用 `useRouteLoaderData('root')` 讀這份結果。`/logout` 的 `loader` 把直接打開這個網址的人送回首頁，`action` 才真正登出。
+
+頁首改讀根路由的使用者，並加上登出。後台選單仍沿用第 12 篇那份 `SiteHeader` 的切換：`pathname.startsWith('/admin')` 決定站名與導覽。
+
+```jsx 07-project-final/src/layout/components/SiteHeader.jsx
+import { useState } from 'react';
+import {
+  Link,
+  NavLink,
+  useFetcher,
+  useLocation,
+  useRouteLoaderData,
+} from 'react-router';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Drawer from '@mui/material/Drawer';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import SiteNav from './SiteNav.jsx';
+import Icon from '../../_shared/Icon.jsx';
+
+const item = ({ isActive }) =>
+  `inline-flex min-h-11 items-center rounded-full px-3 font-bold ${isActive ? 'bg-action text-white' : 'text-ink hover:bg-mist'}`;
+
+export default function SiteHeader() {
+  const { user } = useRouteLoaderData('root');
+  const fetcher = useFetcher();
+  const { pathname } = useLocation();
+  const admin = pathname.startsWith('/admin');
+  const [open, setOpen] = useState(false);
+  const [anchor, setAnchor] = useState(null);
+  const close = () => {
+    setOpen(false);
+    setAnchor(null);
+  };
+  const logout = () => {
+    close();
+    fetcher.submit({ intent: 'logout' }, { method: 'post', action: '/logout' });
+  };
+  const session = admin ? user?.provider === 'password' : Boolean(user);
+  const label = user?.displayName || user?.email || '';
+
+  const account = (extra = '') =>
+    session ? (
+      <Button
+        type="button"
+        aria-expanded={Boolean(anchor)}
+        onClick={(event) => setAnchor(event.currentTarget)}
+        className={`gap-2 text-ink ${extra}`}
+      >
+        <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">
+          {label.slice(0, 1).toUpperCase()}
+        </Avatar>
+        {label}
+      </Button>
+    ) : (
+      <Button
+        component={Link}
+        to={admin ? '/admin/login' : '/login'}
+        onClick={close}
+      >
+        {admin ? '後台登入' : '登入'}
+      </Button>
+    );
+
+  const links = (id) =>
+    admin ? (
+      <nav id={id} className="flex flex-col gap-1 md:flex-row md:items-center">
+        <NavLink to="/admin" end className={item} onClick={close}>
+          行程管理
+        </NavLink>
+        <NavLink to="/admin/bookings" className={item} onClick={close}>
+          報名清單
+        </NavLink>
+      </nav>
+    ) : (
+      <SiteNav onNavigate={close} id={id} />
+    );
+
+  return (
+    <AppBar id="site-header" position="sticky" component="header">
+      <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
+        <Link
+          to={admin ? '/admin' : '/'}
+          className="font-serif text-2xl font-semibold text-ink"
+        >
+          {admin ? '洛奇旅行 · 後台' : '洛奇旅行'}
+        </Link>
+        <Button
+          id="nav-toggle"
+          className="md:hidden"
+          variant="outlined"
+          startIcon={<Icon name="menu" />}
+          aria-expanded={open}
+          aria-controls="site-drawer"
+          onClick={() => setOpen(true)}
+        >
+          選單
+        </Button>
+        <div className="hidden items-center gap-1 md:flex">
+          {links('site-nav')}
+          {account()}
+        </div>
+      </div>
+      <Menu
+        anchorEl={anchor}
+        open={Boolean(anchor)}
+        onClose={() => setAnchor(null)}
+      >
+        {admin ? null : (
+          <MenuItem component={Link} to="/me" onClick={close}>
+            我的報名
+          </MenuItem>
+        )}
+        <MenuItem onClick={logout}>登出</MenuItem>
+      </Menu>
+      <Drawer anchor="right" open={open} onClose={close}>
+        <div id="site-drawer" className="flex flex-col gap-2 p-4">
+          {links(undefined)}
+          {account('justify-start')}
+        </div>
+      </Drawer>
+    </AppBar>
+  );
+}
+```
+
+**解析**
+
+- 頁首在前台看有沒有 `user`，在 `/admin` 底下還要求 `provider === 'password'`。未登入時的按鈕仍依路徑顯示「登入」或「後台登入」。
+- 登出是對 `/logout` 的 `fetcher` POST，不先換頁；網址留在原處，直到 `redirect` 把人送回首頁。
+
+前台登入頁的按鈕改成這條路由的 `Form`。
 
 ```jsx 07-project-final/src/features/auth/LoginPage.jsx
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import {
+  Form,
+  redirect,
+  useActionData,
+  useNavigate,
+  useNavigation,
+  useSearchParams,
+} from 'react-router';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useAuth } from '../../auth-context.js';
+import { safeNext, session } from '../../auth.js';
+import { auth, missingFirebaseMessage } from '../../firebase.js';
+
+export const loader = async ({ request }) => {
+  const current = await session();
+  if (!current.firebaseReady) return current;
+  if (current.user) {
+    const next = new URL(request.url).searchParams.get('next');
+    throw redirect(safeNext(next));
+  }
+  return current;
+};
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const next = safeNext(String(form.get('next') ?? ''));
+  if (!auth) return { error: missingFirebaseMessage };
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    return redirect(next);
+  } catch (err) {
+    const closed =
+      err.code === 'auth/popup-closed-by-user' ||
+      err.code === 'auth/cancelled-popup-request';
+    return {
+      error: closed
+        ? '已關閉登入視窗。'
+        : err.code === 'auth/popup-blocked'
+          ? '瀏覽器擋住了登入視窗。'
+          : err.message,
+    };
+  }
+};
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const navigation = useNavigation();
+  const actionData = useActionData();
   const [params] = useSearchParams();
-  const next = params.get('next');
-  const back = next?.startsWith('/') && !next.startsWith('//') ? next : '/';
-  const { user, ready, signInWithGoogle } = useAuth();
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    if (ready && user) navigate(back, { replace: true });
-  }, [ready, user, back, navigate]);
-
-  const submit = async () => {
-    setBusy(true);
-    setError('');
-    try {
-      await signInWithGoogle();
-      navigate(back, { replace: true });
-    } catch (err) {
-      const closed =
-        err.code === 'auth/popup-closed-by-user' ||
-        err.code === 'auth/cancelled-popup-request';
-      setError(
-        closed
-          ? '已關閉登入視窗。'
-          : err.code === 'auth/popup-blocked'
-            ? '瀏覽器擋住了登入視窗。'
-            : err.message,
-      );
-      setBusy(false);
-    }
-  };
+  const back = safeNext(params.get('next'));
+  const submitting =
+    navigation.state === 'submitting' &&
+    new URL(navigation.formAction, 'http://localhost').pathname === '/login';
 
   return (
-    <main id="content" className="flex-1">
+    <main className="flex-1">
       <title>用 Google 帳號繼續 · 洛奇旅行</title>
       <Dialog
         open
@@ -887,207 +1371,158 @@ export default function LoginPage() {
           <p>
             報名和我的報名會使用 Google 的姓名與 email。我們不另外設定密碼。
           </p>
-          {error ? (
+          {actionData?.error ? (
             <Alert className="mt-4" severity="error">
-              {error}
+              {actionData.error}
             </Alert>
           ) : null}
         </DialogContent>
-        <DialogActions className="flex flex-col items-stretch gap-3 px-6 pb-6">
-          <Button
-            type="button"
-            variant="contained"
-            disabled={busy}
-            onClick={submit}
-          >
-            {busy ? '登入中…' : '用 Google 帳號繼續'}
-          </Button>
-          <Button type="button" onClick={() => navigate('/')}>
-            返回首頁
-          </Button>
-        </DialogActions>
+        <Form method="post">
+          <input type="hidden" name="next" value={back} />
+          <DialogActions className="flex flex-col items-stretch gap-3 px-6 pb-6">
+            <Button type="submit" variant="contained" disabled={submitting}>
+              {submitting ? '登入中…' : '用 Google 帳號繼續'}
+            </Button>
+            <Button type="button" onClick={() => navigate('/')}>
+              返回首頁
+            </Button>
+          </DialogActions>
+        </Form>
       </Dialog>
     </main>
   );
 }
 ```
 
-頁首：前台未登入顯示「登入」，連到 `/login`。已登入顯示 `displayName`，沒有名稱就顯示 email。選單裡「我的報名」連到 `/me`，另一項是登出。後台路徑只有 `provider === 'password'` 才把這個人畫成已登入，否則仍是「後台登入」。
-
-```diff 07-project-final/src/layout/components/SiteHeader.jsx
- import { useState } from 'react';
--import { Link, NavLink, useLocation } from 'react-router';
-+import { Link, NavLink, useLocation, useNavigate } from 'react-router';
- import AppBar from '@mui/material/AppBar';
-+import Avatar from '@mui/material/Avatar';
- import Button from '@mui/material/Button';
- import Drawer from '@mui/material/Drawer';
-+import Menu from '@mui/material/Menu';
-+import MenuItem from '@mui/material/MenuItem';
- import SiteNav from './SiteNav.jsx';
- import Icon from '../../_shared/Icon.jsx';
-+import { useAuth } from '../../auth-context.js';
- // ...
- export default function SiteHeader() {
-+  const { user, provider, ready, signOut } = useAuth();
-+  const navigate = useNavigate();
-   const { pathname } = useLocation();
-   const admin = pathname.startsWith('/admin');
-   const [open, setOpen] = useState(false);
--  const close = () => setOpen(false);
--  const account = <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>;
-+  const [anchor, setAnchor] = useState(null);
-+  const close = () => { setOpen(false); setAnchor(null); };
-+  const logout = () => { signOut(); close(); navigate('/'); };
-+  const session = admin ? provider === 'password' : Boolean(user);
-+  const label = user?.displayName || user?.email || '';
-+  const account = (extra = '') => (!ready ? null : session ? (
-+    <Button type="button" aria-expanded={Boolean(anchor)} onClick={(event) => setAnchor(event.currentTarget)} className={`gap-2 text-ink ${extra}`}>
-+      <Avatar className="h-8 w-8 bg-action text-base font-bold text-white">{label.slice(0, 1).toUpperCase()}</Avatar>
-+      {label}
-+    </Button>
-+  ) : <Button component={Link} to={admin ? '/admin/login' : '/login'} onClick={close}>{admin ? '後台登入' : '登入'}</Button>);
- // ...
-           {links('site-nav')}
--          {account}
-+          {account()}
-         </div>
-       </div>
-+      <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={() => setAnchor(null)}>
-+        {admin ? null : <MenuItem component={Link} to="/me" onClick={close}>我的報名</MenuItem>}
-+        <MenuItem onClick={logout}>登出</MenuItem>
-+      </Menu>
-       <Drawer anchor="right" open={open} onClose={close}>
-         <div id="site-drawer" className="flex flex-col gap-2 p-4">
-           {links(undefined)}
--          {account}
-+          {account('justify-start')}
-         </div>
-       </Drawer>
- // ...
-```
-
-按下「用 Google 帳號繼續」會跳出 Google 視窗。完成後頁首出現名稱或 email，選單可以到 `/me`。
-
 **解析**
 
-- `signInWithPopup` 使用 Firebase Authentication SDK。這一章不自幹 OAuth，也不換另一套登入介面。
-- `onAuthStateChanged` 在重新整理後再回報一次。`ready` 還是假的時候，頁首先不要把人當成未登入。
-- `provider` 這一節先讀得出來。後台閘門下一節才拿 `password` 來擋畫面。
-- 前台的「登入」留著。未登入連到 `/login`，已登入才換成名稱與登出。
+- Google 視窗由 `signInWithPopup` 打開。取消或失敗時 `action` 回傳錯誤，`useActionData` 顯示在對話框裡。成功後 `redirect` 到 `next`。頁面沒有在 effect 裡 `navigate`。
 
-## 報名表寫入訂單
+報名頁的 `loader` 先 `requireUser`。
 
-未登入打開 `/booking`、`/booking/:id` 或 `/me`，`MemberGate` 導向 `/login?next=...`。`next` 是原本要去的網址，含查詢字串。姓名與 email 來自 `user.displayName`、`user.email`，欄位唯讀。電話手填。送出時 `createOrder` 帶 `uid: user.uid`。成功後用回傳的 id 導到 `/booking/:id`，並用 `replace: true` 蓋掉表單頁的瀏覽紀錄。完成頁再以 `getOrder` 讀這一筆；讀不到或沒有權限就渲染 `NotFoundPage`。
+```jsx 07-project-final/src/features/booking/BookingPage.jsx
+import { data, redirect, useLoaderData } from 'react-router';
+import Typography from '@mui/material/Typography';
+import BookingForm from './components/BookingForm.jsx';
+import BookingSteps from './components/BookingSteps.jsx';
+import BookingSummary from './components/BookingSummary.jsx';
+import { createOrder, getTour } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { requireUser } from '../../auth.js';
+import { missingFirebaseMessage } from '../../firebase.js';
 
-```jsx 07-project-final/src/features/booking/components/MemberGate.jsx
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import Alert from '@mui/material/Alert';
-import { useAuth } from '../../../auth-context.js';
-import { missingFirebaseMessage } from '../../../firebase.js';
+export const loader = async ({ request }) => {
+  const gate = await requireUser(request);
+  if (!gate.firebaseReady)
+    return { firebaseReady: false, tour: null, departure: null, user: null };
+  const url = new URL(request.url);
+  const tour = await getTour(
+    url.searchParams.get('tourId') || 'hualien-taroko',
+  );
+  const departure =
+    tour?.departures?.find(
+      (item) => item.id === url.searchParams.get('departureId'),
+    ) || tour?.departures?.[0];
+  if (!tour || !departure) throw data('找不到頁面', { status: 404 });
+  return { firebaseReady: true, tour, departure, user: gate.user };
+};
 
-export default function MemberGate({ children }) {
-  const { user, ready, firebaseReady } = useAuth();
-  const { pathname, search } = useLocation();
-  const navigate = useNavigate();
+export const action = async ({ request }) => {
+  const gate = await requireUser(request);
+  if (!gate.firebaseReady) return { error: missingFirebaseMessage };
+  const form = await request.formData();
+  const phone = String(form.get('phone') ?? '').trim();
+  const name = gate.user.displayName || '';
+  const email = gate.user.email || '';
+  if (!name.trim() || !email.includes('@') || !phone)
+    return {
+      error:
+        name.trim() && email.includes('@')
+          ? '請填電話'
+          : '請確認 Google 帳號帶有姓名與 email，並填電話',
+    };
+  const row = await createOrder({
+    uid: gate.user.uid,
+    tourId: String(form.get('tourId')),
+    tourTitle: String(form.get('tourTitle')),
+    departureId: String(form.get('departureId')),
+    date: String(form.get('date')),
+    people: Number(form.get('people')),
+    name: name.trim(),
+    email: email.trim(),
+    phone,
+    subtotal: Number(form.get('subtotal')),
+  });
+  return redirect(`/booking/${row.id}`);
+};
 
-  useEffect(() => {
-    if (firebaseReady && ready && !user)
-      navigate(`/login?next=${encodeURIComponent(`${pathname}${search}`)}`, {
-        replace: true,
-      });
-  }, [firebaseReady, ready, user, pathname, search, navigate]);
+export default function BookingPage() {
+  const { firebaseReady: ready, tour, departure, user } = useLoaderData();
+  if (!ready) return <MissingFirebase />;
 
-  if (!firebaseReady) {
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-      >
-        <Alert severity="warning">{missingFirebaseMessage}</Alert>
-      </main>
-    );
-  }
-  if (!ready || !user)
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-lg text-muted sm:px-6 md:py-24"
-      >
-        確認身份…
-      </main>
-    );
-  return children;
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <title>報名 · 洛奇旅行</title>
+      <BookingSteps activeStep={1} />
+      <Typography variant="h1">報名</Typography>
+      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
+        姓名與 email 來自 Google 帳號。請留下電話，送出後會寫進訂單。
+      </p>
+      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
+        <BookingForm tour={tour} departure={departure} user={user} />
+        <BookingSummary tour={tour} departure={departure} />
+      </div>
+    </main>
+  );
 }
 ```
 
+**解析**
+
+- 未登入會被帶到 `/login?next=...`。`action` 呼叫 `createOrder`，帶上 `uid`，再 `redirect` 到 `/booking/${id}`。
+
+報名表的姓名與 email 改成唯讀。
+
 ```jsx 07-project-final/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { Form, useActionData, useNavigation } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { createOrder } from '../../../api.js';
-import { useAuth } from '../../../auth-context.js';
 import { ntd } from '../../../format.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
-export default function BookingForm({ tour, departure }) {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+export default function BookingForm({ tour, departure, user }) {
+  const actionData = useActionData();
+  const navigation = useNavigation();
   const [people, setPeople] = useState('2');
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
   const name = user?.displayName || '';
   const email = user?.email || '';
   const subtotal = tour.price * Number(people);
-  const invalid = !name.trim() || !email.includes('@') || !phone.trim();
-
-  const submit = async (event) => {
-    event.preventDefault();
-    setSubmitted(true);
-    if (invalid) {
-      setError(
-        name.trim() && email.includes('@')
-          ? '請填電話'
-          : '請確認 Google 帳號帶有姓名與 email，並填電話',
-      );
-      return;
-    }
-    setBusy(true);
-    setError('');
-    try {
-      const row = await createOrder({
-        uid: user.uid,
-        tourId: tour.id,
-        tourTitle: tour.title,
-        departureId: departure.id,
-        date: departure.date,
-        people: Number(people),
-        name: name.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        subtotal,
-      });
-      navigate(`/booking/${row.id}`, { replace: true });
-    } catch (err) {
-      setError(err.message);
-      setBusy(false);
-    }
-  };
+  const error = actionData?.error ?? '';
+  const submitting =
+    navigation.state === 'submitting' &&
+    new URL(navigation.formAction, 'http://localhost').pathname === '/booking';
 
   return (
-    <form
+    <Form
       id="booking-form"
+      method="post"
+      replace
       noValidate
       className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8"
-      onSubmit={submit}
+      onSubmit={() => setSubmitted(true)}
     >
       <Typography variant="h2">填寫資料</Typography>
+      <input type="hidden" name="tourId" value={tour.id} />
+      <input type="hidden" name="tourTitle" value={tour.title} />
+      <input type="hidden" name="departureId" value={departure.id} />
+      <input type="hidden" name="date" value={departure.date} />
+      <input type="hidden" name="people" value={people} />
+      <input type="hidden" name="subtotal" value={subtotal} />
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           label="姓名"
@@ -1114,6 +1549,7 @@ export default function BookingForm({ tour, departure }) {
         }))}
       />
       <TextField
+        name="phone"
         label="電話"
         type="tel"
         required
@@ -1131,91 +1567,48 @@ export default function BookingForm({ tour, departure }) {
         </span>
       </p>
       <p className="text-muted">小計會依人數更新。送出後我們用 email 確認。</p>
-      <Button type="submit" variant="contained" disabled={busy}>
-        {busy ? '送出中…' : '送出報名'}
+      <Button type="submit" variant="contained" disabled={submitting}>
+        {submitting ? '送出中…' : '送出報名'}
       </Button>
-    </form>
+    </Form>
   );
 }
 ```
 
-```jsx 07-project-final/src/features/booking/BookingPage.jsx
-import { useSearchParams } from 'react-router';
-import Typography from '@mui/material/Typography';
-import BookingForm from './components/BookingForm.jsx';
-import BookingSteps from './components/BookingSteps.jsx';
-import BookingSummary from './components/BookingSummary.jsx';
-import MemberGate from './components/MemberGate.jsx';
-import LoadGate from '../../LoadGate.jsx';
-import NotFoundPage from '../../pages/NotFoundPage.jsx';
-import { useTours } from '../../useAsync.js';
+**解析**
 
-function BookingBody() {
-  const { data, loading, error } = useTours();
-  const tours = data ?? [];
-  const [params] = useSearchParams();
-  const tour = tours.find(
-    (item) => item.id === (params.get('tourId') || 'hualien-taroko'),
-  );
-  const departure =
-    tour?.departures.find((item) => item.id === params.get('departureId')) ||
-    tour?.departures[0];
-  if (loading || error) return <LoadGate loading={loading} error={error} />;
-  if (!tour || !departure) return <NotFoundPage />;
+- 這兩個欄位來自 `loader` 的使用者。電話仍手填；空著時 `action` 回傳「請填電話，此欄必填」。
 
-  return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
-      <title>報名 · 洛奇旅行</title>
-      <BookingSteps activeStep={1} />
-      <Typography variant="h1">報名</Typography>
-      <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
-        姓名與 email 來自 Google 帳號。請留下電話，送出後會寫進訂單。
-      </p>
-      <div className="mt-10 grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,22rem)]">
-        <BookingForm tour={tour} departure={departure} />
-        <BookingSummary tour={tour} departure={departure} />
-      </div>
-    </main>
-  );
-}
-
-export default function BookingPage() {
-  return (
-    <MemberGate>
-      <BookingBody />
-    </MemberGate>
-  );
-}
-```
+完成頁改讀 Firestore 的訂單。
 
 ```jsx 07-project-final/src/features/booking/BookingResultPage.jsx
-import { Link, useParams } from 'react-router';
+import { data, Link, useLoaderData } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import BookingReceipt from './components/BookingReceipt.jsx';
 import BookingSteps from './components/BookingSteps.jsx';
-import MemberGate from './components/MemberGate.jsx';
-import LoadGate from '../../LoadGate.jsx';
-import NotFoundPage from '../../pages/NotFoundPage.jsx';
+import { getOrder } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { requireUser } from '../../auth.js';
 import { statusLabel } from '../../format.js';
-import { useOrder } from '../../useAsync.js';
 
-function BookingResultBody() {
-  const { id } = useParams();
-  const { data: row, loading, error } = useOrder(id);
-  if (loading) return <LoadGate loading={loading} />;
-  if (error || !row) return <NotFoundPage />;
+export const loader = async ({ request, params }) => {
+  const gate = await requireUser(request);
+  if (!gate.firebaseReady) return { firebaseReady: false, row: null };
+  const row = await getOrder(params.id).catch(() => null);
+  if (!row || row.uid !== gate.user.uid)
+    throw data('找不到頁面', { status: 404 });
+  return { firebaseReady: true, row };
+};
+
+export default function BookingResultPage() {
+  const { firebaseReady: ready, row } = useLoaderData();
+  if (!ready) return <MissingFirebase />;
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>報名已送出 · 洛奇旅行</title>
       <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
@@ -1237,39 +1630,83 @@ function BookingResultBody() {
     </main>
   );
 }
+```
 
-export default function BookingResultPage() {
+**解析**
+
+- `loader` 用 `getOrder`。文件不存在就丟 404，由 `RouteErrorPage` 畫找不到頁。
+
+明細跟著改讀這一筆訂單。
+
+```jsx 07-project-final/src/features/booking/components/BookingReceipt.jsx
+import Typography from '@mui/material/Typography';
+import { ntd, statusLabel } from '../../../format.js';
+
+export default function BookingReceipt({ row }) {
   return (
-    <MemberGate>
-      <BookingResultBody />
-    </MemberGate>
+    <>
+      <Typography variant="h2" className="mt-10">
+        這筆內容
+      </Typography>
+      <dl className="rounded-card bg-white shadow-card mt-4 max-w-prose divide-y divide-line px-5">
+        {[
+          ['行程', row.tourTitle],
+          ['出發日', row.date],
+          ['人數', row.people],
+          ['姓名', row.name],
+          ['電話', row.phone],
+          ['小計', ntd(row.subtotal)],
+          ['狀態', statusLabel[row.status] || row.status],
+        ].map(([label, value]) => (
+          <div key={label} className="grid gap-1 py-3 sm:grid-cols-[8rem_1fr]">
+            <dt className="text-muted">{label}</dt>
+            <dd
+              className={
+                label === '小計'
+                  ? 'font-serif text-2xl font-bold text-action'
+                  : undefined
+              }
+            >
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </>
   );
 }
 ```
 
-單筆列沿用 `MyBookingRow`。Firestore 那筆的標題欄是 `tourTitle`，傳給 `title`。
+**解析**
+
+- 欄位仍是行程、出發日、聯絡人與金額，來源改成 `loader` 拿到的訂單文件。
+
+我的報名改列這位使用者的訂單。
 
 ```jsx 07-project-final/src/features/booking/MyBookingsPage.jsx
-import { Link } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import MemberGate from './components/MemberGate.jsx';
 import MyBookingRow from './components/MyBookingRow.jsx';
-import LoadGate from '../../LoadGate.jsx';
-import { useAuth } from '../../auth-context.js';
-import { useMyOrders } from '../../useAsync.js';
+import { listMyOrders } from '../../api.js';
+import { MissingFirebase } from '../../AccessNotice.jsx';
+import { requireUser } from '../../auth.js';
 
-function MyBookingsBody() {
-  const { user } = useAuth();
-  const { data, loading, error } = useMyOrders(user.uid);
-  const rows = data ?? [];
-  if (loading || error) return <LoadGate loading={loading} error={error} />;
+export const loader = async ({ request }) => {
+  const gate = await requireUser(request);
+  if (!gate.firebaseReady) return { firebaseReady: false, rows: [] };
+  return {
+    firebaseReady: true,
+    rows: await listMyOrders(gate.user.uid),
+  };
+};
+
+export default function MyBookingsPage() {
+  const { firebaseReady: ready, rows } = useLoaderData();
+  if (!ready) return <MissingFirebase />;
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>我的報名 · 洛奇旅行</title>
       <Typography variant="h1">我的報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
@@ -1313,304 +1750,221 @@ function MyBookingsBody() {
     </main>
   );
 }
-
-export default function MyBookingsPage() {
-  return (
-    <MemberGate>
-      <MyBookingsBody />
-    </MemberGate>
-  );
-}
 ```
-
-送出一筆之後，主控台的 `orders` 集合應多一份文件，`status` 是 `pending`，`uid` 是目前這個 Google 帳號，網址會變成 `/booking/` 加上這份文件的 id。重新整理完成頁仍看得到這一筆。打開 `/me` 也看得到。對不到或沒有權限讀的 id 會看到 `NotFoundPage`。`src/features/booking/mock.data.js` 不再被頁面 import。
 
 **解析**
 
-- `MemberGate` 等 `ready`。沒有使用者就帶著目前網址去 `/login`。報名連結維持 `/booking?tourId=...&departureId=...`，閘門在報名頁。
-- 表單送出後用回傳的 `row.id` 導到完成頁，並加上 `replace: true`。完成頁用 `useOrder(id)` 讀單筆；讀取中用 `LoadGate`，失敗或沒有資料就渲染 `NotFoundPage`。`id` 是 Firestore `addDoc` 隨機產生的，能不能讀由規則 `isOwner || isAdmin` 把關。自己的訂單清單仍由 `listMyOrders` 再讀。
-- 表單的 `id="booking-form"` 維持契約。姓名與 email 不開放手改。電話仍手填。
-- `useMyOrders(user.uid)` 寫在閘門裡面。沒有通過閘門就不會拿 `uid` 去查訂單。
-- 單筆列沿用 `MyBookingRow`。訂單的標題欄是 `tourTitle`，傳給 `title`。每一筆用 `item.id` 當 `key`。
+- `loader` 先 `requireUser`，再呼叫 `listMyOrders(uid)`，不再讀 `mySamples`。
 
+報名種子補上 `uid`，對應 Firestore 訂單的欄位。`mySamples` 仍留在檔裡，但我的報名已改讀 `listMyOrders`，不再 import 它。
+
+```js 07-project-final/src/features/booking/mock.data.js
+/** 後台清單。姓名與「我的報名」範例不一致，兩頁各自照靜態模板。 */
+export const bookings = [
+  {
+    id: 'b1',
+    tourId: 'hualien-taroko',
+    tourTitle: '花蓮太魯閣與七星潭四日',
+    departureId: '2026-12-18',
+    date: '2026-12-18',
+    people: 2,
+    name: '林可',
+    email: 'lin@example.com',
+    phone: '0912000111',
+    subtotal: 53600,
+    uid: 'demo-lin',
+    status: 'pending',
+  },
+  {
+    id: 'b2',
+    tourId: 'kyoto-nara',
+    tourTitle: '京都嵐山、伏見與奈良五日',
+    departureId: '2027-04-06',
+    date: '2027-04-06',
+    people: 1,
+    name: '陳予安',
+    email: 'chen@example.com',
+    phone: '0912000222',
+    subtotal: 52800,
+    uid: 'demo-chen',
+    status: 'confirmed',
+  },
+  {
+    id: 'b3',
+    tourId: 'tainan-anping',
+    tourTitle: '台南府城與安平兩日',
+    departureId: '2026-11-28',
+    date: '2026-11-28',
+    people: 3,
+    name: '周以寧',
+    email: 'chou@example.com',
+    phone: '0912000333',
+    subtotal: 26400,
+    uid: 'demo-chou',
+    status: 'cancelled',
+  },
+  {
+    id: 'b4',
+    tourId: 'taipei-beitou',
+    tourTitle: '台北大稻埕與北投溫泉三日',
+    departureId: '2026-12-04',
+    date: '2026-12-04',
+    people: 2,
+    name: '何品',
+    email: 'ho@example.com',
+    phone: '0912000444',
+    subtotal: 37200,
+    uid: 'demo-ho',
+    status: 'confirmed',
+  },
+];
+
+/** 我的報名頁照模板：四筆都掛在林可底下，不匯入後台種子。 */
+export const mySamples = [
+  {
+    status: 'pending',
+    title: '花蓮太魯閣與七星潭四日',
+    date: '2026-12-18',
+    people: 2,
+    phone: '0912000111',
+    subtotal: 53600,
+  },
+  {
+    status: 'confirmed',
+    title: '京都嵐山、伏見與奈良五日',
+    date: '2027-04-06',
+    people: 1,
+    phone: '0912000222',
+    subtotal: 52800,
+  },
+  {
+    status: 'cancelled',
+    title: '台南府城與安平兩日',
+    date: '2026-11-28',
+    people: 3,
+    phone: '0912000333',
+    subtotal: 26400,
+  },
+  {
+    status: 'confirmed',
+    title: '台北大稻埕與北投溫泉三日',
+    date: '2026-12-04',
+    people: 2,
+    phone: '0912000444',
+    subtotal: 37200,
+  },
+];
+```
+
+**解析**
+
+- 後台那四筆種子補上 `uid`。`mySamples` 還在同一份檔裡，但我的報名不會再 import 它。
 
 # 管理員、規則與部署
 
-前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，清單改讀 `orders`，最後貼上安全規則，並把網站部署到 Firebase Hosting。
+前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，後台清單改讀 Firestore，最後貼上安全規則，並把網站部署到 Firebase Hosting。
 
 ## 登入與受保護畫面
 
-`request.auth != null` 現在只代表有人登入。Google 登入的旅客也會得到這個值，不能拿它放行全部訂單。規則改看 token 內建欄位 `request.auth.token.firebase.sign_in_provider`。旅客是 `google.com`。管理員是主控台手動新增的 email／密碼帳號，值是 `password`。
+後台登入頁的 `action` 呼叫 `signInWithEmailAndPassword`，成功後 `redirect('/admin')`。行程管理與報名清單的 `loader` 都呼叫 `requireAdmin`。沒有設定 Firebase 時頁面畫 `MissingFirebase`。已登入但不是密碼時畫 `AdminDenied`，並留一顆到 `/admin/login` 的按鈕。
 
-畫面上的 `AdminGate` 先等 `ready`。未登入顯示後台登入提示。已登入但 `provider` 不是 `password` 時不能進後台。只判斷 `user` 有沒有值會放行進來的 Google 帳號。
+行程的新增、修改與刪除仍是列表上的對話框。`useFetcher` 把表單送到這一條路由的 `action`，網址留在 `/admin`。`saveTour` 與 `deleteTour` 寫進 `tours`。
 
-網站上不要做 email 註冊表單。自行註冊的密碼帳號會得到 `sign_in_provider == 'password'`，規則會把它當成管理員。
-
-### 步驟 1：建立管理員帳號
-
-在 Firebase 主控台打開 Authentication 的登入方式，啟用「電子郵件／密碼」。不要啟用「電話」。不要按升級 Identity Platform。在使用者分頁手動新增一位使用者，email 與密碼自己留著，不要寫進專案。
-
-應用程式沒有註冊表單。別人不能自己在網站上變成管理員。
-
-### 步驟 2：補上密碼登入
-
-前台那一節的 `auth.jsx` 已有 `onAuthStateChanged`、`signInWithGoogle` 與 `signOut`。這裡只補 `signIn`。
-
-```diff 07-project-final/src/auth.jsx
- import {
-   GoogleAuthProvider,
-   onAuthStateChanged,
-+  signInWithEmailAndPassword,
-   signInWithPopup,
-   signOut,
- } from 'firebase/auth';
- // ...
-     signInWithGoogle() {
-       if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
-       return signInWithPopup(auth, new GoogleAuthProvider());
-     },
-+    signIn(email, password) {
-+      if (!auth) return Promise.reject(new Error(missingFirebaseMessage));
-+      return signInWithEmailAndPassword(auth, email, password);
-+    },
-     signOut() {
-       return auth ? signOut(auth) : Promise.resolve();
-     },
-```
-
-版面裡的成功提示原本來自 `store`。訂單狀態改由清單頁自己顯示錯誤，這個 Snackbar 拿掉，`ScrollRestoration` 留在頁尾後面。
-
-```jsx 07-project-final/src/layout/SiteLayout.jsx
-import { Outlet, ScrollRestoration } from 'react-router';
-import SiteHeader from './components/SiteHeader.jsx';
-import SiteFooter from './components/SiteFooter.jsx';
-
-export default function SiteLayout() {
-  return (
-    <div className="flex min-h-screen flex-col bg-paper font-sans text-ink">
-      <SiteHeader />
-      <div className="flex flex-1 flex-col">
-        <Outlet />
-      </div>
-      <SiteFooter />
-      <ScrollRestoration />
-    </div>
-  );
-}
-```
-
-頁首已在前台登入那一節接上 `useAuth`。前台未登入仍是「登入」。後台路徑只有 `password` 才顯示帳號。
-
-### 步驟 3：登入表單與閘門
-
-密碼錯誤時，Firebase 的代碼是 `auth/invalid-credential`。這一種改寫成中文。其他失敗仍顯示 `err.message`，尚未設定 Firebase 時就是那句固定文字。已經以密碼登入的人打開這一頁，直接去報名清單。Google 登入者留在這一頁，不會被當成管理員送進去。
+先接後台登入頁。
 
 ```jsx 07-project-final/src/features/admin/AdminLoginPage.jsx
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { Form, redirect, useActionData, useNavigation } from 'react-router';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useAuth } from '../../auth-context.js';
+import { session } from '../../auth.js';
+import { auth, missingFirebaseMessage } from '../../firebase.js';
 
-export default function AdminLoginPage() {
-  const { signIn, provider } = useAuth();
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    if (provider === 'password') navigate('/admin/bookings');
-  }, [provider, navigate]);
+export const loader = async () => {
+  const current = await session();
+  if (current.user?.provider === 'password') throw redirect('/admin/bookings');
+  return current;
+};
 
-  const submit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setBusy(true);
-    try {
-      await signIn(email.trim(), password);
-      navigate('/admin/bookings');
-    } catch (err) {
-      setError(
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  if (!auth) return { error: missingFirebaseMessage };
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      String(form.get('email') ?? '').trim(),
+      String(form.get('password') ?? ''),
+    );
+    return redirect('/admin/bookings');
+  } catch (err) {
+    return {
+      error:
         err.code === 'auth/invalid-credential'
           ? 'email 或密碼不對。請用主控台建立的那一組。'
           : err.message,
-      );
-      setBusy(false);
-    }
-  };
+    };
+  }
+};
+
+export default function AdminLoginPage() {
+  const navigation = useNavigation();
+  const actionData = useActionData();
+  const submitting =
+    navigation.state === 'submitting' &&
+    new URL(navigation.formAction, 'http://localhost').pathname ===
+      '/admin/login';
 
   return (
-    <main
-      id="content"
-      className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24">
       <title>後台登入 · 洛奇旅行</title>
       <Paper
-        component="form"
         elevation={0}
-        className="rounded-card bg-white shadow-card grid max-w-md gap-4 p-6 md:p-8"
-        onSubmit={submit}
+        className="rounded-card bg-white shadow-card max-w-md p-6 md:p-8"
       >
-        <Typography variant="h1">後台登入</Typography>
-        <p className="text-lg leading-relaxed">
-          使用主控台建立的 email 與密碼。網站上沒有註冊表單。
-        </p>
-        <TextField
-          label="Email"
-          type="email"
-          autoComplete="username"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
-        <TextField
-          label="密碼"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
-        {error ? <Alert severity="error">{error}</Alert> : null}
-        <Button type="submit" variant="contained" disabled={busy}>
-          {busy ? '登入中…' : '登入'}
-        </Button>
+        <Form method="post" className="grid gap-4">
+          <Typography variant="h1">後台登入</Typography>
+          <p className="text-lg leading-relaxed">
+            使用主控台建立的 email 與密碼。網站上沒有註冊表單。
+          </p>
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            autoComplete="username"
+            required
+          />
+          <TextField
+            name="password"
+            label="密碼"
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+          {actionData?.error ? (
+            <Alert severity="error">{actionData.error}</Alert>
+          ) : null}
+          <Button type="submit" variant="contained" disabled={submitting}>
+            {submitting ? '登入中…' : '登入'}
+          </Button>
+        </Form>
       </Paper>
     </main>
   );
 }
 ```
 
-```jsx 07-project-final/src/features/admin/components/AdminGate.jsx
-import { Link } from 'react-router';
-import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
-import { useAuth } from '../../../auth-context.js';
-import { missingFirebaseMessage } from '../../../firebase.js';
-
-export default function AdminGate({ children }) {
-  const { user, provider, ready, firebaseReady } = useAuth();
-  if (!firebaseReady) {
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-      >
-        <Alert severity="warning">{missingFirebaseMessage}</Alert>
-      </main>
-    );
-  }
-  if (!ready)
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 text-lg text-muted sm:px-6 md:py-24"
-      >
-        確認身份…
-      </main>
-    );
-  if (!user) {
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-      >
-        <Alert severity="warning">
-          請用主控台建立的 email 與密碼登入後台。
-        </Alert>
-        <Button
-          className="mt-6"
-          component={Link}
-          to="/admin/login"
-          variant="contained"
-        >
-          到後台登入
-        </Button>
-      </main>
-    );
-  }
-  if (provider !== 'password') {
-    return (
-      <main
-        id="content"
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-      >
-        <Alert severity="warning">
-          這個帳號不能進入後台。請改用主控台建立的 email 與密碼。
-        </Alert>
-        <Button
-          className="mt-6"
-          component={Link}
-          to="/admin/login"
-          variant="contained"
-        >
-          到後台登入
-        </Button>
-      </main>
-    );
-  }
-  return children;
-}
-```
-
 **解析**
 
-- `signInWithEmailAndPassword` 成功後，`onAuthStateChanged` 會更新 `user`，`provider` 變成 `password`。表單另外 `navigate` 一次。
-- `AdminGate` 先看有沒有設定、再等 `ready`。沒有使用者時請去後台登入。有使用者但不是 `password` 時停在說明，不渲染孩子。
-- 閘門只擋畫面。沒有通過的人仍可從瀏覽器直接呼叫 SDK。安全規則那一節才擋讀取。
-- 頁首已經接上 `useAuth`。訂單頁離開 store 之後，再刪 `store.jsx` 與 `store-context.js`。
+- 登入表單沒有 effect。錯誤訊息來自 `useActionData`，送出中用 `useNavigation` 停用按鈕。成功後 `redirect('/admin')`。
 
-## 訂單清單與狀態
-
-後台行程頁改讀 `useTours`，表單與列表沿用第 12 篇的 `TourForm`、`TourTable`、`DraftRows` 與 `tourDraft.js`。儲存改呼叫 `api.js` 的 `saveTour`，列表操作欄確認刪除後呼叫 `deleteTour`，成功後都 `reload`。還沒有資料時顯示「還沒有行程」，並保留寫入種子的按鈕。清單頁沿用第 12 篇的 `BookingTable` 與 `BookingForm`，改讀 `useOrders`；在 Dialog 裡按「儲存」才呼叫 `updateOrderStatus`，成功後 `reload`。這兩個頁面換成下面的寫法之後，再拿掉記憶體 provider，並刪掉已經沒有人 import 的檔。
-
-先在 `api.js` 補上寫入與刪除行程。新增用 `addDoc` 讓 Firestore 產生 id，編輯用 `setDoc` 覆寫原來那份文件。編號不寫進文件內容，讀取時再把文件 id 接回去。
-
-```diff 07-project-final/src/api.js
- import {
-   addDoc,
-   collection,
-+  deleteDoc,
-   doc,
-   getDoc,
-   getDocs,
-   orderBy,
-   query,
-   serverTimestamp,
-   setDoc,
-   updateDoc,
-   where,
- } from 'firebase/firestore';
- // ...
-   return created;
- };
-+
-+export const saveTour = async (editingId, tour) => {
-+  const base = database();
-+  if (editingId) {
-+    await setDoc(doc(base, 'tours', editingId), tour);
-+  } else {
-+    await addDoc(collection(base, 'tours'), tour);
-+  }
-+};
-+
-+export const deleteTour = async (id) => {
-+  await deleteDoc(doc(database(), 'tours', id));
-+};
- 
- export const getOrder = async (id) => {
- // ...
-```
-
-`TourTable`、`TourForm`、`BookingTable` 與 `BookingForm` 沿用第 12 篇，不必改。行程管理頁與報名清單頁改成這樣：
+行程管理的 `loader` 改呼叫 `requireAdmin`，寫入改走 Firestore。
 
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useFetcher, useLoaderData } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -1619,44 +1973,75 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
-import AdminGate from './components/AdminGate.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
 import { tourFromDraft } from './components/tourDraft.js';
-import LoadGate from '../../LoadGate.jsx';
-import { deleteTour, saveTour } from '../../api.js';
-import { useTours } from '../../useAsync.js';
+import { deleteTour, listTours, saveTour } from '../../api.js';
+import { AdminDenied, MissingFirebase } from '../../AccessNotice.jsx';
+import { requireAdmin } from '../../auth.js';
+import { missingFirebaseMessage } from '../../firebase.js';
 
-function AdminToursBody() {
-  const { data, loading, error, reload } = useTours();
-  const tours = data ?? [];
+const gateOr = async (request) => {
+  const gate = await requireAdmin(request);
+  if (!gate.firebaseReady) return { error: missingFirebaseMessage };
+  if (gate.denied) return { error: '這個帳號不能進入後台。' };
+  return null;
+};
+
+export const loader = async ({ request }) => {
+  const gate = await requireAdmin(request);
+  if (!gate.firebaseReady || gate.denied)
+    return {
+      firebaseReady: gate.firebaseReady,
+      denied: Boolean(gate.denied),
+      tours: [],
+    };
+  return {
+    firebaseReady: true,
+    denied: false,
+    tours: await listTours(),
+  };
+};
+
+export const action = async ({ request }) => {
+  const blocked = await gateOr(request);
+  if (blocked) return blocked;
+  const form = await request.formData();
+  if (form.get('intent') === 'delete') {
+    await deleteTour(String(form.get('id')));
+    return { notice: '已刪除這筆行程' };
+  }
+  const editingId = String(form.get('editingId') ?? '');
+  const { error, tour } = tourFromDraft(JSON.parse(String(form.get('draft'))));
+  if (error) return { error };
+  await saveTour(editingId, tour);
+  return { notice: '已儲存這筆行程', saved: true };
+};
+
+export default function AdminToursPage() {
+  const { firebaseReady: ready, denied, tours } = useLoaderData();
+  const remove = useFetcher();
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
   const [deletingTour, setDeletingTour] = useState(null);
   const [notice, setNotice] = useState('');
+  const [seenRemove, setSeenRemove] = useState(null);
+  if (
+    remove.state === 'idle' &&
+    remove.data?.notice &&
+    remove.data !== seenRemove
+  ) {
+    setSeenRemove(remove.data);
+    setDeletingTour(null);
+    setNotice(remove.data.notice);
+  }
+  if (!ready) return <MissingFirebase />;
+  if (denied) return <AdminDenied />;
 
   const close = () => setOpen(false);
 
-  const onSave = async (id, draft) => {
-    const { error: message, tour: next } = tourFromDraft(draft);
-    if (message) return message;
-    try {
-      await saveTour(id, next);
-      reload();
-      return '';
-    } catch (err) {
-      return err.message;
-    }
-  };
-
-  if (error) return <LoadGate loading={false} error={error} />;
-  if (loading && !data) return <LoadGate loading error={null} />;
-
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>行程管理 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
@@ -1697,7 +2082,6 @@ function AdminToursBody() {
         open={open}
         tour={tour}
         onClose={close}
-        onSave={onSave}
         onNotice={setNotice}
       />
       <Dialog
@@ -1712,12 +2096,13 @@ function AdminToursBody() {
           <Button
             color="error"
             variant="contained"
-            onClick={async () => {
-              await deleteTour(deletingTour.id);
-              reload();
-              setDeletingTour(null);
-              setNotice('已刪除這筆行程');
-            }}
+            disabled={remove.state !== 'idle'}
+            onClick={() =>
+              remove.submit(
+                { intent: 'delete', id: deletingTour.id },
+                { method: 'post' },
+              )
+            }
           >
             刪除
           </Button>
@@ -1740,42 +2125,73 @@ function AdminToursBody() {
     </main>
   );
 }
-
-export default function AdminToursPage() {
-  return (
-    <AdminGate>
-      <AdminToursBody />
-    </AdminGate>
-  );
-}
 ```
+
+**解析**
+
+- `requireAdmin` 先經過 `requireUser`。未登入的人會離開這個網址；登入方式不對的人留在原頁，看到警告。
+- 刪除用 `fetcher.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 裡的 `fetcher` 送出草稿。成功後 `loader` 再讀清單，Snackbar 仍是頁面自己的狀態。
+
+## 訂單清單與狀態
+
+報名清單的 `loader` 呼叫 `listOrders`。改狀態的 `action` 呼叫 `updateOrderStatus`。對話框用 `useFetcher` 留在 `/admin/bookings`。訂單沒有實體刪除，狀態改成已取消就從作業流程拿掉，文件還在。
 
 ```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
+import { useLoaderData } from 'react-router';
 import Alert from '@mui/material/Alert';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import AdminGate from './components/AdminGate.jsx';
 import BookingTable from './components/BookingTable.jsx';
 import BookingForm from './components/BookingForm.jsx';
-import LoadGate from '../../LoadGate.jsx';
-import { updateOrderStatus } from '../../api.js';
+import { listOrders, updateOrderStatus } from '../../api.js';
+import { AdminDenied, MissingFirebase } from '../../AccessNotice.jsx';
+import { requireAdmin } from '../../auth.js';
+import { missingFirebaseMessage } from '../../firebase.js';
 import { statusLabel } from '../../format.js';
-import { useOrders } from '../../useAsync.js';
 
 const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
-function AdminBookingsBody() {
-  const { data, loading, error, reload } = useOrders();
-  const bookings = data ?? [];
+export const loader = async ({ request }) => {
+  const gate = await requireAdmin(request);
+  if (!gate.firebaseReady || gate.denied)
+    return {
+      firebaseReady: gate.firebaseReady,
+      denied: Boolean(gate.denied),
+      bookings: [],
+    };
+  return {
+    firebaseReady: true,
+    denied: false,
+    bookings: await listOrders(),
+  };
+};
+
+export const action = async ({ request }) => {
+  const gate = await requireAdmin(request);
+  if (!gate.firebaseReady) return { error: missingFirebaseMessage };
+  if (gate.denied) return { error: '這個帳號不能進入後台。' };
+  const form = await request.formData();
+  try {
+    await updateOrderStatus(String(form.get('id')), String(form.get('status')));
+    return { notice: '已更新報名狀態' };
+  } catch (err) {
+    return { error: err.message };
+  }
+};
+
+export default function AdminBookingsPage() {
+  const { firebaseReady: ready, denied, bookings } = useLoaderData();
   const [status, setStatus] = useState('all');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('date-desc');
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
   const [notice, setNotice] = useState('');
+  if (!ready) return <MissingFirebase />;
+  if (denied) return <AdminDenied />;
 
   const keyword = query.trim();
   const shown = bookings
@@ -1789,24 +2205,8 @@ function AdminBookingsBody() {
 
   const close = () => setOpen(false);
 
-  const onSave = async (id, next) => {
-    try {
-      await updateOrderStatus(id, next);
-      reload();
-      return '';
-    } catch (err) {
-      return err.message;
-    }
-  };
-
-  if (error) return <LoadGate loading={false} error={error} />;
-  if (loading && !data) return <LoadGate loading error={null} />;
-
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>報名清單 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
@@ -1860,7 +2260,6 @@ function AdminBookingsBody() {
         open={open}
         booking={booking}
         onClose={close}
-        onSave={onSave}
         onNotice={setNotice}
       />
       <Snackbar
@@ -1880,60 +2279,13 @@ function AdminBookingsBody() {
     </main>
   );
 }
-
-export default function AdminBookingsPage() {
-  return (
-    <AdminGate>
-      <AdminBookingsBody />
-    </AdminGate>
-  );
-}
 ```
-
-頁面換成上面的寫法之後，`App` 拿掉記憶體那一層。
-
-```diff 07-project-final/src/App.jsx
--import { StoreProvider } from './store.jsx';
- import { AuthProvider } from './auth.jsx';
- // ...
- export default function App() {
-   return (
-     <AuthProvider>
--      <StoreProvider>
-         <RouterProvider router={router} />
--      </StoreProvider>
-     </AuthProvider>
-   );
- }
-```
-
-接著刪掉這些檔。`TourForm.jsx`、`DraftRows.jsx`、`tourDraft.js`、`BookingTable.jsx` 與 `BookingForm.jsx` 還在用，不要刪。
-
-- `src/store.jsx`
-- `src/store-context.js`
-
-未登入時打開 `/admin/bookings`，應停在閘門，不應出現訂單。登入後看得到剛才那一筆。把狀態改成已確認，重新整理後仍是已確認。主控台裡同一份文件的 `status` 一起變。
-
-{% mermaid graph LR %}
-  form["登入表單"] --> authn["Authentication"]
-  authn --> gate["AdminGate"]
-  gate --> tours["saveTour／deleteTour"]
-  gate --> list["listOrders"]
-  tours --> fsTours["tours"]
-  list --> fs["orders"]
-  view["查看"] --> dialog["BookingForm"]
-  dialog --> update["updateOrderStatus"]
-  update --> fs
-{% endmermaid %}
 
 **解析**
 
-- `AdminToursBody` 與 `AdminBookingsBody` 都寫在 `AdminGate` 裡面。沒有通過閘門就不會呼叫寫入或 `listOrders`。
-- 行程表單與列表沿用第 12 篇的寫法。頁面先用 `tourFromDraft` 轉成完整行程，再交給 `saveTour`。新增時 Firestore 產生 id，編輯時覆寫原來那份文件；切版那一章是用當下時間做成 id。編號自動產生後，`/tours/:id` 與報名的 `tourId` 才會保持穩定。新增與編輯仍用同一個 Dialog 與頁面上的 Snackbar。刪除在列表操作欄，確認 Dialog 寫在頁面上，確認後才呼叫 `deleteTour`，並提示「已刪除這筆行程」。
-- 報名明細同樣沿用第 12 篇的 Dialog。按「儲存」才呼叫 `updateOrderStatus`。若改成「已取消」，儲存前仍先確認。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。規則也不開放刪除訂單。
-- `reload` 之後清單會換成雲端上的新內容。第一次讀取才整頁交給 `LoadGate`；之後若仍有舊資料，不整頁換成讀取中，避免正在開的 Dialog 或提示被拆掉。
-- 行程頁的「寫入種子」連到 `/seed`。規則改成管理員可寫之後，要先用後台帳號登入再按。
-- 篩選與排序仍在瀏覽器做。Firestore 這一章只負責把訂單整份拿回來。
+- 篩選、搜尋與排序仍在瀏覽器裡做，對的是 `loader` 已經拿回來的陣列。
+- 狀態送出後 `loader` 重跑，列表換成雲端上的新狀態。提示文字留在頁面的 `notice`。
+- 這一頁同樣先看 `firebaseReady` 與 `denied`，沒有通過就不會呼叫 `listOrders`。
 
 ## 安全規則與 Firebase Hosting
 
@@ -2033,7 +2385,11 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 
 ```diff 07-project-final/vite.config.js
  export default defineConfig({
-   plugins: [react(), tailwindcss()],
+   plugins: [
+     react(),
+     babel({ presets: [reactCompilerPreset()] }),
+     tailwindcss(),
+   ],
    server: { host: 'localhost' },
    preview: { host: 'localhost' },
 +  build: {
@@ -2062,9 +2418,20 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
  });
 ```
 
+**解析**
+
+- `rolldownOptions` 的 `codeSplitting` groups 只拆檔。畫面與規則都不會因為拆檔改變。React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。
+- 警告門檻設在 `vite.config.js` 這一處。Firebase 那包大約 570 kB，所以門檻調到 600。
+
+設定改好之後，再打包一次。
+
 ```bash
 pnpm build
 ```
+
+**解析**
+
+- 要發布能連線的版本，就在填好 `.env.local` 的電腦上執行 `pnpm build`。空的環境變數也能建置成功，那種產物打開後，行程頁會顯示尚未設定。
 
 終端機會印出類似下面的內容。檔名後面的雜湊會隨內容改變。
 
@@ -2085,6 +2452,10 @@ dist/assets/firebase-D9Cpe2Kg.js          569.15 kB │ gzip: 170.61 kB
 ✓ built in 521ms
 ```
 
+**解析**
+
+- React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。檔名後面的雜湊會隨內容改變。
+
 若專案根目錄還沒有 `.firebaserc`，先用 Firebase CLI 對到這個專案，再部署：
 
 ```bash
@@ -2093,10 +2464,7 @@ firebase deploy
 
 **解析**
 
-- `rolldownOptions` 的 `codeSplitting` groups 只拆檔。畫面與規則都不會因為拆檔改變。React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。
-- 警告門檻設在 `vite.config.js` 這一處。Firebase 那包大約 570 kB，所以門檻調到 600。
 - `dist/` 已在 `.gitignore`。要更新線上網站時，先 `pnpm build` 再 `firebase deploy`，不要把 `node_modules` 推進去。
-- 空的環境變數也能建置成功。那種產物打開後，行程頁會顯示尚未設定。
 - 授權網域預設包含 `localhost`。發布後若使用 Firebase 給的網域或自訂網域，再把那個網域加進 Authentication 的授權網域。
 
 # 本篇重點回顧
@@ -2105,9 +2473,9 @@ firebase deploy
 - 後台用 `signInWithEmailAndPassword`。管理員帳號在主控台手動新增。網站沒有 email 註冊表單。
 - 主控台啟用「Google」與「電子郵件／密碼」。不要啟用電話。不要升級 Identity Platform。
 - Firebase 的網頁設定放在 `.env.local`，以 `VITE_` 開頭。範例檔是 `.env.example`。金鑰不要 commit。
-- `src/api.js` 集中 Firestore 讀寫。`useAsync` 把等待、失敗與結果留在頁面。
-- `/seed` 把 `src/features/tours/mock.data.js` 寫進 `tours`。已存在的文件略過。規則允許管理員寫入後，要先用後台帳號登入再按。
-- `MemberGate` 把未登入者帶到 `/login?next=...`。`AdminGate` 等 `ready`，並且只放行 `password`。閘門擋的是畫面。
+- `src/api.js` 集中 Firestore 讀寫。頁面用 `loader` 與 `useLoaderData` 接結果，非預期錯誤進 `errorElement`。讀取中由 `useNavigation` 顯示在版型裡。
+- `/seed` 把 `mock.data.js` 寫進 `tours`，`loader` 要求管理員。已存在的文件略過。Google 帳號只看到說明，不會寫入。
+- 未登入進報名或後台時，`loader` 重新導向 `/login?next=...`。密碼以外的帳號留在後台頁，看到警告與按鈕。登出是對 `/logout` 的 POST。
 - `firestore.rules` 讓行程公開可讀、管理員可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者，刪除不開放；改為已取消即軟刪。
 - 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到或沒有權限就渲染 `NotFoundPage`。
 - 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`rolldownOptions` 的 `codeSplitting` groups 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
@@ -2138,9 +2506,10 @@ firebase deploy
 
 - 資料層（data layer）
 - 服務函式（service function）
-- 承諾（Promise）
-- 鉤子（Hook）
-- 副作用（effect）
+- 換頁前讀取（loader）
+- useLoaderData
+- 表單送出（action）
+- 導覽狀態（useNavigation）
 
 ## 接到畫面
 
@@ -2149,12 +2518,13 @@ firebase deploy
 - 使用者識別碼（uid）
 - 彈出視窗登入（signInWithPopup）
 - Google 登入（Google sign-in）
-- 登入閘門（MemberGate）
+- 登入重新導向（redirect to login）
+- 根路由資料（useRouteLoaderData）
 
 ## 管理員、規則與部署
 
 - 受保護畫面（protected view）
-- 登入狀態監聽（onAuthStateChanged）
+- 工作階段（session）
 - 登入提供者（sign_in_provider）
 - 密碼登入（password）
 - 授權（authorization）

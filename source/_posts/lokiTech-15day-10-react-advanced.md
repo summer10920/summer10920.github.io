@@ -10,7 +10,7 @@ date: 2026-08-30 10:09:00
 
 ![](assets/images/banner/react.png)
 
-畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態，並用 Context 處理中間層只為轉傳 props 的麻煩。useMemo、ref、reducer 與表單 Actions 放在選讀。換頁留到 React Router。
+畫面畫完之後，才適合去讀檔、訂閱或對外部系統做一次性的動作。這一篇先看 effect 什麼時候跑、怎麼收尾，再把讀寫請求收成函式。接著讓多個元件共用一份狀態：父層持有，兄弟用 props 對齊。Context、useMemo、ref、reducer 與表單 Actions 放在選讀。換頁與路由上的讀取留到 React Router。
 
 <!-- more -->
 
@@ -1882,7 +1882,7 @@ export default function TwiceDemo() {
 
 # 共用狀態
 
-同一份會變的資料若有兩個以上的元件要讀，就把狀態放到它們的共同父層，這叫做狀態提升。子層用 props 接收值，用函式回報變更。兄弟之間不互相傳資料。中間還隔許多層、而那些層自己不用這份資料時，再用 Context，避免一層層拋丟 props。
+同一份會變的資料若有兩個以上的元件要讀，就把狀態放到它們的共同父層，這叫做狀態提升。子層用 props 接收值，用函式回報變更。兄弟之間不互相傳資料。中間還隔許多層、而那些層自己不用這份資料時，選讀的 Context 可以讓真正要讀的那一層直接取得值。結業專案的清單改由路由的 loader 讀取，不走 Context。
 
 - 父層擁有狀態與設定函式。
 - 子層接收現在的值，以及一個 `onChange` 之類的函式。
@@ -2058,7 +2058,7 @@ export default function SiblingsDemo() {
 
 </details>
 
-## useContext
+## 選讀：useContext
 
 狀態提升之後，資料還是靠 props 往下傳。若中間還隔著好幾層元件，而那些中間層自己根本不用這份資料，每一層卻都要在參數裡多寫幾個欄位再往下拋，改一處就要改一路。這種情況叫做屬性鑽孔。Context 不是另一種狀態，只是讓真正要讀的那一層直接取得上層提供的值，中間層不必再轉手。
 
@@ -2157,14 +2157,14 @@ export default function DrillDemo() {
 
 ### 用 Context 改善
 
-同一棵樹改成 Context：外層提供主題，內層用 `useContext` 讀取，中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。value 直接寫在 Context 元件上，例如 `<ThemeContext value={theme}>`；子元件用 `useContext(ThemeContext)` 讀取。這一則先全部寫在同一個檔，下一節再拆成多個檔案；建立通道、讀值，以及把 value 放上樹，都寫在下面這一段。
+同一棵樹改成 Context：外層提供主題，內層用 `useContext` 讀取，中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。外層的 `<ThemeContext value={theme}>` 負責把 value 放到樹上，React 文件稱這一層為 context provider；子元件用 `useContext(ThemeContext)` 讀取。這一則先全部寫在同一個檔，下一節再拆成多個檔案；建立通道、讀值，以及把 value 放上樹，都寫在下面這一段。
 
 ```jsx
 /**
  * 建立一條 context 通道。
- * @param {*} defaultValue 樹上沒有 Provider 時，useContext 拿到的預設值
+ * @param {*} defaultValue 樹上沒有外層的 `<ThemeContext>` 時，useContext 拿到的預設值
  * @returns {object} ThemeContext
- *   ThemeContext：這條通道。Provider 與 useContext 都要對上同一個物件
+ *   ThemeContext：這條通道。外層的 ThemeContext 與 useContext 都要對上同一個物件
  */
 const ThemeContext = createContext('淺色');
 
@@ -2174,19 +2174,19 @@ const ThemeContext = createContext('淺色');
  */
 function Banner() {
   /**
-   * 讀最近一層 Provider 放上來的值。
+   * 讀最近一層外層的 ThemeContext 放上來的值。
    * @param {object} ThemeContext createContext 建立的通道
    * @returns {*} theme
-   *   theme：最近一層 Provider 的 value。樹上沒有 Provider 時，是建立 context 時的 defaultValue
+   *   theme：最近一層提供上來的 value。樹上沒有提供 value 的那層時，是建立 context 時的 defaultValue
    */
   const theme = useContext(ThemeContext);
   return <p>主題 {theme}</p>;
 }
 
 /**
- * 把 Provider 放在共同父層，讓 Banner 讀得到主題。
- * @param {*} value 寫在 Provider 上的 value，這一輪要分享的資料。這裡是 '深色'，Banner 的 theme 就是它
- * @returns {*} 包住子元件的 Provider
+ * 把提供 value 的 `<ThemeContext>` 放在共同父層，讓 Banner 讀得到主題。
+ * @param {*} value 寫在 `<ThemeContext>` 上的 value，這一輪要分享的資料。這裡是 '深色'，Banner 的 theme 就是它
+ * @returns {*} 包住子元件、提供 value 的那層
  */
 export default function ThemeApp() {
   return (
@@ -2199,7 +2199,7 @@ export default function ThemeApp() {
 
 **觀念**
 
-上面把 Provider 的 value 寫成固定字串；完整示範則把主題放在狀態裡，按下按鈕就更新這份狀態，通道、讀取元件、外框與 Provider 都寫在同一個練習檔：
+上面把 `<ThemeContext>` 的 value 寫成固定字串；完整示範則把主題放在狀態裡，按下按鈕就更新這份狀態，通道、讀取元件、外框與提供 value 的那層都寫在同一個練習檔：
 
 ```jsx 03-react/src/demos/70-context.jsx
 import { createContext, useContext, useState } from 'react';
@@ -2265,7 +2265,7 @@ export default function ContextDemo() {
 <details>
 <summary>參考答案</summary>
 
-兩顆按鈕都設定同一份狀態。Provider 的 value 仍是那個狀態。
+兩顆按鈕都設定同一份狀態。外層 `<ThemeContext>` 的 value 仍是那個狀態。
 
 ```diff 03-react/src/demos/70-context.jsx
  // ...
@@ -2294,9 +2294,9 @@ export default function ContextDemo() {
 - `ThemeContext.js`：只呼叫一次 `createContext` 並匯出。
 - `Banner.jsx`：引入那一份再讀值。
 - `Panel.jsx`、`Layout.jsx`：只畫外框，不碰 context。
-- `index.jsx`：持有狀態，用 Provider 包住 `Layout`。
+- `index.jsx`：持有狀態，用外層的 `<ThemeContext>` 包住 `Layout`。
 
-同名變數不會自動接上。若 `Banner.jsx` 自己再呼叫一次 `createContext`，那是另一條通道，外層 Provider 對它沒有作用。
+同名變數不會自動接上。若 `Banner.jsx` 自己再呼叫一次 `createContext`，那是另一條通道，外層的 `<ThemeContext>` 對它沒有作用。
 
 ```jsx
 import { createContext, useContext } from 'react';
@@ -2389,7 +2389,7 @@ export default function ContextSplitDemo() {
 
 - 各檔 import 的 `ThemeContext` 是同一個物件。對得上的是物件本身，不是變數名稱像不像。
 - `Panel` 與 `Layout` 沒有 import `ThemeContext`。它們不讀值，也不提供值。
-- `index.jsx` 的 Provider 與 `Banner` 的 `useContext` 對上同一份物件，按鈕才改得到文字。
+- `index.jsx` 外層的 `<ThemeContext>` 與 `Banner` 的 `useContext` 對上同一份物件，按鈕才改得到文字。
 - 這一則的檔案都收在 `71-contextDemo`，方便對照上一則的單檔寫法。
 
 {% note success %}
@@ -2418,11 +2418,11 @@ export default function ContextSplitDemo() {
 
 ### 預設值
 
-沒有包到 Provider 時，`useContext` 得到建立 context 時的那個預設值。這一則直接用資料夾裡的 `Banner`，故意不包 Provider，讓你看見 `ThemeContext.js` 裡的預設字串。
+樹上沒有外層的 `<ThemeContext>` 時，`useContext` 得到建立 context 時的那個預設值。這一則直接用資料夾裡的 `Banner`，故意不包提供 value 的那層，讓你看見 `ThemeContext.js` 裡的預設字串。
 
 **觀念**
 
-預設寫在 `71-contextDemo/ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有 Provider，畫面就是淺色，按鈕也不存在。
+預設寫在 `71-contextDemo/ThemeContext.js`，目前是淺色。`Banner` 照樣呼叫 `useContext`。因為樹上沒有提供 value 的那層，畫面就是淺色，按鈕也不存在。
 
 預設值適合沒包到也不該爆炸的顯示。若忘了包是程式錯誤，後面搭配 reducer 的示範會改成直接丟出錯誤，比較好找。
 
@@ -2434,24 +2434,24 @@ export default function DefaultDemo() {
 }
 ```
 
-畫面是「主題 淺色」。Components 分頁裡看不到 Provider。
+畫面是「主題 淺色」。Components 分頁裡看不到外層的 `<ThemeContext>`。
 
 **解析**
 
-- 預設值只在找不到 Provider 時使用。有 Provider 時以 value 為準，所以拆檔那一則畫面上的主題仍由 `index.jsx` 的狀態決定。
+- 預設值只在找不到提供 value 的那層時使用。有外層的 `<ThemeContext>` 時以 value 為準，所以拆檔那一則畫面上的主題仍由 `index.jsx` 的狀態決定。
 - 這一則沒有狀態，也沒有按鈕。預設值不會因為你在別則按了什麼而改變。
-- `Banner` 與拆檔示範引入的是同一份 `ThemeContext`。這一則樹上沒有 Provider，所以讀到建立時的預設值「淺色」。
-- 預設值不是會自己更新的狀態。它只是這條通道在沒有 Provider 時的後援。
+- `Banner` 與拆檔示範引入的是同一份 `ThemeContext`。這一則樹上沒有外層的 `<ThemeContext>`，所以讀到建立時的預設值「淺色」。
+- 預設值不是會自己更新的狀態。它只是這條通道在沒有提供 value 的那層時的後援。
 
 {% note success %}
 **換你試試：**
-把 `71-contextDemo/ThemeContext.js` 建立 context 的預設字串改成深色。72 的畫面應變成主題深色，這一則仍然不要加 Provider。
+把 `71-contextDemo/ThemeContext.js` 建立 context 的預設字串改成深色。72 的畫面應變成主題深色，這一則仍然不要加上外層的 `<ThemeContext>`。
 {% endnote %}
 
 <details>
 <summary>參考答案</summary>
 
-改的是共用模組上的預設值。72 的元件樹上仍沒有 Provider。拆檔那一則有 Provider，畫面不靠這個預設字串。
+改的是共用模組上的預設值。72 的元件樹上仍沒有外層的 `<ThemeContext>`。拆檔那一則有提供 value 的那層，畫面不靠這個預設字串。
 
 ```diff 03-react/src/demos/71-contextDemo/ThemeContext.js
  // ...
@@ -3604,7 +3604,7 @@ export default function TodoPropsDemo() {
 
 **觀念**
 
-做法跟主題色那節一樣：把 `useReducer` 搬進 `TodoProvider`，再把 `{ todos, dispatch }` 放進 `value`。子元件不再從參數拿資料，而是呼叫 `useTodos`（包一層 `useContext`）自己取需要的欄位。若外層忘了包 Provider，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
+做法跟主題色那節一樣：把 `useReducer` 搬進 `TodoProvider`，再把 `{ todos, dispatch }` 放進 `value`。`TodoProvider` 是包住 `<TodoContext value={...}>` 的元件。子元件不再從參數拿資料，而是呼叫 `useTodos`（包一層 `useContext`）自己取需要的欄位。若外層忘了包 `TodoProvider`，`useTodos` 會直接丟錯，而不是默默拿到空值還以為一切正常。
 
 照上一則 `81-propsDemo/` 的資料夾複製成 `82-providerDemo/`，一個檔案一個檔案看改了什麼。
 
@@ -3675,7 +3675,7 @@ export function TodoProvider({ children }) {
  // ...
 ```
 
-`index.jsx` 不再持有狀態，只負責用 Provider 把畫面包起來：
+`index.jsx` 不再持有狀態，只負責用 `TodoProvider` 把畫面包起來：
 
 ```diff 03-react/src/demos/82-providerDemo/index.jsx
 -import { useReducer } from 'react';
@@ -3717,7 +3717,7 @@ export function TodoProvider({ children }) {
 - `TodoContext` 與 `useTodos` 放在 `todo-context.js`。這個檔沒有元件。
 - `TodoProvider` 單獨放在 `TodoContext.jsx`。元件檔只匯出元件，Fast Refresh 才不會被 hook 或常數擋住。
 - 子元件從 `todo-context.js` import `useTodos`。
-- Provider 包在兩顆子元件外面。少了這層，`useTodos` 會丟出錯誤。
+- `TodoProvider` 包在兩顆子元件外面。少了這層，`useTodos` 會丟出錯誤。
 - `dispatch` 的身份是穩定的，可以放進 context。
 - 子元件各自取自己要的欄位。`AddButton` 只拿 `dispatch`，`TodoList` 兩個都拿。
 - 這個 context 只服務待辦。主題若是另一份資料，另開一個 context，不要全部塞進同一個物件。
@@ -4048,9 +4048,8 @@ export default function OptimisticDemo() {
 - 載入、失敗與空資料是三種畫面。清除時用 `AbortController` 取消請求；交給 fetch 的是 `controller.signal`。
 - `fake-api.js` 以 `getItems`、`getItem`、`createItem`、`updateItem`、`deleteItem` 收成 API 模組。元件決定何時呼叫。新增、更新、刪除成功之後，清單改的是本機狀態。
 - 兄弟元件要共享資料時，狀態放到共同父層，再用 props 與函式往下傳。
-- 自訂 Hook 把重複邏輯收成 `use` 開頭的函式，可傳引數；會變的引數要放進內部 effect 的依賴。
-- 中間很多層只為轉傳 props、自己不用時，用 Context：`createContext`、Provider 與 `useContext`。分檔時把同一示範收進資料夾，`createContext` 只建一次再 import。
-- useMemo、memo、useCallback、ref、reducer 與表單 Actions 是選讀。`useMemo` 記住計算結果，元件仍會渲染；`memo` 在 props 沒變時讓子元件跳過重渲染；`useCallback` 記住函式，避免新建的函式把 `memo` 弄失效。ref 與 reducer 則是 `const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
+- 選讀：自訂 Hook 把重複邏輯收成 `use` 開頭的函式；Context 用 `createContext`、提供 value 的那層（例如 `<ThemeContext value={theme}>`）與 `useContext`，分檔時 `createContext` 只建一次再 import。
+- 選讀：useMemo、memo、useCallback、ref、reducer 與表單 Actions。`useMemo` 記住計算結果，元件仍會渲染；`memo` 在 props 沒變時讓子元件跳過重渲染；`useCallback` 記住函式，避免新建的函式把 `memo` 弄失效。ref 與 reducer 則是 `const ref = useRef(initialValue);`、`const [state, dispatch] = useReducer(reducer, initialArg);`。
 
 # 專有名詞中英對照
 
@@ -4070,6 +4069,7 @@ export default function OptimisticDemo() {
 - 狀態提升（lifting state up）
 - 屬性鑽孔（prop drilling）
 - 情境（context）
+- 提供 value 的那層（context provider）
 - 記憶化（memoization）
 - 記憶化元件（memo）
 - 參考（ref）

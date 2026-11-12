@@ -82,6 +82,8 @@ pnpm create vite
 
 計數器、標誌圖與 `App.css` 刪掉。Vite 附的 `public/vite.svg` 一併換成我們自己的網站圖示。套件名稱改成 `loki-travel`，`App` 只留標題。`react`、`react-dom`、`vite`、`@vitejs/plugin-react` 的版本與完成品對齊。
 
+先對齊 `package.json`。
+
 ```json 06-project-init/package.json
 {
   "name": "loki-travel",
@@ -101,22 +103,51 @@ pnpm create vite
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^8.1.0",
+    "@rolldown/plugin-babel": "^0.3.1",
     "@vitejs/plugin-react": "^6.2.1",
+    "babel-plugin-react-compiler": "^1.0.0",
     "vite": "^8.3.5"
   }
 }
 ```
 
+**解析**
+
+- `dependencies` 只留 `react` 與 `react-dom`。Vite 與外掛放在 `devDependencies`，打包後的靜態檔不依賴它們。
+- `type` 設成 `module`，設定檔才能用 `import`。`engines` 把 Node.js 定在 24 以上。
+
+開發伺服器的設定與 React Compiler 寫在 `vite.config.js`。
+
 ```js 06-project-init/vite.config.js
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
   server: { host: 'localhost' },
   preview: { host: 'localhost' },
 });
 ```
+
+**解析**
+
+- `plugins` 先接 `@vitejs/plugin-react`，再接 `@rolldown/plugin-babel`，並放入 `reactCompilerPreset()`。
+- Vite 本身已經不用 Babel 轉 JSX，但目前穩定的 React Compiler 仍是 Babel 外掛，所以只有這一步會用到 Babel；Rust 版已經有了，但還在實驗階段。
+- `server` 與 `preview` 只聽 `localhost`，開發伺服器與預覽都不會綁到區網位址。
+
+如果剛才是從 Vite 範本建的，開發套件還要補裝一次。
+
+```bash
+pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-compiler@^1.0.0
+```
+
+**解析**
+
+- 這三個套件對應 `vite.config.js` 用到的 Compiler 設定，版本範圍與完成品相同。
+
+網站圖示換成自己的檔，放在 `public`。
 
 ```svg 06-project-init/public/favicon.svg
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -124,6 +155,13 @@ export default defineConfig({
   <text x="16" y="22.5" text-anchor="middle" font-family="ui-serif, 'Songti TC', serif" font-size="18" font-weight="700" fill="#FAF8F3">洛</text>
 </svg>
 ```
+
+**解析**
+
+- 這個專案用的是 `favicon.svg`，瀏覽器分頁會顯示圓角方塊與「洛」字。
+- 為什麼放在 `public`：Vite 打包時會把 `src` 裡被 import 的檔編進產物，但網站圖示是 `index.html` 用網址去載入的，沒有經過 import。`public` 裡的檔會原樣複製到網站根目錄，所以 `href="/favicon.svg"` 對應的就是 `public/favicon.svg`。
+
+`index.html` 的標題與圖示路徑一併改掉。
 
 ```html 06-project-init/index.html
 <!doctype html>
@@ -141,6 +179,13 @@ export default defineConfig({
 </html>
 ```
 
+**解析**
+
+- Vite 範本的網站圖示是 `public/vite.svg`，`index.html` 裡也有一條指向 `/vite.svg` 的連結。刪掉那張圖，改放自己的檔，並把 `href` 改成對應的檔名。
+- 以後要換圖示，只要替換 `public` 裡的檔，或改 `href` 指向新檔。
+
+入口檔只負責掛上 `App`。
+
 ```jsx 06-project-init/src/main.jsx
 import './index.css';
 import { StrictMode } from 'react';
@@ -154,11 +199,23 @@ createRoot(document.getElementById('root')).render(
 );
 ```
 
+**解析**
+
+- `main.jsx` 引入樣式，並用 `createRoot` 把 `App` 畫在 `#root`。嚴格模式維持打開。
+
+`App` 先只留標題。
+
 ```jsx 06-project-init/src/App.jsx
 export default function App() {
   return <h1>洛奇旅行</h1>;
 }
 ```
+
+**解析**
+
+- 這個 `App` 沒有狀態，也沒有路由，畫面只有「洛奇旅行」。
+
+樣式檔先清空，下一步才接 Tailwind。
 
 ```css 06-project-init/src/index.css
 /* 下一步才接 Tailwind */
@@ -166,17 +223,13 @@ export default function App() {
 
 **解析**
 
-- `dependencies` 只留 `react` 與 `react-dom`。Vite 與外掛放在 `devDependencies`，打包後的靜態檔不依賴它們。
-- `type` 設成 `module`，設定檔才能用 `import`。`engines` 把 Node.js 定在 24 以上。
-- 這個 `App` 沒有狀態，也沒有路由，畫面只有「洛奇旅行」。
-- `server` 與 `preview` 只聽 `localhost`，開發伺服器與預覽都不會綁到區網位址。
-- Vite 範本的網站圖示是 `public/vite.svg`，`index.html` 裡也有一條指向 `/vite.svg` 的連結。刪掉那張圖，改放自己的檔，並把 `href` 改成對應的檔名。
-- 以後要換圖示，只要替換 `public` 裡的檔，或改 `href` 指向新檔。這個專案用的是 `favicon.svg`，瀏覽器分頁會顯示圓角方塊與「洛」字。
-- 為什麼放在 `public`：Vite 打包時會把 `src` 裡被 import 的檔編進產物，但網站圖示是 `index.html` 用網址去載入的，沒有經過 import。`public` 裡的檔會原樣複製到網站根目錄，所以 `href="/favicon.svg"` 對應的就是 `public/favicon.svg`。
+- `index.css` 此刻沒有規則，只留一行註解提醒下一步。
 
 ### 步驟 4：沿用 ESLint 與 Prettier
 
 第 9 篇已經在 `03-react` 接好檢查與排版。這一節把同一套設定帶進這個專案，規則與用法見 {% post_link lokiTech-15day-09-react-basics %}。
+
+先放 Prettier 的設定。
 
 ```json 06-project-init/.prettierrc
 {
@@ -185,6 +238,12 @@ export default function App() {
   "tabWidth": 2
 }
 ```
+
+**解析**
+
+- `.prettierrc` 和第 9 篇的 `03-react` 相同。
+
+再放 ESLint 的設定。頁面檔會同時匯出元件與 `loader`、`action`。`react-refresh/only-export-components` 預設只准匯出元件，所以用 `allowExportNames` 放行這兩個名字。
 
 ```js 06-project-init/eslint.config.js
 import js from '@eslint/js';
@@ -209,9 +268,23 @@ export default defineConfig([
     },
   },
   reactRefresh.configs.vite(),
+  {
+    files: ['**/*.{js,jsx}'],
+    rules: {
+      'react-refresh/only-export-components': [
+        'error',
+        { allowConstantExport: true, allowExportNames: ['loader', 'action'] },
+      ],
+    },
+  },
   eslintConfigPrettier,
 ]);
 ```
+
+**解析**
+
+- `eslint.config.js` 和第 9 篇的 `03-react` 相同，只多了 `allowExportNames`。
+- 最後一項是 `eslintConfigPrettier`，檢查時不要和 Prettier 搶著改空格與引號。
 
 編輯器設定從 repo 根目錄的 `.vscode` 複製 `settings.json` 與 `extensions.json` 到 `06-project-init/.vscode/`，做法見 {% post_link lokiTech-15day-09-react-basics %}。可略過複製 `placeholder.code-snippets`。
 
@@ -220,11 +293,19 @@ mkdir -p .vscode
 cp ../.vscode/settings.json ../.vscode/extensions.json .vscode/
 ```
 
+**解析**
+
+- `.vscode` 的 `settings.json` 與 `extensions.json` 從 repo 根目錄複製，做法見 {% post_link lokiTech-15day-09-react-basics %}。
+
 接著安裝對應的開發套件。版本範圍與完成品相同。
 
 ```bash
 pnpm add -D prettier@^3.9.10 eslint@^10.14.0 eslint-config-prettier@^10.1.8 @eslint/js@^10.0.1 eslint-plugin-react-hooks@^7.1.1 eslint-plugin-react-refresh@^0.5.7 globals@^17.14.0
 ```
+
+**解析**
+
+- 這些套件放在 `devDependencies`。它們只參與開發與檢查，打包後的靜態檔不依賴它們。
 
 裝完之後，`package.json` 會多出 `lint` 指令和這些開發套件。
 
@@ -238,8 +319,11 @@ pnpm add -D prettier@^3.9.10 eslint@^10.14.0 eslint-config-prettier@^10.1.8 @esl
    },
  // ...
    "devDependencies": {
+     "@babel/core": "^8.1.0",
 +    "@eslint/js": "^10.0.1",
+     "@rolldown/plugin-babel": "^0.3.1",
      "@vitejs/plugin-react": "^6.2.1",
+     "babel-plugin-react-compiler": "^1.0.0",
 +    "eslint": "^10.14.0",
 +    "eslint-config-prettier": "^10.1.8",
 +    "eslint-plugin-react-hooks": "^7.1.1",
@@ -252,9 +336,7 @@ pnpm add -D prettier@^3.9.10 eslint@^10.14.0 eslint-config-prettier@^10.1.8 @esl
 
 **解析**
 
-- `.prettierrc` 與 `eslint.config.js` 和第 9 篇的 `03-react` 相同。`.vscode` 的 `settings.json` 與 `extensions.json` 從 repo 根目錄複製，做法見 {% post_link lokiTech-15day-09-react-basics %}。
-- 這些套件放在 `devDependencies`。它們只參與開發與檢查，打包後的靜態檔不依賴它們。
-- `scripts.lint` 是 `eslint .`。`eslint.config.js` 最後一項是 `eslintConfigPrettier`，檢查時不要和 Prettier 搶著改空格與引號。
+- `scripts.lint` 是 `eslint .`。開發套件的版本範圍與完成品相同。
 
 ## 樣式與主題
 
@@ -291,9 +373,12 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 +    "react-router": "^8.5.1"
    },
    "devDependencies": {
+     "@babel/core": "^8.1.0",
      "@eslint/js": "^10.0.1",
+     "@rolldown/plugin-babel": "^0.3.1",
 +    "@tailwindcss/vite": "^4.3.3",
      "@vitejs/plugin-react": "^6.2.1",
+     "babel-plugin-react-compiler": "^1.0.0",
      "eslint": "^10.14.0",
      "eslint-config-prettier": "^10.1.8",
      "eslint-plugin-react-hooks": "^7.1.1",
@@ -396,7 +481,7 @@ design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 
 
 - `theme` 這層就是放這些 design token 的地方。
 - `base` 這層放 preflight，以及下一步才寫的 `body`。
-- `components` 這層稍後只放「跳到內容」的 `.skip`。
+- `components` 這層留給之後自己寫的元件 class。這一章的按鈕與頂列改由 MUI 主題控制。
 - `utilities` 這層放 Tailwind 的工具 class，所以欄數與間距蓋得過 MUI。
 
 接下來會依序改三個檔案：在 `index.css` 宣告這份層級順序並引入 Tailwind，在 Vite 接上 Tailwind 外掛，最後讓 MUI 的樣式進到剛才宣告的 `mui` 層。
@@ -418,12 +503,17 @@ design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 
 
 ```diff 06-project-init/vite.config.js
  // ...
- import react from '@vitejs/plugin-react';
+ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+ import babel from '@rolldown/plugin-babel';
 +import tailwindcss from '@tailwindcss/vite';
  
  export default defineConfig({
--  plugins: [react()],
-+  plugins: [react(), tailwindcss()],
+-  plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
++  plugins: [
++    react(),
++    babel({ presets: [reactCompilerPreset()] }),
++    tailwindcss(),
++  ],
    server: { host: 'localhost' },
    preview: { host: 'localhost' },
  });
@@ -778,7 +868,7 @@ export default theme;
 
 ## 路由表
 
-這一節先寫佔位頁，再寫路由表。此時還沒有整站外框，重整後會看到各頁的大標題，外框下一節再加。`main.jsx` 維持主題那一步，直接渲染 `App`。本課切版不寫 loader。
+這一節先寫佔位頁，再寫路由表。此時還沒有整站外框，重整後會看到各頁的大標題，外框下一節再加。`main.jsx` 維持主題那一步，直接渲染 `App`。各頁開始讀資料時，再把該頁的 `loader` 掛上路由。
 
 ### 步驟 1：建立佔位頁
 
@@ -787,10 +877,7 @@ export default theme;
 ```jsx 06-project-init/src/_shared/Placeholder.jsx
 export default function Placeholder({ title }) {
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <h1 className="font-serif text-4xl font-bold text-ink">{title}</h1>
     </main>
   );
@@ -800,7 +887,7 @@ export default function Placeholder({ title }) {
 **解析**
 
 - 佔位頁只顯示頁名。`title` 畫成正文裡的大標題。
-- 每個佔位頁都有 `id="content"`，對應稍後頁首那個跳到內容的錨點。
+- 佔位頁的 `main` 用跟完成頁相同的寬度與直向間距，換上真正的頁面時外框不會跳。
 - 十二頁都換成真正的元件之後，自行評估刪掉 `Placeholder.jsx`。
 
 ### 步驟 2：寫路由表
@@ -870,11 +957,19 @@ src/
 
 先寫頁首、主導覽與頁尾的標記元件，再組 `SiteLayout`。接著把它接到路由當父路由，畫面上就能對照外框。頁首會渲染主導覽，所以之後換主導覽時，效果出現在頁首的位置。
 
+主導覽先放標記。
+
 ```jsx 06-project-init/src/layout/components/SiteNav.jsx
 export default function SiteNav() {
   return <nav className="font-bold text-ink">主導覽</nav>;
 }
 ```
+
+**解析**
+
+- 此刻只顯示「主導覽」幾個字。之後換成真正的連結時，效果會出現在頁首裡。
+
+頁首先放標記，並先渲染主導覽。
 
 ```jsx 06-project-init/src/layout/components/SiteHeader.jsx
 import SiteNav from './SiteNav.jsx';
@@ -889,6 +984,10 @@ export default function SiteHeader() {
 }
 ```
 
+**解析**
+
+- 頁首現在只是一段標題和主導覽標記，下一步再換成 `AppBar`。
+
 頁尾用 `mt-auto` 讓它靠下，因為 `SiteLayout` 是直向的 flex。
 
 ```jsx 06-project-init/src/layout/components/SiteFooter.jsx
@@ -896,6 +995,10 @@ export default function SiteFooter() {
   return <footer className="mt-auto bg-ink px-4 py-6 text-white">頁尾</footer>;
 }
 ```
+
+**解析**
+
+- 頁尾此刻只顯示「頁尾」。真正的站名、聯絡與探索連結稍後再換。
 
 外框把頁首、中間的 `Outlet` 與頁尾組起來，並在頁尾後面放上 `ScrollRestoration`。
 
@@ -1021,55 +1124,6 @@ export default function SiteNav({ onNavigate, id }) {
 
 ### 步驟 4：組出 SiteHeader
 
-先補「跳到內容」樣式與按鈕、頂列、手機選單的主題，再把頁首的 placeholder 換成真正的 `SiteHeader`。
-
-鍵盤使用者打開頁面時，焦點會先經過頁首一長串連結。「跳到內容」讓他們可以一次跳到正文。這個連結平常移出畫面，只有焦點進來才顯示。
-
-```diff 06-project-init/src/index.css
- // ...
- }
-
-+@layer components {
-+  /* 「跳到內容」連結：平常藏起來，鍵盤焦點進來才顯示在左上角。
-+     不用 display: none，否則焦點進不去、鍵盤也按不到。 */
-+  .skip {
-+    position: absolute;
-+    width: 1px;
-+    height: 1px;
-+    margin: -1px;
-+    overflow: hidden;
-+    clip: rect(0, 0, 0, 0);
-+    white-space: nowrap;
-+    border: 0;
-+  }
-+
-+  .skip:focus {
-+    position: absolute;
-+    top: 0.5rem;
-+    left: 1rem;
-+    z-index: 80;
-+    width: auto;
-+    height: auto;
-+    margin: 0;
-+    clip: auto;
-+    overflow: visible;
-+    border-radius: 999px;
-+    background: var(--loki-white);
-+    color: var(--loki-ink);
-+    padding: 0.5rem 0.75rem;
-+  }
-+}
-+
- /* 把元素文字裡的圖示名稱畫成圖。liga 讓名稱連成一個圖形。 */
- .material-symbols-outlined {
- // ...
-```
-
-**解析**
-
-- 這段樣式的用意寫在 `index.css` 的註解裡。
-- 連結本身寫在稍後的頁首元件裡；這裡只負責它出現與隱藏的樣子。
-
 頁首會用到 MUI 的頂列、按鈕與手機選單（`Drawer`）。這些元件的長相集中寫在 `theme.js`，之後都會跟著套用，不必在每個元件裡再寫一遍。
 
 ```diff 06-project-init/src/theme.js
@@ -1155,9 +1209,6 @@ export default function SiteHeader() {
 
   return (
     <AppBar id="site-header" position="sticky" component="header">
-      <a className="skip" href="#content">
-        跳到內容
-      </a>
       <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
         <Link to="/" className="font-serif text-2xl font-semibold text-ink">
           洛奇旅行
@@ -1196,7 +1247,7 @@ export default function SiteHeader() {
 **解析**
 
 - 頂列設成 sticky，捲動時貼在視窗上緣。加上 `component="header"` 之後，輸出的是 header 元素，id 是 `site-header`。
-- 第一個子元素是「跳到內容」，class 用剛才寫的 `skip`，並指向 `#content`。這個錨點已經加在佔位頁的正文上。
+- 頁首的根是 `AppBar`，`id` 是 `site-nav` 會放在主導覽上。站名連到 `/`。
 - 桌面版用 `hidden` 搭配 `md:flex` 顯示導覽與登入鈕。選單按鈕加上 `md:hidden`，只在窄螢幕出現。
 - 登入鈕寫成 `component={Link}`，並指定連到 `/login`。看起來像按鈕，行為是路由連結。
 - 手機選單是否打開由 `useState` 控制。導覽的 `onNavigate` 接到 `close`，點了連結就關選單。手機選單按鈕的 id 是 `nav-toggle`。
@@ -1297,10 +1348,7 @@ import Typography from '@mui/material/Typography';
 export default function NotFoundPage() {
   const navigate = useNavigate();
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 sm:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 sm:py-24">
       <title>找不到頁面 · 洛奇旅行</title>
       <p className="font-serif text-8xl font-bold leading-none text-ink sm:text-9xl">
         404
@@ -1336,36 +1384,97 @@ React 19 把元件裡的 `<title>` 提升到文件的 `<head>`。元件卸載時
 
 ### 步驟 2：接到路由
 
-```diff 06-project-init/src/App.jsx
- import SiteLayout from './layout/SiteLayout.jsx';
-+import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
--      { path: '*', element: <Placeholder title="找不到頁面" /> },
-+      { path: '*', element: <NotFoundPage /> },
- // ...
+星號路由換成 `NotFoundPage`，仍放在版型裡面。對不到資料的 `loader` 會 `throw data('找不到頁面', { status: 404 })`。這種錯誤若冒到版型本身，頁首會一起被換掉，所以在版型與各頁之間加一層沒有 `path` 的路由，把 `errorElement` 設成 `RouteErrorPage`。狀態 404 仍畫 `NotFoundPage`，頁首與頁尾留著。其他錯誤顯示「發生錯誤」。
+
+先寫負責判斷錯誤的頁面。
+
+```jsx 06-project-init/src/pages/RouteErrorPage.jsx
+import { isRouteErrorResponse, useRouteError } from 'react-router';
+import Typography from '@mui/material/Typography';
+import NotFoundPage from './NotFoundPage.jsx';
+
+export default function RouteErrorPage() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error) && error.status === 404)
+    return <NotFoundPage />;
+
+  const message = isRouteErrorResponse(error) ? error.data : error?.message;
+
+  return (
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
+      <title>發生錯誤 · 洛奇旅行</title>
+      <Typography variant="h1">發生錯誤</Typography>
+      <p className="mt-4 max-w-prose text-lg leading-relaxed text-muted">
+        {message ? String(message) : '請稍後再試'}
+      </p>
+    </main>
+  );
+}
 ```
 
 **解析**
 
-- 星號路由換成 `NotFoundPage`，而且仍放在 `SiteLayout` 裡面。其他還沒寫的頁仍用佔位。
-- 之後各頁若對不到資料，直接 `return <NotFoundPage />`，不必再經過佔位頁。
+- `RouteErrorPage` 看 `error.status === 404` 就渲染 `NotFoundPage`。其他錯誤顯示「發生錯誤」。
+
+再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
+
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import SiteLayout from './layout/SiteLayout.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import RouteErrorPage from './pages/RouteErrorPage.jsx';
+import Placeholder from './_shared/Placeholder.jsx';
+
+const router = createBrowserRouter([
+  {
+    Component: SiteLayout,
+    children: [
+      {
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, element: <Placeholder title="首頁" /> },
+          { path: 'tours', element: <Placeholder title="行程列表" /> },
+          { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
+          { path: 'booking', element: <Placeholder title="報名" /> },
+          { path: 'booking/:id', element: <Placeholder title="報名完成" /> },
+          { path: 'me', element: <Placeholder title="我的報名" /> },
+          { path: 'about', element: <Placeholder title="關於" /> },
+          { path: 'login', element: <Placeholder title="登入提示" /> },
+          { path: 'admin/login', element: <Placeholder title="後台登入" /> },
+          { path: 'admin', element: <Placeholder title="後台行程" /> },
+          { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
+          { path: '*', element: <NotFoundPage /> },
+        ],
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- 星號路由仍是 `NotFoundPage`，包在版型裡。網址對不上任何路徑時，頁首與頁尾還在。
+- 沒有 `path` 的那一層只負責 `errorElement`。子路由的 `loader` 丟出 404 時，由剛才的 `RouteErrorPage` 處理。
+- 其他還沒寫的頁仍用佔位。之後各頁的 `loader` 對不到資料時丟 404，不再在元件裡 `return <NotFoundPage />`。
 
 # 前台頁面
 
-先建立各頁要共用的行程資料，再把對應的佔位元件換成真正的頁面，並且只補這一頁要讀的欄位。React 狀態與 context 的寫法見 {% post_link lokiTech-15day-10-react-advanced %}，這裡不再展開語法。
+先建立各頁要共用的行程資料，再把對應的佔位元件換成真正的頁面，並且只補這一頁要讀的欄位。讀取用路由的 `loader`，寫法見 {% post_link lokiTech-15day-11-react-router %}。
 
 前台目錄的放法如下：
 
 - 各頁放進 `features/`：頁面檔在功能目錄下，該頁的零件進 `components/`；沒有零件的功能就不必建空資料夾。
 - 每個功能的假資料放在自己的 `mock.data.js`。
 - 行程和篩選選項放在 `features/*/mock.data.js`，其他功能要共用時再 import，做法與稍後首頁引用 `TourCard` 相同。
-- 共用的行程狀態放在 `src/store.jsx`，讀取用的 hook 放在 `src/store-context.js`。
+- 共用的行程與報名放在 `src/store.js` 的模組陣列。頁面用 `loader` 讀，不經過 Context。
 - 下面各頁會先用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件。
 
 {% mermaid graph TD %}
-  app["App"] --> store["store.jsx 共用狀態"]
+  app["App"] --> store["store.js 記憶體資料"]
   app --> layout["SiteLayout 外框"]
   layout --> home["home 首頁"]
   layout --> tours["tours 行程"]
@@ -1378,73 +1487,101 @@ React 19 把元件裡的 `<title>` 提升到文件的 `<head>`。元件卸載時
   style store fill:#fff3bf,stroke:#d97706,color:#422006
 {% endmermaid %}
 
-## StoreContext
+## 記憶體資料
 
-上圖可以看到，首頁、行程、報名都會讀同一份行程資料，後台之後也是，所以不能只放在某一頁的區域狀態裡。若從最外層用 props 往下傳，中間的 `SiteLayout` 與 `Outlet` 自己不用這份資料，卻得一路轉手。{% post_link lokiTech-15day-10-react-advanced %} 的 Context 就是為了這種情況：上層提供資料，真正要用的元件自己讀。這裡沿用那篇的寫法，建立 `store-context.js` 與 `store.jsx`：context 與 `useStore` 放在沒有元件的檔案，`StoreProvider` 單獨放在元件檔。頁面用 `useStore` 讀取。
+首頁、行程、報名與後台讀的是同一份清單。清單放在模組最外層的陣列，函式直接改這個陣列。這不是 React 狀態，也沒有 Context。`App` 只渲染 `RouterProvider`。頁面在 `loader` 裡呼叫 `getTours`、`getTour` 這類函式，再用 `useLoaderData` 拿到結果。寫入放在 `action`。
 
-### 步驟 1：建立 store
+`saveTour` 會呼叫後台的 `tourFromDraft`。這一節先把 `store.js` 整份放上，並放兩個稍後會被各頁換掉的起點：報名種子先是空陣列，`tourFromDraft` 先原樣回傳草稿。
 
-初始值來自 `features/tours/mock.data.js` 的 `tours`。現在先放空陣列，精選行程等首頁輪播那步再補。
+行程種子先留空，等各頁用到再補。
 
 ```js 06-project-init/src/features/tours/mock.data.js
 export const tours = [];
 ```
 
-```js 06-project-init/src/store-context.js
-import { createContext, useContext } from 'react';
+**解析**
 
-export const StoreContext = createContext(null);
+- `features/tours/mock.data.js` 此刻只匯出空的 `tours`。首頁輪播與列表稍後會換成真正的資料。
 
-export const useStore = () => useContext(StoreContext);
+報名種子也先留空。
+
+```js 06-project-init/src/features/booking/mock.data.js
+export const bookings = [];
 ```
 
-```jsx 06-project-init/src/store.jsx
-import { useState } from 'react';
+**解析**
+
+- `features/booking/mock.data.js` 此刻只匯出空的 `bookings`。詳情頁與後台清單稍後再補種子。
+
+`tourFromDraft` 先原樣回傳草稿，後台表單寫好再換成真正的轉換。
+
+```js 06-project-init/src/features/admin/components/tourDraft.js
+export const tourFromDraft = (draft) => ({ error: '', tour: draft });
+```
+
+**解析**
+
+- 這份檔目前只有一個直接回傳草稿的函式，讓 `store.js` 先編譯得過。
+
+記憶體資料模組放在 `src/store.js`。
+
+```js 06-project-init/src/store.js
 import { tours as seedTours } from './features/tours/mock.data.js';
-import { StoreContext } from './store-context.js';
+import { bookings as seedBookings } from './features/booking/mock.data.js';
+import { tourFromDraft } from './features/admin/components/tourDraft.js';
 
-export function StoreProvider({ children }) {
-  const [tours] = useState(seedTours);
-  return (
-    <StoreContext value={{ tours }}>
-      {children}
-    </StoreContext>
+let tours = [...seedTours];
+let bookings = [...seedBookings];
+
+export const getTours = () => tours;
+
+export const getTour = (id) => tours.find((item) => item.id === id) ?? null;
+
+export const getBookings = () => bookings;
+
+export const getBooking = (id) =>
+  bookings.find((item) => item.id === id) ?? null;
+
+export const saveTour = (editingId, draft) => {
+  const { error, tour } = tourFromDraft(draft);
+  if (error) return error;
+  tours = editingId
+    ? tours.map((item) =>
+        item.id === editingId ? { ...tour, id: editingId } : item,
+      )
+    : [{ ...tour, id: `tour-${Date.now()}` }, ...tours];
+  return '';
+};
+
+export const deleteTour = (id) => {
+  tours = tours.filter((item) => item.id !== id);
+};
+
+export const setBookingStatus = (id, status) => {
+  bookings = bookings.map((item) =>
+    item.id === id ? { ...item, status } : item,
   );
-}
+};
+
+export const createBooking = (input) => {
+  const row = {
+    id: `local-${Date.now()}`,
+    status: 'pending',
+    uid: 'demo-local',
+    ...input,
+  };
+  bookings = [row, ...bookings];
+  return row;
+};
 ```
 
 **解析**
 
-- `StoreContext` 與 `useStore` 放在 `store-context.js`。這個檔沒有元件。
-- `StoreProvider` 單獨放在 `store.jsx`。元件檔只匯出元件，Fast Refresh 才不會被 hook 或常數擋住。
-- `seedTours` 當初始值，目前只提供 `tours`；現在是空陣列，之後補上行程，讀這份資料的頁面會一起更新。報名陣列等詳情頁要算剩餘名額再放進來。
-- 頁面用 `useStore` 讀同一個 context，從 `store-context.js` import。
-
-### 步驟 2：接到 App
-
-用 `StoreProvider` 包住 `RouterProvider`，之後各頁都能呼叫 `useStore`。此刻行程還是空陣列，畫面看起來不會變。
-
-```diff 06-project-init/src/App.jsx
- import { createBrowserRouter, RouterProvider } from 'react-router';
-+import { StoreProvider } from './store.jsx';
- import SiteLayout from './layout/SiteLayout.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
- export default function App() {
--  return <RouterProvider router={router} />;
-+  return (
-+    <StoreProvider>
-+      <RouterProvider router={router} />
-+    </StoreProvider>
-+  );
- }
-```
-
-**解析**
-
-- `StoreProvider` 包住 `RouterProvider`，所以 `SiteLayout` 與各頁都在同一棵樹上，之後呼叫 `useStore` 讀得到行程。
-- 路由表這一刻還沒換，各路徑仍是佔位頁。
+- `tours` 與 `bookings` 是模組裡的 `let`。`getTours`、`getTour`、`getBookings`、`getBooking` 只讀當下的陣列。
+- `createBooking` 組出 `id` 為 `local-` 加時間戳、狀態 `pending` 的一筆，插到陣列最前面並回傳。重新整理後回到種子。
+- `saveTour` 先用 `tourFromDraft`。有錯誤就回傳那句話；新增時 id 是 `tour-` 加時間戳，編輯時沿用原來的 id。
+- `deleteTour` 依 id 濾掉行程。`setBookingStatus` 只改那一筆的 `status`，不從清單移除。
+- 頁面不要 import 陣列來自己改狀態。進入路由時由 `loader` 讀，表單送出由 `action` 寫，寫完後 `loader` 會再跑。
 
 ## 首頁
 
@@ -1466,6 +1603,8 @@ export function StoreProvider({ children }) {
 
 先把首頁組起來並接到路由，後面寫零件時才能在畫面上對照。下層元件先用 placeholder 標出區塊位置。
 
+輪播先放標記。
+
 ```jsx 06-project-init/src/features/home/components/HeroSlider.jsx
 export default function HeroSlider() {
   return (
@@ -1476,11 +1615,23 @@ export default function HeroSlider() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，讓首頁組起來就能看到輪播的位置。稍後傳入的 `slides` 此刻先不必接收，多餘的 props 會被忽略。
+
+搜尋表單先放標記。
+
 ```jsx 06-project-init/src/features/home/components/HeroSearch.jsx
 export default function HeroSearch() {
   return <p className="rounded-card bg-white p-6 shadow-card">搜尋表單</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出搜尋表單的位置。
+
+行程卡片先放標記，之後首頁與列表都會用到。
 
 ```jsx 06-project-init/src/features/tours/components/TourCard.jsx
 export default function TourCard() {
@@ -1492,17 +1643,35 @@ export default function TourCard() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字。稍後傳入的 `tour` 此刻先不必接收。
+
+主題列表先放標記。
+
 ```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
 export default function ThemeGrid() {
   return <p className="mt-8">主題列表</p>;
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出依主題找路的位置。
+
+「為什麼選我們」先放標記。
+
 ```jsx 06-project-init/src/features/home/components/ReasonList.jsx
 export default function ReasonList() {
   return <p className="mt-8">理由列表</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出理由列表的位置。
+
+評價列表先放標記。
 
 ```jsx 06-project-init/src/features/home/components/ReviewList.jsx
 export default function ReviewList() {
@@ -1512,10 +1681,9 @@ export default function ReviewList() {
 
 **解析**
 
-- 每個檔案先回傳標記文字，讓頁面組起來就能看到各區塊位置。
-- `HomePage` 稍後傳入的 `slides`、`tour` 先不必接收，多餘的 props 會被忽略。
+- 先回傳標記文字，標出評價列表的位置。
 
-接著把零件組進 `HomePage`。行程用剛才的 `useStore` 讀取。
+接著把零件組進 `HomePage`。行程由這一頁的 `loader` 呼叫 `getTours`，元件用 `useLoaderData` 讀取。
 
 ```jsx 06-project-init/src/features/home/HomePage.jsx
 import Typography from '@mui/material/Typography';
@@ -1524,15 +1692,18 @@ import HeroSlider from './components/HeroSlider.jsx';
 import ReasonList from './components/ReasonList.jsx';
 import ReviewList from './components/ReviewList.jsx';
 import ThemeGrid from './components/ThemeGrid.jsx';
+import { useLoaderData } from 'react-router';
 import TourCard from '../tours/components/TourCard.jsx';
-import { useStore } from '../../store-context.js';
+import { getTours } from '../../store.js';
+
+export const loader = () => ({ tours: getTours() });
 
 export default function HomePage() {
-  const { tours } = useStore();
+  const { tours } = useLoaderData();
   const featured = tours.filter((tour) => tour.featured);
 
   return (
-    <main id="content">
+    <main>
       <title>洛奇旅行</title>
       <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
       <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
@@ -1612,22 +1783,18 @@ export default function HomePage() {
 接著把路由表裡的首頁佔位換成 `HomePage`。
 
 ```diff 06-project-init/src/App.jsx
- import { StoreProvider } from './store.jsx';
  import SiteLayout from './layout/SiteLayout.jsx';
-+import HomePage from './features/home/HomePage.jsx';
++import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
  import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
  // ...
-     children: [
--      { index: true, element: <Placeholder title="首頁" /> },
-+      { index: true, element: <HomePage /> },
-       { path: 'tours', element: <Placeholder title="行程列表" /> },
- // ...
+-          { index: true, element: <Placeholder title="首頁" /> },
++          { index: true, loader: homeLoader, element: <HomePage /> },
+           { path: 'tours', element: <Placeholder title="行程列表" /> },
 ```
 
 **解析**
 
-- 首頁換成 `HomePage`，其他路徑仍用 `Placeholder`。`StoreProvider` 上一節已經包在外層，這裡不必再加。
+- 首頁換成 `HomePage`，其他路徑仍用 `Placeholder`。`loader` 從 `HomePage` 一起匯入，掛在首頁那條路由。
 
 ### 步驟 2：搜尋表單
 
@@ -1740,6 +1907,12 @@ export default function FieldSelect({
 +
 +export const dayOptions = [2, 3, 4, 5];
 ```
+
+**解析**
+
+- `regions` 與 `dayOptions` 寫在行程的 `mock.data.js`，搜尋表單與之後的列表篩選都讀這一份。
+
+接著換成真正的搜尋表單。
 
 ```jsx 06-project-init/src/features/home/components/HeroSearch.jsx
 import { useState } from 'react';
@@ -1890,6 +2063,11 @@ export const ntd = (value) =>
  
  export const dayOptions = [2, 3, 4, 5];
 ```
+
+**解析**
+
+- 空的 `tours` 換成這四筆精選。後面仍接著已有的 `regions` 與 `dayOptions`。
+- 輪播會用到封面、標題與出團日，價格用剛剛的 `ntd` 格式化。
 
 接著把 IconButton 改成圓形。
 
@@ -2103,6 +2281,10 @@ export const themeLinks = [
 ];
 ```
 
+**解析**
+
+- 每個主題有標題、說明與圖片路徑，供下一步的列表使用。
+
 接著把主題列表的 placeholder 換成真正的元件。
 
 ```jsx 06-project-init/src/features/home/components/ThemeGrid.jsx
@@ -2168,6 +2350,10 @@ export default function ThemeGrid() {
 +  { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
 +];
 ```
+
+**解析**
+
+- 三則理由追加在 `features/home/mock.data.js`，與主題資料放在同一份檔。
 
 接著把理由列表的 placeholder 換成真正的元件。
 
@@ -2369,11 +2555,19 @@ export default function ReviewList() {
 
 先把列表頁組起來並接到路由，後面寫篩選列時才能在畫面上對照。篩選列先放標記。價格比對先一律當成符合，下一節再換成區間算法，列表頁才編譯得過。主題與價格區間也等下一節再補，這一步先看到標題與行程卡片。
 
+篩選列先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/TourFilters.jsx
 export default function TourFilters() {
   return <p className="mt-8">篩選列</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出篩選列的位置。真正的下拉下一步再換。
+
+價格比對先一律當成符合，列表頁才編譯得過。
 
 ```diff 06-project-init/src/format.js
  // ...
@@ -2383,19 +2577,25 @@ export default function TourFilters() {
 +export const matchPrice = () => true;
 ```
 
+**解析**
+
+- `matchPrice` 此刻固定回傳 true。下一節再依區間換成真正的算法。
+
 接著組出列表頁。
 
 ```jsx 06-project-init/src/features/tours/ToursPage.jsx
-import { useSearchParams } from 'react-router';
+import { useLoaderData, useSearchParams } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TourCard from './components/TourCard.jsx';
 import TourFilters from './components/TourFilters.jsx';
 import { matchPrice } from '../../format.js';
-import { useStore } from '../../store-context.js';
+import { getTours } from '../../store.js';
+
+export const loader = () => ({ tours: getTours() });
 
 export default function ToursPage() {
-  const { tours } = useStore();
+  const { tours } = useLoaderData();
   const [params, setParams] = useSearchParams();
 
   const region = params.get('region') ?? '';
@@ -2418,10 +2618,7 @@ export default function ToursPage() {
   const visible = [...list].sort(rank[sort] || rank['price-asc']);
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>行程 · 洛奇旅行</title>
       <Typography variant="h1">行程</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
@@ -2476,17 +2673,13 @@ export default function ToursPage() {
 接著把 `/tours` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
+ import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
++import ToursPage, { loader as toursLoader } from './features/tours/ToursPage.jsx';
  // ...
- import HomePage from './features/home/HomePage.jsx';
-+import ToursPage from './features/tours/ToursPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { index: true, element: <HomePage /> },
--      { path: 'tours', element: <Placeholder title="行程列表" /> },
-+      { path: 'tours', element: <ToursPage /> },
-       { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
- // ...
+           { index: true, loader: homeLoader, element: <HomePage /> },
+-          { path: 'tours', element: <Placeholder title="行程列表" /> },
++          { path: 'tours', loader: toursLoader, element: <ToursPage /> },
+           { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
 ```
 
 **解析**
@@ -2494,6 +2687,10 @@ export default function ToursPage() {
 - `/tours` 從 `Placeholder` 換成 `ToursPage`，其他路徑仍用佔位。
 
 ### 步驟 2：這一頁要用的資料
+
+列表要能依主題與價格區間篩選，先把缺的行程與選項補進 `mock.data.js`。
+
+先補上其餘行程。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
  // ...
@@ -2569,6 +2766,12 @@ export default function ToursPage() {
  // ...
 ```
 
+**解析**
+
+- 已有行程補上 `theme`，並加上列表會用到的其餘行程。
+
+再補主題與價格區間的選項。
+
 ```diff 06-project-init/src/features/tours/mock.data.js
  // ...
  export const dayOptions = [2, 3, 4, 5];
@@ -2589,6 +2792,10 @@ export default function ToursPage() {
 +
  // ...
 ```
+
+**解析**
+
+- 主題與價格區間的選項寫在同一份 `mock.data.js`，給篩選列的下拉使用。
 
 價格區間怎麼算符合，寫在 `format.js`。
 
@@ -2853,11 +3060,19 @@ src/features/tours/
 
 先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。頁首、圖集、亮點、每日行程、費用說明、出發日、報名卡片與底部報名列先放標記。出團梯次的標記給出發日使用。
 
+頁首先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/TourHeader.jsx
 export default function TourHeader() {
   return <p>頁首</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出詳情頁頁首的位置。
+
+圖集先放標記。
 
 ```jsx 06-project-init/src/features/tours/components/Gallery.jsx
 export default function Gallery() {
@@ -2865,11 +3080,23 @@ export default function Gallery() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出圖集的位置。
+
+亮點先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/TourHighlights.jsx
 export default function TourHighlights() {
   return <div className="mt-8">亮點</div>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出亮點列表的位置。
+
+每日行程先放標記。
 
 ```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
 export default function Itinerary() {
@@ -2877,11 +3104,23 @@ export default function Itinerary() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出每日行程的位置。
+
+費用說明先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/FareBox.jsx
 export default function FareBox() {
   return <div className="mt-14">費用說明</div>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出費用包含與不含的位置。
+
+出發日先放標記。
 
 ```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
 export default function DepartureList() {
@@ -2889,11 +3128,23 @@ export default function DepartureList() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出出發梯次列表的位置。出團梯次的標記給出發日使用。
+
+手機出發日先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/MobileDepartures.jsx
 export default function MobileDepartures() {
   return <div className="mt-14 lg:hidden">出發日</div>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出窄螢幕出發日的位置。
+
+報名卡片先放標記。
 
 ```jsx 06-project-init/src/features/tours/components/BookingCard.jsx
 export default function BookingCard() {
@@ -2901,11 +3152,21 @@ export default function BookingCard() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出右側報名卡的位置。
+
+底部報名列先放標記。
+
 ```jsx 06-project-init/src/features/tours/components/MobileBookingBar.jsx
 export default function MobileBookingBar() {
   return <div className="fixed inset-x-0 bottom-0 lg:hidden">底部報名列</div>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出窄螢幕底部報名列的位置。
 
 詳情頁會對 `highlights` 做 `map`。每一筆行程的 `featured` 前面先補上 `highlights: []`，否則開到詳情會中斷。八筆都要補。下一步整檔換成有圖集與每日行程的版本時，這行會被蓋掉。
 
@@ -2915,9 +3176,19 @@ export default function MobileBookingBar() {
      featured: true,
 ```
 
+**解析**
+
+- 每筆行程先補上空的 `highlights`，詳情頁對它做 `map` 時才不會中斷。下一步會換成完整內容。
+
+報名種子先留空。
+
 ```js 06-project-init/src/features/booking/mock.data.js
 export const bookings = [];
 ```
+
+**解析**
+
+- 種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。`store.js` 已經會讀這份檔，這一節不必再改那個模組。
 
 剩餘名額先固定回 0，下一節換成真正的算法。
 
@@ -2929,32 +3200,15 @@ export const bookings = [];
 +export const seatsLeft = () => 0;
 ```
 
-Store 要一併提供報名種子，詳情頁才算得出剩餘人數。
-
-```diff 06-project-init/src/store.jsx
- // ...
- import { tours as seedTours } from './features/tours/mock.data.js';
-+import { bookings as seedBookings } from './features/booking/mock.data.js';
- 
- // ...
-   const [tours] = useState(seedTours);
-+  const [bookings] = useState(seedBookings);
-   return (
--    <StoreContext value={{ tours }}>
-+    <StoreContext value={{ tours, bookings }}>
-       {children}
- // ...
-```
-
 **解析**
 
-- `bookings` 放進 context，和 `tours` 一起讀。種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。
+- `seatsLeft` 此刻固定回傳 0，詳情頁才編譯得過。下一節再依訂單人數換成真正的算法。
 
 接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時的處理最後一步再補。然後把路由表裡的詳情佔位換掉。
 
 ```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { data, useLoaderData } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingCard from './components/BookingCard.jsx';
 import FareBox from './components/FareBox.jsx';
@@ -2964,23 +3218,25 @@ import MobileBookingBar from './components/MobileBookingBar.jsx';
 import MobileDepartures from './components/MobileDepartures.jsx';
 import TourHeader from './components/TourHeader.jsx';
 import TourHighlights from './components/TourHighlights.jsx';
-import { useStore } from '../../store-context.js';
+import { getBookings, getTour } from '../../store.js';
+
+export const loader = ({ params }) => {
+  const tour = getTour(params.id);
+  if (!tour) throw data('找不到頁面', { status: 404 });
+  return { tour, bookings: getBookings() };
+};
 
 export default function TourDetailPage() {
-  const { id } = useParams();
-  const { tours, bookings } = useStore();
-  const tour = tours.find((item) => item.id === id);
-  const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
+  const { tour, bookings } = useLoaderData();
+  const [departureId, setDepartureId] = useState(tour.departures[0]?.id ?? '');
+
   const selected =
     tour.departures.find((item) => item.id === departureId) ??
     tour.departures[0];
   const bookTo = `/booking?tourId=${tour.id}&departureId=${selected.id}`;
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24">
       <title>{`${tour.title} · 洛奇旅行`}</title>
       <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
         <div className="min-w-0">
@@ -3022,22 +3278,18 @@ export default function TourDetailPage() {
 接著把詳情路徑換上。
 
 ```diff 06-project-init/src/App.jsx
+ import ToursPage, { loader as toursLoader } from './features/tours/ToursPage.jsx';
++import TourDetailPage, { loader as tourLoader } from './features/tours/TourDetailPage.jsx';
  // ...
- import ToursPage from './features/tours/ToursPage.jsx';
-+import TourDetailPage from './features/tours/TourDetailPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'tours', element: <ToursPage /> },
--      { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
-+      { path: 'tours/:id', element: <TourDetailPage /> },
-       { path: 'booking', element: <Placeholder title="報名" /> },
- // ...
+           { path: 'tours', loader: toursLoader, element: <ToursPage /> },
+-          { path: 'tours/:id', element: <Placeholder title="行程詳情" /> },
++          { path: 'tours/:id', loader: tourLoader, element: <TourDetailPage /> },
+           { path: 'booking', element: <Placeholder title="報名" /> },
 ```
 
 **解析**
 
-- `StoreProvider` 包住 `RouterProvider`。`/tours/:id` 換成 `TourDetailPage`，其餘仍是佔位。
+- `/tours/:id` 換成 `TourDetailPage`，並掛上 `loader`。其餘仍是佔位。
 
 ### 步驟 2：這一頁要用的資料
 
@@ -3335,6 +3587,10 @@ export const sortOptions = [
 ];
 ```
 
+**解析**
+
+- 八筆行程補上圖集、亮點、每日行程、費用與出發梯次。這份是這一節的完整檔。
+
 把上一步的空陣列換成這四筆。
 
 ```js 06-project-init/src/features/booking/mock.data.js
@@ -3398,6 +3654,10 @@ export const bookings = [
   },
 ];
 ```
+
+**解析**
+
+- 報名種子換成四筆，詳情頁才能算出剩餘人數。姓名與「我的報名」範例不一致，兩頁各自照自己的清單。
 
 接著把剩餘名額換成真正的算法。
 
@@ -3862,25 +4122,12 @@ export default function MobileBookingBar({ price, bookTo }) {
 
 ### 步驟 12：找不到行程
 
-網址上的 id 對不到任何行程時，渲染同一份找不到頁。
-
-```diff 06-project-init/src/features/tours/TourDetailPage.jsx
- // ...
- import TourHighlights from './components/TourHighlights.jsx';
-+import NotFoundPage from '../../pages/NotFoundPage.jsx';
- import { useStore } from '../../store-context.js';
- // ...
-   const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
-+  if (!tour) return <NotFoundPage />;
-+
-   const selected =
- // ...
-```
+網址上的 id 對不到任何行程時，`loader` 丟出 `data('找不到頁面', { status: 404 })`。沒有 `path` 的那層 `errorElement` 接到之後，`RouteErrorPage` 仍渲染 `NotFoundPage`，所以頁首與頁尾留著，文案與星號路由相同。
 
 **解析**
 
-- 對不到行程時直接 `return <NotFoundPage />`。找不到頁自己有 `<title>找不到頁面 · 洛奇旅行</title>`。對得到時，這一頁的 `<title>` 用模板字串接上行程名稱。
-- 手改網址、對不上任何一筆時就會進到這裡。這和星號路由用同一份文案，頁首與頁尾還在。
+- 對不到行程時不會進入 `TourDetailPage` 的函式本體。404 由 `RouteErrorPage` 畫成 `NotFoundPage`。
+- 對得到時，這一頁的 `<title>` 用模板字串接上行程名稱。手改網址、對不上任何一筆時就會進到找不到頁。
 
 
 ## 報名
@@ -3903,11 +4150,19 @@ export default function MobileBookingBar({ price, bookTo }) {
 
 先把報名頁組起來並接到路由，後面換零件時才能在畫面上對照。步驟條、表單與右側摘要先放標記。
 
+步驟條先放標記。
+
 ```jsx 06-project-init/src/features/booking/components/BookingSteps.jsx
 export default function BookingSteps() {
   return <p>步驟條</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出報名步驟條的位置。
+
+表單先放標記。
 
 ```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
 export default function BookingForm() {
@@ -3919,39 +4174,66 @@ export default function BookingForm() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出報名表的位置。
+
+右側摘要先放標記。
+
 ```jsx 06-project-init/src/features/booking/components/BookingSummary.jsx
 export default function BookingSummary() {
   return <aside>這趟行程</aside>;
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出右側摘要的位置。
+
 接著把步驟條、表單與摘要組進報名頁。這三個目前是標記。然後把路由表裡的報名佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingPage.jsx
-import { useSearchParams } from 'react-router';
+import { data, redirect, useLoaderData } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
 import BookingSteps from './components/BookingSteps.jsx';
 import BookingSummary from './components/BookingSummary.jsx';
-import NotFoundPage from '../../pages/NotFoundPage.jsx';
-import { useStore } from '../../store-context.js';
+import { createBooking, getTour } from '../../store.js';
+
+export const loader = ({ request }) => {
+  const url = new URL(request.url);
+  const tour = getTour(url.searchParams.get('tourId') || 'hualien-taroko');
+  const departure =
+    tour?.departures.find(
+      (item) => item.id === url.searchParams.get('departureId'),
+    ) || tour?.departures[0];
+  if (!tour || !departure) throw data('找不到頁面', { status: 404 });
+  return { tour, departure };
+};
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const phone = String(form.get('phone') ?? '').trim();
+  if (!phone) return { error: '請填電話，此欄必填' };
+  const row = createBooking({
+    tourId: String(form.get('tourId')),
+    tourTitle: String(form.get('tourTitle')),
+    departureId: String(form.get('departureId')),
+    date: String(form.get('date')),
+    people: Number(form.get('people')),
+    name: String(form.get('name')),
+    email: String(form.get('email')),
+    phone,
+    subtotal: Number(form.get('subtotal')),
+  });
+  return redirect(`/booking/${row.id}`);
+};
 
 export default function BookingPage() {
-  const { tours } = useStore();
-  const [params] = useSearchParams();
-  const tour = tours.find(
-    (item) => item.id === (params.get('tourId') || 'hualien-taroko'),
-  );
-  const departure =
-    tour?.departures.find((item) => item.id === params.get('departureId')) ||
-    tour?.departures[0];
-  if (!tour || !departure) return <NotFoundPage />;
+  const { tour, departure } = useLoaderData();
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>報名 · 洛奇旅行</title>
       <BookingSteps activeStep={1} />
       <Typography variant="h1">報名</Typography>
@@ -3971,23 +4253,27 @@ export default function BookingPage() {
 **解析**
 
 - 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程與梯次走查詢字串，路徑仍是 `/booking`，不會和完成頁的 `/booking/:id` 撞在一起。
-- 網址沒帶 `tourId` 時，會畫出預設那一筆的表單。有帶 `tourId` 但對不到任何行程，或對到的行程沒有出發日時，直接 `return <NotFoundPage />`。沒帶 `departureId`，或帶了但對不到時，出發日改用第一梯，不會因此進到找不到頁。
+- 網址沒帶 `tourId` 時，`loader` 用 `hualien-taroko`。沒帶 `departureId` 或對不到時，出發日用第一梯。有帶 `tourId` 但對不到行程，或行程沒有出發日時，`loader` 丟出 404，由 `RouteErrorPage` 畫 `NotFoundPage`。
 - 左欄是 `BookingForm`，右欄是 `BookingSummary`。大螢幕右欄用 `sticky` 停在離頂一段的位置，等換成真正的摘要就能對照。
 
 接著把 `/booking` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
+ import TourDetailPage, { loader as tourLoader } from './features/tours/TourDetailPage.jsx';
++import BookingPage, {
++  action as bookingAction,
++  loader as bookingLoader,
++} from './features/booking/BookingPage.jsx';
  // ...
- import TourDetailPage from './features/tours/TourDetailPage.jsx';
-+import BookingPage from './features/booking/BookingPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'tours/:id', element: <TourDetailPage /> },
--      { path: 'booking', element: <Placeholder title="報名" /> },
-+      { path: 'booking', element: <BookingPage /> },
-       { path: 'booking/:id', element: <Placeholder title="報名完成" /> },
- // ...
+           { path: 'tours/:id', loader: tourLoader, element: <TourDetailPage /> },
+-          { path: 'booking', element: <Placeholder title="報名" /> },
++          {
++            path: 'booking',
++            loader: bookingLoader,
++            action: bookingAction,
++            element: <BookingPage />,
++          },
+           { path: 'booking/:id', element: <Placeholder title="報名完成" /> },
 ```
 
 **解析**
@@ -4105,29 +4391,8 @@ export default function BookingSteps({ activeStep }) {
 
 送出報名要寫進 Store。先讓 `bookings` 能更新，並加上 `createBooking`。
 
-```diff 06-project-init/src/store.jsx
- // ...
-   const [tours] = useState(seedTours);
--  const [bookings] = useState(seedBookings);
-+  const [bookings, setBookings] = useState(seedBookings);
-+
-+  const createBooking = (input) => {
-+    const row = {
-+      id: `local-${Date.now()}`,
-+      status: 'pending',
-+      uid: 'demo-local',
-+      ...input,
-+    };
-+    setBookings((list) => [row, ...list]);
-+    return row;
-+  };
-+
-   return (
--    <StoreContext value={{ tours, bookings }}>
-+    <StoreContext value={{ tours, bookings, createBooking }}>
-       {children}
- // ...
-```
+這些函式已經在 `store.js`，這一節不必再改那個檔。
+
 
 **解析**
 
@@ -4139,61 +4404,50 @@ export default function BookingSteps({ activeStep }) {
 
 ```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { Form, useActionData, useNavigation } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { ntd } from '../../../format.js';
-import { useStore } from '../../../store-context.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
 
 const preview = { name: '林可', email: 'lin@example.com' };
 
 export default function BookingForm({ tour, departure }) {
-  const navigate = useNavigate();
-  const { createBooking } = useStore();
+  const actionData = useActionData();
+  const navigation = useNavigation();
   const [people, setPeople] = useState('2');
   const [phone, setPhone] = useState('');
   const [touched, setTouched] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
   const subtotal = tour.price * Number(people);
   const phoneInvalid = !phone.trim();
-  const showPhoneError = (touched || submitted) && phoneInvalid;
-
-  const submit = (event) => {
-    event.preventDefault();
-    setSubmitted(true);
-    if (phoneInvalid) {
-      setError('請填電話，此欄必填');
-      return;
-    }
-    const row = createBooking({
-      tourId: tour.id,
-      tourTitle: tour.title,
-      departureId: departure.id,
-      date: departure.date,
-      people: Number(people),
-      name: preview.name,
-      email: preview.email,
-      phone: phone.trim(),
-      subtotal,
-    });
-    navigate(`/booking/${row.id}`, { replace: true });
-  };
+  const error = actionData?.error ?? '';
+  const showPhoneError = (touched || Boolean(error)) && phoneInvalid;
+  const submitting =
+    navigation.state === 'submitting' &&
+    new URL(navigation.formAction, 'http://localhost').pathname === '/booking';
 
   return (
-    <form
+    <Form
       id="booking-form"
+      method="post"
+      replace
       noValidate
       className="rounded-card bg-white shadow-card grid gap-4 p-6 md:p-8"
-      onSubmit={submit}
     >
       <Typography variant="h2">填寫資料</Typography>
       <Alert severity="success">
         預覽 · {preview.name} · {preview.email}
       </Alert>
+      <input type="hidden" name="tourId" value={tour.id} />
+      <input type="hidden" name="tourTitle" value={tour.title} />
+      <input type="hidden" name="departureId" value={departure.id} />
+      <input type="hidden" name="date" value={departure.date} />
+      <input type="hidden" name="people" value={people} />
+      <input type="hidden" name="name" value={preview.name} />
+      <input type="hidden" name="email" value={preview.email} />
+      <input type="hidden" name="subtotal" value={subtotal} />
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField
           label="姓名"
@@ -4218,6 +4472,7 @@ export default function BookingForm({ tour, departure }) {
         }))}
       />
       <TextField
+        name="phone"
         label="電話"
         type="tel"
         required
@@ -4226,10 +4481,7 @@ export default function BookingForm({ tour, departure }) {
         error={showPhoneError}
         helperText={showPhoneError ? '必填：請留下可聯絡的電話' : ' '}
         onBlur={() => setTouched(true)}
-        onChange={(event) => {
-          setPhone(event.target.value);
-          if (event.target.value.trim()) setError('');
-        }}
+        onChange={(event) => setPhone(event.target.value)}
       />
       {error ? <Alert severity="error">{error}</Alert> : null}
       <p>
@@ -4239,10 +4491,10 @@ export default function BookingForm({ tour, departure }) {
         </span>
       </p>
       <p className="text-muted">小計會依人數更新。送出後我們用 email 確認。</p>
-      <Button type="submit" variant="contained">
+      <Button type="submit" variant="contained" disabled={submitting}>
         送出報名
       </Button>
-    </form>
+    </Form>
   );
 }
 ```
@@ -4394,6 +4646,10 @@ export default function BookingSummary({ tour, departure }) {
  // ...
 ```
 
+**解析**
+
+- `statusLabel` 把 `pending`、`confirmed`、`cancelled` 對成「待確認」、「已確認」、「已取消」。對不到時顯示「待確認」。
+
 明細先放標記。
 
 ```jsx 06-project-init/src/features/booking/components/BookingReceipt.jsx
@@ -4402,31 +4658,34 @@ export default function BookingReceipt() {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出完成頁明細的位置。下一步再換成真正的 `BookingReceipt`。
+
 接著組出完成頁。步驟條沿用 `BookingSteps`，`activeStep` 是 2。明細目前是標記。然後把路由表裡的完成頁佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingResultPage.jsx
-import { Link, useParams } from 'react-router';
+import { data, Link, useLoaderData } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import BookingReceipt from './components/BookingReceipt.jsx';
 import BookingSteps from './components/BookingSteps.jsx';
-import NotFoundPage from '../../pages/NotFoundPage.jsx';
 import { statusLabel } from '../../format.js';
-import { useStore } from '../../store-context.js';
+import { getBooking } from '../../store.js';
+
+export const loader = ({ params }) => {
+  const row = getBooking(params.id);
+  if (!row) throw data('找不到頁面', { status: 404 });
+  return { row };
+};
 
 export default function BookingResultPage() {
-  const { id } = useParams();
-  const { bookings } = useStore();
-  const row = bookings.find((item) => item.id === id);
-  if (!row) return <NotFoundPage />;
+  const { row } = useLoaderData();
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>報名已送出 · 洛奇旅行</title>
       <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
@@ -4452,24 +4711,27 @@ export default function BookingResultPage() {
 
 **解析**
 
-- 用 `useParams` 讀網址上的 `id`，再從 `bookings` 找出那一筆。找不到就 `return <NotFoundPage />`，標題由找不到頁自己的 `<title>` 接上。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
-- `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。狀態仍是 `pending`、`confirmed`、`cancelled`，沒有另外的草稿狀態。
+- `loader` 用網址上的 `id` 呼叫 `getBooking`。找不到就丟出 404，由 `RouteErrorPage` 畫 `NotFoundPage`。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
+- `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文。狀態仍是 `pending`、`confirmed`、`cancelled`，沒有另外的草稿狀態。
 - 成功 `Alert` 套用剛才補進主題的提示框外觀。明細目前是標記，下一步再換成 `BookingReceipt`。兩顆按鈕分別去我的報名與行程列表。
 
 接著把 `/booking/:id` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
+ import BookingPage, {
+   action as bookingAction,
+   loader as bookingLoader,
+ } from './features/booking/BookingPage.jsx';
++import BookingResultPage, { loader as bookingResultLoader } from './features/booking/BookingResultPage.jsx';
  // ...
- import BookingPage from './features/booking/BookingPage.jsx';
-+import BookingResultPage from './features/booking/BookingResultPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'booking', element: <BookingPage /> },
--      { path: 'booking/:id', element: <Placeholder title="報名完成" /> },
-+      { path: 'booking/:id', element: <BookingResultPage /> },
-       { path: 'me', element: <Placeholder title="我的報名" /> },
- // ...
+           },
+-          { path: 'booking/:id', element: <Placeholder title="報名完成" /> },
++          {
++            path: 'booking/:id',
++            loader: bookingResultLoader,
++            element: <BookingResultPage />,
++          },
+           { path: 'me', element: <Placeholder title="我的報名" /> },
 ```
 
 **解析**
@@ -4580,6 +4842,11 @@ export default function BookingReceipt({ row }) {
 +];
 ```
 
+**解析**
+
+- `mySamples` 是這一頁的預覽清單，不匯入後台種子。清單就是這四筆，不依 email 過濾，也不讀 Store 裡剛送出的那幾筆。
+- 後台那四筆種子不會出現在這一頁。
+
 單筆列先放標記。
 
 ```jsx 06-project-init/src/features/booking/components/MyBookingRow.jsx
@@ -4587,6 +4854,10 @@ export default function MyBookingRow() {
   return <article className="py-6">單筆報名</article>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字。標題「你的報名」與列表外框組在頁面上時，每一筆先渲染這個標記。
 
 接著組出我的報名頁。單筆列目前是標記。清單先一律畫出來。
 
@@ -4597,10 +4868,7 @@ import { mySamples } from './mock.data.js';
 
 export default function MyBookingsPage() {
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>我的報名 · 洛奇旅行</title>
       <Typography variant="h1">我的報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
@@ -4630,26 +4898,19 @@ export default function MyBookingsPage() {
 
 **解析**
 
-- 清單就是 `mySamples`，不依 email 過濾，也不讀 Store 裡剛送出的那幾筆。
-- 後台那四筆種子不會出現在這一頁。
-- 標題「你的報名」與列表外框先組在頁面上。每一筆先渲染 `MyBookingRow` 標記。
 - 清單目前一律畫出來。空陣列時的提示，最後一步再補。
 - 副標是靜態說明。這一頁沒有取消按鈕。
 
 接著把 `/me` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
- // ...
- import BookingResultPage from './features/booking/BookingResultPage.jsx';
+ import BookingResultPage, { loader as bookingResultLoader } from './features/booking/BookingResultPage.jsx';
 +import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
  // ...
-       { path: 'booking/:id', element: <BookingResultPage /> },
--      { path: 'me', element: <Placeholder title="我的報名" /> },
-+      { path: 'me', element: <MyBookingsPage /> },
-       { path: 'about', element: <Placeholder title="關於" /> },
- // ...
+           },
+-          { path: 'me', element: <Placeholder title="我的報名" /> },
++          { path: 'me', element: <MyBookingsPage /> },
+           { path: 'about', element: <Placeholder title="關於" /> },
 ```
 
 **解析**
@@ -4822,6 +5083,10 @@ export const faqs = [
 ];
 ```
 
+**解析**
+
+- 常見問題寫在 `features/about/mock.data.js`，關於頁只負責展開與收合。
+
 接著寫關於頁。
 
 ```jsx 06-project-init/src/features/about/AboutPage.jsx
@@ -4836,10 +5101,7 @@ export default function AboutPage() {
   const [open, setOpen] = useState(null);
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>關於 · 洛奇旅行</title>
       <Typography variant="h1" className="max-w-[10em]">
         關於洛奇旅行
@@ -4894,17 +5156,13 @@ export default function AboutPage() {
 接著把 `/about` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
- // ...
  import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
 +import AboutPage from './features/about/AboutPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
  // ...
-       { path: 'me', element: <MyBookingsPage /> },
--      { path: 'about', element: <Placeholder title="關於" /> },
-+      { path: 'about', element: <AboutPage /> },
-       { path: 'login', element: <Placeholder title="登入提示" /> },
- // ...
+           { path: 'me', element: <MyBookingsPage /> },
+-          { path: 'about', element: <Placeholder title="關於" /> },
++          { path: 'about', element: <AboutPage /> },
+           { path: 'login', element: <Placeholder title="登入提示" /> },
 ```
 
 **解析**
@@ -4915,7 +5173,7 @@ export default function AboutPage() {
 
 登入頁畫出 Google 對話框。主按鈕不寫入狀態，也不導頁。返回首頁與關閉對話框都導回 `/`。頁首維持登入連結。
 
-這一節先寫 `LoginPage`，再讓已經存在的 `SiteHeader` 在後台路徑改顯示後台導覽與「後台登入」。它們不是上下層關係。
+這一節先寫 `LoginPage`，再讓已經存在的 `SiteHeader` 依路徑切換登入按鈕的文字與連結。它們不是上下層關係。
 
 ### 步驟 1：登入頁
 
@@ -4951,7 +5209,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   return (
-    <main id="content" className="flex-1">
+    <main className="flex-1">
       <title>用 Google 帳號繼續 · 洛奇旅行</title>
       <Dialog
         open
@@ -4994,17 +5252,13 @@ export default function LoginPage() {
 接著把 `/login` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
- // ...
  import AboutPage from './features/about/AboutPage.jsx';
 +import LoginPage from './features/auth/LoginPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
  // ...
-       { path: 'about', element: <AboutPage /> },
--      { path: 'login', element: <Placeholder title="登入提示" /> },
-+      { path: 'login', element: <LoginPage /> },
-       { path: 'admin/login', element: <Placeholder title="後台登入" /> },
- // ...
+           { path: 'about', element: <AboutPage /> },
+-          { path: 'login', element: <Placeholder title="登入提示" /> },
++          { path: 'login', element: <LoginPage /> },
+           { path: 'admin/login', element: <Placeholder title="後台登入" /> },
 ```
 
 **解析**
@@ -5013,100 +5267,134 @@ export default function LoginPage() {
 
 ### 步驟 2：更新頁首
 
-登入頁已經接上。這一節改已經存在的 `SiteHeader`：前台仍是連到 `/login` 的「登入」，路徑以 `/admin` 開頭時改成「後台登入」。沒有頭像，也沒有登出。
+登入頁已經接上。這一節改已經存在的 `SiteHeader`：前台仍是連到 `/login` 的「登入」，路徑以 `/admin` 開頭時改成「後台登入」。沒有頭像，也沒有登出。導覽與站名仍是前台的樣子，後台選單留到下一章再換。
 
-```jsx 06-project-init/src/layout/components/SiteHeader.jsx
-import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router';
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import SiteNav from './SiteNav.jsx';
-import Icon from '../../_shared/Icon.jsx';
-
-const item = ({ isActive }) =>
-  `inline-flex min-h-11 items-center rounded-full px-3 font-bold ${isActive ? 'bg-action text-white' : 'text-ink hover:bg-mist'}`;
-
-export default function SiteHeader() {
-  const { pathname } = useLocation();
-  const admin = pathname.startsWith('/admin');
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
-  const account = (
-    <Button
-      component={Link}
-      to={admin ? '/admin/login' : '/login'}
-      onClick={close}
-    >
-      {admin ? '後台登入' : '登入'}
-    </Button>
-  );
-
-  const links = (id) =>
-    admin ? (
-      <nav id={id} className="flex flex-col gap-1 md:flex-row md:items-center">
-        <NavLink to="/admin" end className={item} onClick={close}>
-          行程管理
-        </NavLink>
-        <NavLink to="/admin/bookings" className={item} onClick={close}>
-          報名清單
-        </NavLink>
-      </nav>
-    ) : (
-      <SiteNav onNavigate={close} id={id} />
-    );
-
-  return (
-    <AppBar id="site-header" position="sticky" component="header">
-      <a className="skip" href="#content">
-        跳到內容
-      </a>
-      <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
-        <Link
-          to={admin ? '/admin' : '/'}
-          className="font-serif text-2xl font-semibold text-ink"
-        >
-          {admin ? '洛奇旅行 · 後台' : '洛奇旅行'}
-        </Link>
-        <Button
-          id="nav-toggle"
-          className="md:hidden"
-          variant="outlined"
-          startIcon={<Icon name="menu" />}
-          aria-expanded={open}
-          aria-controls="site-drawer"
-          onClick={() => setOpen(true)}
-        >
-          選單
-        </Button>
-        <div className="hidden items-center gap-1 md:flex">
-          {links('site-nav')}
-          {account}
-        </div>
-      </div>
-      <Drawer anchor="right" open={open} onClose={close}>
-        <div id="site-drawer" className="flex flex-col gap-2 p-4">
-          {links(undefined)}
-          {account}
-        </div>
-      </Drawer>
-    </AppBar>
-  );
-}
+```diff 06-project-init/src/layout/components/SiteHeader.jsx
+ import { useState } from 'react';
+-import { Link } from 'react-router';
++import { Link, useLocation } from 'react-router';
+ // ...
+ export default function SiteHeader() {
++  const { pathname } = useLocation();
++  const admin = pathname.startsWith('/admin');
+   const [open, setOpen] = useState(false);
+   const close = () => setOpen(false);
++  const account = (
++    <Button
++      component={Link}
++      to={admin ? '/admin/login' : '/login'}
++      onClick={close}
++    >
++      {admin ? '後台登入' : '登入'}
++    </Button>
++  );
+ 
+   return (
+ // ...
+         <div className="hidden items-center gap-1 md:flex">
+           <SiteNav onNavigate={close} id="site-nav" />
+-          <Button component={Link} to="/login" onClick={close}>
+-            登入
+-          </Button>
++          {account}
+         </div>
+ // ...
+         <div id="site-drawer" className="flex flex-col gap-2 p-4">
+           <SiteNav onNavigate={close} />
+-          <Button component={Link} to="/login" onClick={close}>
+-            登入
+-          </Button>
++          {account}
+         </div>
+ // ...
 ```
 
 **解析**
 
 - 前台按鈕文字是「登入」，連到 `/login`。路徑以 `/admin` 開頭時，按鈕文字是「後台登入」，連到 `/admin/login`。
-- 同一條件下，商標改成「洛奇旅行 · 後台」，站名連到 `/admin`，導覽換成行程管理與報名清單。
-- 窄螢幕用 Drawer 放同一組連結。點連結會關掉抽屜。
-- 這一章不依登入狀態改頁首，也沒有頭像或登出。
+- 用 `useLocation().pathname.startsWith('/admin')` 判斷。`/admin/login` 也算後台路徑。
+- 登入鈕抽成 `account`，桌面與抽屜共用同一份。
+- 這一章不依登入狀態改頁首，也沒有頭像或登出。站名與導覽仍是前台的寫法。
+
 
 # 後台
 
 這一章把後台頁組出來。後台頁可直接打開預覽，身份檢查留到下一篇。打包與預覽寫在下一章。
 
-後台同樣放在 `features/admin/`。下面每一節也會先說明該頁拆哪些元件，再用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件，以便在畫面上對照。
+## 後台選單
+
+後台沿用同一份 `SiteHeader` 與 `SiteLayout`，不必另做一組頁首。登入那一節已經用 `useLocation().pathname.startsWith('/admin')` 讓登入按鈕在後台路徑改成「後台登入」。這一節用同一個條件，把導覽與站名也換成後台的樣子。
+
+後台導覽有兩條 `NavLink`：行程管理連到 `/admin`，並加上 `end`，這樣 `/admin/bookings` 才不會被當成行程管理的作用中連結；報名清單連到 `/admin/bookings`。站名改成「洛奇旅行 · 後台」，連到 `/admin`。
+
+兩頁已經能用頁首切換，所以行程管理與報名清單不必再做一排分頁。
+
+```diff 06-project-init/src/layout/components/SiteHeader.jsx
+ import { useState } from 'react';
+-import { Link, useLocation } from 'react-router';
++import { Link, NavLink, useLocation } from 'react-router';
+ // ...
+ import Icon from '../../_shared/Icon.jsx';
++
++const item = ({ isActive }) =>
++  `inline-flex min-h-11 items-center rounded-full px-3 font-bold ${isActive ? 'bg-action text-white' : 'text-ink hover:bg-mist'}`;
+ 
+ export default function SiteHeader() {
+ // ...
+     </Button>
+   );
++
++  const links = (id) =>
++    admin ? (
++      <nav id={id} className="flex flex-col gap-1 md:flex-row md:items-center">
++        <NavLink to="/admin" end className={item} onClick={close}>
++          行程管理
++        </NavLink>
++        <NavLink to="/admin/bookings" className={item} onClick={close}>
++          報名清單
++        </NavLink>
++      </nav>
++    ) : (
++      <SiteNav onNavigate={close} id={id} />
++    );
+ 
+   return (
+     <AppBar id="site-header" position="sticky" component="header">
+       <div className="relative mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
+-        <Link to="/" className="font-serif text-2xl font-semibold text-ink">
+-          洛奇旅行
+-        </Link>
++        <Link
++          to={admin ? '/admin' : '/'}
++          className="font-serif text-2xl font-semibold text-ink"
++        >
++          {admin ? '洛奇旅行 · 後台' : '洛奇旅行'}
++        </Link>
+         <Button
+ // ...
+         <div className="hidden items-center gap-1 md:flex">
+-          <SiteNav onNavigate={close} id="site-nav" />
++          {links('site-nav')}
+           {account}
+         </div>
+ // ...
+         <div id="site-drawer" className="flex flex-col gap-2 p-4">
+-          <SiteNav onNavigate={close} />
++          {links(undefined)}
+           {account}
+         </div>
+ // ...
+```
+
+**解析**
+
+- 後台不另做頁首，外框仍是 `SiteLayout`。
+- `admin` 仍用 `pathname.startsWith('/admin')` 判斷，`/admin/login` 也算後台。
+- `/admin` 的 `NavLink` 加 `end`，否則以 `/admin` 開頭的路徑都會亮起行程管理。
+- 站名在後台改連 `/admin`，文字是「洛奇旅行 · 後台」。前台仍連 `/`，文字仍是「洛奇旅行」。
+- 行程管理與報名清單用頁首切換即可，不必再做一排分頁。
+
+後台頁放在 `features/admin/`。下面每一節會先說明該頁拆哪些元件，再用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件，以便在畫面上對照。
 
 ```
 src/features/admin/
@@ -5167,10 +5455,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
 
   return (
-    <main
-      id="content"
-      className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24">
       <title>後台登入 · 洛奇旅行</title>
       <Paper
         component="form"
@@ -5217,17 +5502,13 @@ export default function AdminLoginPage() {
 接著把 `/admin/login` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
- // ...
  import LoginPage from './features/auth/LoginPage.jsx';
 +import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
  // ...
-       { path: 'login', element: <LoginPage /> },
--      { path: 'admin/login', element: <Placeholder title="後台登入" /> },
-+      { path: 'admin/login', element: <AdminLoginPage /> },
-       { path: 'admin', element: <Placeholder title="後台行程" /> },
- // ...
+           { path: 'login', element: <LoginPage /> },
+-          { path: 'admin/login', element: <Placeholder title="後台登入" /> },
++          { path: 'admin/login', element: <AdminLoginPage /> },
+           { path: 'admin', element: <Placeholder title="後台行程" /> },
 ```
 
 **解析**
@@ -5257,11 +5538,19 @@ export default function AdminLoginPage() {
 
 先把行程管理組起來並接到路由。表格與表單先放標記。表單先做成 Dialog 外殼，依有沒有帶入行程區分標題。空白草稿與轉換函式放在 `tourDraft.js`，不要和表單元件寫在同一個檔。
 
+表格先放標記。
+
 ```jsx 06-project-init/src/features/admin/components/TourTable.jsx
 export default function TourTable() {
   return <p className="mt-8">行程表格</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出行程表格的位置。
+
+空白草稿與轉換函式先放在 `tourDraft.js`。
 
 ```js 06-project-init/src/features/admin/components/tourDraft.js
 export const empty = {
@@ -5283,6 +5572,12 @@ export const empty = {
 export const draftFromTour = () => empty;
 ```
 
+**解析**
+
+- 不要和表單元件寫在同一個檔。此刻先有空白草稿與一個稍後會再換掉的 `draftFromTour`。
+
+表單先做成 Dialog 外殼，依有沒有帶入行程區分標題。
+
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -5298,26 +5593,62 @@ export default function TourForm({ open, tour, onClose }) {
 }
 ```
 
+**解析**
+
+- 此刻只畫出對話框標題與關閉。真正的欄位留到草稿工具與 `TourForm` 再換。
+
 接著組出行程管理頁。表格與表單目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
 import { useState } from 'react';
+import { useFetcher, useLoaderData } from 'react-router';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
-import { useStore } from '../../store-context.js';
+import { deleteTour, getTours, saveTour } from '../../store.js';
+
+export const loader = () => ({ tours: getTours() });
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  if (form.get('intent') === 'delete') {
+    deleteTour(String(form.get('id')));
+    return { notice: '已刪除這筆行程' };
+  }
+  const editingId = String(form.get('editingId') ?? '');
+  const error = saveTour(editingId, JSON.parse(String(form.get('draft'))));
+  return error ? { error } : { notice: '已儲存這筆行程', saved: true };
+};
 
 export default function AdminToursPage() {
-  const { tours } = useStore();
+  const { tours } = useLoaderData();
+  const remove = useFetcher();
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
+  const [deletingTour, setDeletingTour] = useState(null);
+  const [notice, setNotice] = useState('');
+  const [seenRemove, setSeenRemove] = useState(null);
+  if (
+    remove.state === 'idle' &&
+    remove.data?.notice &&
+    remove.data !== seenRemove
+  ) {
+    setSeenRemove(remove.data);
+    setDeletingTour(null);
+    setNotice(remove.data.notice);
+  }
+
+  const close = () => setOpen(false);
 
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>行程管理 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
@@ -5343,8 +5674,53 @@ export default function AdminToursPage() {
           setTour(item);
           setOpen(true);
         }}
+        onDelete={setDeletingTour}
       />
-      <TourForm open={open} tour={tour} onClose={() => setOpen(false)} />
+      <TourForm
+        key={open ? (tour?.id ?? 'create') : 'closed'}
+        open={open}
+        tour={tour}
+        onClose={close}
+        onNotice={setNotice}
+      />
+      <Dialog
+        open={Boolean(deletingTour)}
+        onClose={() => setDeletingTour(null)}
+        aria-labelledby="delete-title"
+      >
+        <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
+        <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
+        <DialogActions className="gap-2 p-4">
+          <Button onClick={() => setDeletingTour(null)}>留下</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={remove.state !== 'idle'}
+            onClick={() =>
+              remove.submit(
+                { intent: 'delete', id: deletingTour.id },
+                { method: 'post' },
+              )
+            }
+          >
+            刪除
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={3200}
+        onClose={() => setNotice('')}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setNotice('')}
+        >
+          {notice}
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
@@ -5354,22 +5730,26 @@ export default function AdminToursPage() {
 
 - 直接打開 `/admin` 就看得到這一頁。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
 - 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
-- 表格與表單目前是標記。兩頁用頁首切換。
+- 這一頁的 `action` 已經會處理儲存與刪除，成功時把 `notice` 交給 Snackbar。表格與表單目前是標記。兩頁用頁首切換。
 
 接著把 `/admin` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
- // ...
  import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
-+import AdminToursPage from './features/admin/AdminToursPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
++import AdminToursPage, {
++  action as adminToursAction,
++  loader as adminToursLoader,
++} from './features/admin/AdminToursPage.jsx';
  // ...
-       { path: 'admin/login', element: <AdminLoginPage /> },
--      { path: 'admin', element: <Placeholder title="後台行程" /> },
-+      { path: 'admin', element: <AdminToursPage /> },
-       { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
- // ...
+           { path: 'admin/login', element: <AdminLoginPage /> },
+-          { path: 'admin', element: <Placeholder title="後台行程" /> },
++          {
++            path: 'admin',
++            loader: adminToursLoader,
++            action: adminToursAction,
++            element: <AdminToursPage />,
++          },
+           { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
 ```
 
 **解析**
@@ -5400,7 +5780,9 @@ export default function AdminToursPage() {
  // ...
 ```
 
-主題名稱只寫在首頁的 `themeLinks`。這裡用同一份清單做成 `themes`，後台表單的下拉直接用它。每筆行程只存 `theme` 字串，不必再做主題的增刪或另建資料表。
+**解析**
+
+- 主題名稱只寫在首頁的 `themeLinks`。這裡用同一份清單做成 `themes`，後台表單的下拉直接用它。每筆行程只存 `theme` 字串，不必再做主題的增刪或另建資料表。
 
 接著補上草稿轉行程的函式，並讓 Store 能儲存與刪除行程。`draftFromTour` 下一步再換成會帶入行程欄位的寫法。
 
@@ -5478,48 +5860,12 @@ export const tourFromDraft = (draft) => {
 };
 ```
 
-```diff 06-project-init/src/store.jsx
- import { StoreContext } from './store-context.js';
-+import { tourFromDraft } from './features/admin/components/tourDraft.js';
-
- export function StoreProvider({ children }) {
--  const [tours] = useState(seedTours);
-+  const [tours, setTours] = useState(seedTours);
-   const [bookings, setBookings] = useState(seedBookings);
-+  const saveTour = (editingId, draft) => {
-+    const { error, tour } = tourFromDraft(draft);
-+    if (error) return error;
-+    if (editingId) {
-+      setTours(
-+        tours.map((item) =>
-+          item.id === editingId ? { ...tour, id: editingId } : item,
-+        ),
-+      );
-+    } else {
-+      setTours([{ ...tour, id: `tour-${Date.now()}` }, ...tours]);
-+    }
-+    return '';
-+  };
-+
-+  const deleteTour = (id) => {
-+    setTours((list) => list.filter((item) => item.id !== id));
-+  };
- 
-   const createBooking = (input) => {
- // ...
-   return (
--    <StoreContext value={{ tours, bookings, createBooking }}>
-+    <StoreContext value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
-       {children}
- // ...
-```
-
 **解析**
 
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
 - 標題去掉空白後是空的，回傳「標題要填」，不寫入。編號不由表單填，新增時 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
-- 新增與編輯都寫完整結構。新增時插到陣列最前面。
-- 成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。提示訊息下一步寫在頁面自己的狀態裡。
+- 新增與編輯都寫完整結構。新增時插到陣列最前面。成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。
+- 這些函式已經在 `store.js`，這一節不必再改那個檔。提示訊息由步驟 1 的頁面用 `notice` 與 Snackbar 顯示。
 
 ### 步驟 3：行程表格
 
@@ -5647,57 +5993,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 
 接著在頁面接上刪除。操作欄的「刪除」先記要刪的那一筆，確認後才從列表拿掉。
 
-```diff 06-project-init/src/features/admin/AdminToursPage.jsx
- import { useState } from 'react';
- import Button from '@mui/material/Button';
-+import Dialog from '@mui/material/Dialog';
-+import DialogActions from '@mui/material/DialogActions';
-+import DialogContent from '@mui/material/DialogContent';
-+import DialogTitle from '@mui/material/DialogTitle';
- import Typography from '@mui/material/Typography';
- // ...
- export default function AdminToursPage() {
--  const { tours } = useStore();
-+  const { tours, deleteTour } = useStore();
-   const [open, setOpen] = useState(false);
-   const [tour, setTour] = useState(null);
-+  const [deletingTour, setDeletingTour] = useState(null);
-
-   return (
- // ...
-       <TourTable
-         tours={tours}
-         onEdit={(item) => {
-           setTour(item);
-           setOpen(true);
-         }}
-+        onDelete={setDeletingTour}
-       />
-       <TourForm open={open} tour={tour} onClose={() => setOpen(false)} />
-+      <Dialog
-+        open={Boolean(deletingTour)}
-+        onClose={() => setDeletingTour(null)}
-+        aria-labelledby="delete-title"
-+      >
-+        <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
-+        <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
-+        <DialogActions className="gap-2 p-4">
-+          <Button onClick={() => setDeletingTour(null)}>留下</Button>
-+          <Button
-+            color="error"
-+            variant="contained"
-+            onClick={() => {
-+              deleteTour(deletingTour.id);
-+              setDeletingTour(null);
-+            }}
-+          >
-+            刪除
-+          </Button>
-+        </DialogActions>
-+      </Dialog>
-     </main>
- // ...
-```
 
 **解析**
 
@@ -5707,9 +6002,9 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 - 「編輯」把該筆交給 `onEdit`，頁面會打開同一個 Dialog。
 - 「刪除」把該筆交給頁面的 `deletingTour`。先出現確認 Dialog，確認後才呼叫 Store 的 `deleteTour`，這筆會從列表消失。
 
-### 步驟 4：行程表單
+### 步驟 4：草稿工具
 
-把行程表單的 placeholder 換成真正的元件，並把 `draftFromTour` 換成會帶入行程欄位的寫法。多列輸入抽成 `DraftRows`，避免圖庫、每日行程與出發梯次各寫一套新增與刪除。草稿留在表單裡。頁面補上 `onSave`、`onNotice` 與成功提示；刪除確認後也用同一則提示。
+把 `draftFromTour` 換成會帶入行程欄位的寫法，並讓空白草稿每次都是一份新物件。圖庫、每日行程與出發梯次的每一列都帶一個只活在草稿裡的 `id`。
 
 ```diff 06-project-init/src/features/admin/components/tourDraft.js
  // ...
@@ -5781,6 +6076,16 @@ export default function TourTable({ tours, onEdit, onDelete }) {
  // ...
 ```
 
+**解析**
+
+- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty()` 每次回傳一份新的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。
+- `draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
+- 每一列有一個只活在草稿裡的 `id`，當 React 的 `key`；刪列或重排時才不會用 index 對錯列。存檔時 `tourFromDraft` 會拿掉它，圖庫存回網址字串，出發梯次的 `id` 仍用日期。
+
+### 步驟 5：DraftRows
+
+多列輸入抽成 `DraftRows`，避免圖庫、每日行程與出發梯次各寫一套新增與刪除。
+
 ```jsx 06-project-init/src/features/admin/components/DraftRows.jsx
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -5835,8 +6140,18 @@ export default function DraftRows({
 }
 ```
 
+**解析**
+
+- `DraftRows` 負責多列輸入的新增與刪除。列的 `key` 用草稿上的 `id`，新增一列時再補一個新的 `id`。`blank` 本身不含 `id`。
+- 各列的欄位由呼叫端用 `children` 傳進去，下一步的 `TourForm` 會用它來畫圖庫、每日行程與出發梯次。
+
+### 步驟 6：行程表單
+
+把行程表單的 placeholder 換成真正的元件。草稿留在表單裡，送出走 `useFetcher`。步驟 1 的頁面已經傳入 `onNotice`，並用 Snackbar 顯示成功提示。
+
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useFetcher } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -5851,25 +6166,38 @@ import FieldSelect from '../../../_shared/FieldSelect.jsx';
 import DraftRows from './DraftRows.jsx';
 import { draftFromTour, empty } from './tourDraft.js';
 
-export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
+export default function TourForm({ open, tour, onClose, onNotice }) {
   const editingId = tour?.id ?? null;
+  const fetcher = useFetcher();
+  const handled = useRef(null);
+  const error =
+    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
   const [draft, setDraft] = useState(() =>
     tour ? draftFromTour(tour) : empty(),
   );
-  const [error, setError] = useState('');
   const set = (key) => (event) =>
     setDraft((current) => ({ ...current, [key]: event.target.value }));
   const setList = (key) => (items) =>
     setDraft((current) => ({ ...current, [key]: items }));
 
-  const submit = async (event) => {
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data?.saved) return;
+    if (handled.current === fetcher.data) return;
+    handled.current = fetcher.data;
+    onNotice(fetcher.data.notice);
+    onClose();
+  }, [fetcher.state, fetcher.data, onNotice, onClose]);
+
+  const submit = (event) => {
     event.preventDefault();
-    const message = await onSave(editingId, draft);
-    setError(message);
-    if (!message) {
-      onNotice('已儲存這筆行程');
-      onClose();
-    }
+    fetcher.submit(
+      {
+        intent: 'save',
+        editingId: editingId ?? '',
+        draft: JSON.stringify(draft),
+      },
+      { method: 'post' },
+    );
   };
 
   return (
@@ -6063,7 +6391,11 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
           />
         </DialogContent>
         <DialogActions className="flex-wrap gap-2 p-4">
-          <Button type="submit" variant="contained">
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={fetcher.state !== 'idle'}
+          >
             儲存
           </Button>
           <Button type="button" onClick={onClose}>
@@ -6076,88 +6408,13 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
 }
 ```
 
-```diff 06-project-init/src/features/admin/AdminToursPage.jsx
- import { useState } from 'react';
-+import Alert from '@mui/material/Alert';
- import Button from '@mui/material/Button';
- import Dialog from '@mui/material/Dialog';
- import DialogActions from '@mui/material/DialogActions';
- import DialogContent from '@mui/material/DialogContent';
- import DialogTitle from '@mui/material/DialogTitle';
-+import Snackbar from '@mui/material/Snackbar';
- import Typography from '@mui/material/Typography';
- // ...
- export default function AdminToursPage() {
--  const { tours, deleteTour } = useStore();
-+  const { tours, saveTour, deleteTour } = useStore();
-   const [open, setOpen] = useState(false);
-   const [tour, setTour] = useState(null);
-   const [deletingTour, setDeletingTour] = useState(null);
-+  const [notice, setNotice] = useState('');
-+
-+  const close = () => setOpen(false);
- 
-   return (
- // ...
--      <TourForm open={open} tour={tour} onClose={() => setOpen(false)} />
-+      <TourForm
-+        key={open ? (tour?.id ?? 'create') : 'closed'}
-+        open={open}
-+        tour={tour}
-+        onClose={close}
-+        onSave={saveTour}
-+        onNotice={setNotice}
-+      />
-       <Dialog
-         open={Boolean(deletingTour)}
-         onClose={() => setDeletingTour(null)}
-         aria-labelledby="delete-title"
-       >
-         <DialogTitle id="delete-title">刪除這筆行程？</DialogTitle>
-         <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
-         <DialogActions className="gap-2 p-4">
-           <Button onClick={() => setDeletingTour(null)}>留下</Button>
-           <Button
-             color="error"
-             variant="contained"
-             onClick={() => {
-               deleteTour(deletingTour.id);
-               setDeletingTour(null);
-+              setNotice('已刪除這筆行程');
-             }}
-           >
-             刪除
-           </Button>
-         </DialogActions>
-       </Dialog>
-+      <Snackbar
-+        open={Boolean(notice)}
-+        autoHideDuration={3200}
-+        onClose={() => setNotice('')}
-+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-+      >
-+        <Alert
-+          severity="success"
-+          variant="filled"
-+          onClose={() => setNotice('')}
-+        >
-+          {notice}
-+        </Alert>
-+      </Snackbar>
-     </main>
- // ...
-```
-
 **解析**
 
-- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty()` 每次回傳一份新的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。`draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
-- 每一列有一個只活在草稿裡的 `id`，當 React 的 `key`；刪列或重排時才不會用 index 對錯列。存檔時 `tourFromDraft` 會拿掉它，圖庫存回網址字串，出發梯次的 `id` 仍用日期。
 - `TourForm` 是同一個 Dialog。沒有帶入行程時標題是「新增行程」，有帶入時是「編輯行程」。草稿在表單裡面初始化；頁面用 `key` 在每次打開時重新掛載，才會依當下的行程重算。表單只負責儲存，沒有刪除鈕。
-- `DraftRows` 負責多列輸入的新增與刪除。圖庫、每日行程與出發梯次都用它，各列的欄位由 `TourForm` 傳進去。列的 `key` 用草稿上的 `id`，新增一列時再補一個新的 `id`。`blank` 本身不含 `id`。
+- 圖庫、每日行程與出發梯次都用剛才的 `DraftRows`，各列的欄位由這裡傳進去。
 - 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
-- 送出時把 `onSave` 的回傳當成錯誤訊息。`onSave` 由頁面傳入，這一章是 Store 的 `saveTour`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已儲存這筆行程」。
-- 刪除仍在列表操作欄。確認之後除了從列表拿掉，也請頁面把 `notice` 設成「已刪除這筆行程」。
-- `notice` 放在頁面。有字時打開 Snackbar，約 3.2 秒後或按下關閉會清掉。位置在畫面下方置中，裡面是一則填色的成功 `Alert`。提示留在頁面，關窗後才看得到。
+- 送出時 `fetcher.submit` 把 `intent: 'save'`、`editingId` 與 JSON 草稿送到這一頁的 `action`。成功後 `useEffect` 呼叫 `onNotice` 並關窗。錯誤時用 `fetcher.data.error` 顯示在 Dialog 裡。
+- 步驟 1 的頁面已經把 `onNotice` 接到 `setNotice`，用 Snackbar 顯示成功提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。刪除仍在列表操作欄，確認後也走同一則 `notice`，文案是「已刪除這筆行程」。提示留在頁面，關窗後才看得到。
 - 說明寫空的網址列會略過，封面用圖庫第一張。
 
 ## 報名清單
@@ -6175,11 +6432,19 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
 
 先把報名清單組起來並接到路由。表格與明細先放標記。直接打開 `/admin/bookings` 就看得到這一頁。
 
+表格先放標記。
+
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 export default function BookingTable() {
   return <p className="mt-8">報名表格</p>;
 }
 ```
+
+**解析**
+
+- 先回傳標記文字，標出報名表格的位置。
+
+明細先放標記。
 
 ```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
 import Dialog from '@mui/material/Dialog';
@@ -6196,27 +6461,43 @@ export default function BookingForm({ open, onClose }) {
 }
 ```
 
+**解析**
+
+- 先回傳標記文字，標出查看明細的 Dialog 位置。
+
 接著寫報名清單。表格與明細目前仍是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
+import { useLoaderData } from 'react-router';
+import Alert from '@mui/material/Alert';
 import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import BookingTable from './components/BookingTable.jsx';
 import BookingForm from './components/BookingForm.jsx';
 import { statusLabel } from '../../format.js';
-import { useStore } from '../../store-context.js';
+import { getBookings, setBookingStatus } from '../../store.js';
 
 const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
 
+export const loader = () => ({ bookings: getBookings() });
+
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  setBookingStatus(String(form.get('id')), String(form.get('status')));
+  return { notice: '已更新報名狀態' };
+};
+
 export default function AdminBookingsPage() {
-  const { bookings } = useStore();
+  const { bookings } = useLoaderData();
   const [status, setStatus] = useState('all');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('date-desc');
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
+  const [notice, setNotice] = useState('');
 
   const keyword = query.trim();
   const shown = bookings
@@ -6228,11 +6509,10 @@ export default function AdminBookingsPage() {
         : b.date.localeCompare(a.date),
     );
 
+  const close = () => setOpen(false);
+
   return (
-    <main
-      id="content"
-      className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
-    >
+    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
       <title>報名清單 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
@@ -6282,10 +6562,26 @@ export default function AdminBookingsPage() {
         <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
       )}
       <BookingForm
+        key={open ? booking.id : 'closed'}
         open={open}
         booking={booking}
-        onClose={() => setOpen(false)}
+        onClose={close}
+        onNotice={setNotice}
       />
+      <Snackbar
+        open={Boolean(notice)}
+        autoHideDuration={3200}
+        onClose={() => setNotice('')}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          onClose={() => setNotice('')}
+        >
+          {notice}
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
@@ -6301,17 +6597,24 @@ export default function AdminBookingsPage() {
 接著把 `/admin/bookings` 換成這一頁。
 
 ```diff 06-project-init/src/App.jsx
+ import AdminToursPage, {
+   action as adminToursAction,
+   loader as adminToursLoader,
+ } from './features/admin/AdminToursPage.jsx';
++import AdminBookingsPage, {
++  action as adminBookingsAction,
++  loader as adminBookingsLoader,
++} from './features/admin/AdminBookingsPage.jsx';
  // ...
- import AdminToursPage from './features/admin/AdminToursPage.jsx';
-+import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
- import Placeholder from './_shared/Placeholder.jsx';
- // ...
-       { path: 'admin', element: <AdminToursPage /> },
--      { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
-+      { path: 'admin/bookings', element: <AdminBookingsPage /> },
-       { path: '*', element: <NotFoundPage /> },
- // ...
+           },
+-          { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
++          {
++            path: 'admin/bookings',
++            loader: adminBookingsLoader,
++            action: adminBookingsAction,
++            element: <AdminBookingsPage />,
++          },
+           { path: '*', element: <NotFoundPage /> },
 ```
 
 **解析**
@@ -6319,46 +6622,91 @@ export default function AdminBookingsPage() {
 - `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`。星號路由先前已接上 `NotFoundPage`。
 - 十二條路徑到這裡都已換成完成品裡的頁面。`Placeholder` 至此沒有人引用，把 import 拿掉。檔案本身自行評估刪掉。
 
-```diff 06-project-init/src/App.jsx
- import AdminBookingsPage from './features/admin/AdminBookingsPage.jsx';
- import NotFoundPage from './pages/NotFoundPage.jsx';
--import Placeholder from './_shared/Placeholder.jsx';
- 
- const router = createBrowserRouter([
- // ...
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import SiteLayout from './layout/SiteLayout.jsx';
+import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
+import ToursPage, {
+  loader as toursLoader,
+} from './features/tours/ToursPage.jsx';
+import TourDetailPage, {
+  loader as tourLoader,
+} from './features/tours/TourDetailPage.jsx';
+import BookingPage, {
+  action as bookingAction,
+  loader as bookingLoader,
+} from './features/booking/BookingPage.jsx';
+import BookingResultPage, {
+  loader as bookingResultLoader,
+} from './features/booking/BookingResultPage.jsx';
+import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
+import AboutPage from './features/about/AboutPage.jsx';
+import LoginPage from './features/auth/LoginPage.jsx';
+import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
+import AdminToursPage, {
+  action as adminToursAction,
+  loader as adminToursLoader,
+} from './features/admin/AdminToursPage.jsx';
+import AdminBookingsPage, {
+  action as adminBookingsAction,
+  loader as adminBookingsLoader,
+} from './features/admin/AdminBookingsPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import RouteErrorPage from './pages/RouteErrorPage.jsx';
+
+const router = createBrowserRouter([
+  {
+    Component: SiteLayout,
+    children: [
+      {
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, loader: homeLoader, Component: HomePage },
+          { path: 'tours', loader: toursLoader, Component: ToursPage },
+          { path: 'tours/:id', loader: tourLoader, Component: TourDetailPage },
+          {
+            path: 'booking',
+            loader: bookingLoader,
+            action: bookingAction,
+            Component: BookingPage,
+          },
+          {
+            path: 'booking/:id',
+            loader: bookingResultLoader,
+            Component: BookingResultPage,
+          },
+          { path: 'me', Component: MyBookingsPage },
+          { path: 'about', Component: AboutPage },
+          { path: 'login', Component: LoginPage },
+          { path: 'admin/login', Component: AdminLoginPage },
+          {
+            path: 'admin',
+            loader: adminToursLoader,
+            action: adminToursAction,
+            Component: AdminToursPage,
+          },
+          {
+            path: 'admin/bookings',
+            loader: adminBookingsLoader,
+            action: adminBookingsAction,
+            Component: AdminBookingsPage,
+          },
+          { path: '*', Component: NotFoundPage },
+        ],
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
 ```
 
 ### 步驟 2：更新 Store
 
-```diff 06-project-init/src/store.jsx
- // ...
-   const deleteTour = (id) => {
-     setTours((list) => list.filter((item) => item.id !== id));
-   };
- 
-+  const setBookingStatus = (id, status) => {
-+    setBookings((list) =>
-+      list.map((item) => (item.id === id ? { ...item, status } : item)),
-+    );
-+  };
-+
-   const createBooking = (input) => {
- // ...
-   return (
--    <StoreContext value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
-+    <StoreContext
-+      value={{
-+        tours,
-+        bookings,
-+        saveTour,
-+        deleteTour,
-+        setBookingStatus,
-+        createBooking,
-+      }}
-+    >
-       {children}
- // ...
-```
+這些函式已經在 `store.js`，這一節不必再改那個檔。
+
 
 **解析**
 
@@ -6368,6 +6716,8 @@ export default function AdminBookingsPage() {
 ### 步驟 3：報名表格與明細
 
 把報名表格與明細的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog，看完整欄位，並用下拉選狀態；按「儲存」才送出，「取消」關閉。
+
+先換成真正的表格。
 
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 import Button from '@mui/material/Button';
@@ -6450,8 +6800,16 @@ export default function BookingTable({ bookings, onView }) {
 }
 ```
 
+**解析**
+
+- 列表只放行程、出發日、姓名、狀態與「查看」。完整欄位寫在下一步的 Dialog 裡。
+- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，用主色。
+
+再換成真正的明細 Dialog。
+
 ```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useFetcher } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -6470,33 +6828,33 @@ const Row = ({ label, value }) => (
   </div>
 );
 
-export default function BookingForm({
-  open,
-  booking,
-  onClose,
-  onSave,
-  onNotice,
-}) {
+export default function BookingForm({ open, booking, onClose, onNotice }) {
+  const fetcher = useFetcher();
+  const handled = useRef(null);
+  const error =
+    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
   const [status, setStatus] = useState(booking?.status ?? 'pending');
-  const [error, setError] = useState('');
   const [confirmCancel, setConfirmCancel] = useState(false);
 
-  const commit = async () => {
-    const message = await onSave(booking.id, status);
-    setError(message);
-    if (!message) {
-      onNotice('已更新報名狀態');
-      onClose();
-    }
+  useEffect(() => {
+    if (fetcher.state !== 'idle' || !fetcher.data?.notice) return;
+    if (handled.current === fetcher.data) return;
+    handled.current = fetcher.data;
+    onNotice(fetcher.data.notice);
+    onClose();
+  }, [fetcher.state, fetcher.data, onNotice, onClose]);
+
+  const commit = () => {
+    fetcher.submit({ id: booking.id, status }, { method: 'post' });
   };
 
-  const submit = async (event) => {
+  const submit = (event) => {
     event.preventDefault();
     if (status === 'cancelled' && booking.status !== 'cancelled') {
       setConfirmCancel(true);
       return;
     }
-    await commit();
+    commit();
   };
 
   return (
@@ -6536,7 +6894,11 @@ export default function BookingForm({
             />
           </DialogContent>
           <DialogActions className="flex-wrap gap-2 p-4">
-            <Button type="submit" variant="contained">
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={fetcher.state !== 'idle'}
+            >
               儲存
             </Button>
             <Button type="button" onClick={onClose}>
@@ -6559,9 +6921,9 @@ export default function BookingForm({
           <Button
             color="error"
             variant="contained"
-            onClick={async () => {
+            onClick={() => {
               setConfirmCancel(false);
-              await commit();
+              commit();
             }}
           >
             確認取消
@@ -6573,69 +6935,11 @@ export default function BookingForm({
 }
 ```
 
-```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
- import { useState } from 'react';
-+import Alert from '@mui/material/Alert';
- import MenuItem from '@mui/material/MenuItem';
-+import Snackbar from '@mui/material/Snackbar';
- import TextField from '@mui/material/TextField';
- // ...
- export default function AdminBookingsPage() {
--  const { bookings } = useStore();
-+  const { bookings, setBookingStatus } = useStore();
-   const [status, setStatus] = useState('all');
-   const [query, setQuery] = useState('');
-   const [sort, setSort] = useState('date-desc');
-   const [open, setOpen] = useState(false);
-   const [booking, setBooking] = useState(null);
-+  const [notice, setNotice] = useState('');
- // ...
-+  const close = () => setOpen(false);
-+
-+  const onSave = (id, next) => {
-+    setBookingStatus(id, next);
-+    return '';
-+  };
-+
-   return (
- // ...
-       <BookingForm
--        open={open}
--        booking={booking}
--        onClose={() => setOpen(false)}
--      />
-+        key={open ? booking.id : 'closed'}
-+        open={open}
-+        booking={booking}
-+        onClose={close}
-+        onSave={onSave}
-+        onNotice={setNotice}
-+      />
-+      <Snackbar
-+        open={Boolean(notice)}
-+        autoHideDuration={3200}
-+        onClose={() => setNotice('')}
-+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-+      >
-+        <Alert
-+          severity="success"
-+          variant="filled"
-+          onClose={() => setNotice('')}
-+        >
-+          {notice}
-+        </Alert>
-+      </Snackbar>
-     </main>
- // ...
-```
-
 **解析**
 
-- 列表只放行程、出發日、姓名、狀態與「查看」。完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。
-- 狀態下拉在 Dialog 底部。按「儲存」才呼叫頁面傳入的 `onSave`，這一章是 Store 的 `setBookingStatus`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已更新報名狀態」。
+- 完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。狀態下拉在底部。
+- 按「儲存」才把新狀態送到這一頁的 `action`。成功後關窗，並請頁面把 `notice` 設成「已更新報名狀態」。步驟 1 的頁面已經用同一套 Snackbar 顯示提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
 - 若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
-- `notice` 放在頁面，寫法和行程表單同一套：約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
-- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，用主色。
 
 # 打包與預覽
 
@@ -6648,6 +6952,10 @@ export default function BookingForm({
 ```bash
 pnpm build
 ```
+
+**解析**
+
+- React 與 Vite 是開發時的工具。打包之後，瀏覽器收到的是標準的 HTML、CSS 與 JS，不需要再跑開發伺服器。
 
 終端機會印出類似下面的內容。檔名後面的雜湊會隨內容改變。
 
@@ -6669,16 +6977,10 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 ✓ built in 421ms
 ```
 
-打開 `dist/`，會看到這些檔：
-
-- `index.html`：網站的進入點
-- `favicon.svg`：從 `public/` 原樣複製過來
-- `assets/index-….css` 與 `assets/index-….js`：打包後的樣式與程式
-
 **解析**
 
-- React 與 Vite 是開發時的工具。打包之後，瀏覽器收到的是標準的 HTML、CSS 與 JS，不需要再跑開發伺服器。
 - 這則警告代表打包後的 JS 超過 500 kB。這一章先看到產出長什麼樣子；下一篇部署時再把套件拆成較小的檔。
+- 打開 `dist/`，會看到 `index.html`（網站的進入點）、從 `public/` 原樣複製過來的 `favicon.svg`，以及 `assets/` 裡打包後的樣式與程式。
 
 ## 預覽
 
@@ -6688,17 +6990,17 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 
 - 若在內頁按重新整理，Live Server 會回自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有 `index.html` 一張進入點，內頁的網址是前端路由。這個問題留到下一篇部署時，用轉送設定處理。
 
-切版到此為止。同一份畫面怎麼接上資料層、Hooks、Firestore 與管理員登入，見 {% post_link lokiTech-15day-13-project-travel-api %}。
+切版到此為止。同一份畫面怎麼改成 Firestore 與登入，見 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 # 本篇重點回顧
 
-- Vite 專案先自己加上 `jsconfig.json`、清掉範本，再安裝 React Router、MUI、Emotion 與 Tailwind。
+- Vite 專案加上 `jsconfig.json`、React Compiler 的 Babel 外掛，再安裝 React Router、MUI、Emotion 與 Tailwind。頁面檔的 `loader` 與 `action` 用 ESLint 的 `allowExportNames` 放行。
 - `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
 - 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的元件。
-- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程與報名都是列表加 Dialog，用頁面 state 控制開關，不另開路由。行程刪除在列表操作欄，確認後才拿掉。圖庫是網址列，封面用第一張。訂單改為已取消即軟刪，不從清單移除那一筆。兩頁用頁首切換。
+- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程與報名都是列表加 Dialog，用頁面 state 控制開關，不另開路由。行程刪除在列表操作欄，確認後才拿掉。圖庫是網址列，封面用第一張。訂單改為已取消即軟刪，不從清單移除那一筆。後台沿用同一份 `SiteHeader`，兩頁用頁首切換，不必再做一排分頁。
 - `/login`、`/booking`、`/booking/:id`、`/me`、`/admin`、`/admin/login`、`/admin/bookings` 都能直接打開。對不到的路徑與錯誤的 id 都渲染 `NotFoundPage`。登入與讀自己的訂單留到下一篇。
 - `pnpm build` 產出 `dist/` 裡的 HTML、CSS 與 JS。用 Live Server 預覽時，內頁重新整理會拿到靜態伺服器的 404，下一篇部署再處理。
-- 切版在這一章結束。資料層、Hooks、Firestore、管理員登入與 Firebase Hosting 寫在下一篇。
+- 切版在這一章結束。Firebase、雲端讀寫與登入寫在下一篇。這一章的資料在 `store.js`，由 `loader` 與 `action` 呼叫。
 
 # 專有名詞中英對照
 
@@ -6741,9 +7043,12 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 ## 前台頁面
 
 - 種子資料（seed data）
-- 情境（context）
-- useStore
-- StoreProvider
+- 記憶體資料模組（module store）
+- 換頁前讀取（loader）
+- useLoaderData
+- 表單送出（action）
+- 錯誤元件（errorElement）
+- 不換頁的送出（useFetcher）
 - 唯讀欄位（read-only field）
 
 ## 後台
