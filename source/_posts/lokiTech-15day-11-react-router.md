@@ -82,17 +82,13 @@ export default function StatePages() {
 
 ## React Router
 
-這一節說明為什麼畫面不能只靠狀態切換，以及 React Router 負責網址的哪一段。接著先看課堂要用的資料模式，再對照宣告式與框架模式的寫法與目錄。
+網址要對上元件、換頁要進瀏覽器歷史、重新整理要停在同一條路徑，這些事 React 本身不做。React Router 負責這一段，同一套畫面對應可以接成資料模式、宣告式或框架模式。課堂與結業專案用資料模式，另外兩種留作選讀對照。
 
-### 為什麼需要路由
+### 三種接法一覽
 
-上一節的選單只改元件裡的狀態，網址沒有跟著變，重新整理也回到起點。這一節看 React 為什麼不管網址，以及自己把網址接上畫面時，哪些需求會讓程式變繁瑣。
+React 只依狀態決定要渲染哪些元件，不處理網址。上一節的選單只改元件裡的狀態，所以網址沒有跟著變，重新整理也回到起點。手刻路由要自己聽瀏覽器的歷史事件，再依路徑換元件；巢狀版面、路徑參數與查詢字串加進來之後，外框要留著、編號要取出、問號後面的篩選要保留，拆路徑與還原畫面都得自己寫。這些工作和把資料畫進 DOM 是兩件事，所以改用專門做路由的套件。
 
-React 只依狀態決定要渲染哪些元件，不處理網址。手刻路由可以自己聽瀏覽器的歷史事件，再依路徑換元件；巢狀版面、網址參數與查詢字串加進來之後，外框要留著、路徑裡的編號要取出、問號後面的篩選要保留，拆路徑、對歷史堆疊、重新整理後還原畫面都得自己寫，過程繁瑣也容易出錯。這些工作和把資料畫進 DOM 是兩件事，所以改用專門做路由的第三方套件。
-
-### React Router 是什麼
-
-React Router 是目前最普遍的 React 路由套件。它把現在的網址對到要畫的元件，並提供換頁用的連結與導覽 Hook，讓文件不用整頁重載。這一節先看它負責的三件事；資料在哪裡讀，留到後面的三種接法。
+React Router 把現在的網址對到要畫的元件，並提供換頁用的連結與導覽 Hook，文件不用整頁重載。下面三件事三種接法都做得到。
 
 **一覽**
 
@@ -108,90 +104,232 @@ React Router 是目前最普遍的 React 路由套件。它把現在的網址對
   style viewNode fill:#e8f5e9
 {% endmermaid %}
 
-套件把網址、歷史與換頁接起來，不負責這一頁的資料在哪裡讀。讀取留在元件裡，或提前寫在路由上，是後面三種接法的差別。同一套對應可以寫成資料模式、宣告式或框架模式。先看課堂要用的資料模式，再對照另外兩種。
+套件把網址、歷史與換頁接起來。讀取可以留在頁面掛上之後，也可以寫在路由上、於進頁前完成。先看課堂要用的資料模式。
 
 {% note info %}
 **Next.js 自帶路由**
 Next.js 依檔案結構決定路徑（檔案路由，file-based routing），用 Next.js 的專案不必再裝 React Router。本課用 Vite，所以接 React Router。
 {% endnote %}
 
-### 資料模式
-
-課堂與結業專案用資料模式的 `createBrowserRouter`。路由寫成物件陣列，交給這個函式，再由 `RouterProvider` 渲染。專案骨架仍是一般的 Vite 與 React。這一堂把路由器寫在 `App.jsx`；專案變大時可以再拆成 `router.jsx`。
-
-loader、action、`Form`、`redirect`、`errorElement` 在路由與連結接好之後寫，見後面的「讀取與送出資料」。
-
-#### 目錄架構
-
-資料模式不改變 Vite 專案的骨架。入口直接渲染 `App`；路由器物件放在 `App.jsx`。共用版型放在 `layouts`，每個網址對應 `pages` 裡的一個頁面元件。進頁前要讀的資料寫在該路由的 `loader`，頁面用 `useLoaderData` 接。
-
-{% mermaid graph LR %}
-root["專案根目錄"] --> html["index.html<br/>網頁外殼，掛載點 #root"]
-root --> pkg["package.json<br/>相依套件，含 react-router"]
-root --> vite["vite.config.js<br/>Vite 設定"]
-root --> src["src/"]
-src --> main["main.jsx<br/>入口：createRoot，直接渲染 App"]
-src --> app["App.jsx<br/>createBrowserRouter 與 RouterProvider"]
-src --> layouts["layouts/"]
-layouts --> layout["MainLayout.jsx<br/>共用版型：選單、Outlet、ScrollRestoration"]
-src --> pages["pages/"]
-pages --> home["Home.jsx<br/>路徑 /"]
-pages --> demo["DemoPage.jsx<br/>路徑 /demos/:id"]
-src --> examples["examples/<br/>編號示範，含 loader 與 action"]
-classDef router fill:#fff3e0,stroke:#fb8c00
-class pkg,main,app,layout router
-{% endmermaid %}
-
-#### 觀念
-
-`createBrowserRouter` 收到的是路由物件陣列。每一筆用 `path` 對網址，用 `element` 或 `Component` 指定要畫的元件。`loader` 在進入該路徑之前執行，回傳值交給 `useLoaderData`。`action` 接收 `Form` 送出的請求。同一層還可以加 `errorElement`。筆記站先把路徑、連結與星號 404 接上，讀取與送出放到那一章的編號示範。
-
 {% note info %}
 **舊的套件名稱**
 v8 已移除套件 `react-router-dom`。v7 時它只是相容用的再出口。不要再安裝那個套件，也不要照舊文件的入口去引入。
 {% endnote %}
 
-### 選讀：宣告式
+### 資料模式
 
-這一節對照另一種接法。路由寫成 JSX，入口用 `BrowserRouter` 包住應用，頁面掛上之後才讀資料。官方的 `ScrollRestoration` 不能用在這一種。課堂與結業專案不用這一套，下面只留寫法與目錄，方便和資料模式對照。
+資料模式把路由寫成物件陣列，在元件外面交給 `createBrowserRouter`，再由 `RouterProvider` 畫出來。專案骨架仍是一般的 Vite 與 React。下面這份迷你範例的版型是 `MainLayout`，選單是首頁與行程清單，`/` 畫 `Home`，`/trips` 畫 `TripList`。
 
-#### 目錄架構
+先對照三個問題：
 
-宣告式不改變 Vite 專案的骨架，只在 `src` 裡多出路由相關的分工。正式專案通常這樣規劃：入口負責掛上路由器，路由表集中在一個檔案，共用版型放在 `layouts`，每個網址對應 `pages` 裡的一個頁面元件，跨頁共用的小元件放在 `components`。
+- **路由表寫在哪裡**：`src/App.jsx`。`createBrowserRouter` 接收路由物件陣列，父路由的 `children` 放首頁與 `/trips`。
+- **入口怎麼掛**：`src/main.jsx` 用 `createRoot` 渲染 `<App />`，不包 `BrowserRouter`。`App` 回傳 `<RouterProvider router={router} />`，路由器物件寫在元件函式外面。
+- **資料在哪裡讀**：進頁前。`src/pages/TripList.jsx` 匯出的 `loader` 呼叫 `getItems()`，頁面用 `useLoaderData()` 接回傳值。
 
-{% mermaid graph LR %}
-root["專案根目錄"] --> html["index.html<br/>網頁外殼，掛載點 #root"]
-root --> pkg["package.json<br/>相依套件，含 react-router"]
-root --> vite["vite.config.js<br/>Vite 設定"]
-root --> src["src/"]
-src --> main["main.jsx<br/>入口：createRoot 並以 BrowserRouter 包住 App"]
-src --> app["App.jsx<br/>路由表：Routes 與 Route，最後一條 path=* 接 404"]
-src --> layouts["layouts/"]
-layouts --> layout["MainLayout.jsx<br/>共用版型：頁首、選單與 Outlet"]
-src --> pages["pages/"]
-pages --> home["Home.jsx<br/>路徑 /"]
-pages --> list["TripList.jsx<br/>路徑 /trips"]
-pages --> nf["NotFoundPage.jsx<br/>404：對不上任何路徑時"]
-src --> comps["components/<br/>跨頁共用的小元件"]
-src --> api["api/"]
-api --> fake["fake-api.js<br/>getItems 等讀寫，由頁面自己呼叫"]
-classDef router fill:#fff3e0,stroke:#fb8c00
-class pkg,main,app,layout,nf router
-{% endmermaid %}
+同一份範例還有 `src/api/fake-api.js`、`src/layouts/MainLayout.jsx` 與 `src/pages/Home.jsx`。
 
-下一段觀念的五個檔就是這棵樹的最小版本。版型與 404 頁面後面章節會逐步加上：404 頁面跟其他頁面一樣放在 `pages`，在路由表裡用 `path="*"` 登記在最後一條，前面的路徑都對不上時才輪到它。課堂為了逐則對照，把這些角色放成 `src/demos` 的編號檔，例如版型是 `03-layout.jsx`、404 頁面是 `11-missing.jsx`；結業專案再照這棵樹拆成 `layouts` 與 `pages`。
+`action`、`Form`、`redirect` 與 `errorElement` 寫在後面的「讀取與送出資料」，這一節只留一條 `loader`。
 
-#### 觀念
+```js src/api/fake-api.js
+/**
+ * 讀取清單。三種接法都呼叫這個函式，差別只在誰、何時呼叫。
+ * @returns {Promise<{ id: string, title: string }[]>}
+ */
+export function getItems() {
+  return Promise.resolve([
+    { id: '1', title: '看海' },
+    { id: '2', title: '寫筆記' },
+  ]);
+}
+```
 
-宣告式把路由寫成 JSX。入口用 `BrowserRouter` 包住整個應用，讓元件樹聽得到網址；路由表再把每一條路徑配上要畫的頁面，網址變了就換畫另一個頁面。下面照上一段的目錄架構拆成五個檔，清單頁的資料向後端 `fake-api` 拿。
+**解析**
+
+- `getItems` 回傳一個已經完成的 Promise，內容是兩筆物件，標題依序是「看海」與「寫筆記」。
+- 三種接法都呼叫這支函式。這一節由 `loader` 在進頁前呼叫，後面兩節沿用同一支函式，只在程式裡引入。
 
 ```jsx src/main.jsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-/** BrowserRouter 聽網址，包在 App 外層，裡面的 Routes 才讀得到目前路徑。 */
+import App from './App.jsx';
+
+/**
+ * 把應用掛上 #root。資料模式不在入口包 BrowserRouter。
+ * createRoot(container) 的 container 是掛載點，render(element) 把元素畫進去。
+ */
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+```
+
+**解析**
+
+- 入口只從 `react`、`react-dom/client` 與 `./App.jsx` 引入。
+- `createRoot` 把樹掛上 `#root`，嚴格模式裡只有 `App`。
+
+```jsx src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import MainLayout from './layouts/MainLayout.jsx';
+import Home from './pages/Home.jsx';
+import TripList, { loader as tripLoader } from './pages/TripList.jsx';
+
+/**
+ * 建立資料路由器。路由表是物件陣列，寫在元件外面，不要放進 state。
+ * 每一筆用 path 對網址，用 element 指定已經建立的元素。
+ * 也可以改寫 Component，傳入元件函式，由路由器建立元素。
+ * index 為 true 時代表父路徑本身，同一筆不要再寫 path。
+ * children 是巢狀子路由，畫進父層 element 裡的 Outlet。
+ * loader 在該路由的元件畫出來之前執行，回傳 Promise 時路由器會等待，值交給 useLoaderData。
+ * @param {object[]} routes 路由物件陣列
+ * @returns {object} 資料路由器，交給 RouterProvider 的 router
+ */
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <Home /> },
+      { path: 'trips', element: <TripList />, loader: tripLoader },
+    ],
+  },
+]);
+
+/**
+ * 把資料路由器畫進 React 樹。
+ * @param {object} props
+ * @param {object} props.router createBrowserRouter 的回傳值
+ * @returns {React.ReactElement}
+ */
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- `createBrowserRouter` 收到路由物件陣列，回傳資料路由器。這個物件寫在元件外面，再交給 `RouterProvider`。
+- 父路由的 `element` 是版型。`index: true` 那一筆不寫 `path`，網址就是 `/`。`path: 'trips'` 與父路徑接成 `/trips`，並掛上清單的 `loader`。
+- 同一筆也可以改寫 `Component: Home`，傳入元件函式，由路由器建立元素。這一則用 `element`，和後面「啟用路由」的路由表相同。
+
+```jsx src/layouts/MainLayout.jsx
+/**
+ * Link 改網址且不整頁重載。
+ * @param {object} props
+ * @param {string} props.to 目標路徑
+ * @param {React.ReactNode} props.children 連結文字
+ * @returns {React.ReactElement}
+ */
+/**
+ * Outlet 畫出對上的子路由。沒有對上的子路由時是 null。
+ * @returns {React.ReactElement | null}
+ */
+/**
+ * ScrollRestoration 在換頁後還原捲動位置。
+ * 資料模式與框架模式可用，放在根版型一次。
+ * @returns {React.ReactElement | null}
+ */
+import { Link, Outlet, ScrollRestoration } from 'react-router';
+
+/** 共用版型。選單每頁都在，Outlet 依網址換成首頁或清單。 */
+export default function MainLayout() {
+  return (
+    <>
+      <header>
+        <nav>
+          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
+        </nav>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+      <ScrollRestoration />
+    </>
+  );
+}
+```
+
+**解析**
+
+- `Link` 的 `to` 是站內路徑，點下去改網址，文件不整頁重載。
+- `Outlet` 畫出對上的子路由，`/` 是首頁，`/trips` 是清單。
+- `ScrollRestoration` 放在根版型一次，換頁時還原捲動位置。
+
+```jsx src/pages/Home.jsx
+/** 路徑 / 的頁面。這一頁沒有自己的資料讀取。 */
+export default function Home() {
+  return <h1>首頁</h1>;
+}
+```
+
+**解析**
+
+- 首頁只畫一個標題。後面兩種接法的首頁元件相同，直接沿用這一份。
+
+```jsx src/pages/TripList.jsx
+import { useLoaderData } from 'react-router';
+import { getItems } from '../api/fake-api.js';
+
+/**
+ * 進 /trips 之前執行。回傳值就是 useLoaderData 的結果。
+ * 路由器會等待這個 Promise。
+ * @returns {Promise<{ id: string, title: string }[]>}
+ */
+export function loader() {
+  return getItems();
+}
+
+/** 路徑 /trips 的頁面。 */
+export default function TripList() {
+  /**
+   * 讀取目前這條路由 loader 的回傳值。
+   * @returns {{ id: string, title: string }[]}
+   */
+  const items = useLoaderData();
+
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+**解析**
+
+- `loader` 在 `TripList` 畫出來之前執行，回傳的 Promise 由路由器等待，完成後的陣列就是 `useLoaderData()` 的結果。
+- 畫面上兩列是「看海」與「寫筆記」。這一頁沒有 `useEffect`。
+
+### 選讀：宣告式
+
+宣告式把路由寫成 JSX，入口用 `BrowserRouter` 包住應用，頁面掛上之後才讀資料。這一模式沒有 `loader` 與 `action`，官方的 `ScrollRestoration` 也不在這裡。課堂與結業專案用的是資料模式，這一節只對照寫法。
+
+迷你範例仍是 `MainLayout`、首頁與行程清單。`getItems` 與首頁和上一節相同，檔案是 `src/api/fake-api.js` 與 `src/pages/Home.jsx`。
+
+先對照三個問題：
+
+- **路由表寫在哪裡**：`src/App.jsx` 的 `<Routes>` 與 `<Route>`。父路由 `path="/"` 畫版型，`index` 畫首頁，`path="trips"` 畫清單，沒有 `loader`。
+- **入口怎麼掛**：`src/main.jsx` 用 `<BrowserRouter>` 包住 `<App />`，再交給 `createRoot`。
+- **資料在哪裡讀**：頁面掛上後。`TripList` 在 `useEffect` 裡呼叫 `getItems()`，沒有 `useLoaderData`。這一模式沒有 `loader`、`action`，也沒有官方的 `ScrollRestoration`。
+
+版型是 `src/layouts/MainLayout.jsx`，清單頁是 `src/pages/TripList.jsx`。
+
+```jsx src/main.jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import App from './App.jsx';
 
+/**
+ * BrowserRouter 聽瀏覽器網址，讓子樹裡的 Routes 讀得到目前路徑。
+ * 它沒有 router 屬性，路徑對應寫在子樹的 Route。
+ * @param {object} props
+ * @param {React.ReactNode} props.children 要聽網址的元件樹
+ * @returns {React.ReactElement}
+ */
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -201,8 +339,28 @@ createRoot(document.getElementById('root')).render(
 );
 ```
 
+**解析**
+
+- `BrowserRouter` 包在 `App` 外面，裡面的 `Routes` 才讀得到目前路徑。
+- 入口仍用 `createRoot` 掛上 `#root`。引入來源是 `react-router`。
+
 ```jsx src/App.jsx
-/** Routes 與 Route 用 JSX 登記路徑，path 對到網址，element 是要畫的元件。 */
+/**
+ * Routes 在子層 Route 裡挑符合目前網址的那一筆。
+ * @param {object} props
+ * @param {React.ReactNode} props.children 若干 Route
+ * @returns {React.ReactElement | null}
+ */
+/**
+ * 一條路徑。path 是網址片段，element 是要畫的元素，children 是巢狀路由。
+ * index 不寫 path，代表父路徑本身。宣告式的 Route 沒有 loader 與 action。
+ * @param {object} props
+ * @param {string} [props.path] 網址片段
+ * @param {boolean} [props.index] 為 true 時對上父路徑
+ * @param {React.ReactElement} [props.element] 要畫的元素
+ * @param {React.ReactNode} [props.children] 巢狀的 Route
+ * @returns {React.ReactElement | null}
+ */
 import { Route, Routes } from 'react-router';
 import MainLayout from './layouts/MainLayout.jsx';
 import Home from './pages/Home.jsx';
@@ -224,11 +382,27 @@ export default function App() {
 }
 ```
 
+**解析**
+
+- `<Routes>` 依目前網址在子層 `<Route>` 裡挑一筆。`path` 對片段，`element` 是要畫的元素。
+- 父路由畫 `MainLayout`。`index` 不寫 `path`，網址是 `/`。`path="trips"` 接成 `/trips`。
+- 這些 `Route` 沒有 `loader` 屬性。資料不在進頁前讀。
+
 ```jsx src/layouts/MainLayout.jsx
-/** Link 換頁不重新載入；Outlet 是子路由頁面要畫進來的位置。 */
+/**
+ * Link 改網址且不整頁重載。
+ * @param {object} props
+ * @param {string} props.to 目標路徑
+ * @param {React.ReactNode} props.children 連結文字
+ * @returns {React.ReactElement}
+ */
+/**
+ * Outlet 畫出對上的子路由。沒有對上的子路由時是 null。
+ * @returns {React.ReactElement | null}
+ */
 import { Link, Outlet } from 'react-router';
 
-/** 共用版型。頁首與選單每頁都在，中間的 Outlet 依網址換成首頁或清單。 */
+/** 共用版型。選單每頁都在，Outlet 依網址換成首頁或清單。 */
 export default function MainLayout() {
   return (
     <>
@@ -245,25 +419,33 @@ export default function MainLayout() {
 }
 ```
 
-```jsx src/pages/Home.jsx
-/** 路徑 / 要畫的頁面。 */
-export default function Home() {
-  return <h1>首頁</h1>;
-}
-```
+**解析**
+
+- 版型只有 `Link` 與 `Outlet`。選單兩條分別前往 `/` 與 `/trips`。
+- 宣告式沒有官方的 `ScrollRestoration`，所以這裡不放。
 
 ```jsx src/pages/TripList.jsx
 import { useEffect, useState } from 'react';
-/** getItems 向後端 fake-api 要行程清單，回傳 Promise。 */
 import { getItems } from '../api/fake-api.js';
 
 /**
- * 路徑 /trips 要畫的頁面。
- * 宣告式的路由表不負責讀資料，頁面掛上後自己在 useEffect 向 fake-api 拿資料。
+ * 路徑 /trips。宣告式沒有 loader，元件掛上後才讀 getItems。
+ * getItems 與資料模式相同，檔案是 src/api/fake-api.js。
  */
 export default function TripList() {
+  /**
+   * 目前清單。useState 回傳 [目前值, 更新函式]，初值是空陣列。
+   * @param {{ id: string, title: string }[]} initialState 一開始的清單
+   * @returns {[{ id: string, title: string }[], function]}
+   */
   const [items, setItems] = useState([]);
 
+  /**
+   * 元件掛上後執行。第二個引數是依賴陣列，空陣列表示只在掛上時跑一次。
+   * getItems 回傳 Promise，完成後用 setItems 寫進狀態。
+   * @param {function(): void} effect 掛上後要跑的函式
+   * @param {unknown[]} deps 依賴陣列
+   */
   useEffect(() => {
     getItems().then(setItems);
   }, []);
@@ -278,44 +460,42 @@ export default function TripList() {
 }
 ```
 
-網址是根路徑時畫首頁，是 `/trips` 時畫清單。`main.jsx` 的 `BrowserRouter` 讓元件樹聽得到網址，`App.jsx` 再用 JSX 把路徑對到頁面。這組檔同樣不是 `04-react-router` 的完成檔。
+**解析**
+
+- 元件掛上後，`useEffect` 才呼叫 `getItems()`。Promise 完成時 `setItems` 把空陣列換成兩筆資料。
+- 路由表沒有 `loader`，頁面也沒有 `useLoaderData`。第一個畫面先是空清單，讀完才出現「看海」與「寫筆記」。
 
 ### 選讀：框架模式
 
-框架模式的前身是 Remix。它在資料模式之上加上檔案路由、伺服器端渲染（SSR）、程式碼切分（code splitting），並由建置工具負責打包；需要搜尋引擎最佳化（SEO）或 SSR 時，整個專案架構都跟著這套走。課堂的 Vite 專案維持資料模式，用 `createBrowserRouter` 接路由，不換成這套目錄。
+框架模式的前身是 Remix，在資料模式之上加上路由模組、伺服器端渲染（SSR）與程式碼切分，並由 Vite 插件負責打包。需要搜尋引擎最佳化（SEO）時，整個專案架構跟著這套走。課堂的 Vite 專案用資料模式的 `createBrowserRouter`。`package.json` 依賴 `react-router`，開發依賴是 `@react-router/dev`。
 
-#### 目錄架構
+迷你範例的角色相同：`app/root.tsx` 同時是版型與 HTML 外殼，選單仍是首頁與行程清單。`getItems` 與前面相同，檔案是 `app/api/fake-api.ts`。首頁模組 `app/routes/home.tsx` 與前面的 `Home` 相同，只回傳一個標題。
 
-框架模式的檔案位置是約定的一部分。路徑、頁面模組、全站外框與建置設定各有固定角色，改路徑時改的是登記檔。
+先對照三個問題：
 
-{% mermaid graph LR %}
-root["專案根目錄"] --> pkg["package.json<br/>相依套件，含 @react-router/dev"]
-root --> cfg["react-router.config.ts<br/>框架設定，例如是否開 SSR"]
-root --> vite["vite.config.ts<br/>掛上 React Router 的 Vite 插件"]
-root --> app["app/"]
-app --> rootf["root.tsx<br/>根版型：全站外框與 Outlet"]
-app --> routes["routes.ts<br/>路徑登記：每列指向一個模組"]
-app --> rdir["routes/"]
-rdir --> home["home.tsx<br/>首頁模組"]
-rdir --> trips["trips.tsx<br/>清單模組：匯出 loader 與元件"]
-rdir --> nf["not-found.tsx<br/>404：登記為 * 路徑"]
-app --> api["api/"]
-api --> fake["fake-api.ts<br/>getItems，由路由模組的 loader 呼叫"]
-app --> ec["entry.client.tsx<br/>瀏覽器入口：HydratedRouter 水合（可省略）"]
-app --> es["entry.server.tsx<br/>伺服器入口：SSR 輸出（可省略）"]
-classDef router fill:#fff3e0,stroke:#fb8c00
-class pkg,cfg,vite,rootf,routes,trips,nf,ec router
-{% endmermaid %}
-
-#### 觀念
-
-框架模式用設定檔登記路徑與模組檔。清單的讀取函式與預設元件寫在路由模組裡，由框架在進頁前呼叫。
+- **路由表寫在哪裡**：`app/routes.ts`。`index(file)` 登記首頁模組，`route(path, file)` 的第一個引數是網址、第二個是模組檔。這份檔案不引入 React 元件。
+- **入口怎麼掛**：預設沒有自己寫的 `main.jsx` 與 `RouterProvider`。`vite.config.ts` 用 `@react-router/dev/vite` 的 `reactRouter()` 接手入口，是否開啟 SSR 寫在根目錄的 `react-router.config.ts`。瀏覽器入口預設是 `HydratedRouter`，`entry.client.tsx` 與 `entry.server.tsx` 可以省略。
+- **資料在哪裡讀**：進頁前。`app/routes/trips.tsx` 匯出 `loader`，呼叫 `getItems()`，預設元件用 `useLoaderData()` 接。框架模式同樣有 `action` 與 `ScrollRestoration`，送出與錯誤頁的寫法見「讀取與送出資料」。
 
 ```tsx app/root.tsx
-/** Links、Meta、Scripts 由框架填入 head 與腳本；Outlet 畫各路由模組。 */
-import { Link, Links, Meta, Outlet, Scripts } from 'react-router';
+/**
+ * 根路由，是 routes.ts 每一筆的父層，並負責整份 HTML。
+ * Link 的 to 是站內路徑。
+ * Meta、Links 由框架填入 head。不用 React 19 原生 metadata 時要留這兩個。
+ * Outlet 畫出子路由。ScrollRestoration 換頁後還原捲動，根版型放一次。
+ * Scripts 填入框架的客戶端腳本。
+ * @returns {React.ReactElement}
+ */
+import {
+  Link,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from 'react-router';
 
-/** 根版型，角色等同 MainLayout。整份 HTML 外框也寫在這裡。 */
+/** 根版型。角色等同 MainLayout，再加上整份 HTML 外框。 */
 export default function App() {
   return (
     <html lang="zh-Hant">
@@ -330,6 +510,7 @@ export default function App() {
         <main>
           <Outlet />
         </main>
+        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
@@ -337,35 +518,59 @@ export default function App() {
 }
 ```
 
+**解析**
+
+- `app/root.tsx` 是每一條路由的父層，子路由畫進 `Outlet`。選單與資料模式相同，通往 `/` 與 `/trips`。
+- `ScrollRestoration` 放在這份根版型一次。`Scripts` 負責客戶端腳本，`Meta` 與 `Links` 填進 `head`。
+- 預設設定裡沒有學生自己寫的 `main.jsx`。入口由 Vite 插件接手。
+
 ```ts app/routes.ts
 /**
- * index 與 route 從 @react-router/dev/routes 引入，只負責登記模組檔。
- * 這份設定沒有元件：index 指向首頁模組，route 的第一個引數是路徑、第二個是模組檔。
+ * index(file) 登記首頁模組，畫在 /，出現在 root.tsx 的 Outlet。
+ * @param {string} file 相對 app 目錄的模組路徑
+ * @returns {object} 一筆索引路由設定
+ */
+/**
+ * route(path, file) 登記一條網址。path 是網址樣式，file 是模組路徑。
+ * @param {string} path 網址樣式，trips 會接到 /trips
+ * @param {string} file 相對 app 目錄的模組路徑
+ * @returns {object} 一筆路由設定
  */
 import { type RouteConfig, index, route } from '@react-router/dev/routes';
 
-/** 路徑對到模組檔。改 /trips 對到哪一個檔時，改的是 route 的第二個引數。 */
+/** 路徑對到模組檔。這份設定沒有 React 元件。 */
 export default [
   index('./routes/home.tsx'),
   route('trips', './routes/trips.tsx'),
 ] satisfies RouteConfig;
 ```
 
+**解析**
+
+- `app/routes.ts` 只登記模組路徑，不引入頁面元件。`index` 對上 `/`，`route('trips', ...)` 對上 `/trips`。
+- 改哪一個檔負責清單時，改的是 `route` 的第二個引數。讀取函式寫在那個模組裡，不寫在這份表。
+
 ```tsx app/routes/trips.tsx
 import { useLoaderData } from 'react-router';
 import { getItems } from '../api/fake-api.ts';
 
 /**
- * 行程清單的讀取。框架在進 /trips 前呼叫，回傳值交給預設元件。
- * getItems 寫在這個路由模組，不寫在 routes.ts。
- * @returns {Promise<Array>}
+ * 進 /trips 前執行。回傳值交給 useLoaderData，Promise 會被等待。
+ * 框架模式也可把結果以 loaderData 屬性傳入元件，型別是 ./+types 的 Route.ComponentProps。
+ * 這一則仍用 hook，方便和資料模式對照。
+ * getItems 與前面相同，檔案是 app/api/fake-api.ts。
+ * @returns {Promise<{ id: string, title: string }[]>}
  */
 export async function loader() {
   return getItems();
 }
 
-/** 預設匯出是這一頁的元件，用 useLoaderData 接 loader 的陣列並把清單畫出來。 */
+/** 這一頁的元件。 */
 export default function TripList() {
+  /**
+   * 讀取這個路由模組 loader 的回傳值。
+   * @returns {{ id: string, title: string }[]}
+   */
   const items = useLoaderData();
 
   return (
@@ -378,13 +583,26 @@ export default function TripList() {
 }
 ```
 
-路徑放在 `app/routes.ts`，`loader` 與預設元件放在對應的路由模組。進清單路徑之前，框架呼叫該模組匯出的 `loader`，預設匯出的元件再把清單畫出來。
+**解析**
+
+- 框架在進入 `/trips` 之前呼叫這個模組匯出的 `loader`，`useLoaderData()` 拿到的就是 `getItems()` 的陣列。
+- 也可以改用 `Route.ComponentProps` 的 `loaderData` 屬性接同一份結果。這一則用 hook，和資料模式的清單頁同一種讀法。
+- `action`、`Form`、`redirect` 與 `errorElement` 的寫法見「讀取與送出資料」。
 
 ### 怎麼選
 
-三種接法都能把網址對上元件。路由表可以寫成路由物件、寫在元件樹，或交給框架的設定檔；資料可以等頁面掛上再讀，也可以在進頁前由路由先讀好。
+三種接法都能把網址對上元件。差別在路由表放在哪一個檔、入口由誰掛上，以及資料在進頁前讀還是等頁面掛上再讀。
 
-後面的練習都在從 `03-react` 複製出來的 `04-react-router` 上，用資料模式往下加，不為另外兩種各開一個專案。先學 `createBrowserRouter`。路由與連結接好之後，loader 與 action 寫在「讀取與送出資料」。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`。要做完整的伺服器端渲染，再看框架模式或 Next.js。
+| | 資料模式 | 宣告式 | 框架模式 |
+| --- | --- | --- | --- |
+| 路由設定寫在哪個檔 | `src/App.jsx` 的路由物件 | `src/App.jsx` 的 `Routes` | `app/routes.ts` |
+| 入口 | `main.jsx` 渲染 `App`，由 `RouterProvider` 掛上 | `main.jsx` 以 `BrowserRouter` 包住 `App` | Vite 插件 `reactRouter()`，不自寫入口 |
+| 資料何時讀 | 進頁前，`loader` | 頁面掛上後，`useEffect` | 進頁前，路由模組的 `loader` |
+| loader / action | 有 | 沒有 | 有，寫在路由模組 |
+| ScrollRestoration | 有，放在根版型 | 沒有官方元件 | 有，放在 `root.tsx` |
+| 適合 | 課堂與後面的練習 | 薄寫法的對照 | 插件、路由模組與 SSR／SEO |
+
+課堂和後面的 `04-react-router`（從 `03-react` 複製）都用資料模式，不為另外兩種各開一個專案。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`；要把 Vite 插件、路由模組與伺服器端渲染當成一整套架構時，再看框架模式或 Next.js。路由與連結接好之後，`loader` 與 `action` 寫在「讀取與送出資料」。
 
 # 啟用路由
 
@@ -558,7 +776,7 @@ export default function App() {
 
 ### 路由表
 
-路由表集中在 `src/App.jsx`，用物件陣列交給 `createBrowserRouter`。父路由的 `path` 是 `/`，`element` 是版型；`index: true` 那一筆跟父路徑同一個網址，所以打開網站根目錄時，版型中間是首頁。後面的單則筆記會寫成 `demos/:id`，跟父路徑接成 `/demos/01` 這種網址。上一節的草稿整份換成下面這份。
+路由表集中在 `src/App.jsx`，用物件陣列交給 `createBrowserRouter`。父路由的 `path` 是 `/`，`element` 是版型；`index: true` 那一筆跟父路徑同一個網址，所以打開網站根目錄時，版型中間是首頁。後面的單則筆記會寫成 `demos/:slug`，跟父路徑接成 `/demos/01-hello` 這種網址。`slug` 與範例檔名去掉 `.jsx` 相同。上一節的草稿整份換成下面這份。
 
 **語法**
 
@@ -780,12 +998,12 @@ export default function Home() {
 
 ## 示範目錄
 
-目錄是這份筆記網站的清單。主題順序與每一則的編號、標題、元件都放在同一份資料，左側選單與首頁總覽都讀它，換一則的標題時只改這一處。
+目錄是這份筆記網站的清單。主題順序與每一則的 slug、標題、元件都放在同一份資料，左側選單與首頁總覽都讀它，換一則的標題時只改這一處。
 
 **一覽**
 
 - `topics` 是主題。每一筆有 `id` 與畫在畫面上的 `title`，陣列順序就是左側由上到下的順序。
-- `demos` 是單則筆記。`id` 用兩位數，`topic` 對到某個主題的 `id`，`Component` 是該則要畫出的元件。
+- `demos` 是單則筆記。`slug` 是範例檔名去掉 `.jsx`，與路徑 `/demos/:slug` 相同，`topic` 對到某個主題的 `id`，`Component` 是該則要畫出的元件。
 
 **語法**
 
@@ -793,7 +1011,7 @@ export default function Home() {
 /**
  * 一則筆記在目錄裡的資料。
  * @typedef {object} DemoRecord
- * @property {string} id 兩位數編號，與路徑 /demos/:id 相同
+ * @property {string} slug 檔名去掉 .jsx，與路徑 /demos/:slug 相同
  * @property {string} title 畫在目錄上的標題
  * @property {string} topic 主題 id，對到 topics 裡的某一筆
  * @property {React.ComponentType} Component 該則要畫出的元件
@@ -802,12 +1020,12 @@ export default function Home() {
 
 **觀念**
 
-分組跟著編號走：同一段編號共用一個主題，左側才會一段接一段，上一則與下一則也才跟上課順序相同。這一則先把編號與標題印出來，點了還不會換頁；連結、路徑與搜尋都在後面加上。首頁改為讀同一份資料，主區的則數與主題名稱就跟左側一致。
+分組跟著編號走：同一段編號共用一個主題，左側才會一段接一段，上一則與下一則也才跟上課順序相同。這一則先把 slug 與標題印出來，點了還不會換頁；連結、路徑與搜尋都在後面加上。首頁改為讀同一份資料，主區的則數與主題名稱就跟左側一致。
 
 ```js 04-react-router/src/data/catalog.js
 /**
  * 練習筆記的目錄。左側選單與單則頁面都讀這一份。
- * topics 是主題的順序與標題。demos 每一筆的 id 與路徑 /demos/:id 相同，topic 對到 topics 的 id，Component 是該則要畫的元件。
+ * topics 是主題的順序與標題。demos 每一筆的 slug 與路徑 /demos/:slug 相同，topic 對到 topics 的 id，Component 是該則要畫的元件。
  */
 import Hello from '../examples/01-hello.jsx';
 import ExprDemo from '../examples/02-expr.jsx';
@@ -894,6 +1112,11 @@ import ProviderDemo from '../examples/82-providerDemo/index.jsx';
 import ActionDemo from '../examples/83-action.jsx';
 import ActionStateDemo from '../examples/84-action-state.jsx';
 import OptimisticDemo from '../examples/85-optimistic.jsx';
+import LoaderDemo from '../examples/86-loader.jsx';
+import FormActionDemo from '../examples/87-action.jsx';
+import RedirectDemo from '../examples/88-redirect-error.jsx';
+import FetcherDemo from '../examples/89-fetcher.jsx';
+import NavigationDemo from '../examples/90-navigation.jsx';
 
 export const topics = [
   { id: 'component', title: '元件' },
@@ -905,148 +1128,364 @@ export const topics = [
   { id: 'effect', title: 'Effect 與資料' },
   { id: 'share', title: '共用狀態' },
   { id: 'more', title: 'Ref、Reducer 與 Actions' },
+  { id: 'data', title: '資料模式' },
 ];
 
 export const demos = [
-  { id: '01', title: '函式元件', topic: 'component', Component: Hello },
-  { id: '02', title: '表達式', topic: 'component', Component: ExprDemo },
-  { id: '03', title: '由父層傳入', topic: 'component', Component: DownDemo },
-  { id: '04', title: '拆分元件', topic: 'component', Component: TreeDemo },
-  { id: '05', title: '狀態的位置', topic: 'component', Component: PlaceDemo },
-  { id: '06', title: 'Fragment', topic: 'jsx', Component: FragmentDemo },
-  { id: '07', title: 'style 物件', topic: 'jsx', Component: StyleDemo },
-  { id: '08', title: 'className', topic: 'jsx', Component: ClassDemo },
-  { id: '09', title: '提早 return', topic: 'jsx', Component: EarlyDemo },
-  { id: '10', title: '三元運算子', topic: 'jsx', Component: TernaryDemo },
-  { id: '11', title: '邏輯且', topic: 'jsx', Component: AndDemo },
-  { id: '12', title: '數字 0', topic: 'jsx', Component: ZeroDemo },
-  { id: '13', title: '邏輯或', topic: 'jsx', Component: OrDemo },
-  { id: '14', title: '空值合併', topic: 'jsx', Component: NullishDemo },
-  { id: '15', title: 'default export', topic: 'module', Component: CardDemo },
-  { id: '16', title: 'named export', topic: 'module', Component: BoardDemo },
-  { id: '17', title: '解構', topic: 'module', Component: PropsDemo },
-  { id: '18', title: '預設值', topic: 'module', Component: DefaultsDemo },
-  { id: '19', title: '函式型 props', topic: 'module', Component: CallbackDemo },
-  { id: '20', title: 'children', topic: 'module', Component: ChildrenDemo },
-  { id: '21', title: '宣告狀態', topic: 'state', Component: CountDemo },
-  { id: '22', title: '多個狀態', topic: 'state', Component: MultiDemo },
+  { slug: '01-hello', title: '函式元件', topic: 'component', Component: Hello },
+  { slug: '02-expr', title: '表達式', topic: 'component', Component: ExprDemo },
   {
-    id: '23',
+    slug: '03-down',
+    title: '由父層傳入',
+    topic: 'component',
+    Component: DownDemo,
+  },
+  {
+    slug: '04-tree',
+    title: '拆分元件',
+    topic: 'component',
+    Component: TreeDemo,
+  },
+  {
+    slug: '05-place',
+    title: '狀態的位置',
+    topic: 'component',
+    Component: PlaceDemo,
+  },
+  {
+    slug: '06-fragment',
+    title: 'Fragment',
+    topic: 'jsx',
+    Component: FragmentDemo,
+  },
+  { slug: '07-style', title: 'style 物件', topic: 'jsx', Component: StyleDemo },
+  { slug: '08-class', title: 'className', topic: 'jsx', Component: ClassDemo },
+  {
+    slug: '09-early',
+    title: '提早 return',
+    topic: 'jsx',
+    Component: EarlyDemo,
+  },
+  {
+    slug: '10-ternary',
+    title: '三元運算子',
+    topic: 'jsx',
+    Component: TernaryDemo,
+  },
+  { slug: '11-and', title: '邏輯且', topic: 'jsx', Component: AndDemo },
+  { slug: '12-zero', title: '數字 0', topic: 'jsx', Component: ZeroDemo },
+  { slug: '13-or', title: '邏輯或', topic: 'jsx', Component: OrDemo },
+  {
+    slug: '14-nullish',
+    title: '空值合併',
+    topic: 'jsx',
+    Component: NullishDemo,
+  },
+  {
+    slug: '15-card',
+    title: 'default export',
+    topic: 'module',
+    Component: CardDemo,
+  },
+  {
+    slug: '16-board',
+    title: 'named export',
+    topic: 'module',
+    Component: BoardDemo,
+  },
+  { slug: '17-props', title: '解構', topic: 'module', Component: PropsDemo },
+  {
+    slug: '18-defaults',
+    title: '預設值',
+    topic: 'module',
+    Component: DefaultsDemo,
+  },
+  {
+    slug: '19-callback',
+    title: '函式型 props',
+    topic: 'module',
+    Component: CallbackDemo,
+  },
+  {
+    slug: '20-children',
+    title: 'children',
+    topic: 'module',
+    Component: ChildrenDemo,
+  },
+  { slug: '21-state', title: '宣告狀態', topic: 'state', Component: CountDemo },
+  { slug: '22-multi', title: '多個狀態', topic: 'state', Component: MultiDemo },
+  {
+    slug: '23-snapshot',
     title: '狀態快照：只加一',
     topic: 'state',
     Component: SnapshotDemo,
   },
-  { id: '24', title: '更新函式：加二', topic: 'state', Component: UpdaterDemo },
-  { id: '25', title: '批次更新', topic: 'state', Component: BatchDemo },
-  { id: '26', title: 'Hooks 規則', topic: 'state', Component: RulesDemo },
-  { id: '27', title: '陣列新增', topic: 'state', Component: AddDemo },
-  { id: '28', title: '陣列刪除', topic: 'state', Component: RemoveDemo },
-  { id: '29', title: '陣列修改', topic: 'state', Component: EditDemo },
-  { id: '30', title: '物件欄位', topic: 'state', Component: ObjectDemo },
-  { id: '31', title: '巢狀物件', topic: 'state', Component: NestedDemo },
-  { id: '32', title: '命名慣例', topic: 'event', Component: EventDemo },
-  { id: '33', title: '事件物件', topic: 'event', Component: TargetDemo },
-  { id: '34', title: '帶參數', topic: 'event', Component: PickDemo },
-  { id: '35', title: 'preventDefault', topic: 'event', Component: PreventDemo },
-  { id: '36', title: 'map', topic: 'list', Component: MapDemo },
-  { id: '37', title: 'filter', topic: 'list', Component: FilterDemo },
-  { id: '38', title: '空清單', topic: 'list', Component: EmptyDemo },
-  { id: '39', title: 'key', topic: 'list', Component: KeyDemo },
-  { id: '40', title: 'input', topic: 'list', Component: InputDemo },
-  { id: '41', title: 'textarea', topic: 'list', Component: AreaDemo },
-  { id: '42', title: 'select', topic: 'list', Component: SelectDemo },
-  { id: '43', title: 'checkbox', topic: 'list', Component: CheckDemo },
-  { id: '44', title: 'radio', topic: 'list', Component: RadioDemo },
-  { id: '45', title: '多欄位物件', topic: 'list', Component: FieldsDemo },
-  { id: '46', title: 'submit', topic: 'list', Component: SubmitDemo },
-  { id: '47', title: 'useId', topic: 'list', Component: UseIdDemo },
-  { id: '48', title: '第一次執行', topic: 'effect', Component: EffectMount },
-  { id: '49', title: '依賴陣列', topic: 'effect', Component: DepsDemo },
-  { id: '50', title: '清除函式', topic: 'effect', Component: TimerDemo },
-  { id: '51', title: '無限迴圈', topic: 'effect', Component: LoopDemo },
-  { id: '52', title: '漏寫依賴', topic: 'effect', Component: LintDemo },
-  { id: '53', title: '載入與錯誤', topic: 'effect', Component: LoadDemo },
-  { id: '54', title: '空資料', topic: 'effect', Component: EmptyLoadDemo },
-  { id: '55', title: 'AbortController', topic: 'effect', Component: AbortDemo },
-  { id: '56', title: 'GET', topic: 'effect', Component: GetDemo },
-  { id: '57', title: 'POST', topic: 'effect', Component: PostDemo },
-  { id: '58', title: 'PUT', topic: 'effect', Component: PutDemo },
-  { id: '59', title: 'DELETE', topic: 'effect', Component: DeleteDemo },
-  { id: '60', title: 'API 模組', topic: 'effect', Component: ItemsDemo },
-  { id: '61', title: '渲染時計算', topic: 'effect', Component: DeriveDemo },
   {
-    id: '62',
+    slug: '24-updater',
+    title: '更新函式：加二',
+    topic: 'state',
+    Component: UpdaterDemo,
+  },
+  { slug: '25-batch', title: '批次更新', topic: 'state', Component: BatchDemo },
+  {
+    slug: '26-rules',
+    title: 'Hooks 規則',
+    topic: 'state',
+    Component: RulesDemo,
+  },
+  { slug: '27-add', title: '陣列新增', topic: 'state', Component: AddDemo },
+  {
+    slug: '28-remove',
+    title: '陣列刪除',
+    topic: 'state',
+    Component: RemoveDemo,
+  },
+  { slug: '29-edit', title: '陣列修改', topic: 'state', Component: EditDemo },
+  {
+    slug: '30-object',
+    title: '物件欄位',
+    topic: 'state',
+    Component: ObjectDemo,
+  },
+  {
+    slug: '31-nested',
+    title: '巢狀物件',
+    topic: 'state',
+    Component: NestedDemo,
+  },
+  { slug: '32-event', title: '命名慣例', topic: 'event', Component: EventDemo },
+  {
+    slug: '33-target',
+    title: '事件物件',
+    topic: 'event',
+    Component: TargetDemo,
+  },
+  { slug: '34-pick', title: '帶參數', topic: 'event', Component: PickDemo },
+  {
+    slug: '35-prevent',
+    title: 'preventDefault',
+    topic: 'event',
+    Component: PreventDemo,
+  },
+  { slug: '36-map', title: 'map', topic: 'list', Component: MapDemo },
+  { slug: '37-filter', title: 'filter', topic: 'list', Component: FilterDemo },
+  { slug: '38-empty', title: '空清單', topic: 'list', Component: EmptyDemo },
+  { slug: '39-key', title: 'key', topic: 'list', Component: KeyDemo },
+  { slug: '40-input', title: 'input', topic: 'list', Component: InputDemo },
+  { slug: '41-area', title: 'textarea', topic: 'list', Component: AreaDemo },
+  { slug: '42-select', title: 'select', topic: 'list', Component: SelectDemo },
+  { slug: '43-check', title: 'checkbox', topic: 'list', Component: CheckDemo },
+  { slug: '44-radio', title: 'radio', topic: 'list', Component: RadioDemo },
+  {
+    slug: '45-fields',
+    title: '多欄位物件',
+    topic: 'list',
+    Component: FieldsDemo,
+  },
+  { slug: '46-submit', title: 'submit', topic: 'list', Component: SubmitDemo },
+  { slug: '47-useid', title: 'useId', topic: 'list', Component: UseIdDemo },
+  {
+    slug: '48-effect',
+    title: '第一次執行',
+    topic: 'effect',
+    Component: EffectMount,
+  },
+  { slug: '49-deps', title: '依賴陣列', topic: 'effect', Component: DepsDemo },
+  {
+    slug: '50-timer',
+    title: '清除函式',
+    topic: 'effect',
+    Component: TimerDemo,
+  },
+  { slug: '51-loop', title: '無限迴圈', topic: 'effect', Component: LoopDemo },
+  { slug: '52-lint', title: '漏寫依賴', topic: 'effect', Component: LintDemo },
+  {
+    slug: '53-load',
+    title: '載入與錯誤',
+    topic: 'effect',
+    Component: LoadDemo,
+  },
+  {
+    slug: '54-empty',
+    title: '空資料',
+    topic: 'effect',
+    Component: EmptyLoadDemo,
+  },
+  {
+    slug: '55-abort',
+    title: 'AbortController',
+    topic: 'effect',
+    Component: AbortDemo,
+  },
+  { slug: '56-get', title: 'GET', topic: 'effect', Component: GetDemo },
+  { slug: '57-post', title: 'POST', topic: 'effect', Component: PostDemo },
+  { slug: '58-put', title: 'PUT', topic: 'effect', Component: PutDemo },
+  {
+    slug: '59-delete',
+    title: 'DELETE',
+    topic: 'effect',
+    Component: DeleteDemo,
+  },
+  {
+    slug: '60-items-demo',
+    title: 'API 模組',
+    topic: 'effect',
+    Component: ItemsDemo,
+  },
+  {
+    slug: '61-derive',
+    title: '渲染時計算',
+    topic: 'effect',
+    Component: DeriveDemo,
+  },
+  {
+    slug: '62-click',
     title: '事件裡的請求',
     topic: 'effect',
     Component: ClickFetchDemo,
   },
-  { id: '63', title: '抽出讀取', topic: 'effect', Component: HookDemo },
-  { id: '64', title: '傳入引數', topic: 'effect', Component: ToggleDemo },
+  { slug: '63-hook', title: '抽出讀取', topic: 'effect', Component: HookDemo },
   {
-    id: '65',
+    slug: '64-toggle',
+    title: '傳入引數',
+    topic: 'effect',
+    Component: ToggleDemo,
+  },
+  {
+    slug: '65-filter',
     title: '引數放進依賴',
     topic: 'effect',
     Component: FilterHookDemo,
   },
-  { id: '66', title: '各呼叫各一份狀態', topic: 'share', Component: TwiceDemo },
-  { id: '67', title: '父層持有', topic: 'share', Component: LiftDemo },
-  { id: '68', title: '兄弟元件', topic: 'share', Component: SiblingsDemo },
-  { id: '69', title: '層層傳遞', topic: 'share', Component: DrillDemo },
   {
-    id: '70',
+    slug: '66-twice',
+    title: '各呼叫各一份狀態',
+    topic: 'share',
+    Component: TwiceDemo,
+  },
+  { slug: '67-lift', title: '父層持有', topic: 'share', Component: LiftDemo },
+  {
+    slug: '68-siblings',
+    title: '兄弟元件',
+    topic: 'share',
+    Component: SiblingsDemo,
+  },
+  { slug: '69-drill', title: '層層傳遞', topic: 'share', Component: DrillDemo },
+  {
+    slug: '70-context',
     title: '用 Context 改善',
     topic: 'share',
     Component: ContextDemo,
   },
   {
-    id: '71',
+    slug: '71-contextDemo',
     title: '拆成多個檔案',
     topic: 'share',
     Component: ContextSplitDemo,
   },
-  { id: '72', title: '預設值', topic: 'share', Component: DefaultDemo },
-  { id: '73', title: 'useMemo', topic: 'share', Component: MemoDemo },
-  { id: '74', title: 'memo', topic: 'share', Component: MemoComponentDemo },
-  { id: '75', title: 'useCallback', topic: 'share', Component: UseCallbackDemo },
-  { id: '76', title: '聚焦輸入框', topic: 'more', Component: RefDemo },
-  { id: '77', title: '不觸發渲染的值', topic: 'more', Component: RefCountDemo },
   {
-    id: '78',
+    slug: '72-default',
+    title: '預設值',
+    topic: 'share',
+    Component: DefaultDemo,
+  },
+  { slug: '73-memo', title: 'useMemo', topic: 'share', Component: MemoDemo },
+  {
+    slug: '74-memo-component',
+    title: 'memo',
+    topic: 'share',
+    Component: MemoComponentDemo,
+  },
+  {
+    slug: '75-callback',
+    title: 'useCallback',
+    topic: 'share',
+    Component: UseCallbackDemo,
+  },
+  { slug: '76-ref', title: '聚焦輸入框', topic: 'more', Component: RefDemo },
+  {
+    slug: '77-ref-count',
+    title: '不觸發渲染的值',
+    topic: 'more',
+    Component: RefCountDemo,
+  },
+  {
+    slug: '78-reducer-count',
     title: '計數（useReducer）',
     topic: 'more',
     Component: ReducerCountDemo,
   },
   {
-    id: '79',
+    slug: '79-reducer-state',
     title: '待辦（useState）',
     topic: 'more',
     Component: ReducerStateDemo,
   },
   {
-    id: '80',
+    slug: '80-reducer',
     title: '待辦（useReducer）',
     topic: 'more',
     Component: ReducerDemo,
   },
   {
-    id: '81',
+    slug: '81-propsDemo',
     title: '拆成元件用 props',
     topic: 'more',
     Component: TodoPropsDemo,
   },
-  { id: '82', title: '改用 Context', topic: 'more', Component: ProviderDemo },
-  { id: '83', title: 'form action', topic: 'more', Component: ActionDemo },
   {
-    id: '84',
+    slug: '82-providerDemo',
+    title: '改用 Context',
+    topic: 'more',
+    Component: ProviderDemo,
+  },
+  {
+    slug: '83-action',
+    title: 'form action',
+    topic: 'more',
+    Component: ActionDemo,
+  },
+  {
+    slug: '84-action-state',
     title: 'useActionState',
     topic: 'more',
     Component: ActionStateDemo,
   },
   {
-    id: '85',
+    slug: '85-optimistic',
     title: 'useOptimistic',
     topic: 'more',
     Component: OptimisticDemo,
+  },
+  {
+    slug: '86-loader',
+    title: 'loader 讀資料',
+    topic: 'data',
+    Component: LoaderDemo,
+  },
+  {
+    slug: '87-action',
+    title: 'action 與 Form',
+    topic: 'data',
+    Component: FormActionDemo,
+  },
+  {
+    slug: '88-redirect-error',
+    title: 'redirect 與錯誤',
+    topic: 'data',
+    Component: RedirectDemo,
+  },
+  {
+    slug: '89-fetcher',
+    title: 'fetcher 不換頁',
+    topic: 'data',
+    Component: FetcherDemo,
+  },
+  {
+    slug: '90-navigation',
+    title: 'useNavigation',
+    topic: 'data',
+    Component: NavigationDemo,
   },
 ];
 ```
@@ -1056,7 +1495,7 @@ import { demos, topics } from '../data/catalog.js';
 
 /**
  * 左側目錄。topics 決定分組順序，同一主題的示範排在該組下面。
- * 這一則先印出編號與標題。
+ * 這一則先印出 slug 與標題。
  */
 export default function DemoList() {
   return (
@@ -1070,8 +1509,8 @@ export default function DemoList() {
             </h2>
             <ul className="mt-1 grid">
               {items.map((demo) => (
-                <li key={demo.id} className="px-2 py-1 text-sm">
-                  {demo.id} {demo.title}
+                <li key={demo.slug} className="px-2 py-1 text-sm">
+                  {demo.slug} {demo.title}
                 </li>
               ))}
             </ul>
@@ -1120,7 +1559,7 @@ export default function Home() {
 }
 ```
 
-重新整理 `/`，左側每個主題下面是該組的編號與標題，主區寫出則數，並依同樣的順序列出主題名稱。
+重新整理 `/`，左側每個主題下面是該組的 slug 與標題，主區寫出則數，並依同樣的順序列出主題名稱。
 
 {% note success %}
 **換你試試：**
@@ -1147,13 +1586,13 @@ export default function Home() {
 
 ## 連結
 
-一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。`Link` 看起來一樣是連結，點了只換網址，React Router 依新網址換掉對應的那一塊畫面，其餘不動。`NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，是的話自動加上 `active` class。分法很簡單：要依「是不是目前頁」換樣式的連結（選單、分頁）用 `NavLink`，其他一般連結都用 `Link`。所以首頁的「從第一則開始」用 `Link`，左側每一則與站名用 `NavLink`。點了首頁的 `Link` 進到 `/demos/01` 後，左側對應的那一則會自動變成 active：`NavLink` 看的是目前網址，不管你從哪裡點進來。
+一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。`Link` 看起來一樣是連結，點了只換網址，React Router 依新網址換掉對應的那一塊畫面，其餘不動。`NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，是的話自動加上 `active` class。分法很簡單：要依「是不是目前頁」換樣式的連結（選單、分頁）用 `NavLink`，其他一般連結都用 `Link`。所以首頁的「從第一則開始」用 `Link`，左側每一則與站名用 `NavLink`。點了首頁的 `Link` 進到 `/demos/01-hello` 後，左側對應的那一則會自動變成 active：`NavLink` 看的是目前網址，不管你從哪裡點進來。
 
 **一覽**
 
 - `Link` 的 `to` 是目標路徑。它渲染成 `<a>`，點擊推進瀏覽器歷史，對上的元件換掉。
 - `NavLink` 同樣用 `to` 換頁。`className` 可以是函式，參數裡的 `isActive` 為真時表示這一條對上目前網址。
-- `end` 要求路徑完全符合。站名連到 `/` 時要加上，否則停在 `/demos/01` 時首頁那一條也會算成使用中。
+- `end` 要求路徑完全符合。站名連到 `/` 時要加上，否則停在 `/demos/01-hello` 時首頁那一條也會算成使用中。
 
 {% mermaid graph LR %}
   clickNode["點選單"] --> linkNode["NavLink 改網址"]
@@ -1167,7 +1606,7 @@ export default function Home() {
 
 ### Link
 
-首頁主區需要一條前往第一則筆記的連結。它只要把人帶到 `/demos/01`，不必知道自己是不是目前頁，所以用 `Link`。
+首頁主區需要一條前往第一則筆記的連結。它只要把人帶到 `/demos/01-hello`，不必知道自己是不是目前頁，所以用 `Link`。
 
 **語法**
 
@@ -1180,12 +1619,12 @@ export default function Home() {
  * @param {React.ReactNode} props.children 連結文字
  * @returns {React.ReactElement}
  */
-const jump = <Link to="/demos/01">從第一則開始</Link>;
+const jump = <Link to="/demos/01-hello">從第一則開始</Link>;
 ```
 
 **觀念**
 
-`to` 寫的是路由路徑，從網站根目錄算起。第一則的編號是目錄裡的 `01`，所以路徑是 `/demos/01`。單則的路由在路徑參數那一節才登記，連結可以先寫上；路由補上之後，點了主區就會換成那一則元件。
+`to` 寫的是路由路徑，從網站根目錄算起。第一則的 `slug` 是檔名 `01-hello`，所以路徑是 `/demos/01-hello`。單則的路由在路徑參數那一節才登記，連結可以先寫上；路由補上之後，點了主區就會換成那一則元件。
 
 ```diff 04-react-router/src/pages/Home.jsx
 +import { Link } from 'react-router';
@@ -1200,7 +1639,7 @@ const jump = <Link to="/demos/01">從第一則開始</Link>;
  // ...
        </ul>
 +      <p className="mt-4">
-+        <Link className="text-teal-800 underline" to="/demos/01">
++        <Link className="text-teal-800 underline" to="/demos/01-hello">
 +          從第一則開始
 +        </Link>
 +      </p>
@@ -1208,11 +1647,11 @@ const jump = <Link to="/demos/01">從第一則開始</Link>;
  // ...
 ```
 
-主區主題清單下面多一條底線連結。路由表還沒有 `demos/:id` 時，點了主區是空的；下一節補上路徑之後，同一條連結會打開第一則。
+主區主題清單下面多一條底線連結。路由表還沒有 `demos/:slug` 時，點了主區是空的；下一節補上路徑之後，同一條連結會打開第一則。
 
 {% note success %}
 **換你試試：**
-把連結文字改成「打開第一則」。`to` 仍指向 `/demos/01`。
+把連結文字改成「打開第一則」。`to` 仍指向 `/demos/01-hello`。
 {% endnote %}
 
 <details>
@@ -1246,15 +1685,15 @@ const jump = <Link to="/demos/01">從第一則開始</Link>;
  * @returns {React.ReactElement}
  */
 const item = (
-  <NavLink to="/demos/01" className={({ isActive }) => (isActive ? 'on' : '')}>
-    01 函式元件
+  <NavLink to="/demos/01-hello" className={({ isActive }) => (isActive ? 'on' : '')}>
+    01-hello 函式元件
   </NavLink>
 );
 ```
 
 **觀念**
 
-目錄的 `to` 用該則的 `id` 接成 `/demos/` 加上編號。`isActive` 為真時套深色底與白字，其餘只留一行淡色。站名若連到 `/` 卻沒有 `end`，往後只要路徑以斜線開頭，站名都會亮；加上 `end` 之後，只有停在總覽時站名才是使用中。
+目錄的 `to` 用該則的 `slug` 接成 `/demos/` 加上檔名。`isActive` 為真時套深色底與白字，其餘只留一行淡色。站名若連到 `/` 卻沒有 `end`，往後只要路徑以斜線開頭，站名都會亮；加上 `end` 之後，只有停在總覽時站名才是使用中。
 
 ```diff 04-react-router/src/layouts/MainLayout.jsx
 -import { Outlet, ScrollRestoration } from 'react-router';
@@ -1287,24 +1726,24 @@ const item = (
 +import { NavLink } from 'react-router';
 +import { demos, topics } from '../data/catalog.js';
  // ...
--                <li key={demo.id} className="px-2 py-1 text-sm">
--                  {demo.id} {demo.title}
-+                <li key={demo.id}>
+-                <li key={demo.slug} className="px-2 py-1 text-sm">
+-                  {demo.slug} {demo.title}
++                <li key={demo.slug}>
 +                  <NavLink
-+                    to={'/demos/' + demo.id}
++                    to={'/demos/' + demo.slug}
 +                    className={({ isActive }) =>
 +                      isActive
 +                        ? 'block rounded bg-teal-800 px-2 py-1 text-sm text-white'
 +                        : 'block rounded px-2 py-1 text-sm hover:bg-stone-100'
 +                    }
 +                  >
-+                    {demo.id} {demo.title}
++                    {demo.slug} {demo.title}
 +                  </NavLink>
                  </li>
  // ...
 ```
 
-路徑參數那一節補上路由之後，點「01 函式元件」會到 `/demos/01`，該列變成深色。回到總覽時，只有站名是深色字，目錄列恢復淡色。
+路徑參數那一節補上路由之後，點「01-hello 函式元件」會到 `/demos/01-hello`，該列變成深色。回到總覽時，只有站名是深色字，目錄列恢復淡色。
 
 {% note success %}
 **換你試試：**
@@ -1329,17 +1768,17 @@ const item = (
 
 ## 路徑參數
 
-每一則筆記共用同一個頁面元件，網址中段的編號決定要畫哪一則。這個會變的片段叫路徑參數。讀取用 `useParams`，上一則與下一則改網址用 `useNavigate`。
+每一則筆記共用同一個頁面元件，網址上的 slug 決定要畫哪一則。slug 就是範例檔名去掉 `.jsx`。這個會變的片段叫路徑參數。讀取用 `useParams`，上一則與下一則改網址用 `useNavigate`。
 
 **一覽**
 
-- `useParams` 讀路徑上的參數，回傳的欄位都是字串。這裡的 `id` 就是 `/demos/:id` 裡那一段。
+- `useParams` 讀路徑上的參數，回傳的欄位都是字串。這裡的 `slug` 就是 `/demos/:slug` 裡那一段。
 - `useNavigate` 回傳一個函式。呼叫時傳入路徑，效果與點連結相同：推進歷史並換成對上的頁面。送出表單或按下「下一則」這種不是連結的動作才用它。
 
 {% mermaid graph LR %}
-  pathNode["/demos/01"] --> paramsNode["useParams 得到 id"]
+  pathNode["/demos/01-hello"] --> paramsNode["useParams 得到 slug"]
   paramsNode --> pageNode["畫出該則元件"]
-  pageNode --> nextNode["useNavigate 到相鄰編號"]
+  pageNode --> nextNode["useNavigate 到相鄰 slug"]
   style pathNode fill:#e3f2fd
   style paramsNode fill:#fff3e0
   style pageNode fill:#e8f5e9
@@ -1348,21 +1787,21 @@ const item = (
 
 ### useParams
 
-路徑寫成 `demos/:id`。冒號後面的名字就是參數名，打開 `/demos/01` 時，`id` 是字串 `'01'`。頁面用這個字串到目錄裡找同一筆，找到才畫出該則的 `Component`。
+路徑寫成 `demos/:slug`。冒號後面的名字就是參數名，打開 `/demos/01-hello` 時，`slug` 是字串 `'01-hello'`。頁面用這個字串到目錄裡找同一筆，找到才畫出該則的 `Component`。
 
 **語法**
 
 ```jsx
 /**
  * 讀取目前路徑上的參數，欄位都是字串。
- * @returns {{ id: string }} 與 path 裡的 :id 同名
+ * @returns {{ slug: string }} 與 path 裡的 :slug 同名
  */
-const { id } = useParams();
+const { slug } = useParams();
 ```
 
 **觀念**
 
-目錄的 `id` 也是字串，所以直接用 `===` 比較，不用先轉成數字。對不到任何一筆時，留在這一頁說明沒有這則，並給一條回總覽的連結。對得到時，主區先寫主題與標題，再把該則元件畫在下面。
+目錄的 `slug` 也是字串，所以直接用 `===` 比較，不用先轉成數字。對不到任何一筆時，留在這一頁說明沒有這則，並給一條回總覽的連結。對得到時，主區先寫主題與標題，再把該則元件畫在下面。
 
 ```diff 04-react-router/src/App.jsx
  import MainLayout from './layouts/MainLayout.jsx';
@@ -1370,7 +1809,7 @@ const { id } = useParams();
  import Home from './pages/Home.jsx';
  // ...
        { index: true, element: <Home /> },
-+      { path: 'demos/:id', element: <DemoPage /> },
++      { path: 'demos/:slug', element: <DemoPage /> },
  // ...
 ```
 
@@ -1379,12 +1818,12 @@ import { Link, useParams } from 'react-router';
 import { demos, topics } from '../data/catalog.js';
 
 /**
- * 單則筆記。useParams 的 id 是字串，和目錄的 id 相同才畫出 Component。
+ * 單則筆記。useParams 的 slug 是字串，和目錄的 slug 相同才畫出 Component。
  * 對不到時留在這一頁，並用 Link 回總覽。
  */
 export default function DemoPage() {
-  const { id } = useParams();
-  const demo = demos.find((item) => item.id === id);
+  const { slug } = useParams();
+  const demo = demos.find((item) => item.slug === slug);
 
   if (!demo) {
     return (
@@ -1406,7 +1845,7 @@ export default function DemoPage() {
     <article>
       <p className="text-sm text-stone-500">{topic ? topic.title : ''}</p>
       <h1 className="mt-1 text-2xl font-bold">
-        {demo.id} {demo.title}
+        {demo.slug} {demo.title}
       </h1>
       <div className="mt-6">
         <View />
@@ -1416,7 +1855,7 @@ export default function DemoPage() {
 }
 ```
 
-點目錄的「01 函式元件」，網址變成 `/demos/01`，主區是該則的標題與元件，該列是深色。打開 `/demos/99`，主區是「沒有這則筆記」，因為目錄沒有這個編號。重新整理仍停在同一個網址。
+點目錄的「01-hello 函式元件」，網址變成 `/demos/01-hello`，主區是該則的標題與元件，該列是深色。打開 `/demos/not-found`，主區是「沒有這則筆記」，因為目錄沒有這個 slug。重新整理仍停在同一個網址。
 
 {% note success %}
 **換你試試：**
@@ -1426,7 +1865,7 @@ export default function DemoPage() {
 <details>
 <summary>參考答案</summary>
 
-這句話在找不到資料的那個分支。路由的 `:id` 不用改。
+這句話在找不到資料的那個分支。路由的 `:slug` 不用改。
 
 ```diff 04-react-router/src/pages/DemoPage.jsx
  // ...
@@ -1439,7 +1878,7 @@ export default function DemoPage() {
 
 ### useNavigate
 
-上一則與下一則是按鈕，不是一開始就寫死的連結。按下去要改到相鄰編號的網址，所以用 `useNavigate`。順序跟 `demos` 陣列相同，第一則沒有上一則，最後一則沒有下一則。
+上一則與下一則是按鈕，不是一開始就寫死的連結。按下去要改到相鄰那一則的網址，所以用 `useNavigate`。順序跟 `demos` 陣列相同，第一則沒有上一則，最後一則沒有下一則。
 
 **語法**
 
@@ -1453,7 +1892,7 @@ const navigate = useNavigate();
 
 **觀念**
 
-先用 `findIndex` 找出目前這筆在陣列裡的位置，前一格是上一則，後一格是下一則。找不到時索引是 `-1`，而負數索引會讀到陣列尾端，所以要先改成 `null`，才會走進「沒有這則筆記」。按鈕在沒有相鄰筆記時停用。按得下時才呼叫 `navigate`，路徑仍是 `/demos/` 加上那一則的 `id`。
+先用 `find` 以 `slug` 對到目錄那一筆，對不到就留在「沒有這則筆記」。`findIndex` 取出同一筆的位置，前一格是上一則，後一格是下一則。按鈕在沒有相鄰筆記時停用。按得下時才呼叫 `navigate`，路徑是 `/demos/` 加上那一則的 `slug`。
 
 ```diff 04-react-router/src/pages/DemoPage.jsx
 -import { Link, useParams } from 'react-router';
@@ -1463,25 +1902,24 @@ const navigate = useNavigate();
 + * 對不到時留在這一頁，並用 Link 回總覽。上一則與下一則跟著目錄陣列，用 useNavigate 改網址；第一則與最後一則的按鈕停用。
  // ...
  export default function DemoPage() {
-   const { id } = useParams();
--  const demo = demos.find((item) => item.id === id);
+   const { slug } = useParams();
 +  const navigate = useNavigate();
-+  const index = demos.findIndex((demo) => demo.id === id);
-+  const demo = index < 0 ? null : demos[index];
+   const demo = demos.find((item) => item.slug === slug);
++  const index = demos.findIndex((item) => item.slug === slug);
  // ...
    const topic = topics.find((item) => item.id === demo.topic);
 +  const prev = demos[index - 1];
 +  const next = demos[index + 1];
    const View = demo.Component;
  // ...
-         {demo.id} {demo.title}
+         {demo.slug} {demo.title}
        </h1>
 +      <div className="mt-4 flex gap-2">
 +        <button
 +          type="button"
 +          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
 +          disabled={!prev}
-+          onClick={() => navigate('/demos/' + prev.id)}
++          onClick={() => navigate('/demos/' + prev.slug)}
 +        >
 +          上一則
 +        </button>
@@ -1489,7 +1927,7 @@ const navigate = useNavigate();
 +          type="button"
 +          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
 +          disabled={!next}
-+          onClick={() => navigate('/demos/' + next.id)}
++          onClick={() => navigate('/demos/' + next.slug)}
 +        >
 +          下一則
 +        </button>
@@ -1498,7 +1936,7 @@ const navigate = useNavigate();
  // ...
 ```
 
-停在 `/demos/01` 時，「上一則」是淡的，按「下一則」會到 `/demos/02`，目錄的深色列跟著移到下一則。瀏覽器的上一頁可以回到 `01`。
+停在 `/demos/01-hello` 時，「上一則」是淡的，按「下一則」會到 `/demos/02-expr`，目錄的深色列跟著移到下一則。瀏覽器的上一頁可以回到 `01-hello`。
 
 {% note success %}
 **換你試試：**
@@ -1559,7 +1997,7 @@ const q = params.get('q');
 
 **觀念**
 
-關鍵字比對編號或標題，大小寫忽略。某個主題篩完沒有留下任何一則，該組標題也不畫。輸入變成空字串時寫入空物件，網址回到沒有問號的路徑。目錄連到單則時把同一個 `q` 帶在路徑後面，否則一點進筆記，篩選就會不見。
+關鍵字比對 slug 或標題，大小寫忽略。某個主題篩完沒有留下任何一則，該組標題也不畫。輸入變成空字串時寫入空物件，網址回到沒有問號的路徑。目錄連到單則時把同一個 `q` 帶在路徑後面，否則一點進筆記，篩選就會不見。
 
 ```jsx 04-react-router/src/pages/DemoList.jsx
 import { NavLink, useSearchParams } from 'react-router';
@@ -1577,7 +2015,7 @@ export default function DemoList() {
   const visible = demos.filter((demo) => {
     if (!keyword) return true;
     return (
-      demo.id.includes(keyword) || demo.title.toLowerCase().includes(keyword)
+      demo.slug.includes(keyword) || demo.title.toLowerCase().includes(keyword)
     );
   });
 
@@ -1608,12 +2046,12 @@ export default function DemoList() {
               </h2>
               <ul className="mt-1 grid">
                 {items.map((demo) => (
-                  <li key={demo.id}>
+                  <li key={demo.slug}>
                     <NavLink
                       to={
                         q
-                          ? `/demos/${demo.id}?q=${encodeURIComponent(q)}`
-                          : `/demos/${demo.id}`
+                          ? `/demos/${demo.slug}?q=${encodeURIComponent(q)}`
+                          : `/demos/${demo.slug}`
                       }
                       className={({ isActive }) =>
                         isActive
@@ -1621,7 +2059,7 @@ export default function DemoList() {
                           : 'block rounded px-2 py-1 text-sm hover:bg-stone-100'
                       }
                     >
-                      {demo.id} {demo.title}
+                      {demo.slug} {demo.title}
                     </NavLink>
                   </li>
                 ))}
@@ -1725,7 +2163,7 @@ export default function WherePage() {
  import Home from './pages/Home.jsx';
 +import WherePage from './pages/WherePage.jsx';
  // ...
-       { path: 'demos/:id', element: <DemoPage /> },
+       { path: 'demos/:slug', element: <DemoPage /> },
 +      { path: 'where', element: <WherePage /> },
  // ...
 ```
@@ -1775,7 +2213,7 @@ export default function WherePage() {
 
 ## 分散式星號路由
 
-把 `*` 放進版型的子路由，而且放在最後面。`/demos/01` 這種更具體的路徑會先對上，剩下的網址才落到星號。未知網址仍留在版型裡，左側目錄不會被拿掉，主區換成找不到的那一頁，並附上回總覽的連結。
+把 `*` 放進版型的子路由，而且放在最後面。`/demos/01-hello` 這種更具體的路徑會先對上，剩下的網址才落到星號。未知網址仍留在版型裡，左側目錄不會被拿掉，主區換成找不到的那一頁，並附上回總覽的連結。
 
 **語法**
 
@@ -1789,7 +2227,7 @@ const missed = { path: '*', element: <NotFoundPage /> };
 
 **觀念**
 
-404 頁面只負責主區的說明與回目錄連結。回目錄的路徑是 `/`，點了主區回到總覽，左側仍是同一份版型。`demos/:id` 比星號具體，所以 `/demos/01` 不會掉進 404；`/demos/99` 會進單則頁面裡「沒有這則筆記」的分支，因為那條路由已經對上了，只是目錄沒有這個編號。
+404 頁面只負責主區的說明與回目錄連結。回目錄的路徑是 `/`，點了主區回到總覽，左側仍是同一份版型。`demos/:slug` 比星號具體，所以 `/demos/01-hello` 不會掉進 404；`/demos/not-found` 會進單則頁面裡「沒有這則筆記」的分支，因為那條路由已經對上了，只是目錄沒有這個 slug。
 
 ```jsx 04-react-router/src/pages/NotFoundPage.jsx
 import { Link } from 'react-router';
@@ -1907,7 +2345,12 @@ const central = createBrowserRouter([
 
 # 讀取與送出資料
 
-路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。這一章的五則都掛在 `04-react-router` 的 `/demos/86` 到 `/demos/90`，而且都排在 `demos/:id` 前面，編號才不會被路徑參數吃掉。
+路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。每一則練習網址就是範例檔名去掉 `.jsx`，例如 `/demos/86-loader` 對應 `86-loader.jsx`；路徑裡若有 `notes/`，後面那一段是筆記自己的 id（`noteId`）。這一章的五則都排在 `demos/:slug` 前面，才不會被路徑參數吃掉。
+
+{% note info %}
+**哪一種路由器能用**
+`loader`、`action`、`Form`、`useFetcher`、`errorElement` 以及這一章的相關 Hook，只配合資料路由器：`createBrowserRouter`、`createHashRouter`、`createMemoryRouter` 與 `RouterProvider`；框架模式則在路由模組匯出 `loader` 與 `action`。宣告式的 `BrowserRouter` 與 `Routes` 不能用這些，三種接法見[三種接法](#React-Router)。
+{% endnote %}
 
 筆記先放在模組裡的陣列，五則共用 `notes-db.js`。重新整理開發伺服器會回到最初的兩筆。
 
@@ -1920,21 +2363,41 @@ const central = createBrowserRouter([
 `notes-db.js` 把陣列留在模組作用域，匯出讀取與寫入函式。`86-loader.jsx` 的 `loader` 呼叫 `listNotes`，把陣列放進 `notes`。頁面解構同一份結果，用 `map` 畫出標題。
 
 ```js 04-react-router/src/examples/notes-db.js
+/** @type {{ id: string, title: string, done: boolean }[]} */
 let notes = [
   { id: '1', title: '看海', done: false },
   { id: '2', title: '寫筆記', done: true },
 ];
 
+/**
+ * 讀出目前全部筆記，回傳模組裡的同一份陣列。
+ * @returns {{ id: string, title: string, done: boolean }[]}
+ */
 export const listNotes = () => notes;
 
+/**
+ * 依 id 找一筆。找不到時回傳 null。
+ * @param {string} id
+ * @returns {{ id: string, title: string, done: boolean } | null}
+ */
 export const getNote = (id) => notes.find((item) => item.id === id) ?? null;
 
+/**
+ * 新增一筆並放在最前面。id 用目前時間的毫秒數。
+ * @param {string} title
+ * @returns {{ id: string, title: string, done: boolean }}
+ */
 export const addNote = (title) => {
   const note = { id: String(Date.now()), title, done: false };
   notes = [note, ...notes];
   return note;
 };
 
+/**
+ * 把指定 id 的 done 翻轉。沒有這筆時陣列內容不變。
+ * @param {string} id
+ * @returns {void}
+ */
 export const toggleNote = (id) => {
   notes = notes.map((item) =>
     item.id === id ? { ...item, done: !item.done } : item,
@@ -1946,10 +2409,20 @@ export const toggleNote = (id) => {
 import { useLoaderData } from 'react-router';
 import { listNotes } from './notes-db.js';
 
-/** loader 在畫面前把筆記讀好，頁面用 useLoaderData 拿標題。 */
+/**
+ * 在這個網址的元件畫出來之前執行。回傳值交給 useLoaderData。
+ * 路由器會傳入 { params, request }。這一則不讀路徑參數，直接回傳全部筆記。
+ * 回傳 Promise 時路由器會先等待。這一則是同步回傳。
+ * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+ */
 export const loader = () => ({ notes: listNotes() });
 
+/** 畫出 loader 準備好的標題。 */
 export default function LoaderDemo() {
+  /**
+   * 讀取這條路由 loader 的回傳值。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
   const { notes } = useLoaderData();
   return (
     <section>
@@ -1964,22 +2437,22 @@ export default function LoaderDemo() {
 }
 ```
 
-路由要註冊在 `demos/:id` 前面。`App.jsx` 用具名匯入把 `loader` 掛到 `demos/86`。
+路由要註冊在 `demos/:slug` 前面。`App.jsx` 用具名匯入把 `loader` 掛到 `demos/86-loader`。
 
 ```diff 04-react-router/src/App.jsx
  import WherePage from './pages/WherePage.jsx';
 +import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
  // ...
-+        { path: 'demos/86', loader: loader86, Component: LoaderDemo },
-         { path: 'demos/:id', element: <DemoPage /> },
++        { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
+         { path: 'demos/:slug', element: <DemoPage /> },
  // ...
 ```
 
 **解析**
 
-- 打開 `/demos/86` 會先跑 `loader`，畫面上是「看海」與「寫筆記」兩列，沒有另外的讀取中文字。
+- 打開 `/demos/86-loader` 會先跑 `loader`，畫面上是「看海」與「寫筆記」兩列，沒有另外的讀取中文字。
 - `useLoaderData` 拿到的就是 `loader` 的回傳值。這一則沒有 `useEffect`。
-- `demos/86` 比 `demos/:id` 更具體，所以這一則不會掉進單則筆記頁。
+- `demos/86-loader` 比 `demos/:slug` 更具體，所以這一則不會掉進單則筆記頁。
 
 {% note success %}
 **換你試試：**
@@ -2013,9 +2486,21 @@ export default function LoaderDemo() {
 import { Form, useActionData, useLoaderData } from 'react-router';
 import { addNote, listNotes } from './notes-db.js';
 
-/** Form 送到這條路由的 action，寫進同一份筆記後 loader 會自己重跑。 */
+/**
+ * 進頁前讀清單。回傳值交給 useLoaderData。
+ * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+ */
 export const loader = () => ({ notes: listNotes() });
 
+/**
+ * 接收這一條路由的表單。request 是這次送出。
+ * request.formData() 回傳 Promise，解析後是 FormData。
+ * form.get(name) 取出同名欄位，沒有時是 null。
+ * 標題去掉空白後是空字串就回 { error }，否則寫入並回空字串。
+ * 寫入之後這條路由的 loader 會再跑。
+ * @param {{ request: Request }} args
+ * @returns {Promise<{ error: string }>}
+ */
 export const action = async ({ request }) => {
   const form = await request.formData();
   const title = String(form.get('title') ?? '').trim();
@@ -2024,8 +2509,20 @@ export const action = async ({ request }) => {
   return { error: '' };
 };
 
+/**
+ * Form method="post" 把欄位送到目前這條路由的 action，不整頁換成另一份文件。
+ * 沒有 action 屬性時，目標就是目前網址。
+ */
 export default function ActionDemo() {
+  /**
+   * 讀取這條路由 loader 的回傳值。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
   const { notes } = useLoaderData();
+  /**
+   * 最近一次 action 的回傳值。還沒送出時是 undefined。
+   * @returns {{ error: string } | undefined}
+   */
   const result = useActionData();
   return (
     <section>
@@ -2061,20 +2558,20 @@ export default function ActionDemo() {
 +  loader as loader87,
 +} from './examples/87-action.jsx';
  // ...
-         { path: 'demos/86', loader: loader86, Component: LoaderDemo },
+         { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
 +        {
-+          path: 'demos/87',
++          path: 'demos/87-action',
 +          loader: loader87,
 +          action: action87,
 +          Component: ActionDemo,
 +        },
-         { path: 'demos/:id', element: <DemoPage /> },
+         { path: 'demos/:slug', element: <DemoPage /> },
  // ...
 ```
 
 **解析**
 
-- 填一個標題再按「新增」，新的一列出現在清單最上面。網址仍是 `/demos/87`。
+- 填一個標題再按「新增」，新的一列出現在清單最上面。網址仍是 `/demos/87-action`。
 - 這次更新來自 `action` 寫入之後 `loader` 自動重跑，頁面沒有自己呼叫 `listNotes`。
 - 標題留白就送出時，`useActionData` 讀到 `error`，輸入框下面出現「請填標題」，清單筆數不變。
 
@@ -2103,7 +2600,44 @@ export default function ActionDemo() {
 
 **觀念**
 
-`/demos/88` 與 `/demos/88/:id` 共用同一個 `loader`。沒有 `params.id` 時回傳清單；有 id 時用 `getNote`，沒有這筆就丟 404。`NoteMissing` 用 `useRouteError` 讀錯誤，`isRouteErrorResponse` 為真時顯示 `error.data`。
+`/demos/88-redirect-error` 與 `/demos/88-redirect-error/notes/:noteId` 共用同一個 `loader`：沒有 `params.noteId` 時回傳清單，有 `noteId` 時用 `getNote`，沒有這筆就丟 404。路徑 `demos/88-redirect-error/notes/:noteId` 會對上 `notes/` 後面的任何一段，因此 `/demos/88-redirect-error/notes/not-found` 就是同一條路由，`params.noteId` 為 `'not-found'`，不必再宣告一條路徑。`NoteMissing` 用 `useRouteError` 讀錯誤，`isRouteErrorResponse` 為真時顯示 `error.data`。
+
+```diff 04-react-router/src/App.jsx
+ import ActionDemo, {
+   action as action87,
+   loader as loader87,
+ } from './examples/87-action.jsx';
++import RedirectDemo, {
++  action as action88,
++  loader as loader88,
++  NoteDetail,
++  NoteMissing,
++} from './examples/88-redirect-error.jsx';
+ // ...
+           Component: ActionDemo,
+         },
++        {
++          path: 'demos/88-redirect-error',
++          loader: loader88,
++          action: action88,
++          Component: RedirectDemo,
++        },
++        {
++          path: 'demos/88-redirect-error/notes/:noteId',
++          loader: loader88,
++          Component: NoteDetail,
++          errorElement: <NoteMissing />,
++        },
+         { path: 'demos/:slug', element: <DemoPage /> },
+ // ...
+```
+
+**解析**
+
+- 列表路由是 `demos/88-redirect-error`，明細路由是 `demos/88-redirect-error/notes/:noteId`，兩筆都用同一個 `loader88`。
+- 沒有 `params.noteId` 時 `loader` 回傳清單；有 `noteId` 時用 `getNote`，找不到就丟狀態 404。
+- `errorElement` 只掛在明細那一條，列表路由仍畫 `RedirectDemo`。
+- `demos/88-redirect-error/notes/:noteId` 會對上 `notes/` 後面的任何一段，所以 `/demos/88-redirect-error/notes/not-found` 就是這條路由，`params.noteId` 為 `'not-found'`，不必再宣告一條路徑。
 
 ```jsx 04-react-router/src/examples/88-redirect-error.jsx
 import {
@@ -2117,23 +2651,45 @@ import {
 } from 'react-router';
 import { addNote, getNote, listNotes } from './notes-db.js';
 
-/** 列表新增後 redirect 到明細；明細找不到時丟 404，由 errorElement 接住。 */
+/**
+ * 列表與明細共用。params 是路徑參數，明細路由才有 noteId。
+ * 沒有 noteId 時回傳清單；有 noteId 時回傳那一筆。
+ * 找不到就 throw data(message, { status })。第一個引數會成為 error.data，
+ * status 是狀態碼。丟出後這條路由改畫 errorElement，不畫原本的元件。
+ * @param {{ params: { noteId?: string }, request: Request }} args
+ * @returns {{ notes: { id: string, title: string, done: boolean }[] } | { note: { id: string, title: string, done: boolean } }}
+ */
 export const loader = ({ params }) => {
-  if (!params.id) return { notes: listNotes() };
-  const note = getNote(params.id);
+  if (!params.noteId) return { notes: listNotes() };
+  const note = getNote(params.noteId);
   if (!note) throw data('找不到這則筆記', { status: 404 });
   return { note };
 };
 
+/**
+ * 接收目前路由的表單。formData 與 form.get 的用法和上一則相同。
+ * 標題空白時回錯誤物件。
+ * 成功時回傳 redirect(url)。url 是要去的路徑，路由器改去該網址並跑那一條的 loader。
+ * @param {{ request: Request }} args
+ * @returns {Promise<{ error: string } | Response>}
+ */
 export const action = async ({ request }) => {
   const form = await request.formData();
   const title = String(form.get('title') ?? '').trim();
   if (!title) return { error: '請填標題' };
   const note = addNote(title);
-  return redirect(`/demos/88/${note.id}`);
+  return redirect(`/demos/88-redirect-error/notes/${note.id}`);
 };
 
+/**
+ * 列表頁。Form method="post" 送到目前網址的 action，沒有 action 屬性。
+ * 這一則的列表沒有讀取 useActionData。
+ */
 export default function RedirectDemo() {
+  /**
+   * 沒有 params.noteId 時，loader 回傳的是 { notes }。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
   const { notes } = useLoaderData();
   return (
     <section>
@@ -2152,7 +2708,11 @@ export default function RedirectDemo() {
         </button>
       </Form>
       <p className="mt-4">
-        <Link className="text-teal-800 underline" to="/demos/88/missing">
+        {/* not-found 是不存在的 id，用來觸發 404。這個網址由 demos/88-redirect-error/notes/:noteId 對上，params.noteId 是 'not-found'，沒有另外宣告路由。 */}
+        <Link
+          className="text-teal-800 underline"
+          to="/demos/88-redirect-error/notes/not-found"
+        >
           打開一筆不存在的筆記
         </Link>
       </p>
@@ -2161,7 +2721,7 @@ export default function RedirectDemo() {
           <li key={note.id}>
             <Link
               className="text-teal-800 underline"
-              to={`/demos/88/${note.id}`}
+              to={`/demos/88-redirect-error/notes/${note.id}`}
             >
               {note.title}
             </Link>
@@ -2172,14 +2732,18 @@ export default function RedirectDemo() {
   );
 }
 
+/** 明細頁。loader 在有 noteId 時回傳 { note }。 */
 export function NoteDetail() {
+  /**
+   * @returns {{ note: { id: string, title: string, done: boolean } }}
+   */
   const { note } = useLoaderData();
   return (
     <section>
       <h1 className="text-2xl font-bold">{note.title}</h1>
       <p className="mt-2">{note.done ? '已完成' : '未完成'}</p>
       <p className="mt-4">
-        <Link className="text-teal-800 underline" to="/demos/88">
+        <Link className="text-teal-800 underline" to="/demos/88-redirect-error">
           回列表
         </Link>
       </p>
@@ -2187,7 +2751,14 @@ export function NoteDetail() {
   );
 }
 
+/** 明細路由的 errorElement。列表那一條沒有掛這個元件。 */
 export function NoteMissing() {
+  /**
+   * useRouteError 讀取這條路由丟出的錯誤。
+   * isRouteErrorResponse 為 true 時，error.data 是 throw data() 的第一個引數；
+   * 否則改顯示備用文字。
+   * @returns {unknown}
+   */
   const error = useRouteError();
   const message = isRouteErrorResponse(error) ? error.data : '找不到';
   return (
@@ -2195,7 +2766,7 @@ export function NoteMissing() {
       <h1 className="text-2xl font-bold">找不到</h1>
       <p className="mt-2">{String(message)}</p>
       <p className="mt-4">
-        <Link className="text-teal-800 underline" to="/demos/88">
+        <Link className="text-teal-800 underline" to="/demos/88-redirect-error">
           回列表
         </Link>
       </p>
@@ -2204,41 +2775,10 @@ export function NoteMissing() {
 }
 ```
 
-```diff 04-react-router/src/App.jsx
- import ActionDemo, {
-   action as action87,
-   loader as loader87,
- } from './examples/87-action.jsx';
-+import RedirectDemo, {
-+  action as action88,
-+  loader as loader88,
-+  NoteDetail,
-+  NoteMissing,
-+} from './examples/88-redirect-error.jsx';
- // ...
-           Component: ActionDemo,
-         },
-+        {
-+          path: 'demos/88',
-+          loader: loader88,
-+          action: action88,
-+          Component: RedirectDemo,
-+        },
-+        {
-+          path: 'demos/88/:id',
-+          loader: loader88,
-+          Component: NoteDetail,
-+          errorElement: <NoteMissing />,
-+        },
-         { path: 'demos/:id', element: <DemoPage /> },
- // ...
-```
-
 **解析**
 
-- 在 `/demos/88` 填標題並送出後，網址變成 `/demos/88/` 加上新筆記的 id，畫面是那一筆的標題與完成狀態。
-- 「打開一筆不存在的筆記」連到 `/demos/88/missing`。`loader` 丟出狀態 404，主區換成 `NoteMissing` 的「找不到」與「找不到這則筆記」。
-- `errorElement` 掛在明細那條路由上，列表頁本身仍是原來的元件。
+- 填標題並送出後，`action` 回傳 `redirect`，網址變成 `/demos/88-redirect-error/notes/` 加上新筆記的 id，畫面是那一筆的標題與完成狀態。
+- 「打開一筆不存在的筆記」連到 `/demos/88-redirect-error/notes/not-found`。`loader` 丟出狀態 404，主區換成 `NoteMissing` 的「找不到」與「找不到這則筆記」。
 
 {% note success %}
 **換你試試：**
@@ -2258,14 +2798,13 @@ export function NoteMissing() {
 ```
 
 </details>
-
 ## 不換頁的送出與讀取中狀態
 
 有的送出不應該改網址，例如列表上把一筆標成完成。有的送出或換頁需要讓人看見「正在進行」。這兩則都是後面專案會用到的寫法：後台對話框用 `useFetcher` 留在列表頁，讀取中的提示用 `useNavigation`。
 
 ### useFetcher
 
-`useFetcher` 拿得到一組自己的 `Form` 與 `submit`。送到的仍是這一條路由的 `action`，網址留在 `/demos/89`。`action` 改完筆記後，`loader` 一樣會自己重跑。
+`useFetcher` 拿得到一組自己的 `Form` 與 `submit`。送到的仍是這一條路由的 `action`，網址留在 `/demos/89-fetcher`。`action` 改完筆記後，`loader` 一樣會自己重跑。
 
 **觀念**
 
@@ -2275,17 +2814,37 @@ export function NoteMissing() {
 import { useFetcher, useLoaderData } from 'react-router';
 import { listNotes, toggleNote } from './notes-db.js';
 
-/** useFetcher 更新完成狀態，網址留在這一頁。 */
+/**
+ * 進頁前讀清單。回傳值交給 useLoaderData。
+ * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+ */
 export const loader = () => ({ notes: listNotes() });
 
+/**
+ * 接收送到這條路由的表單。form.get('id') 取出隱藏欄位。
+ * toggleNote 只翻轉那一筆的 done。回傳值可從 fetcher.data 讀到，這一則沒有畫出來。
+ * @param {{ request: Request }} args
+ * @returns {Promise<{ ok: boolean }>}
+ */
 export const action = async ({ request }) => {
   const form = await request.formData();
   toggleNote(String(form.get('id')));
   return { ok: true };
 };
 
+/** 每一列用 fetcher.Form 送出，網址留在 /demos/89-fetcher。 */
 export default function FetcherDemo() {
+  /**
+   * 讀取這條路由 loader 的回傳值。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
   const { notes } = useLoaderData();
+  /**
+   * 不換頁的送出。fetcher.Form 把表單送到這條路由的 action，網址不變。
+   * state 是 'idle'、'loading' 或 'submitting'，data 是 action 的回傳值。
+   * 這一則只用 Form，沒有把 state 與 data 畫出來。
+   * @returns {{ Form: React.ElementType, state: 'idle' | 'loading' | 'submitting', data: unknown }}
+   */
   const fetcher = useFetcher();
   return (
     <section>
@@ -2322,18 +2881,18 @@ export default function FetcherDemo() {
            errorElement: <NoteMissing />,
          },
 +        {
-+          path: 'demos/89',
++          path: 'demos/89-fetcher',
 +          loader: loader89,
 +          action: action89,
 +          Component: FetcherDemo,
 +        },
-         { path: 'demos/:id', element: <DemoPage /> },
+         { path: 'demos/:slug', element: <DemoPage /> },
  // ...
 ```
 
 **解析**
 
-- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/89`。
+- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/89-fetcher`。
 - 寫入的是 `action` 裡的 `toggleNote`。清單更新是因為 `loader` 在 action 之後自動重跑。
 
 {% note success %}
@@ -2371,12 +2930,22 @@ import {
 } from 'react-router';
 import { addNote, listNotes } from './notes-db.js';
 
-/** 故意等 400ms，讓 useNavigation 的讀取中與送出中看得到。 */
+/**
+ * 進頁前讀清單。這裡多等 400 毫秒，讓讀取中留在畫面上。
+ * 回傳值交給 useLoaderData。回傳 Promise 時路由器會等待。
+ * @returns {Promise<{ notes: { id: string, title: string, done: boolean }[] }>}
+ */
 export const loader = async () => {
   await new Promise((resolve) => setTimeout(resolve, 400));
   return { notes: listNotes() };
 };
 
+/**
+ * 接收目前路由的表單。同樣先等 400 毫秒。
+ * formData 與 form.get 讀取標題，有字才寫入。回傳 null，這一則沒有用 useActionData。
+ * @param {{ request: Request }} args
+ * @returns {Promise<null>}
+ */
 export const action = async ({ request }) => {
   const form = await request.formData();
   await new Promise((resolve) => setTimeout(resolve, 400));
@@ -2385,8 +2954,20 @@ export const action = async ({ request }) => {
   return null;
 };
 
+/**
+ * Form method="post" 送到目前網址的 action，沒有 action 屬性。
+ * 送出期間用 navigation.state 停用按鈕。
+ */
 export default function NavigationDemo() {
+  /**
+   * 讀取這條路由 loader 的回傳值。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
   const { notes } = useLoaderData();
+  /**
+   * 路由器此刻的導覽。state 為 'idle'（閒置）、'loading'（正在跑 loader）或 'submitting'（正在跑 action）。
+   * @returns {{ state: 'idle' | 'loading' | 'submitting' }}
+   */
   const navigation = useNavigation();
   const [params] = useSearchParams();
   const nonce = Number(params.get('n') ?? '0');
@@ -2399,7 +2980,7 @@ export default function NavigationDemo() {
       <p className="mt-3">
         <Link
           className="text-teal-800 underline"
-          to={`/demos/90?n=${nonce + 1}`}
+          to={`/demos/90-navigation?n=${nonce + 1}`}
         >
           重新讀取
         </Link>
@@ -2437,12 +3018,12 @@ export default function NavigationDemo() {
            Component: FetcherDemo,
          },
 +        {
-+          path: 'demos/90',
++          path: 'demos/90-navigation',
 +          loader: loader90,
 +          action: action90,
 +          Component: NavigationDemo,
 +        },
-         { path: 'demos/:id', element: <DemoPage /> },
+         { path: 'demos/:slug', element: <DemoPage /> },
  // ...
 ```
 
@@ -2476,7 +3057,7 @@ export default function NavigationDemo() {
 
 # 選讀：部署到 GitHub Pages
 
-`pnpm build` 產生的 `dist` 就是一般靜態檔案，網站從 `/` 開始，首頁是 `dist/index.html`。放上 GitHub Pages 後，從首頁點左側目錄進 `/demos/01` 都正常。問題出在直接打開或重新整理 `/demos/01`：GitHub Pages 是純靜態主機，會去找 `demos/01` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
+`pnpm build` 產生的 `dist` 就是一般靜態檔案，網站從 `/` 開始，首頁是 `dist/index.html`。放上 GitHub Pages 後，從首頁點左側目錄進 `/demos/01-hello` 都正常。問題出在直接打開或重新整理 `/demos/01-hello`：GitHub Pages 是純靜態主機，會去找 `demos/01-hello` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
 
 GitHub Pages 不能設定「其他路徑都改走 `index.html`」的規則，常見的做法有兩種：
 
@@ -2506,7 +3087,7 @@ cp dist/index.html dist/404.html
 
 {% note info %}
 **網址多一段子路徑時：**
-用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找。路由的 `basename` 已經寫在 `createBrowserRouter` 的第二個參數，值是 `import.meta.env.BASE_URL.replace(/\/$/, '')`。`base` 一改，`BASE_URL` 跟著變，路由也從這段算起。元件裡的 `to="/demos/01"` 都不用改。
+用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找。路由的 `basename` 已經寫在 `createBrowserRouter` 的第二個參數，值是 `import.meta.env.BASE_URL.replace(/\/$/, '')`。`base` 一改，`BASE_URL` 跟著變，路由也從這段算起。元件裡的 `to="/demos/01-hello"` 都不用改。
 {% endnote %}
 
 {% note success %}
@@ -2523,7 +3104,7 @@ cp dist/index.html dist/404.html
 
 ## createHashRouter
 
-`createHashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01`。伺服器收到的路徑只有 `#` 前面那一段，靜態主機只要能打開 `index.html` 即可。代價是網址比較不好讀。`App` 已經回傳 `RouterProvider`，不能再在外面加 `HashRouter`。要試井字號網址，把同一份路由表的 `createBrowserRouter` 暫時換成 `createHashRouter`。平常完成版仍用 `createBrowserRouter`。
+`createHashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01-hello`。伺服器收到的路徑只有 `#` 前面那一段，靜態主機只要能打開 `index.html` 即可。代價是網址比較不好讀。`App` 已經回傳 `RouterProvider`，不能再在外面加 `HashRouter`。要試井字號網址，把同一份路由表的 `createBrowserRouter` 暫時換成 `createHashRouter`。平常完成版仍用 `createBrowserRouter`。
 
 **語法**
 
@@ -2540,7 +3121,7 @@ const router = createHashRouter(routes, { basename });
 
 **觀念**
 
-下面只換建立路由器的函式，路由表、目錄與 `to` 都維持原樣。井字號後面的變化不會向伺服器要一份新文件，所以不必為 `/demos/01` 準備 `404.html`。這是觀念示範，沒有另外的練習檔。看完改回 `createBrowserRouter`。
+下面只換建立路由器的函式，路由表、目錄與 `to` 都維持原樣。井字號後面的變化不會向伺服器要一份新文件，所以不必為 `/demos/01-hello` 準備 `404.html`。這是觀念示範，沒有另外的練習檔。看完改回 `createBrowserRouter`。
 
 ```diff 04-react-router/src/App.jsx
 -import { createBrowserRouter, RouterProvider } from 'react-router';
@@ -2554,12 +3135,12 @@ const router = createHashRouter(routes, { basename });
 **解析**
 
 - `RouterProvider` 不用換。不能在 `App` 外面再包 `HashRouter`，因為 `App` 已經把路由器畫出來了。
-- 路由物件與 `basename` 留著。第一則的網址會像 `http://localhost:5173/#/demos/01`。
+- 路由物件與 `basename` 留著。第一則的網址會像 `http://localhost:5173/#/demos/01-hello`。
 - 重新整理仍停在該則。做完把函式改回 `createBrowserRouter`。
 
 {% note success %}
 **換你試試：**
-對照兩種網址：`createBrowserRouter` 的 `/demos/01`，以及 `createHashRouter` 的 `/#/demos/01`。目錄的 `to` 都不必改。看完改回 `createBrowserRouter`。
+對照兩種網址：`createBrowserRouter` 的 `/demos/01-hello`，以及 `createHashRouter` 的 `/#/demos/01-hello`。目錄的 `to` 都不必改。看完改回 `createBrowserRouter`。
 {% endnote %}
 
 <details>
@@ -2574,10 +3155,10 @@ const router = createHashRouter(routes, { basename });
 - `04-react-router` 由 `03-react` 複製後再裝 `react-router`。課堂用資料模式的 `createBrowserRouter` 與 `RouterProvider`；宣告式與框架模式只留作選讀對照。
 - 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，同層的 `ScrollRestoration` 負責換頁捲動。
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
-- 單則筆記的路徑是 `/demos/:id`，`useParams` 取出字串 id。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
+- 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
 - `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`，寫入後 `loader` 會自動重跑；空標題用 `useActionData` 顯示。
 - `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，由 `errorElement` 畫找不到。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
-- 編號示範 `demos/86` 到 `demos/90` 要寫在 `demos/:id` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
+- `demos/86-loader` 到 `demos/90-navigation` 要寫在 `demos/:slug` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
 
 # 專有名詞中英對照
@@ -2591,6 +3172,7 @@ const router = createHashRouter(routes, { basename });
 - 路由（routing）
 - 資料模式（data mode）
 - createBrowserRouter
+- 資料路由器（data router）
 - RouterProvider
 - 捲動還原（ScrollRestoration）
 - 換頁前讀取（loader）
@@ -2613,6 +3195,7 @@ const router = createHashRouter(routes, { basename });
 - Next.js
 - 路由設定（routes.ts）
 - 路由模組（route module）
+- 路由元件屬性（Route.ComponentProps）
 
 ## 啟用路由
 
@@ -2621,6 +3204,7 @@ const router = createHashRouter(routes, { basename });
 - 歷史 API（History API）
 - 索引路由（index route）
 - 路徑（path）
+- 代稱（slug）
 - 元素（element）
 - 子路由（children）
 - 插槽（Outlet）
@@ -2653,6 +3237,8 @@ const router = createHashRouter(routes, { basename });
 
 這一組是路由上的讀取與送出。`Form` 是元件，`data()` 用來丟出帶狀態碼的路由錯誤。
 
+- 雜湊路由器（createHashRouter）
+- 記憶體路由器（createMemoryRouter）
 - 換頁前讀取（loader）
 - useLoaderData
 - 表單送出（action）
@@ -2680,5 +3266,4 @@ const router = createHashRouter(routes, { basename });
 這一組是讓靜態主機接住子路徑的做法。`base` 管打包；`basename` 沿用前面 `createBrowserRouter` 的第二個參數。
 
 - 建置基底（base）
-- 雜湊路由器（createHashRouter）
 - 雜湊路由（HashRouter）
