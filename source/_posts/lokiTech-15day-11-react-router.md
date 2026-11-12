@@ -2804,65 +2804,54 @@ export default function LoaderDemo() {
 
 ## 用 action 與 Form 送出
 
-`Form method=post` 把欄位送到這條路由的 `action`，不會整頁換成另一份文件。`action` 寫完之後，路由器會再跑這條的 `loader`，清單跟著更新；標題留白時，`action` 回傳錯誤，頁面用 `useActionData` 顯示。
+`Form method=post` 把欄位送到這條路由的 `action`，不會整頁換成另一份文件。`action` 用 `request.formData()` 讀欄位，再呼叫 `createItem` 對 jsonplaceholder 發出 POST，頁面用 `useActionData` 顯示伺服器回傳的那一筆。
 
 {% mermaid graph TD %}
   form["Form method=post"] --> action["action"]
-  action -->|"寫入成功"| loader["重跑 loader"]
-  loader --> view["元件重畫"]
-  action -->|"回傳錯誤"| err["useActionData"]
-  err --> view
+  action -->|"createItem POST"| item["回傳伺服器建立的物件"]
+  item --> hook["useActionData 顯示"]
+  action -->|"回傳錯誤"| hook
   style form fill:#e3f2fd
   style action fill:#fff3e0
-  style loader fill:#e3f2fd
-  style view fill:#e8f5e9
-  style err fill:#ffebee
+  style item fill:#e8f5e9
+  style hook fill:#e8f5e9
 {% endmermaid %}
 
 **觀念**
 
-`request.formData()` 讀取欄位 `title`。去掉空白後是空字串就回 `{ error: '請填標題' }`，有字才呼叫 `addNote`。成功時回 `{ error: '' }`，畫面上不顯示紅字。
+`form.get('title')` 是 FormData 的方法，用來讀取表單裡 name 為 `title` 的欄位，不是 HTTP 的 GET。沒有這個欄位時是 `null`。去掉空白後是空字串就回 `{ error: '請填標題' }`，有字才呼叫 `../api/fake-api.js` 的 `createItem({ title })`，把伺服器回傳的物件交給 `useActionData`。jsonplaceholder 不會把資料留下來，所以這一則不維護清單。
 
 ```jsx 04-react-router/src/examples/87-action.jsx
-import { Form, useActionData, useLoaderData } from 'react-router';
-import { addNote, listNotes } from './notes-db.js';
-
-/**
- * 進頁前讀清單。回傳值交給 useLoaderData。
- * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
- */
-export const loader = () => ({ notes: listNotes() });
+import { Form, useActionData } from 'react-router';
+import { createItem } from '../api/fake-api.js';
 
 /**
  * 接收這一條路由的表單。request 是這次送出。
  * request.formData() 回傳 Promise，解析後是 FormData。
- * form.get(name) 取出同名欄位，沒有時是 null。
- * 標題去掉空白後是空字串就回 { error }，否則寫入並回空字串。
- * 寫入之後這條路由的 loader 會再跑。
+ * form.get('title') 是 FormData 的方法，讀取 name 為 title 的欄位，不是 HTTP GET。
+ * 沒有這個欄位時是 null。標題去掉空白後是空字串就回 { error }。
+ * 有字就呼叫 createItem({ title })，對 jsonplaceholder 發出 POST，
+ * 並回傳伺服器建立的物件。這個服務不會把資料留下來，所以這一則不維護清單。
  * @param {{ request: Request }} args
- * @returns {Promise<{ error: string }>}
+ * @returns {Promise<{ error: string } | { item: { id: number, title: string } }>}
  */
 export const action = async ({ request }) => {
   const form = await request.formData();
   const title = String(form.get('title') ?? '').trim();
   if (!title) return { error: '請填標題' };
-  addNote(title);
-  return { error: '' };
+  const item = await createItem({ title });
+  return { item };
 };
 
 /**
  * Form method="post" 把欄位送到目前這條路由的 action，不整頁換成另一份文件。
  * 沒有 action 屬性時，目標就是目前網址。
+ * 成功後用 useActionData 顯示伺服器回傳的那一筆。
  */
 export default function ActionDemo() {
   /**
-   * 讀取這條路由 loader 的回傳值。
-   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
-   */
-  const { notes } = useLoaderData();
-  /**
    * 最近一次 action 的回傳值。還沒送出時是 undefined。
-   * @returns {{ error: string } | undefined}
+   * @returns {{ error: string } | { item: { id: number, title: string } } | undefined}
    */
   const result = useActionData();
   return (
@@ -2872,9 +2861,14 @@ export default function ActionDemo() {
         <input
           name="title"
           className="rounded border px-2 py-1"
-          placeholder="新的筆記標題"
+          placeholder="新的標題"
         />
         {result?.error ? <p className="text-red-700">{result.error}</p> : null}
+        {result?.item ? (
+          <p>
+            伺服器回傳 #{result.item.id} {result.item.title}
+          </p>
+        ) : null}
         <button
           type="submit"
           className="rounded bg-teal-800 px-3 py-1 text-white"
@@ -2882,11 +2876,6 @@ export default function ActionDemo() {
           新增
         </button>
       </Form>
-      <ul className="mt-4 grid gap-2">
-        {notes.map((note) => (
-          <li key={note.id}>{note.title}</li>
-        ))}
-      </ul>
     </section>
   );
 }
@@ -2894,21 +2883,20 @@ export default function ActionDemo() {
 
 **解析**
 
-- 填一個標題再按「新增」，新的一列出現在清單最上面。網址仍是 `/demos/87-action`。
-- 這次更新來自 `action` 寫入之後 `loader` 自動重跑，頁面沒有自己呼叫 `listNotes`。
-- 標題留白就送出時，`useActionData` 讀到 `error`，輸入框下面出現「請填標題」，清單筆數不變。
+- 填一個標題再按「新增」，畫面出現伺服器回傳的 id 與標題。網址仍是 `/demos/87-action`。
+- `form.get('title')` 是 FormData 的方法，用來讀取欄位名為 `title` 的值，不是向伺服器發 HTTP GET。
+- jsonplaceholder 接受 POST 後會回傳一筆帶 id 的物件，但不會真的存下來，所以這一則不用 `loader` 列清單，也不會看到列表變長。
+- 標題留白就送出時，`useActionData` 讀到 `error`，輸入框下面出現「請填標題」。
 
 ```diff 04-react-router/src/App.jsx
  import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
 +import ActionDemo, {
 +  action as action87,
-+  loader as loader87,
 +} from './examples/87-action.jsx';
  // ...
          { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
 +        {
 +          path: 'demos/87-action',
-+          loader: loader87,
 +          action: action87,
 +          Component: ActionDemo,
 +        },
@@ -2918,7 +2906,7 @@ export default function ActionDemo() {
 
 **解析**
 
-- 這條路由同時掛 `loader`、`action` 與 `Component`，路徑寫在 `demos/:slug` 前面。
+- 這條路由掛 `action` 與 `Component`，不必再掛 `loader`。路徑寫在 `demos/:slug` 前面。
 
 {% note success %}
 **換你試試：**
@@ -2964,7 +2952,6 @@ export default function ActionDemo() {
 ```diff 04-react-router/src/App.jsx
  import ActionDemo, {
    action as action87,
-   loader as loader87,
  } from './examples/87-action.jsx';
 +import RedirectDemo, {
 +  action as action88,
@@ -3536,7 +3523,7 @@ const router = createHashRouter(routes, { basename });
 - 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，同層的 `ScrollRestoration` 負責換頁捲動。
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
 - 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
-- `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`，寫入後 `loader` 會自動重跑；空標題用 `useActionData` 顯示。
+- `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目或空標題錯誤。後面幾則寫入後，`loader` 會自動重跑。
 - `redirect` 改去新網址。明細找不到時 `throw data(..., { status: 404 })`，由 `errorElement` 畫找不到。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
 - `demos/86-loader` 到 `demos/90-navigation` 要寫在 `demos/:slug` 前面。90 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
