@@ -6376,6 +6376,12 @@ export default function TourForm({ open, tour, onClose }) {
 +import Alert from '@mui/material/Alert';
  import Button from '@mui/material/Button';
  // ...
++/**
++ * 新增與編輯行程的 Dialog。open 控制開關，tour 有值是編輯、沒有是新增，onClose 只給取消鈕。
++ * useFetcher({ key: 'tour-form' }) 與 AdminToursPage 共用同一個 fetcher；只負責送出草稿，結果由頁面讀取。
++ * @param {{ open: boolean, tour: object | null, onClose: () => void }} props
++ * @returns {JSX.Element}
++ */
  export default function TourForm({ open, tour, onClose }) {
 +  const editingId = tour?.id ?? null;
 +  const fetcher = useFetcher({ key: 'tour-form' });
@@ -6551,9 +6557,7 @@ export default function NoticeSnackbar({ notice, onClose }) {
 - 頁面用 `useFetcher({ key: 'tour-form' })` 讀表單的送出結果。`save` 回到 `idle` 且有尚未處理的 `{ saved: true }` 時，關閉 Dialog 並把 `notice` 交給 `NoticeSnackbar`。`seenSave` 記住已經處理過的結果，同一筆不會再跑一次。
 - 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，避免重開時還顯示舊的錯誤。
 
-{% note info %}
-同一個 `key` 的 `useFetcher` 會共用一份狀態。頁面在渲染時檢查有沒有尚未處理的新結果，不必再用 `useEffect`。
-{% endnote %}
+同一個 `key` 的寫法見[第十一篇〈用 key 共用 fetcher〉](/2026/08-30/lokiTech-15day-11-react-router/#用-key-共用-fetcher)。
 
 把 `action` 接到 `/admin`。
 
@@ -6672,8 +6676,19 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 -import { getTours, saveTour } from '../../store.js';
 +import { deleteTour, getTours, saveTour } from '../../store.js';
  
++/**
++ * 行程管理頁的 loader。進頁前呼叫 getTours，回傳值交給頁面的 useLoaderData。
++ * @returns {{ tours: object[] }}
++ */
  export const loader = () => ({ tours: getTours() });
  
++/**
++ * 接收這一頁的表單。intent 為 delete 時刪除該筆並回傳 { notice }。
++ * 否則讀 editingId 與 draft，交給 saveTour。失敗回傳 { error }，成功回傳 { notice, saved: true }。
++ * 同一 key 的 useFetcher 可從 fetcher.data 讀到這份結果。
++ * @param {{ request: Request }} args
++ * @returns {Promise<{ notice: string, saved?: boolean } | { error: string }>}
++ */
  export const action = async ({ request }) => {
    const form = await request.formData();
 +  if (form.get('intent') === 'delete') {
@@ -6685,6 +6700,12 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
    return error ? { error } : { notice: '已儲存這筆行程', saved: true };
  };
  
++/**
++ * 行程管理頁。useFetcher({ key: 'tour-form' }) 與 TourForm 共用同一個 fetcher。
++ * 渲染時比對尚未處理的 save.data；有 { saved: true } 就關窗並寫入 notice。
++ * 打開 Dialog 時呼叫 save.reset()，清掉上一次留下的資料。刪除另用一個沒有 key 的 fetcher。
++ * @returns {JSX.Element}
++ */
  export default function AdminToursPage() {
    const { tours } = useLoaderData();
    const save = useFetcher({ key: 'tour-form' });
@@ -7179,6 +7200,12 @@ export default function BookingForm({ open, booking, onClose }) {
 +import Alert from '@mui/material/Alert';
  import Button from '@mui/material/Button';
  // ...
++/**
++ * 報名明細 Dialog。open 控制開關，booking 是這一筆報名，onClose 只給取消鈕。
++ * useFetcher({ key: 'booking-form' }) 與 AdminBookingsPage 共用同一個 fetcher；只負責送出新狀態，結果由頁面讀取。
++ * @param {{ open: boolean, booking: object | null, onClose: () => void }} props
++ * @returns {JSX.Element}
++ */
  export default function BookingForm({ open, booking, onClose }) {
 +  const fetcher = useFetcher({ key: 'booking-form' });
 +  const error =
@@ -7248,14 +7275,30 @@ export default function BookingForm({ open, booking, onClose }) {
 +import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
 +import { getBookings, setBookingStatus } from '../../store.js';
  
++/**
++ * 報名清單頁的 loader。進頁前呼叫 getBookings，回傳值交給頁面的 useLoaderData。
++ * @returns {{ bookings: object[] }}
++ */
  export const loader = () => ({ bookings: getBookings() });
  
++/**
++ * 接收明細表單。讀 id 與 status，交給 setBookingStatus，回傳 { notice }。
++ * 同一 key 的 useFetcher 可從 fetcher.data 讀到這份結果。
++ * @param {{ request: Request }} args
++ * @returns {Promise<{ notice: string }>}
++ */
 +export const action = async ({ request }) => {
 +  const form = await request.formData();
 +  setBookingStatus(String(form.get('id')), String(form.get('status')));
 +  return { notice: '已更新報名狀態' };
 +};
 +
++/**
++ * 報名清單頁。useFetcher({ key: 'booking-form' }) 與 BookingForm 共用同一個 fetcher。
++ * 渲染時比對尚未處理的 save.data；有 notice 就關窗並寫入提示。
++ * 打開 Dialog 時呼叫 save.reset()，清掉上一次留下的資料。
++ * @returns {JSX.Element}
++ */
  export default function AdminBookingsPage() {
    const { bookings } = useLoaderData();
 +  const save = useFetcher({ key: 'booking-form' });

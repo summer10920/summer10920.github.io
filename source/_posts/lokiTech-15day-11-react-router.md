@@ -1295,6 +1295,7 @@ import RedirectList from '../examples/88-redirect-list.jsx';
 import ErrorElementDemo from '../examples/89-error-element.jsx';
 import FetcherDemo from '../examples/90-fetcher.jsx';
 import NavigationDemo from '../examples/91-navigation.jsx';
+import FetcherKeyDemo from '../examples/92-fetcher-key.jsx';
 
 export const topics = [
   { id: 'component', title: '元件' },
@@ -1670,6 +1671,12 @@ export const demos = [
     title: 'useNavigation',
     topic: 'data',
     Component: NavigationDemo,
+  },
+  {
+    slug: '92-fetcher-key',
+    title: '用 key 共用 fetcher',
+    topic: 'data',
+    Component: FetcherKeyDemo,
   },
 ];
 ```
@@ -2617,7 +2624,7 @@ const central = createBrowserRouter([
 
 # 讀取與送出資料
 
-路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。每一則練習網址就是範例檔名去掉 `.jsx`，從 `/demos/86-loader` 到 `/demos/91-navigation`。路徑裡若有 `notes/`，後面那一段仍是 `noteId`。這一章的六則都排在 `demos/:slug` 前面，才不會被路徑參數吃掉。
+路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。每一則練習網址就是範例檔名去掉 `.jsx`，從 `/demos/86-loader` 到 `/demos/92-fetcher-key`。路徑裡若有 `notes/`，後面那一段仍是 `noteId`。這一章的七則都排在 `demos/:slug` 前面，才不會被路徑參數吃掉。
 
 {% note info %}
 **哪一種路由器能用**
@@ -3503,6 +3510,171 @@ export default function FetcherDemo() {
 
 </details>
 
+#### 用 key 共用 fetcher
+
+頁面與表單各自呼叫 `useFetcher({ key })`，只要 `key` 相同，拿到的就是同一個 fetcher。表單只負責送出，頁面在渲染時讀 `fetcher.data`，有尚未處理的新結果就關閉表單或更新畫面。再次打開前呼叫 `fetcher.reset()`，清掉上一次留下的資料。
+
+{% mermaid graph TD %}
+  subgraph share["useFetcher({ key })"]
+    page["頁面"]
+    form["表單"]
+  end
+  form -->|"submit"| action["action"]
+  action -->|"fetcher.data"| page
+  page -->|"有新結果，關閉表單"| ui["畫面"]
+{% endmermaid %}
+
+兩個元件傳入同一把 `key`，路由器就讓它們共用一份 fetcher。`action` 的回傳值寫在 `fetcher.data`。頁面在渲染時用 `seen` 比對，同一筆結果只處理一次；再次打開時 `reset()` 把資料清掉。
+
+```jsx 04-react-router/src/examples/92-fetcher-key.jsx
+import { useState } from 'react';
+import { useFetcher } from 'react-router';
+
+/**
+ * 接收表單。讀 title，回傳 { notice }。同一 key 的 useFetcher 可從 fetcher.data 讀到這份結果。
+ * @param {{ request: Request }} args
+ * @returns {Promise<{ notice: string }>}
+ */
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  const title = String(form.get('title') ?? '');
+  return { notice: `已送出：${title}` };
+};
+
+/**
+ * 子表單。useFetcher({ key: 'notice-form' }) 與頁面共用同一個 fetcher，只負責送出標題。
+ * @param {{ onClose: () => void }} props
+ * @returns {JSX.Element}
+ */
+function NoticeForm({ onClose }) {
+  /**
+   * 與頁面共用同一個 fetcher。Form 把標題送到這一條路由的 action，網址不變。
+   * @returns {{ Form: React.ElementType, state: 'idle' | 'loading' | 'submitting', data: { notice?: string } | undefined, reset: () => void }}
+   */
+  const fetcher = useFetcher({ key: 'notice-form' });
+  return (
+    <fetcher.Form method="post" className="mt-4 grid max-w-sm gap-3">
+      <input
+        name="title"
+        className="rounded border px-2 py-1"
+        defaultValue="看海"
+      />
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          className="rounded bg-teal-800 px-3 py-1 text-white"
+          disabled={fetcher.state !== 'idle'}
+        >
+          送出
+        </button>
+        <button
+          type="button"
+          className="rounded border px-3 py-1"
+          onClick={onClose}
+        >
+          取消
+        </button>
+      </div>
+    </fetcher.Form>
+  );
+}
+
+/**
+ * 示範頁。useFetcher({ key: 'notice-form' }) 與 NoticeForm 共用同一個 fetcher。
+ * 渲染時比對尚未處理的 fetcher.data；有 notice 就關起表單並顯示提示。
+ * 再次打開時呼叫 fetcher.reset()，清掉上一次留下的資料。
+ * @returns {JSX.Element}
+ */
+export default function FetcherKeyDemo() {
+  /**
+   * 與 NoticeForm 共用同一個 fetcher。data 是 action 的回傳值。
+   * reset 把 fetcher 清回空的 idle。
+   * @returns {{ state: 'idle' | 'loading' | 'submitting', data: { notice?: string } | undefined, reset: () => void }}
+   */
+  const fetcher = useFetcher({ key: 'notice-form' });
+  const [open, setOpen] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [seen, setSeen] = useState(null);
+  if (
+    fetcher.state === 'idle' &&
+    fetcher.data?.notice &&
+    fetcher.data !== seen
+  ) {
+    setSeen(fetcher.data);
+    setOpen(false);
+    setNotice(fetcher.data.notice);
+  }
+
+  const openForm = () => {
+    fetcher.reset();
+    setOpen(true);
+  };
+
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">92 用 key 共用 fetcher</h1>
+      {notice ? <p className="mt-3">{notice}</p> : null}
+      {open ? (
+        <NoticeForm onClose={() => setOpen(false)} />
+      ) : (
+        <button
+          type="button"
+          className="mt-4 rounded bg-teal-800 px-3 py-1 text-white"
+          onClick={openForm}
+        >
+          打開表單
+        </button>
+      )}
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 頁面與 `NoticeForm` 都呼叫 `useFetcher({ key: 'notice-form' })`，拿到同一個 fetcher。
+- 按「送出」後，`action` 回傳 `{ notice: '已送出：看海' }`。頁面在渲染時發現這是尚未處理的新結果，關起表單並在標題下面顯示這句提示。網址仍是 `/demos/92-fetcher-key`。
+- 再按「打開表單」時，`fetcher.reset()` 清掉上一次的 `data`。若不呼叫 `reset()`，共用 fetcher 還留著舊結果。
+
+```diff 04-react-router/src/App.jsx
++import FetcherKeyDemo, {
++  action as action92,
++} from './examples/92-fetcher-key.jsx';
+ // ...
+           Component: NavigationDemo,
+         },
++        {
++          path: 'demos/92-fetcher-key',
++          action: action92,
++          Component: FetcherKeyDemo,
++        },
+         { path: 'demos/:slug', element: <DemoPage /> }
+ // ...
+```
+
+**解析**
+
+- 這條路由掛 `action` 與 `Component`，路徑寫在 `demos/:slug` 前面。送出後網址仍停在 `/demos/92-fetcher-key`。
+
+{% note success %}
+**換你試試：**
+把送出按鈕的文字改成「送出並關閉」。
+{% endnote %}
+
+<details>
+<summary>參考答案</summary>
+
+只改按鈕文字。
+
+```diff 04-react-router/src/examples/92-fetcher-key.jsx
+ // ...
+-          送出
++          送出並關閉
+ // ...
+```
+
+</details>
+
 ### useNavigation
 
 `useNavigation` 描述路由器此刻在做什麼。`state` 為 `loading` 是正在跑 loader，`submitting` 是正在跑 action，`idle` 是閒置。這一則的 `loader` 與 `action` 各等 400 毫秒，只為了讓「讀取中」留在畫面上看得清楚。專案裡的記憶體讀取不必做這個延遲。
@@ -3793,8 +3965,8 @@ const router = createHashRouter(routes, { basename });
 - 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
 - `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目，或依欄位回傳的錯誤。後面幾則寫入後，`loader` 會自動重跑。
 - 編輯表單送出後，`action` 用 `updateItem` 寫入標題，再 `return redirect('/demos/88-redirect-list')`。列表的 `loader` 接著重跑，畫面上是新標題。
-- 明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由這條路由的 `errorElement` 用 `useRouteError` 讀取。沒有指定 `errorElement` 時，錯誤往上找最近一層，只替換那一層以下的畫面。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
-- `demos/86-loader` 到 `demos/91-navigation` 要寫在 `demos/:slug` 前面。91 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
+- 明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由這條路由的 `errorElement` 用 `useRouteError` 讀取。沒有指定 `errorElement` 時，錯誤往上找最近一層，只替換那一層以下的畫面。`useFetcher` 送出但不換頁；同一個 `key` 的 `useFetcher` 會共用一份狀態，頁面在渲染時讀 `fetcher.data`；`useNavigation` 讀取讀取中與送出中。
+- `demos/86-loader` 到 `demos/92-fetcher-key` 要寫在 `demos/:slug` 前面。91 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
 
 # 專有名詞中英對照
@@ -3887,6 +4059,7 @@ const router = createHashRouter(routes, { basename });
 - 路由錯誤回應（isRouteErrorResponse）
 - useRouteError
 - 不換頁的送出（useFetcher）
+- 共用的 fetcher（useFetcher key）
 - 導覽狀態（useNavigation）
 
 ## 找不到的頁面
