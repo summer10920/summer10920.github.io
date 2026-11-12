@@ -1096,16 +1096,6 @@ export default function SiteNav({ onNavigate, id }) {
 +          paddingInline: 22,
 +          fontWeight: 700,
 +        },
-+        containedPrimary: {
-+          backgroundColor: tokens.action,
-+          color: tokens.white,
-+          '&:hover': { backgroundColor: tokens.actionHover },
-+        },
-+        containedSecondary: {
-+          backgroundColor: tokens.accent,
-+          color: tokens.ink,
-+          '&:hover': { backgroundColor: '#E8B423' },
-+        },
 +        outlined: {
 +          borderColor: tokens.line,
 +          color: tokens.ink,
@@ -1143,7 +1133,7 @@ export default function SiteNav({ onNavigate, id }) {
 - `shape.borderRadius` 先設成 12，作為元件的預設圓角。
 - `MuiButton` 的 `root` 把圓角改成 999，按鈕變成膠囊。
 - `disableElevation` 設成 true，按鈕預設不再帶陰影。
-- 實心主按鈕與次按鈕的顏色來自 `tokens`，和 Tailwind 看到的是同一組色票。
+- 實心主按鈕與次按鈕的顏色來自 palette（`primary` / `secondary`），與 `tokens` 是同一組色票。
 - `MuiAppBar` 設成半透明、貼在上緣、沒有陰影，底邊加一條分隔線。
 - `MuiDrawer` 從右側打開，紙張左側做成圓角。
 - `MuiBackdrop` 是手機選單後面那層半透明遮罩。
@@ -1300,21 +1290,18 @@ export default function SiteFooter() {
 超大的「404」放在標題上面，再放說明與兩顆按鈕。
 
 ```jsx 06-project-init/src/pages/NotFoundPage.jsx
-import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
-  useEffect(() => {
-    document.title = '找不到頁面 · 洛奇旅行';
-  }, []);
   return (
     <main
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 sm:py-24"
     >
+      <title>找不到頁面 · 洛奇旅行</title>
       <p className="font-serif text-8xl font-bold leading-none text-ink sm:text-9xl">
         404
       </p>
@@ -1337,9 +1324,13 @@ export default function NotFoundPage() {
 }
 ```
 
+{% note info %}
+React 19 把元件裡的 `<title>` 提升到文件的 `<head>`。元件卸載時這段標題會拿掉，下一頁的 `<title>` 會接上。`<title>` 裡面只能是一個字串，依資料組標題時要用模板字串寫成一整段，例如 `` <title>{`${tour.title} · 洛奇旅行`}</title> ``。
+{% endnote %}
+
 **解析**
 
-- 進頁時把分頁標題設成「找不到頁面 · 洛奇旅行」。
+- 這一頁的 `<title>` 是「找不到頁面 · 洛奇旅行」。React 19 會把它放到文件的 `<head>`。
 - 超大的「404」用 serif 粗體。標題是「找不到這個頁面」，內文說明這個網址沒有對應的頁面。
 - 「返回上一頁」呼叫 `navigate(-1)`，回到瀏覽紀錄的上一筆。「回首頁」連到 `/`。
 
@@ -1415,9 +1406,9 @@ import { StoreContext } from './store-context.js';
 export function StoreProvider({ children }) {
   const [tours] = useState(seedTours);
   return (
-    <StoreContext.Provider value={{ tours }}>
+    <StoreContext value={{ tours }}>
       {children}
-    </StoreContext.Provider>
+    </StoreContext>
   );
 }
 ```
@@ -1527,7 +1518,6 @@ export default function ReviewList() {
 接著把零件組進 `HomePage`。行程用剛才的 `useStore` 讀取。
 
 ```jsx 06-project-init/src/features/home/HomePage.jsx
-import { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import HeroSearch from './components/HeroSearch.jsx';
 import HeroSlider from './components/HeroSlider.jsx';
@@ -1540,12 +1530,10 @@ import { useStore } from '../../store-context.js';
 export default function HomePage() {
   const { tours } = useStore();
   const featured = tours.filter((tour) => tour.featured);
-  useEffect(() => {
-    document.title = '洛奇旅行';
-  }, []);
 
   return (
     <main id="content">
+      <title>洛奇旅行</title>
       <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
       <div className="relative z-20 mx-auto mt-8 w-full max-w-6xl px-4 sm:px-6 lg:-mt-20">
         <HeroSearch />
@@ -2398,7 +2386,6 @@ export default function TourFilters() {
 接著組出列表頁。
 
 ```jsx 06-project-init/src/features/tours/ToursPage.jsx
-import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -2410,9 +2397,6 @@ import { useStore } from '../../store-context.js';
 export default function ToursPage() {
   const { tours } = useStore();
   const [params, setParams] = useSearchParams();
-  useEffect(() => {
-    document.title = '行程 · 洛奇旅行';
-  }, []);
 
   const region = params.get('region') ?? '';
   const days = params.get('days') ?? '';
@@ -2438,6 +2422,7 @@ export default function ToursPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>行程 · 洛奇旅行</title>
       <Typography variant="h1">行程</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         依地區、天數與預算挑選。價格為每人，以新台幣計。
@@ -2955,8 +2940,8 @@ Store 要一併提供報名種子，詳情頁才算得出剩餘人數。
    const [tours] = useState(seedTours);
 +  const [bookings] = useState(seedBookings);
    return (
--    <StoreContext.Provider value={{ tours }}>
-+    <StoreContext.Provider value={{ tours, bookings }}>
+-    <StoreContext value={{ tours }}>
++    <StoreContext value={{ tours, bookings }}>
        {children}
  // ...
 ```
@@ -2968,7 +2953,7 @@ Store 要一併提供報名種子，詳情頁才算得出剩餘人數。
 接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時的處理最後一步再補。然後把路由表裡的詳情佔位換掉。
 
 ```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingCard from './components/BookingCard.jsx';
@@ -2986,11 +2971,6 @@ export default function TourDetailPage() {
   const { tours, bookings } = useStore();
   const tour = tours.find((item) => item.id === id);
   const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
-  useEffect(() => {
-    document.title = tour
-      ? `${tour.title} · 洛奇旅行`
-      : '找不到頁面 · 洛奇旅行';
-  }, [tour]);
   const selected =
     tour.departures.find((item) => item.id === departureId) ??
     tour.departures[0];
@@ -3001,6 +2981,7 @@ export default function TourDetailPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24"
     >
+      <title>{`${tour.title} · 洛奇旅行`}</title>
       <div className="lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(20rem,24rem)] lg:items-start lg:gap-10">
         <div className="min-w-0">
           <TourHeader tour={tour} />
@@ -3889,7 +3870,7 @@ export default function MobileBookingBar({ price, bookTo }) {
 +import NotFoundPage from '../../pages/NotFoundPage.jsx';
  import { useStore } from '../../store-context.js';
  // ...
-   }, [tour]);
+   const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
 +  if (!tour) return <NotFoundPage />;
 +
    const selected =
@@ -3898,7 +3879,7 @@ export default function MobileBookingBar({ price, bookTo }) {
 
 **解析**
 
-- `useState` 與設定分頁標題的 `useEffect` 留在提前返回之前。對不到行程時，標題已設成「找不到頁面 · 洛奇旅行」，並渲染 `NotFoundPage`。
+- 對不到行程時直接 `return <NotFoundPage />`。找不到頁自己有 `<title>找不到頁面 · 洛奇旅行</title>`。對得到時，這一頁的 `<title>` 用模板字串接上行程名稱。
 - 手改網址、對不上任何一筆時就會進到這裡。這和星號路由用同一份文案，頁首與頁尾還在。
 
 
@@ -3947,7 +3928,6 @@ export default function BookingSummary() {
 接著把步驟條、表單與摘要組進報名頁。這三個目前是標記。然後把路由表裡的報名佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingPage.jsx
-import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
@@ -3965,9 +3945,6 @@ export default function BookingPage() {
   const departure =
     tour?.departures.find((item) => item.id === params.get('departureId')) ||
     tour?.departures[0];
-  useEffect(() => {
-    document.title = '報名 · 洛奇旅行';
-  }, []);
   if (!tour || !departure) return <NotFoundPage />;
 
   return (
@@ -3975,6 +3952,7 @@ export default function BookingPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名 · 洛奇旅行</title>
       <BookingSteps activeStep={1} />
       <Typography variant="h1">報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
@@ -4145,8 +4123,8 @@ export default function BookingSteps({ activeStep }) {
 +  };
 +
    return (
--    <StoreContext.Provider value={{ tours, bookings }}>
-+    <StoreContext.Provider value={{ tours, bookings, createBooking }}>
+-    <StoreContext value={{ tours, bookings }}>
++    <StoreContext value={{ tours, bookings, createBooking }}>
        {children}
  // ...
 ```
@@ -4427,7 +4405,6 @@ export default function BookingReceipt() {
 接著組出完成頁。步驟條沿用 `BookingSteps`，`activeStep` 是 2。明細目前是標記。然後把路由表裡的完成頁佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingResultPage.jsx
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -4443,9 +4420,6 @@ export default function BookingResultPage() {
   const { id } = useParams();
   const { bookings } = useStore();
   const row = bookings.find((item) => item.id === id);
-  useEffect(() => {
-    document.title = row ? '報名已送出 · 洛奇旅行' : '找不到頁面 · 洛奇旅行';
-  }, [row]);
   if (!row) return <NotFoundPage />;
 
   return (
@@ -4453,6 +4427,7 @@ export default function BookingResultPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名已送出 · 洛奇旅行</title>
       <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
       <Typography variant="h1" className="mt-3 max-w-[10em]">
@@ -4477,7 +4452,7 @@ export default function BookingResultPage() {
 
 **解析**
 
-- 用 `useParams` 讀網址上的 `id`，再從 `bookings` 找出那一筆。找不到就 `return <NotFoundPage />`，分頁標題也改成「找不到頁面 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
+- 用 `useParams` 讀網址上的 `id`，再從 `bookings` 找出那一筆。找不到就 `return <NotFoundPage />`，標題由找不到頁自己的 `<title>` 接上。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
 - `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。狀態仍是 `pending`、`confirmed`、`cancelled`，沒有另外的草稿狀態。
 - 成功 `Alert` 套用剛才補進主題的提示框外觀。明細目前是標記，下一步再換成 `BookingReceipt`。兩顆按鈕分別去我的報名與行程列表。
 
@@ -4616,21 +4591,17 @@ export default function MyBookingRow() {
 接著組出我的報名頁。單筆列目前是標記。清單先一律畫出來。
 
 ```jsx 06-project-init/src/features/booking/MyBookingsPage.jsx
-import { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import MyBookingRow from './components/MyBookingRow.jsx';
 import { mySamples } from './mock.data.js';
 
 export default function MyBookingsPage() {
-  useEffect(() => {
-    document.title = '我的報名 · 洛奇旅行';
-  }, []);
-
   return (
     <main
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>我的報名 · 洛奇旅行</title>
       <Typography variant="h1">我的報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         這一頁用範例清單預覽報名長什麼樣子。成品會依 Google
@@ -4753,7 +4724,6 @@ export default function MyBookingRow({
 清單是空陣列時，不要畫空的列表外框。
 
 ```diff 06-project-init/src/features/booking/MyBookingsPage.jsx
- import { useEffect } from 'react';
 +import { Link } from 'react-router';
 +import Button from '@mui/material/Button';
  import Typography from '@mui/material/Typography';
@@ -4855,7 +4825,7 @@ export const faqs = [
 接著寫關於頁。
 
 ```jsx 06-project-init/src/features/about/AboutPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -4864,15 +4834,13 @@ import { faqs } from './mock.data.js';
 
 export default function AboutPage() {
   const [open, setOpen] = useState(null);
-  useEffect(() => {
-    document.title = '關於 · 洛奇旅行';
-  }, []);
 
   return (
     <main
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>關於 · 洛奇旅行</title>
       <Typography variant="h1" className="max-w-[10em]">
         關於洛奇旅行
       </Typography>
@@ -4972,7 +4940,6 @@ export default function AboutPage() {
 接著寫登入頁。
 
 ```jsx 06-project-init/src/features/auth/LoginPage.jsx
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -4982,12 +4949,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  useEffect(() => {
-    document.title = '用 Google 帳號繼續 · 洛奇旅行';
-  }, []);
 
   return (
     <main id="content" className="flex-1">
+      <title>用 Google 帳號繼續 · 洛奇旅行</title>
       <Dialog
         open
         onClose={() => navigate('/')}
@@ -5191,7 +5156,7 @@ src/features/admin/
 接著寫後台登入頁。白底與陰影仍用這三個 utility。
 
 ```jsx 06-project-init/src/features/admin/AdminLoginPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
@@ -5200,15 +5165,13 @@ import Typography from '@mui/material/Typography';
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  useEffect(() => {
-    document.title = '後台登入 · 洛奇旅行';
-  }, []);
 
   return (
     <main
       id="content"
       className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>後台登入 · 洛奇旅行</title>
       <Paper
         component="form"
         elevation={0}
@@ -5273,7 +5236,7 @@ export default function AdminLoginPage() {
 
 ## 行程管理
 
-後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項跟首頁主題卡片用同一份清單，這一頁才從 `themeLinks` 導出 `themes`。頁首在後台路徑已經換成「行程管理」與「報名清單」，兩頁用頁首切換，不再另做分頁列。
+後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項跟首頁主題卡片用同一份清單，這一頁才從 `themeLinks` 導出 `themes`。後台兩頁用頁首切換。
 
 新增與編輯共用同一個 Dialog。沒有帶入行程是新增，有帶入是編輯。用這一頁的 state 控制開關，不另開路由。刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
 
@@ -5338,7 +5301,7 @@ export default function TourForm({ open, tour, onClose }) {
 接著組出行程管理頁。表格與表單目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TourTable from './components/TourTable.jsx';
@@ -5349,15 +5312,13 @@ export default function AdminToursPage() {
   const { tours } = useStore();
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
-  useEffect(() => {
-    document.title = '行程管理 · 洛奇旅行';
-  }, []);
 
   return (
     <main
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>行程管理 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
         行程管理
@@ -5393,7 +5354,7 @@ export default function AdminToursPage() {
 
 - 直接打開 `/admin` 就看得到這一頁。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
 - 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
-- 表格與表單目前是標記。兩頁用頁首切換，這一頁不再放分頁列。
+- 表格與表單目前是標記。兩頁用頁首切換。
 
 接著把 `/admin` 換成這一頁。
 
@@ -5547,8 +5508,8 @@ export const tourFromDraft = (draft) => {
    const createBooking = (input) => {
  // ...
    return (
--    <StoreContext.Provider value={{ tours, bookings, createBooking }}>
-+    <StoreContext.Provider value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
+-    <StoreContext value={{ tours, bookings, createBooking }}>
++    <StoreContext value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
        {children}
  // ...
 ```
@@ -5687,7 +5648,7 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 接著在頁面接上刪除。操作欄的「刪除」先記要刪的那一筆，確認後才從列表拿掉。
 
 ```diff 06-project-init/src/features/admin/AdminToursPage.jsx
- import { useEffect, useState } from 'react';
+ import { useState } from 'react';
  import Button from '@mui/material/Button';
 +import Dialog from '@mui/material/Dialog';
 +import DialogActions from '@mui/material/DialogActions';
@@ -5701,7 +5662,8 @@ export default function TourTable({ tours, onEdit, onDelete }) {
    const [open, setOpen] = useState(false);
    const [tour, setTour] = useState(null);
 +  const [deletingTour, setDeletingTour] = useState(null);
-   useEffect(() => {
+
+   return (
  // ...
        <TourTable
          tours={tours}
@@ -5751,31 +5713,71 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 
 ```diff 06-project-init/src/features/admin/components/tourDraft.js
  // ...
-   featured: false,
- };
- 
+-export const empty = {
+-  title: '',
+-  region: '',
+-  theme: '城市',
+-  days: 2,
+-  price: 0,
+-  images: [''],
+-  intro: '',
+-  highlights: '',
+-  itinerary: [{ title: '', body: '' }],
+-  includes: '',
+-  excludes: '',
+-  departures: [{ date: '', capacity: 8 }],
+-  featured: false,
+-};
+-
 -export const draftFromTour = () => empty;
++const rowId = () => crypto.randomUUID();
++
++export const empty = () => ({
++  title: '',
++  region: '',
++  theme: '城市',
++  days: 2,
++  price: 0,
++  images: [{ id: rowId(), url: '' }],
++  intro: '',
++  highlights: '',
++  itinerary: [{ id: rowId(), title: '', body: '' }],
++  includes: '',
++  excludes: '',
++  departures: [{ id: rowId(), date: '', capacity: 8 }],
++  featured: false,
++});
++
 +export const draftFromTour = (tour) => ({
 +  title: tour.title,
 +  region: tour.region,
 +  theme: tour.theme,
 +  days: tour.days,
 +  price: tour.price,
-+  images: tour.images?.length ? [...tour.images] : [''],
++  images: tour.images?.length
++    ? tour.images.map((url) => ({ id: rowId(), url }))
++    : [{ id: rowId(), url: '' }],
 +  intro: tour.intro,
 +  highlights: (tour.highlights ?? []).join('\n'),
 +  itinerary: tour.itinerary?.length
-+    ? tour.itinerary.map(({ title, body }) => ({ title, body }))
-+    : [{ title: '', body: '' }],
++    ? tour.itinerary.map(({ title, body }) => ({ id: rowId(), title, body }))
++    : [{ id: rowId(), title: '', body: '' }],
 +  includes: (tour.includes ?? []).join('\n'),
 +  excludes: (tour.excludes ?? []).join('\n'),
 +  departures: tour.departures?.length
-+    ? tour.departures.map(({ date, capacity }) => ({ date, capacity }))
-+    : [{ date: '', capacity: 8 }],
++    ? tour.departures.map(({ date, capacity }) => ({
++        id: rowId(),
++        date,
++        capacity,
++      }))
++    : [{ id: rowId(), date: '', capacity: 8 }],
 +  featured: Boolean(tour.featured),
 +});
 
  export const tourFromDraft = (draft) => {
+ // ...
+-    .map((item) => String(item).trim())
++    .map((item) => String(item.url ?? '').trim())
  // ...
 ```
 
@@ -5801,7 +5803,7 @@ export default function DraftRows({
       <Typography variant="h3">{title}</Typography>
       {items.map((item, index) => (
         <div
-          key={index}
+          key={item.id}
           className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
         >
           <div className="grid gap-3 sm:grid-cols-2">
@@ -5821,7 +5823,9 @@ export default function DraftRows({
         <Button
           type="button"
           variant="outlined"
-          onClick={() => onChange([...items, blank])}
+          onClick={() =>
+            onChange([...items, { ...blank, id: crypto.randomUUID() }])
+          }
         >
           {addLabel}
         </Button>
@@ -5850,7 +5854,7 @@ import { draftFromTour, empty } from './tourDraft.js';
 export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
   const editingId = tour?.id ?? null;
   const [draft, setDraft] = useState(() =>
-    tour ? draftFromTour(tour) : empty,
+    tour ? draftFromTour(tour) : empty(),
   );
   const [error, setError] = useState('');
   const set = (key) => (event) =>
@@ -5962,7 +5966,7 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
           <DraftRows
             title="圖庫網址"
             items={draft.images}
-            blank=""
+            blank={{ url: '' }}
             addLabel="新增一張"
             onChange={setList('images')}
           >
@@ -5974,8 +5978,10 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
                 helperText={
                   index === 0 ? '第一張會當作列表與輪播的封面' : undefined
                 }
-                value={item}
-                onChange={(event) => update(index, event.target.value)}
+                value={item.url}
+                onChange={(event) =>
+                  update(index, { ...item, url: event.target.value })
+                }
               />
             )}
           </DraftRows>
@@ -6071,7 +6077,7 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
 ```
 
 ```diff 06-project-init/src/features/admin/AdminToursPage.jsx
- import { useEffect, useState } from 'react';
+ import { useState } from 'react';
 +import Alert from '@mui/material/Alert';
  import Button from '@mui/material/Button';
  import Dialog from '@mui/material/Dialog';
@@ -6088,9 +6094,6 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
    const [tour, setTour] = useState(null);
    const [deletingTour, setDeletingTour] = useState(null);
 +  const [notice, setNotice] = useState('');
-   useEffect(() => {
-     document.title = '行程管理 · 洛奇旅行';
-   }, []);
 +
 +  const close = () => setOpen(false);
  
@@ -6147,9 +6150,10 @@ export default function TourForm({ open, tour, onClose, onSave, onNotice }) {
 
 **解析**
 
-- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty` 是新增用的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。`draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
+- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty()` 每次回傳一份新的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。`draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
+- 每一列有一個只活在草稿裡的 `id`，當 React 的 `key`；刪列或重排時才不會用 index 對錯列。存檔時 `tourFromDraft` 會拿掉它，圖庫存回網址字串，出發梯次的 `id` 仍用日期。
 - `TourForm` 是同一個 Dialog。沒有帶入行程時標題是「新增行程」，有帶入時是「編輯行程」。草稿在表單裡面初始化；頁面用 `key` 在每次打開時重新掛載，才會依當下的行程重算。表單只負責儲存，沒有刪除鈕。
-- `DraftRows` 負責多列輸入的新增與刪除。圖庫、每日行程與出發梯次都用它，各列的欄位由 `TourForm` 傳進去。
+- `DraftRows` 負責多列輸入的新增與刪除。圖庫、每日行程與出發梯次都用它，各列的欄位由 `TourForm` 傳進去。列的 `key` 用草稿上的 `id`，新增一列時再補一個新的 `id`。`blank` 本身不含 `id`。
 - 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
 - 送出時把 `onSave` 的回傳當成錯誤訊息。`onSave` 由頁面傳入，這一章是 Store 的 `saveTour`。空字串代表成功，先關窗，再請頁面把 `notice` 設成「已儲存這筆行程」。
 - 刪除仍在列表操作欄。確認之後除了從列表拿掉，也請頁面把 `notice` 設成「已刪除這筆行程」。
@@ -6195,7 +6199,7 @@ export default function BookingForm({ open, onClose }) {
 接著寫報名清單。表格與明細目前仍是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -6213,9 +6217,6 @@ export default function AdminBookingsPage() {
   const [sort, setSort] = useState('date-desc');
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
-  useEffect(() => {
-    document.title = '報名清單 · 洛奇旅行';
-  }, []);
 
   const keyword = query.trim();
   const shown = bookings
@@ -6232,6 +6233,7 @@ export default function AdminBookingsPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名清單 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
         報名清單
@@ -6294,7 +6296,7 @@ export default function AdminBookingsPage() {
 - 直接打開 `/admin/bookings` 就看得到這一頁。上方的狀態、姓名與日期用來篩選與排序。
 - 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
 - `open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
-- 兩頁用頁首切換，這一頁不再放分頁列。
+- 兩頁用頁首切換。
 
 接著把 `/admin/bookings` 換成這一頁。
 
@@ -6343,8 +6345,8 @@ export default function AdminBookingsPage() {
    const createBooking = (input) => {
  // ...
    return (
--    <StoreContext.Provider value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
-+    <StoreContext.Provider
+-    <StoreContext value={{ tours, bookings, saveTour, deleteTour, createBooking }}>
++    <StoreContext
 +      value={{
 +        tours,
 +        bookings,
@@ -6572,7 +6574,7 @@ export default function BookingForm({
 ```
 
 ```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
- import { useEffect, useState } from 'react';
+ import { useState } from 'react';
 +import Alert from '@mui/material/Alert';
  import MenuItem from '@mui/material/MenuItem';
 +import Snackbar from '@mui/material/Snackbar';
@@ -6587,9 +6589,6 @@ export default function BookingForm({
    const [open, setOpen] = useState(false);
    const [booking, setBooking] = useState(null);
 +  const [notice, setNotice] = useState('');
-   useEffect(() => {
-     document.title = '報名清單 · 洛奇旅行';
-   }, []);
  // ...
 +  const close = () => setOpen(false);
 +

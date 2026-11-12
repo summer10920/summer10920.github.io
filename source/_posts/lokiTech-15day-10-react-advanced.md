@@ -300,7 +300,7 @@ export default function TimerDemo() {
 
 **觀念**
 
-跟外面的系統對齊時，setup 可以改外面的東西，例如瀏覽器分頁標題。這一則把 `document.title` 設成目前的行程名稱。依賴是 `[place]`，只有行程變了才改標題。清除函式把標題還原成這一次 setup 開始前的文字。練習頁進來時的標題是「React 練習」，切到別的示範後會回到這句。
+跟外面的系統對齊時，setup 可以改外面的東西，例如瀏覽器分頁標題。這一則把 `document.title` 設成目前的行程名稱。依賴是 `[place]`，只有行程變了才改標題。清除函式把標題還原成這一次 setup 開始前的文字。練習頁進來時的標題是「React 練習」，切到別的示範後會回到這句。專案裡的分頁標題，React 19 改在 JSX 寫 `<title>`，寫法見 {% post_link lokiTech-15day-12-project-travel %}。
 
 {% note warning %}
 **不要存進專案**
@@ -2157,7 +2157,7 @@ export default function DrillDemo() {
 
 ### 用 Context 改善
 
-同一棵樹改成 Context：外層用 Provider 提供主題，內層用 `useContext` 讀取，中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。這一則先全部寫在同一個檔，下一節再拆成多個檔案；建立通道、讀值，以及把 value 放上樹，都寫在下面這一段。
+同一棵樹改成 Context：外層提供主題，內層用 `useContext` 讀取，中間的 `Layout` 與 `Panel` 不再接收主題相關的 props。value 直接寫在 Context 元件上，例如 `<ThemeContext value={theme}>`；子元件用 `useContext(ThemeContext)` 讀取。這一則先全部寫在同一個檔，下一節再拆成多個檔案；建立通道、讀值，以及把 value 放上樹，都寫在下面這一段。
 
 ```jsx
 /**
@@ -2190,9 +2190,9 @@ function Banner() {
  */
 export default function ThemeApp() {
   return (
-    <ThemeContext.Provider value="深色">
+    <ThemeContext value="深色">
       <Banner />
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 }
 ```
@@ -2231,7 +2231,7 @@ export default function ContextDemo() {
   const [theme, setTheme] = useState('淺色');
 
   return (
-    <ThemeContext.Provider value={theme}>
+    <ThemeContext value={theme}>
       <section className="grid gap-3">
         <button
           type="button"
@@ -2242,7 +2242,7 @@ export default function ContextDemo() {
         </button>
         <Layout />
       </section>
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 }
 ```
@@ -2251,7 +2251,7 @@ export default function ContextDemo() {
 
 **解析**
 
-- Provider 寫在同一個檔，`value` 是主題狀態那個字串，這一則不必包成物件。
+- value 直接寫在 Context 元件上，例如 `<ThemeContext value={theme}>`。子元件用 `useContext(ThemeContext)` 讀取。`value` 是主題狀態那個字串，這一則不必包成物件。
 - `Banner` 在元件最上層呼叫 `useContext`，不寫在條件裡；這一則的 `ThemeContext` 還沒拆檔，所以直接用同一份常數。
 - `Layout` 與 `Panel` 不接收主題，也不呼叫 `useContext`，只畫實線框與虛線框。中間層不轉 props。
 - context 的值變了，讀它的 `Banner` 會再渲染。不要把一個每次渲染都新建、內容卻相同的物件毫無必要地當 value，否則讀的人每次都會再跑。
@@ -2367,7 +2367,7 @@ export default function ContextSplitDemo() {
   const [theme, setTheme] = useState('淺色');
 
   return (
-    <ThemeContext.Provider value={theme}>
+    <ThemeContext value={theme}>
       <section className="grid gap-3">
         <button
           type="button"
@@ -2378,7 +2378,7 @@ export default function ContextSplitDemo() {
         </button>
         <Layout />
       </section>
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 }
 ```
@@ -3646,9 +3646,9 @@ export function TodoProvider({ children }) {
     { id: 1, title: '台北城市漫遊', done: false },
   ]);
   return (
-    <TodoContext.Provider value={{ todos, dispatch }}>
+    <TodoContext value={{ todos, dispatch }}>
       {children}
-    </TodoContext.Provider>
+    </TodoContext>
   );
 }
 ```

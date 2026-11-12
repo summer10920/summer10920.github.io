@@ -450,7 +450,6 @@ export default function LoadGate({ loading, error, children }) {
 `store.jsx` 與 `store-context.js` 先留著。報名與後台下一節才脫離它們。
 
 ```diff 07-project-final/src/features/home/HomePage.jsx
- import { useEffect } from 'react';
 +import Alert from '@mui/material/Alert';
  import Typography from '@mui/material/Typography';
  // ...
@@ -464,17 +463,17 @@ export default function LoadGate({ loading, error, children }) {
 +  const { data, loading, error } = useTours();
 +  const tours = data ?? [];
    const featured = tours.filter((tour) => tour.featured);
-   useEffect(() => { document.title = '洛奇旅行'; }, []);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
 
    return (
      <main id="content">
+       <title>洛奇旅行</title>
 +      {tours.length ? null : <div className="mx-auto w-full max-w-6xl px-4 pt-10 sm:px-6"><Alert severity="info">還沒有行程。請先打開 /seed 寫入種子。</Alert></div>}
        <HeroSlider slides={featured.length ? featured : tours.slice(0, 4)} />
  // ...
 ```
 
-篩選與排序仍在 render 時直接計算。`useTours` 與 `useEffect` 這些 Hook 要留在提前返回之前，不能寫在 `if` 後面。集合還是空的時候，空狀態的說明改提示去種子頁。篩選把已有的行程濾光時，說明仍請對方換地區、天數或價格條件。
+篩選與排序仍在 render 時直接計算。`useTours` 與 `useSearchParams` 這些 Hook 要留在提前返回之前，不能寫在 `if` 後面。集合還是空的時候，空狀態的說明改提示去種子頁。篩選把已有的行程濾光時，說明仍請對方換地區、天數或價格條件。分頁標題寫在回傳的 `<title>`。
 
 ```diff 07-project-final/src/features/tours/ToursPage.jsx
  import TourFilters from './components/TourFilters.jsx';
@@ -488,12 +487,16 @@ export default function LoadGate({ loading, error, children }) {
 +  const { data, loading, error } = useTours();
 +  const tours = data ?? [];
    const [params, setParams] = useSearchParams();
-   useEffect(() => { document.title = '行程 · 洛奇旅行'; }, []);
  // ...
    const visible = [...list].sort(rank[sort] || rank['price-asc']);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
 
    return (
+     <main
+       id="content"
+       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
+     >
+       <title>行程 · 洛奇旅行</title>
  // ...
            <Typography id="empty-title" variant="h2">沒有符合的行程</Typography>
 -          <p className="mt-3 max-w-prose">換一個地區或天數，或清掉價格條件。</p>
@@ -513,9 +516,15 @@ export default function LoadGate({ loading, error, children }) {
 -  const tour = tours.find((item) => item.id === id);
 +  const { data: tour, loading, error } = useTour(id);
    const [departureId, setDepartureId] = useState(tour?.departures[0]?.id ?? '');
-   useEffect(() => { document.title = tour ? `${tour.title} · 洛奇旅行` : '找不到頁面 · 洛奇旅行'; }, [tour]);
 +  if (loading || error) return <LoadGate loading={loading} error={error} />;
    if (!tour) return <NotFoundPage />;
+ // ...
+   return (
+     <main
+       id="content"
+       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 pb-28 sm:px-6 md:py-24 lg:pb-24"
+     >
+       <title>{`${tour.title} · 洛奇旅行`}</title>
  // ...
 -          <MobileDepartures tour={tour} bookings={bookings} />
 +          <MobileDepartures tour={tour} />
@@ -626,7 +635,7 @@ export default function LoadGate({ loading, error, children }) {
 規則換成最後一節的內容之後，寫入只限管理員。請先用後台帳號登入再按。
 
 ```jsx 07-project-final/src/features/admin/SeedPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -638,9 +647,6 @@ export default function SeedPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    document.title = '寫入行程種子 · 洛奇旅行';
-  }, []);
 
   const run = async () => {
     setBusy(true);
@@ -663,6 +669,7 @@ export default function SeedPage() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>寫入行程種子 · 洛奇旅行</title>
       <Typography variant="h1">寫入行程種子</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         把專案裡的行程寫進 Firestore 的
@@ -791,7 +798,7 @@ export function AuthProvider({ children }) {
     [user, ready],
   );
 
-  return <AuthContext.Provider value={api}>{children}</AuthContext.Provider>;
+  return <AuthContext value={api}>{children}</AuthContext>;
 }
 ```
 
@@ -836,9 +843,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    document.title = '用 Google 帳號繼續 · 洛奇旅行';
-  }, []);
-  useEffect(() => {
     if (ready && user) navigate(back, { replace: true });
   }, [ready, user, back, navigate]);
 
@@ -865,6 +869,7 @@ export default function LoginPage() {
 
   return (
     <main id="content" className="flex-1">
+      <title>用 Google 帳號繼續 · 洛奇旅行</title>
       <Dialog
         open
         onClose={() => navigate('/')}
@@ -1135,7 +1140,6 @@ export default function BookingForm({ tour, departure }) {
 ```
 
 ```jsx 07-project-final/src/features/booking/BookingPage.jsx
-import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingForm from './components/BookingForm.jsx';
@@ -1156,9 +1160,6 @@ function BookingBody() {
   const departure =
     tour?.departures.find((item) => item.id === params.get('departureId')) ||
     tour?.departures[0];
-  useEffect(() => {
-    document.title = '報名 · 洛奇旅行';
-  }, []);
   if (loading || error) return <LoadGate loading={loading} error={error} />;
   if (!tour || !departure) return <NotFoundPage />;
 
@@ -1167,6 +1168,7 @@ function BookingBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名 · 洛奇旅行</title>
       <BookingSteps activeStep={1} />
       <Typography variant="h1">報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
@@ -1190,7 +1192,6 @@ export default function BookingPage() {
 ```
 
 ```jsx 07-project-final/src/features/booking/BookingResultPage.jsx
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -1207,9 +1208,6 @@ import { useOrder } from '../../useAsync.js';
 function BookingResultBody() {
   const { id } = useParams();
   const { data: row, loading, error } = useOrder(id);
-  useEffect(() => {
-    document.title = row ? '報名已送出 · 洛奇旅行' : '找不到頁面 · 洛奇旅行';
-  }, [row]);
   if (loading) return <LoadGate loading={loading} />;
   if (error || !row) return <NotFoundPage />;
 
@@ -1218,6 +1216,7 @@ function BookingResultBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名已送出 · 洛奇旅行</title>
       <BookingSteps activeStep={2} />
       <Chip color="primary" label={statusLabel[row.status] || '待確認'} />
       <Typography variant="h1" className="mt-3 max-w-[10em]">
@@ -1251,7 +1250,6 @@ export default function BookingResultPage() {
 單筆列沿用 `MyBookingRow`。Firestore 那筆的標題欄是 `tourTitle`，傳給 `title`。
 
 ```jsx 07-project-final/src/features/booking/MyBookingsPage.jsx
-import { useEffect } from 'react';
 import { Link } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -1265,9 +1263,6 @@ function MyBookingsBody() {
   const { user } = useAuth();
   const { data, loading, error } = useMyOrders(user.uid);
   const rows = data ?? [];
-  useEffect(() => {
-    document.title = '我的報名 · 洛奇旅行';
-  }, []);
   if (loading || error) return <LoadGate loading={loading} error={error} />;
 
   return (
@@ -1275,6 +1270,7 @@ function MyBookingsBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>我的報名 · 洛奇旅行</title>
       <Typography variant="h1">我的報名</Typography>
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         這裡列出這個 Google 帳號的訂單。如需改期或取消，請來信或來電。
@@ -1427,9 +1423,6 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    document.title = '後台登入 · 洛奇旅行';
-  }, []);
-  useEffect(() => {
     if (provider === 'password') navigate('/admin/bookings');
   }, [provider, navigate]);
 
@@ -1455,6 +1448,7 @@ export default function AdminLoginPage() {
       id="content"
       className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>後台登入 · 洛奇旅行</title>
       <Paper
         component="form"
         elevation={0}
@@ -1615,7 +1609,7 @@ export default function AdminGate({ children }) {
 `TourTable`、`TourForm`、`BookingTable` 與 `BookingForm` 沿用第 12 篇，不必改。行程管理頁與報名清單頁改成這樣：
 
 ```jsx 07-project-final/src/features/admin/AdminToursPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -1640,9 +1634,6 @@ function AdminToursBody() {
   const [tour, setTour] = useState(null);
   const [deletingTour, setDeletingTour] = useState(null);
   const [notice, setNotice] = useState('');
-  useEffect(() => {
-    document.title = '行程管理 · 洛奇旅行';
-  }, []);
 
   const close = () => setOpen(false);
 
@@ -1666,6 +1657,7 @@ function AdminToursBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>行程管理 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
         行程管理
@@ -1759,7 +1751,7 @@ export default function AdminToursPage() {
 ```
 
 ```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Alert from '@mui/material/Alert';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
@@ -1784,9 +1776,6 @@ function AdminBookingsBody() {
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
   const [notice, setNotice] = useState('');
-  useEffect(() => {
-    document.title = '報名清單 · 洛奇旅行';
-  }, []);
 
   const keyword = query.trim();
   const shown = bookings
@@ -1818,6 +1807,7 @@ function AdminBookingsBody() {
       id="content"
       className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24"
     >
+      <title>報名清單 · 洛奇旅行</title>
       <p className="font-bold text-action">管理員</p>
       <Typography variant="h1" className="mt-2">
         報名清單
@@ -2048,19 +2038,23 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
    preview: { host: 'localhost' },
 +  build: {
 +    chunkSizeWarningLimit: 600,
-+    rollupOptions: {
++    rolldownOptions: {
 +      output: {
-+        manualChunks(id) {
-+          if (!id.includes('node_modules')) return undefined;
-+          if (id.includes('@mui') || id.includes('@emotion')) return 'mui';
-+          if (id.includes('firebase')) return 'firebase';
-+          if (
-+            id.includes('react-dom') ||
-+            id.includes('react-router') ||
-+            id.includes('/react/')
-+          )
-+            return 'react';
-+          return undefined;
++        codeSplitting: {
++          groups: [
++            {
++              test: /node_modules\/(?:react-dom|react-router|\/react\/)/,
++              name: 'react',
++            },
++            {
++              test: /node_modules\/(?:@mui|@emotion)/,
++              name: 'mui',
++            },
++            {
++              test: /node_modules\/firebase/,
++              name: 'firebase',
++            },
++          ],
 +        },
 +      },
 +    },
@@ -2099,7 +2093,7 @@ firebase deploy
 
 **解析**
 
-- `manualChunks` 只拆檔。畫面與規則都不會因為拆檔改變。React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。
+- `rolldownOptions` 的 `codeSplitting` groups 只拆檔。畫面與規則都不會因為拆檔改變。React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。
 - 警告門檻設在 `vite.config.js` 這一處。Firebase 那包大約 570 kB，所以門檻調到 600。
 - `dist/` 已在 `.gitignore`。要更新線上網站時，先 `pnpm build` 再 `firebase deploy`，不要把 `node_modules` 推進去。
 - 空的環境變數也能建置成功。那種產物打開後，行程頁會顯示尚未設定。
@@ -2116,7 +2110,7 @@ firebase deploy
 - `MemberGate` 把未登入者帶到 `/login?next=...`。`AdminGate` 等 `ready`，並且只放行 `password`。閘門擋的是畫面。
 - `firestore.rules` 讓行程公開可讀、管理員可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者，刪除不開放；改為已取消即軟刪。
 - 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到或沒有權限就渲染 `NotFoundPage`。
-- 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`manualChunks` 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
+- 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`rolldownOptions` 的 `codeSplitting` groups 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
 
 # 專有名詞中英對照
 
