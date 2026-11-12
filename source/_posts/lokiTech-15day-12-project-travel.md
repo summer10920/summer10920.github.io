@@ -1598,7 +1598,7 @@ export const createBooking = (input) => {
 **解析**
 
 - `tours` 與 `bookings` 是模組裡的 `let`。`getTours`、`getTour`、`getBookings`、`getBooking` 只讀當下的陣列。
-- `createBooking` 組出 `id` 為 `local-` 加時間戳、狀態 `pending` 的一筆，插到陣列最前面並回傳。重新整理後回到種子。
+- `createBooking` 組出 `id` 為 `local-` 加時間戳、狀態 `pending` 的一筆，插到同一個 `bookings` 陣列最前面並回傳。完成頁依網址上的 id 去找這一筆。重新整理後回到種子。
 - `saveTour` 先用 `tourFromDraft`。有錯誤就回傳那句話；新增時 id 是 `tour-` 加時間戳，編輯時沿用原來的 id。
 - `deleteTour` 依 id 濾掉行程。`setBookingStatus` 只改那一筆的 `status`，不從清單移除。
 - 頁面不要 import 陣列來自己改狀態。進入路由時由 `loader` 讀，表單送出由 `action` 寫，寫完後 `loader` 會再跑。
@@ -3273,7 +3273,7 @@ export const bookings = [];
 
 **解析**
 
-- 種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。`store.js` 已經會讀這份檔，這一節不必再改那個模組。
+- 種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。`store.js` 會讀這份檔。
 
 剩餘名額先固定回 0，下一節換成真正的算法。
 
@@ -4470,17 +4470,6 @@ export default function BookingSteps({ activeStep }) {
 
 - `MuiOutlinedInput` 覆寫圓角 16 與白底，報名表的文字欄會套到。
 
-送出報名要寫進 Store。先讓 `bookings` 能更新，並加上 `createBooking`。
-
-這些函式已經在 `store.js`，這一節不必再改那個檔。
-
-
-**解析**
-
-- `createBooking` 組出新的一筆：`id` 是 `local-` 加時間戳，狀態是 `pending`，再插到陣列最前面，並把這一筆回傳給呼叫端。
-- 這一筆會進同一個 `bookings` 陣列。完成頁之後依網址上的 id 去找，不必另外記剛送出的那一筆。
-- 這些狀態都在記憶體。重新整理後報名會回到種子。
-
 接著換成真正的報名表單。
 
 ```jsx 06-project-init/src/features/booking/components/BookingForm.jsx
@@ -4584,7 +4573,7 @@ export default function BookingForm({ tour, departure }) {
 
 - 姓名與 email 唯讀，值是頁內的 `preview`：林可、`lin@example.com`。人數預設 `'2'`，小計用單價乘上人數，再交給 `ntd`。
 - 電話去掉空白後是空的就不能送出。失焦或按過送出才把欄位標成錯誤；電話一旦有內容，上方的錯誤提示會清掉。
-- 送出時先 `preventDefault`。通過檢查後呼叫 `createBooking`，帶上行程、梯次、人數、預覽姓名與 email、電話與小計。用回傳的 `row.id` 導到 `/booking/${row.id}`。
+- `<Form method="post">` 把欄位送到這一頁的 `action`。電話空白時 `action` 回傳 `{ error }`，表單用 `useActionData` 顯示。有電話時 `action` 呼叫 `createBooking`，帶上行程、梯次、人數、預覽姓名與 email、電話與小計，再 `redirect` 到 `/booking/` 加上回傳的 `row.id`。送出期間 `useNavigation` 的 `state` 是 `submitting`，按鈕會停用。
 - 表單的 `id` 是 `booking-form`。上方的成功 `Alert` 寫出同一組預覽姓名與 email。提示框的外觀，等完成頁再補進主題。
 
 {% note info %}
@@ -5981,7 +5970,7 @@ export const tourFromDraft = (draft) => {
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
 - 標題去掉空白後是空的，回傳「標題要填」，不寫入。編號不由表單填，新增時 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
 - 新增與編輯都寫完整結構。新增時插到陣列最前面。成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。
-- 這些函式已經在 `store.js`，這一節不必再改那個檔。提示訊息由步驟 1 的頁面用 `notice` 與 `NoticeSnackbar` 顯示。
+- 提示訊息由步驟 1 的頁面用 `notice` 與 `NoticeSnackbar` 顯示。
 
 ### 步驟 3：行程表格
 
@@ -6537,7 +6526,7 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
 
 清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態。按「儲存」才送出。重新整理就回到種子。兩頁用頁首切換，模式跟行程管理相同。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。下面先組出這一頁並接到路由，表格與明細先放標記，再補改狀態的方法，接著換成真正的元件。
+這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。下面先組出這一頁並接到路由，表格與明細先放標記，接著換成真正的元件。
 
 {% mermaid graph TD %}
   page["AdminBookingsPage"] --> filters["BookingFilters"]
@@ -6837,17 +6826,7 @@ export default function App() {
 }
 ```
 
-### 步驟 2：更新 Store
-
-這些函式已經在 `store.js`，這一節不必再改那個檔。
-
-
-**解析**
-
-- `setBookingStatus` 依 `id` 找到那一筆，只改 `status`，其他欄位原樣。重新整理會回到種子，這次的改動不會寫進檔案。
-- 提示訊息下一步寫在頁面自己的狀態裡，不經過 Store。
-
-### 步驟 3：報名表格與明細
+### 步驟 2：報名表格與明細
 
 把報名表格與明細的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog，看完整欄位，並用下拉選狀態；按「儲存」才送出，「取消」關閉。
 
