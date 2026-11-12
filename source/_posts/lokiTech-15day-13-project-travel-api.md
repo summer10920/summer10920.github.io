@@ -1943,12 +1943,19 @@ export const action = async ({ request }) => {
 
 export default function AdminToursPage() {
   const { firebaseReady: ready, denied, tours } = useLoaderData();
+  const save = useFetcher({ key: 'tour-form' });
   const remove = useFetcher();
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
   const [deletingTour, setDeletingTour] = useState(null);
   const [notice, setNotice] = useState('');
+  const [seenSave, setSeenSave] = useState(null);
   const [seenRemove, setSeenRemove] = useState(null);
+  if (save.state === 'idle' && save.data?.saved && save.data !== seenSave) {
+    setSeenSave(save.data);
+    setOpen(false);
+    setNotice(save.data.notice);
+  }
   if (
     remove.state === 'idle' &&
     remove.data?.notice &&
@@ -1962,6 +1969,11 @@ export default function AdminToursPage() {
   if (denied) return <AdminDenied />;
 
   const close = () => setOpen(false);
+  const openTour = (item) => {
+    save.reset();
+    setTour(item);
+    setOpen(true);
+  };
 
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-16 sm:px-6 md:py-24">
@@ -1975,13 +1987,7 @@ export default function AdminToursPage() {
         Firestore。還沒有資料時，先寫入種子。兩頁用頁首切換。
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setTour(null);
-            setOpen(true);
-          }}
-        >
+        <Button variant="outlined" onClick={() => openTour(null)}>
           新增行程
         </Button>
         <Button component={Link} to="/seed" variant="outlined">
@@ -1989,14 +1995,7 @@ export default function AdminToursPage() {
         </Button>
       </div>
       {tours.length ? (
-        <TourTable
-          tours={tours}
-          onEdit={(item) => {
-            setTour(item);
-            setOpen(true);
-          }}
-          onDelete={setDeletingTour}
-        />
+        <TourTable tours={tours} onEdit={openTour} onDelete={setDeletingTour} />
       ) : (
         <p className="mt-8 text-base text-muted">還沒有行程。</p>
       )}
@@ -2005,7 +2004,6 @@ export default function AdminToursPage() {
         open={open}
         tour={tour}
         onClose={close}
-        onNotice={setNotice}
       />
       <DeleteTourDialog
         tour={deletingTour}
@@ -2027,7 +2025,7 @@ export default function AdminToursPage() {
 **解析**
 
 - `requireAdmin` 先經過 `requireUser`。未登入的人會離開這個網址；登入方式不對的人留在原頁，看到警告。
-- 刪除用 `fetcher.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 裡的 `fetcher` 送出草稿。成功後 `loader` 再讀清單，提示仍由頁面的 `notice` 交給 `NoticeSnackbar`。
+- 刪除用 `remove.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 用 `key: 'tour-form'` 的 fetcher 送出草稿。頁面在渲染時比對尚未處理的結果，成功就關窗並把 `notice` 交給 `NoticeSnackbar`。打開 Dialog 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
 
 ## 訂單清單與狀態
 
@@ -2035,7 +2033,7 @@ export default function AdminToursPage() {
 
 ```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
-import { useLoaderData } from 'react-router';
+import { useFetcher, useLoaderData } from 'react-router';
 import Typography from '@mui/material/Typography';
 import BookingFilters from './components/BookingFilters.jsx';
 import BookingTable from './components/BookingTable.jsx';
@@ -2076,12 +2074,19 @@ export const action = async ({ request }) => {
 
 export default function AdminBookingsPage() {
   const { firebaseReady: ready, denied, bookings } = useLoaderData();
+  const save = useFetcher({ key: 'booking-form' });
   const [status, setStatus] = useState('all');
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState('date-desc');
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
   const [notice, setNotice] = useState('');
+  const [seenSave, setSeenSave] = useState(null);
+  if (save.state === 'idle' && save.data?.notice && save.data !== seenSave) {
+    setSeenSave(save.data);
+    setOpen(false);
+    setNotice(save.data.notice);
+  }
   if (!ready) return <MissingFirebase />;
   if (denied) return <AdminDenied />;
 
@@ -2119,6 +2124,7 @@ export default function AdminBookingsPage() {
         <BookingTable
           bookings={shown}
           onView={(item) => {
+            save.reset();
             setBooking(item);
             setOpen(true);
           }}
@@ -2131,7 +2137,6 @@ export default function AdminBookingsPage() {
         open={open}
         booking={booking}
         onClose={close}
-        onNotice={setNotice}
       />
       <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
@@ -2142,7 +2147,7 @@ export default function AdminBookingsPage() {
 **解析**
 
 - 篩選、搜尋與排序仍在瀏覽器裡做，對的是 `loader` 已經拿回來的陣列。
-- 狀態送出後 `loader` 重跑，列表換成雲端上的新狀態。提示文字留在頁面的 `notice`。
+- 狀態送出後 `loader` 重跑，列表換成雲端上的新狀態。頁面用 `key: 'booking-form'` 的 fetcher 在渲染時讀取結果，成功就關窗並寫入 `notice`。打開 Dialog 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
 - 這一頁同樣先看 `firebaseReady` 與 `denied`，沒有通過就不會呼叫 `listOrders`。
 
 ## 安全規則與 Firebase Hosting

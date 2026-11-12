@@ -6378,7 +6378,7 @@ export default function TourForm({ open, tour, onClose }) {
  // ...
  export default function TourForm({ open, tour, onClose }) {
 +  const editingId = tour?.id ?? null;
-+  const fetcher = useFetcher();
++  const fetcher = useFetcher({ key: 'tour-form' });
 +  const error =
 +    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
    const [draft, setDraft] = useState(() =>
@@ -6440,9 +6440,10 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
+- `useFetcher({ key: 'tour-form' })` 與頁面共用同一個 fetcher。`fetcher.submit` 只負責送出，不會回傳 `action` 的結果。
 - 送出時帶 `intent: 'save'`、`editingId` 與 JSON 字串的 `draft`。用 `fetcher.submit`，不會換頁。
 - `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示，避免送出途中還拿舊錯誤。
-- 儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。
+- 儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。`onClose` 只給取消鈕用。
 
 #### 步驟 6-4：接到 action，成功後關閉並提示
 
@@ -6472,50 +6473,12 @@ export default function NoticeSnackbar({ notice, onClose }) {
 
 - `notice` 有字才打開，約 3.2 秒後或按下關閉會呼叫 `onClose`。位置在畫面下方置中。
 
-表單在儲存成功時關閉 Dialog，並把提示交給這一頁。
-
-```diff 06-project-init/src/features/admin/components/TourForm.jsx
--import { useState } from 'react';
-+import { useEffect, useRef, useState } from 'react';
- import { useFetcher } from 'react-router';
- // ...
--export default function TourForm({ open, tour, onClose }) {
-+export default function TourForm({ open, tour, onClose, onNotice }) {
-   const editingId = tour?.id ?? null;
-   const fetcher = useFetcher();
-+  const handled = useRef(null);
-   const error =
-     fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
-   const [draft, setDraft] = useState(() =>
-     tour ? draftFromTour(tour) : empty(),
-   );
-   const set = (key) => (event) =>
-     setDraft((current) => ({ ...current, [key]: event.target.value }));
-   const setList = (key) => (items) =>
-     setDraft((current) => ({ ...current, [key]: items }));
- 
-+  useEffect(() => {
-+    if (fetcher.state !== 'idle' || !fetcher.data?.saved) return;
-+    if (handled.current === fetcher.data) return;
-+    handled.current = fetcher.data;
-+    onNotice(fetcher.data.notice);
-+    onClose();
-+  }, [fetcher.state, fetcher.data, onNotice, onClose]);
-+
-   const submit = (event) => {
- // ...
-```
-
-**解析**
-
-- `action` 回傳 `{ notice, saved: true }` 且 `fetcher` 回到 `idle` 時，把提示交給 `onNotice` 並關閉 Dialog。
-- `handled` 記住已經處理過的 `fetcher.data`，同一筆結果不會再跑一次。
-
-接著在頁面加上儲存的 `action`，並接上提示。
+頁面用同一個 `key` 讀取送出結果。成功時關閉 Dialog，並交給 `NoticeSnackbar`。
 
 ```diff 06-project-init/src/features/admin/AdminToursPage.jsx
  import { useState } from 'react';
- import { useLoaderData } from 'react-router';
+-import { useLoaderData } from 'react-router';
++import { useFetcher, useLoaderData } from 'react-router';
  import Button from '@mui/material/Button';
  import Typography from '@mui/material/Typography';
  import TourTable from './components/TourTable.jsx';
@@ -6535,17 +6498,47 @@ export default function NoticeSnackbar({ notice, onClose }) {
 +
  export default function AdminToursPage() {
    const { tours } = useLoaderData();
++  const save = useFetcher({ key: 'tour-form' });
    const [open, setOpen] = useState(false);
    const [tour, setTour] = useState(null);
 +  const [notice, setNotice] = useState('');
++  const [seenSave, setSeenSave] = useState(null);
++  if (save.state === 'idle' && save.data?.saved && save.data !== seenSave) {
++    setSeenSave(save.data);
++    setOpen(false);
++    setNotice(save.data.notice);
++  }
    const close = () => setOpen(false);
++  const openTour = (item) => {
++    save.reset();
++    setTour(item);
++    setOpen(true);
++  };
  // ...
+         <Button
+           variant="outlined"
+-          onClick={() => {
+-            setTour(null);
+-            setOpen(true);
+-          }}
++          onClick={() => openTour(null)}
+         >
+           新增行程
+         </Button>
+ // ...
+       <TourTable
+         tours={tours}
+-        onEdit={(item) => {
+-          setTour(item);
+-          setOpen(true);
+-        }}
++        onEdit={openTour}
+       />
        <TourForm
          key={open ? (tour?.id ?? 'create') : 'closed'}
          open={open}
          tour={tour}
          onClose={close}
-+        onNotice={setNotice}
        />
 +      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
      </main>
@@ -6555,7 +6548,12 @@ export default function NoticeSnackbar({ notice, onClose }) {
 **解析**
 
 - `action` 讀 `editingId` 與 `draft`，交給 `saveTour`。失敗回傳 `{ error }`，成功回傳 `{ notice: '已儲存這筆行程', saved: true }`。loader 會再跑一次，列表立刻更新。
-- `notice` 交給 `NoticeSnackbar`。表單成功時透過 `onNotice` 寫入這份 state。
+- 頁面用 `useFetcher({ key: 'tour-form' })` 讀表單的送出結果。`save` 回到 `idle` 且有尚未處理的 `{ saved: true }` 時，關閉 Dialog 並把 `notice` 交給 `NoticeSnackbar`。`seenSave` 記住已經處理過的結果，同一筆不會再跑一次。
+- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，避免重開時還顯示舊的錯誤。
+
+{% note info %}
+同一個 `key` 的 `useFetcher` 會共用一份狀態。頁面在渲染時檢查有沒有尚未處理的新結果，不必再用 `useEffect`。
+{% endnote %}
 
 把 `action` 接到 `/admin`。
 
@@ -6665,9 +6663,6 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 頁面加上刪除的 `action` 分支，並接上確認 Dialog。
 
 ```diff 06-project-init/src/features/admin/AdminToursPage.jsx
- import { useState } from 'react';
--import { useLoaderData } from 'react-router';
-+import { useFetcher, useLoaderData } from 'react-router';
  import Button from '@mui/material/Button';
  import Typography from '@mui/material/Typography';
 +import DeleteTourDialog from './components/DeleteTourDialog.jsx';
@@ -6692,12 +6687,19 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
  
  export default function AdminToursPage() {
    const { tours } = useLoaderData();
+   const save = useFetcher({ key: 'tour-form' });
 +  const remove = useFetcher();
    const [open, setOpen] = useState(false);
    const [tour, setTour] = useState(null);
 +  const [deletingTour, setDeletingTour] = useState(null);
    const [notice, setNotice] = useState('');
+   const [seenSave, setSeenSave] = useState(null);
 +  const [seenRemove, setSeenRemove] = useState(null);
+   if (save.state === 'idle' && save.data?.saved && save.data !== seenSave) {
+     setSeenSave(save.data);
+     setOpen(false);
+     setNotice(save.data.notice);
+   }
 +  if (
 +    remove.state === 'idle' &&
 +    remove.data?.notice &&
@@ -6708,13 +6710,15 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 +    setNotice(remove.data.notice);
 +  }
    const close = () => setOpen(false);
+   const openTour = (item) => {
+     save.reset();
+     setTour(item);
+     setOpen(true);
+   };
  // ...
        <TourTable
          tours={tours}
-         onEdit={(item) => {
-           setTour(item);
-           setOpen(true);
-         }}
+         onEdit={openTour}
 +        onDelete={setDeletingTour}
        />
        <TourForm
@@ -6722,7 +6726,6 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
          open={open}
          tour={tour}
          onClose={close}
-         onNotice={setNotice}
        />
 +      <DeleteTourDialog
 +        tour={deletingTour}
@@ -6744,7 +6747,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 
 - `action` 看到 `intent` 是 `delete` 就呼叫 `deleteTour`，回傳「已刪除這筆行程」。
 - 操作欄的「刪除」先把該筆放到 `deletingTour`，打開確認 Dialog。確認後用 `remove.submit` 送出，不會換頁。送出期間「刪除」不能再按。
-- `remove` 回到 `idle` 且有尚未顯示過的 `notice` 時，關閉確認 Dialog 並交給 `NoticeSnackbar`。`seenRemove` 記住已經處理過的結果，同一筆不會再跑一次。
+- `remove` 回到 `idle` 且有尚未顯示過的 `notice` 時，關閉確認 Dialog 並交給 `NoticeSnackbar`。`seenRemove` 記住已經處理過的結果，同一筆不會再跑一次。模式與儲存的 `seenSave` 相同。
 
 ## 報名清單
 
@@ -7168,31 +7171,20 @@ export default function BookingForm({ open, booking, onClose }) {
 
 ### 步驟 5：送出狀態
 
-用 `useFetcher` 把新狀態送到這一頁的 `action`。成功後關閉 Dialog，並交給 `NoticeSnackbar` 顯示提示。
+用 `useFetcher` 把新狀態送到這一頁的 `action`。表單只負責送出；成功後由頁面關閉 Dialog，並交給 `NoticeSnackbar` 顯示提示。
 
 ```diff 06-project-init/src/features/admin/components/BookingForm.jsx
--import { useState } from 'react';
-+import { useEffect, useRef, useState } from 'react';
+ import { useState } from 'react';
 +import { useFetcher } from 'react-router';
 +import Alert from '@mui/material/Alert';
  import Button from '@mui/material/Button';
  // ...
--export default function BookingForm({ open, booking, onClose }) {
-+export default function BookingForm({ open, booking, onClose, onNotice }) {
-+  const fetcher = useFetcher();
-+  const handled = useRef(null);
+ export default function BookingForm({ open, booking, onClose }) {
++  const fetcher = useFetcher({ key: 'booking-form' });
 +  const error =
 +    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
    const [status, setStatus] = useState(booking?.status ?? 'pending');
  
-+  useEffect(() => {
-+    if (fetcher.state !== 'idle' || !fetcher.data?.notice) return;
-+    if (handled.current === fetcher.data) return;
-+    handled.current = fetcher.data;
-+    onNotice(fetcher.data.notice);
-+    onClose();
-+  }, [fetcher.state, fetcher.data, onNotice, onClose]);
-+
 +  const commit = () => {
 +    fetcher.submit({ id: booking.id, status }, { method: 'post' });
 +  };
@@ -7239,13 +7231,17 @@ export default function BookingForm({ open, booking, onClose }) {
 
 **解析**
 
-- 按「儲存」才把 `id` 與新狀態用 `fetcher.submit` 送出，不會換頁。
-- `action` 回傳 `{ notice }` 且 `fetcher` 回到 `idle` 時，把提示交給 `onNotice` 並關閉 Dialog。`handled` 記住已經處理過的結果，同一筆不會再跑一次。
-- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示。儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。
+- `useFetcher({ key: 'booking-form' })` 與頁面共用同一個 fetcher。按「儲存」才把 `id` 與新狀態用 `fetcher.submit` 送出，不會換頁，也不回傳 `action` 的結果。
+- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示。儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。`onClose` 只給取消鈕用。
 
 接著在頁面加上 `action`，並接上提示。
 
 ```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
+ import { useState } from 'react';
+-import { useLoaderData } from 'react-router';
++import { useFetcher, useLoaderData } from 'react-router';
+ import Typography from '@mui/material/Typography';
+ // ...
  import BookingTable from './components/BookingTable.jsx';
  import BookingForm from './components/BookingForm.jsx';
 -import { getBookings } from '../../store.js';
@@ -7262,19 +7258,31 @@ export default function BookingForm({ open, booking, onClose }) {
 +
  export default function AdminBookingsPage() {
    const { bookings } = useLoaderData();
++  const save = useFetcher({ key: 'booking-form' });
    const [status, setStatus] = useState('all');
    const [query, setQuery] = useState('');
    const [sort, setSort] = useState('date-desc');
    const [open, setOpen] = useState(false);
    const [booking, setBooking] = useState(null);
 +  const [notice, setNotice] = useState('');
++  const [seenSave, setSeenSave] = useState(null);
++  if (save.state === 'idle' && save.data?.notice && save.data !== seenSave) {
++    setSeenSave(save.data);
++    setOpen(false);
++    setNotice(save.data.notice);
++  }
+ // ...
+           onView={(item) => {
++            save.reset();
+             setBooking(item);
+             setOpen(true);
+           }}
  // ...
        <BookingForm
          key={open ? booking.id : 'closed'}
          open={open}
          booking={booking}
          onClose={close}
-+        onNotice={setNotice}
        />
 +      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
      </main>
@@ -7284,7 +7292,8 @@ export default function BookingForm({ open, booking, onClose }) {
 **解析**
 
 - `action` 讀 `id` 與 `status`，交給 `setBookingStatus`，回傳「已更新報名狀態」。loader 會再跑一次，列表立刻更新。
-- `notice` 交給先前行程管理抽好的 `NoticeSnackbar`。表單成功時透過 `onNotice` 寫入這份 state。提示約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
+- 頁面用 `useFetcher({ key: 'booking-form' })` 讀表單的送出結果。`save` 回到 `idle` 且有尚未處理的 `notice` 時，關閉 Dialog 並交給先前行程管理抽好的 `NoticeSnackbar`。`seenSave` 記住已經處理過的結果，同一筆不會再跑一次。提示約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
+- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，避免重開時還顯示舊的錯誤。
 
 把 `action` 接到 `/admin/bookings`。
 
@@ -7316,7 +7325,7 @@ export default function BookingForm({ open, booking, onClose }) {
    const [status, setStatus] = useState(booking?.status ?? 'pending');
 +  const [confirmCancel, setConfirmCancel] = useState(false);
  
-   useEffect(() => {
+   const commit = () => {
  // ...
    const submit = (event) => {
      event.preventDefault();
