@@ -3380,6 +3380,30 @@ export function NoteMissing() {
 
 `useFetcher` 拿得到一組自己的 `Form` 與 `submit`。送到的仍是這一條路由的 `action`，網址留在 `/demos/90-fetcher`。`action` 改完筆記後，`loader` 一樣會自己重跑。
 
+{% mermaid sequenceDiagram %}
+  participant U as 使用者
+  participant C as Component
+  participant A as action
+  participant L as loader
+  alt fetcher.Form 或 fetcher.submit
+    U->>C: 送出表單
+    Note over C: fetcher.state 是 submitting
+    C->>A: 跑 action
+    Note over C: fetcher.state 是 loading，fetcher.data 是 action 回傳值
+    A->>L: 路由器重跑 loader
+    L->>C: 新資料重畫
+    Note over C: fetcher.state 是 idle
+  else fetcher.load
+    U->>C: 呼叫 load
+    Note over C: fetcher.state 是 loading
+    C->>L: 跑 loader
+    L->>C: 資料進 fetcher.data
+    Note over C: fetcher.state 是 idle
+  end
+{% endmermaid %}
+
+送出時 `fetcher.state` 依序是 idle、submitting、loading、idle。`submitting` 是正在跑 `action`，畫面常把按鈕停用，或改顯示「儲存中…」；接著的 `loading` 是路由器重跑 `loader`，可顯示讀取列。`fetcher.load()` 沒有 submitting，只走 idle、loading、idle。`fetcher.data` 是 `action` 或 `loader` 的回傳值。`useFetcher` 不會換頁，網址維持原樣。
+
 **觀念**
 
 每一列的按鈕包在 `fetcher.Form` 裡，用隱藏欄位帶 `id`。`toggleNote` 只翻轉那一筆的 `done`。
@@ -3396,7 +3420,7 @@ export const loader = () => ({ notes: listNotes() });
 
 /**
  * 接收送到這條路由的表單。form.get('id') 取出隱藏欄位。
- * toggleNote 只翻轉那一筆的 done。回傳值可從 fetcher.data 讀到，這一則沒有畫出來。
+ * toggleNote 只翻轉那一筆的 done。回傳值可從 fetcher.data 讀到。
  * @param {{ request: Request }} args
  * @returns {Promise<{ ok: boolean }>}
  */
@@ -3416,13 +3440,14 @@ export default function FetcherDemo() {
   /**
    * 不換頁的送出。fetcher.Form 把表單送到這條路由的 action，網址不變。
    * state 是 'idle'、'loading' 或 'submitting'，data 是 action 的回傳值。
-   * 這一則只用 Form，沒有把 state 與 data 畫出來。
+   * 畫面用 state 顯示目前狀態。
    * @returns {{ Form: React.ElementType, state: 'idle' | 'loading' | 'submitting', data: unknown }}
    */
   const fetcher = useFetcher();
   return (
     <section>
       <h1 className="text-2xl font-bold">90 fetcher 不換頁</h1>
+      <p className="mt-3">狀態：{fetcher.state}</p>
       <ul className="mt-4 grid max-w-sm gap-3">
         {notes.map((note) => (
           <li key={note.id} className="flex items-center justify-between gap-3">
@@ -3448,7 +3473,7 @@ export default function FetcherDemo() {
 
 **解析**
 
-- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/90-fetcher`。
+- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/90-fetcher`。標題下面的「狀態」會依序顯示 submitting、loading，再回到 idle。
 - 寫入的是 `action` 裡的 `toggleNote`。清單更新是因為 `loader` 在 action 之後自動重跑。
 
 ```diff 04-react-router/src/App.jsx
@@ -3496,6 +3521,30 @@ export default function FetcherDemo() {
 ### useNavigation
 
 `useNavigation` 描述路由器此刻在做什麼。`state` 為 `loading` 是正在跑 loader，`submitting` 是正在跑 action，`idle` 是閒置。這一則的 `loader` 與 `action` 各等 400 毫秒，只為了讓「讀取中」留在畫面上看得清楚。專案裡的記憶體讀取不必做這個延遲。
+
+{% mermaid sequenceDiagram %}
+  participant U as 使用者
+  participant C as Component
+  participant A as action
+  participant L as loader
+  alt 點選 Link
+    U->>C: 點連結
+    Note over C: navigation.state 是 loading
+    C->>L: 跑新頁面的 loader
+    L->>C: 畫新頁面
+    Note over C: navigation.state 是 idle
+  else 送出 Form
+    U->>C: 送出表單
+    Note over C: navigation.state 是 submitting
+    C->>A: 跑 action
+    Note over C: navigation.state 是 loading
+    A->>L: 路由器重跑 loader
+    L->>C: 新資料重畫
+    Note over C: navigation.state 是 idle
+  end
+{% endmermaid %}
+
+點連結時 `navigation.state` 依序是 idle、loading、idle，畫面可顯示讀取列。送出 `Form` 時依序是 idle、submitting、loading、idle；`submitting` 期間可把按鈕停用，或改顯示「儲存中…」。`useNavigation` 追蹤的是換頁，網址會改變。
 
 **觀念**
 
@@ -3557,6 +3606,7 @@ export default function NavigationDemo() {
   return (
     <section>
       <h1 className="text-2xl font-bold">91 useNavigation</h1>
+      <p className="mt-3">狀態：{navigation.state}</p>
       {pending ? <p className="mt-3">讀取中</p> : null}
       <p className="mt-3">
         <Link
@@ -3592,7 +3642,7 @@ export default function NavigationDemo() {
 
 **解析**
 
-- 點「重新讀取」或按「新增」時，標題下面會先出現「讀取中」，大約 400 毫秒後清單才換成新的結果。
+- 點「重新讀取」或按「新增」時，標題下面的「狀態」會變成 loading 或 submitting，並出現「讀取中」，大約 400 毫秒後清單才換成新的結果，狀態回到 idle。
 - 這段等待只寫在這一則的 `loader` 與 `action`。記憶體裡的讀取本身很快，專案不必複製這個 `setTimeout`。
 - 送出期間按鈕停用，避免同一份表單連按兩次。
 
