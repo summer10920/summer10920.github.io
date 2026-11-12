@@ -6750,7 +6750,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 
 清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態。按「儲存」才送出。重新整理就回到種子。兩頁用頁首切換，模式跟行程管理相同。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。下面先組出這一頁並接到路由，表格與明細先放標記，接著換成真正的元件。
+這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。先組出這一頁並接到路由，表格與明細先放標記，再換成表格與篩選，然後組出明細與送出。
 
 {% mermaid graph TD %}
   page["AdminBookingsPage"] --> filters["BookingFilters"]
@@ -6761,7 +6761,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 
 ### 步驟 1：組出 AdminBookingsPage
 
-先把報名清單組起來並接到路由。表格與明細先放標記。直接打開 `/admin/bookings` 就看得到這一頁。
+先把報名清單組起來並接到路由。表格與明細先放標記。`loader` 讀清單，`open` 與 `booking` 控制 Dialog。
 
 表格先放標記。
 
@@ -6796,100 +6796,22 @@ export default function BookingForm({ open, onClose }) {
 
 - 先回傳標記文字，標出查看明細的 Dialog 位置。
 
-狀態、姓名與日期的篩選寫成 `BookingFilters`。
-
-```jsx 06-project-init/src/features/admin/components/BookingFilters.jsx
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import { statusLabel } from '../../../format.js';
-
-const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
-
-export default function BookingFilters({
-  status,
-  query,
-  sort,
-  onStatusChange,
-  onQueryChange,
-  onSortChange,
-}) {
-  return (
-    <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
-      <TextField
-        select
-        label="狀態"
-        value={status}
-        onChange={(event) => onStatusChange(event.target.value)}
-      >
-        {statusOptions.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value === 'all' ? '全部' : statusLabel[value]}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        label="搜尋姓名"
-        value={query}
-        onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="輸入姓名"
-      />
-      <TextField
-        select
-        label="日期排序"
-        value={sort}
-        onChange={(event) => onSortChange(event.target.value)}
-      >
-        <MenuItem value="date-desc">出發日新到舊</MenuItem>
-        <MenuItem value="date-asc">出發日舊到新</MenuItem>
-      </TextField>
-    </div>
-  );
-}
-```
-
-**解析**
-
-- 三個欄位的值與變更都由頁面傳入。狀態選項的標籤沿用 `statusLabel`，「全部」對應 `all`。
-
-接著寫報名清單。表格與明細目前仍是標記。
+接著組出報名清單頁。表格與明細目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
 import { useLoaderData } from 'react-router';
 import Typography from '@mui/material/Typography';
-import BookingFilters from './components/BookingFilters.jsx';
 import BookingTable from './components/BookingTable.jsx';
 import BookingForm from './components/BookingForm.jsx';
-import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
-import { getBookings, setBookingStatus } from '../../store.js';
+import { getBookings } from '../../store.js';
 
 export const loader = () => ({ bookings: getBookings() });
 
-export const action = async ({ request }) => {
-  const form = await request.formData();
-  setBookingStatus(String(form.get('id')), String(form.get('status')));
-  return { notice: '已更新報名狀態' };
-};
-
 export default function AdminBookingsPage() {
   const { bookings } = useLoaderData();
-  const [status, setStatus] = useState('all');
-  const [query, setQuery] = useState('');
-  const [sort, setSort] = useState('date-desc');
   const [open, setOpen] = useState(false);
   const [booking, setBooking] = useState(null);
-  const [notice, setNotice] = useState('');
-
-  const keyword = query.trim();
-  const shown = bookings
-    .filter((item) => status === 'all' || item.status === status)
-    .filter((item) => !keyword || item.name.includes(keyword))
-    .sort((a, b) =>
-      sort === 'date-asc'
-        ? a.date.localeCompare(b.date)
-        : b.date.localeCompare(a.date),
-    );
-
   const close = () => setOpen(false);
 
   return (
@@ -6902,33 +6824,19 @@ export default function AdminBookingsPage() {
       <p className="mt-3 max-w-prose text-lg leading-relaxed text-muted">
         查看所有報名，點一筆看明細並改狀態。兩頁用頁首切換。
       </p>
-      <BookingFilters
-        status={status}
-        query={query}
-        sort={sort}
-        onStatusChange={setStatus}
-        onQueryChange={setQuery}
-        onSortChange={setSort}
+      <BookingTable
+        bookings={bookings}
+        onView={(item) => {
+          setBooking(item);
+          setOpen(true);
+        }}
       />
-      {shown.length ? (
-        <BookingTable
-          bookings={shown}
-          onView={(item) => {
-            setBooking(item);
-            setOpen(true);
-          }}
-        />
-      ) : (
-        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
-      )}
       <BookingForm
         key={open ? booking.id : 'closed'}
         open={open}
         booking={booking}
         onClose={close}
-        onNotice={setNotice}
       />
-      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }
@@ -6936,12 +6844,10 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- 直接打開 `/admin/bookings` 就看得到這一頁。上方的狀態、姓名與日期由 `BookingFilters` 負責篩選與排序。
-- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
-- `open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
-- 兩頁用頁首切換。
+- 直接打開 `/admin/bookings` 就看得到這一頁。`loader` 回傳 `getBookings()`。`open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
+- `key` 依開窗與報名編號重掛表單，狀態才會是這一筆的資料。兩頁用頁首切換。
 
-接著把 `/admin/bookings` 換成這一頁。
+接著把 `/admin/bookings` 換成這一頁。路由先接上 `loader`。
 
 ```diff 06-project-init/src/App.jsx
  import AdminToursPage, {
@@ -6949,7 +6855,6 @@ export default function AdminBookingsPage() {
    loader as adminToursLoader,
  } from './features/admin/AdminToursPage.jsx';
 +import AdminBookingsPage, {
-+  action as adminBookingsAction,
 +  loader as adminBookingsLoader,
 +} from './features/admin/AdminBookingsPage.jsx';
  // ...
@@ -6958,7 +6863,6 @@ export default function AdminBookingsPage() {
 +          {
 +            path: 'admin/bookings',
 +            loader: adminBookingsLoader,
-+            action: adminBookingsAction,
 +            element: <AdminBookingsPage />,
 +          },
            { path: '*', element: <NotFoundPage /> },
@@ -6966,95 +6870,11 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`。星號路由先前已接上 `NotFoundPage`。
-- 十二條路徑到這裡都已換成完成品裡的頁面。`Placeholder` 至此沒有人引用，把 import 拿掉。檔案本身自行評估刪掉。
+- `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`，並接上 `loader`。星號路由先前已接上 `NotFoundPage`。
 
-```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import SiteLayout from './layout/SiteLayout.jsx';
-import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
-import ToursPage, {
-  loader as toursLoader,
-} from './features/tours/ToursPage.jsx';
-import TourDetailPage, {
-  loader as tourLoader,
-} from './features/tours/TourDetailPage.jsx';
-import BookingPage, {
-  action as bookingAction,
-  loader as bookingLoader,
-} from './features/booking/BookingPage.jsx';
-import BookingResultPage, {
-  loader as bookingResultLoader,
-} from './features/booking/BookingResultPage.jsx';
-import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
-import AboutPage from './features/about/AboutPage.jsx';
-import LoginPage from './features/auth/LoginPage.jsx';
-import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
-import AdminToursPage, {
-  action as adminToursAction,
-  loader as adminToursLoader,
-} from './features/admin/AdminToursPage.jsx';
-import AdminBookingsPage, {
-  action as adminBookingsAction,
-  loader as adminBookingsLoader,
-} from './features/admin/AdminBookingsPage.jsx';
-import NotFoundPage from './pages/NotFoundPage.jsx';
-import RouteErrorPage from './pages/RouteErrorPage.jsx';
+### 步驟 2：報名表格
 
-const router = createBrowserRouter([
-  {
-    Component: SiteLayout,
-    children: [
-      {
-        errorElement: <RouteErrorPage />,
-        children: [
-          { index: true, loader: homeLoader, Component: HomePage },
-          { path: 'tours', loader: toursLoader, Component: ToursPage },
-          { path: 'tours/:id', loader: tourLoader, Component: TourDetailPage },
-          {
-            path: 'booking',
-            loader: bookingLoader,
-            action: bookingAction,
-            Component: BookingPage,
-          },
-          {
-            path: 'booking/:id',
-            loader: bookingResultLoader,
-            Component: BookingResultPage,
-          },
-          { path: 'me', Component: MyBookingsPage },
-          { path: 'about', Component: AboutPage },
-          { path: 'login', Component: LoginPage },
-          { path: 'admin/login', Component: AdminLoginPage },
-          {
-            path: 'admin',
-            loader: adminToursLoader,
-            action: adminToursAction,
-            Component: AdminToursPage,
-          },
-          {
-            path: 'admin/bookings',
-            loader: adminBookingsLoader,
-            action: adminBookingsAction,
-            Component: AdminBookingsPage,
-          },
-          { path: '*', Component: NotFoundPage },
-        ],
-      },
-    ],
-  },
-]);
-
-export default function App() {
-  return <RouterProvider router={router} />;
-}
-```
-
-### 步驟 2：報名表格與明細
-
-把報名表格與明細的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog，看完整欄位，並用下拉選狀態；按「儲存」才送出，「取消」關閉。
-
-先換成真正的表格。
+把報名表格的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog。表頭與分隔線沿用行程表格在 `theme.js` 補的 `MuiTableCell` 樣式。
 
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 import Button from '@mui/material/Button';
@@ -7139,15 +6959,141 @@ export default function BookingTable({ bookings, onView }) {
 
 **解析**
 
-- 列表只放行程、出發日、姓名、狀態與「查看」。完整欄位寫在下一步的 Dialog 裡。
+- 列表只放行程、出發日、姓名、狀態與「查看」。完整欄位寫在明細 Dialog 裡。
 - `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，用主色。
+- 「查看」把該筆交給 `onView`，頁面會打開同一個 Dialog。
 
-再換成真正的明細 Dialog。
+### 步驟 3：篩選
+
+狀態、姓名與日期的篩選寫成 `BookingFilters`。三個欄位的值與變更都由頁面傳入。
+
+```jsx 06-project-init/src/features/admin/components/BookingFilters.jsx
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import { statusLabel } from '../../../format.js';
+
+const statusOptions = ['all', 'pending', 'confirmed', 'cancelled'];
+
+export default function BookingFilters({
+  status,
+  query,
+  sort,
+  onStatusChange,
+  onQueryChange,
+  onSortChange,
+}) {
+  return (
+    <div className="mt-8 grid gap-4 md:grid-cols-[minmax(0,12rem)_minmax(0,1fr)_minmax(0,14rem)]">
+      <TextField
+        select
+        label="狀態"
+        value={status}
+        onChange={(event) => onStatusChange(event.target.value)}
+      >
+        {statusOptions.map((value) => (
+          <MenuItem key={value} value={value}>
+            {value === 'all' ? '全部' : statusLabel[value]}
+          </MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        label="搜尋姓名"
+        value={query}
+        onChange={(event) => onQueryChange(event.target.value)}
+        placeholder="輸入姓名"
+      />
+      <TextField
+        select
+        label="日期排序"
+        value={sort}
+        onChange={(event) => onSortChange(event.target.value)}
+      >
+        <MenuItem value="date-desc">出發日新到舊</MenuItem>
+        <MenuItem value="date-asc">出發日舊到新</MenuItem>
+      </TextField>
+    </div>
+  );
+}
+```
+
+**解析**
+
+- 三個欄位的值與變更都由頁面傳入。狀態選項的標籤沿用 `statusLabel`，「全部」對應 `all`。
+
+把篩選接到這一頁。有結果才渲染表格，否則顯示「沒有符合的報名」。
+
+```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
+ import { useState } from 'react';
+ import { useLoaderData } from 'react-router';
+ import Typography from '@mui/material/Typography';
++import BookingFilters from './components/BookingFilters.jsx';
+ import BookingTable from './components/BookingTable.jsx';
+ import BookingForm from './components/BookingForm.jsx';
+ import { getBookings } from '../../store.js';
+ // ...
+ export default function AdminBookingsPage() {
+   const { bookings } = useLoaderData();
++  const [status, setStatus] = useState('all');
++  const [query, setQuery] = useState('');
++  const [sort, setSort] = useState('date-desc');
+   const [open, setOpen] = useState(false);
+   const [booking, setBooking] = useState(null);
++
++  const keyword = query.trim();
++  const shown = bookings
++    .filter((item) => status === 'all' || item.status === status)
++    .filter((item) => !keyword || item.name.includes(keyword))
++    .sort((a, b) =>
++      sort === 'date-asc'
++        ? a.date.localeCompare(b.date)
++        : b.date.localeCompare(a.date),
++    );
++
+   const close = () => setOpen(false);
+ // ...
+         查看所有報名，點一筆看明細並改狀態。兩頁用頁首切換。
+       </p>
+-      <BookingTable
+-        bookings={bookings}
+-        onView={(item) => {
+-          setBooking(item);
+-          setOpen(true);
+-        }}
+-      />
++      <BookingFilters
++        status={status}
++        query={query}
++        sort={sort}
++        onStatusChange={setStatus}
++        onQueryChange={setQuery}
++        onSortChange={setSort}
++      />
++      {shown.length ? (
++        <BookingTable
++          bookings={shown}
++          onView={(item) => {
++            setBooking(item);
++            setOpen(true);
++          }}
++        />
++      ) : (
++        <p className="mt-8 text-base text-muted">沒有符合的報名。</p>
++      )}
+       <BookingForm
+ // ...
+```
+
+**解析**
+
+- 狀態、姓名與出發日由 `BookingFilters` 負責篩選與排序。表格拿到的是篩完的 `shown`。
+- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
+
+### 步驟 4：報名明細
+
+把明細的 placeholder 換成真正的 Dialog。看完整欄位，並用下拉選狀態。儲存與取消按鈕先畫出來，此刻還不能送出。
 
 ```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
-import { useEffect, useRef, useState } from 'react';
-import { useFetcher } from 'react-router';
-import Alert from '@mui/material/Alert';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7165,107 +7111,52 @@ const Row = ({ label, value }) => (
   </div>
 );
 
-export default function BookingForm({ open, booking, onClose, onNotice }) {
-  const fetcher = useFetcher();
-  const handled = useRef(null);
-  const error =
-    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+export default function BookingForm({ open, booking, onClose }) {
   const [status, setStatus] = useState(booking?.status ?? 'pending');
-  const [confirmCancel, setConfirmCancel] = useState(false);
-
-  useEffect(() => {
-    if (fetcher.state !== 'idle' || !fetcher.data?.notice) return;
-    if (handled.current === fetcher.data) return;
-    handled.current = fetcher.data;
-    onNotice(fetcher.data.notice);
-    onClose();
-  }, [fetcher.state, fetcher.data, onNotice, onClose]);
-
-  const commit = () => {
-    fetcher.submit({ id: booking.id, status }, { method: 'post' });
-  };
-
-  const submit = (event) => {
-    event.preventDefault();
-    if (status === 'cancelled' && booking.status !== 'cancelled') {
-      setConfirmCancel(true);
-      return;
-    }
-    commit();
-  };
 
   return (
-    <>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        maxWidth="sm"
-        scroll="paper"
-      >
-        <form onSubmit={submit}>
-          <DialogTitle>報名明細</DialogTitle>
-          <DialogContent className="grid gap-4 pt-2">
-            {booking ? (
-              <dl className="grid gap-2 text-base">
-                <Row label="行程" value={booking.tourTitle} />
-                <Row label="出發日" value={booking.date} />
-                <Row label="聯絡人" value={booking.name} />
-                <Row label="Email" value={booking.email} />
-                <Row label="電話" value={booking.phone} />
-                <Row label="人數" value={booking.people} />
-                <Row label="金額" value={ntd(booking.subtotal)} />
-              </dl>
-            ) : null}
-            {error ? <Alert severity="error">{error}</Alert> : null}
-            <FieldSelect
-              id="booking-status"
-              label="狀態"
-              value={status}
-              onChange={setStatus}
-              options={statuses.map((item) => ({
-                value: item,
-                label: statusLabel[item],
-              }))}
-            />
-          </DialogContent>
-          <DialogActions className="flex-wrap gap-2 p-4">
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={fetcher.state !== 'idle'}
-            >
-              儲存
-            </Button>
-            <Button type="button" onClick={onClose}>
-              取消
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-      <Dialog
-        open={confirmCancel}
-        onClose={() => setConfirmCancel(false)}
-      >
-        <DialogTitle>改為已取消？</DialogTitle>
-        <DialogContent>
-          紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      scroll="paper"
+    >
+      <form>
+        <DialogTitle>報名明細</DialogTitle>
+        <DialogContent className="grid gap-4 pt-2">
+          {booking ? (
+            <dl className="grid gap-2 text-base">
+              <Row label="行程" value={booking.tourTitle} />
+              <Row label="出發日" value={booking.date} />
+              <Row label="聯絡人" value={booking.name} />
+              <Row label="Email" value={booking.email} />
+              <Row label="電話" value={booking.phone} />
+              <Row label="人數" value={booking.people} />
+              <Row label="金額" value={ntd(booking.subtotal)} />
+            </dl>
+          ) : null}
+          <FieldSelect
+            id="booking-status"
+            label="狀態"
+            value={status}
+            onChange={setStatus}
+            options={statuses.map((item) => ({
+              value: item,
+              label: statusLabel[item],
+            }))}
+          />
         </DialogContent>
-        <DialogActions className="gap-2 p-4">
-          <Button onClick={() => setConfirmCancel(false)}>返回</Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => {
-              setConfirmCancel(false);
-              commit();
-            }}
-          >
-            確認取消
+        <DialogActions className="flex-wrap gap-2 p-4">
+          <Button type="button" variant="contained">
+            儲存
+          </Button>
+          <Button type="button" onClick={onClose}>
+            取消
           </Button>
         </DialogActions>
-      </Dialog>
-    </>
+      </form>
+    </Dialog>
   );
 }
 ```
@@ -7273,8 +7164,304 @@ export default function BookingForm({ open, booking, onClose, onNotice }) {
 **解析**
 
 - 完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。狀態下拉在底部。
-- 按「儲存」才把新狀態送到這一頁的 `action`。成功後關窗，並請頁面把 `notice` 設成「已更新報名狀態」。步驟 1 的頁面已經用同一套 `NoticeSnackbar` 顯示提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
-- 若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
+- 儲存是 `type="button"`，此刻不會送出。取消呼叫 `onClose`。
+
+### 步驟 5：送出狀態
+
+用 `useFetcher` 把新狀態送到這一頁的 `action`。成功後關閉 Dialog，並交給 `NoticeSnackbar` 顯示提示。
+
+```diff 06-project-init/src/features/admin/components/BookingForm.jsx
+-import { useState } from 'react';
++import { useEffect, useRef, useState } from 'react';
++import { useFetcher } from 'react-router';
++import Alert from '@mui/material/Alert';
+ import Button from '@mui/material/Button';
+ // ...
+-export default function BookingForm({ open, booking, onClose }) {
++export default function BookingForm({ open, booking, onClose, onNotice }) {
++  const fetcher = useFetcher();
++  const handled = useRef(null);
++  const error =
++    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+   const [status, setStatus] = useState(booking?.status ?? 'pending');
+ 
++  useEffect(() => {
++    if (fetcher.state !== 'idle' || !fetcher.data?.notice) return;
++    if (handled.current === fetcher.data) return;
++    handled.current = fetcher.data;
++    onNotice(fetcher.data.notice);
++    onClose();
++  }, [fetcher.state, fetcher.data, onNotice, onClose]);
++
++  const commit = () => {
++    fetcher.submit({ id: booking.id, status }, { method: 'post' });
++  };
++
++  const submit = (event) => {
++    event.preventDefault();
++    commit();
++  };
++
+   return (
+     <Dialog
+       open={open}
+       onClose={onClose}
+       fullWidth
+       maxWidth="sm"
+       scroll="paper"
+     >
+-      <form>
++      <form onSubmit={submit}>
+         <DialogTitle>報名明細</DialogTitle>
+         <DialogContent className="grid gap-4 pt-2">
+           {booking ? (
+             <dl className="grid gap-2 text-base">
+ // ...
+             </dl>
+           ) : null}
++          {error ? <Alert severity="error">{error}</Alert> : null}
+           <FieldSelect
+             id="booking-status"
+             label="狀態"
+ // ...
+         <DialogActions className="flex-wrap gap-2 p-4">
+-          <Button type="button" variant="contained">
++          <Button
++            type="submit"
++            variant="contained"
++            disabled={fetcher.state !== 'idle'}
++          >
+             儲存
+           </Button>
+           <Button type="button" onClick={onClose}>
+ // ...
+```
+
+**解析**
+
+- 按「儲存」才把 `id` 與新狀態用 `fetcher.submit` 送出，不會換頁。
+- `action` 回傳 `{ notice }` 且 `fetcher` 回到 `idle` 時，把提示交給 `onNotice` 並關閉 Dialog。`handled` 記住已經處理過的結果，同一筆不會再跑一次。
+- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示。儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。
+
+接著在頁面加上 `action`，並接上提示。
+
+```diff 06-project-init/src/features/admin/AdminBookingsPage.jsx
+ import BookingTable from './components/BookingTable.jsx';
+ import BookingForm from './components/BookingForm.jsx';
+-import { getBookings } from '../../store.js';
++import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
++import { getBookings, setBookingStatus } from '../../store.js';
+ 
+ export const loader = () => ({ bookings: getBookings() });
+ 
++export const action = async ({ request }) => {
++  const form = await request.formData();
++  setBookingStatus(String(form.get('id')), String(form.get('status')));
++  return { notice: '已更新報名狀態' };
++};
++
+ export default function AdminBookingsPage() {
+   const { bookings } = useLoaderData();
+   const [status, setStatus] = useState('all');
+   const [query, setQuery] = useState('');
+   const [sort, setSort] = useState('date-desc');
+   const [open, setOpen] = useState(false);
+   const [booking, setBooking] = useState(null);
++  const [notice, setNotice] = useState('');
+ // ...
+       <BookingForm
+         key={open ? booking.id : 'closed'}
+         open={open}
+         booking={booking}
+         onClose={close}
++        onNotice={setNotice}
+       />
++      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
+     </main>
+ // ...
+```
+
+**解析**
+
+- `action` 讀 `id` 與 `status`，交給 `setBookingStatus`，回傳「已更新報名狀態」。loader 會再跑一次，列表立刻更新。
+- `notice` 交給先前行程管理抽好的 `NoticeSnackbar`。表單成功時透過 `onNotice` 寫入這份 state。提示約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
+
+把 `action` 接到 `/admin/bookings`。
+
+```diff 06-project-init/src/App.jsx
+ import AdminBookingsPage, {
+-  loader as adminBookingsLoader,
++  action as adminBookingsAction,
++  loader as adminBookingsLoader,
+ } from './features/admin/AdminBookingsPage.jsx';
+ // ...
+           {
+             path: 'admin/bookings',
+             loader: adminBookingsLoader,
++            action: adminBookingsAction,
+             element: <AdminBookingsPage />,
+           },
+ // ...
+```
+
+**解析**
+
+- `/admin/bookings` 加上 `action`。表單的 `fetcher.submit` 會送到這一頁的 `action`，不會換頁。
+
+### 步驟 6：改為已取消的確認
+
+若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
+
+```diff 06-project-init/src/features/admin/components/BookingForm.jsx
+   const [status, setStatus] = useState(booking?.status ?? 'pending');
++  const [confirmCancel, setConfirmCancel] = useState(false);
+ 
+   useEffect(() => {
+ // ...
+   const submit = (event) => {
+     event.preventDefault();
++    if (status === 'cancelled' && booking.status !== 'cancelled') {
++      setConfirmCancel(true);
++      return;
++    }
+     commit();
+   };
+ 
+   return (
+-    <Dialog
+-      open={open}
+-      onClose={onClose}
+-      fullWidth
+-      maxWidth="sm"
+-      scroll="paper"
+-    >
++    <>
++      <Dialog
++        open={open}
++        onClose={onClose}
++        fullWidth
++        maxWidth="sm"
++        scroll="paper"
++      >
+         <form onSubmit={submit}>
+ // ...
+         </form>
+       </Dialog>
++      <Dialog open={confirmCancel} onClose={() => setConfirmCancel(false)}>
++        <DialogTitle>改為已取消？</DialogTitle>
++        <DialogContent>
++          紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
++        </DialogContent>
++        <DialogActions className="gap-2 p-4">
++          <Button onClick={() => setConfirmCancel(false)}>返回</Button>
++          <Button
++            color="error"
++            variant="contained"
++            onClick={() => {
++              setConfirmCancel(false);
++              commit();
++            }}
++          >
++            確認取消
++          </Button>
++        </DialogActions>
++      </Dialog>
++    </>
+   );
+ }
+```
+
+**解析**
+
+- 要把狀態從尚未取消改成「已取消」時，先打開確認 Dialog，不直接送出。按「確認取消」才呼叫 `commit`。
+- 已經是「已取消」再按儲存，不會再出現確認。按「返回」只關掉確認，明細 Dialog 還在。
+
+十二條路徑到這裡都已換成完成品裡的頁面。把整份 `App.jsx` 再看一次。`Placeholder` 至此沒有人引用，把 import 拿掉。檔案本身自行評估刪掉。
+
+```jsx 06-project-init/src/App.jsx
+import { createBrowserRouter, RouterProvider } from 'react-router';
+import SiteLayout from './layout/SiteLayout.jsx';
+import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
+import ToursPage, {
+  loader as toursLoader,
+} from './features/tours/ToursPage.jsx';
+import TourDetailPage, {
+  loader as tourLoader,
+} from './features/tours/TourDetailPage.jsx';
+import BookingPage, {
+  action as bookingAction,
+  loader as bookingLoader,
+} from './features/booking/BookingPage.jsx';
+import BookingResultPage, {
+  loader as bookingResultLoader,
+} from './features/booking/BookingResultPage.jsx';
+import MyBookingsPage from './features/booking/MyBookingsPage.jsx';
+import AboutPage from './features/about/AboutPage.jsx';
+import LoginPage from './features/auth/LoginPage.jsx';
+import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
+import AdminToursPage, {
+  action as adminToursAction,
+  loader as adminToursLoader,
+} from './features/admin/AdminToursPage.jsx';
+import AdminBookingsPage, {
+  action as adminBookingsAction,
+  loader as adminBookingsLoader,
+} from './features/admin/AdminBookingsPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
+import RouteErrorPage from './pages/RouteErrorPage.jsx';
+
+const router = createBrowserRouter([
+  {
+    Component: SiteLayout,
+    children: [
+      {
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, loader: homeLoader, Component: HomePage },
+          { path: 'tours', loader: toursLoader, Component: ToursPage },
+          { path: 'tours/:id', loader: tourLoader, Component: TourDetailPage },
+          {
+            path: 'booking',
+            loader: bookingLoader,
+            action: bookingAction,
+            Component: BookingPage,
+          },
+          {
+            path: 'booking/:id',
+            loader: bookingResultLoader,
+            Component: BookingResultPage,
+          },
+          { path: 'me', Component: MyBookingsPage },
+          { path: 'about', Component: AboutPage },
+          { path: 'login', Component: LoginPage },
+          { path: 'admin/login', Component: AdminLoginPage },
+          {
+            path: 'admin',
+            loader: adminToursLoader,
+            action: adminToursAction,
+            Component: AdminToursPage,
+          },
+          {
+            path: 'admin/bookings',
+            loader: adminBookingsLoader,
+            action: adminBookingsAction,
+            Component: AdminBookingsPage,
+          },
+          { path: '*', Component: NotFoundPage },
+        ],
+      },
+    ],
+  },
+]);
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**解析**
+
+- 十二條路徑都已換成完成品裡的頁面，含各頁的 `loader` 與 `action`。`Placeholder` 至此沒有人引用，把 import 拿掉。
 
 # 打包與預覽
 
