@@ -5286,12 +5286,8 @@ export default function LoginPage() {
         onClose={() => navigate('/')}
         fullWidth
         maxWidth="xs"
-        aria-labelledby="login-title"
       >
-        <DialogTitle
-          id="login-title"
-          className="font-serif text-4xl leading-tight"
-        >
+        <DialogTitle className="font-serif text-4xl leading-tight">
           用 Google 帳號繼續
         </DialogTitle>
         <DialogContent>
@@ -5593,7 +5589,7 @@ export default function AdminLoginPage() {
 
 新增與編輯共用同一個 Dialog。沒有帶入行程是新增，有帶入是編輯。用這一頁的 state 控制開關，不另開路由。刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
 
-這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，零件先放標記，再補儲存行程的資料，最後逐一換成真正的元件。畫面拆成這些零件：
+這一節要組出 `AdminToursPage`。先組出這一頁並接到路由，表格與表單先放標記，再補這一頁要用的資料與表格，然後組出表單與送出，最後接上刪除。畫面拆成這些零件：
 
 - `TourTable`
 - `TourForm`：新增與編輯共用的 Dialog
@@ -5611,7 +5607,7 @@ export default function AdminLoginPage() {
 
 ### 步驟 1：組出 AdminToursPage
 
-先把行程管理組起來並接到路由。表格與表單先放標記。表單先做成 Dialog 外殼，依有沒有帶入行程區分標題。空白草稿與轉換函式放在 `tourDraft.js`，不要和表單元件寫在同一個檔。
+先把行程管理組起來並接到路由。表格與表單先放標記。`loader` 讀清單，`open` 與 `tour` 控制 Dialog。
 
 表格先放標記。
 
@@ -5624,32 +5620,6 @@ export default function TourTable() {
 **解析**
 
 - 先回傳標記文字，標出行程表格的位置。
-
-空白草稿與轉換函式先放在 `tourDraft.js`。
-
-```js 06-project-init/src/features/admin/components/tourDraft.js
-export const empty = {
-  title: '',
-  region: '',
-  theme: '城市',
-  days: 2,
-  price: 0,
-  images: [''],
-  intro: '',
-  highlights: '',
-  itinerary: [{ title: '', body: '' }],
-  includes: '',
-  excludes: '',
-  departures: [{ date: '', capacity: 8 }],
-  featured: false,
-};
-
-export const draftFromTour = () => empty;
-```
-
-**解析**
-
-- 不要和表單元件寫在同一個檔。此刻先有空白草稿與一個稍後會再換掉的 `draftFromTour`。
 
 表單先做成 Dialog 外殼，依有沒有帶入行程區分標題。
 
@@ -5670,112 +5640,25 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
-- 此刻只畫出對話框標題與關閉。真正的欄位留到草稿工具與 `TourForm` 再換。
-
-刪除確認寫成 `DeleteTourDialog`。
-
-```jsx 06-project-init/src/features/admin/components/DeleteTourDialog.jsx
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
-  return (
-    <Dialog open={Boolean(tour)} onClose={onClose}>
-      <DialogTitle>刪除這筆行程？</DialogTitle>
-      <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
-      <DialogActions className="gap-2 p-4">
-        <Button onClick={onClose}>留下</Button>
-        <Button
-          color="error"
-          variant="contained"
-          disabled={busy}
-          onClick={onConfirm}
-        >
-          刪除
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-```
-
-**解析**
-
-- 有要刪的行程才打開。按下「刪除」時呼叫頁面傳入的 `onConfirm`；`busy` 為真時按鈕不能再按。
-
-兩頁都會用到成功提示，抽成 `NoticeSnackbar`，放在 `src/_shared`。
-
-```jsx 06-project-init/src/_shared/NoticeSnackbar.jsx
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-
-export default function NoticeSnackbar({ notice, onClose }) {
-  return (
-    <Snackbar
-      open={Boolean(notice)}
-      autoHideDuration={3200}
-      onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-    >
-      <Alert severity="success" variant="filled" onClose={onClose}>
-        {notice}
-      </Alert>
-    </Snackbar>
-  );
-}
-```
-
-**解析**
-
-- `notice` 有字才打開，約 3.2 秒後或按下關閉會呼叫 `onClose`。位置在畫面下方置中。
+- 此刻只畫出對話框標題與關閉。真正的欄位留到行程表單再換。
 
 接著組出行程管理頁。表格與表單目前是標記。
 
 ```jsx 06-project-init/src/features/admin/AdminToursPage.jsx
 import { useState } from 'react';
-import { useFetcher, useLoaderData } from 'react-router';
+import { useLoaderData } from 'react-router';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import DeleteTourDialog from './components/DeleteTourDialog.jsx';
 import TourTable from './components/TourTable.jsx';
 import TourForm from './components/TourForm.jsx';
-import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
-import { deleteTour, getTours, saveTour } from '../../store.js';
+import { getTours } from '../../store.js';
 
 export const loader = () => ({ tours: getTours() });
 
-export const action = async ({ request }) => {
-  const form = await request.formData();
-  if (form.get('intent') === 'delete') {
-    deleteTour(String(form.get('id')));
-    return { notice: '已刪除這筆行程' };
-  }
-  const editingId = String(form.get('editingId') ?? '');
-  const error = saveTour(editingId, JSON.parse(String(form.get('draft'))));
-  return error ? { error } : { notice: '已儲存這筆行程', saved: true };
-};
-
 export default function AdminToursPage() {
   const { tours } = useLoaderData();
-  const remove = useFetcher();
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState(null);
-  const [deletingTour, setDeletingTour] = useState(null);
-  const [notice, setNotice] = useState('');
-  const [seenRemove, setSeenRemove] = useState(null);
-  if (
-    remove.state === 'idle' &&
-    remove.data?.notice &&
-    remove.data !== seenRemove
-  ) {
-    setSeenRemove(remove.data);
-    setDeletingTour(null);
-    setNotice(remove.data.notice);
-  }
-
   const close = () => setOpen(false);
 
   return (
@@ -5805,27 +5688,13 @@ export default function AdminToursPage() {
           setTour(item);
           setOpen(true);
         }}
-        onDelete={setDeletingTour}
       />
       <TourForm
         key={open ? (tour?.id ?? 'create') : 'closed'}
         open={open}
         tour={tour}
         onClose={close}
-        onNotice={setNotice}
       />
-      <DeleteTourDialog
-        tour={deletingTour}
-        busy={remove.state !== 'idle'}
-        onClose={() => setDeletingTour(null)}
-        onConfirm={() =>
-          remove.submit(
-            { intent: 'delete', id: deletingTour.id },
-            { method: 'post' },
-          )
-        }
-      />
-      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
     </main>
   );
 }
@@ -5833,16 +5702,15 @@ export default function AdminToursPage() {
 
 **解析**
 
-- 直接打開 `/admin` 就看得到這一頁。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
+- 直接打開 `/admin` 就看得到這一頁。`loader` 回傳 `getTours()`。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
 - 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
-- 這一頁的 `action` 已經會處理儲存與刪除，成功時把 `notice` 交給 `NoticeSnackbar`。刪除確認是 `DeleteTourDialog`。表格與表單目前是標記。兩頁用頁首切換。
+- `key` 依開窗與行程編號重掛表單，草稿才會是這一筆的資料。兩頁用頁首切換。
 
-接著把 `/admin` 換成這一頁。
+接著把 `/admin` 換成這一頁。路由先接上 `loader`。
 
 ```diff 06-project-init/src/App.jsx
  import AdminLoginPage from './features/admin/AdminLoginPage.jsx';
 +import AdminToursPage, {
-+  action as adminToursAction,
 +  loader as adminToursLoader,
 +} from './features/admin/AdminToursPage.jsx';
  // ...
@@ -5851,7 +5719,6 @@ export default function AdminToursPage() {
 +          {
 +            path: 'admin',
 +            loader: adminToursLoader,
-+            action: adminToursAction,
 +            element: <AdminToursPage />,
 +          },
            { path: 'admin/bookings', element: <Placeholder title="後台報名" /> },
@@ -5859,7 +5726,7 @@ export default function AdminToursPage() {
 
 **解析**
 
-- `/admin` 從 `Placeholder` 換成 `AdminToursPage`。報名清單仍是佔位。
+- `/admin` 從 `Placeholder` 換成 `AdminToursPage`，並接上 `loader`。報名清單仍是佔位。
 - `/admin` 與 `/admin/bookings` 這一章不檢查身份。打開網址就看得到行程管理與報名清單。身份檢查留到下一篇。
 
 ### 步驟 2：這一頁要用的資料
@@ -5889,7 +5756,7 @@ export default function AdminToursPage() {
 
 - 主題名稱只寫在首頁的 `themeLinks`。這裡用同一份清單做成 `themes`，後台表單的下拉直接用它。每筆行程只存 `theme` 字串，不必再做主題的增刪或另建資料表。
 
-接著補上草稿轉行程的函式，並讓 Store 能儲存與刪除行程。`draftFromTour` 下一步再換成會帶入行程欄位的寫法。
+接著補上草稿轉行程的函式 `tourFromDraft`。`draftFromTour` 下一步再換成會帶入行程欄位的寫法。
 
 ```js 06-project-init/src/features/admin/components/tourDraft.js
 const linesOf = (text) =>
@@ -5968,9 +5835,7 @@ export const tourFromDraft = (draft) => {
 **解析**
 
 - `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
-- 標題去掉空白後是空的，回傳「標題要填」，不寫入。編號不由表單填，新增時 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
-- 新增與編輯都寫完整結構。新增時插到陣列最前面。成功時回傳空字串。`deleteTour` 依編號濾掉那一筆。
-- 提示訊息由步驟 1 的頁面用 `notice` 與 `NoticeSnackbar` 顯示。
+- 標題去掉空白後是空的，回傳「標題要填」，不寫入。回傳的行程不含 id；新增時由 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
 
 ### 步驟 3：行程表格
 
@@ -6000,7 +5865,7 @@ export const tourFromDraft = (draft) => {
 
 - 儲存格的分隔線用色票的 `line`。表頭字重 700、mist 底、文字用 ink。桌機表格會套到。
 
-接著把行程表格的 placeholder 換成真正的元件。操作欄放「編輯」與「刪除」。
+接著把行程表格的 placeholder 換成真正的元件。操作欄先放「編輯」。
 
 ```jsx 06-project-init/src/features/admin/components/TourTable.jsx
 import Button from '@mui/material/Button';
@@ -6013,7 +5878,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { ntd } from '../../../format.js';
 
-export default function TourTable({ tours, onEdit, onDelete }) {
+export default function TourTable({ tours, onEdit }) {
   return (
     <>
       <TableContainer
@@ -6048,14 +5913,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
                     >
                       編輯
                     </Button>
-                    <Button
-                      variant="contained"
-                      disableElevation
-                      color="error"
-                      onClick={() => onDelete(tour)}
-                    >
-                      刪除
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -6079,14 +5936,6 @@ export default function TourTable({ tours, onEdit, onDelete }) {
               >
                 編輯
               </Button>
-              <Button
-                variant="contained"
-                disableElevation
-                color="error"
-                onClick={() => onDelete(tour)}
-              >
-                刪除
-              </Button>
             </div>
           </Card>
         ))}
@@ -6096,16 +5945,12 @@ export default function TourTable({ tours, onEdit, onDelete }) {
 }
 ```
 
-接著在頁面接上刪除。操作欄的「刪除」先記要刪的那一筆，確認後才從列表拿掉。
-
-
 **解析**
 
-- `tours` 是這一頁傳進來的清單。`onEdit` 是「編輯」要呼叫的函式，`onDelete` 是「刪除」要呼叫的函式。
-- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯與刪除。價格用 `ntd`。
-- 操作欄的按鈕用實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，不加 `size="small"`。「編輯」與報名清單的「查看」用主色，「刪除」用錯誤色，不用輪廓樣式。
+- `tours` 是這一頁傳進來的清單。`onEdit` 是「編輯」要呼叫的函式。
+- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯。價格用 `ntd`。
+- 操作欄的按鈕用實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，不加 `size="small"`。「編輯」與報名清單的「查看」用主色。
 - 「編輯」把該筆交給 `onEdit`，頁面會打開同一個 Dialog。
-- 「刪除」把該筆交給頁面的 `deletingTour`。先出現確認 Dialog，確認後才呼叫 Store 的 `deleteTour`，這筆會從列表消失。
 
 ### 步驟 4：草稿工具
 
@@ -6252,12 +6097,14 @@ export default function DraftRows({
 
 ### 步驟 6：行程表單
 
-把行程表單的 placeholder 換成真正的元件。草稿留在表單裡，送出走 `useFetcher`。步驟 1 的頁面已經傳入 `onNotice`，並用 `NoticeSnackbar` 顯示成功提示。
+組出新增與編輯共用的表單，再接到這一頁的 action。
+
+#### 步驟 6-1：Dialog 與基本欄位
+
+組出表單的 Dialog 與基本欄位。草稿用 `empty` 與 `draftFromTour`。儲存與取消按鈕先畫出來，此刻還不能送出。
 
 ```jsx 06-project-init/src/features/admin/components/TourForm.jsx
-import { useEffect, useRef, useState } from 'react';
-import { useFetcher } from 'react-router';
-import Alert from '@mui/material/Alert';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
@@ -6268,42 +6115,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import { themes } from '../../tours/mock.data.js';
 import FieldSelect from '../../../_shared/FieldSelect.jsx';
-import DraftRows from './DraftRows.jsx';
 import { draftFromTour, empty } from './tourDraft.js';
 
-export default function TourForm({ open, tour, onClose, onNotice }) {
-  const editingId = tour?.id ?? null;
-  const fetcher = useFetcher();
-  const handled = useRef(null);
-  const error =
-    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+export default function TourForm({ open, tour, onClose }) {
   const [draft, setDraft] = useState(() =>
     tour ? draftFromTour(tour) : empty(),
   );
   const set = (key) => (event) =>
     setDraft((current) => ({ ...current, [key]: event.target.value }));
-  const setList = (key) => (items) =>
-    setDraft((current) => ({ ...current, [key]: items }));
-
-  useEffect(() => {
-    if (fetcher.state !== 'idle' || !fetcher.data?.saved) return;
-    if (handled.current === fetcher.data) return;
-    handled.current = fetcher.data;
-    onNotice(fetcher.data.notice);
-    onClose();
-  }, [fetcher.state, fetcher.data, onNotice, onClose]);
-
-  const submit = (event) => {
-    event.preventDefault();
-    fetcher.submit(
-      {
-        intent: 'save',
-        editingId: editingId ?? '',
-        draft: JSON.stringify(draft),
-      },
-      { method: 'post' },
-    );
-  };
 
   return (
     <Dialog
@@ -6312,21 +6131,10 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
       fullWidth
       maxWidth="md"
       scroll="paper"
-      aria-labelledby="tour-form-title"
     >
-      <form id="admin-form" onSubmit={submit}>
-        <DialogTitle id="tour-form-title">
-          {tour ? '編輯行程' : '新增行程'}
-        </DialogTitle>
+      <form id="admin-form">
+        <DialogTitle>{tour ? '編輯行程' : '新增行程'}</DialogTitle>
         <DialogContent className="grid gap-4 pt-2 sm:grid-cols-2">
-          <p className="text-muted sm:col-span-2">
-            圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
-          </p>
-          {error ? (
-            <Alert className="sm:col-span-2" severity="error">
-              {error}
-            </Alert>
-          ) : null}
           <TextField
             className="sm:col-span-2"
             label="標題"
@@ -6396,89 +6204,6 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
             value={draft.excludes}
             onChange={set('excludes')}
           />
-          <DraftRows
-            title="圖庫網址"
-            items={draft.images}
-            blank={{ url: '' }}
-            addLabel="新增一張"
-            onChange={setList('images')}
-          >
-            {(item, index, update) => (
-              <TextField
-                className="sm:col-span-2"
-                label={`第 ${index + 1} 張網址`}
-                type="url"
-                helperText={
-                  index === 0 ? '第一張會當作列表與輪播的封面' : undefined
-                }
-                value={item.url}
-                onChange={(event) =>
-                  update(index, { ...item, url: event.target.value })
-                }
-              />
-            )}
-          </DraftRows>
-          <DraftRows
-            title="每日行程"
-            items={draft.itinerary}
-            blank={{ title: '', body: '' }}
-            addLabel="新增一天"
-            onChange={setList('itinerary')}
-          >
-            {(item, index, update) => (
-              <>
-                <p className="text-muted sm:col-span-2">第 {index + 1} 天</p>
-                <TextField
-                  className="sm:col-span-2"
-                  label="當日標題"
-                  value={item.title}
-                  onChange={(event) =>
-                    update(index, { ...item, title: event.target.value })
-                  }
-                />
-                <TextField
-                  className="sm:col-span-2"
-                  label="當日說明"
-                  multiline
-                  minRows={2}
-                  value={item.body}
-                  onChange={(event) =>
-                    update(index, { ...item, body: event.target.value })
-                  }
-                />
-              </>
-            )}
-          </DraftRows>
-          <DraftRows
-            title="出發梯次"
-            items={draft.departures}
-            blank={{ date: '', capacity: 8 }}
-            addLabel="新增一梯"
-            onChange={setList('departures')}
-          >
-            {(item, index, update) => (
-              <>
-                <TextField
-                  label="出發日"
-                  type="date"
-                  slotProps={{ inputLabel: { shrink: true } }}
-                  value={item.date}
-                  onChange={(event) =>
-                    update(index, { ...item, date: event.target.value })
-                  }
-                />
-                <TextField
-                  label="名額"
-                  type="number"
-                  slotProps={{ htmlInput: { min: 1 } }}
-                  value={item.capacity}
-                  onChange={(event) =>
-                    update(index, { ...item, capacity: event.target.value })
-                  }
-                />
-              </>
-            )}
-          </DraftRows>
           <FormControlLabel
             className="sm:col-span-2"
             control={
@@ -6496,11 +6221,7 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
           />
         </DialogContent>
         <DialogActions className="flex-wrap gap-2 p-4">
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={fetcher.state !== 'idle'}
-          >
+          <Button type="button" variant="contained">
             儲存
           </Button>
           <Button type="button" onClick={onClose}>
@@ -6515,12 +6236,515 @@ export default function TourForm({ open, tour, onClose, onNotice }) {
 
 **解析**
 
-- `TourForm` 是同一個 Dialog。沒有帶入行程時標題是「新增行程」，有帶入時是「編輯行程」。草稿在表單裡面初始化；頁面用 `key` 在每次打開時重新掛載，才會依當下的行程重算。表單只負責儲存，沒有刪除鈕。
-- 圖庫、每日行程與出發梯次都用剛才的 `DraftRows`，各列的欄位由這裡傳進去。
-- 文字欄的 `onChange` 把 `event.target.value` 寫進草稿。主題的 `FieldSelect` 回傳的是字串，所以另外寫進 `theme`。精選勾選框寫入 `featured`。
-- 送出時 `fetcher.submit` 把 `intent: 'save'`、`editingId` 與 JSON 草稿送到這一頁的 `action`。成功後 `useEffect` 呼叫 `onNotice` 並關窗。錯誤時用 `fetcher.data.error` 顯示在 Dialog 裡。
-- 步驟 1 的頁面已經把 `onNotice` 接到 `setNotice`，用 `NoticeSnackbar` 顯示成功提示，約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。刪除仍在列表操作欄，確認後也走同一則 `notice`，文案是「已刪除這筆行程」。提示留在頁面，關窗後才看得到。
-- 說明寫空的網址列會略過，封面用圖庫第一張。
+- 沒有帶入行程是新增，有帶入是編輯。標題依此切換。草稿存在元件的 state，新增用 `empty()`，編輯用 `draftFromTour`。
+- 文字欄用 `set`，主題與精選直接改 `draft`。
+- 儲存是 `type="button"`，此刻不會送出。取消呼叫 `onClose`。
+
+#### 步驟 6-2：接上 DraftRows
+
+把圖庫、每日行程與出發梯次接到 `DraftRows`。
+
+```diff 06-project-init/src/features/admin/components/TourForm.jsx
+ import FieldSelect from '../../../_shared/FieldSelect.jsx';
++import DraftRows from './DraftRows.jsx';
+ import { draftFromTour, empty } from './tourDraft.js';
+ 
+ export default function TourForm({ open, tour, onClose }) {
+   const [draft, setDraft] = useState(() =>
+     tour ? draftFromTour(tour) : empty(),
+   );
+   const set = (key) => (event) =>
+     setDraft((current) => ({ ...current, [key]: event.target.value }));
++  const setList = (key) => (items) =>
++    setDraft((current) => ({ ...current, [key]: items }));
+ 
+   return (
+ // ...
+         <DialogContent className="grid gap-4 pt-2 sm:grid-cols-2">
++          <p className="text-muted sm:col-span-2">
++            圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
++          </p>
+           <TextField
+             className="sm:col-span-2"
+             label="標題"
+ // ...
+             onChange={set('excludes')}
+           />
++          <DraftRows
++            title="圖庫網址"
++            items={draft.images}
++            blank={{ url: '' }}
++            addLabel="新增一張"
++            onChange={setList('images')}
++          >
++            {(item, index, update) => (
++              <TextField
++                className="sm:col-span-2"
++                label={`第 ${index + 1} 張網址`}
++                type="url"
++                helperText={
++                  index === 0 ? '第一張會當作列表與輪播的封面' : undefined
++                }
++                value={item.url}
++                onChange={(event) =>
++                  update(index, { ...item, url: event.target.value })
++                }
++              />
++            )}
++          </DraftRows>
++          <DraftRows
++            title="每日行程"
++            items={draft.itinerary}
++            blank={{ title: '', body: '' }}
++            addLabel="新增一天"
++            onChange={setList('itinerary')}
++          >
++            {(item, index, update) => (
++              <>
++                <p className="text-muted sm:col-span-2">第 {index + 1} 天</p>
++                <TextField
++                  className="sm:col-span-2"
++                  label="當日標題"
++                  value={item.title}
++                  onChange={(event) =>
++                    update(index, { ...item, title: event.target.value })
++                  }
++                />
++                <TextField
++                  className="sm:col-span-2"
++                  label="當日說明"
++                  multiline
++                  minRows={2}
++                  value={item.body}
++                  onChange={(event) =>
++                    update(index, { ...item, body: event.target.value })
++                  }
++                />
++              </>
++            )}
++          </DraftRows>
++          <DraftRows
++            title="出發梯次"
++            items={draft.departures}
++            blank={{ date: '', capacity: 8 }}
++            addLabel="新增一梯"
++            onChange={setList('departures')}
++          >
++            {(item, index, update) => (
++              <>
++                <TextField
++                  label="出發日"
++                  type="date"
++                  slotProps={{ inputLabel: { shrink: true } }}
++                  value={item.date}
++                  onChange={(event) =>
++                    update(index, { ...item, date: event.target.value })
++                  }
++                />
++                <TextField
++                  label="名額"
++                  type="number"
++                  slotProps={{ htmlInput: { min: 1 } }}
++                  value={item.capacity}
++                  onChange={(event) =>
++                    update(index, { ...item, capacity: event.target.value })
++                  }
++                />
++              </>
++            )}
++          </DraftRows>
+           <FormControlLabel
+             className="sm:col-span-2"
+             control={
+ // ...
+```
+
+**解析**
+
+- `setList` 用來改圖庫、每日行程與出發梯次這三組列。
+- 圖庫第一張會當作列表與輪播的封面。空的網址列在存檔時會略過。
+- 每日行程顯示「第 n 天」，存檔時再編成 `day`。出發梯次填出發日與名額。
+
+#### 步驟 6-3：送出草稿
+
+用 `useFetcher` 送出草稿。送出期間按鈕不能再按。失敗時在表單上方顯示錯誤。`action` 下一步再接到路由。
+
+```diff 06-project-init/src/features/admin/components/TourForm.jsx
+-import { useState } from 'react';
++import { useState } from 'react';
++import { useFetcher } from 'react-router';
++import Alert from '@mui/material/Alert';
+ import Button from '@mui/material/Button';
+ // ...
+ export default function TourForm({ open, tour, onClose }) {
++  const editingId = tour?.id ?? null;
++  const fetcher = useFetcher();
++  const error =
++    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+   const [draft, setDraft] = useState(() =>
+     tour ? draftFromTour(tour) : empty(),
+   );
+   const set = (key) => (event) =>
+     setDraft((current) => ({ ...current, [key]: event.target.value }));
+   const setList = (key) => (items) =>
+     setDraft((current) => ({ ...current, [key]: items }));
+ 
++  const submit = (event) => {
++    event.preventDefault();
++    fetcher.submit(
++      {
++        intent: 'save',
++        editingId: editingId ?? '',
++        draft: JSON.stringify(draft),
++      },
++      { method: 'post' },
++    );
++  };
++
+   return (
+     <Dialog
+       open={open}
+       onClose={onClose}
+       fullWidth
+       maxWidth="md"
+       scroll="paper"
+     >
+-      <form id="admin-form">
++      <form id="admin-form" onSubmit={submit}>
+         <DialogTitle>{tour ? '編輯行程' : '新增行程'}</DialogTitle>
+         <DialogContent className="grid gap-4 pt-2 sm:grid-cols-2">
+           <p className="text-muted sm:col-span-2">
+             圖庫、每日行程與出發梯次可增刪列。空的網址列會略過。封面用圖庫第一張。
+           </p>
++          {error ? (
++            <Alert className="sm:col-span-2" severity="error">
++              {error}
++            </Alert>
++          ) : null}
+           <TextField
+             className="sm:col-span-2"
+             label="標題"
+ // ...
+         <DialogActions className="flex-wrap gap-2 p-4">
+-          <Button type="button" variant="contained">
++          <Button
++            type="submit"
++            variant="contained"
++            disabled={fetcher.state !== 'idle'}
++          >
+             儲存
+           </Button>
+           <Button type="button" onClick={onClose}>
+ // ...
+```
+
+**解析**
+
+- 送出時帶 `intent: 'save'`、`editingId` 與 JSON 字串的 `draft`。用 `fetcher.submit`，不會換頁。
+- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示，避免送出途中還拿舊錯誤。
+- 儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。
+
+#### 步驟 6-4：接到 action，成功後關閉並提示
+
+成功提示抽成 `NoticeSnackbar`，放在 `src/_shared`。行程管理與報名清單都會用到。
+
+```jsx 06-project-init/src/_shared/NoticeSnackbar.jsx
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
+
+export default function NoticeSnackbar({ notice, onClose }) {
+  return (
+    <Snackbar
+      open={Boolean(notice)}
+      autoHideDuration={3200}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+    >
+      <Alert severity="success" variant="filled" onClose={onClose}>
+        {notice}
+      </Alert>
+    </Snackbar>
+  );
+}
+```
+
+**解析**
+
+- `notice` 有字才打開，約 3.2 秒後或按下關閉會呼叫 `onClose`。位置在畫面下方置中。
+
+表單在儲存成功時關閉 Dialog，並把提示交給這一頁。
+
+```diff 06-project-init/src/features/admin/components/TourForm.jsx
+-import { useState } from 'react';
++import { useEffect, useRef, useState } from 'react';
+ import { useFetcher } from 'react-router';
+ // ...
+-export default function TourForm({ open, tour, onClose }) {
++export default function TourForm({ open, tour, onClose, onNotice }) {
+   const editingId = tour?.id ?? null;
+   const fetcher = useFetcher();
++  const handled = useRef(null);
+   const error =
+     fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+   const [draft, setDraft] = useState(() =>
+     tour ? draftFromTour(tour) : empty(),
+   );
+   const set = (key) => (event) =>
+     setDraft((current) => ({ ...current, [key]: event.target.value }));
+   const setList = (key) => (items) =>
+     setDraft((current) => ({ ...current, [key]: items }));
+ 
++  useEffect(() => {
++    if (fetcher.state !== 'idle' || !fetcher.data?.saved) return;
++    if (handled.current === fetcher.data) return;
++    handled.current = fetcher.data;
++    onNotice(fetcher.data.notice);
++    onClose();
++  }, [fetcher.state, fetcher.data, onNotice, onClose]);
++
+   const submit = (event) => {
+ // ...
+```
+
+**解析**
+
+- `action` 回傳 `{ notice, saved: true }` 且 `fetcher` 回到 `idle` 時，把提示交給 `onNotice` 並關閉 Dialog。
+- `handled` 記住已經處理過的 `fetcher.data`，同一筆結果不會再跑一次。
+
+接著在頁面加上儲存的 `action`，並接上提示。
+
+```diff 06-project-init/src/features/admin/AdminToursPage.jsx
+ import { useState } from 'react';
+ import { useLoaderData } from 'react-router';
+ import Button from '@mui/material/Button';
+ import Typography from '@mui/material/Typography';
+ import TourTable from './components/TourTable.jsx';
+ import TourForm from './components/TourForm.jsx';
+-import { getTours } from '../../store.js';
++import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
++import { getTours, saveTour } from '../../store.js';
+ 
+ export const loader = () => ({ tours: getTours() });
+ 
++export const action = async ({ request }) => {
++  const form = await request.formData();
++  const editingId = String(form.get('editingId') ?? '');
++  const error = saveTour(editingId, JSON.parse(String(form.get('draft'))));
++  return error ? { error } : { notice: '已儲存這筆行程', saved: true };
++};
++
+ export default function AdminToursPage() {
+   const { tours } = useLoaderData();
+   const [open, setOpen] = useState(false);
+   const [tour, setTour] = useState(null);
++  const [notice, setNotice] = useState('');
+   const close = () => setOpen(false);
+ // ...
+       <TourForm
+         key={open ? (tour?.id ?? 'create') : 'closed'}
+         open={open}
+         tour={tour}
+         onClose={close}
++        onNotice={setNotice}
+       />
++      <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
+     </main>
+ // ...
+```
+
+**解析**
+
+- `action` 讀 `editingId` 與 `draft`，交給 `saveTour`。失敗回傳 `{ error }`，成功回傳 `{ notice: '已儲存這筆行程', saved: true }`。loader 會再跑一次，列表立刻更新。
+- `notice` 交給 `NoticeSnackbar`。表單成功時透過 `onNotice` 寫入這份 state。
+
+把 `action` 接到 `/admin`。
+
+```diff 06-project-init/src/App.jsx
+ import AdminToursPage, {
+-  loader as adminToursLoader,
++  action as adminToursAction,
++  loader as adminToursLoader,
+ } from './features/admin/AdminToursPage.jsx';
+ // ...
+           {
+             path: 'admin',
+             loader: adminToursLoader,
++            action: adminToursAction,
+             element: <AdminToursPage />,
+           },
+ // ...
+```
+
+**解析**
+
+- `/admin` 加上 `action`。表單的 `fetcher.submit` 會送到這一頁的 `action`，不會換頁。
+
+### 步驟 7：刪除行程
+
+刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
+
+```jsx 06-project-init/src/features/admin/components/DeleteTourDialog.jsx
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
+export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
+  return (
+    <Dialog open={Boolean(tour)} onClose={onClose}>
+      <DialogTitle>刪除這筆行程？</DialogTitle>
+      <DialogContent>刪除後，這筆行程不會再出現在列表。</DialogContent>
+      <DialogActions className="gap-2 p-4">
+        <Button onClick={onClose}>留下</Button>
+        <Button
+          color="error"
+          variant="contained"
+          disabled={busy}
+          onClick={onConfirm}
+        >
+          刪除
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+```
+
+**解析**
+
+- 有要刪的行程才打開。按下「刪除」時呼叫頁面傳入的 `onConfirm`；`busy` 為真時按鈕不能再按。
+
+表格的操作欄加上「刪除」。
+
+```diff 06-project-init/src/features/admin/components/TourTable.jsx
+-export default function TourTable({ tours, onEdit }) {
++export default function TourTable({ tours, onEdit, onDelete }) {
+   return (
+ // ...
+                     <Button
+                       variant="contained"
+                       disableElevation
+                       color="primary"
+                       onClick={() => onEdit(tour)}
+                     >
+                       編輯
+                     </Button>
++                    <Button
++                      variant="contained"
++                      disableElevation
++                      color="error"
++                      onClick={() => onDelete(tour)}
++                    >
++                      刪除
++                    </Button>
+                   </div>
+                 </TableCell>
+ // ...
+                 onClick={() => onEdit(tour)}
+               >
+                 編輯
+               </Button>
++              <Button
++                variant="contained"
++                disableElevation
++                color="error"
++                onClick={() => onDelete(tour)}
++              >
++                刪除
++              </Button>
+             </div>
+           </Card>
+ // ...
+```
+
+**解析**
+
+- 桌機表格與窄螢幕卡片都加上「刪除」，交給頁面的 `onDelete`。「刪除」用錯誤色，不用輪廓樣式。
+
+頁面加上刪除的 `action` 分支，並接上確認 Dialog。
+
+```diff 06-project-init/src/features/admin/AdminToursPage.jsx
+ import { useState } from 'react';
+-import { useLoaderData } from 'react-router';
++import { useFetcher, useLoaderData } from 'react-router';
+ import Button from '@mui/material/Button';
+ import Typography from '@mui/material/Typography';
++import DeleteTourDialog from './components/DeleteTourDialog.jsx';
+ import TourTable from './components/TourTable.jsx';
+ import TourForm from './components/TourForm.jsx';
+ import NoticeSnackbar from '../../_shared/NoticeSnackbar.jsx';
+-import { getTours, saveTour } from '../../store.js';
++import { deleteTour, getTours, saveTour } from '../../store.js';
+ 
+ export const loader = () => ({ tours: getTours() });
+ 
+ export const action = async ({ request }) => {
+   const form = await request.formData();
++  if (form.get('intent') === 'delete') {
++    deleteTour(String(form.get('id')));
++    return { notice: '已刪除這筆行程' };
++  }
+   const editingId = String(form.get('editingId') ?? '');
+   const error = saveTour(editingId, JSON.parse(String(form.get('draft'))));
+   return error ? { error } : { notice: '已儲存這筆行程', saved: true };
+ };
+ 
+ export default function AdminToursPage() {
+   const { tours } = useLoaderData();
++  const remove = useFetcher();
+   const [open, setOpen] = useState(false);
+   const [tour, setTour] = useState(null);
++  const [deletingTour, setDeletingTour] = useState(null);
+   const [notice, setNotice] = useState('');
++  const [seenRemove, setSeenRemove] = useState(null);
++  if (
++    remove.state === 'idle' &&
++    remove.data?.notice &&
++    remove.data !== seenRemove
++  ) {
++    setSeenRemove(remove.data);
++    setDeletingTour(null);
++    setNotice(remove.data.notice);
++  }
+   const close = () => setOpen(false);
+ // ...
+       <TourTable
+         tours={tours}
+         onEdit={(item) => {
+           setTour(item);
+           setOpen(true);
+         }}
++        onDelete={setDeletingTour}
+       />
+       <TourForm
+         key={open ? (tour?.id ?? 'create') : 'closed'}
+         open={open}
+         tour={tour}
+         onClose={close}
+         onNotice={setNotice}
+       />
++      <DeleteTourDialog
++        tour={deletingTour}
++        busy={remove.state !== 'idle'}
++        onClose={() => setDeletingTour(null)}
++        onConfirm={() =>
++          remove.submit(
++            { intent: 'delete', id: deletingTour.id },
++            { method: 'post' },
++          )
++        }
++      />
+       <NoticeSnackbar notice={notice} onClose={() => setNotice('')} />
+     </main>
+ // ...
+```
+
+**解析**
+
+- `action` 看到 `intent` 是 `delete` 就呼叫 `deleteTour`，回傳「已刪除這筆行程」。
+- 操作欄的「刪除」先把該筆放到 `deletingTour`，打開確認 Dialog。確認後用 `remove.submit` 送出，不會換頁。送出期間「刪除」不能再按。
+- `remove` 回到 `idle` 且有尚未顯示過的 `notice` 時，關閉確認 Dialog 並交給 `NoticeSnackbar`。`seenRemove` 記住已經處理過的結果，同一筆不會再跑一次。
 
 ## 報名清單
 
@@ -6978,10 +7202,9 @@ export default function BookingForm({ open, booking, onClose, onNotice }) {
         fullWidth
         maxWidth="sm"
         scroll="paper"
-        aria-labelledby="booking-form-title"
       >
         <form onSubmit={submit}>
-          <DialogTitle id="booking-form-title">報名明細</DialogTitle>
+          <DialogTitle>報名明細</DialogTitle>
           <DialogContent className="grid gap-4 pt-2">
             {booking ? (
               <dl className="grid gap-2 text-base">
@@ -7023,9 +7246,8 @@ export default function BookingForm({ open, booking, onClose, onNotice }) {
       <Dialog
         open={confirmCancel}
         onClose={() => setConfirmCancel(false)}
-        aria-labelledby="cancel-title"
       >
-        <DialogTitle id="cancel-title">改為已取消？</DialogTitle>
+        <DialogTitle>改為已取消？</DialogTitle>
         <DialogContent>
           紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
         </DialogContent>

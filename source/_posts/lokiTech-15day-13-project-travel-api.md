@@ -1290,12 +1290,8 @@ export default function LoginPage() {
         onClose={() => navigate('/')}
         fullWidth
         maxWidth="xs"
-        aria-labelledby="login-title"
       >
-        <DialogTitle
-          id="login-title"
-          className="font-serif text-4xl leading-tight"
-        >
+        <DialogTitle className="font-serif text-4xl leading-tight">
           用 Google 帳號繼續
         </DialogTitle>
         <DialogContent>
