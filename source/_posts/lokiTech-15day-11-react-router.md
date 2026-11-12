@@ -1291,7 +1291,7 @@ import ActionStateDemo from '../examples/84-action-state.jsx';
 import OptimisticDemo from '../examples/85-optimistic.jsx';
 import LoaderDemo from '../examples/86-loader.jsx';
 import FormActionDemo from '../examples/87-action.jsx';
-import RedirectDemo from '../examples/88-redirect.jsx';
+import RedirectList from '../examples/88-redirect-list.jsx';
 import ErrorElementDemo from '../examples/89-error-element.jsx';
 import FetcherDemo from '../examples/90-fetcher.jsx';
 import NavigationDemo from '../examples/91-navigation.jsx';
@@ -1648,10 +1648,10 @@ export const demos = [
     Component: FormActionDemo,
   },
   {
-    slug: '88-redirect',
+    slug: '88-redirect-list',
     title: '送出後轉址',
     topic: 'data',
-    Component: RedirectDemo,
+    Component: RedirectList,
   },
   {
     slug: '89-error-element',
@@ -2667,7 +2667,7 @@ const central = createBrowserRouter([
 
 `loader` 在進頁前把資料備好，頁面用 `useLoaderData` 接。`Form` 或 `useFetcher` 把欄位送到這條路由的 `action`；成功後路由器會再跑相關的 `loader`，或依 `redirect` 換到新網址。`action` 回傳的錯誤用 `useActionData` 顯示，`throw` 則交給 `errorElement`，由 `useRouteError` 讀取。細節見下面各節。
 
-`86-loader` 與 `88-redirect` 到 `91-navigation` 共用 `notes-db.js` 裡的陣列。`87-action` 用 `createItem`，不寫這份檔案。重新整理開發伺服器會回到最初的兩筆。
+`86-loader` 與 `89-error-element` 到 `91-navigation` 共用 `notes-db.js` 裡的陣列。`87-action` 與 `88-redirect-list` 用 `fake-api.js`，不寫這份檔案。重新整理開發伺服器會回到最初的兩筆。
 
 ## 用 loader 讀資料
 
@@ -2708,20 +2708,6 @@ export const listNotes = () => notes;
 export const getNote = (id) => notes.find((item) => item.id === id) ?? null;
 
 /**
- * 依 id 更新標題。找到時回傳更新後的那一筆，沒有這筆時回傳 null。
- * @param {string} id
- * @param {string} title
- * @returns {{ id: string, title: string, done: boolean } | null}
- */
-export const updateNote = (id, title) => {
-  const current = notes.find((item) => item.id === id);
-  if (!current) return null;
-  const note = { ...current, title };
-  notes = notes.map((item) => (item.id === id ? note : item));
-  return note;
-};
-
-/**
  * 新增一筆並放在最前面。id 用目前時間的毫秒數。
  * @param {string} title
  * @returns {{ id: string, title: string, done: boolean }}
@@ -2746,8 +2732,8 @@ export const toggleNote = (id) => {
 
 **解析**
 
-- `listNotes`、`getNote`、`updateNote`、`addNote`、`toggleNote` 都操作模組裡的同一份陣列。
-- `86-loader` 與 `88-redirect` 到 `91-navigation` 共用這份檔案。`87-action` 用 `createItem`，不寫這裡。重新整理開發伺服器會回到最初的「看海」與「寫筆記」兩筆。
+- `listNotes`、`getNote`、`addNote`、`toggleNote` 都操作模組裡的同一份陣列。
+- `86-loader` 與 `89-error-element` 到 `91-navigation` 共用這份檔案。`87-action` 與 `88-redirect-list` 用 `fake-api.js`，不寫這裡。重新整理開發伺服器會回到最初的「看海」與「寫筆記」兩筆。
 
 
 ```jsx 04-react-router/src/examples/86-loader.jsx
@@ -2955,124 +2941,59 @@ export default function ActionDemo() {
 
 ## redirect：送出後轉址
 
-編輯表單送出後，`action` 用 `updateNote` 寫入標題，並 `return redirect('/demos/88-redirect')`，畫面回到列表。`redirect` 從 `action` 或 `loader` 回傳；路由器改去那個網址，並執行那一條路由的 `loader`。
+編輯表單送出後，`action` 用 `updateItem` 寫入標題，並 `return redirect('/demos/88-redirect-list')`。路由器改去那個網址，並執行列表的 `loader`。
 
 {% mermaid graph TD %}
-  action["action"] -->|"return redirect"| url["/demos/88-redirect"]
-  url --> listLoader["列表的 loader"]
-  listLoader --> listPage["列表頁"]
-  style action fill:#fff3e0
-  style url fill:#e3f2fd
-  style listLoader fill:#e3f2fd
-  style listPage fill:#e8f5e9
+  subgraph route["Route"]
+    subgraph list["List"]
+      listPath["/demos/88-redirect-list"]
+      listLoader["loader"]
+    end
+    subgraph edit["Edit"]
+      editPath["/demos/88-redirect-edit/:itemId"]
+      editLoader["loader"]
+      form["Form"]
+      action["action"]
+    end
+  end
+  action -->|"redirect"| listPath
 {% endmermaid %}
 
-寫入用 `notes-db.js` 的 `updateNote`，依 id 換掉標題，找到時回傳更新後的那一筆。標題空白時，`action` 回傳 `{ error: '請填標題' }`，編輯頁留在原地，用 `useActionData` 顯示。筆記不存在時，`editLoader` 回傳 `redirect('/demos/88-redirect')`，同樣回到列表。
+列表與編輯是兩條路由。編輯頁的 `Form` 送到這一條的 `action`；`action` 呼叫 `updateItem` 後回傳 `redirect`。路由器改去列表路徑，並再跑列表的 `loader`，畫面上是新的標題。
 
-列表與編輯是兩條路由，編輯那一條掛 `editLoader` 與 `action`，兩條都寫在 `demos/:slug` 前面。
+### 步驟 1：列表頁
 
-```diff 04-react-router/src/App.jsx
- import ActionDemo, {
-   action as action87,
- } from './examples/87-action.jsx';
-+import RedirectDemo, {
-+  action as action88,
-+  editLoader as editLoader88,
-+  loader as loader88,
-+  NoteEdit,
-+} from './examples/88-redirect.jsx';
- // ...
-           Component: ActionDemo,
-         },
-+        {
-+          path: 'demos/88-redirect',
-+          loader: loader88,
-+          Component: RedirectDemo,
-+        },
-+        {
-+          path: 'demos/88-redirect/notes/:noteId',
-+          loader: editLoader88,
-+          action: action88,
-+          Component: NoteEdit,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
-```
-
-**解析**
-
-- 列表路徑是 `demos/88-redirect`，`loader` 回傳 `{ notes: listNotes() }`，`Component` 是預設匯出的列表。
-- 編輯路徑是 `demos/88-redirect/notes/:noteId`，`loader` 是 `editLoader`，`action` 讀取標題後轉址，`Component` 是 `NoteEdit`。
-- 這兩條比 `demos/:slug` 更具體，所以寫在它前面。
-
-`88-redirect.jsx` 放列表、編輯表單，以及寫入後回到列表的 `action`。
-
-```jsx 04-react-router/src/examples/88-redirect.jsx
-import {
-  Form,
-  Link,
-  redirect,
-  useActionData,
-  useLoaderData,
-} from 'react-router';
-import { getNote, listNotes, updateNote } from './notes-db.js';
+```jsx 04-react-router/src/examples/88-redirect-list.jsx
+import { Link, useLoaderData } from 'react-router';
+import { getItems } from '../api/fake-api.js';
 
 /**
- * 列表路由的 loader。進頁前讀全部筆記，回傳值交給列表頁的 useLoaderData。
- * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+ * 列表路由的 loader。進頁前呼叫 getItems，回傳值交給列表頁的 useLoaderData。
+ * @returns {Promise<{ items: { id: number, title: string }[] }>}
  */
-export const loader = () => ({ notes: listNotes() });
+export const loader = async () => ({ items: await getItems() });
 
 /**
- * 編輯路由的 loader。params.noteId 是路徑上的筆記 id。
- * getNote 找到時回傳 { note }，交給 NoteEdit 的 useLoaderData。
- * 沒有這筆時回傳 redirect(url)。url 是要去的路徑，路由器改去該網址並跑那一條的 loader。
- * @param {{ params: { noteId: string } }} args
- * @returns {{ note: { id: string, title: string, done: boolean } } | Response}
- */
-export const editLoader = ({ params }) => {
-  const note = getNote(params.noteId);
-  if (!note) return redirect('/demos/88-redirect');
-  return { note };
-};
-
-/**
- * 接收編輯頁的表單。request.formData() 讀取欄位，form.get('title') 取出標題。
- * 標題空白時回傳 { error: '請填標題' }，編輯頁用 useActionData 顯示，網址不變。
- * 有標題時 updateNote 依 id 寫入，再回傳 redirect('/demos/88-redirect')。
- * 路由器改去列表並跑列表的 loader。
- * @param {{ params: { noteId: string }, request: Request }} args
- * @returns {Promise<{ error: string } | Response>}
- */
-export const action = async ({ params, request }) => {
-  const form = await request.formData();
-  const title = String(form.get('title') ?? '').trim();
-  if (!title) return { error: '請填標題' };
-  updateNote(params.noteId, title);
-  return redirect('/demos/88-redirect');
-};
-
-/**
- * 列表頁。每一列連到該筆的編輯頁 /demos/88-redirect/notes/:noteId。
- * 使用 loader 回傳的 { notes }。
+ * 列表頁。每一列有「編輯」連到 /demos/88-redirect-edit/:itemId。
  * @returns {JSX.Element}
  */
-export default function RedirectDemo() {
+export default function RedirectList() {
   /**
-   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   * @returns {{ items: { id: number, title: string }[] }}
    */
-  const { notes } = useLoaderData();
+  const { items } = useLoaderData();
   return (
     <section>
       <h1 className="text-2xl font-bold">88 送出後轉址</h1>
       <ul className="mt-4 grid gap-2">
-        {notes.map((note) => (
-          <li key={note.id}>
+        {items.map((item) => (
+          <li key={item.id} className="flex gap-3">
+            <span>{item.title}</span>
             <Link
               className="text-teal-800 underline"
-              to={`/demos/88-redirect/notes/${note.id}`}
+              to={`/demos/88-redirect-edit/${item.id}`}
             >
-              {note.title}
+              編輯
             </Link>
           </li>
         ))}
@@ -3080,34 +3001,65 @@ export default function RedirectDemo() {
     </section>
   );
 }
+```
+
+**解析**
+
+- `loader` 進頁前呼叫 `getItems`，回傳 `{ items }`。頁面用 `useLoaderData` 接。
+- 每一列有「編輯」連到 `/demos/88-redirect-edit/:itemId`。
+
+### 步驟 2：編輯頁
+
+```jsx 04-react-router/src/examples/88-redirect-edit.jsx
+import { Form, Link, redirect, useLoaderData } from 'react-router';
+import { getItems, updateItem } from '../api/fake-api.js';
+
+/**
+ * 編輯路由的 loader。params.itemId 是路徑上的項目 id。
+ * 從 getItems 找出這一筆，交給編輯頁的 useLoaderData。
+ * @param {{ params: { itemId: string } }} args
+ * @returns {Promise<{ item: { id: number, title: string } }>}
+ */
+export const loader = async ({ params }) => {
+  const items = await getItems();
+  const item = items.find((row) => String(row.id) === String(params.itemId));
+  return { item };
+};
+
+/**
+ * 接收編輯頁的表單。request.formData() 讀取 title，updateItem 寫入後
+ * 回傳 redirect('/demos/88-redirect-list')。路由器改去列表並跑列表的 loader。
+ * @param {{ params: { itemId: string }, request: Request }} args
+ * @returns {Promise<Response>}
+ */
+export const action = async ({ params, request }) => {
+  const form = await request.formData();
+  const title = String(form.get('title') ?? '');
+  const items = await getItems();
+  const current = items.find((row) => String(row.id) === String(params.itemId));
+  await updateItem(params.itemId, { ...current, title });
+  return redirect('/demos/88-redirect-list');
+};
 
 /**
  * 編輯頁。Form method="post" 送到目前網址的 action，沒有 action 屬性。
- * defaultValue 帶入目前標題。空白標題時，useActionData 的 error 顯示在輸入框下面。
- * 「回列表」連到 /demos/88-redirect。
+ * defaultValue 帶入目前標題。送出後由 action 轉回列表。
  * @returns {JSX.Element}
  */
-export function NoteEdit() {
+export default function RedirectEdit() {
   /**
-   * editLoader 回傳 { note }。
-   * @returns {{ note: { id: string, title: string, done: boolean } }}
+   * @returns {{ item: { id: number, title: string } }}
    */
-  const { note } = useLoaderData();
-  /**
-   * 最近一次 action 的回傳值。還沒送出，或 action 已 redirect 時，是 undefined。
-   * @returns {{ error: string } | undefined}
-   */
-  const result = useActionData();
+  const { item } = useLoaderData();
   return (
     <section>
-      <h1 className="text-2xl font-bold">編輯筆記</h1>
+      <h1 className="text-2xl font-bold">編輯標題</h1>
       <Form method="post" className="mt-4 grid max-w-sm gap-3">
         <input
           name="title"
           className="rounded border px-2 py-1"
-          defaultValue={note.title}
+          defaultValue={item.title}
         />
-        {result?.error ? <p className="text-red-700">{result.error}</p> : null}
         <button
           type="submit"
           className="rounded bg-teal-800 px-3 py-1 text-white"
@@ -3116,7 +3068,7 @@ export function NoteEdit() {
         </button>
       </Form>
       <p className="mt-4">
-        <Link className="text-teal-800 underline" to="/demos/88-redirect">
+        <Link className="text-teal-800 underline" to="/demos/88-redirect-list">
           回列表
         </Link>
       </p>
@@ -3127,9 +3079,44 @@ export function NoteEdit() {
 
 **解析**
 
-- 點一則標題會打開編輯表單，欄位裡是目前的標題。改完按「儲存」，`action` 用 `updateNote` 寫入，再 `redirect`。
-- 網址變成 `/demos/88-redirect`，列表上是新的標題。
-- 標題留白再按「儲存」，人留在編輯頁，輸入框下面出現「請填標題」。
+- `Form method="post"` 送到目前網址的 `action`，沒有 `action` 屬性。欄位只有標題。
+- `action` 讀取 `title`，呼叫 `updateItem` 寫入，最後一行是 `return redirect('/demos/88-redirect-list')`。路由器改去列表並跑列表的 `loader`，畫面上是新的標題。
+- `getItems` 與 `updateItem` 共用同一份還留在記憶體裡的清單，所以轉回去時列表會讀到剛改的標題。
+
+### 步驟 3：在 App.jsx 掛上兩條路由
+
+```diff 04-react-router/src/App.jsx
+ import ActionDemo, { action as action87 } from './examples/87-action.jsx';
++import RedirectList, {
++  loader as loader88List,
++} from './examples/88-redirect-list.jsx';
++import RedirectEdit, {
++  action as action88,
++  loader as loader88Edit,
++} from './examples/88-redirect-edit.jsx';
+ // ...
+           Component: ActionDemo,
+         },
++        {
++          path: 'demos/88-redirect-list',
++          loader: loader88List,
++          Component: RedirectList,
++        },
++        {
++          path: 'demos/88-redirect-edit/:itemId',
++          loader: loader88Edit,
++          action: action88,
++          Component: RedirectEdit,
++        },
+         { path: 'demos/:slug', element: <DemoPage /> }
+ // ...
+```
+
+**解析**
+
+- 列表路徑是 `demos/88-redirect-list`，`loader` 回傳清單，`Component` 是預設匯出的列表。
+- 編輯路徑是 `demos/88-redirect-edit/:itemId`，掛上 `loader`、`action` 與編輯頁。`itemId` 是路徑上的項目 id。
+- 這兩條比 `demos/:slug` 更具體，所以寫在它前面。側欄只列列表那一則；編輯頁從列表點進去。
 
 {% note success %}
 **換你試試：**
@@ -3141,7 +3128,7 @@ export function NoteEdit() {
 
 只改按鈕文字。
 
-```diff 04-react-router/src/examples/88-redirect.jsx
+```diff 04-react-router/src/examples/88-redirect-edit.jsx
  // ...
 -          儲存
 +          儲存並回列表
@@ -3192,19 +3179,17 @@ export function NoteEdit() {
 明細路由才掛 `errorElement`。`notes/:noteId` 對上 `notes/` 後面的任何一段，所以 `not-found` 走同一條路由。
 
 ```diff 04-react-router/src/App.jsx
- import RedirectDemo, {
+ import RedirectEdit, {
    action as action88,
-   editLoader as editLoader88,
-   loader as loader88,
-   NoteEdit,
- } from './examples/88-redirect.jsx';
+   loader as loader88Edit,
+ } from './examples/88-redirect-edit.jsx';
 +import ErrorElementDemo, {
 +  loader as loader89,
 +  NoteDetail,
 +  NoteMissing,
 +} from './examples/89-error-element.jsx';
  // ...
-           Component: NoteEdit,
+           Component: RedirectEdit,
          },
 +        {
 +          path: 'demos/89-error-element',
@@ -3807,7 +3792,7 @@ const router = createHashRouter(routes, { basename });
 - 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
 - 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
 - `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目，或依欄位回傳的錯誤。後面幾則寫入後，`loader` 會自動重跑。
-- 編輯表單送出後，`action` 用 `updateNote` 寫入標題，再 `return redirect('/demos/88-redirect')`。列表的 `loader` 接著重跑，畫面上是新標題。
+- 編輯表單送出後，`action` 用 `updateItem` 寫入標題，再 `return redirect('/demos/88-redirect-list')`。列表的 `loader` 接著重跑，畫面上是新標題。
 - 明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由這條路由的 `errorElement` 用 `useRouteError` 讀取。沒有指定 `errorElement` 時，錯誤往上找最近一層，只替換那一層以下的畫面。`useFetcher` 送出但不換頁；`useNavigation` 讀取讀取中與送出中。
 - `demos/86-loader` 到 `demos/91-navigation` 要寫在 `demos/:slug` 前面。91 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
 - 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
