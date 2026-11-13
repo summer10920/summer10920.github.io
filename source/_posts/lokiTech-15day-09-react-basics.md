@@ -10,270 +10,186 @@ date: 2026-08-30 10:08:00
 
 ![](assets/images/banner/react.png)
 
-React 是在瀏覽器裡用函式描述畫面的函式庫。資料一變，同一個函式再跑一次，畫面跟著換。這一篇先看它是什麼、為什麼用它，再寫 JSX、元件、狀態、事件、列表與表單。
+React 是用函式描述畫面的 JavaScript 函式庫：資料一變，同一個函式再跑一次，畫面跟著更新。這一篇先說明為何使用框架、為何選 React，再用 Vite 建立啟用 React Compiler 的專案，接著依序學 JSX、單向資料流、元件與 props、用 `useState` 保存的狀態與不可變更新、事件、列表與 key，以及受控表單；選讀補充 ESLint 與 Prettier 工具鏈、ES Module 的匯出與匯入，以及 `useId`。
 
 <!-- more -->
 
 # 認識 React
 
-本講義的 React 是 19.3，React Router 是 8，Vite 是 8。元件與 Hooks 對照 [react.dev](https://react.dev)，路由對照 [reactrouter.com](https://reactrouter.com)。查到要從 `react-router-dom` 引入，或寫成 class 元件，那是舊版，這門課不跟。
+本講義的 React 是 19.3，React Router 是 8，Vite 是 8。元件與 Hooks 對照 [react.dev](https://react.dev)，路由對照 [reactrouter.com](https://reactrouter.com)。網路上的舊教學常出現 class 元件，或從 `react-router-dom` 引入路由，那是舊寫法，這門課不跟。
 
-這一章先看框架為何存在，以及這門課為什麼選 React。
+這一章先看框架為何存在、這門課為什麼選 React，再說明 React 是什麼、站在哪一層。
 
 ## 為何使用框架
 
-沒有框架（framework）時，你要自己驅動 DOM，以及跟畫面連動的瀏覽器 API。用了框架，你改寫元件與 JSX 這種描述畫面的程式；框架當中間的代理人，替你跟瀏覽器溝通，所以更新 DOM 與相關的瀏覽器物件模型（Browser Object Model，BOM），對開發者比較有效率。
+用原生 JavaScript 做互動頁面，你要自己找出節點、一個一個改內容，資料一多就容易漏改。框架（framework）把這件事接手：你只描述畫面該長什麼樣子，由框架負責更新瀏覽器裡的 DOM。
 
 {% mermaid graph LR %}
-  code["Your code<br/>JSX / components"] --> fw["Framework"]
-  fw --> browser["Browser"]
-  browser --> domNode["DOM"]
-  browser --> bomNode["BOM"]
+  code["你的程式<br/>元件 / JSX"] --> fw["框架"]
+  fw --> dom["DOM"]
+  dom --> screen["畫面"]
 {% endmermaid %}
 
-- 框架站在你的寫法和瀏覽器之間：你描述畫面，函式庫更新 DOM；瀏覽器 API 與 BOM 也透過這套模型來用，不必每一步都自己接上。
-- 自己一步步指定要改哪個節點，叫做命令式（imperative）；只描述畫面現在該長什麼樣子，叫做宣告式（declarative）。
-- 框架簡化的是你寫出來的控制流程；真正的畫面一變，瀏覽器仍會重排（reflow）與重繪（repaint）。
+- 自己一步步指定要改哪個節點，叫做命令式（imperative）。07 的 DOM 操作就是這種寫法。
+- 只描述畫面現在該長什麼樣子，叫做宣告式（declarative）。框架比對前後差異，只更新有變的節點。
+- 框架省下的是你自己寫的更新流程；畫面真的變了，瀏覽器仍然要重排與重繪。
 
 ## 為何選擇 React
 
-Vue、Angular、React 都能把狀態畫成畫面。差別在畫面寫在哪裡、邏輯跟著哪一種語法走，以及專案目錄要不要由工具先定好。這一節先把三套都看過，再說明這門課為什麼停在 React。
+Vue、Angular、React 都能把資料變成畫面，三者都有活躍的維護與社群，沒有哪一套是標準答案。差別在畫面用什麼語法寫、官方替你決定多少事，這一節先看三者的取向，再說明這門課的選擇。
 
 ### Vue
 
-Vue 的定位是漸進式框架（progressive framework）。同一套工具可以只嵌進既有頁面的一小塊，也可以長大成整份應用，範圍由你決定。
+Vue 是漸進式框架（progressive framework）：可以只嵌進既有頁面的一小塊，也可以長成整個應用。常見寫法是單檔元件（Single-File Component），一個檔案放模板（template）、腳本與樣式，條件與清單用模板專屬的指令來寫。
 
-常見寫法是單檔元件（Single-File Component，SFC）。一個檔案裡放下這塊畫面的模板、腳本與樣式；使用者看到的結構寫在模板（template）裡，條件與清單用模板自己的指令（template directive），而不是一般的 JavaScript 陳述。官方的路由與狀態也沿同一套文件與套件走，專案往下接時仍在 Vue 的約定裡。
-
-核心以外，往下做完整專案時還常再接這些套件。
-
-- Vue Router 負責網址與頁面的對應。
-- Pinia 管理多個元件共用的狀態。舊專案裡還可能看到 Vuex。
-- 要做成全端應用時，常改接 Nuxt。
-- 介面元件庫（component library）常見 Element Plus 與 Vuetify。
+官方維護的周邊套件包括路由（Vue Router）與共用狀態（Pinia）；要做伺服器端渲染（server-side rendering，SSR，先在伺服器產生 HTML 再送到瀏覽器）時，常搭配 Nuxt。
 
 ### Angular
 
-Angular 把模板、路由、表單和專案結構收得更完整，一開始就用同一套框架約定把這些擺在一起。新專案通常依這套約定長出來，目錄的形狀在產生器裡就定了。
+Angular 由 Google 維護，用 TypeScript 撰寫，把模板、路由、表單與 HTTP 請求都放進同一個框架。專案結構與寫法有一套官方約定，團隊內的風格比較一致，代價是要先學這套約定。
 
-畫面一樣寫在模板裡。路由怎麼對應頁面、表單怎麼綁資料、資料夾怎麼分層，都有框架自己的做法。模板和這些約定讓同一個專案裡的寫法穩定；要另外熟悉的，是那一種模板語法與目錄。
-
-核心以外，就業與實務往下還常再接這些套件。
-
-- 響應式程式庫（RxJS）處理非同步與資料流，寫 Angular 時幾乎都會碰到。
-- 大型應用的共用狀態常再接 NgRx。
-- 介面元件庫常見 Angular Material。
-- 職缺與周邊生態常要求會 TypeScript。
+非同步資料流常用 RxJS 處理，大型應用的共用狀態也有 NgRx 這類套件可選。
 
 ### React
 
-React 裡，元件是一支函式。這塊畫面的判斷、事件與要顯示的內容留在 JavaScript，標記用 JSX 寫進同一支函式的回傳。
-
-它不另外準備一套模板語言，也不規定專案目錄該怎麼切。檔案怎麼分、路由與共用狀態日後接哪一套，函式庫不過問。你沿用已經會的 JavaScript，再多學 JSX 這一種寫法。
-
-核心以外，往下常再接這些套件。
-
-- React Router 負責換頁。本課後面會教。
-- 全端與伺服器端渲染（server-side rendering，SSR）常見 Next.js。
-- 共用狀態常見 Zustand 與 Redux Toolkit。
-- 介面元件庫常見 MUI 與 Ant Design。
+React 的元件是一支 JavaScript 函式，判斷、事件與要顯示的內容都留在函式裡，標記用 JSX 寫在回傳值。它沒有另一套模板語言，也不規定專案目錄；路由、共用狀態與 SSR 都靠另外的套件，例如 React Router 與 Next.js。
 
 ### 這門課的取捨
 
-這門課選 React，是因為它留在 JavaScript 旁邊，寫畫面的自由仍是寫 JS 的自由。元件怎麼判斷、資料怎麼變成畫面，都還是一般的 JavaScript 與 JSX，而不是改去學一套模板語言。
+選 React 的理由有兩個：畫面邏輯就是一般的 JavaScript，剛學完 JS 的人最容易接上；周邊工具由你自己選，正好可以一步步認識每一層在做什麼。
 
-準確地說，React 是描述使用者介面的函式庫（library）。路由與共用狀態不在核心裡，要用再接上；這門課後面會用到 React Router。開發與打包交給 Vite，外觀交給 Tailwind，畫面與狀態留給 React，三件分開。把路由、資料與伺服器端渲染綁成一套的全端框架，例如 Next.js，是更後面的題目。官方的元件與 Hooks 說明在 [react.dev](https://react.dev)，和課堂上的函式元件是同一套寫法。
-
-代價也寫在前面。專案骨架要自己定：檔案怎麼分、路由與共用狀態接哪一套，用到的那一天再補。JavaScript 要夠熟，因為畫面以外的流程仍是一般的 JS 在接。
+代價是專案骨架要自己決定。這門課的分工是：Vite 負責開發與打包，Tailwind 負責外觀，React 負責畫面與狀態，React Router 負責換頁。
 
 {% note info %}
-**小技巧：函式庫還是框架**
-React 的核心是函式庫，負責描述畫面。路由、共用狀態與專案目錄要另外接，所以它不像把模板、路由、表單一次配齊的框架。日常對話仍常叫它框架。兩種說法指的是同一套工具，差在有沒有把周邊套件算進去。
+**函式庫還是框架**
+React 的核心是函式庫（library），只描述畫面；路由與資料載入要另外接，所以嚴格說它不是把全部配齊的框架。日常對話常把它叫做框架，兩種說法都會聽到。
 {% endnote %}
 
 ## 什麼是 React
 
-React 由 Meta（前身 Facebook）主導，是用來描述使用者介面（user interface）的 JavaScript 函式庫。你用函式寫出畫面現在的長相，瀏覽器裡的節點由另一個套件掛上去。這一節分開看它站在哪一層、頁面怎麼由元件拼成、JSX 為什麼要先編譯，以及兩個套件各管什麼。
+React 由 Meta 主導開發，是描述使用者介面（user interface）的 JavaScript 函式庫。你用函式描述畫面現在的長相，再交給 React 放進頁面。這一節看它管哪一層、怎麼用元件拼出頁面、JSX 是什麼，以及它分成哪兩個套件。
 
 ### 定位
 
-React 專注在 View 層，也就是使用者看得到、點得到的那一層。標題文字、清單有幾列、按鈕現在能不能按，都是這一層要回答的事。
+React 專注在 View 層，也就是使用者看得到、點得到的那一層：標題文字、清單有幾列、按鈕現在能不能按，都由它決定。資料庫、帳號驗證與伺服器不在它的範圍內，那些由後端準備資料，React 只負責把拿到的資料畫成畫面。
 
-資料庫、帳號驗證與伺服器不在這一套裡。那些程式把資料準備好；React 負責把已經到手的資料畫成畫面。它不取代後端，也不規定資料存在哪裡。
-
-做出來的應用常常是單頁應用（Single Page Application，SPA）。瀏覽器先載入一份 `index.html`，裡面留一個掛載點 `#root`。之後換畫面靠 JavaScript 更新這一塊，不必整頁重新載入。掛載點怎麼接、入口檔怎麼把元件放進去，下一章建立專案會對著實際檔案做一次。
+用 React 做出來的網站多半是單頁應用（Single Page Application，SPA）。瀏覽器只載入一份幾乎空白的 `index.html`，之後換畫面都由 JavaScript 更新頁面上的節點，不重新載入整頁。
 
 ### 元件化
 
-做法是元件化（component-based）。標題、清單、表單各自是一塊元件（component），每塊用函式描述自己現在的長相，頁面再由這些區塊拼起來。
+React 把畫面切成元件（component）：標題、清單、表單各是一塊，每塊用函式描述自己的長相，頁面再由這些區塊拼起來。同一個元件可以用在不同位置，修改這支函式，用到它的地方就一起更新。
 
-同一種清單可以出現在不同位置，因為它是同一支函式。你改的是這支函式回傳的樣子，用到它的地方跟著那一支走。判斷與事件可以寫在元件裡面；資料庫連線與登入流程仍留在這套畫面函式庫外面。
+### JSX
 
-### JSX 與編譯
+用純 JavaScript 逐一建立節點，寫起來冗長，也看不出畫面的層次。JSX 讓你在函式裡直接寫接近 HTML 的標記，結構一眼就對得上畫面。
 
-直接用 JavaScript 建立每個節點，參數會拉得很長，畫面結構也不容易一眼看完。JSX 是語法糖（syntactic sugar）：在函式裡寫接近 HTML 的標記，讀的時候對得上畫面上的層次。
-
-瀏覽器不執行 JSX。開發時由 Vite 編成一般的 JavaScript，瀏覽器跑的是編成後的程式。正式站載入的同樣是建置過的結果，不是編輯器裡的 JSX 原文。標記怎麼寫、花括號裡能放什麼，後面的 JSX 章再拆開練。
+瀏覽器不認得 JSX。開發時 Vite 會先把它編譯成一般的 JavaScript，上線的也是編譯後的結果。標記怎麼寫、花括號能放什麼，後面的 JSX 章再拆開說明。
 
 ### react 與 react-dom
 
-在瀏覽器裡，React 分成兩個套件。寫元件的那一半，和把畫面放進頁面的那一半，不在同一個套件裡。
+在瀏覽器裡，React 分成兩個套件，兩者都要安裝：
 
-- `react` 管元件、狀態與 Hooks。你宣告的函式，以及讓函式記住資料的工具，從這個套件來。
-- `react-dom` 管掛載。它把上一項描述好的畫面，放進瀏覽器的 DOM。
+- `react`：元件、狀態與 Hooks，也就是描述畫面、讓函式記住資料的部分。
+- `react-dom`：把描述好的畫面放進瀏覽器的 DOM。
 
-少了前者，沒有元件與狀態可寫。少了後者，描述好的畫面不會出現在頁面上。函式怎麼掛上去、第一個元件回傳什麼，下一章建立專案再對著入口檔看。
+為什麼要分開？描述畫面的規則和輸出到哪裡是兩件事，同一套規則也能輸出到手機 App 等其他環境，那邊用的是別的套件。這門課只在瀏覽器裡用。
 
 # 建立專案
 
-上一階段已經裝好 Node、nvs 與 pnpm。這一章先在練習倉庫根目錄用 Vite 做出一個 React 試做專案，確認畫面跑得起來，再切回課堂準備好的 `03-react`。後面的元件、檢查工具與資料流，都在 `03-react` 裡看。
+這一章先用 Vite 建一個最小的 React 試做專案，看懂範本產生的檔案；再切到課堂準備好的 `03-react`，認識入口檔怎麼把元件掛上頁面。之後所有示範都在 `03-react` 裡執行。
 
 ## 用 Vite 建立 React 專案
 
-工具鏈上一階段已經能跑，這裡不必重裝。上一階段的 Vite 範本是純 HTML、CSS、JavaScript；這次改選 React，產生器會多放 `main.jsx`、`App.jsx` 與轉換 JSX 的插件。先在 `sandbox` 走完建立、安裝、看檔、啟動，再換到 `03-react`，讓大家的練習環境一致。
+Node、nvs 與 pnpm 在 04 已經裝好，這裡不重裝。這一節先認識 Vite 的 React 範本，在 `sandbox` 走完建立、安裝、看檔與啟動，再換到 `03-react`。
 
 ### 認識 React 範本
 
-**Vite** 同時是開發伺服器與打包器，上一階段已經用它看過 Tailwind。React 專案仍由它啟動：開發時瀏覽器跟它要目前用到的模組，JSX 會先編成一般 JavaScript。上線另跑建置，把用到的模組打包到成品資料夾。
+Vite 同時是開發伺服器與打包器。開發時瀏覽器向它要模組，JSX 會先被編成一般 JavaScript；上線時另跑建置，把用到的模組打包成靜態檔。React 專案與 04 的純 HTML 專案用的是同一個 Vite，差別只在範本多了 JSX 的轉換插件與入口檔。
 
-範本用互動選單或一行參數都可以。選單裡 Framework 選 React，Variant 選 JavaScript。等價的參數是 `--template react`。Variant 選 TypeScript 時，範本名稱是 `react-ts`，檔案會變成 `.tsx`。這門課用 JavaScript 那一項。
+建立時可以用互動選單，也可以直接指定範本。React 相關的選項如下：
 
-```bash
-pnpm dev     # 開發伺服器；終端機印出的 Local 多半是 http://localhost:5173/
-pnpm build   # 打包、壓縮，輸出到 dist/；直接雙擊 HTML 不會經過 Vite，JSX 也不會被轉換
-```
+- Framework 選 React，Variant 選 JavaScript：對應 `--template react`，檔案是 `.jsx`。
+- Variant 選 TypeScript：對應 `react-ts`，檔案是 `.tsx`。
+- Variant 選 JavaScript + React Compiler：對應 `react-compiler`，在 `react` 之外額外加上 React Compiler 的設定。
 
-### 手動建立專案（sandbox）
+這門課用 JavaScript，不用 TypeScript。`03-react` 另外啟用了 React Compiler，它是在建置時自動替元件做效能最佳化的工具，設定寫在 `vite.config.js`，後面看到該檔再說明。
 
-在 `studiesAdvanced` 倉庫根目錄自己做出一份能跑的 React 專案。它和課堂的 `03-react` 分開，做壞了把整個 `sandbox` 資料夾刪掉重建即可。後面的示範留在 `03-react`。
+### 手動建立專案
 
-```bash
-# sandbox：試做專案，建置結果在 sandbox/dist/
-# 03-react：課堂範例，和 sandbox 分開；正式練習一律 cd 03-react
-```
+在 `studiesAdvanced` 倉庫根目錄建立 `sandbox` 資料夾，它和 `03-react` 分開，做壞了整個刪掉重建即可。
 
 {% note info %}
-**已安裝過可跳過**
-Node、nvs、pnpm 上一階段已裝好，這裡不要重裝。若 `03-react` 已經能開開發伺服器，而且你做過一次 Vite 的 React 專案，可以略過 sandbox，從「改用 03-react」的安裝開始。第一次做 React 專案，請把下面四步走完。
+**已做過可跳過**
+已經用 Vite 做過 React 專案、`03-react` 也能啟動的人，可以略過 sandbox，直接看「改用 03-react」。
 {% endnote %}
 
 #### 步驟 1：建立專案
 
-在 VS Code 開一個新的終端機，它會停在倉庫根目錄（Windows 多半是 PowerShell，macOS 是 zsh，後面的指令兩邊相同）。先確認旁邊看得到 `03-react` 資料夾，再下建立指令。
-
-這是課堂上建立 React 專案的指令：請 pnpm 下載 Vite 官方的專案產生器，用 React 加 JavaScript 的範本，在目前位置建立 `sandbox` 資料夾。先看完整指令，再看拆開的註解：
+在 VS Code 開新終端機，它會停在倉庫根目錄。下面這行請 pnpm 暫時下載 Vite 的專案產生器，用 React 加 JavaScript 的範本建立 `sandbox`：
 
 ```bash
-pnpm create vite@latest sandbox -- --template react
+pnpm create vite@latest sandbox --template react
 ```
 
+指令拆開看：
+
 ```bash
-pnpm create          # 執行「專案產生器」：暫時下載 create-xxx 套件來跑，用完不留在電腦上
+pnpm create          # 執行專案產生器：暫時下載 create-xxx 套件來跑，用完不留在電腦上
   vite@latest        # 產生器是 create-vite，@latest 表示用最新版
-  sandbox            # 專案資料夾名稱，會建在目前所在的倉庫根目錄
-  --                 # 分隔線：後面的參數原封不動交給產生器（npm 必須寫，pnpm 寫了也沒關係）
-  --template react   # 範本：react 是 React + JavaScript；react-ts 是 TypeScript，這門課不選
+  sandbox            # 專案資料夾名稱，建在目前所在的資料夾
+  --template react   # 範本：React + JavaScript
 ```
 
-就算寫了 `--template react`，終端機多半還會再問兩題。Which linter to use 選 ESLint。本課一律選 ESLint。選完之後，產生器會拿掉範本裡的 `oxlint` 套件與 `.oxlintrc.json`，改加入 `eslint`、`@eslint/js`、`eslint-plugin-react-hooks`、`eslint-plugin-react-refresh`、`globals`，寫入 `eslint.config.js`，並把 `scripts.lint` 改成 `eslint .`。sandbox 先認得這份骨架；規則怎麼寫、怎麼跟 Prettier 搭配，留到後面的工具鏈，對照 `03-react`。Install with pnpm and start now 選 No，安裝與啟動留給下面兩步，你才看得到指令自己跑完。
+終端機之後還會問兩題：
 
-{% note success %}
-**試試：不指定範本**
-也可以拿掉範本參數，改用互動選單建立另一個資料夾。畫面會一步步問你框架（Framework）與語言（Variant），用方向鍵選、Enter 確定。Framework 選 React，Variant 選 JavaScript，會得到和上面一樣的結果。Variant 還有 TypeScript、JavaScript + React Compiler、RSC，以及名稱後面帶箭頭、會改跑別的指令的項目，那些先不要選。Which linter to use 同樣選 ESLint，是否立刻安裝仍選 No。試完不需要的資料夾直接刪掉即可。
-
-```bash
-# 拿掉 --template，改走互動選單；sandbox2 是另一個資料夾
-pnpm create vite@latest sandbox2
-# Framework：React
-# Variant：JavaScript
-# Which linter to use：ESLint
-# 完成後比較兩邊的 package.json：lint 都是 eslint .，並都有 eslint.config.js
-```
-{% endnote %}
+- Which linter to use：選 ESLint（另一個選項是 Oxlint）。選了之後，產生器會移除 `oxlint`，改加入 `eslint` 與 React 相關的檢查套件，並寫入 `eslint.config.js`，把 lint 指令改成 `eslint .`。
+- Install with pnpm and start now：選 No。安裝與啟動留給下面兩步分開做。
 
 #### 步驟 2：安裝依賴
 
-產生器只負責放檔案，還沒有下載任何套件。進入資料夾，依選完 ESLint 之後的 `package.json` 安裝 React、Vite 與檢查套件。
+產生器只放檔案，還沒下載任何套件。進入資料夾後安裝：
 
 ```bash
 cd sandbox     # 進入剛建立的專案資料夾
 pnpm install   # 依 package.json 下載套件到 node_modules/
 ```
 
-範本已經寫好 React、React DOM、Vite 與 `@vitejs/plugin-react`。選 ESLint 之後，同一份清單還會多出 `eslint`、`@eslint/js`、`eslint-plugin-react-hooks`、`eslint-plugin-react-refresh` 與 `globals`，`lint` 指令是 `eslint .`。這一步只是下載，不必再手動改版本。React 與 React DOM 要一起在；清單裡少一邊時，畫面畫不上去。
+清單裡有 `react`、`react-dom`、`vite` 與轉換 JSX 的 `@vitejs/plugin-react`，加上選 ESLint 後多出的檢查套件。版本號不用自己改。
 
 #### 步驟 3：認識檔案結構
 
-安裝完先看檔，再啟動。HTML 幾乎是空的，真正的畫面在 `src/App.jsx`，`src/main.jsx` 負責把那個元件掛進頁面。
+啟動前先看檔案。HTML 幾乎是空的，真正的畫面在 `src/App.jsx`，`src/main.jsx` 負責把它掛進頁面。
 
 ```bash
-# sandbox/index.html      空頁面，只留 #root，腳本指向 /src/main.jsx
-# sandbox/vite.config.js  plugins 裡有 react()，負責轉換 JSX
-# sandbox/src/main.jsx    入口：createRoot 把 App 畫進 #root
-# sandbox/src/App.jsx     畫面上那一塊元件；範本預設是標誌與計數按鈕
+# sandbox/index.html        空頁面，只留 #root，腳本指向 /src/main.jsx
+# sandbox/vite.config.js    plugins 裡有 react()，負責轉換 JSX
+# sandbox/src/main.jsx      入口：createRoot 把 App 畫進 #root
+# sandbox/src/App.jsx       畫面上那一塊元件；範本預設是標誌與計數按鈕
 # sandbox/eslint.config.js  選 ESLint 後產生器寫入的檢查設定
-# sandbox/package.json      依賴與 dev、build、lint 指令；lint 是 eslint .
+# sandbox/package.json      依賴與 dev、build、lint 指令
 ```
 
-對一下檢查器改過的片段。`react`、`react-dom`、`vite` 仍在同一份檔案裡，這裡只留你要核對的指令與套件。版本號以產生器當下寫入的為準，名稱要對得上。
-
-```json sandbox/package.json
-{
-  "scripts": {
-    "lint": "eslint ."
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.10.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.6",
-    "globals": "^17.12.0"
-  }
-}
-```
-
-頁面本體只有一個起點。腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔，路徑以斜線開頭，表示這個專案的根目錄。
+頁面本體只有一個起點。腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔；路徑以斜線開頭，表示從專案根目錄算起。
 
 ```html sandbox/index.html
 <body>
   <div id="root"></div>
-  <!-- 範本原本就有：main.jsx 會畫進 #root -->
   <script type="module" src="/src/main.jsx"></script>
 </body>
 ```
 
-入口盯著 `#root`，再把 `App` 畫進去。外面包的 `<StrictMode>` 是開發時的檢查。為什麼範本一開始就打開、它在查什麼、怎麼關掉，以及為什麼課堂不關，見後面的「createRoot」。下面依課堂排版補了分號，結構與產生器給的檔相同。
-
-```jsx sandbox/src/main.jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
-```
-
-設定檔裡要有 React 插件，瀏覽器才讀得懂 JSX。`defineConfig` 是 Vite 提供的設定包裝函式，從 `vite` 匯入。傳進去的物件就是這份 Vite 設定，下面的例子放的是 `plugins`。
+Vite 設定裡的 React 插件負責轉換 JSX，沒有它瀏覽器讀不懂 JSX。`defineConfig` 是 Vite 提供的設定包裝函式，包不包都能跑，包起來是讓編輯器能給提示。
 
 ```js sandbox/vite.config.js
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react()], // 沒有這個插件，JSX 不會被轉換
+  plugins: [react()],
 });
 ```
 
-{% note info %}
-**包裝函式把設定包起來再匯出**
-多數情況直接寫 `export default { … }` 也能跑。包一層主要是寫法統一，並讓編輯器較好給提示。
-{% endnote %}
-
-範本的 `App.jsx` 比較長，畫面上會是標誌和一顆計數按鈕。整份換成下面這樣，等一下才確定字是從這個檔來的。改完記得存檔。
+`main.jsx` 在 `03-react` 裡有一樣的檔案，下一節再看。這裡先把範本的 `App.jsx` 整份換成下面這樣，等一下才確定畫面上的字是從這個檔來的：
 
 ```jsx sandbox/src/App.jsx
 export default function App() {
@@ -281,75 +197,60 @@ export default function App() {
 }
 ```
 
-{% note info %}
-**Tailwind 設定留在課堂專案**
-sandbox 這一步只要跑起來，並對上 `eslint.config.js` 與 `lint` 指令。正式練習的完整設定在 `03-react`，sandbox 先認得產生器給的 ESLint 骨架。想在 sandbox 順便看到工具類別，可以照上一階段把 Tailwind 的 Vite 插件掛上，標題改成 `className="text-3xl font-bold text-teal-700"`，做完不必留著。
-{% endnote %}
-
 #### 步驟 4：啟動開發伺服器
 
-在 `sandbox` 目錄啟動開發伺服器，終端機會印出 Local 網址，多半是 `http://localhost:5173/`。用 Chrome 打開，應看到「React 有跑起來」。
+在 `sandbox` 目錄啟動開發伺服器，終端機會印出 Local 網址，通常是 `http://localhost:5173/`，用 Chrome 打開應看到「React 有跑起來」。
 
 ```bash
-pnpm dev   # 日常開發；終端機印出的 Local 多半是 http://localhost:5173/
+pnpm dev     # 開發伺服器，修改存檔後畫面自動更新
+pnpm build   # 打包成上線用的靜態檔，輸出到 dist/
 ```
 
-改 `App.jsx` 再存檔，畫面會跟著換。這叫熱更新（Hot Module Replacement，HMR）：開發伺服器換上你改過的那一塊。看完在終端機按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉。要產出上線用的檔案再執行：
+改 `App.jsx` 再存檔，畫面會立刻跟著換，這叫熱更新（Hot Module Replacement，HMR）：開發伺服器只換上你改過的那一塊，不必整頁重載。確認完在終端機按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉。`pnpm build` 產出的是打包後的檔案，不是正在編輯的 `src/`，要交付靜態檔時才需要跑。
 
-```bash
-pnpm build   # 輸出到 sandbox/dist/，是打包後的檔，不是正在編輯的 src/
-```
+### 改用 03-react
 
-建置結果放在輸出資料夾。之後日常開發仍用開發伺服器，要交靜態檔時才再跑建置。
+sandbox 只要確認三件事：選的是 React、看得懂 `main.jsx` 與 `App.jsx`、`pnpm dev` 看得到自己寫的標題。之後的示範都在 `03-react`，那裡已經接好 Tailwind、React Compiler、ESLint 與 Prettier，用產生器重建會蓋掉這些設定。
 
-### 改用 03-react 練習環境
-
-試做專案確認三件事即可：選的是 React、看懂 `main.jsx` 與 `App.jsx`、`pnpm dev` 看得到自己寫的標題。後面每一則示範都在課堂專案。Tailwind 插件、入口 CSS、ESLint 與 Prettier 已經接好。正式練習一律進入 `03-react`。
-
-在 VS Code 新開一個終端機（它會開在倉庫根目錄），再進入專案、安裝、啟動。若目前終端機還停在試做資料夾，先回到根目錄。sandbox 的開發伺服器若還開著，先在那個終端機按 <kbd>Ctrl</kbd>+<kbd>C</kbd>。
+若 sandbox 的開發伺服器還開著，先按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉，再從倉庫根目錄進入專案：
 
 ```bash
 cd ..            # 若還停在 sandbox，先回到倉庫根目錄
-cd 03-react      # 後面的示範都在這裡
+cd 03-react
 pnpm install
 pnpm dev
 ```
 
-{% note info %}
-**專案已經在手上**
-`03-react` 是倉庫裡準備好的資料夾，用產生器重建會蓋掉課堂檔。Node、pnpm 與這個資料夾都已經能用時，終端機進入 `03-react`，執行 `pnpm install` 與 `pnpm dev` 即可。
-{% endnote %}
+開啟後，頁面最上方會列出所有示範的按鈕（選單由講師的工具依講義順序產生），點按鈕就切換到對應的示範。
 
-同樣用終端機印出的 Local 網址開 Chrome。應看到一排示範按鈕，主區是編號 01。建置會把這個專案輸出到它自己的成品資料夾。套件清單要求的 Node 至少是 24；若安裝時抱怨版本，回到上一階段確認版本號。
+`package.json` 的 `engines.node` 要求 Node 26 以上，安裝時若抱怨版本，用 `node -v` 確認是 v26 開頭。主要套件如下：
 
-```bash
-# pnpm build 輸出到 03-react/dist/
-# pnpm preview 看成品；pnpm lint 跑這一專案的 ESLint
-# package.json 的 engines.node 是 >=24
-node -v   # 安裝若抱怨版本，確認是 v24 開頭
-```
+- `react`、`react-dom`：19.3。
+- `vite`：8；`@vitejs/plugin-react`：6，負責轉換 JSX。
+- `babel-plugin-react-compiler`、`@rolldown/plugin-babel`：React Compiler 與它需要的 Babel 外掛載入器。
+- `tailwindcss` 與 `@tailwindcss/vite`：4。
+- `eslint`、`eslint-plugin-react-hooks`、`prettier`：檢查與排版，在選讀的工具鏈說明。
 
-依賴已經寫在 `package.json`，`pnpm install` 會裝上。React 與 React DOM 是 19，兩邊都在清單裡。Vite 是 8，`@vitejs/plugin-react` 是 6，JSX 由這個插件轉換。Tailwind 是 4，插件與入口 CSS 都接好了。
-
-```bash
-# dependencies：react、react-dom（19）
-# devDependencies：vite 8、@vitejs/plugin-react 6
-# Tailwind：tailwindcss 4、@tailwindcss/vite 4
-# 檢查與排版：eslint、prettier、eslint-config-prettier
-#   eslint-plugin-react-hooks、eslint-plugin-react-refresh、globals
-```
-
-Vite 設定同時留下 React 與 Tailwind 兩個插件。樣式從入口 CSS 引入。
+這份 Vite 設定在 React 插件之後掛上 React Compiler 與 Tailwind。
 
 ```js 03-react/vite.config.js
 import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
+    tailwindcss(),
+  ],
 });
 ```
+
+React Compiler 在建置時分析元件，自動替重複計算的值與函式做記憶（memoization，同樣輸入就沿用上次的結果）。有了它，多數情況不必手寫記憶用的函式，這些手動寫法在後面的選讀才會出現。編譯器只處理遵守 React 規則的元件；寫法不合規則時，它會略過那個元件，ESLint 的 Hooks 規則就是用來提早抓出這類問題。
+
+Tailwind 的樣式從入口 CSS 引入：
 
 ```css 03-react/src/index.css
 @import 'tailwindcss';
@@ -360,24 +261,19 @@ body {
 }
 ```
 
-入口仍是 `index.html` 的 `#root` 與 `src/main.jsx`，和 sandbox 同一條路。課堂的 `App.jsx` 用一份清單切換後面的示範，按按鈕就換內容，網址不會變。掛載在下一節拆開看，檢查設定與那份清單在工具鏈。
-
 ## 元件與掛載
 
-上一章把 React 放在用函式描述畫面的位置。進到 `03-react` 之後，你交給它的就是這樣一個函式：回傳這一塊現在的長相。狀態變了，React 再呼叫這個函式，用新的回傳換掉畫面上的那一塊。
+上一章說過，React 用函式描述畫面。進到 `03-react` 後，你交給它的就是這樣的函式：回傳這一塊現在該長什麼樣子。這一節先看一個最小的元件長什麼樣，再看入口檔怎麼把它放進頁面。
 
-- 元件是回傳畫面的函式。一塊標題、一列清單、一張表單，都可以各是一個元件。
-- 渲染（render）是 React 呼叫元件、算出這一次的元素。提交（commit）才把差異寫進頁面上的節點。
+本節的 `export`、`import` 是 ES Module 的語法，作用是讓一個檔案把函式交給另一個檔案使用，這裡先照寫，細節見 {% post_link lokiTech-15day-06-js-basics %} 的選讀「ES Module」。
 
 ### 函式元件
 
-元件就是一個函式。名稱用大寫開頭，回傳你要的元素。React 呼叫它，把回傳的那棵元素畫進頁面。
-
 **觀念**
 
-函式名稱要大寫開頭，React 才把它當元件。回傳的標籤寫在函式裡，看起來像 HTML，實際上是 JavaScript 裡的 JSX。最外層只有一個父元素，裡面可以再放標題與段落。
+元件就是一個回傳畫面的函式。函式名稱要大寫開頭，React 才會把它當元件；回傳的標記是 JSX，看起來像 HTML，其實是寫在 JavaScript 裡的語法。
 
-直接寫 `class` 會跟 JavaScript 的類別撞名，所以外觀類別寫成 `className`。這一則只描述畫面，還沒有按鈕，也還沒有會變的資料。
+JSX 的最外層只能有一個父元素，裡面再放子元素。外觀類別要寫成 `className`，因為 `class` 在 JavaScript 裡是保留字。這個示範只描述畫面，還沒有按鈕，也沒有會變的資料。
 
 ```jsx 03-react/src/demos/01-hello.jsx
 export default function Hello() {
@@ -399,59 +295,30 @@ export default function Hello() {
 
 **解析**
 
-- `export default` 把這個函式交給別的檔使用。一個檔案通常交出一個主要元件。
-- 回傳外面的括號，是為了讓標籤可以分成多行寫。
-- 父層是 `section`。裡面兩個標籤是它的子元素，所以這一次回傳仍是一棵樹。
-- 標籤必須成對，或像輸入框那樣自己結束。少了結尾，轉換會失敗。
+- `export default` 把這個函式交給別的檔案使用，一個檔案通常交出一個主要元件。
+- `return` 後面的括號讓標記可以分成多行寫。
+- 最外層的 `section` 是父元素，兩個標籤是它的子元素，所以回傳仍是一棵樹。
+- 標籤必須成對，或像 `<img />` 那樣自己結束；少了結尾，編譯會失敗。
 
 {% note info %}
 **以前的寫法**
-class 元件用 `this.state` 記資料。現在的文件與這門課都只寫函式元件。
+舊教學常見 class 元件（用 `this.state` 記資料）。現在的官方文件與這門課都只寫函式元件。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-標題改成「你好，React」。下面那句留著，父層仍是同一個 section。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-回傳的文字改了，函式再跑時畫面就會換成新的標題。這一則還沒有按鈕，所以存檔後看畫面即可。
-
-```jsx 03-react/src/demos/01-hello.jsx
-export default function Hello() {
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">你好，React</h1>
-      <p>這一段由元件回傳。</p>
-    </section>
-  );
-}
-```
-
-</details>
 
 ### createRoot
 
-瀏覽器先載入一份幾乎是空的 HTML。React 從指定的那個節點開始畫。開發時外面包一層嚴格模式，讓有問題的寫法更早出現。
-
 **觀念**
 
-HTML 只留一個空的 `div` 當起點。`createRoot` 盯著這個節點，`render` 把元件畫進去。畫面上的內容仍是元件的回傳。
+瀏覽器先載入幾乎空白的 HTML，React 從指定的節點開始把畫面畫進去。這個動作由 react-dom 的 `createRoot` 完成：它指定掛載點，再呼叫 render 把元件畫進去。第一次畫之前，React 會先清掉掛載點裡原有的內容。
 
-Vite 產生 React 專案時，會在 `main.jsx` 用 `<StrictMode>` 包住 `<App />`。sandbox 與 `03-react` 都是這份寫法，所以專案一開始嚴格模式就是開的。`<StrictMode>` 是 React 的嚴格模式（React Strict Mode），不是多出來的 HTML 標籤。
+範本的入口檔用 `<StrictMode>` 包住 App，所以專案一開始就啟用了嚴格模式。它是 React 提供的元件，不會產生任何 HTML 標籤，只在開發時多做檢查，目的是提早抓出不純（impure）的寫法。純的意思是：同樣的資料應算出同樣的畫面，渲染過程不該改動外面的資料。
 
-它只在開發時多做檢查，用來提早抓到不純的渲染：同樣的狀態應算出同樣的畫面，元件函式在這一步不該改到外面的資料。effect 的收尾檢查會在下一篇 {% post_link lokiTech-15day-10-react-advanced %} 看到。`<StrictMode>` 不會在畫面上多包一層看得到的外框。正式建置不會對使用者再跑那些額外檢查。
+開發時嚴格模式會做這些事：
 
-開發時，元件第一次掛上畫面，React 可能把元件函式再呼叫一次。兩次都應算出同一份畫面。元件函式裡若有起始的 `console.log`，同一行會印兩次。那是檢查在跑，使用者並沒有點兩下。後面的「批次更新」會看到這個現象：第一次載入時起始那一行可能連續出現兩次，按下按鈕之後新的那一行只有一次。
+- 元件函式會多呼叫一次，兩次都應算出一樣的畫面。函式裡的 console.log 因此會印兩次，這不代表使用者點了兩下。
+- 元件第一次掛上時，每個 effect 會多跑一輪「設定、清除、再設定」，檢查清除函式有沒有寫對。effect 在下一篇才登場。
 
-要關掉，就拿掉 `main.jsx` 裡的 `<StrictMode>`，留下 `createRoot(document.getElementById('root')).render(<App />)`。課堂與 `03-react` 保持打開。關掉之後 Console 比較安靜，嚴格模式本來要露出的問題也一起被藏起來。
-
-{% note info %}
-**正式建置不會多一層畫面**
-`pnpm build` 做出來的成品不會因為 Strict Mode 多給使用者一層畫面。開發時多跑是刻意的檢查。
-{% endnote %}
+這些檢查只在開發時執行，`pnpm build` 之後的成品不會有，也不會多出一層畫面。要關掉的話，把 StrictMode 那層拿掉，直接 render App 即可；但關掉只是讓問題看不見，課堂維持開啟。
 
 ```html 03-react/index.html
 <!doctype html>
@@ -481,61 +348,26 @@ createRoot(document.getElementById('root')).render(
 );
 ```
 
-畫面的最外層是 `App`。打開開發者工具，`#root` 裡面會出現元件產生的標籤。
+打開開發者工具，`#root` 裡會出現元件產生的標籤。
 
 **解析**
 
-- `index.html` 沒有正文內容。正文由 React 畫進 `#root`。
-- 腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔。
-- `createRoot` 的引數必須是頁面上真的有的那個節點。找不到就無法畫。
-- Vite 的 React 範本在 `main.jsx` 用 `<StrictMode>` 包住 `<App />`。sandbox 與 `03-react` 都這樣寫，所以嚴格模式一開始就是開的。
-- `<StrictMode>` 只在開發時檢查不純的渲染。它不會變成畫面上多出來的一層，正式建置也不會對使用者重跑那些檢查。
-- 開發時第一次掛上，元件函式可能再跑一次，兩次都應算出同一份畫面。起始的 `console.log` 印兩次是這項檢查，使用者並沒有點兩下。
-- 要關掉就拿掉 `<StrictMode>`，改成 `createRoot(...).render(<App />)`。課堂與 `03-react` 保持打開。關掉只會讓 Console 變安靜，問題仍留在程式裡。
+- `index.html` 沒有正文，正文由 React 畫進 `#root`。
+- `createRoot` 的引數必須是頁面上真的存在的節點，找不到就無法畫。
+- `import './index.css'` 沒有取值，只是把這個樣式檔載入，Tailwind 的樣式因此生效。
+- `App` 是最外層元件，之後的元件都由它往下拼。
 
-{% note success %}
-**換你試試：**
-把 HTML 的標題改成「元件練習」。`#root` 與腳本那行留著。
-{% endnote %}
+## 選讀：工具鏈
 
-<details>
-<summary>參考答案</summary>
-
-分頁標題來自 HTML 的 `title`，跟元件裡的標題是兩件事。
-
-```diff 03-react/index.html
-  // ...
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
--     <title>React 練習</title>
-+     <title>元件練習</title>
-    </head>
-    <body>
-      // ...
-```
-
-</details>
-
-## 工具鏈
-
-`03-react` 裡 Vite 負責開發伺服器與打包，Tailwind 負責外觀的工具類別，ESLint 看 React 的規則，Prettier 只排版。四件事都寫在專案裡，不要寫進個人的使用者設定。這一節打開檢查、排版，以及最外層怎麼切換示範。
+`03-react` 除了 Vite 與 Tailwind，還接了 ESLint 與 Prettier。ESLint 檢查程式有沒有違反規則，Prettier 只管排版，兩者分工，才不會同一行被兩套工具各改一次。這一節看這兩份設定。
 
 ### ESLint
 
-ESLint 看程式有沒有違反 React 的規則。Prettier 只負責空格、引號與分號。兩件事分開，避免同一行被兩套工具各改一次。你在 `03-react` 執行 `pnpm lint`，跑的就是這份設定。
-
-{% note info %}
-**檢查器選 ESLint**
-`pnpm create vite` 問 Which linter to use 時，本課一律選 ESLint。sandbox 認的是產生器留下的骨架，`03-react` 的 `eslint.config.js` 再往下接 Prettier。同一個專案不要同時留兩套檢查器改同一支程式。
-{% endnote %}
-
 **觀念**
 
-這份設定用 ESLint 的 flat config。檢查範圍是 JavaScript 與 JSX。`dist` 不檢查。React Hooks 的建議規則，以及 Vite 重新整理元件時要守的規則，都掛在這裡。
+在 `03-react` 執行 `pnpm lint`，跑的就是下面這份設定。它用 ESLint 的 flat config（以陣列列出一組組設定的新格式），檢查所有 `.js` 與 `.jsx`，忽略 `dist`。`defineConfig` 在這裡從 `eslint/config` 匯入，和 Vite 的同名但不是同一個函式。
 
-Prettier 的設定放在陣列最後，讓排版規則不要跟檢查規則打架。終端機用 `pnpm lint` 看結果。
-
-這裡的 `defineConfig` 從 `eslint/config` 匯入。它和 Vite 的 `defineConfig` 同名，套件不同，是另一個函式。用途類似：把設定包起來再匯出。前面 `vite.config.js` 見過同名寫法，來源不同；這裡包的是 flat config，內容是陣列。
+Prettier 的設定放在陣列最後，用來關掉與排版衝突的規則。同一個專案不要同時留兩套檢查器去改同一支程式。
 
 ```js 03-react/eslint.config.js
 import js from '@eslint/js';
@@ -564,53 +396,24 @@ export default defineConfig([
 ]);
 ```
 
-沒有錯誤時，指令結束、終端機不印問題清單。警告仍會印出來，但不會讓指令失敗。
+沒有問題時，指令結束、不印任何內容；警告會印出但不讓指令失敗，錯誤則會讓指令失敗。
 
 **解析**
 
-- `eslint-plugin-react-hooks` 會抓 Hooks 的呼叫順序。effect 的依賴若少寫，它會提出警告。
-- 在 effect 裡同步呼叫設定狀態，這套規則會當成錯誤。那是下一篇才會碰到的寫法。
-- `eslint-plugin-react-refresh` 避免一個檔案匯出的內容讓熱更新失效。
-- `globals.browser` 讓 document 與 fetch 不會被當成未宣告變數。
-- `eslint-config-prettier` 放最後，空格與引號才不會被 ESLint 再判一次錯。
-
-{% note success %}
-**換你試試：**
-在專案資料夾執行 `pnpm lint`。起始程式應能通過。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-通過時不會列出錯誤。若某個示範少了依賴或改壞了 Hooks 的規則，同一支指令會指出檔名與行號。
-
-```bash
-pnpm lint
-```
-
-</details>
+- `reactHooks.configs.flat.recommended` 包含 Hooks 的使用規則，以及 React Compiler 用的檢查。
+- 規則錯誤（error）有：在 effect 裡同步設定狀態、渲染過程讀寫 ref、渲染不純、在渲染中設定狀態。這幾項在後面用到時再細說。
+- effect 的依賴陣列少寫，只會是警告（warning）。
+- `eslint-plugin-react-refresh` 檢查檔案的匯出方式，避免熱更新失效。
+- `globals.browser` 讓 `document`、`fetch` 這些瀏覽器全域名稱不會被判成未宣告。
+- `eslint-config-prettier` 放最後，空格與引號就只由 Prettier 決定。
 
 ### Prettier
 
-全班用同一套排版：兩個空格、要分號、JavaScript 用單引號。JSX 的屬性仍用雙引號，這是 Prettier 的預設。
-
 **觀念**
 
-設定只放專案裡的 `.prettierrc`。存檔時要排版，並讓 ESLint 能一併修可自動修的問題。編輯器設定放在專案的 `.vscode`，不要寫進個人的使用者設定。
+全班用同一套排版：縮排兩個空格、要分號、JavaScript 字串用單引號，JSX 屬性仍用雙引號（Prettier 的預設）。規則放在專案裡的 `.prettierrc`，不要寫進個人的使用者設定，別人 clone 專案才會套到一樣的規則。
 
-規則跟專案走。不要在使用者的 `settings.json` 另外寫 `prettier.semi` 這一類鍵。
-
-課堂練習 repo 的根目錄已經有一份 `.vscode`。在 `03-react` 裡建立 `.vscode` 資料夾，再把這兩個檔複製進來：
-
-- `settings.json`：存檔時用 Prettier 排版，並修 ESLint 能自動修的問題。
-- `extensions.json`：建議安裝 Prettier 與 ESLint 等擴充。打開專案時編輯器會提示安裝。
-
-Cursor 或 VS Code 只會讀你打開的那個資料夾裡的 `.vscode`。把 `03-react` 當專案開啟時，要用專案內這一份。可略過複製 `placeholder.code-snippets`。
-
-```bash
-mkdir -p .vscode
-cp ../.vscode/settings.json ../.vscode/extensions.json .vscode/
-```
+編輯器的行為放在專案的 `.vscode` 資料夾，`03-react` 已經附上。VS Code 只讀你開啟的那個資料夾裡的 `.vscode`，所以要把 `03-react` 當專案開啟。
 
 ```json 03-react/.prettierrc
 {
@@ -683,638 +486,37 @@ cp ../.vscode/settings.json ../.vscode/extensions.json .vscode/
 }
 ```
 
-存檔後，JavaScript 字串會是單引號，語句結尾有分號。JSX 屬性仍是雙引號。
-
 **解析**
 
-- `singleQuote` 只管 JavaScript 字串。標籤屬性維持雙引號，讀起來才跟 HTML 一致。
-- `tabWidth` 是縮排幾個空格。這門課用 2。
-- `editor.formatOnSave` 設成 true，存檔時交給 Prettier 排版。
-- `editor.defaultFormatter` 指定用 Prettier 擴充來排版。各語言區塊也寫了同一套，HTML、CSS、JavaScript 與 JSON 都會走 Prettier。
+- `singleQuote` 只管 JavaScript 字串；標籤屬性維持雙引號，與 HTML 一致。
+- `tabWidth` 是縮排的空格數，這門課用 2。
+- `editor.formatOnSave` 讓存檔時交給 Prettier 排版，`editor.defaultFormatter` 指定使用 Prettier 擴充。
 - `source.fixAll.eslint` 設成 `explicit`，存檔時一併修 ESLint 能自動修的問題。
-- `extensions.json` 列出建議安裝的擴充。打開這個資料夾時，編輯器會提示安裝清單裡還沒有的項目。
-- 存檔修 ESLint 與排版用的都是專案設定。別人 clone 同一份專案，會套到同一套。
-- 排版問題不要寫進 ESLint 規則。空格與引號只交給 Prettier。
-
-{% note success %}
-**換你試試：**
-在任一隻示範檔故意把字串改成雙引號，存檔。存完應回到單引號，分號還在。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-Prettier 會依 `.prettierrc` 把 JavaScript 字串改回單引號。不要為了這一點去改 ESLint。
-
-```jsx 03-react/src/demos/02-expr.jsx
-export default function ExprDemo() {
-  const name = '台北城市漫遊';
-  const price = 12800;
-  const people = 2;
-  let peopleLabel = '一人';
-  if (people === 2) {
-    peopleLabel = '兩人';
-  } else if (people >= 3) {
-    peopleLabel = '多人';
-  }
-
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">{name}</h1>
-      <p>
-        {peopleLabel} {price * people}
-      </p>
-    </section>
-  );
-}
-```
-
-</details>
-
-### 示範清單
-
-切換清單記著現在要看哪一個示範。狀態存的是編號，按鈕把編號換成另一個。網址不會變，換頁留到 React Router。
-
-**觀念**
-
-每一筆有編號、標題與元件。找到對上的那一筆之後，把元件放到變數 `View`，再用標籤把它畫出來。變數名稱要大寫開頭，React 才會把它當元件。
-
-這一頁的狀態只負責切換。各示範自己的狀態在切走之後會卸掉，再點回來會重新開始。
-
-```jsx 03-react/src/App.jsx
-import { useState } from 'react';
-import Hello from './demos/01-hello.jsx';
-import ExprDemo from './demos/02-expr.jsx';
-import DownDemo from './demos/03-down.jsx';
-import TreeDemo from './demos/04-tree.jsx';
-import PlaceDemo from './demos/05-place.jsx';
-import FragmentDemo from './demos/06-fragment.jsx';
-import StyleDemo from './demos/07-style.jsx';
-import ClassDemo from './demos/08-class.jsx';
-import EarlyDemo from './demos/09-early.jsx';
-import TernaryDemo from './demos/10-ternary.jsx';
-import AndDemo from './demos/11-and.jsx';
-import ZeroDemo from './demos/12-zero.jsx';
-import OrDemo from './demos/13-or.jsx';
-import NullishDemo from './demos/14-nullish.jsx';
-import CardDemo from './demos/15-card.jsx';
-import BoardDemo from './demos/16-board.jsx';
-import PropsDemo from './demos/17-props.jsx';
-import DefaultsDemo from './demos/18-defaults.jsx';
-import CallbackDemo from './demos/19-callback.jsx';
-import ChildrenDemo from './demos/20-children.jsx';
-import CountDemo from './demos/21-state.jsx';
-import MultiDemo from './demos/22-multi.jsx';
-import SnapshotDemo from './demos/23-snapshot.jsx';
-import UpdaterDemo from './demos/24-updater.jsx';
-import BatchDemo from './demos/25-batch.jsx';
-import RulesDemo from './demos/26-rules.jsx';
-import AddDemo from './demos/27-add.jsx';
-import RemoveDemo from './demos/28-remove.jsx';
-import EditDemo from './demos/29-edit.jsx';
-import ObjectDemo from './demos/30-object.jsx';
-import NestedDemo from './demos/31-nested.jsx';
-import EventDemo from './demos/32-event.jsx';
-import TargetDemo from './demos/33-target.jsx';
-import PickDemo from './demos/34-pick.jsx';
-import PreventDemo from './demos/35-prevent.jsx';
-import MapDemo from './demos/36-map.jsx';
-import FilterDemo from './demos/37-filter.jsx';
-import EmptyDemo from './demos/38-empty.jsx';
-import KeyDemo from './demos/39-key.jsx';
-import InputDemo from './demos/40-input.jsx';
-import AreaDemo from './demos/41-area.jsx';
-import SelectDemo from './demos/42-select.jsx';
-import CheckDemo from './demos/43-check.jsx';
-import RadioDemo from './demos/44-radio.jsx';
-import FieldsDemo from './demos/45-fields.jsx';
-import SubmitDemo from './demos/46-submit.jsx';
-import UseIdDemo from './demos/47-useid.jsx';
-import EffectMount from './demos/48-effect.jsx';
-import DepsDemo from './demos/49-deps.jsx';
-import TimerDemo from './demos/50-timer.jsx';
-import LoopDemo from './demos/51-loop.jsx';
-import LintDemo from './demos/52-lint.jsx';
-import LoadDemo from './demos/53-load.jsx';
-import EmptyLoadDemo from './demos/54-empty.jsx';
-import AbortDemo from './demos/55-abort.jsx';
-import GetDemo from './demos/56-get.jsx';
-import PostDemo from './demos/57-post.jsx';
-import PutDemo from './demos/58-put.jsx';
-import DeleteDemo from './demos/59-delete.jsx';
-import ItemsDemo from './demos/60-items-demo.jsx';
-import DeriveDemo from './demos/61-derive.jsx';
-import ClickFetchDemo from './demos/62-click.jsx';
-import HookDemo from './demos/63-hook.jsx';
-import ToggleDemo from './demos/64-toggle.jsx';
-import FilterHookDemo from './demos/65-filter.jsx';
-import TwiceDemo from './demos/66-twice.jsx';
-import LiftDemo from './demos/67-lift.jsx';
-import SiblingsDemo from './demos/68-siblings.jsx';
-import DrillDemo from './demos/69-drill.jsx';
-import ContextDemo from './demos/70-context.jsx';
-import ContextSplitDemo from './demos/71-contextDemo/index.jsx';
-import DefaultDemo from './demos/72-default.jsx';
-import MemoDemo from './demos/73-memo.jsx';
-import MemoComponentDemo from './demos/74-memo-component.jsx';
-import UseCallbackDemo from './demos/75-callback.jsx';
-import RefDemo from './demos/76-ref.jsx';
-import RefCountDemo from './demos/77-ref-count.jsx';
-import ReducerCountDemo from './demos/78-reducer-count.jsx';
-import ReducerStateDemo from './demos/79-reducer-state.jsx';
-import ReducerDemo from './demos/80-reducer.jsx';
-import TodoPropsDemo from './demos/81-propsDemo/index.jsx';
-import ProviderDemo from './demos/82-providerDemo/index.jsx';
-import ActionDemo from './demos/83-action.jsx';
-import ActionStateDemo from './demos/84-action-state.jsx';
-import OptimisticDemo from './demos/85-optimistic.jsx';
-import StatePages from './demos/86-state-pages.jsx';
-
-const demos = [
-  { id: '01', title: '函式元件', Component: Hello },
-  { id: '02', title: '表達式', Component: ExprDemo },
-  { id: '03', title: '由父層傳入', Component: DownDemo },
-  { id: '04', title: '拆分元件', Component: TreeDemo },
-  { id: '05', title: '狀態的位置', Component: PlaceDemo },
-  { id: '06', title: 'Fragment', Component: FragmentDemo },
-  { id: '07', title: 'style 物件', Component: StyleDemo },
-  { id: '08', title: 'className', Component: ClassDemo },
-  { id: '09', title: '提早 return', Component: EarlyDemo },
-  { id: '10', title: '三元運算子', Component: TernaryDemo },
-  { id: '11', title: '邏輯且', Component: AndDemo },
-  { id: '12', title: '數字 0', Component: ZeroDemo },
-  { id: '13', title: '邏輯或', Component: OrDemo },
-  { id: '14', title: '空值合併', Component: NullishDemo },
-  { id: '15', title: 'default export', Component: CardDemo },
-  { id: '16', title: 'named export', Component: BoardDemo },
-  { id: '17', title: '解構', Component: PropsDemo },
-  { id: '18', title: '預設值', Component: DefaultsDemo },
-  { id: '19', title: '函式型 props', Component: CallbackDemo },
-  { id: '20', title: 'children', Component: ChildrenDemo },
-  { id: '21', title: '宣告狀態', Component: CountDemo },
-  { id: '22', title: '多個狀態', Component: MultiDemo },
-  { id: '23', title: '狀態快照：只加一', Component: SnapshotDemo },
-  { id: '24', title: '更新函式：加二', Component: UpdaterDemo },
-  { id: '25', title: '批次更新', Component: BatchDemo },
-  { id: '26', title: 'Hooks 規則', Component: RulesDemo },
-  { id: '27', title: '陣列新增', Component: AddDemo },
-  { id: '28', title: '陣列刪除', Component: RemoveDemo },
-  { id: '29', title: '陣列修改', Component: EditDemo },
-  { id: '30', title: '物件欄位', Component: ObjectDemo },
-  { id: '31', title: '巢狀物件', Component: NestedDemo },
-  { id: '32', title: '命名慣例', Component: EventDemo },
-  { id: '33', title: '事件物件', Component: TargetDemo },
-  { id: '34', title: '帶參數', Component: PickDemo },
-  { id: '35', title: 'preventDefault', Component: PreventDemo },
-  { id: '36', title: 'map', Component: MapDemo },
-  { id: '37', title: 'filter', Component: FilterDemo },
-  { id: '38', title: '空清單', Component: EmptyDemo },
-  { id: '39', title: 'key', Component: KeyDemo },
-  { id: '40', title: 'input', Component: InputDemo },
-  { id: '41', title: 'textarea', Component: AreaDemo },
-  { id: '42', title: 'select', Component: SelectDemo },
-  { id: '43', title: 'checkbox', Component: CheckDemo },
-  { id: '44', title: 'radio', Component: RadioDemo },
-  { id: '45', title: '多欄位物件', Component: FieldsDemo },
-  { id: '46', title: 'submit', Component: SubmitDemo },
-  { id: '47', title: 'useId', Component: UseIdDemo },
-  { id: '48', title: '第一次執行', Component: EffectMount },
-  { id: '49', title: '依賴陣列', Component: DepsDemo },
-  { id: '50', title: '清除函式', Component: TimerDemo },
-  { id: '51', title: '無限迴圈', Component: LoopDemo },
-  { id: '52', title: '漏寫依賴', Component: LintDemo },
-  { id: '53', title: '載入與錯誤', Component: LoadDemo },
-  { id: '54', title: '空資料', Component: EmptyLoadDemo },
-  { id: '55', title: 'AbortController', Component: AbortDemo },
-  { id: '56', title: 'GET', Component: GetDemo },
-  { id: '57', title: 'POST', Component: PostDemo },
-  { id: '58', title: 'PUT', Component: PutDemo },
-  { id: '59', title: 'DELETE', Component: DeleteDemo },
-  { id: '60', title: 'API 模組', Component: ItemsDemo },
-  { id: '61', title: '渲染時計算', Component: DeriveDemo },
-  { id: '62', title: '事件裡的請求', Component: ClickFetchDemo },
-  { id: '63', title: '抽出讀取', Component: HookDemo },
-  { id: '64', title: '傳入引數', Component: ToggleDemo },
-  { id: '65', title: '引數放進依賴', Component: FilterHookDemo },
-  { id: '66', title: '各呼叫各一份狀態', Component: TwiceDemo },
-  { id: '67', title: '父層持有', Component: LiftDemo },
-  { id: '68', title: '兄弟元件', Component: SiblingsDemo },
-  { id: '69', title: '層層傳遞', Component: DrillDemo },
-  { id: '70', title: '用 Context 改善', Component: ContextDemo },
-  { id: '71', title: '拆成多個檔案', Component: ContextSplitDemo },
-  { id: '72', title: '預設值', Component: DefaultDemo },
-  { id: '73', title: 'useMemo', Component: MemoDemo },
-  { id: '74', title: 'memo', Component: MemoComponentDemo },
-  { id: '75', title: 'useCallback', Component: UseCallbackDemo },
-  { id: '76', title: '聚焦輸入框', Component: RefDemo },
-  { id: '77', title: '不觸發渲染的值', Component: RefCountDemo },
-  { id: '78', title: '計數（useReducer）', Component: ReducerCountDemo },
-  { id: '79', title: '待辦（useState）', Component: ReducerStateDemo },
-  { id: '80', title: '待辦（useReducer）', Component: ReducerDemo },
-  { id: '81', title: '拆成元件用 props', Component: TodoPropsDemo },
-  { id: '82', title: '改用 Context', Component: ProviderDemo },
-  { id: '83', title: 'form action', Component: ActionDemo },
-  { id: '84', title: 'useActionState', Component: ActionStateDemo },
-  { id: '85', title: 'useOptimistic', Component: OptimisticDemo },
-  { id: '86', title: '狀態切頁', Component: StatePages },
-];
-
-export default function App() {
-  const [current, setCurrent] = useState('01');
-  const demo = demos.find((item) => item.id === current) ?? demos[0];
-  const View = demo.Component;
-
-  return (
-    <div className="min-h-screen bg-stone-50 text-stone-900">
-      <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-3xl flex-wrap gap-2 px-4 py-3">
-          {demos.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={
-                item.id === demo.id
-                  ? 'rounded bg-teal-800 px-3 py-1 text-sm text-white'
-                  : 'rounded bg-stone-100 px-3 py-1 text-sm'
-              }
-              onClick={() => setCurrent(item.id)}
-            >
-              {item.id} {item.title}
-            </button>
-          ))}
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-6">
-        <View />
-      </main>
-    </div>
-  );
-}
-```
-
-打開頁面時，主區是編號 01 的示範。按下別的編號，主區換成那一則，網址仍停在原處。
-
-**解析**
-
-- 起始編號是 01，所以一打開是第一則。
-- `find` 找不到時用第一筆，避免編號對不上就整頁空白。
-- 按鈕的 `key` 用編號。標題可以改，身份仍是那個編號。
-- 大寫的 `View` 才會被當成元件。小寫開頭會被當成普通標籤。
-
-{% note success %}
-**換你試試：**
-把起始編號改成 02。重新整理後應先看到表達式那個示範。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改起始值。清單與按鈕不用動。
-
-```diff 03-react/src/App.jsx
-  // ...
-  export default function App() {
--   const [current, setCurrent] = useState('01');
-+   const [current, setCurrent] = useState('02');
-    const demo = demos.find((item) => item.id === current) ?? demos[0];
-    // ...
-  }
-```
-
-重新整理後，主區是花括號表達式那一則。
-
-</details>
-
-## 單向資料流
-
-資料由父層持有，用屬性傳給子層。子層不要改父層交下來的那一份，要改就請父層換一份新的。這樣你永遠追得回來：畫面不對，就從擁有那份資料的元件看起。
-
-- 單向資料流是父層把現在的值傳下去。子層用得到，但不能把那份物件直接改掉。
-- 要往上通知時，父層再傳一個函式下去。子層呼叫它，真正的更新仍發生在父層。
-- 狀態放在「用得到它的那些元件」的共同父層。只服務一顆元件的值，就留在那一顆。
-
-Thinking in React 是官方建議的拆法：先照畫面把元件界線畫出來，用固定資料把靜態畫面組好，再決定哪幾個值會變、該放在哪一層。這一節先做前半。會變的值用到的 `useState`，在狀態那一章才寫。
-
-### 由父層傳入
-
-子層的參數就是父層這一次傳下來的值。同一份標題傳給兩張卡片，兩張看到的是同一個字，子層裡沒有自己的副本可以偷偷改。
-
-**觀念**
-
-`Card` 只負責把收到的標題畫出來。`DownDemo` 擁有那個標題，用屬性交下去。卡片裡沒有設定函式，所以它改不了父層的常數。
-
-這就是單向。之後狀態放進父層時，方向仍然一樣，只是值會在父層被換成新的。
-
-```jsx 03-react/src/demos/03-down.jsx
-function Card({ title }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-    </article>
-  );
-}
-
-export default function DownDemo() {
-  const title = '台北城市漫遊';
-
-  return (
-    <section className="grid gap-3">
-      <Card title={title} />
-      <Card title={title} />
-    </section>
-  );
-}
-```
-
-畫面是上下兩張卡片，標題都是「台北城市漫遊」。
-
-**解析**
-
-- 兩次 `<Card title={title} />` 各是一次渲染。它們讀到的是父層同一個常數。
-- 子層的參數 `title` 是這一次的值。在子層寫 `title = '花蓮山海三日'` 不會改到父層，也不會讓另一張卡片跟著變。
-- 卡片沒有自己的資料來源。標題不對時，回到 `DownDemo` 看那個常數。
-- 屬性名稱是你自己取的。子層的參數名稱要跟父層寫的屬性對上。
-
-{% note success %}
-**換你試試：**
-父層的常數改成「花蓮山海三日」。兩張卡片的標題都要跟著變，卡片元件裡不要寫死文字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-文字只改父層。子層仍只讀 `title`，所以兩張一起換。
-
-```diff 03-react/src/demos/03-down.jsx
-  // ...
-  }
-  
-  export default function DownDemo() {
--   const title = '台北城市漫遊';
-+   const title = '花蓮山海三日';
-  
-    return (
-      <section className="grid gap-3">
-        // ...
-```
-
-</details>
-
-### 拆分元件
-
-先不要管資料會不會變。把畫面裡重複的區塊收成元件，固定的字先寫死或用常數傳下去。界線清楚之後，再決定狀態放哪。
-
-**觀念**
-
-這一頁還是同一張畫面：標題「洛奇旅行」、一句說明、兩張卡片。先把整頁寫在同一個函式裡，再抽出標題、說明與卡片，父層只負責把它們組合回去。
-
-這一步對應 Thinking in React 的前兩步：畫出元件階層，以及用固定資料組出靜態版本。按鈕與刪除留到狀態那一章。
-
-```jsx 03-react/src/demos/04-tree.jsx
-export default function TreeDemo() {
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">洛奇旅行</h1>
-      <p className="mt-2">先拆開，再由父層排回去。</p>
-      <div className="mt-4 grid gap-3">
-        <article className="rounded border border-stone-200 bg-white p-4">
-          <h2 className="text-lg font-semibold">台北城市漫遊</h2>
-          <p>12800</p>
-        </article>
-        <article className="rounded border border-stone-200 bg-white p-4">
-          <h2 className="text-lg font-semibold">花蓮山海三日</h2>
-          <p>15900</p>
-        </article>
-      </div>
-    </section>
-  );
-}
-```
-
-畫面與拆分後相同：上方是標題「洛奇旅行」與一句說明，下面兩張卡片分別是台北城市漫遊 12800、花蓮山海三日 15900。
-
-{% note info %}
-**小技巧：先評估再拆**
-這一則是為了示範怎麼把畫面拆成元件。實務上不要為了拆而拆。先看哪些區塊值得獨立出來：重複出現、可以單獨命名、之後會單獨改動的，再收成元件。
-{% endnote %}
-
-拆完之後，標題、說明、卡片各自是一個函式，父層的回傳只負責把它們排回同一個 `section`。
-
-```jsx 03-react/src/demos/04-tree.jsx.final
-function PageTitle() {
-  return <h1 className="text-2xl font-bold">洛奇旅行</h1>;
-}
-
-function PageLead() {
-  return <p className="mt-2">先拆開，再由父層排回去。</p>;
-}
-
-function Card({ title, price }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p>{price}</p>
-    </article>
-  );
-}
-
-export default function TreeDemo() {
-  return (
-    <section>
-      <PageTitle />
-      <PageLead />
-      <div className="mt-4 grid gap-3">
-        <Card title="台北城市漫遊" price={12800} />
-        <Card title="花蓮山海三日" price={15900} />
-      </div>
-    </section>
-  );
-}
-```
-
-**解析**
-
-- 拆分前，整頁都在同一個 `return` 裡。卡片外框寫了兩次，要改其中一塊就得在這一段標籤裡找，也不容易拿到別處再用。
-- 拆分後，`PageTitle` 與 `PageLead` 沒有參數，因為標題與說明在這一頁是固定的。`Card` 接收 `title` 與 `price`，因為外框相同、兩筆資料不同。
-- 父層的回傳可以看出頁面結構。要改卡片去 `Card`，要改標題去 `PageTitle`，各改各的地方。
-- 小元件寫在同一個檔、而且沒有 `export`，代表只有這一頁用得到。下一章才把它們移到別的檔。
-- 這一則是為了把拆分步驟看清楚。上面那則提醒仍然適用：先判斷哪些區塊值得拆，再收成元件。
-
-{% note success %}
-**換你試試：**
-再排一張卡片，名稱是京都紅葉散步、價格是 42800。標題與說明那兩個元件留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新卡片仍由父層決定位置與內容。卡片元件本身不用改。
-
-```diff 03-react/src/demos/04-tree.jsx.final
-  // ...
-          <Card title="台北城市漫遊" price={12800} />
-          <Card title="花蓮山海三日" price={15900} />
-+         <Card title="京都紅葉散步" price={42800} />
-        </div>
-      </section>
-    // ...
-```
-
-</details>
-
-### 狀態的位置
-
-會變的值放在「所有用得到它的元件」上面那一層。只有一顆元件看得到的值，不要抬到更外面。誰都不看的值，不要放進狀態。
-
-**觀念**
-
-價格是否顯示，兩張卡片都要跟著走，所以這個布林值屬於父層。父層再把現在的布林傳下去。卡片只負責決定這一次要不要畫出價格，不自己保管開關。
-
-能從現有資料算出來的字，也不要另存一份。名稱已經在，就不要再存一個「大寫名稱」。
-
-```jsx 03-react/src/demos/05-place.jsx
-function Card({ title, price, showPrice }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {showPrice ? <p>{price}</p> : null}
-    </article>
-  );
-}
-
-export default function PlaceDemo() {
-  const showPrice = true;
-
-  return (
-    <section className="grid gap-3">
-      <Card title="台北城市漫遊" price={12800} showPrice={showPrice} />
-      <Card title="花蓮山海三日" price={15900} showPrice={showPrice} />
-    </section>
-  );
-}
-```
-
-`showPrice` 目前是常數 `true`，所以兩張卡片都看得到價格。
-
-把它改成 `false` 時，兩張的價格一起消失。真正的按鈕留到 `useState`。
-
-**解析**
-
-- 開關若寫在 `Card` 裡面，每一張卡片會各持有一份，無法一次關掉全部。
-- 放在父層時，兩張讀到的是同一次傳下去的值。
-- 卡片用三元決定要畫價格還是什麼都不畫。`null` 不會在畫面上留下節點。
-- 價格的數字已經是參數。不要再為了顯示而複製一份到別的變數裡當狀態。
-
-{% note success %}
-**換你試試：**
-把 `showPrice` 改成 `false`。兩張卡片都只留名稱，卡片元件的參數不要刪。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-父層的值一改，兩張卡片收到的屬性一起改。這就是「狀態該放在共同父層」的原因，即使這一則還沒有寫 `useState`。
-
-```diff 03-react/src/demos/05-place.jsx
-  // ...
-  }
-  
-  export default function PlaceDemo() {
--   const showPrice = true;
-+   const showPrice = false;
-  
-    return (
-      <section className="grid gap-3">
-        // ...
-```
-
-</details>
-
-### React Developer Tools
-
-React Developer Tools 是瀏覽器擴充功能。它讓你點畫面上的元件，直接看這一輪的 props 與 state，而不用在程式裡臨時加 `console.log`。
-
-**觀念**
-
-到 Chrome 或 Firefox 的擴充功能商店安裝 React Developer Tools。裝好後重新整理開發中的頁面，開發者工具會多出 Components 分頁。
-
-在 Components 裡點選一顆元件，右側會列出它收到的 props，以及它自己的 state 與 hooks。這一則還沒有 state，所以你會先看到 props。下一章的計數元件，則可以在同一個分頁看 `count` 怎麼變。
-
-```jsx 03-react/src/demos/03-down.jsx
-function Card({ title }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-    </article>
-  );
-}
-
-export default function DownDemo() {
-  const title = '台北城市漫遊';
-
-  return (
-    <section className="grid gap-3">
-      <Card title={title} />
-      <Card title={title} />
-    </section>
-  );
-}
-```
-
-打開示範「由父層傳入」。Components 樹裡會看到 `DownDemo`，下面兩顆 `Card`。
-
-點任一顆 `Card`，props 的 `title` 是台北城市漫遊。
-
-**解析**
-
-- Components 分頁看的是 React 的元件樹，不是 HTML 的標籤樹。標籤樹仍在 Elements。
-- 點子層時，右側的 props 就是父層這一次傳下來的值。
-- 畫面上有兩顆 `Card`，樹上也有兩顆。它們的 props 可以相同，仍是兩個元件。
-- 正式建置若沒有開發用的除錯資訊，這個分頁可能對不到你的函式名稱。開發伺服器底下看即可。
-
-{% note success %}
-**換你試試：**
-在 Components 點 `DownDemo`。
-
-確認它沒有 props，再點一顆 `Card`，讀出 `title`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`DownDemo` 是這一頁的根，沒有人傳 props 給它。
-
-`Card` 的 `title` 來自父層的常數，所以右側會看到台北城市漫遊。
-
-元件樹由上到下是 `DownDemo`，然後兩顆 `Card`。
-
-不要在 Elements 裡找這個名稱，HTML 上只會有 `section` 與 `article`。
-
-</details>
+- `extensions.json` 列出建議安裝的擴充，打開專案時編輯器會提示安裝缺少的項目。
+- 空格與引號只交給 Prettier，不要再寫成 ESLint 規則。
 
 # JSX
 
-JSX 讓你在 JavaScript 裡寫元素。它不是字串，也不是另開一個 HTML 檔。這一章看一棵樹怎麼回傳、花括號能放什麼、樣式物件怎麼寫，以及條件怎麼決定畫哪一塊。
+JSX 讓你在 JavaScript 裡寫元素。它不是字串，也不是另開一個 HTML 檔，而是建置時由 Vite 轉成一般 JavaScript 的寫法。這一章先看 JSX 的語法規則：一個根、花括號、屬性名稱與樣式物件；再看條件怎麼決定畫哪一塊。
 
 ## JSX 語法
 
-標籤要有結尾，或寫成自閉。花括號裡放的是值，不是一整段敘述。樣式若要寫在元素上，交給一個物件，屬性名稱用駝峰。
+JSX 長得像 HTML，但規則更嚴格。這一節把最常踩到的規則依序走一遍：多個元素怎麼回傳、花括號裡能放什麼、屬性名稱與樣式要怎麼寫。
 
-- 回傳只能有一個父層。多個兄弟用 Fragment，或包進 `section`。
-- 花括號裡放表達式。變數、運算、函式呼叫都可以。`if` 與 `for` 要寫在回傳外面。
-- 類別寫 `className`。`style` 的值是物件，鍵用駝峰，例如 `backgroundColor`。
+- 回傳只能有一個根。多個兄弟元素要用 Fragment 或另一個元素包起來。
+- 每個標籤都要結束，沒有內容的標籤寫成自閉，例如 `<input />`。
+- 花括號裡放表達式（算得出一個值的式子）。`if` 與 `for` 是敘述，要寫在回傳之前。
+- 屬性名稱用駝峰：`class` 寫 `className`，`for` 寫 `htmlFor`。`aria-*` 與 `data-*` 維持原本的連字號。
 
 ### Fragment
 
-兩個兄弟要一起回傳、又不想多一個父標籤時，用 Fragment。簡寫是空標籤。需要 `key` 時才寫出 `Fragment` 這個名稱。
+一個元件只能回傳一個根，但有時多個兄弟元素外面不該多一層包裹。Fragment 就是不產生 HTML 的包裹。
 
 **觀念**
 
-空標籤 `<>...</>` 是 Fragment 的簡寫。它會消失在 HTML 裡，裡面的標題與段落直接變成上一層的子節點。
+JSX 會被轉成一般的 JavaScript 物件，函式不能同時回傳兩個物件，所以多個兄弟要有共同的根。空標籤 `<>...</>` 是 Fragment 的簡寫，它不會出現在 HTML 裡，裡面的元素直接成為上一層的子節點。
 
-列表裡的每一項如果要回傳兩個元素又要有 key，簡寫沒有地方放 key。那時改用 `Fragment`。
-
-這一則先用簡寫。
+列表裡每一項若要回傳多個元素又要給 key，簡寫沒有地方放 key，才改寫成 `<Fragment key={...}>`。列表在後面的章節才教，這一則先用簡寫。
 
 ```jsx 03-react/src/demos/06-fragment.jsx
 export default function FragmentDemo() {
@@ -1327,44 +529,21 @@ export default function FragmentDemo() {
 }
 ```
 
-畫面是一行標題、一行說明。用開發者工具看 `#root` 裡這一層，標題與段落的外面不會多一個空的包裹元素。
+畫面是一行標題、一行說明。用開發者工具看 `#root` 底下，標題與段落直接並列，外面沒有多出空的包裹元素。
 
 **解析**
 
-- 簡寫包住的兩個標籤算一次回傳。拿掉簡寫、讓它們並列，轉換會失敗。
-- Fragment 本身不會出現在 Elements。你看不到一個叫做 Fragment 的標籤。
-- 要在列表裡給這一組兄弟一個 key 時，寫 `<Fragment key={id}>`，並從 react 引入 Fragment。
-- 大多數版面仍然用 `section` 或 `article` 當父層。只有「多這一層沒有意義」時才用 Fragment。
-
-{% note success %}
-**換你試試：**
-在段落下面再加一個段落，文字是「仍然沒有外框」。簡寫留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-三個兄弟都放在同一個 Fragment 裡，回傳還是只有一個根。
-
-```diff 03-react/src/demos/06-fragment.jsx
-  // ...
-        <h1 className="text-2xl font-bold">洛奇旅行</h1>
-        <p>這兩個兄弟沒有多包一層 div。</p>
-+       <p>仍然沒有外框</p>
-      </>
-    );
-  // ...
-```
-
-</details>
+- 空標籤包住的兩個元素算一次回傳。如果兩個標籤並列、外面沒有任何包裹，會是語法錯誤。
+- Fragment 本身不會出現在 Elements，所以看不到一個叫 Fragment 的標籤。
+- 大多數版面仍用 `section`、`article` 這類有語意的標籤當根。只有多一層沒有意義時才用 Fragment。
 
 ### 表達式
 
-花括號裡放會算出一個值的式子。`if` 是敘述，不能寫在花括號裡；要在 `return` 之前先算好，再把結果插進畫面。依條件整塊換畫面的寫法，留到後面的條件渲染。
+花括號是從 JSX 回到 JavaScript 的入口，裡面只能放會算出一個值的式子。需要 `if` 判斷時，先在 `return` 之前算好結果，再把結果放進花括號。
 
 **觀念**
 
-元件函式裡先準備名稱、單價與人數。花括號只接受表達式。人數要換成畫面上的說法時，在 `return` 之前用 `if` 決定 `peopleLabel`，回傳時只把這個字串放進花括號。總價寫 `{price * people}`，乘法會先算出數字，再變成文字節點。
+元件函式裡先準備名稱、單價與人數。人數要換成畫面上的說法時，在回傳之前用 `if` 先決定好 `peopleLabel`，回傳時花括號裡只放這個字串。總價則直接在花括號裡做乘法，算出數字後再變成畫面上的文字。
 
 ```jsx 03-react/src/demos/02-expr.jsx
 export default function ExprDemo() {
@@ -1398,55 +577,26 @@ export default function ExprDemo() {
 
 {% note info %}
 **不要這樣寫**
-花括號裡只能放表達式。`{ if (people === 2) { ... } }` 把整段 `if` 敘述塞進標籤中間，不是合法的 JSX，不要照這樣抄。這一則是在 `return` 之前用 `if` 決定 `peopleLabel`，畫面上只寫 `{peopleLabel}`。
+把 `if (people === 2) { ... }` 整段放進花括號不是合法的 JSX，`if` 是敘述，不是表達式。條件要在 `return` 之前先處理，或改用後面的三元運算子。
 {% endnote %}
 
 **解析**
 
-- `{name}` 的結果是字串，所以標題就是台北城市漫遊。
-- `{price * people}` 先做乘法。人數是 2 時，花括號裡看到的是結果 25600，不是算式本身。
-- `{peopleLabel}` 裡只有字串。這個字串在 `return` 之前用 `if` 決定，人數是 2 時是「兩人」。
-- 兩個花括號中間的空白是固定文字。固定文字與表達式可以接在同一段。
-- 物件直接放進花括號當子節點，畫面不會變成你期望的文字。物件要先取出欄位。
+- `{name}` 算出字串，成為標題文字。
+- `{price * people}` 先做乘法。人數是 2 時，畫面上看到的是結果 25600，不是算式。
+- `{peopleLabel}` 的值由 `return` 之前的 `if` 決定，人數是 2 時是「兩人」。
+- 兩個花括號中間的空白是固定文字，固定文字與表達式可以接在同一個標籤裡。
+- 物件不能直接放進花括號當子節點，React 會丟出「Objects are not valid as a React child」的錯誤。要先取出欄位，例如寫成 `{person.name}`。
 
-{% note success %}
-**換你試試：**
-人數改成 3。標題仍是名稱。應顯示多人 38400。
-{% endnote %}
+### 屬性名稱與 style 物件
 
-<details>
-<summary>參考答案</summary>
-
-只改 `people`。同一個 `if` 會把標籤改成「多人」，總價仍用 `{price * people}` 算出來。標題仍是 `{name}`。
-
-```diff 03-react/src/demos/02-expr.jsx
-  // ...
--   const people = 2;
-+   const people = 3;
-    let peopleLabel = '一人';
-  // ...
-```
-
-```text
-台北城市漫遊
-多人 38400
-```
-
-</details>
-
-### style 物件
-
-JSX 的屬性名稱沿用 DOM 的屬性，不是每一個 HTML 屬性都照抄。要直接寫行內樣式時，值是一個物件。
+JSX 的屬性名稱對應的是 DOM 的屬性，而不是 HTML 的寫法。行內樣式的值是一個物件，而不是字串。
 
 **觀念**
 
-`htmlFor` 對應 HTML 的 for，因為 for 在 JavaScript 裡另有用途。
+屬性在 JSX 裡會變成 JavaScript 物件的鍵，而 class、for 是 JavaScript 的保留字，所以改寫成 `className` 與 `htmlFor`。其餘屬性也是駝峰，例如 `readOnly` 的 O 要大寫。
 
-`readOnly` 中間的 O 要大寫。
-
-`style` 接受物件。CSS 的 background-color 寫成 `backgroundColor`。
-
-物件可以先放在常數，再交給 `style`。Tailwind 的 `className` 仍是字串。兩者可以同時在，這一則為了看物件，才把顏色寫進行內樣式。
+行內樣式的值是物件，CSS 的 background-color 寫成 `backgroundColor`。這個物件可以先放在常數，再交給 `style`。一般的外觀仍以 Tailwind 的類別為主，這一則為了看物件，才把背景與內距寫進行內樣式。
 
 ```jsx 03-react/src/demos/07-style.jsx
 export default function StyleDemo() {
@@ -1473,40 +623,10 @@ export default function StyleDemo() {
 
 **解析**
 
-- `style={panel}` 的花括號代表「這裡是 JavaScript 的值」。裡面那個物件不是字串。
-- 樣式的鍵是駝峰。寫成 `'background-color'` 不會套到你要的顏色。
-- `htmlFor` 必須跟輸入框的 `id` 相同，點標籤才會聚焦到那一格。
-- `readOnly` 是屬性，不是子元素。它讓這一格只顯示、不接受輸入。
-
-{% note success %}
-**換你試試：**
-把內距改成 `20px`，輸入框的值改成花蓮山海三日。
-
-`htmlFor` 與 `id` 仍要相同。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-樣式物件換一個欄位，輸入框換 `value`。標籤與輸入框的對應不要拆開。
-
-```jsx 03-react/src/demos/07-style.jsx
-export default function StyleDemo() {
-  const panel = {
-    backgroundColor: '#ffffff',
-    padding: '20px',
-  };
-
-  return (
-    <section style={panel} className="rounded border border-stone-200">
-      <label htmlFor="item-name">名稱</label>
-      <input id="item-name" readOnly value="花蓮山海三日" className="ml-2 rounded border px-2" />
-    </section>
-  );
-}
-```
-
-</details>
+- `style={panel}` 的花括號是 JavaScript 的入口，裡面的 `panel` 是物件。直接寫成 `style={{ ... }}` 的雙花括號，只是外層入口加上內層的物件。
+- 樣式的鍵要用駝峰，寫成 `'background-color'` 會讓 React 在 Console 警告。多數屬性的數字值沒有單位時，React 會補上 px，字串則照寫。
+- `htmlFor` 要和輸入框的 `id` 相同，點標籤才會聚焦到那一格。
+- 輸入框有 `value` 卻沒有改值的處理函式時，React 會在 Console 警告。加上 `readOnly` 表示這一格刻意只顯示、不接受輸入。表單欄位的正式寫法在後面的表單章節。
 
 ### className
 
@@ -1516,7 +636,7 @@ export default function StyleDemo() {
 
 `active` 為真時用深色按鈕，為假時用淺色按鈕。三元算出的是字串，放進 `className`。Tailwind 的工具類別用空白接在同一個字串裡。
 
-不要把兩種按鈕寫成兩個元件，除非它們的結構真的不同。這裡只差外觀。
+兩種按鈕若只有外觀不同，就用同一個元素換類別，不要寫成兩個元件。
 
 ```jsx 03-react/src/demos/08-class.jsx
 export default function ClassDemo() {
@@ -1540,40 +660,19 @@ export default function ClassDemo() {
 
 **解析**
 
-- `className` 的值是字串。三元的兩個分支都要是字串，不能一邊是字串、一邊是元件。
-- 工具類別之間留一個空白。少了空白，Tailwind 會把它看成一個不存在的類別。
-- 段落的三元決定文字，按鈕的三元決定外觀。兩件事可以各算各的。
-- 類別很多時，先放進常數再綁到屬性上，回傳的標籤比較短。
-
-{% note success %}
-**換你試試：**
-把 `active` 改成 `false`。第一行應變成「已停用」，按鈕改成淺底。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-同一個布林同時餵給文字與類別。改一處，兩處一起換。
-
-```diff 03-react/src/demos/08-class.jsx
-  export default function ClassDemo() {
--   const active = true;
-+   const active = false;
-    const buttonClass = active
-      ? 'rounded bg-teal-800 px-3 py-1 text-white'
-      // ...
-```
-
-</details>
+- `className` 的值是字串，所以三元的兩個分支都要是字串。
+- 類別之間要有空白，少了空白會變成一個不存在的類別。
+- 段落的三元決定文字，按鈕的三元決定外觀，兩件事各算各的。
+- 類別很長時，先放進常數再綁到屬性，回傳的標籤比較好讀。
 
 ## 條件渲染
 
-同一顆元件可以依資料回傳不同的元素。提早 return 與三元決定整塊或二選一。短路運算子則在樹裡多畫一塊、補預設字，或把數字 0 留在畫面上。
+同一個元件可以依資料回傳不同的畫面。這一節從最大的單位開始：整個元件換成另一棵樹，然後是兩個元素二選一，最後是用運算子在樹裡多畫一塊或補預設字。
 
-- 提早 return 在函式前半就結束。適合整塊畫面完全不同的情況，例如還沒有資料。
-- 三元運算子在兩個元素之間挑一個。兩個分支都寫在附近，讀的人看得到另一種長相。
-- `&&` 在條件為真時才多畫一塊。左邊要是布林；數字 0 直接放在左邊會被畫出來。
-- `||` 在左邊缺內容時補預設字，0 也會被換成右邊。要留下 0、只補 `null` 與 `undefined` 時用 `??`。
+- 提早 return 在函式前半就結束，適合整塊畫面完全不同的情況，例如還沒有資料。
+- 三元運算子在兩個元素之間挑一個。
+- `&&` 在條件為真時才多畫一塊。左邊要放布林；數字 0 放在左邊會被畫出來。
+- `||` 在左邊缺內容時補預設字，0 也會被換掉。只想補 `null` 與 `undefined` 時用 `??`。
 
 {% mermaid graph LR %}
   checkNode["先看條件"] --> earlyNode["整顆提早 return"]
@@ -1587,13 +686,13 @@ export default function ClassDemo() {
 
 ### 提早 return
 
-條件成立時先回傳另一棵樹，後面的主要畫面就不會再執行。讀程式的人可以先把例外看完，再看正常的那一塊。
+條件成立時先回傳另一棵樹，後面的主要畫面就不會再執行。讀的人可以先把例外情況看完，再看正常的那一塊。
 
 **觀念**
 
-沒有選到行程時，函式立刻回傳一句說明。有行程時才回傳卡片。兩個 `return` 不會同時發生。
+沒有選到行程時，函式立刻回傳一句說明；有行程時才回傳卡片。兩個 `return` 不會同時發生。
 
-這種寫法適合「整頁都不一樣」。只是少一個小標記、或只補一句預設字時，用後面的三元與邏輯運算子就夠了，不必把整顆元件分成兩大段。
+這種寫法適合「整個元件都不一樣」。元件也可以回傳 `null`，代表什麼都不畫。只是少一個小標記、或補一句預設字時，用後面的三元與邏輯運算子就夠了。
 
 ```jsx 03-react/src/demos/09-early.jsx
 export default function EarlyDemo() {
@@ -1612,48 +711,23 @@ export default function EarlyDemo() {
 }
 ```
 
-畫面只有一行「尚未選擇行程。」。卡片那一段這一次不會跑到。
+畫面只有一行「尚未選擇行程。」，卡片那一段這一次不會執行。
 
 **解析**
 
 - `if` 寫在 `return` 之前，不寫在 JSX 的花括號裡。
-- 第一個 `return` 執行後，函式結束。下面的卡片不會被算出來。
-- product 是 `null` 時去讀 `product.title` 會丟出錯誤。
-
-提早 return 就是在那一行之前擋下來。
-- 主要畫面仍是一個父元素。例外畫面這一則只有一個段落，也符合一次回傳一棵樹。
-
-{% note success %}
-**換你試試：**
-把 `product` 改成一筆真的資料，名稱台北城市漫遊、價格 12800。畫面應變成卡片，說明那一行消失。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件不再成立，函式會走到第二個 `return`。卡片用的是物件的欄位。
-
-```diff 03-react/src/demos/09-early.jsx
-  export default function EarlyDemo() {
--   const product = null;
-+   const product = { title: '台北城市漫遊', price: 12800 };
-  
-    if (!product) {
-      return <p>尚未選擇行程。</p>;
-    // ...
-```
-
-</details>
+- 第一個 `return` 執行後函式就結束，下面的卡片不會被算出來。
+- `product` 是 `null` 時，去讀 `product.title` 會丟出錯誤。提早 return 正是在那一行之前把它擋下來。
 
 ### 三元運算子
 
-兩個互斥的元素要留在同一段 JSX 裡時，用三元。條件為真取問號後面那個，為假取冒號後面那個。
+兩個互斥的元素要留在同一段 JSX 裡時，用三元：條件為真取問號後面那個，為假取冒號後面那個。
 
 **觀念**
 
-庫存大於 0 就顯示「有庫存」，否則顯示「補貨中」。兩個段落都寫在附近，之後改文案不用翻到函式的另一端。
+庫存大於 0 就顯示「有庫存」，否則顯示「補貨中」。兩個段落寫在同一個地方，之後改文案不用翻到函式的另一端。
 
-三元的兩個分支都應該是可畫的值。一邊是元素、另一邊卻是一段沒有回傳的敘述，語法不會過。只在成立時多畫一塊，或左邊缺內容要補預設字，用下一節的短路寫法。
+三元的兩個分支都要是可以畫出來的值。只在成立時多畫一塊、或左邊缺內容要補預設字，用下一節的短路寫法會更簡潔。
 
 ```jsx 03-react/src/demos/10-ternary.jsx
 export default function TernaryDemo() {
@@ -1672,48 +746,26 @@ export default function TernaryDemo() {
 
 **解析**
 
-- 條件是 `stock > 0`。3 通過，所以畫出第一個段落。
-- 冒號後面的段落這一次不會出現在 HTML 裡，但它留在程式裡當另一種結果。
-- 三元本身放在花括號裡，因為它是表達式，會算出一個元素。
-- 分支一多就會很難讀。超過兩個結果時，改在 `return` 前用 `if` 先決定要回傳哪一個變數。
-
-{% note success %}
-**換你試試：**
-把庫存改成 0。標題留著，下面應變成「補貨中」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件變成假，三元改走冒號後面的元素。
-
-```diff 03-react/src/demos/10-ternary.jsx
-  export default function TernaryDemo() {
--   const stock = 3;
-+   const stock = 0;
-  
-    return (
-      <section>
-        // ...
-```
-
-</details>
+- 條件是 `stock > 0`，3 通過，所以畫出第一個段落。
+- 冒號後面的段落這一次不會出現在 HTML 裡，它只是另一種可能的結果。
+- 三元本身是表達式，會算出一個元素，所以可以放進花括號。
+- 超過兩種結果時，三元會很難讀。改在 `return` 之前用 `if` 決定要放哪個變數。
 
 ### 邏輯運算子與短路求值
 
-第 06 天 {% post_link lokiTech-15day-06-js-basics %} 已經看過短路與空值合併：`&&` 左邊為假就交出左邊，`||` 左邊為假才改看右邊，`??` 只在 `null` 或 `undefined` 時才改用右邊。這裡看同一套規則出現在 JSX 裡：條件成立才多畫一塊、缺內容時補預設字，以及怎樣避開把 0 畫出來或把 0 吃掉。
+06 {% post_link lokiTech-15day-06-js-basics %} 已經教過短路求值：`&&` 左邊為假就交出左邊，`||` 左邊為假才改看右邊，`??` 只在 `null` 或 `undefined` 時改用右邊。這一節看同一套規則放進 JSX 之後的結果：條件成立才多畫一塊、缺內容時補預設字，以及怎樣避免把 0 畫出來或把 0 吃掉。
 
-數字 0 同時是 falsy，也是 React 願意畫上畫面的值。左邊放什麼，決定你看到的是元素、預設字，還是一個不該出現的 0。
+React 會把 `true`、`false`、`null`、`undefined` 當成空位，什麼都不畫；數字與字串則會照樣畫出來。數字 0 既是假值，又是可以畫出來的值，這就是幾個陷阱的來源。
 
 #### && 運算子
 
-條件成立時才多一塊元素，不成立時那一格什麼都不留，用 `&&`。左邊要是布林或比較，結果為真才畫出右邊。
+條件成立才多一塊元素、不成立就什麼都不留，用 `&&`。左邊要是布林或比較，為真時才畫出右邊。
 
 **觀念**
 
-有折扣時才顯示那一行。另外用布林 `hasTag` 決定要不要多一個標籤。兩個條件各自短路，標題與價格始終都在。
+有折扣時才顯示折扣那一行，另外用布林 `hasTag` 決定要不要多一個標籤。兩個條件各自短路，標題與價格始終都在。
 
-不要用 `&&` 在兩個很長的畫面之間二選一。那種情況用上面的三元或提早 return。左邊也不要直接放件數或金額，0 的問題在下一節。
+不要用 `&&` 在兩大塊畫面之間二選一，那是三元或提早 return 的工作。左邊也不要直接放件數或金額，原因在下一節。
 
 ```jsx 03-react/src/demos/11-and.jsx
 export default function AndDemo() {
@@ -1735,48 +787,20 @@ export default function AndDemo() {
 
 **解析**
 
-- `discount > 0` 為真，所以折扣那一段會被畫出來。
-- `hasTag` 本身是布林。為真時，標籤段落出現；布林不會變成畫面上的文字。
-- 比較或布林為假時，這一格沒有元素。不要再寫一個 `null` 在後面，那是三元的工作。
-- 左邊若改成數字，短路交出的就是那個數字。0 會被畫出來，下一節專門看這個特例。
-
-{% note info %}
-**左邊用布林**
-好的寫法是比較或布林。`discount > 0` 與 `hasTag` 都屬於這一類。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-把 `hasTag` 改成 false。標籤那一行消失，折扣、標題與價格留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-布林是 false，`&&` 短路，標籤段落不會出現。折扣那一行的左邊仍是比較，而且結果為真，所以留著。
-
-```diff 03-react/src/demos/11-and.jsx
-  export default function AndDemo() {
-    const discount = 10;
--   const hasTag = true;
-+   const hasTag = false;
-  
-    return (
-      <section>
-        // ...
-```
-
-</details>
+- `discount > 0` 為真，所以折扣那一行會被畫出來。
+- `hasTag` 本身是布林，為真時標籤段落出現，布林不會變成畫面上的文字。
+- 左邊為假時，這一格沒有任何節點，不必再補 `null`。
+- 左邊寫比較或布林，是用 `&&` 的安全做法。
 
 #### 左邊是 0 的陷阱
 
-上一節的 `&&` 在左邊為假時會交出左邊。左邊如果是數字 0，React 會把那個 0 畫出來。這一節就是剛才那個短路的特例。
+`&&` 在左邊為假時，整個式子的值就是左邊。左邊若是數字 0，React 會把這個 0 畫出來。
 
 **觀念**
 
-件數是 0 時，`count && <p>...</p>` 的結果就是 0，不是「什麼都不畫」。畫面上會多一個你沒打算顯示的 0。
+件數是 0 時，`count && <p>...</p>` 算出來的是 0，而不是「什麼都不畫」，畫面上會多一個你沒打算顯示的 0。
 
-要表達「大於 0 才顯示」，就把左邊寫成比較。或改用三元，假的那一邊給 `null`。
+要表達「大於 0 才顯示」，就把左邊寫成比較，或改用三元並讓假的那一邊給 `null`。件數、長度、金額這幾種值常常是 0，用 `&&` 之前都先改成比較。
 
 ```jsx 03-react/src/demos/12-zero.jsx
 export default function ZeroDemo() {
@@ -1800,48 +824,20 @@ export default function ZeroDemo() {
 
 **解析**
 
-- `&&` 在左邊為假時，整個表達式的值就是左邊。0 為假，所以值是 0。
-- React 允許數字當子節點，因此 0 被畫出來。`false` 與 `null` 則不會。
-- 這不是數學錯，是假值與可渲染的值重疊了。
-- 寫成 `count > 0 && ...` 之後，左邊變成布林，0 就不會再漏到畫面上。
-
-{% note warning %}
-**件數、長度、金額**
-這三種常常是 0。拿它們直接當 `&&` 的左邊之前，先改成比較。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-左邊改成 `count > 0`。畫面應只剩標題，那個 0 消失。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-比較的結果是 `false`。`false` 不會被畫成文字，右邊的段落也不會出現。
-
-```diff 03-react/src/demos/12-zero.jsx
-  // ...
-      <section>
-        <h1 className="text-2xl font-bold">台北城市漫遊</h1>
--       {count && <p>人數 {count}</p>}
-+       {count > 0 && <p>人數 {count}</p>}
-      </section>
-    );
-  // ...
-```
-
-</details>
+- 0 是假值，所以 `&&` 交出左邊的 0。
+- React 允許數字當子節點，因此 0 被畫出來；`false` 與 `null` 則不會。
+- 這不是計算錯誤，而是「假值」和「可以畫出來的值」剛好重疊。
+- 左邊改寫成 `count > 0` 之後，結果是 `false`，右邊的段落與那個 0 都不會出現。
 
 #### || 運算子
 
-字串是空的、或值是別的 falsy 時，用 `||` 補上一句預設字。左邊已經有內容，就留下左邊，右邊不執行。
+字串是空的、或值是其他假值時，用 `||` 補上預設字。左邊已經有內容，就留下左邊，右邊不會執行。
 
 **觀念**
 
-地點是空字串時，畫面上改顯示「未定地點」。備註已經寫了「含早餐」，就繼續用這句，不會換成「尚無備註」。兩種結果都是文字，段落本身都還在。
+地點是空字串時，畫面改顯示「未定地點」。備註已經寫了「含早餐」，就繼續用這句，不會換成「尚無備註」。兩種結果都是文字，段落本身都還在。
 
-這和 `&&` 的方向相反。`&&` 是左邊成立才採用右邊；`||` 是左邊缺了才改看右邊。
+這和 `&&` 的方向相反：`&&` 是左邊成立才採用右邊，`||` 是左邊缺了才改看右邊。
 
 ```jsx 03-react/src/demos/13-or.jsx
 export default function OrDemo() {
@@ -1858,7 +854,7 @@ export default function OrDemo() {
 }
 ```
 
-畫面有三行。地點補上預設字，備註留下已有的內容。
+畫面有三行，地點補上預設字，備註留下已有的內容。
 
 ```text
 台北城市漫遊
@@ -1868,53 +864,20 @@ export default function OrDemo() {
 
 **解析**
 
-- `place` 是空字串。空字串是 falsy，`||` 交出右邊，所以地點那一行是「未定地點」。
-- `note` 已有「含早餐」。`||` 不再看「尚無備註」，備註那一行就是含早餐。
-- 畫出來的是字串，不是條件本身。兩行都會有段落，差在花括號裡的文字。
-- 數字 0 也是 falsy。用 `||` 補「未定」會把 0 吃掉。要留下 0 時用下一節的 `??`。
-
-{% note info %}
-**和 06 同一條規則**
-空字串、數字 0、false、null、undefined、NaN 都會讓 `||` 改走右邊。這裡只是把結果放進花括號。
-{% endnote %}
-
-{% note warning %}
-**0 會被吃掉**
-金額或件數是 0 時，`||` 也會換成預設字。要留下 0，用下一節的 `??`。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-把 `place` 改成「花蓮」。地點那一行應變成花蓮，備註仍是含早餐。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-「花蓮」有內容，`||` 交出左邊，不再用「未定地點」。備註本來就有字，所以那一行不變。
-
-```diff 03-react/src/demos/13-or.jsx
-  export default function OrDemo() {
--   const place = '';
-+   const place = '花蓮';
-    const note = '含早餐';
-  
-    return (
-      <section>
-        // ...
-```
-
-</details>
+- `place` 是空字串，屬於假值，`||` 交出右邊，所以地點那一行是「未定地點」。
+- `note` 已有內容，`||` 不再看右邊，備註那一行就是「含早餐」。
+- 兩個段落都在，差別只在花括號算出的文字。
+- 數字 0 也是假值，用 `||` 補「未定」會把 0 吃掉，要留下 0 就改用下一節的 `??`。
 
 #### ?? 運算子
 
-0 是有效數字。空值合併只在左邊是 `null` 或 `undefined` 時才改用右邊，所以 0 會留在畫面上。
+0 是有效的數字。空值合併只在左邊是 `null` 或 `undefined` 時才改用右邊，所以 0 與空字串都會留下來。
 
 **觀念**
 
-同一筆價格是 0。用 `||` 的那一行會變成「未定」，用 `??` 的那一行仍是 0。兩行放在一起，就是為了對照哪一種運算子把 0 當成沒有值。
+同一筆價格是 0：用 `||` 的那一行變成「未定」，用 `??` 的那一行仍是 0。兩行並排，就是為了對照哪一種運算子把 0 當成沒有值。
 
-空字串也一樣：`||` 會換成預設字，`??` 會留下空字串。這一則先把對照看在數字 0 上。
+補「未定」這類預設字時，若來源可能是 0（金額、件數），用 `??`。
 
 ```jsx 03-react/src/demos/14-nullish.jsx
 export default function NullishDemo() {
@@ -1930,7 +893,7 @@ export default function NullishDemo() {
 }
 ```
 
-畫面標題下面兩行不一樣。邏輯或把 0 換成「未定」，空值合併留下 0。
+畫面標題下面兩行不一樣：邏輯或把 0 換成「未定」，空值合併留下 0。
 
 ```text
 台北城市漫遊
@@ -1940,60 +903,244 @@ export default function NullishDemo() {
 
 **解析**
 
-- 0 是 falsy，`||` 改用右邊，第一行是「未定」。金額 0 被吃掉了。
-- `??` 只在 `null` 或 `undefined` 時才改用右邊。0 兩種都不是，第二行留下 0。
-- 兩行的段落都在。差在花括號算出的文字，不是條件要不要畫出整段。
-- 左邊改成 `null` 或 `undefined` 時，兩種寫法都會落到「未定」。
+- 0 是假值，`||` 改用右邊，第一行是「未定」，金額 0 被吃掉。
+- 0 不是 `null` 也不是 `undefined`，所以 `??` 不改用右邊，第二行留下 0。
+- 左邊換成 `null` 或 `undefined` 時，兩種寫法都會落到「未定」。
 
-{% note warning %}
-**金額與件數**
-這兩種常常是 0。補「未定」這類預設字時用 `??`，不要用 `||`。
-{% endnote %}
+# 單向資料流
 
-{% note success %}
-**換你試試：**
-把 `price` 改成 `null`。兩行都應變成「未定」。
-{% endnote %}
+React 的資料只往一個方向走：由上層的元件交給下層。這一章先說明資料怎麼向下傳，並用 React Developer Tools 看到它；再依照官方的 Thinking in React 步驟，看畫面怎麼拆成元件、會變的值該放在哪一層。
 
-<details>
-<summary>參考答案</summary>
+下面的示範會用到屬性（props，父層寫在標籤上、交給子層的資料）。父層是在回傳的 JSX 裡用到另一個元件的那個元件，被用到的就是子層。子層用函式參數接收屬性，並用 06 學過的解構取出需要的欄位。屬性的完整寫法在下一章再詳細說明，這一章先看資料的走向。
 
-`null` 對兩種運算子都算空值，所以兩行都是「未定」。這和上面的 0 不同：0 只會被 `||` 換掉。
+## 資料向下傳
 
-```diff 03-react/src/demos/14-nullish.jsx
-  export default function NullishDemo() {
--   const price = 0;
-+   const price = null;
-  
-    return (
-      <section>
-        // ...
-```
+資料由父層持有，用屬性傳給子層。畫面不對時，順著這個方向往上找，就能找到擁有那份資料的元件。這一節先看一個傳遞的範例，再用開發者工具看實際的元件樹。
 
-</details>
+- 父層把現在的值傳下去，子層可以讀，但不能把那份物件直接改掉。
+- 子層要通知父層時，由父層再傳一個函式下去，子層呼叫它，改資料的動作仍然發生在父層。這個做法在後面的元件與狀態章節才會實作，這裡先記住方向。
 
-# 元件
+### 由父層傳入
 
-元件是可重複使用的函式。這一章把卡片拆到另一個檔，再用 props 把資料與函式傳進去。父層若要決定子層中間畫什麼，就把那一塊當成 children 夾在標籤裡。
-
-## 模組
-
-一個檔可以同時交出預設元件與具名元件。引入的一邊要對上交法：預設的不加花括號，具名的要加，而且名稱要一樣。
-
-- default export 是這個檔的主角。引入時名稱可以自己取，一個檔只有一個預設匯出。
-- named export 可以有好幾個。引入時用花括號，名稱必須跟交出時相同。
-
-### default export
-
-預設匯出給切換清單這樣的呼叫端使用。呼叫端寫 `<CardDemo />`，不必自己準備名稱與價格。
+子層的參數就是父層這一次傳下來的值。同一份標題傳給兩張卡片，兩張看到的是同一個字，子層裡沒有自己的副本。
 
 **觀念**
 
-這個檔的主角是 `CardDemo`。它在內部使用 `Card`，並傳入固定的標題與價格。
+`Card` 只負責把收到的標題畫出來。`DownDemo` 擁有那個標題，用屬性交下去。卡片裡沒有任何能修改父層資料的函式，所以它改不了父層的常數。
 
-`Card` 另外用具名匯出，下一節的頁面才接得走。
+```jsx 03-react/src/demos/03-down.jsx
+function Card({ title }) {
+  return (
+    <article className="rounded border border-stone-200 bg-white p-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+    </article>
+  );
+}
 
-只看這一則時，畫面就是一張卡片。預設匯出負責把元件變成「打開就能看」的示範。
+export default function DownDemo() {
+  const title = '台北城市漫遊';
+
+  return (
+    <section className="grid gap-3">
+      <Card title={title} />
+      <Card title={title} />
+    </section>
+  );
+}
+```
+
+畫面是上下兩張卡片，標題都是「台北城市漫遊」。
+
+**解析**
+
+- 兩次 `<Card title={title} />` 會各自執行一次 `Card` 函式（React 執行元件函式、算出畫面，稱為渲染），兩次讀到的是父層同一個常數。
+- 子層的 `title` 只是這一次收到的值。在子層重新指定它，不會改到父層，也不會讓另一張卡片跟著變。
+- 屬性名稱由你自己取，子層參數的名稱要和父層寫的屬性對上。
+- 標題不對時，回到 `DownDemo` 看那個常數。
+
+### React Developer Tools
+
+React Developer Tools 是瀏覽器擴充功能，讓你點一個元件，就看到它這一輪收到的 props，不必在程式裡臨時加 `console.log`。
+
+**觀念**
+
+Chrome、Firefox 與 Edge 都可以從各自的擴充功能商店安裝；Safari 則要用官方的獨立 `react-devtools` 套件。裝好後重新整理開發中的頁面，開發者工具會多出兩個分頁：Components 看元件樹，Profiler 量測渲染的花費。
+
+在 Components 點選元件，右側會列出它收到的 props；之後學到的狀態也會列在同一處，這一則還沒有，所以先看 props。啟用 React Compiler 的專案裡，被編譯的元件名稱旁會出現「Memo ✨」徽章。
+
+```jsx 03-react/src/demos/03-down.jsx
+function Card({ title }) {
+  return (
+    <article className="rounded border border-stone-200 bg-white p-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+    </article>
+  );
+}
+
+export default function DownDemo() {
+  const title = '台北城市漫遊';
+
+  return (
+    <section className="grid gap-3">
+      <Card title={title} />
+      <Card title={title} />
+    </section>
+  );
+}
+```
+
+打開上面的示範，Components 的元件樹裡可以找到 `DownDemo`，底下兩顆 `Card`；上層還有練習專案自己的 `App` 等元件。點任一顆 `Card`，props 的 `title` 是「台北城市漫遊」。
+
+**解析**
+
+- Components 看的是 React 的元件樹，Elements 看的才是 HTML 的標籤樹，兩者的節點不同。
+- 畫面上有兩張卡片，樹上就有兩顆 `Card`。它們的 props 可以相同，但仍是兩個各自獨立的元件。
+- 點 `DownDemo` 會發現它的 props 是空的，因為它的父層沒有傳任何屬性給它。
+- 一般來說，正式建置會把函式名稱壓縮成短名，Components 看到的名稱就不好讀。學習階段在開發伺服器底下看即可。
+
+## 規劃元件
+
+Thinking in React 把「從畫面到元件」分成幾個步驟：先照畫面畫出元件界線，用固定資料組出靜態畫面，再找出哪些值會變、決定它們放在哪一層。會變的值在 React 稱為狀態（state），也就是元件記住、並會讓畫面跟著更新的資料。怎麼寫出狀態要等狀態那一章，這一節只用常數預告它會放在哪裡。
+
+### 拆分元件
+
+先不管資料會不會變，把畫面裡重複的區塊收成元件，固定的字先寫死或用常數傳下去。界線清楚之後，再決定狀態放哪。
+
+**觀念**
+
+這一頁是同一張畫面：標題「洛奇旅行」、一句說明、兩張卡片。第一個示範把整頁寫在同一個函式裡；第二個示範抽出標題、說明與卡片，父層只負責把它們組合回去。
+
+{% note info %}
+**先評估再拆**
+實務上不要為了拆而拆。重複出現、可以單獨命名、之後會單獨改動的區塊，才值得收成元件。
+{% endnote %}
+
+整頁寫在同一個函式：
+
+```jsx 03-react/src/demos/04-tree.jsx
+export default function TreeDemo() {
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">洛奇旅行</h1>
+      <p className="mt-2">先拆開，再由父層排回去。</p>
+      <div className="mt-4 grid gap-3">
+        <article className="rounded border border-stone-200 bg-white p-4">
+          <h2 className="text-lg font-semibold">台北城市漫遊</h2>
+          <p>12800</p>
+        </article>
+        <article className="rounded border border-stone-200 bg-white p-4">
+          <h2 className="text-lg font-semibold">花蓮山海三日</h2>
+          <p>15900</p>
+        </article>
+      </div>
+    </section>
+  );
+}
+```
+
+畫面是標題「洛奇旅行」與一句說明，下面兩張卡片分別是台北城市漫遊 12800、花蓮山海三日 15900。
+
+拆成元件之後，畫面與上面完全相同：
+
+```jsx 03-react/src/demos/04b-tree-split.jsx
+function PageTitle() {
+  return <h1 className="text-2xl font-bold">洛奇旅行</h1>;
+}
+
+function PageLead() {
+  return <p className="mt-2">先拆開，再由父層排回去。</p>;
+}
+
+function Card({ title, price }) {
+  return (
+    <article className="rounded border border-stone-200 bg-white p-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p>{price}</p>
+    </article>
+  );
+}
+
+export default function TreeSplitDemo() {
+  return (
+    <section>
+      <PageTitle />
+      <PageLead />
+      <div className="mt-4 grid gap-3">
+        <Card title="台北城市漫遊" price={12800} />
+        <Card title="花蓮山海三日" price={15900} />
+      </div>
+    </section>
+  );
+}
+```
+
+**解析**
+
+- 拆分前，卡片外框寫了兩次，要改外框就得在一大段標籤裡找，也很難拿到別處重複使用。
+- 拆分後，`PageTitle` 與 `PageLead` 沒有參數，因為標題與說明在這一頁是固定的。`Card` 接收 `title` 與 `price`，因為外框相同、兩筆資料不同。
+- 父層的回傳讀起來就是頁面結構：要改卡片去 `Card`，要改標題去 `PageTitle`。
+- 這些小元件寫在同一個檔案、沒有 `export`，代表只有這一頁用得到。要放到別的檔案共用，見下一章的選讀「模組」。
+
+### 狀態的位置
+
+會變的值放在「所有用得到它的元件」的最近共同父層。只有一個元件看得到的值，就留在那個元件；能從現有資料算出來的值，不必另存成狀態。
+
+**觀念**
+
+價格是否顯示，兩張卡片都要跟著走，所以這個布林值屬於父層。父層把現在的布林傳下去，卡片只決定這一次要不要畫出價格，不自己保管開關。
+
+名稱已經在，就不要再另存一個「大寫名稱」。算得出來的值，每次渲染時直接算即可。
+
+```jsx 03-react/src/demos/05-place.jsx
+function Card({ title, price, showPrice }) {
+  return (
+    <article className="rounded border border-stone-200 bg-white p-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      {showPrice ? <p>{price}</p> : null}
+    </article>
+  );
+}
+
+export default function PlaceDemo() {
+  const showPrice = true;
+
+  return (
+    <section className="grid gap-3">
+      <Card title="台北城市漫遊" price={12800} showPrice={showPrice} />
+      <Card title="花蓮山海三日" price={15900} showPrice={showPrice} />
+    </section>
+  );
+}
+```
+
+`showPrice` 目前是常數 `true`，所以兩張卡片都看得到價格。改成 `false`，兩張的價格會一起消失；真正能切換的按鈕，留到狀態那一章再做。
+
+**解析**
+
+- 開關若寫在 `Card` 裡面，每一張卡片會各持有一份，無法一次關掉全部。放在父層時，兩張讀到的是同一次傳下去的值。
+- 卡片用三元決定要畫價格還是什麼都不畫，`null` 不會在畫面上留下節點。
+- 價格已經是參數，不要為了顯示再複製一份到別的變數裡當狀態。
+
+# 元件
+
+元件是可重複使用的函式，回傳一塊畫面。這一章先看元件怎麼分檔、怎麼互相引用（選讀），再看父層如何用 props 把資料、函式與標籤中間的內容傳給子層。
+
+## 選讀：模組
+
+元件拆成多個檔案後，每個檔要先「匯出」自己的元件，別的檔才能「匯入」使用。這套機制是 ES Module，語法細節見 {% post_link lokiTech-15day-06-js-basics %} 的選讀 ES Module 章節；本課的專案不必先懂它也能照著寫，這一節只看元件最常見的兩種匯出。
+
+一覽：
+
+- 預設匯出（default export）：一個檔只能有一個，匯入時不加花括號，名稱可以自己取。
+- 具名匯出（named export）：一個檔可以有多個，匯入時要加花括號，名稱必須和匯出時相同。
+
+### default export
+
+預設匯出代表這個檔的主角。本課每個 demo 都用預設匯出交出頁面元件，專案裡的頁面檔也是這樣寫，匯入的一方才不必知道裡面叫什麼名字。
+
+**觀念**
+
+下面的檔案有兩個元件：`Card` 用具名匯出，讓下一個 demo 引入；`CardDemo` 用預設匯出，是這個檔的主角，內容是一張固定資料的卡片。
 
 ```jsx 03-react/src/demos/15-card.jsx
 export function Card({ title, price }) {
@@ -2010,46 +1157,22 @@ export default function CardDemo() {
 }
 ```
 
-畫面是一張白底卡片，標題台北城市漫遊，下面一行 12800。
+畫面是一張白底卡片，標題「台北城市漫遊」，下面一行 12800。
 
 **解析**
 
-- `export default` 這一行決定別的檔在不加快括號時會拿到誰。
-- 同一個檔還有 `export function Card`。那是具名匯出，不是第二個預設匯出。
-- 一個檔不能有兩個 `export default`。第二個會讓轉換失敗。
-- `CardDemo` 把資料寫死，是為了單獨打開這個檔也能看到卡片。真正的列表會改由父層傳不同的資料。
-
-{% note success %}
-**換你試試：**
-預設匯出裡的價格改成 15900，名稱改成花蓮山海三日。`Card` 的參數不要改成固定文字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-改的是呼叫 `Card` 時傳下去的值。卡片元件仍舊只負責顯示參數。
-
-```diff 03-react/src/demos/15-card.jsx
-  // ...
-  }
-  
-  export default function CardDemo() {
--   return <Card title="台北城市漫遊" price={12800} />;
-+   return <Card title="花蓮山海三日" price={15900} />;
-  }
-```
-
-</details>
+- 預設匯出決定別的檔不加花括號時會拿到誰，這裡拿到的是 `CardDemo`。
+- 同一個檔裡的 `export function Card` 是具名匯出，不是第二個預設匯出。
+- 一個檔寫兩個預設匯出會是語法錯誤。
+- `CardDemo` 把資料寫死，只是讓這個檔單獨打開也看得到卡片。
 
 ### named export
 
-具名匯出要在引入時把名字放進花括號。名字寫錯，或忘了花括號，這個檔就接不到 `Card`。
+具名匯出在匯入時要把名字放進花括號。名字拼錯或忘了花括號，都會拿不到想要的元件。
 
 **觀念**
 
-`BoardDemo` 從卡片檔引入 `Card`，排兩張不同的卡片。它自己用預設匯出，因為切換清單要的是這一頁，不是卡片。
-
-路徑寫成 `./15-card.jsx`。這個點代表同一個資料夾。不要用一整條從磁碟根目錄開始的路徑。
+下面的頁面從卡片檔匯入 `Card`，排出兩張不同資料的卡片。路徑開頭的 `./` 代表同一個資料夾。
 
 ```jsx 03-react/src/demos/16-board.jsx
 import { Card } from './15-card.jsx';
@@ -2064,57 +1187,28 @@ export default function BoardDemo() {
 }
 ```
 
-畫面是上下兩張卡片：台北城市漫遊 12800、花蓮山海三日 15900。外框與標題樣式來自 `Card`，這一頁只決定有幾張、各是什麼。
+畫面是上下兩張卡片：「台北城市漫遊」12800、「花蓮山海三日」15900。外框與標題樣式來自 `Card`，這一頁只決定有幾張、各是什麼資料。
 
 **解析**
 
-- 花括號裡的 `Card` 必須跟 `15-card.jsx` 的具名匯出相同。
-- 寫成 `import Card from './15-card.jsx'` 會拿到預設的 `CardDemo`，不是卡片本身。
-- 兩次使用 `Card` 各傳各的 props。元件函式會各跑一次。
-- 頁面元件用 `export default`，跟卡片的具名匯出是兩種交法，可以同時存在於不同檔。
+- 花括號裡的 `Card` 必須和卡片檔的具名匯出同名。
+- 寫成不加花括號的匯入，拿到的會是預設匯出的 `CardDemo`，不是 `Card`。
+- 兩次使用 `Card` 各傳各的資料，元件函式各執行一次，互不影響。
+- 這個頁面自己用預設匯出，同時匯入別檔的具名匯出，兩種寫法可以在同一個檔裡並存。
 
-{% note success %}
-**換你試試：**
-再加一張卡片，名稱京都紅葉散步、價格 42800。引入那一行留著。
-{% endnote %}
+## 傳入資料
 
-<details>
-<summary>參考答案</summary>
+元件的輸入叫 props（properties 的縮寫）：父層在標籤上寫的屬性，React 會收集成一個物件，交給元件函式當作唯一的參數。這一節看子層如何用解構取出需要的欄位，以及欄位沒傳時如何補預設值。
 
-新的資料仍由這一頁決定。卡片檔不用為了第三張而修改。
-
-```diff 03-react/src/demos/16-board.jsx
-  // ...
-        <Card title="台北城市漫遊" price={12800} />
-        <Card title="花蓮山海三日" price={15900} />
-+       <Card title="京都紅葉散步" price={42800} />
-      </section>
-    );
-  // ...
-```
-
-</details>
-
-## props
-
-props 是父層傳給子層的參數。子層用解構把要的欄位取出來，沒傳的欄位可以給預設值。父層也可以把函式當參數傳下去，或把標籤中間的內容當成 children。
-
-- 解構寫在參數的位置，欄位名稱要跟父層的屬性一樣。
-- 預設值在沒有傳那個屬性時補上。父層有傳，就算傳的是空字串，也不會改用預設值。
-- 函式型 props 讓子層在某個時機通知父層。子層不擁有那份狀態。
-- children 是標籤中間的內容。子層決定放在版面的哪裡，不決定內容是什麼。
+props 是唯讀的：子層可以用它畫畫面，但不要修改它，要改資料只能請父層傳新的。
 
 ### 解構
 
-參數寫成 `{ title, price }` 時，函式裡面可以直接用這兩個名字。不解構的話，它們會待在同一個物件上。
+參數寫成 `{ title, price }`，就是直接對 props 物件做解構（destructuring，把物件的欄位拆成變數），函式裡就能直接用這兩個名字。
 
 **觀念**
 
-父層寫 `<Product title="台北城市漫遊" price={12800} />`。子層的參數就是 `{ title: '台北城市漫遊', price: 12800 }`。
-
-解構之後，`title` 與 `price` 是兩個區域變數。
-
-屬性是字串時用雙引號。屬性是數字時用花括號。花括號裡的 `12800` 是數字，不是文字「12800」。
+父層寫 `<Product title="台北城市漫遊" price={12800} />`，子層收到的參數等於 `{ title: '台北城市漫遊', price: 12800 }`。屬性值是字串時可以直接用引號，其他型別（數字、變數、函式）都要用花括號包起來，花括號表示裡面是 JavaScript 的值。
 
 ```jsx 03-react/src/demos/17-props.jsx
 function Product({ title, price }) {
@@ -2131,53 +1225,22 @@ export default function PropsDemo() {
 }
 ```
 
-畫面是一張卡片，標題台北城市漫遊，下面一行 12800。
+畫面是一張卡片，標題「台北城市漫遊」，下面一行 12800。
 
 **解析**
 
-- 解構的名字跟屬性名一一對上。父層寫 `price`，子層才能取出 `price`。
-- `price={12800}` 的花括號表示這是 JavaScript 的值。寫成 `price="12800"` 會變成字串。
-- 子層不要改 `title` 再指望父層跟著變。這一次的參數只活在這一次渲染。
-- 多個屬性可以只解構用得到的那些。用不到的不必全部列出。
-
-{% note success %}
-**換你試試：**
-再傳一個屬性 `unit`，值是「天」。卡片在價格後面顯示這個單位。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新欄位要在父層傳、在子層的解構裡接。只寫其中一邊，另一邊會是 `undefined`。
-
-```jsx 03-react/src/demos/17-props.jsx
-function Product({ name, price, unit }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p>
-        {price} {unit}
-      </p>
-    </article>
-  );
-}
-
-export default function PropsDemo() {
-  return <Product title="台北城市漫遊" price={12800} unit="天" />;
-}
-```
-
-</details>
+- 解構的名字要和屬性名一一對上：父層寫 `price`，子層才取得到 `price`。
+- `price={12800}` 傳的是數字；寫成 `price="12800"` 會變成字串。
+- 只解構用得到的欄位即可，沒用到的屬性不必列出。
+- 不要在子層改 `title`：改了也動不到父層的資料，資料要變，請父層傳新的值。
 
 ### 預設值
 
-解構時可以在欄位後面給預設值。父層省略那個屬性時，子層仍有東西可畫。
+父層可以省略某個屬性。解構時在欄位後面用等號補預設值，子層就仍有東西可畫。
 
 **觀念**
 
-單位常常是「天」，所以預設寫在參數上。這一則父層沒有傳 `unit`，畫面仍會出現天。價格沒有預設，因為每條行程都不該偷偷變成 0。
-
-預設值只在值是 `undefined` 時介入。父層若明確傳了空字串，畫面上就是空的，不會被預設值蓋掉。
+預設值只在該屬性是 `undefined`（沒傳）時補上；父層明確傳了空字串或 0，就用傳入的值。價格沒有寫預設值，因為缺少價格應該被發現，不該被預設值悄悄蓋掉。
 
 ```jsx 03-react/src/demos/18-defaults.jsx
 function Product({ title, price, unit = '天' }) {
@@ -2200,46 +1263,28 @@ export default function DefaultsDemo() {
 
 **解析**
 
-- `unit = '天'` 寫在解構裡。這是參數的預設值，不是狀態。
-- 父層沒有寫 `unit` 這個屬性，所以子層用天。
-- 預設值每次渲染會重新看一次。它不會被記到下一次。
-- 不要為了預設值去改父層傳下來的物件。預設發生在參數這一層。
+- 父層沒有傳 `unit`，所以子層用預設的「天」。
+- 預設值寫在參數的解構裡，是一般的 JavaScript 語法，不是狀態，每次渲染都重新判斷一次。
+- 父層若寫成 `unit="人"`，畫面就會是「12800 人」，預設值不介入。
 
-{% note success %}
-**換你試試：**
-呼叫時加上 `unit="人"`。畫面應變成 12800 人，預設的天這一次不會出現。
+{% note info %}
+**defaultProps**
+舊版 React 常見元件函式後面接 `Product.defaultProps = { … }` 設定預設值。React 19 已移除函式元件的 defaultProps，一律改用上面的預設參數；只有類別元件還保留它。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+## 傳入函式與內容
 
-父層傳了值，預設值就不會介入。參數上的 `'天'` 留著，給下一次沒傳的時候用。
-
-```diff 03-react/src/demos/18-defaults.jsx
-  // ...
-  }
-  
-  export default function DefaultsDemo() {
--   return <Product title="台北城市漫遊" price={12800} />;
-+   return <Product title="台北城市漫遊" price={12800} unit="人" />;
-  }
-```
-
-</details>
+props 不只能傳資料，也能傳函式，以及標籤中間夾著的內容。這一節看子層如何呼叫父層傳下來的函式來通知父層，再看版面元件如何用 children 決定中間放什麼。
 
 ### 函式型 props
 
-父層把函式傳下來，子層在點擊時呼叫它。被點到的是哪一筆，由子層把名字交回去，狀態仍留在父層。
+資料由父層持有，子層想改資料時，沒有辦法直接動父層的狀態，只能呼叫父層傳下來的函式。這個 demo 先預告狀態的用法：`useState` 是讓元件記住會變資料的內建函式，這裡用它讓父層記住「目前選到誰」，下一章才細講。
 
 **觀念**
 
-`Shelf` 擁有「目前選到誰」。
+`CallbackDemo` 擁有「目前選到誰」，子元件只知道自己的名稱，和一個叫 `onPick` 的函式。屬性名稱慣例用 on 開頭，表示「發生這件事時要做的事」。
 
-`Choice` 只知道自己的名稱，以及一個叫做 `onPick` 的函式。
-
-按下時它呼叫 `onPick(title)`，不自己保存選取結果。
-
-屬性名稱用 `on` 開頭，表示「發生這件事時」。子層裡對應的參數也沿用這個名字。真正更新狀態的那一行只出現在父層。
+`onClick` 是 React 綁定點擊事件的寫法，值是點擊時才執行的函式，細節在後面的事件章節。
 
 ```jsx 03-react/src/demos/19-callback.jsx
 import { useState } from 'react';
@@ -2271,50 +1316,22 @@ export default function CallbackDemo() {
 }
 ```
 
-一開始是「選到 尚未選」。按下花蓮山海三日之後，變成「選到 花蓮山海三日」。台北城市漫遊那一顆會把文字改成台北城市漫遊。
+一開始是「選到 尚未選」。按下「花蓮山海三日」，變成「選到 花蓮山海三日」；按「台北城市漫遊」則改成那個名稱。
 
 **解析**
 
-- `onPick={setPicked}` 把設定函式交下去。子層拿到的是函式本身，不是呼叫結果。
-- 箭頭函式 `() => onPick(name)` 等到點擊才跑。寫成 `onClick={onPick(name)}` 會在渲染時就呼叫。
-- 兩顆按鈕共用同一個 `onPick`。差在各自閉包裡的 `title`。
-- 父層是唯一呼叫 `setPicked` 的地方。子層沒有自己的 `useState`。
-
-{% note success %}
-**換你試試：**
-再加一顆選項，名稱是京都紅葉散步。按下之後，上面那一行應變成「選到 京都紅葉散步」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新按鈕仍把同一個設定函式傳下去，只是名稱不同。
-
-```diff 03-react/src/demos/19-callback.jsx
-  // ...
-          <Choice title="台北城市漫遊" onPick={setPicked} />
-          <Choice title="花蓮山海三日" onPick={setPicked} />
-+         <Choice title="京都紅葉散步" onPick={setPicked} />
-        </div>
-      </section>
-    // ...
-```
-
-</details>
+- `onPick={setPicked}` 把設定函式本身交下去，沒有加括號，所以此時沒有執行它。
+- 箭頭函式 `() => onPick(title)` 等到點擊才執行；若直接寫成 `onClick={onPick(title)}`，渲染時就會先呼叫一次。
+- 兩顆按鈕共用同一個 `onPick`，差別只在各自傳回去的 `title`。
+- 更新狀態的呼叫只出現在父層，`Choice` 自己沒有狀態。
 
 ### children
 
-標籤中間的內容會變成子層的 `children`。版面元件負責外框，不負責中間的句子是什麼。
+寫在標籤開頭與結尾中間的內容，會以 `children` 這個 prop 傳進元件。版面元件負責外框，中間放什麼由使用它的那一方決定。
 
 **觀念**
 
-`Panel` 畫一個有邊框的區塊，中間放 `{children}`。
-
-父層把標題與段落寫在 `<Panel>` 與 `</Panel>` 之間。
-
-下次要放一張表單，仍用同一個外框，不必改 `Panel`。
-
-`children` 這個名字是 React 定的。不要另外取一個 `content`，除非你真的想用屬性而不是標籤中間。
+`Panel` 畫一個有邊框的區塊，中間放 `children`。同一個外框之後要放標題與段落，或放表單，都不必修改它。這個名字由 React 規定，不能換成別的。
 
 ```jsx 03-react/src/demos/20-children.jsx
 function Panel({ children }) {
@@ -2339,65 +1356,34 @@ export default function ChildrenDemo() {
 
 **解析**
 
-- 開始標籤與結束標籤中間的元素，就是這一次的 `children`。
-- `Panel` 不知道中間是標題還是表單。它只決定外框與內距。
-- 沒有寫中間內容時，`children` 是 `undefined`，那一塊就是空的。
-- 要限制只能放一種子元件時，再另外用明確的 props。一般的外框用 `children` 就夠。
-
-{% note success %}
-**換你試試：**
-在段落下面再放一行「第二段仍在外框裡」。`Panel` 的實作不要改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多出來的段落仍是 `children` 的一部分。外框元件會照單全收。
-
-```diff 03-react/src/demos/20-children.jsx
-  // ...
-        <h1 className="text-2xl font-bold">洛奇旅行</h1>
-        <p>外框在 Panel，文字在呼叫端。</p>
-+       <p>第二段仍在外框裡</p>
-      </Panel>
-    );
-  // ...
-```
-
-</details>
+- 夾在 `<Panel>` 與 `</Panel>` 之間的兩個元素，就是這一次的 `children`。
+- `Panel` 不知道中間是標題還是表單，只決定外框與內距。
+- 標籤中間沒寫東西時，`children` 是 `undefined`，那一塊就是空的。
+- 需要放在版面不同位置的內容（例如標題區與內容區）時，再另外用明確名稱的 props 傳入；單一區塊用 `children` 就夠。
 
 # 狀態
 
-會變、而且變了就要重畫的資料，放進狀態。React 在渲染時讀到的是這一輪的快照。設定函式把下一輪要的值排進去，提交之後畫面才換成新的。
+會變、而且變了畫面就要跟著換的資料，放進狀態（state）。元件每次渲染（重新呼叫元件函式算出畫面）讀到的是那一輪的快照（固定不變的值），設定函式則是把下一輪要用的值排進去，渲染完成後畫面才換成新的。
 
 ## useState
 
-`useState` 讓元件記住會變的資料。呼叫寫成這樣：
+`useState` 是 React 提供的函式（稱為 Hook，只能在元件裡使用的內建功能），讓元件記住會變的資料。這一節從宣告開始，依序看多個狀態、快照、更新函式、批次更新，最後是使用 Hooks 必須遵守的規則。
+
+呼叫寫成這樣：
 
 ```jsx
 /**
- * @param {*} initialValue 這顆元件實例第一次掛上時使用的起始值
+ * @param {*} initialValue 元件第一次掛上時使用的起始值
  * @returns [value, setValue]
  *   value：這一輪的狀態
- *   setValue：把下一輪的值排進去的函式。指派給 value 不會重畫
+ *   setValue：把下一輪的值排進去的函式。直接改 value 不會重畫
  */
 const [value, setValue] = useState(initialValue);
 ```
 
-回傳值是一個有兩個元素的陣列：現在的值，以及設定函式。我們用解構把這兩個名字拆開來用。
+回傳值是有兩個元素的陣列：現在的值，以及設定函式，我們用解構把它們拆成兩個名字。命名時成對，例如 `count` 與 `setCount`，讀的人一看就知道第二個用來改第一個。
 
-名字成對。管次數就寫 `count` 與 `setCount`。讀的人看得出來第二個是用來改第一個的。
-
-`initialValue` 只在這顆元件實例第一次掛上時使用。同一個實例之後的渲染，不會再用起始值蓋掉現在的數字。
-
-要讓下一輪渲染看到新的值，呼叫設定函式。指派給 `value` 只會碰到這一次渲染的常數，畫面不會因此重畫。
-
-更深的規則先記方向，完整的原因在後面各節：
-
-- 渲染讀到的狀態是這一輪的快照。同一個事件裡呼叫設定函式之後，手上的 `count` 仍是這一輪的值。見「狀態快照」。
-- 下一輪要從前一個狀態算出來時，用更新函式。見「更新函式」。
-- 同一個事件裡的多次設定會批次處理，通常只再渲染一次。見「批次更新」。
-- `useState` 寫在元件最上面，每次渲染的呼叫順序要一樣。見「Hooks 規則」。
+起始值只在元件第一次掛上時使用，之後的渲染不會再用它蓋掉現在的值。
 
 {% mermaid graph LR %}
   clickNode["事件呼叫設定函式"] --> queueNode["更新排進佇列"]
@@ -2411,22 +1397,22 @@ const [value, setValue] = useState(initialValue);
 
 {% note info %}
 **React Compiler**
-同一輪裡重複的計算，以及子元件要不要重畫，這門課交給 React Compiler。不另外寫 memo、useMemo 或 useCallback。
+元件裡重複的計算，以及子元件要不要重畫，這門課交給 React Compiler：它在建置時自動為元件加上記憶（把算過的結果留著重用）。所以不必手寫 memo、useMemo 或 useCallback。
 {% endnote %}
 
 ### 宣告狀態
 
-`useState` 寫在元件函式的最上面。這一則用 `count` 與 `setCount` 管次數。
+狀態寫在元件函式的最上面。這個 demo 用 `count` 管次數，按下按鈕就呼叫 `setCount`。
 
 **觀念**
 
-計數從 0 開始。按下按鈕時呼叫 `setCount`，下一輪的次數才會加一。畫面上的「次數」讀的是 `count`。你沒有自己去找那個段落再改文字。
+一次更新分成兩步。渲染（render）是 React 重新呼叫元件函式，用新的狀態算出新的畫面描述；提交（commit）是把新舊描述不同的地方寫進頁面。你沒有自己去找段落改文字，而是改狀態，畫面跟著狀態重畫。
 
-設定函式的名字用 `set` 接在狀態名後面。這是慣例，React 不會因為你換了名字就壞掉，但全班這樣寫最好認。
+設定函式的名字用 set 接在狀態名後面，這是慣例，換名字不會壞，但全班照慣例寫最好認。
 
 {% note warning %}
 **不要這樣寫**
-指派給 `count` 更新不到 React 記住的狀態。`const` 解出來的 `count` 也不能被指派，那一行會丟出錯誤。改成 `let` 之後，改到的仍只是這個函式裡的變數，畫面不會重畫。
+直接指派不會更新 React 記住的狀態。解構出來的名字是 `const`，再指派會丟出錯誤；改成 `let` 也只是改到這一次渲染裡的變數，畫面不會重畫。
 
 ```jsx
 const [count, setCount] = useState(0);
@@ -2436,7 +1422,7 @@ const onAdd = () => {
 };
 ```
 
-要換下一輪的數字，呼叫 `setCount`。下面這一則的按鈕就是這樣寫的。
+要換下一輪的數字，呼叫 `setCount`。
 {% endnote %}
 
 ```jsx 03-react/src/demos/21-state.jsx
@@ -2451,7 +1437,7 @@ export default function CountDemo() {
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
+        onClick={() => setCount(count + 1)}
       >
         加一
       </button>
@@ -2460,89 +1446,27 @@ export default function CountDemo() {
 }
 ```
 
-一開始畫面是「次數 0」。按三次之後是「次數 3」。
+一開始畫面是「次數 0」，按三次之後是「次數 3」。
 
 **解析**
 
-- 起始值 `0` 只在這顆元件被放上畫面的第一次用到。之後按按鈕不會再把次數清回 0。
-- `(value) => value + 1` 用的是排到這一次的狀態。這一則每次點擊只排一個更新，寫 `setCount(count + 1)` 也會加一。下一輪要從前一個值算出來時，優先用更新函式。同一個事件裡排兩次的差別，在「狀態快照」與「更新函式」。
-- 換成已知常數時直接交那個值。歸零寫 `setCount(0)`。
-- 設定成同一個數字時，React 可以略過這次渲染。畫面上的次數不會無故閃動。
-
-{% note success %}
-**換你試試：**
-再加一顆按鈕，按下去把次數設回 0。加一那顆留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-歸零的下一輪是已知常數 0，直接交給 `setCount`。兩顆按鈕各管自己的設定。
-
-```diff 03-react/src/demos/21-state.jsx
-  // ...
-          加一
-        </button>
-+       <button
-+         type="button"
-+         className="ml-2 rounded bg-stone-200 px-3 py-1"
-+         onClick={() => setCount(0)}
-+       >
-+         歸零
-+       </button>
-      </section>
-    );
-  // ...
-```
-
-</details>
-
-### render 與 commit
-
-一次更新分成渲染與提交。渲染只呼叫你的元件、算出元素。提交才把跟上一輪不同的地方寫進頁面。這一節沿用同一支 `03-react/src/demos/21-state.jsx`，程式仍是上一則的計數按鈕。
-
-**觀念**
-
-按下「加一」之後，順序是：
-
-1. 事件呼叫 `setCount`，更新排進佇列。
-2. 渲染：React 重新呼叫 `CountDemo`。這一次讀到的 `count` 已是新數字，回傳的段落也是新的描述。這一步還在 JavaScript 裡，頁面上的文字仍是舊的。
-3. 提交：比對這一輪與上一輪的元素，只把有差的節點寫進頁面。段落從「次數 0」變成「次數 1」。按鈕文字沒改，那一顆按鈕可以留在原處。
-
-官方文件用 render 與 commit 稱呼這兩步。渲染是純的計算：同樣的狀態應算出同樣的元素。渲染過程中不要改狀態，也不要在元件函式裡直接改畫面上的 DOM。
-
-**解析**
-
-- 渲染發生在 JavaScript 裡。這時候頁面上的文字還是舊的。
-- 提交比對這一次與上一次的元素，只更新有差的節點。
-- 元件函式裡不要寫「順便改某個 DOM」。那會跟提交打架。
-- 開發時的嚴格模式可能讓渲染多跑一次。多跑的那次仍應算出同一棵元素。
-
-{% note success %}
-**換你試試：**
-按加一三次。確認每一次都是渲染讀到新的 `count` 之後，畫面才變成 1、2、3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-每一次點擊都排進一個「加一」。React 渲染時讀到的是加上去之後的快照，提交才把段落換成那個數字。三次點擊就是三次這樣的循環，所以停在 3。
-
-程式維持原樣即可。若數字一次跳 3，代表一個事件裡呼叫了三次設定，而不是按了三下。
-
-</details>
+- 起始值 `0` 只在元件第一次放上畫面時用到，之後按按鈕不會把次數清回 0。
+- 按下按鈕時呼叫 `setCount(count + 1)`，React 重新呼叫 `CountDemo`，這一次讀到的 `count` 是新數字。
+- 渲染階段只是在 JavaScript 裡算出新的描述，頁面文字要到提交才改；而且渲染時不要改狀態，也不要直接動 DOM，同樣的狀態應算出同樣的畫面。
+- 設定成和現在相同的值時，React 通常會略過畫面更新。
+- 要歸零這類已知常數，直接交那個值，寫 `setCount(0)`。
 
 ### 多個狀態
 
-互不相關的值分成多個 `useState`。名稱與件數會各自改，拆開各管各的。呼叫 Hooks 的順序每次渲染都要固定。
+互不相關的值各用一個 `useState`。名稱與件數會分開改，就拆成兩份，各管各的。
 
 **觀念**
 
-先寫名稱，再寫件數。改名稱時只呼叫 `setName`，件數留在原來的數字。每一次渲染都維持這個順序。不要把其中一個 `useState` 放進 `if` 或迴圈；呼叫次數一變，狀態就會對錯格。那種寫法在「Hooks 規則」看完整的原因。
+先寫名稱，再寫件數，每次渲染都維持這個順序，React 靠順序把每一份狀態對回原位。改名稱只呼叫 `setName`，件數留在原來的數字。
 
 {% note warning %}
 **不要這樣寫**
-名稱與件數會分開改。塞進同一個物件只是少寫一個 `useState`。改名稱時仍要展開整包，把沒改的欄位再帶回去。
+把會分開改的欄位塞進同一個物件，每次改名稱都得展開整包，把沒改的欄位再帶回去，容易漏。兩個值永遠一起換時，才適合合成一個物件。
 
 ```jsx
 const [trip, setTrip] = useState({
@@ -2554,8 +1478,6 @@ const onRename = () => {
   setTrip({ ...trip, name: '花蓮山海三日' });
 };
 ```
-
-會分開改的，拆成兩個 `useState`。兩個值永遠一起換，才合成一個物件。
 {% endnote %}
 
 ```jsx 03-react/src/demos/22-multi.jsx
@@ -2573,7 +1495,7 @@ export default function MultiDemo() {
       <button
         type="button"
         className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={() => setCount((value) => value + 1)}
+        onClick={() => setCount(count + 1)}
       >
         加一人
       </button>
@@ -2589,69 +1511,22 @@ export default function MultiDemo() {
 }
 ```
 
-一開始是「台北城市漫遊 × 1」。按加一人變成「台北城市漫遊 × 2」。再按改成花蓮山海三日，變成「花蓮山海三日 × 2」。件數不會因為改名而回到 1。
+一開始是「台北城市漫遊 × 1」。按「加一人」變成「× 2」，再按「改成花蓮山海三日」，變成「花蓮山海三日 × 2」。件數不會因為改名而回到 1。
 
 **解析**
 
-- 兩個 `useState` 是兩份狀態。更新其中一份，另一份用上一輪的值留到這一輪。
-- 改名那顆按鈕沒有碰到 `setCount`，所以件數保持不變。
-- 起始值各自只算一次。件數的 `1` 不會在改名時重跑。
-- 先 `name`、後 `count`，每次渲染都要這個順序。「Hooks 規則」會看把 `useState` 放進 `if` 或迴圈時，順序為什麼對不上。
-- 兩個值永遠一起換時，可以合成一個物件。會分開改的，維持上面兩個 `useState`。
-
-{% note success %}
-**換你試試：**
-再加一個狀態 `city`，起始值台北，以及一顆按鈕把它改成台南。名稱與件數那兩行更新留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三個 Hook 仍寫在元件最上面。按鈕只呼叫它自己的設定函式。
-
-```diff 03-react/src/demos/22-multi.jsx
-  // ...
-    const [name, setName] = useState('台北城市漫遊');
-    const [count, setCount] = useState(1);
-+   const [city, setCity] = useState('台北');
-  
-    return (
-      <section>
-        <p>
--         {name} × {count}
-+         {name} × {count} · {city}
-        </p>
-        <button
-          // ...
-          改成花蓮山海三日
-        </button>
-+       <button
-+         type="button"
-+         className="ml-2 rounded bg-stone-200 px-3 py-1"
-+         onClick={() => setCity('台南')}
-+       >
-+         改到台南
-+       </button>
-      </section>
-    );
-  // ...
-```
-
-</details>
+- 兩個 `useState` 是兩份獨立的狀態，更新其中一份，另一份沿用上一輪的值。
+- 改名的按鈕沒有碰到 `setCount`，所以件數保持不變。
+- 每份起始值各自只用一次，件數的 `1` 不會在改名時重新套用。
+- 先 `name`、後 `count` 的順序每次渲染都不能變，原因在最後一節的 Hooks 規則。
 
 ### 狀態快照
 
-這一則是錯法示範，跟下一則「更新函式」對著看。按鈕寫「以為加二」，事件裡卻連叫兩次 `setCount(count + 1)`。兩次用的是同一個快照，畫面只加一。
+每一次渲染都有自己的一份狀態快照（snapshot）：事件處理函式建立時，帶著的是那一輪的 `count`。這個 demo 故意在同一個事件裡連呼叫兩次 `setCount(count + 1)`，看畫面是不是加二。
 
 **觀念**
 
-`setCount(count + 1)` 用的是這一次渲染關進事件函式裡的 `count`。同一個事件裡呼叫兩次，兩次讀到的都是按下當下的那個數字。畫面是 0 時，兩次都在排「設成 1」，後一次把前一次蓋掉。
-
-`console.log(count)` 印的也是這個快照。設定函式不會把同一個函式裡的 `count` 當場改掉。
-
-一個事件裡只更新一次、而且下一輪就是「這一輪的 `count` 加一」時，`setCount(count + 1)` 可以用。下一輪是已知常數時，直接交那個值，例如 `setCount(0)`。
-
-同一個事件裡要疊加多次，或下一個值必須接在前一個更新之後，改用 `setCount((value) => value + 1)`。更新函式拿到的是佇列裡排到它為止的值。下一輪只要依賴前一個狀態，就優先用更新函式；直接交值，用在你已經知道要換成哪個常數的時候。下一則就是兩個更新函式，按一次才會加二。
+兩次呼叫讀的是同一個快照。畫面是 0 時，兩次都在說「下一輪設成 1」，後一次只是重複前一次，所以結果是 1，不是 2。`console.log(count)` 也一樣，印的是按下當下的值，設定函式不會當場改掉手上的 `count`。
 
 ```jsx 03-react/src/demos/23-snapshot.jsx
 import { useState } from 'react';
@@ -2680,7 +1555,7 @@ export default function SnapshotDemo() {
 }
 ```
 
-從 0 按一次「以為加二」，畫面是「快照次數 1」。Console 印出按下當下的快照：
+從 0 按一次「以為加二」，畫面是「快照次數 1」，Console 印出按下當下的快照：
 
 ```text
 0
@@ -2688,49 +1563,21 @@ export default function SnapshotDemo() {
 
 **解析**
 
-- `count` 是這一次渲染的常數。事件函式把它關在閉包裡，兩次 `setCount(count + 1)` 都讀這個數字。
-- 兩次設定排的是同一個下一輪的值，後一次蓋掉前一次。這是同一次點擊裡的兩次設定，畫面因此只加 1。
-- 只更新一次時，`setCount(count + 1)` 與 `setCount((value) => value + 1)` 都會變成這一輪再加一。要在同一個事件裡疊加，才看得出更新函式的差別。
-- `console.log(count)` 發生在設定之後，印出的仍是按下之前的數字。下一輪渲染才會有新的 `count`，新的事件函式也跟著那一輪一起建立。
-
-{% note success %}
-**換你試試：**
-在 `console.log` 後面再印一次 `count + 1`。畫面仍是「快照次數 1」，Console 第二行應是 1。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`count + 1` 只是把快照拿來做算術，不會多排一次更新。畫面仍由那兩次相同的設定決定，停在「快照次數 1」。
-
-```diff 03-react/src/demos/23-snapshot.jsx
-  // ...
-      setCount(count + 1);
-      setCount(count + 1);
-      console.log(count);
-+     console.log(count + 1);
-    };
-  
-    return (
-      // ...
-```
-
-```text
-0
-1
-```
-
-</details>
+- `count` 是這一輪渲染的常數，兩次 `setCount(count + 1)` 都從同一個數字開始算。
+- 兩次排進去的值相同，所以畫面只加 1。
+- `console.log(count)` 發生在設定之後，仍印出 0；新的 `count` 要到下一輪渲染才有。
 
 ### 更新函式
 
-這一則是正確累加，對照上一則的快照。兩個 `(value) => value + 1` 會接在佇列上：第一個把 0 變成 1，第二個接到 1 再變成 2。按鈕寫「正確加二」。
+設定函式除了接受值，也可以接受一個函式，稱為更新函式（updater function）。React 會把它排進佇列，依序執行，每一個拿到的是前一個算出的結果。
 
 **觀念**
 
-`setCount((value) => value + 1)` 的 `value` 是排到這一次為止的狀態，不是事件函式閉包裡的 `count`。所以同一個事件裡的兩次加一會疊上去。事件函式裡的 `console.log(count)` 仍印按下當下的 0，畫面要等下一輪渲染才是 2。
+`setCount((value) => value + 1)` 裡的參數，是佇列排到這一步為止的狀態，不是事件函式帶著的快照，所以同一個事件裡的兩次加一會疊上去。
 
-規則與上一則同一套。下一輪要從前一個狀態算出來，用更新函式。下一個值是已知常數，直接交那個值，例如 `setCount(0)`。一個事件裡只做一次「目前畫面上的數字加一」時，`setCount(count + 1)` 也可以；會連續排、或下一個值依賴前一個值時，用更新函式。切換布林、依據上一筆陣列產生新陣列，也是依賴前一個狀態，同樣用更新函式。
+選擇的原則是：下一個值依賴前一個狀態（累加、切換布林、依舊陣列產生新陣列）時，用更新函式；已知要換成哪個常數（例如歸零）時，直接交值。
+
+更新函式必須是純的：只用參數算出新值，不修改任何東西。開發時的嚴格模式（StrictMode，專案的 main.jsx 已經包上）會故意把更新函式呼叫兩次來檢查，純函式不受影響。
 
 ```jsx 03-react/src/demos/24-updater.jsx
 import { useState } from 'react';
@@ -2759,7 +1606,7 @@ export default function UpdaterDemo() {
 }
 ```
 
-從 0 按一次「正確加二」，畫面是「累加次數 2」。再按一次，從 2 加到 4。Console 仍印出 0，那一行讀的是按下當下的快照，不是更新函式的參數。
+從 0 按一次「正確加二」，畫面是「累加次數 2」，再按一次變 4。Console 仍印出 0，那一行讀的是快照，不是更新函式的參數。
 
 ```text
 0
@@ -2767,48 +1614,19 @@ export default function UpdaterDemo() {
 
 **解析**
 
-- 更新函式的參數是佇列裡最新的那一個。第一個拿到 0 交出 1，第二個拿到 1 交出 2。
-- 上一則兩次 `setCount(count + 1)` 都排成 1，後一次蓋掉前一次。這一則兩次加一會疊加。
-- 一個事件裡只有一次、而且就是目前畫面上的數字加一時，`setCount(count + 1)` 也可以。會連續排、或下一個值依賴前一個值時，用更新函式。已知常數直接交值。
-- `console.log(count)` 沒有讀更新函式的參數，所以仍是按下之前的 0。下一輪渲染的 `count` 才是 2。
-
-{% note success %}
-**換你試試：**
-再排第三個更新函式，同樣加一。按一次，畫面應從「累加次數 0」變成「累加次數 3」。Console 仍是 0。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-三個更新函式依序接到 0、1、2，最後排定的值是 3。畫面是「累加次數 3」。
-
-```diff 03-react/src/demos/24-updater.jsx
-  // ...
-      setCount((value) => value + 1);
-      setCount((value) => value + 1);
-+     setCount((value) => value + 1);
-      console.log(count);
-    };
-    // ...
-```
-
-```text
-0
-```
-
-</details>
+- 第一個更新函式拿到 0 交出 1，第二個拿到 1 交出 2，所以按一次加二。
+- 對照上一個 demo：直接交值的兩次呼叫互相蓋掉，更新函式的兩次呼叫則接在一起。
+- 每次點擊只更新一次時，`setCount(count + 1)` 也正確；一個事件裡要連續疊加時，才一定得用更新函式。
 
 ### 批次更新
 
-同一個事件裡的多次設定，React 會收成一次渲染。「多個狀態」是兩顆按鈕各改一份。這一則是同一次點擊裡設定名稱與件數，下一輪一起出現。
+同一個事件裡的多次設定，React 會合併成一次渲染，這個行為稱為批次更新（batching）。React 18 起所有事件與非同步回呼裡都會批次處理。這個 demo 在同一次點擊裡同時設定名稱與件數。
 
 **觀念**
 
-名稱與件數在同一個點擊裡各設定一次。元件函式裡的 `console.log` 會在渲染時印出兩個新值。按一次，只多一輪渲染。你不會先看到名稱變了、件數還是舊的那一輪。
+渲染時印出 `console.log`，就能數出渲染了幾輪。兩個新值會在同一輪一起出現，不會先看到名稱變了、件數還是舊的。兩份狀態仍然拆開，批次是 React 做的，不必為了少畫一次而把不相關的值塞進同一個物件。
 
-兩份狀態仍然拆開。批次是 React 在做，不必為了少畫一次就把不相關的欄位塞進同一個物件。
-
-開發時，嚴格模式可能在第一次載入印出兩次相同的起始渲染。那是檢查，不是點了兩下。按下按鈕之後，應只再增加一次。
+專案有開 StrictMode，開發時每一次渲染都會多呼叫一次元件函式來檢查純度，所以每一輪的 Console 會出現兩行相同的紀錄。這不是點了兩下，也不影響正式版。
 
 ```jsx 03-react/src/demos/25-batch.jsx
 import { useState } from 'react';
@@ -2841,64 +1659,33 @@ export default function BatchDemo() {
 }
 ```
 
-按下之後畫面是「花蓮山海三日 × 3」。
+按下之後畫面是「花蓮山海三日 × 3」。開發模式下 Console 先是掛上時的兩行，點擊後再兩行：
 
 ```text
 渲染 台北城市漫遊 1
+渲染 台北城市漫遊 1
+渲染 花蓮山海三日 3
 渲染 花蓮山海三日 3
 ```
 
-開發模式第一次載入時，第一行可能連續出現兩次。按下按鈕後，新的那一行只有一次。
-
 **解析**
 
-- 兩次設定發生在同一個事件裡，所以下一次渲染同時看得到新名稱與新件數。
-- 渲染時的 `console.log` 印的是這一輪的快照，不是按鈕函式裡的區域變數。
-- 不要為了批次而把兩個不相關的值硬併成一個狀態。批次是 React 做的。
-- 嚴格模式多跑的那次渲染應算出同樣的畫面。若印出的兩次起始值不同，表示渲染過程改到了外部資料。
-
-{% note success %}
-**換你試試：**
-按鈕裡把件數改成 5，名稱改成京都紅葉散步。按下後 Console 應多一行「渲染 京都紅葉散步 5」，而且只有這一次新增。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-同一個事件裡的兩個新值會一起出現在下一輪渲染。
-
-```diff 03-react/src/demos/25-batch.jsx
-  // ...
-    console.log('渲染', name, count);
-  
-    const onChange = () => {
--     setName('花蓮山海三日');
--     setCount(3);
-+     setName('京都紅葉散步');
-+     setCount(5);
-    };
-  
-    return (
-      // ...
-```
-
-```text
-渲染 京都紅葉散步 5
-```
-
-</details>
+- 兩次設定發生在同一個事件裡，所以下一輪渲染同時看到新名稱與新件數。
+- Console 沒有出現「花蓮山海三日 1」或「台北城市漫遊 3」這種只改一半的紀錄，代表只渲染了一輪。
+- 渲染時的 `console.log` 印的是這一輪的快照。
+- 若關掉 StrictMode，每一輪只會印一行。
 
 ### Hooks 規則
 
-Hooks 只在元件的最上層呼叫，自訂 Hook 也一樣。每一次渲染，`useState` 的呼叫次數與順序都要一樣，React 才對得回上一輪的狀態。條件寫在 JSX，決定畫出哪一句。
+Hooks 只能寫在元件函式（或自訂 Hook）的最上層，每次渲染的呼叫次數與順序都必須一樣，React 才對得回上一輪的狀態。要依條件決定畫什麼，把條件寫在回傳的 JSX 裡。
 
 **觀念**
 
-少呼叫一次、或多呼叫一次，後面的狀態就會對到前面的格子。ESLint 的 `react-hooks/rules-of-hooks` 會把下面兩種寫法報成錯誤。練習檔 `26-rules.jsx` 只放正確寫法，這兩段不要接進 `App.jsx`。
+React 不是靠名字，而是靠呼叫的先後順序，把第幾個 `useState` 對回第幾份狀態。少呼叫或多呼叫一次，後面的狀態就會對到錯誤的位置。以下位置都不能呼叫 Hook：條件式、迴圈、提早回傳之後、事件處理函式或其他巢狀函式裡。ESLint 的 `react-hooks/rules-of-hooks` 會把這些寫法報成錯誤。
 
 {% note warning %}
 **不要這樣寫**
-`if` 成立時才呼叫 `useState`。下一次渲染若跳過這個 `if`，少了一次呼叫，後面的 `useState` 會往前對到上一輪的第一個狀態。
+條件成立時才呼叫 Hook。下一輪若跳過條件，少了一次呼叫，後面的 Hook 會往前對到上一輪的第一份狀態。
 
 ```jsx
 function StockDemo({ soldOut }) {
@@ -2909,7 +1696,7 @@ function StockDemo({ soldOut }) {
 }
 ```
 
-`for` 或 `map` 裡呼叫 `useState` 也一樣。筆數一變，Hook 的次數就變，每一筆對不回上一次的同一個狀態。
+在迴圈裡呼叫也一樣：筆數一變，Hook 的次數就變，每一筆都對不回上一次的同一份狀態。
 
 ```jsx
 function ListDemo({ rows }) {
@@ -2919,10 +1706,10 @@ function ListDemo({ rows }) {
 }
 ```
 
-`rows.map((row) => { const [on, setOn] = useState(false); })` 同樣是在迴圈裡產生 Hook。要幾個狀態，就在元件最上面寫幾個。
+要幾份狀態，就在元件最上面寫幾次；每一筆資料各需要自己的狀態時，把那一筆拆成獨立的子元件。
 {% endnote %}
 
-下面這份把兩個 Hook 放在任何條件之前。有沒有庫存，只影響回傳的那一行字。
+下面的檔案把兩個 Hook 放在所有條件之前。有沒有庫存，只影響回傳的那一行字。
 
 ```jsx 03-react/src/demos/26-rules.jsx
 import { useState } from 'react';
@@ -2953,56 +1740,36 @@ export default function RulesDemo() {
 }
 ```
 
-一開始是「台北城市漫遊 有庫存」。按下設為缺貨，變成「台北城市漫遊 補貨中」。名稱那顆按鈕仍改得到文字。
+一開始是「台北城市漫遊 有庫存」。按「設為缺貨」變成「台北城市漫遊 補貨中」，按「改成花蓮山海三日」則只換名稱。
 
 **解析**
 
-- 兩個 Hook 都在 `return` 之前，也不在條件或迴圈裡。每次渲染都會各呼叫一次，順序固定，狀態才對得回同一個格子。
-- 庫存判斷寫在 JSX 裡。`stock > 0` 只選句子，不決定 `useState` 有沒有被呼叫。
-- 上面警告裡的 `if` 與 `for`／`map` 會讓呼叫次數隨資料變。ESLint 的 `react-hooks/rules-of-hooks` 會擋下這些寫法。
-- 普通函式不是元件。名稱不是大寫開頭時，不要在裡面呼叫 Hooks。
-
-{% note success %}
-**換你試試：**
-把 `setStock(0)` 改成更新函式，讓庫存減 1。按兩次應變成補貨中。Hook 仍留在最上面。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-減一要用上一輪的庫存，所以用更新函式。條件仍只負責選句子。
-
-```diff 03-react/src/demos/26-rules.jsx
-  // ...
-          type="button"
-          className="rounded bg-teal-800 px-3 py-1 text-white"
--         onClick={() => setStock(0)}
-+         onClick={() => setStock((value) => value - 1)}
-        >
-          設為缺貨
-        // ...
-```
-
-從 2 按一次還是有庫存，再按一次庫存是 0，句子變成補貨中。
-
-</details>
+- 兩個 Hook 都在 `return` 之前，也不在條件或迴圈裡，每次渲染各呼叫一次、順序固定。
+- `stock > 0` 只決定顯示哪一句，不影響 `useState` 有沒有被呼叫。
+- 只有元件與自訂 Hook 可以呼叫 Hooks；一般函式不行。自訂 Hook 的函式名稱以 use 開頭。
 
 ## 不可變更新
 
-狀態裡的陣列與物件不能直接改內容。`push`、改某個欄位，都不會穩定地觸發下一輪渲染。要複製一份，在新的那份上留下變更，再交出去。
+狀態是 React 判斷「畫面要不要重畫」的依據，而它比較新舊狀態的方式是看「是不是同一份」。直接修改陣列或物件的內容，狀態仍是同一份，React 看不出變化；要改就複製一份，在新的那份上做變更，再交給更新函式。這一節依序看陣列的新增、刪除、修改，再看物件與巢狀物件。
 
-- 新增時把舊元素展開到新陣列，再接上新的一筆。
-- 刪除時用 `filter` 留下不是那一筆的元素。
-- 修改時用 `map` 找到那一筆，展開後蓋掉要改的欄位，其他筆原樣放回。
-- 巢狀物件要每一層都換新的。只展開最外層時，裡面的物件仍是原來的那一份。
+**一覽**
+
+- 不改原陣列（可以用在更新狀態）：展開 `[...items]`、`filter`、`map`、`slice`，以及 ES2023 新增的 `toSorted`、`toReversed`、`toSpliced`、`with`。
+- 會改原陣列（不要用在狀態）：`push`、`pop`、`shift`、`unshift`、`splice`、`sort`、`reverse`，還有 `items[0] = x` 這種直接賦值。
+- 物件同理：展開 `{ ...obj, 欄位: 新值 }` 是複製，`obj.欄位 = 新值` 是直接改。
+- 巢狀物件要從改動的那一層到最外層，每一層都換成新的。
+
+直接改狀態常常讓畫面沒有更新，這違反 React 的規則。本課專案啟用的 React Compiler 會假設元件遵守這些規則，並依此保留運算結果；直接改狀態不但不保證畫面正確，ESLint 的 React 規則也會標出來。所以不論有沒有 Compiler，做法都一樣：狀態只換新的、不改舊的。
+
+這一節的清單先用 `map` 畫出來，`key` 的用意留到後面「列表」一節再說明。
 
 ### 陣列新增
 
-備忘從兩則開始。按按鈕時產生新陣列，長度比原來多一。原來的陣列沒有被 `push`。
+新增是把舊元素展開到新陣列，再接上新的一筆。舊陣列原樣留著。
 
 **觀念**
 
-新陣列先把現有項目攤開，再接上新字串。新字串帶上長度，避免跟舊的文字重複。清單用文字當 `key` 只是因為這一則的文字不會重複。會刪、會改的清單要改用 id，列表那一節會專門看。
+按下按鈕時產生新陣列，長度比原來多一。新字串帶上長度，避免和舊的文字重複。這個清單的文字不會重複，也不會刪除，所以先暫用文字當 `key`；會刪、會改的清單要用 id。
 
 ```jsx 03-react/src/demos/27-add.jsx
 import { useState } from 'react';
@@ -3033,55 +1800,29 @@ export default function AddDemo() {
 }
 ```
 
-一開始是台北城市漫遊、花蓮山海三日。按一次多出「備忘3」。
+一開始是台北城市漫遊、花蓮山海三日。按一次多出「備忘3」，再按一次多出「備忘4」。
 
 **解析**
 
-- 展開會複製元素到新陣列。舊陣列的內容不會被這一行改掉。
-- 更新函式的 `items` 是排到這一次的陣列。連續點擊也不會用到過期的長度。
-- `notes.push(...)` 改的是原陣列。狀態的參考沒換，畫面常常不會更新。
-- `sort` 也會改到呼叫它的那一份。要排序時先複製再排。
+- 展開把舊元素複製進新陣列，這一行不會動到舊陣列。
+- 更新函式的參數 `items` 是目前最新的陣列，連續點擊也不會用到過期的長度。
+- `notes.push(...)` 改的是原陣列，狀態的參考沒換，畫面常常不會更新。
+- 要排序時，用 `toSorted` 取得排好的新陣列；舊的 `sort` 會改到原陣列，要先複製再排。
 
 {% note warning %}
 **不要改原陣列**
 新增、刪除、排序都交一份新陣列。原陣列留著，這一輪的其他程式才不會看到做到一半的資料。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-再加一顆按鈕，按下去把備忘變成空陣列。加一則的按鈕留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-空清單是新的陣列 `[]`，不是把原陣列的長度改成 0。清空後再加，序號會從 1 重新數。
-
-```diff 03-react/src/demos/27-add.jsx
-  // ...
-          加一則
-        </button>
-+       <button
-+         type="button"
-+         className="ml-2 rounded bg-stone-200 px-3 py-1"
-+         onClick={() => setNotes([])}
-+       >
-+         清空
-+       </button>
-        <ul className="mt-3 list-disc pl-5">
-          {notes.map((note) => (
-            // ...
-```
-
-</details>
-
 ### 陣列刪除
 
-刪除是留下其他筆，不是把那一格挖空。`filter` 回傳的是新陣列，對不上 id 的那一筆不會在裡面。
+刪除是留下其他筆，不是把那一格挖空。`filter` 回傳新陣列，對不上的那一筆不會在裡面。
 
 **觀念**
 
-每一列有自己的刪除按鈕。按下時把那一筆的 id 交給更新函式。`filter` 的條件是「id 不相同才留下」。台北城市漫遊被刪掉之後，花蓮山海三日與京都紅葉散步還在，而且順序不變。
+每一列有自己的刪除按鈕，按下時把那一筆的 id 交給更新函式。`filter` 的條件是「id 不相同才留下」。刪掉花蓮山海三日之後，台北城市漫遊與京都紅葉散步仍在，順序不變。
+
+按鈕上的 `() => onRemove(item.id)` 是為了把這一列的 id 帶進去，為什麼要多包一層，本章稍後的「參數與預設動作」會說明。
 
 ```jsx 03-react/src/demos/28-remove.jsx
 import { useState } from 'react';
@@ -3122,45 +1863,20 @@ export default function RemoveDemo() {
 
 **解析**
 
-- `filter` 不會改原陣列。它交出一份較短的新陣列。
+- `filter` 不會改原陣列，它交出一份較短的新陣列。
 - 條件用 id，不用名稱。以後兩筆都叫台北城市漫遊時，才不會一次刪掉兩列。
-- 箭頭函式把這一列的 id 傳進 `onRemove`。不要寫成 `onClick={onRemove(item.id)}`。
-- 刪到最後一筆時，`map` 得到空陣列，清單就是空的，不需要另外把 `<ul>` 拿掉。
-
-{% note success %}
-**換你試試：**
-刪除改成只留被點到的那一筆，其他筆都拿掉。按花蓮山海三日之後，清單只剩花蓮山海三日。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件改成 id 相同才留下。這仍是新陣列，不是把其他元素設成空的。
-
-```diff 03-react/src/demos/28-remove.jsx
-  // ...
-    const [items, setItems] = useState(initial);
-  
-    const onRemove = (id) => {
--     setItems((current) => current.filter((item) => item.id !== id));
-+     setItems((current) => current.filter((item) => item.id === id));
-    };
-  
-    return (
-      // ...
-```
-
-</details>
+- 全部刪光時，`map` 得到空陣列，清單就是空的，不需要另外把 `<ul>` 拿掉。
+- 要在中間插入一筆，可用 `toSpliced`；它和 `splice` 的參數相同，但回傳新陣列、不改原陣列。
 
 ### 陣列修改
 
-修改某一筆時，那一筆要換成新物件，其他筆可以沿用原來的參考。`map` 負責走訪，展開負責複製欄位。
+修改某一筆時，那一筆要換成新物件，其他筆沿用原來的。`map` 負責走訪，展開負責複製欄位。
 
 **觀念**
 
-按下「花蓮改價」時，只有 id 是 `hualien` 的那一筆換成價格 16800 的新物件。台北城市漫遊與京都紅葉散步仍是原來的物件。畫面三列都還在，花蓮山海三日的數字變了。
+按下「花蓮改價」時，只有 id 是 `hualien` 的那一筆換成價格 16800 的新物件，另外兩筆仍是原來的物件。三列都還在，只有花蓮山海三日的數字變了。
 
-不要寫 `item.price = 16800`。那是在改狀態裡的原物件，下一輪渲染可能看不出有什麼需要更新。
+不要寫 `item.price = 16800`。那是直接改狀態裡的原物件，React 比較新舊狀態時看不出差別。
 
 ```jsx 03-react/src/demos/29-edit.jsx
 import { useState } from 'react';
@@ -3203,39 +1919,15 @@ export default function EditDemo() {
 }
 ```
 
-按下之後，中間一列從「花蓮山海三日 15900」變成「花蓮山海三日 16800」。另外兩列不變。
+按下之後，中間一列從「花蓮山海三日 15900」變成「花蓮山海三日 16800」，另外兩列不變。
 
 **解析**
 
-- `map` 的長度與原陣列相同。這一則不是在新增或刪除。
-- 對到的那一筆用展開複製，再把 `price` 蓋掉。標題仍是花蓮山海三日。
-- 沒對到的筆直接放回原來的物件。不必每一筆都複製。
-- 三元的兩個分支都要是物件。一邊回傳物件、一邊什麼都不回傳，那一格會變成 `undefined`。
-
-{% note success %}
-**換你試試：**
-同一顆按鈕把花蓮山海三日的標題也改成「花蓮山海五日」。價格仍是 16800。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個新欄位都寫在展開後面。舊的標題與價格都會被覆蓋。
-
-```diff 03-react/src/demos/29-edit.jsx
-  // ...
-      setItems((current) =>
-        current.map((item) =>
--         item.id === 'hualien' ? { ...item, price: 16800 } : item,
-+         item.id === 'hualien' ? { ...item, title: '花蓮山海五日', price: 16800 } : item,
-        ),
-      );
-    // ...
-```
-
-按下之後是「花蓮山海五日 16800」。
-
-</details>
+- `map` 回傳的長度與原陣列相同，這一則不是在新增或刪除。
+- 對到的那一筆用展開複製，再把 `price` 蓋掉，標題仍是花蓮山海三日。
+- 沒對到的筆直接放回原物件，不必每一筆都複製。
+- 三元運算子的兩個分支都要回傳一筆資料；只回傳其中一邊，另一邊那一格會變成 `undefined`。
+- 只改陣列中某一格時，也可以用 `with(index, newValue)`，它回傳換掉那一格的新陣列。
 
 ### 物件欄位
 
@@ -3243,9 +1935,7 @@ export default function EditDemo() {
 
 **觀念**
 
-人物有名稱與城市。改城市時，名稱要留在新物件裡。展開放前面、新欄位放後面，同名時才會留下新的城市。
-
-這是巢狀更新的前一步。只有一層時，展開一次就夠。
+人物有名稱與城市。改城市時，名稱要留在新物件裡。展開放前面、新欄位放後面，同名的欄位才會以新值為準。
 
 ```jsx 03-react/src/demos/30-object.jsx
 import { useState } from 'react';
@@ -3274,51 +1964,24 @@ export default function ObjectDemo() {
 }
 ```
 
-一開始是「阿光 在 台北」。按下之後變成「阿光 在 台中」。
+一開始是「阿光 在 台北」，按下之後變成「阿光 在 台中」。
 
 **解析**
 
-- `profile.city = '台中'` 改的是原物件。不要用這種寫法更新狀態。
-- 展開在前、新欄位在後。順序對調就會被舊的城市蓋回去。
-- 名稱沒有寫在後面，所以仍是阿光。沒被覆蓋的欄位會保留。
-- 更新函式的 `current` 是上一輪的人物。不要改用渲染時的 `profile` 再展開，連續更新才不會蓋掉彼此。
-
-{% note success %}
-**換你試試：**
-同一顆按鈕除了改城市，也把名稱改成「阿明」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個新欄位都寫在展開後面。舊的名稱與城市都會被覆蓋。
-
-```diff 03-react/src/demos/30-object.jsx
-  // ...
-    const [profile, setProfile] = useState({ name: '阿光', city: '台北' });
-  
-    const onMove = () => {
--     setProfile((current) => ({ ...current, city: '台中' }));
-+     setProfile((current) => ({ ...current, name: '阿明', city: '台中' }));
-    };
-  
-    return (
-      // ...
-```
-
-按下之後是「阿明 在 台中」。
-
-</details>
+- `profile.city = '台中'` 改的是原物件，不要用這種寫法更新狀態。
+- 展開在前、新欄位在後。順序對調，新欄位會被舊值蓋回去。
+- 沒有被寫在後面的欄位會保留，所以名稱仍是阿光。
+- 同一次事件裡要連續更新同一個物件時，用更新函式的 `current` 當基礎，後一次才接得到前一次的結果。
 
 ### 巢狀物件
 
-物件裡還有物件時，要改的那一層與它的每一層父物件都得換成新的。只展開最外層，裡面的地址仍是原來的參考。
+物件裡還有物件時，要改的那一層與它的每一層父物件都得換成新的。只展開最外層，裡面的地址仍是原來那一份。
 
 **觀念**
 
 人物有名稱，也有一個地址物件。改城市時，先展開人物，再展開地址，最後蓋掉城市。名稱與路名都留在新物件裡。
 
-只寫 `{ ...profile, city: '台南' }` 會把城市放在人物這一層，地址裡的城市仍是舊的，畫面若讀的是 `profile.address.city` 就不會變。
+若只寫 `{ ...profile, city: '台南' }`，城市會多出現在人物這一層，地址裡的城市仍是舊的，畫面讀 `profile.address.city` 就不會變。
 
 ```jsx 03-react/src/demos/31-nested.jsx
 import { useState } from 'react';
@@ -3357,60 +2020,39 @@ export default function NestedDemo() {
 
 **解析**
 
-- 外層展開留下 `name`。沒有這層展開，名稱會消失。
-- `address` 被一整個換成新物件。新物件再展開舊地址，所以路名還在。
-- `current.address.city = '台南'` 改的是原物件。不要用這種寫法更新狀態。
-- 更深的巢狀就繼續一層一個展開。不要為了省事把整包狀態變成可直接改的外部變數。
+- 外層展開留下 `name`，沒有這層展開，名稱會消失。
+- `address` 被整個換成新物件，新物件再展開舊地址，所以路名還在。
+- `current.address.city = '台南'` 改的是原物件，不要用這種寫法更新狀態。
+- 層數愈深愈難寫。可以先把狀態拆平，或改用 Immer（讓你用「直接改」的寫法、由它產生新物件的套件，本課不使用）。
 
-{% note success %}
-**換你試試：**
-同一顆按鈕把路名也改成「民生路」。城市仍是台南，名稱仍是阿光。
+{% note info %}
+**structuredClone 不適合拿來更新狀態**
+`structuredClone` 是瀏覽器內建的深層複製，但每一層都會變成新物件，沒改的部分也一併換掉；物件裡有函式時會丟出錯誤，class 的實例複製後會變成一般物件、失去方法。只換需要換的那幾層，才是更新狀態的寫法。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-路名與城市都寫在地址那一層的展開後面。人物的名稱沒有被覆蓋。
-
-```diff 03-react/src/demos/31-nested.jsx
-  // ...
-      setProfile((current) => ({
-        ...current,
--       address: { ...current.address, city: '台南' },
-+       address: { ...current.address, city: '台南', street: '民生路' },
-      }));
-    };
-    // ...
-```
-
-按下之後是「阿光 在 台南 民生路」。
-
-</details>
 
 # 事件
 
-使用者的點擊、輸入與送出，都經由事件處理函式進入元件。屬性用 `on` 接事件名，處理函式用 `handle` 接動作。需要額外參數時，用箭頭函式包一層，不要在渲染時就把函式呼叫掉。
+使用者的點擊、輸入與送出，都經由事件處理函式進入元件。這一章先看處理函式怎麼綁、怎麼取名、怎麼取得事件物件，再看需要額外參數與取消瀏覽器預設動作的情況。
 
 ## 事件處理函式
 
-處理函式在事件發生時才跑。寫進 `onClick` 的是函式本身。React 會把事件物件交給它。命名分成屬性與函式兩邊，讀的人看得出誰在等事件、誰在做事。
+處理函式在事件發生時才執行。寫進屬性的是函式本身，事件發生時 React 呼叫它，並把事件物件交給它。屬性與函式各有慣用的取名，讀的人一眼就看得出誰在等事件、誰在做事。
 
-- 屬性叫 `onClick`、onChange、onSubmit。
+**一覽**
 
-`on` 後面的事件名用大寫開頭。
-- 函式叫 `handleClick`、handleChange、handleSubmit。
-
-同一個動作在子層的參數也可以沿用 `onClick` 這種名字。
+- 屬性名稱：`on` 加上大寫開頭的事件名，例如 `onClick`、`onChange`、`onSubmit`、`onKeyDown`、`onMouseEnter`。內建標籤（`button`、`input`）只能用這些固定名稱。
+- 處理函式名稱：`handle` 加上事件名，例如 `handleClick`、`handleSubmit`。
+- 自己的元件可以替 props 取符合用途的名字，例如 `onRemove`，一樣以 `on` 開頭。
 
 ### 命名慣例
 
-`onClick` 是 JSX 的屬性。`handleClick` 是你寫的函式。兩邊不要對調，也不要在屬性上立刻呼叫函式。
+`onClick` 是 JSX 的屬性，`handleClick` 是你寫的函式。兩邊不要對調，也不要在屬性上立刻呼叫函式。
 
 **觀念**
 
-按下按鈕時，`handleClick` 把文字改成「已記錄」。屬性寫 `onClick={handleClick}`。
+按下按鈕時，`handleClick` 把文字改成「已記錄」，屬性寫 `onClick={handleClick}`。
 
-若寫成 `onClick={handleClick()}`，渲染到這一行就會執行，而且交給 React 的是回傳值，不是函式。
+若寫成 `onClick={handleClick()}`，渲染到這一行就會執行，交給 React 的是回傳值而不是函式。這個處理函式又在渲染中設定狀態，React 會不斷重畫，超過上限後丟出「Too many re-renders」的錯誤。
 
 按鈕要寫 `type="button"`。放在表單裡時，預設的 `submit` 會順便送出表單。
 
@@ -3443,66 +2085,35 @@ export default function EventDemo() {
 
 **解析**
 
-- `handleClick` 沒有在渲染時被呼叫。畫面先畫完，等使用者按下才跑。
-- 屬性名稱是 `onClick`，不是 HTML 字串 `'onclick'`。JSX 裡這是一個函式屬性。
-- 設定狀態發生在處理函式裡。下一輪渲染才讀得到新的 `label`。
-- 一個屬性綁一個函式。要先做兩件事，把兩件事寫進同一個 `handleClick`。
-
-{% note success %}
-**換你試試：**
-再加一顆按鈕，屬性是 `onClick`，處理函式叫 `handleReset`，按下把文字設回「尚未點」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新的處理函式仍是「把函式交給屬性」。不要在 `onClick` 後面加上呼叫括號。
-
-```diff 03-react/src/demos/32-event.jsx
-  // ...
-      setLabel('已記錄');
-    };
-  
-+   const handleReset = () => {
-+     setLabel('尚未點');
-+   };
-+ 
-    return (
-      <section>
-        // ...
-          記錄
-        </button>
-+       <button
-+         type="button"
-+         className="ml-2 rounded bg-stone-200 px-3 py-1"
-+         onClick={handleReset}
-+       >
-+         還原
-+       </button>
-        <p className="mt-2">{label}</p>
-      </section>
-    // ...
-```
-
-</details>
+- `handleClick` 沒有在渲染時被呼叫。畫面先畫完，等使用者按下才執行。
+- 設定狀態發生在處理函式裡，下一輪渲染才讀得到新的 `label`。
+- 一個屬性綁一個函式。要同時做兩件事，就把兩件事寫進同一個函式。
+- 處理函式不必放進 `useCallback`。每次渲染建立新的函式是正常寫法，不影響正確性。
 
 ### 事件物件
 
-React 呼叫處理函式時會傳入事件物件。要讀「被點到的那一個元素」時用 `currentTarget`。它是你綁定監聽的那個節點。
+React 呼叫處理函式時會傳入一個事件物件，描述這次事件的種類與來源。這個物件是 React 包過的版本，常用的欄位與瀏覽器原生事件相同，需要原生的那一份時可用 `event.nativeEvent`。
+
+**一覽**
+
+- `event.type`：事件種類，點擊時是 `click`。
+- `event.target`：真正被點到的元素，可能是按鈕裡更小的子元素。
+- `event.currentTarget`：綁定處理函式的那個元素，不論點到哪個子元素都不變。
 
 **觀念**
 
-`handleClick` 把按鈕上的文字放進狀態，並在 Console 印出事件種類。`currentTarget` 不會因為你點到按鈕裡的子元素就換成別的節點。這一則的按鈕沒有子標籤，文字就是按鈕自己的內容。
+按鈕裡放了一段粗體字。點粗體字時，`target` 是粗體字的 STRONG，`currentTarget` 仍是 BUTTON；點粗體字以外的按鈕區域，兩者都是 BUTTON。要讀「處理函式綁在哪個元素上」就用 `currentTarget`。輸入框沒有子元素，所以讀輸入值時 `target` 就是它自己。
 
 ```jsx 03-react/src/demos/33-target.jsx
 import { useState } from 'react';
 
 export default function TargetDemo() {
-  const [label, setLabel] = useState('尚未點');
+  const [info, setInfo] = useState('尚未點');
 
   const handleClick = (event) => {
-    setLabel(event.currentTarget.textContent);
-    console.log(event.type);
+    setInfo(
+      `type：${event.type}，target：${event.target.tagName}，currentTarget：${event.currentTarget.tagName}`,
+    );
   };
 
   return (
@@ -3512,77 +2123,39 @@ export default function TargetDemo() {
         className="rounded bg-teal-800 px-3 py-1 text-white"
         onClick={handleClick}
       >
-        記錄這顆按鈕
+        點這裡的 <strong className="underline">粗體字</strong> 或旁邊
       </button>
-      <p className="mt-2">{label}</p>
+      <p className="mt-2">{info}</p>
     </section>
   );
 }
 ```
 
-點一次之後，那段文字變成「記錄這顆按鈕」。
-
-```text
-click
-```
+點「粗體字」三個字，畫面顯示「type：click，target：STRONG，currentTarget：BUTTON」。點按鈕其他部分，顯示 target 是 BUTTON。
 
 **解析**
 
-- 參數 `event` 由 React 傳入。你不用在 `onClick` 後面自己寫括號把事件塞進去。
-- `event.type` 在點擊時是 `click`。這可以用來確認處理函式真的有跑。
-- `currentTarget` 是綁定 `onClick` 的按鈕。
-
-`target` 可能是按鈕裡面更小的節點。
-- 渲染的當下不會印出 click。一定要等使用者按下。
-
-{% note success %}
-**換你試試：**
-Console 除了事件種類，再印出按鈕文字。畫面的那段文字維持不變。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-文字已經在設定狀態時讀過一次。再印一次同一個來源，Console 就會多一行按鈕文字。
-
-```diff 03-react/src/demos/33-target.jsx
-  // ...
-      setLabel(event.currentTarget.textContent);
-      console.log(event.type);
-+     console.log(event.currentTarget.textContent);
-    };
-  
-    return (
-      // ...
-```
-
-```text
-click
-記錄這顆按鈕
-```
-
-</details>
+- 參數 `event` 由 React 傳入，不必自己在 `onClick` 後面寫括號把事件塞進去。
+- `tagName` 是元素的標籤名稱，HTML 元素會以大寫回傳。
+- `currentTarget` 只在處理函式執行的當下有值，所以這個示範在 `setInfo` 前先把字串組好，不把事件物件留到之後再讀。
+- 渲染的當下不會有事件，一定要等使用者操作才會執行處理函式。
 
 ## 參數與預設動作
 
-有時處理函式需要按鈕以外的資料，例如這一列的 id。瀏覽器對表單還有預設動作：按下送出會整頁重新載入。兩件事都在處理函式裡處理。
+有時處理函式需要事件以外的資料，例如這一列的 id；瀏覽器對表單也有預設動作，按下送出會整頁重新載入。兩件事都在處理函式裡處理。
 
-- 要額外參數時，用箭頭函式包住呼叫，讓渲染時只建立函式、不執行它。
-- `preventDefault` 取消這一次事件的預設動作。表單就不會整頁重載，網址也不會被瀏覽器改掉。
+- 要額外參數時，用箭頭函式包住呼叫，渲染時只建立函式、不執行它。
+- `preventDefault` 取消這一次事件的預設動作，表單就不會整頁重載。
 
 ### 帶參數
 
-每一顆按鈕對應一個名稱。處理函式收名稱，屬性上用箭頭函式把那個名稱傳進去。
+每一顆按鈕對應一個名稱。處理函式收名稱，屬性上用箭頭函式把名稱傳進去。
 
 **觀念**
 
-`handlePick` 只負責把收到的名稱放進狀態。兩顆按鈕各寫 `onClick={() => handlePick('台北城市漫遊')}`。
+`handlePick` 只負責把收到的名稱放進狀態。兩顆按鈕各寫 `onClick={() => handlePick('台北城市漫遊')}`。渲染時只是建立箭頭函式，`handlePick` 還沒執行，點下去才把字串交出去。
 
-渲染時箭頭函式被建立，但 `handlePick` 還沒跑。點下去才把字串交出去。
-
-不要寫 `onClick={handlePick('台北城市漫遊')}`。
-
-那一行在渲染時就會挑好台北城市漫遊，而且 `onClick` 拿到的是 `undefined`。
+不要寫 `onClick={handlePick('台北城市漫遊')}`。那一行在渲染時就會執行並設定狀態，一樣會得到「Too many re-renders」，而且 `onClick` 拿到的是 `undefined`。
 
 ```jsx 03-react/src/demos/34-pick.jsx
 import { useState } from 'react';
@@ -3622,50 +2195,20 @@ export default function PickDemo() {
 
 **解析**
 
-- 箭頭函式的參數是事件物件，這一則用不到，所以留空。真正要的名稱寫在箭頭函式裡面。
-- `handlePick` 可以重用。差在每一顆按鈕交出去的字串。
-- 渲染時 Console 不該出現選取結果。出現的話，就是在屬性上呼叫了函式。
-- 名稱若來自陣列，把那一筆的欄位放進箭頭函式，不要把整個事件當成名稱。
-
-{% note success %}
-**換你試試：**
-再加一顆按鈕，按下把選取設成京都紅葉散步。`handlePick` 不要複製第二份。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三顆按鈕呼叫同一個處理函式，只換傳進去的字串。
-
-```diff 03-react/src/demos/34-pick.jsx
-  // ...
-            花蓮山海三日
-          </button>
-+         <button
-+           type="button"
-+           className="rounded bg-stone-100 px-3 py-1"
-+           onClick={() => handlePick('京都紅葉散步')}
-+         >
-+           京都紅葉散步
-+         </button>
-        </div>
-      </section>
-    // ...
-```
-
-</details>
+- 箭頭函式本身可以接收事件，這一則用不到，所以參數留空。真正要的名稱寫在箭頭函式裡面。
+- `handlePick` 可以重用，差別只在每一顆按鈕交出去的字串。
+- 名稱若來自陣列，把那一筆的欄位放進箭頭函式即可，每一列各自帶著自己的資料。
+- 每次渲染都會建立新的箭頭函式，這是慣用寫法，不需要特地用 `useCallback` 包起來。
 
 ### preventDefault
 
-表單的送出有預設動作：瀏覽器會重新載入頁面。處理函式先取消這件事，再讀你放在狀態裡的值。
+表單送出時，瀏覽器預設會重新載入頁面。處理函式先取消這件事，再用狀態裡的值做事。
 
 **觀念**
 
-`handleSubmit` 收到事件物件後第一行就呼叫 `preventDefault`。接著把名稱寫進畫面下方的訊息。網址列不會多出問號，示範頁也不會整頁刷新回第一個按鈕。
+`handleSubmit` 收到事件物件後，第一行就呼叫 `preventDefault`，接著把名稱寫進畫面下方的訊息。網址列不會多出問號，頁面也不會重新載入。
 
-輸入框這一則先用受控的寫法：`value` 與 onChange 都綁到 `name`。
-
-表單那一章會把每一種欄位拆開看。
+輸入框在這一則先用受控的寫法：欄位顯示的值由狀態決定，每次輸入就用 `onChange` 更新狀態。各種欄位的寫法留到「表單欄位」一節。
 
 ```jsx 03-react/src/demos/35-prevent.jsx
 import { useState } from 'react';
@@ -3698,64 +2241,43 @@ export default function PreventDemo() {
 }
 ```
 
-按下送出，訊息變成「送出 台北城市漫遊」。網址沒有變，頁面沒有整個重載。
+按下送出，訊息變成「送出 台北城市漫遊」。網址沒有變，頁面沒有重新載入。
 
 **解析**
 
-- `onSubmit` 綁在 `<form>` 上，不綁在按鈕上。按 Enter 時同樣會跑到這個函式。
-- 沒有 `preventDefault` 時，瀏覽器會用預設方式送出，React 這一頁的狀態會跟著重載消失。
-- 按鈕的 `type="submit"` 是為了觸發表單。它不是第二個送出邏輯。
-- 訊息來自狀態。不要在送出時直接改某個段落的 `textContent`。
+- `onSubmit` 綁在 `<form>` 上，不綁在按鈕上。在輸入框按 Enter 時同樣會執行這個函式。
+- 沒有 `preventDefault` 時，瀏覽器會以預設方式送出並重新載入，頁面上的狀態會跟著消失。
+- 按鈕的 `type="submit"` 只是用來觸發表單，不是第二個送出邏輯。
+- 訊息來自狀態。不要在送出時直接去改某個段落的文字內容。
 
-{% note success %}
-**換你試試：**
-送出時改把訊息設成「已收到」加上名稱。仍要先取消預設動作。
+{% note info %}
+**React 19 的 form action**
+React 19 的 `<form action={函式}>` 是另一種送出寫法：React 會自動取消預設動作，並把欄位內容交給函式。這門課的專案用 `onSubmit` 搭配狀態；`action` 的寫法見 {% post_link lokiTech-15day-10-react-advanced %} 的選讀「表單 Actions」。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`preventDefault` 留在第一行。後面只換要放進狀態的字串。
-
-```diff 03-react/src/demos/35-prevent.jsx
-  // ...
-    const handleSubmit = (event) => {
-      event.preventDefault();
--     setMessage('送出 ' + name);
-+     setMessage('已收到' + name);
-    };
-  
-    return (
-      // ...
-```
-
-名稱是台北城市漫遊時，訊息是「已收到台北城市漫遊」。
-
-</details>
 
 # 列表與表單
 
-清單用 `map` 把陣列轉成一組元素，再用 `filter` 先拿掉不要的筆。
-
-每一個兄弟要有穩定的 `key`。表單則把欄位的值放進狀態，讓輸入與畫面讀的是同一份資料。
+清單用 `map` 把陣列轉成一組元素，並要為每個元素給穩定的 `key`；表單則把欄位的值放進狀態，讓輸入與畫面讀的是同一份資料。這一章先看列表，再看表單。
 
 ## 列表
 
-陣列在 JavaScript 裡轉換，JSX 只負責把轉換結果放進樹裡。`filter` 與 `map` 可以串在一起：先留下符合條件的，再變成元素。
+陣列的轉換在 JavaScript 裡完成，JSX 只負責把結果放進畫面。`filter` 與 `map` 可以串在一起：先留下符合條件的，再變成元素。
 
-- `map` 的回傳要是元素，長度與你交出去的陣列相同。
-- `filter` 不改原陣列。它先決定哪些筆有資格出現。
-- `key` 幫助 React 認出「這一個還是原來的那一筆」。不要用會跟著插入、刪除而改變的 index。
+**一覽**
+
+- `map`：把陣列的每一筆轉成一個元素，長度與原陣列相同。
+- `filter`：只留下條件為真的筆，不改原陣列。
+- `key`：幫助 React 認出「這一個還是原來的那一筆」，每個兄弟元素都要有，且不要用會隨插入、刪除而改變的 index。
 
 ### map
 
-三條行程各有 id。`map` 回傳一列項目。這一則先把每一筆都畫出來，篩選放在下一則。
+三條行程各有 id，`map` 回傳一列項目。這一則先把每一筆都畫出來，篩選放在下一則。
 
 **觀念**
 
-`tours` 寫在元件外面，因為這三筆不會變。元件每次渲染都讀得到同一份陣列。
+`tours` 寫在元件外面，因為這三筆資料不會變，元件每次渲染都讀到同一份陣列。`map` 的回呼回傳 `<li>`，清單的子節點就是這三個元素。
 
-`map` 的回呼回傳 `<li>`，所以清單的子節點就是這三個元素。
+每一個 `<li>` 要有 `key`，用資料自己的 id。React 用它在重畫時認出哪一筆是哪一筆；少了 `key`，Console 會出現「Each child in a list should have a unique "key" prop」的警告。
 
 ```jsx 03-react/src/demos/36-map.jsx
 const tours = [
@@ -3780,49 +2302,25 @@ export default function MapDemo() {
 }
 ```
 
-畫面是三列：台北城市漫遊 12800、花蓮山海三日 15900、京都紅葉散步 42800。每一列都是白底邊框。
+畫面是三列：台北城市漫遊 12800、花蓮山海三日 15900、京都紅葉散步 42800，每一列都是白底邊框。
 
 **解析**
 
 - `map` 寫在花括號裡，因為它的結果是一組元素。
-- 回呼的參數 `item` 是陣列裡的一個物件。標題與價格從欄位讀。
-- `key` 寫在 `map` 直接回傳的那個元素上。寫在更裡面的標籤，React 對不到這一層兄弟。
-- 陣列是空的時候，`map` 得到空陣列，ul 裡就沒有 li。
-
-{% note success %}
-**換你試試：**
-陣列再加一筆，id 是 `osaka`，名稱大阪一日，價格 9800。前三筆留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新的 id 沒有跟舊的重複，所以四列都能各自對上。
-
-```diff 03-react/src/demos/36-map.jsx
-  // ...
-    { id: 'hualien', title: '花蓮山海三日', price: 15900 },
-    { id: 'kyoto', title: '京都紅葉散步', price: 42800 },
-+   { id: 'osaka', title: '大阪一日', price: 9800 },
-  ];
-  
-  export default function MapDemo() {
-    // ...
-```
-
-</details>
+- 回呼的參數 `item` 是陣列裡的一個物件，標題與價格從欄位讀取。
+- `key` 要寫在 `map` 直接回傳的那個元素上。寫在更裡面的標籤，React 對不到這一層的兄弟。
+- 箭頭函式若改用大括號寫法，就必須自己寫 `return`；忘了寫，每一筆都是 `undefined`，畫面什麼都不會出現。
+- 陣列是空的時候，`map` 得到空陣列，`ul` 裡就沒有 `li`。
 
 ### filter
 
-先留下價格低於 20000 的行程，再交給 `map`。畫面上就不會出現京都紅葉散步。條件寫在 JavaScript，不寫成「先全部畫出來再用 CSS 藏起來」。
+先留下價格低於 20000 的行程，再交給 `map`，畫面上就不會出現京都紅葉散步。篩選寫在 JavaScript，不寫成「先全部畫出來再用 CSS 藏起來」。
 
 **觀念**
 
-`filter` 回傳新陣列，原 `tours` 仍是三筆。
+`filter` 回傳新陣列，原本的 `tours` 仍是三筆。後面的 `map` 只走訪留下的那些。
 
-後面的 `map` 只走訪留下的那些。兩個動作串在同一個花括號裡，讀的人看得到先篩再畫。
-
-價格的條件用數字比較。不要把價格先變成字串再比大小。
+篩選的結果 `visible` 每次渲染時重新算，不需要放進狀態，因為它完全由 `tours` 與條件決定；能由現有資料算出來的值，就不要另外存一份。
 
 ```jsx 03-react/src/demos/37-filter.jsx
 const tours = [
@@ -3846,49 +2344,21 @@ export default function FilterDemo() {
 }
 ```
 
-畫面兩列：台北城市漫遊 12800、花蓮山海三日 15900。京都紅葉散步被留在原陣列裡，沒有進 `visible`。
+畫面兩列：台北城市漫遊 12800、花蓮山海三日 15900。京都紅葉散步仍在原陣列裡，沒有進 `visible`。
 
 **解析**
 
-- `filter` 的條件為真才留下。京都紅葉散步的價格是 42800，所以不在新陣列裡。
-- 原陣列沒有被改掉。下一輪若條件放寬，京都紅葉散步還在。
-- `visible` 在渲染時算出來。它不必放進狀態，因為它完全由 `tours` 與條件決定。
-- `key` 仍用行程 id。篩選之後花蓮山海三日還是 `hualien`，不會因為它變成第二列就換身份。
-
-{% note success %}
-**換你試試：**
-條件改成價格大於 15000。畫面應變成花蓮山海三日與京都紅葉散步，台北城市漫遊消失。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-台北城市漫遊的價格是 12800，過不了新的條件。花蓮山海三日與京都紅葉散步留下。
-
-```diff 03-react/src/demos/37-filter.jsx
-  // ...
-  ];
-  
-  export default function FilterDemo() {
--   const visible = tours.filter((item) => item.price < 20000);
-+   const visible = tours.filter((item) => item.price > 15000);
-  
-    return (
-      <ul className="grid gap-2">
-        // ...
-```
-
-</details>
+- 條件為真才留下。京都紅葉散步的價格是 42800，所以不在新陣列裡。
+- 原陣列沒有被改掉，條件放寬時京都紅葉散步就會回來。
+- `key` 仍用行程 id。篩選之後花蓮山海三日變成第二列，但它的 id 沒變，React 仍認得它。
 
 ### 空清單
 
-篩選之後可能一筆都不剩。這種情況要另外回傳一句說明，不要留下一個沒有項目、也沒有解釋的空 `<ul>`。
+篩選之後可能一筆都不剩。這時要另外回傳一句說明，不要留下一個沒有項目、也沒有解釋的空 `<ul>`。
 
 **觀念**
 
-價格小於 0 的行程在這份資料裡不存在，所以 `visible` 是空陣列。長度是 0 時提早 return 一句話。有資料時才走 `map`。
-
-空陣列是正常結果，不是錯誤。下一篇的讀取失敗會另外用狀態區分。
+這一則的條件是價格小於 0，沒有任何行程符合，所以 `visible` 是空陣列。長度是 0 時提早 return 一句說明，有資料才走 `map`。空陣列是正常結果，不是錯誤；之後用 fetch 讀資料時，讀取失敗另外用狀態區分。
 
 ```jsx 03-react/src/demos/38-empty.jsx
 const tours = [
@@ -3920,45 +2390,35 @@ export default function EmptyDemo() {
 
 **解析**
 
-- 長度是 0 才提早 return。不要用 `visible &&` 判斷陣列，空陣列也是真值。
-- 說明與清單是兩次不同的回傳。有資料時不會同時看到那句話。
-- `filter` 沒有改到原陣列。條件放寬之後，行程還在。
-- 這一句是給人看的空狀態。它不是讀取失敗。
-
-{% note success %}
-**換你試試：**
-條件改成價格小於 20000。說明應消失，改出現台北城市漫遊與花蓮山海三日。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件放寬後長度不再是 0，函式走到清單那個回傳。
-
-```diff 03-react/src/demos/38-empty.jsx
-  // ...
-  ];
-  
-  export default function EmptyDemo() {
--   const visible = tours.filter((item) => item.price < 0);
-+   const visible = tours.filter((item) => item.price < 20000);
-  
-    if (visible.length === 0) {
-      return <p>沒有符合的行程。</p>;
-    // ...
-```
-
-</details>
+- 用 `visible.length === 0` 判斷。不要寫 `visible &&`，空陣列也是真值，空的 `ul` 仍會畫出來。
+- 也不要寫 `visible.length && …`，長度 0 會直接把 `0` 印在畫面上，這就是前面「左邊是 0 的陷阱」。
+- 說明與清單是兩次不同的回傳，有資料時不會同時看到那句話。
+- 條件放寬之後行程就回來，因為 `filter` 沒有改到原陣列。
 
 ### key
 
-`key` 讓 React 把狀態對回「同一筆資料」，而不是「現在排在第幾列」。子元件自己的輸入狀態會跟著 key 走。用 index 當 key 時，刪掉前面一列，後面的文字會黏在錯誤的那一列上。
+`key` 讓 React 把狀態對回「同一筆資料」，而不是「現在排在第幾列」。元件自己的狀態（例如輸入框裡打的字）會跟著 key 走。
+
+**一覽**
+
+好的 key 有三個條件：
+
+- 在兄弟之間不重複，不同的清單可以用相同的 key。
+- 不會變：同一筆資料每次渲染都是同一個 key。
+- 來自資料本身：資料庫的 id；在本機新增的資料，建立時就用 `crypto.randomUUID()` 之類的方式產生 id。
+
+要避免的寫法：
+
+- 用 index：插入、刪除、重新排序時，index 會移位，狀態就接到別筆資料上。只有永遠不變動的靜態清單才適合。
+- 在渲染時才產生，例如 `key={Math.random()}`：每次 key 都不同，整份清單被丟掉重建，輸入中的文字也會消失。
+
+另外，`key` 不會成為 props，子元件讀不到；需要 id 時要另外傳一個 props。
 
 **觀念**
 
-`Row` 自己記得輸入框的文字。父層的清單用 `item.id` 當 key。你在花蓮山海三日那一列打了字，再刪掉台北城市漫遊，花蓮山海三日的文字還在花蓮山海三日旁邊。
+`Row` 自己記得輸入框的文字，父層的清單用 `item.id` 當 key。在台北那一列打「甲」、花蓮那一列打「乙」，刪掉台北之後，花蓮那一列仍是「乙」。
 
-若改成 `key={index}`，刪掉第一列之後，原本第二列的元件會被當成第一列重用，文字就黏到剩下的那一列上。身份應該跟著 id，不跟著位置。
+若改成 `key={index}`：台北是 key 0、花蓮是 key 1，刪掉台北後花蓮變成 key 0。React 認為 key 0 還是原來那個 `Row`，於是花蓮那一列接到台北的「甲」，原本 key 1 的「乙」連同元件一起被丟掉。身份應該跟著 id，不跟著位置。
 
 ```jsx 03-react/src/demos/39-key.jsx
 import { useState } from 'react';
@@ -4007,97 +2467,34 @@ export default function KeyDemo() {
 }
 ```
 
-在花蓮山海三日的輸入框打「甲」。按下刪掉台北城市漫遊之後，畫面上只剩花蓮山海三日，輸入框裡仍是甲。
+兩個輸入框分別打「甲」與「乙」，按下刪掉台北城市漫遊之後，畫面只剩花蓮山海三日，輸入框裡仍是乙。
 
 **解析**
 
-- `key` 寫在 Row 上，因為 Row 才是 map 直接回傳的那個元素。
-- id 用資料自己的代號。重新排序後，花蓮山海三日仍是 `hualien`。
-- `key` 不會變成 DOM 上的屬性。要顯示編號時，另外把編號寫進文字。
-- 用 index 當 key，刪掉第一筆時，後面每一筆的 key 都會往前移，輸入框裡的字可能跟著錯位。
-
-{% note success %}
-**換你試試：**
-把 `key` 暫時改成 `index`，在花蓮山海三日那一列打字再刪掉台北城市漫遊。
-
-看完文字黏到哪一列之後，改回 `item.id`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`index` 會讓 React 以為「現在的第 0 列」仍是剛才的第 0 列。台北城市漫遊刪掉之後，花蓮山海三日變成第 0 列，於是沿用了台北城市漫遊那個輸入框的狀態，花蓮山海三日打的字反而留不下來。
-
-改回 id 之後，花蓮山海三日的 key 一直是 `hualien`，輸入框的文字跟著花蓮山海三日走。
-
-```jsx 03-react/src/demos/39-key.jsx
-import { useState } from 'react';
-
-function Row({ label }) {
-  const [text, setText] = useState('');
-
-  return (
-    <li className="flex gap-2">
-      <span>{label}</span>
-      <input
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        className="rounded border px-2"
-      />
-    </li>
-  );
-}
-
-export default function KeyDemo() {
-  const [rows, setRows] = useState([
-    { id: 'taipei', label: '台北城市漫遊' },
-    { id: 'hualien', label: '花蓮山海三日' },
-  ]);
-
-  const onRemove = () => {
-    setRows((items) => items.filter((item) => item.id !== 'taipei'));
-  };
-
-  return (
-    <section>
-      <button
-        type="button"
-        className="rounded bg-teal-800 px-3 py-1 text-white"
-        onClick={onRemove}
-      >
-        刪掉台北城市漫遊
-      </button>
-      <ul className="mt-3 grid gap-2">
-        {rows.map((item) => (
-          <Row key={item.id} label={item.label} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-```
-
-</details>
+- `key` 寫在 `Row` 上，因為 `Row` 才是 `map` 直接回傳的那個元素。
+- id 是資料自己的代號，重新排序後花蓮山海三日仍是 `hualien`。
+- `key` 不會出現在 DOM 的屬性上；要顯示編號時，另外把編號寫進文字。
+- 一個 `map` 若要回傳多個並列元素，要用 `<Fragment key={…}>`，簡寫的 `<>` 不能放 key。
 
 ## 表單欄位
 
-受控欄位的值放在狀態裡。畫面讀狀態，使用者一輸入就用事件把狀態換成新的字串或布林。不同的欄位讀值的方式不一樣。
+表單欄位是使用者輸入資料的地方，React 的作法是讓欄位顯示的內容永遠來自狀態：使用者一輸入，事件處理函式就把新值寫進狀態，畫面再依狀態重畫。這種由狀態決定內容的欄位稱為受控欄位（controlled），這一節依序看常見的五種欄位怎麼接上狀態。
 
-- `input` 與 textarea 用 value 配 onChange，從 `event.target.value` 讀文字。
-- `select` 同樣用 value 對到選項的 value，不是對到畫面上的那一行字。
-- `checkbox` 讀 `checked`。
+**一覽**
 
-`radio` 用同一份狀態比對每一顆的值。
+- `value` 與 `onChange`：文字輸入框、多行文字與下拉選單都用它，新值從 `event.target.value` 讀。
+- `checked` 與 `onChange`：核取方塊與單選鈕用它，勾選狀態是布林，核取方塊從 `event.target.checked` 讀。
+- `defaultValue`：只給欄位一個起始值，之後由瀏覽器自己記住內容，這種欄位稱為非受控（uncontrolled）。核取方塊與單選鈕對應的是 `defaultChecked`。
+
+受控與非受控不能混用：欄位一開始給了 `value`，就不能中途改成沒有，否則 React 會在 Console 警告。本課的表單一律使用受控寫法，因為畫面上其他地方也常要讀同一份資料。
 
 ### input
 
-單行文字的值就是狀態裡的字串。每一次按鍵都換成新字串，輸入框顯示的永遠是狀態，不是瀏覽器自己記的那一份。
+單行文字的值就是狀態裡的字串，每一次按鍵都換成新字串，輸入框顯示的永遠是狀態，不是瀏覽器自己記的那一份。
 
 **觀念**
 
-`value={name}` 讓輸入框變成受控。沒有 `onChange` 時，使用者打字不會更新狀態，畫面會像卡住。
-
-`event.target.value` 是這一刻輸入框裡的整段文字，不是只有新按下的那一個鍵。
+只給 `value` 而沒有 `onChange`，欄位就被鎖住，使用者打字不會有任何反應，React 也會在 Console 提醒。事件物件讀到的是輸入當下整個欄位的內容，不是只有剛按下的那個鍵。
 
 ```jsx 03-react/src/demos/40-input.jsx
 import { useState } from 'react';
@@ -4121,46 +2518,23 @@ export default function InputDemo() {
 }
 ```
 
-還沒打字時，下面是「目前：尚未填」。打上台北城市漫遊之後，變成「目前：台北城市漫遊」。
-
 **解析**
 
-- 空字串是合法的受控值。不要用 `undefined` 當 `value`，那會讓輸入框在受控與非受控之間切換。
-- `onChange` 在每一個輸入時發生，不只有失焦的時候。
-- 下面那一行讀的是同一個 `name`。輸入框與文字不會各記各的。
-- `name || '尚未填'` 在空字串時顯示提示。0 不會出現在這個欄位，所以這裡可以用或運算。
+- 還沒打字時，下面顯示「目前：尚未填」；輸入 `abc` 之後，每打一個字，輸入框與下面那一行就同步更新，因為兩處讀的是同一個 `name`。
+- 空字串是合法的受控值。不要把 `undefined` 當 `value`，欄位會被當成非受控，之後第一次給值時又變成受控，React 就會警告。
+- `name || '尚未填'` 在空字串時顯示提示。空字串與 0 都是假值，這裡的欄位只有文字，所以用或運算沒有問題。
 
-{% note success %}
-**換你試試：**
-起始值改成台北城市漫遊。打開頁面時輸入框裡就有台北城市漫遊，下面一行也是台北城市漫遊。
+{% note info %}
+想給欄位起始內容時，受控寫法是把狀態的起始值設成那段文字。`defaultValue` 屬於非受控寫法，之後改它不會讓欄位變動。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-起始值只影響第一次。之後仍由 `onChange` 更新。
-
-```diff 03-react/src/demos/40-input.jsx
-  import { useState } from 'react';
-  
-  export default function InputDemo() {
--   const [name, setName] = useState('');
-+   const [name, setName] = useState('台北城市漫遊');
-  
-    return (
-      <section>
-        // ...
-```
-
-</details>
 
 ### textarea
 
-多行文字的寫法與單行輸入框相同，都是 `value` 配 `onChange`。不要把要顯示的文字放在開始標籤與結束標籤中間，那是 HTML 的寫法，在受控元件裡不會跟著狀態走。
+多行文字的寫法與單行輸入框相同，內容由狀態決定。原生 HTML 的 `<textarea>` 把內容寫在開始與結束標籤中間，React 改成用 `value` 屬性，才能和其他欄位一樣接上狀態。
 
 **觀念**
 
-備註放在 `note`。輸入框用 `<textarea value={note} />`。換行也是字串的一部分，狀態裡會保留使用者按下的換行。
+換行也是字串的一部分，使用者按下的換行會留在狀態裡。標籤中間不要再塞一份預設文字。
 
 ```jsx 03-react/src/demos/41-area.jsx
 import { useState } from 'react';
@@ -4182,56 +2556,20 @@ export default function AreaDemo() {
 }
 ```
 
-打開時文字區裡是「第一行」，下面是「字數 3」。再打一個字，字數變成 4。
-
 **解析**
 
-- `value` 放在屬性上。標籤中間不要再塞一份預設文字。
-- `rows` 只影響高度。它不是狀態，這一則沒有讓使用者改列數。
-- `note.length` 在渲染時算出來。字數不必另存一個狀態。
-- 清空時把狀態設成空字串。不要去呼叫文字區的 DOM 方法。
-
-{% note success %}
-**換你試試：**
-加一顆按鈕，按下把備註設成空字串。字數應變成 0。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-按鈕只更新 `note`。字數跟著下一輪渲染重算。
-
-```diff 03-react/src/demos/41-area.jsx
-  // ...
-          className="rounded border px-2 py-1"
-        />
-+       <button
-+         type="button"
-+         className="rounded bg-stone-200 px-3 py-1"
-+         onClick={() => setNote('')}
-+       >
-+         清空
-+       </button>
-        <p>字數 {note.length}</p>
-      </section>
-    // ...
-```
-
-</details>
+- 打開時文字區裡是「第一行」，下面是「字數 3」；再打一個字，字數變成 4。
+- `note.length` 在渲染時算出來，字數不必另存一個狀態。
+- `rows` 只決定文字區的初始高度，與狀態無關。
+- 要清空欄位，就把狀態設成空字串，不必操作 DOM。
 
 ### select
 
-下拉選單的 `value` 對到某個 `<option value="...">`。
-
-畫面上的「台北」是給人看的，狀態裡存的是 `taipei`。
+下拉選單的 `value` 要對到某個選項的 `value` 屬性，而不是畫面上看到的文字。畫面上寫「台北」，狀態裡存的是程式用的代碼 `taipei`。
 
 **觀念**
 
-`city` 起始是 `taipei`，所以打開時選在台北。
-
-`onChange` 仍從 `event.target.value` 讀，讀到的是選項的 value，不是標籤中間的文字。
-
-沒有任何選項的 value 與狀態相同時，React 會在開發時提出警告。起始值要對到一個真的選項。
+選單的新值同樣從事件物件讀，讀到的是被選中選項的 `value` 屬性。如果狀態的值沒有對到任何選項，React 不會出錯，畫面只會顯示第一個選項，狀態卻還是原來的值，兩邊就不一致了，所以起始值要對到真的選項。
 
 ```jsx 03-react/src/demos/42-select.jsx
 import { useState } from 'react';
@@ -4255,50 +2593,19 @@ export default function SelectDemo() {
 }
 ```
 
-打開時下面是「代碼 taipei」。改選台南之後變成 `tainan`。
-
 **解析**
 
-- `value` 在 select 上，不在每一個 option 上用 `selected`。
-- 選項的 `value` 用你程式裡的代碼。顯示文字可以是中文。
-- 狀態換了，選單會自己跳到對應的選項。不必再找 DOM 去設 `selectedIndex`。
-- 這一則只有兩個城市。要加第三個，就再加一個 `<option>`，並確定 value 不重複。
-
-{% note success %}
-**換你試試：**
-加一個選項，value 是 `taichung`，文字是台中。選了之後代碼那一行應是 taichung。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新選項的 value 就是會進狀態的字串。顯示文字只出現在選單上。
-
-```diff 03-react/src/demos/42-select.jsx
-  // ...
-          <option value="taipei">台北</option>
-          <option value="tainan">台南</option>
-+         <option value="taichung">台中</option>
-        </select>
-        <p className="mt-3">代碼 {city}</p>
-      // ...
-```
-
-</details>
+- 打開時選單停在台北，下面顯示「代碼 taipei」；改選台南之後變成 `tainan`。
+- 選取的狀態寫在 `select` 上，不必在每個選項上寫 `selected`。
+- 選項的 `value` 用程式要用的代碼，顯示文字可以是中文。要多一個城市，就多一個 `option`，並確認 `value` 不重複。
 
 ### checkbox
 
-核取方塊的狀態是布林。
-
-讀 `event.target.checked`，綁定用 checked，不要用 value 記住有沒有勾。
+核取方塊只有勾與不勾兩種結果，所以狀態是布林。它要綁的是 `checked` 而不是 `value`：`value` 是勾選時隨表單送出的字串，不會反映有沒有勾。
 
 **觀念**
 
-`gift` 為真時顯示「要早餐」。
-
-勾選時 `checked` 是 true，取消時是 false。
-
-`value` 這一則沒有用來保存勾選，因為勾選不是一段文字。
+勾選時 `event.target.checked` 是 `true`，取消時是 `false`，把它直接存進狀態即可。畫面上的文字由同一個布林決定，不必再存一份文字狀態。
 
 ```jsx 03-react/src/demos/43-check.jsx
 import { useState } from 'react';
@@ -4322,50 +2629,19 @@ export default function CheckDemo() {
 }
 ```
 
-一開始是「不含早餐」。勾起來之後變成「要早餐」。再點一次回到不包。
-
 **解析**
 
-- `checked` 必須是布林。不要把字串 `'on'` 放進去。
-- `onChange` 讀 `checked`。
-
-讀 `value` 會拿到輸入框的 value 屬性，不是勾選狀態。
-- 標籤包住輸入框時，點文字也會切換。`htmlFor` 那一則是另一種綁法。
-- 畫面下方的句子由同一個布林決定。不要再存一份「要早餐」的文字狀態。
-
-{% note success %}
-**換你試試：**
-起始值改成 `true`。打開頁面時應已勾選，文字是要早餐。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-起始布林改成真。事件仍把使用者的下一次勾選寫回狀態。
-
-```diff 03-react/src/demos/43-check.jsx
-  import { useState } from 'react';
-  
-  export default function CheckDemo() {
--   const [gift, setGift] = useState(false);
-+   const [gift, setGift] = useState(true);
-  
-    return (
-      <section>
-        // ...
-```
-
-</details>
+- 一開始顯示「不含早餐」；勾起來變成「要早餐」，再點一次回到「不含早餐」。
+- `checked` 必須是布林，不要放字串。
+- `label` 包住輸入框時，點文字也會切換勾選，不必另外綁 id。
 
 ### radio
 
-同一組選項共用一個狀態。每一顆的 `checked` 是「狀態是否等於我的值」。點任何一顆，都把狀態設成那一顆的值。
+單選鈕是一組選項裡只能選一個，所以整組共用一份狀態。每一顆的 `checked` 是「狀態是否等於我的值」，點任何一顆，就把狀態設成那一顆的值。
 
 **觀念**
 
-`unit` 起始是 `person`。
-
-第一顆的 `checked` 為真，第二顆為假。兩顆都叫同一個 `name`，瀏覽器才把它們當同一組。真正決定畫面的仍是 React 的狀態，不是瀏覽器記住的那一顆。
+同一組單選鈕要寫相同的 `name`，瀏覽器才會把它們視為一組，鍵盤的方向鍵也才能在組內切換。真正決定哪一顆被選中的，仍然是 React 的狀態。
 
 ```jsx 03-react/src/demos/44-radio.jsx
 import { useState } from 'react';
@@ -4399,73 +2675,23 @@ export default function RadioDemo() {
 }
 ```
 
-打開時單位那一行是 `person`。點天之後變成 `day`，人那一顆不再勾選。
-
 **解析**
 
-- 兩顆的 `checked` 來自同一份 `unit`。不會兩顆同時為真。
-- `onChange` 寫成設定固定的值。這一則不必讀 `event.target.value`，因為值已經寫在那一顆上。
-- `name` 相同讓鍵盤與瀏覽器把它們當一組。React 的狀態才是你之後送出時要讀的那一份。
-- 要加第三顆時，再比對一個新的字串，並在點擊時設定那個字串。
-
-{% note success %}
-**換你試試：**
-加一顆「團」，值是 `group`。點了之後，下面一行應是 group。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三顆用同一個狀態。
-
-`checked` 只有在 unit 等於 group 時為真。
-
-```diff 03-react/src/demos/44-radio.jsx
-  // ...
-          人
-        </label>
--       <label>
-+       <label className="mr-4">
-          <input
-            type="radio"
-            // ...
-          天
-        </label>
-+       <label>
-+         <input
-+           type="radio"
-+           name="unit"
-+           checked={unit === 'group'}
-+           onChange={() => setUnit('group')}
-+         />
-+         團
-+       </label>
-        <p className="mt-3">單位 {unit}</p>
-      </fieldset>
-    // ...
-```
-
-</details>
+- 打開時「人」被選中，下面顯示「單位 person」；點「天」之後變成 `day`，「人」不再被選中。
+- 兩顆的 `checked` 都由同一個 `unit` 算出來，所以不可能同時為真。
+- 每一顆的 `onChange` 直接寫入固定的值，不必讀 `event.target.value`。要增加選項，就多一顆並比對新的字串。
 
 ## 送出表單
 
-多個欄位可以收在同一個物件裡，欄位的 `name` 對到物件的鍵。送出時讀這份物件。標籤與輸入框的 id 用 `useId` 產生，避免同一頁有兩份表單時 id 撞在一起。
-
-- 物件欄位用一個 `onChange` 依 `event.target.name` 更新對應的鍵。
-- `handleSubmit` 先 `preventDefault`，再使用這一份物件。
-- `useId` 每呼叫一次給一組穩定的 id。
-
-把它接到 `htmlFor` 與 `id`。
+欄位多了以後，把它們收進同一個物件，比每個欄位各開一個狀態好管理。送出時，狀態物件就是要用的資料，只要在表單的送出事件裡先取消預設動作，再使用這份物件。
 
 ### 多欄位物件
 
-名稱與價格分屬物件的兩個鍵。一個 `handleChange` 服務兩個輸入框，靠輸入框的 `name` 決定改哪一鍵。
+物件的每個鍵對應一個欄位，輸入框的 `name` 寫成鍵名，一個共用的 `handleChange` 就能服務所有輸入框。
 
 **觀念**
 
-更新時展開舊物件，再用計算屬性蓋掉被改的那一鍵。另一鍵留著。這跟巢狀物件是同一件事，只是欄位都在第一層。
-
-兩個輸入框都受控。價格這一則先當字串，送出前若要做算術再轉成數字。不要在每打一個字時就轉，否則空字串會變成 0，使用者會刪不掉。
+更新時展開舊物件，再用計算屬性（用變數的值當鍵名的寫法）蓋掉被改的那一鍵，其他鍵保持不變，這與先前的物件不可變更新是同一件事。價格這一例先當字串存，要做算術時才轉成數字；若每打一個字就轉，使用者清空欄位時空字串會變成 0，反而刪不乾淨。
 
 ```jsx 03-react/src/demos/45-fields.jsx
 import { useState } from 'react';
@@ -4502,67 +2728,20 @@ export default function FieldsDemo() {
 }
 ```
 
-在名稱打台北城市漫遊、價格打 12800，下面一行變成「台北城市漫遊 12800」。
-
 **解析**
 
-- 輸入框的 `name` 必須是狀態物件裡的鍵。寫錯就會多出一個你沒在畫面上讀的鍵。
-- `[name]` 是計算屬性。它用變數的值當鍵，不是用字面的 `"name"`。
-- 展開放在前面，新鍵放在後面，另一個欄位才不會被清掉。
-- 兩個輸入框共用 `handleChange`。不必每個欄位各寫一個幾乎一樣的函式。
-
-{% note success %}
-**換你試試：**
-物件再加一個鍵 `unit`，起始是空字串，並加一個對應的輸入框。打「天」時，下面一行也要看得到。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新鍵靠同一個 `handleChange` 更新。
-
-輸入框的 `name` 寫成 `unit`。
-
-```diff 03-react/src/demos/45-fields.jsx
-  import { useState } from 'react';
-  
-  export default function FieldsDemo() {
--   const [form, setForm] = useState({ name: '', price: '' });
-+   const [form, setForm] = useState({ name: '', price: '', unit: '' });
-  
-    const handleChange = (event) => {
-      const { name, value } = event.target;
-      // ...
-          className="rounded border px-2 py-1"
-        />
-+       <input
-+         name="unit"
-+         value={form.unit}
-+         onChange={handleChange}
-+         placeholder="單位"
-+         className="rounded border px-2 py-1"
-+       />
-        <p>
--         {form.name || '未填'} {form.price}
-+         {form.name || '未填'} {form.price} {form.unit}
-        </p>
-      </section>
-    // ...
-```
-
-</details>
+- 名稱欄打 `abc`、價格欄打 `100`，下面一行變成「abc 100」；名稱沒填時顯示「未填」。
+- 輸入框的 `name` 必須與狀態物件的鍵相同，寫錯會在物件裡多出一個畫面讀不到的鍵。
+- `[name]` 用變數的值當鍵，不是字面上的 `"name"`。
+- 展開放前面、新鍵放後面，另一個欄位才不會被蓋掉。
 
 ### submit
 
-送出時不要再去問 DOM 裡的輸入框。狀態物件就是要送出的那一份。先取消預設動作，再把結果寫到畫面上。
+表單的送出由 `<form>` 的送出事件處理。按下 `type="submit"` 的按鈕，或在輸入框按 Enter，都會觸發它，瀏覽器預設會重新載入頁面，所以處理函式第一行要先取消預設動作。
 
 **觀念**
 
-`handleSubmit` 用名稱與價格組成一句話。兩個輸入框的更新仍走 `handleChange`。
-
-送出按鈕是 `type="submit"`，表單綁 `onSubmit`。
-
-這一則只把結果留在畫面。下一篇才把同一份物件送到網路上。
+送出時不必再用 DOM 查詢輸入框的內容，狀態物件已經有完整資料。處理函式讀到的是這一次事件當下的快照，送出只讀一次，這樣就夠用。這一例只把結果顯示在畫面上，把資料送到伺服器的做法留到後面的資料章節。
 
 ```jsx 03-react/src/demos/46-submit.jsx
 import { useState } from 'react';
@@ -4609,60 +2788,32 @@ export default function SubmitDemo() {
 }
 ```
 
-名稱填台北城市漫遊、價格填 12800，按下送出，訊息是「台北城市漫遊 12800」。網址不變。
-
 **解析**
 
-- `preventDefault` 放在讀狀態之前。頁面沒重載，訊息才留得住。
-- 訊息用的是送出當下的 `form`。這是這一次事件的快照，夠用，因為送出只讀一次。
-- 輸入過程中 `message` 不會跟著變。它只在送出時更新。
-- 不要在送出時用 `document.querySelector` 再讀一次輸入框。狀態已經有了。
+- 名稱填 `abc`、價格填 `100`，按下送出，下面顯示「abc 100」，網址與頁面都沒有重載。
+- 輸入的過程中 `message` 不會變，它只在送出時更新。
+- 若沒有 `preventDefault`，頁面重載，狀態會全部重來，訊息也留不住。
 
-{% note success %}
-**換你試試：**
-名稱是空的時候不要更新訊息，改把訊息設成「請填名稱」。有名稱時仍送出原本那句。
+{% note info %}
+React 19 另外提供把函式交給 `<form action>` 的作法，送出進行中的狀態也能由 Hook 讀到。這屬於選讀內容，見 {% post_link lokiTech-15day-10-react-advanced %} 的「選讀：表單 Actions」。本課主線用 `onSubmit`，router 章節還會看到另一種由 `Form` 交給路由處理的送出方式。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+### 選讀：useId
 
-空字串在送出時擋下來。兩個輸入框的受控寫法不用改。
+同一個元件在頁面上出現兩次時，寫死的 `id` 會重複，點標籤就會聚焦到第一個同 id 的輸入框。`useId` 為每個元件實例產生各自獨立的字串，專門給 `htmlFor`、`aria-describedby` 這類無障礙屬性接線。
 
-```diff 03-react/src/demos/46-submit.jsx
-  // ...
-    const handleSubmit = (event) => {
-      event.preventDefault();
-+     if (!form.name) {
-+       setMessage('請填名稱');
-+       return;
-+     }
-      setMessage(form.name + ' ' + form.price);
-    };
-    // ...
-```
+**觀念**
 
-</details>
-
-### useId
-
-`useId` 產生這一輪元件專用的 id。
-
-把它接到標籤的 `htmlFor` 與輸入框的 `id`，點標籤就會聚焦到那一格。同一頁有兩份元件時，兩組 id 不會撞在一起。
+每呼叫一次 `useId` 得到一個字串，需要幾個 id 就呼叫幾次，而且一律寫在元件最上層，不能放進迴圈或條件。它不是用來當列表的 `key`，`key` 要用資料本身的識別值。字串的格式會隨版本改變，程式不要依賴它長什麼樣子。
 
 ```jsx
 /**
- * 產生這一輪元件專用的 id。同一頁有兩份元件時不會撞在一起。
+ * 產生這個元件實例專用的 id。同一頁有兩份元件時不會重複。
  * @returns {string} id
  *   id：穩定字串，接到標籤的 htmlFor 與輸入框的 id
  */
 const id = useId();
 ```
-
-**觀念**
-
-每呼叫一次 `useId` 得到一個字串。名稱與價格各要一組，所以呼叫兩次，而且兩次都在元件最上面。不要把 `useId` 放進迴圈或條件。
-
-id 的值不要自己寫死成 `name`。另一個元件若也寫 `name`，點標籤會聚焦到頁面上第一個同 id 的輸入框。
 
 ```jsx 03-react/src/demos/47-useid.jsx
 import { useId, useState } from 'react';
@@ -4670,7 +2821,9 @@ import { useId, useState } from 'react';
 export default function UseIdDemo() {
   const nameId = useId();
   const priceId = useId();
+  const hintId = useId();
   const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
 
   return (
     <form className="grid max-w-sm gap-3">
@@ -4687,151 +2840,197 @@ export default function UseIdDemo() {
         <label htmlFor={priceId}>價格</label>
         <input
           id={priceId}
+          value={price}
+          onChange={(event) => setPrice(event.target.value)}
+          aria-describedby={hintId}
           className="mt-1 block w-full rounded border px-2 py-1"
         />
+        <p id={hintId} className="mt-1 text-sm text-stone-600">
+          只填數字，不含貨幣符號
+        </p>
       </div>
     </form>
   );
 }
 ```
 
-點「名稱」兩個字，焦點進到第一個輸入框。點「價格」則進到第二個。用開發者工具看，兩個 id 不會都叫 name。
-
 **解析**
 
-- `htmlFor` 必須與輸入框的 `id` 相同。只寫其中一個，點文字不會聚焦。
-- 兩次 `useId` 的結果不同。不要把同一個 id 接到兩個輸入框。
-- `useId` 的結果在這顆元件的生命裡是穩定的。不要把它放進狀態再改。
-- 價格這一格先示範標籤綁定。要讓它受控時，再加一份狀態與 `value`。
+- 點「名稱」兩個字，焦點進到第一個輸入框；點「價格」則進到第二個。標籤與輸入框靠 `htmlFor` 與 `id` 對上，兩邊必須相同。
+- `hintId` 讓提示文字與價格欄關聯：輔助科技（如螢幕閱讀器）進到價格欄時，會一併唸出提示。
+- 三次呼叫得到三個不同的 id，不要把同一個 id 接到兩個元素。
+- 結果在元件的生命期間保持穩定，不需要放進狀態。
 
-{% note success %}
-**換你試試：**
-讓價格也受控，狀態放在 `price`，起始是空字串。
+# 回家作業
 
-標籤的 `htmlFor` 仍用 `priceId`。
-{% endnote %}
+這份作業只用必教內容，資料取自專案的行程清單，題目依序累加：前一題的畫面就是後一題的基礎。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果，自己對照即可。
 
-<details>
-<summary>參考答案</summary>
+## 起始檔
 
-第二個欄位補上 `value` 與 `onChange`。
+起始檔在練習專案的 `03-react/src/homework/09-homework.jsx`，裡面已經有八筆行程資料和一個空的元件。在練習專案的選單裡切到「09 回家作業」就能看到。
 
-id 繼續用 `useId` 的結果，不要改回寫死的字串。
+```jsx 03-react/src/homework/09-homework.jsx
+const tours = [
+  { id: 'taipei-beitou', title: '台北大稻埕與北投溫泉三日', region: '台北', theme: '城市', days: 3, price: 18600 },
+  { id: 'keelung-jiufen', title: '基隆北海岸與九份兩日', region: '基隆', theme: '海岸', days: 2, price: 9200 },
+  { id: 'hualien-taroko', title: '花蓮太魯閣與七星潭四日', region: '花蓮', theme: '山海', days: 4, price: 26800 },
+  { id: 'taitung-chishang', title: '台東池上與成功海岸三日', region: '台東', theme: '山海', days: 3, price: 21400 },
+  { id: 'tainan-anping', title: '台南府城與安平兩日', region: '台南', theme: '古都', days: 2, price: 8800 },
+  { id: 'kaohsiung-qijin', title: '高雄港都與旗津三日', region: '高雄', theme: '城市', days: 3, price: 14200 },
+  { id: 'kinmen-villages', title: '金門聚落與戰地三日', region: '金門', theme: '離島', days: 3, price: 16800 },
+  { id: 'kyoto-nara', title: '京都嵐山、伏見與奈良五日', region: '京都', theme: '日本', days: 5, price: 52800 },
+];
 
-```diff 03-react/src/demos/47-useid.jsx
-  // ...
-    const priceId = useId();
-    const [name, setName] = useState('');
-+   const [price, setPrice] = useState('');
-  
-    return (
-      <form className="grid max-w-sm gap-3">
-        // ...
-          <input
-            id={priceId}
-+           value={price}
-+           onChange={(event) => setPrice(event.target.value)}
-            className="mt-1 block w-full rounded border px-2 py-1"
-          />
-        // ...
+export default function Homework09() {
+  return <p>共 {tours.length} 筆行程，在這裡開始寫</p>;
+}
 ```
 
-</details>
+## 題目
+
+### 題目一：行程卡片
+
+寫一個接收標題、天數與價格的元件，把八筆行程各畫成一張卡片，每張卡片要有穩定的 key。
+
+完成後畫面有八張卡片，第一張顯示「台北大稻埕與北投溫泉三日」、3 天、NT$18600。
+
+### 題目二：主題篩選
+
+加上一排主題按鈕（全部、城市、山海、海岸、古都、離島、日本），點擊後只顯示該主題的卡片。沒有符合的行程時顯示「找不到符合的行程」。目前選到的主題放在狀態裡。
+
+完成後點「城市」只剩台北與高雄兩張，點「全部」回到八張，目前選到的按鈕要有不同的外觀。
+
+### 題目三：收藏
+
+每張卡片加一個「收藏」按鈕，點一下切換已收藏與未收藏，畫面上方顯示「已收藏 N 筆」。收藏的行程編號放在狀態裡，更新時不能直接修改原本的陣列。
+
+完成後收藏兩張，數字是 2；切換主題再切回來，這兩張仍顯示已收藏。
+
+### 題目四：關鍵字搜尋
+
+加一個搜尋欄，輸入的字要由狀態控制，標題含有這些字的行程才顯示。搜尋要和主題篩選一起作用。
+
+完成後在「山海」下輸入「花蓮」只剩一張；清空搜尋欄會回到該主題的全部行程。
+
+### 題目五：報名表單
+
+做一個報名表單，欄位是姓名與人數，兩個欄位都由狀態控制。送出時不要換頁，把「姓名報名 N 人」加進一份報名清單並顯示在表單下方，然後清空欄位。姓名空白時不能送出。
+
+完成後連續報名兩次，清單有兩筆；姓名只打空白按送出，清單不會多出一筆。
 
 # 本篇重點回顧
 
-- 元件是回傳元素的函式。渲染算出這一次的元素，提交才寫進畫面。
-- 資料從父層用 props 往下流。子層要改資料時，呼叫父層傳下來的函式。狀態放在用得到它的共同父層。
-- JSX 的花括號放表達式。整塊換畫面用提早 return 或三元。多畫一塊用 `&&`，左邊要是布林。缺內容用 `||` 補預設字；要留下 0 時改用空值合併 `??`。
-- `className` 寫類別，`style` 寫駝峰物件。多個兄弟又不想多包一層時用 Fragment。
-- 狀態是快照。下一輪依賴前一個狀態時用更新函式；換成已知常數時直接交那個值。同一個事件裡的多次設定會收成一次渲染。`useState` 每次渲染的呼叫順序都要一樣。陣列與物件都交一份新的值。
-- 事件屬性用 `onClick` 這種名字。要參數就包一層箭頭函式，表單送出要 `preventDefault`。
-- 列表用 `map` 畫出，key 用穩定的 id。表單欄位受控，多欄位可以收成一個物件，標籤 id 用 `useId`。
+選讀的部分是「選讀：工具鏈」、「選讀：模組」與「選讀：useId」，其餘為主線。
+
+- React 是用函式描述畫面的函式庫，專案用 Vite 建立，範本再加上 React Compiler 自動處理記憶。
+- JSX 的花括號放表達式，屬性名稱用駝峰如 `className`，多個兄弟元素又不想多包一層時用 Fragment。
+- 條件渲染整塊換畫面用提早 return 或三元，多畫一塊用 `&&` 且左邊要是布林，要留下 0 時補預設字改用空值合併。
+- 資料單向由父層用 props 傳給子層，子層要改資料時呼叫父層傳下來的函式，狀態放在用得到它的最近共同父層。
+- 元件是回傳畫面的函式，props 用解構取值並可設預設值，標籤中間的內容由 `children` 接收。
+- `useState` 的狀態是快照，依賴前一個值時用更新函式，同一個事件裡的多次設定合併成一次渲染，陣列與物件都要交一份新的值。
+- 事件用 `onClick` 這類屬性綁定，要帶參數就包一層箭頭函式，表單送出前要取消預設動作。
+- 列表用 map 畫出並給穩定的 `key`，表單欄位用受控寫法，讓輸入與畫面讀同一份狀態。
 
 # 專有名詞中英對照
 
 ## 認識 React
 
 - 框架（framework）
+- 命令式（imperative）
+- 宣告式（declarative）
 - 重排（reflow）
 - 重繪（repaint）
-- 宣告式（declarative）
-- 命令式（imperative）
 - 漸進式框架（progressive framework）
-- 單檔元件（Single-File Component、SFC）
+- 單檔元件（Single-File Component）
 - 模板（template）
-- 模板指令（template directive）
-- Vue 狀態管理（Pinia）
-- Vue 全端框架（Nuxt）
-- Vue 介面元件庫（Element Plus）
-- Vue 介面元件庫（Vuetify）
-- 響應式程式庫（RxJS）
-- Angular 狀態管理（NgRx）
-- Angular 介面元件庫（Angular Material）
-- React 狀態管理（Zustand）
-- React 狀態管理（Redux Toolkit）
-- React 介面元件庫（MUI）
-- React 介面元件庫（Ant Design）
+- 伺服器端渲染（server-side rendering）
 - 函式庫（library）
-- JSX
 - 使用者介面（user interface）
-- View
-- 元件（component）
-- 元件化（component-based）
 - 單頁應用（Single Page Application、SPA）
-- 語法糖（syntactic sugar）
+- 元件化（componentization）
+- 元件（component）
 
 ## 建立專案
 
-- 元件（Component）
-- JSX
-- 渲染（render）
-- 提交（commit）
-- 嚴格模式（React Strict Mode、`<StrictMode>`）
-- 單向資料流（one-way data flow）
-- Thinking in React
-- props
-- React 開發者工具（React Developer Tools）
 - 專案範本（project template）
+- 開發伺服器（development server）
+- 打包器（bundler）
 - 專案產生器（project generator）
+- 依賴（dependency）
 - 熱更新（Hot Module Replacement、HMR）
-- Vite 的 defineConfig（defineConfig，from vite）
-- ESLint
-- ESLint 的 defineConfig（defineConfig，from eslint/config）
+- 記憶（memoization）
+- 掛載（mount）
+- 函式元件（function component）
+- 保留字（reserved word）
+- 嚴格模式（StrictMode）
+- 不純（impure）
 
 ## JSX
 
-- Fragment
-- 條件渲染（conditional rendering）
 - 表達式（expression）
+- 敘述（statement）
+- 駝峰（camelCase）
+- 三元運算子（ternary operator）
+- 行內樣式（inline style）
+- 條件渲染（conditional rendering）
+- 提早 return（early return）
+- 邏輯運算子（logical operator）
 - 短路求值（short-circuit evaluation）
-- 邏輯且（logical AND、`&&`）
-- 邏輯或（logical OR、`||`）
-- 空值合併（nullish coalescing、`??`）
+- 假值（falsy value）
+- 空值合併（nullish coalescing）
+
+## 單向資料流
+
+- 單向資料流（one-way data flow）
+- 屬性（props）
+- 父層（parent component）
+- 子層（child component）
+- 元件樹（component tree）
+- 渲染（render）
 
 ## 元件
 
+- 模組（module）
+- 匯出（export）
+- 匯入（import）
 - 預設匯出（default export）
 - 具名匯出（named export）
 - 解構（destructuring）
-- 子元素（children）
+- 預設值（default value）
+- 唯讀（read-only）
+- 版面元件（layout component）
+- 箭頭函式（arrow function）
 
 ## 狀態
 
 - 狀態（state）
 - 快照（snapshot）
-- Hook
+- 設定函式（setter function）
+- 提交（commit）
+- 展開（spread syntax）
 - 更新函式（updater function）
+- 純函式（pure function）
 - 批次更新（batching）
 - Hooks 規則（Rules of Hooks）
+- 不可變更新（immutable update）
+- 巢狀物件（nested object）
 
 ## 事件
 
 - 事件處理函式（event handler）
+- 事件物件（event object）
 - 預設動作（default action）
 
 ## 列表與表單
 
-- 鍵（key）
-- 受控元件（controlled component）
+- 列表（list）
 - 表單（form）
+- 空清單（empty list）
+- 受控欄位（controlled component）
+- 多行文字（textarea）
+- 下拉選單（select）
+- 核取方塊（checkbox）
+- 單選鈕（radio button）
+- 非受控欄位（uncontrolled component）
+- 無障礙（accessibility）
+- 輔助科技（assistive technology）

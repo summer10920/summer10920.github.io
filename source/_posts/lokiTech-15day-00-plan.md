@@ -10,72 +10,91 @@ date: 2026-08-30 08:00:00
 
 ![網站開發爆炸圖：HTML、CSS、JavaScript、Tailwind、React 等前端技能樹](assets/images/banner/frontend-skill-tree.png)
 
-這是約 120 小時的在職前端入門計畫，依階段排，不鎖死每天 8 小時。你會用 VS Code、Git、HTML、CSS、Tailwind、JavaScript、React 做出旅行社網站，深度停在看得懂、改得動、講得出來。各階段講義在下面的表，檔名就是連結。
+這是約 120 小時（15 天 × 8 小時）的在職前端入門計畫：從 HTML、CSS、Tailwind、JavaScript 學到 React 與 React Router，最後做出一個多頁的旅行社網站。課程不鎖死每天的內容，依階段與時數推進；深度停在看得懂、改得動、講得出來。
 
 <!-- more -->
 
 # 課程目標與對象
 
-這門課給沒有網頁底子的在職學員。技術要夠你審畫面、改元件、把專題佈上 GitHub Pages；不追求默寫框架，也不上 TypeScript。
+這門課給沒有網頁底子的在職學員。目標是學完能讀懂一個 React 專案、依需求修改，並說得出每一塊程式為什麼這樣寫；不追求默寫框架，也不教 TypeScript。
 
 ## 你要帶走的能力
 
-上完你能用語意 HTML 搭頁面骨架，用 CSS 與 Tailwind 做手機到桌機的版面，用 JavaScript 讀寫清單與表單，再用 React 把同一套旅行社頁面收成可部署的站。各階段練習都是期末站上的一塊元件，不是另開無關習題。
+上完課你能用語意化的 HTML 搭出頁面骨架，用 CSS 與 Tailwind 做出手機到桌機都能看的版面，用 JavaScript 處理資料、清單與表單，再用 React 與 React Router 把這些收成一個多頁網站。
 
 ## 適合誰、先備是什麼
 
-對象是初學前端的在職學員，課期內要做出可展示的專題。你需要自備筆電、Google Chrome、GitHub 帳號，以及能安裝 VS Code、Git、Node.js LTS。不需要先會 HTML。站上舊的 jQuery、Bootstrap 教材只當選讀，本課路徑不走那一套。
+對象是初學前端的在職學員。需要自備筆電、Google Chrome 與 GitHub 帳號，並能安裝 VS Code、Git 與 Node.js。不需要先會 HTML。站上舊的 jQuery、Bootstrap 教材只當選讀，本課路徑不走那一套。
 
-# 階段課表
+# 課程如何進行
 
-合計約 120 小時。時數是階段估時，可依進度前後挪。檔名就是下面的連結。
+這一節說明課堂怎麼上、哪些內容一定會講、哪些留給自學。
+
+## 上課方式
+
+講師不在課堂上現場打程式。每個範例都是練習 repo 裡一份完整、可以直接執行的檔案，講師把它複製進 VS Code，執行後講解背後的觀念。學員可以自己 fork 練習 repo、讀程式、改一改再執行，也可以請 Claude Code 這類 AI 助手當家教。
+
+## 主線與選讀
+
+每篇講義分成主線與選讀兩種內容。
+
+- 主線：基本觀念，加上最後的結業專案會用到的內容。主線全部加起來要在 120 小時內講完。
+- 選讀：標題以「選讀：」開頭。上課不講，留給你回家自己讀。
+
+後面章節如果用到選讀的內容，會在那裡放一句提示與連結，需要時再跳回去看。Tailwind 公式表與 Firebase 篇整篇都是選讀。
 
 ## 階段、時數與講義
 
-| 階段 | 約略時數 | 主題 | 講義 |
-| --- | --- | --- | --- |
-| 1 工具與 HTML | ~24h | VS Code、Git／GitHub、語意標籤、表單、a11y | {% post_link lokiTech-15day-01-tools %}、{% post_link lokiTech-15day-02-html %} |
-| 2 CSS 基礎 | ~16h | 選擇器、盒模型、Flex、Grid、RWD | {% post_link lokiTech-15day-03-css %} |
-| 3 Tailwind | ~8h | utilities、RWD、dark mode、改寫先前頁面、公式表 | {% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-05-tailwind-cheatsheet %} |
-| 4 JavaScript | ~32h | 變數、函式、陣列／物件、DOM／事件、fetch／async、modules、小練習 | {% post_link lokiTech-15day-06-js-basics %}、{% post_link lokiTech-15day-07-js-dom %}、{% post_link lokiTech-15day-08-js-async %} |
-| 5 React | ~24h | 基礎約 8h：JSX、元件、狀態、列表與表單；進階約 8h：effect、共用狀態；Router 約 8h | {% post_link lokiTech-15day-09-react-basics %}、{% post_link lokiTech-15day-10-react-advanced %}、{% post_link lokiTech-15day-11-react-router %} |
-| 6 結業專案 | ~16h | 切版、功能化（API）、佈署 GitHub Pages、demo | {% post_link lokiTech-15day-12-project-travel %}、{% post_link lokiTech-15day-13-project-travel-api %} |
+下面的時數是預估，可依進度前後挪動；合計 120 小時，含約 6 小時的緩衝。
 
-# 作業對到專題元件
+- 工具與 HTML，約 12 小時：{% post_link lokiTech-15day-01-tools %}、{% post_link lokiTech-15day-02-html %}。VS Code、Git 與 GitHub、語意標籤、表單、無障礙。
+- CSS，約 12 小時：{% post_link lokiTech-15day-03-css %}。選擇器、盒模型、Flex、Grid、響應式版面。
+- Tailwind，約 8 小時：{% post_link lokiTech-15day-04-tailwind %}。工具類別、響應式、深色模式、自訂主題；速查表 {% post_link lokiTech-15day-05-tailwind-cheatsheet %} 是選讀附錄，不佔上課時間。
+- JavaScript，約 24 小時：{% post_link lokiTech-15day-06-js-basics %}、{% post_link lokiTech-15day-07-js-dom %}、{% post_link lokiTech-15day-08-js-async %}。語法與資料處理、DOM 與事件、fetch 與 async。
+- React 基礎與進階，約 18 小時：{% post_link lokiTech-15day-09-react-basics %}、{% post_link lokiTech-15day-10-react-advanced %}。元件、狀態、列表、表單、effect、共用狀態。
+- React Router，約 8 小時：{% post_link lokiTech-15day-11-react-router %}。路由、版型、動態路由、loader、action。
+- 結業專案，約 32 小時：{% post_link lokiTech-15day-12-project-travel %}。旅行社網站切版與頁面功能，用記憶體裡的假資料運作。
+- 選讀：{% post_link lokiTech-15day-13-project-travel-api %}。把專案接上 Firebase（Firestore、登入、部署），課堂有餘裕時請 AI 助手對照講義做，否則回家完成。
 
-每份作業是旅行社網站的一塊元件模板。交得出該階段指定的標記或元件，並能指出它最後會放在哪一頁。不上 TypeScript。
+# 回家作業
 
-## 元件作業
+從 {% post_link lokiTech-15day-02-html %} 開始，每篇講義最後都有一章「回家作業」。作業不計分，也不在課堂上講解或公布解答。
 
-| 作業 | 專題元件 | 做在哪一階段 | 講義 |
-| --- | --- | --- | --- |
-| 頁首與導覽 | `SiteHeader`（`#site-header`、`#nav-toggle`） | 階段 1 語意骨架；階段 3 可開合導覽 | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-04-tailwind %} |
-| 首頁主視覺 | `Hero` | 階段 3 改寫先前頁面 | {% post_link lokiTech-15day-04-tailwind %} |
-| 行程卡片列表 | `TourList`／`TourCard`（`#tour-list`） | 階段 2 手寫卡片；階段 3 utility 卡片；階段 4 資料與重繪；階段 5 學元件、狀態與列表；階段 6 做成這兩個元件 | {% post_link lokiTech-15day-03-css %}、{% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-06-js-basics %}、{% post_link lokiTech-15day-07-js-dom %}、{% post_link lokiTech-15day-09-react-basics %} |
-| 行程詳情 | `TourDetail` | 階段 3 靜態詳情；階段 5 學動態路由；階段 6 用在 `/tours/:id` | {% post_link lokiTech-15day-04-tailwind %}、{% post_link lokiTech-15day-10-react-advanced %}、{% post_link lokiTech-15day-11-react-router %} |
-| 報名表 | `BookingForm`（`#booking-form`） | 階段 1 表單欄位；階段 4 POST；階段 5 學受控表單；階段 6 接到 `/booking` | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-08-js-async %}、{% post_link lokiTech-15day-09-react-basics %} |
-| 頁尾 | `SiteFooter` | 階段 1 語意 `footer`；階段 3 各頁共用 | {% post_link lokiTech-15day-02-html %}、{% post_link lokiTech-15day-04-tailwind %} |
+## 作業怎麼出
 
-# 期末專題
+每份作業取自結業專案裡的一塊頁面或元件，起始檔與資料放在練習 repo 對應的資料夾（各篇的回家作業章會說明位置）。題目寫成目標、要求與檢查方式（做完該看到什麼），不寫一步一步的做法。作業只涵蓋主線內容。
 
-品牌用課堂契約裡的**洛奇旅行**：介紹、套裝行程、詳情、報名。用 React 與 Tailwind 完成，佈到 GitHub Pages。json-server 只在本機；線上改讀專案裡的 JSON。
+## 各階段的作業
 
-## 頁面與資料
+- HTML：頁面骨架、行程簡介、行程表、報名表單。
+- CSS：全站基礎與變數、版頭、卡片、卡片牆、互動狀態、手機優先的版心。
+- Tailwind：版頭、卡片、響應式卡片牆、互動狀態、深色模式、自己的顏色。
+- JavaScript：陣列與物件整理行程資料；把資料畫成列表、篩選、搜尋、收藏、表單驗證；讀取資料、處理錯誤、送出報名、保存收藏。
+- React：行程卡片、篩選、收藏、搜尋、報名表單；讀取資料、共用狀態、頁面標題、避免多餘的 effect。
+- React Router：版型與導覽、用 loader 讀資料、用網址保存篩選、詳情頁與找不到、報名表單與轉址。
 
-前台四條路由：`/` 首頁（主視覺）、`/tours` 行程列表、`/tours/:id` 詳情、`/booking` 報名。後台 `/admin` 只做行程的增刪改。列表可依 `place`、`days` 篩選。行程欄位：`id`、`title`、`place`、`days`、`price`、`image`、`intro`。報名欄位：`tourId`、`name`、`email`、`people`。詳情頁的按鈕把 `tourId` 帶到報名頁。
+# 結業專案
 
-## 評分與展示
+品牌用課堂契約裡的洛奇旅行：介紹、套裝行程、詳情、報名。這個專案是整門課的主軸，前面每個階段學的東西，最後都會在這裡用上。
 
-結構與功能 50%（路由、契約 id、列表、詳情、報名、本機能開的 admin）、元件作業 30%、展示口述 20%。結業階段示範：本機走完報名，再開 GitHub Pages 上的靜態站，並不看稿說明一個元件的資料從哪來。線上 admin 標成僅本機示範即可。畫面好不好看不單獨計分。
+## 頁面
+
+前台有首頁、行程列表、行程詳情、關於、報名、報名完成、我的報名與登入提示；後台有後台登入、行程管理與報名清單。後台可新增、編輯、刪除行程，也可以更新報名狀態。資料放在記憶體裡的假資料，由 React Router 的 loader 與 action 讀寫。
+
+## 展示
+
+結業時在本機把網站打包並預覽，走完一次從選行程到報名的流程，再口頭說明一個元件的資料從哪裡來。畫面好不好看不單獨評量。
 
 # 工具與環境
 
-開發用 VS Code、Chrome、Git。Tailwind 階段起用 Node.js LTS、pnpm、Vite；Tailwind 用 v4。React 用 JavaScript，不裝 TypeScript。作業區是隨課 repo 的學期分支，不是這個講義站。
+開發用 VS Code、Chrome 與 Git。課程環境是 Node.js 26 與 pnpm 12，建置工具是 Vite 8；Tailwind 用 v4，React 用 JavaScript 開發，不裝 TypeScript。安裝步驟在 {% post_link lokiTech-15day-04-tailwind %}，作業與範例都在隨課的練習 repo，不在這個講義站。
 
-## 排版與檢查
-
-工具階段只裝建議套件，並開啟工作區的存檔排版。`practice/` 用 HTMLHint，不放 ESLint。第一次 `create-vite`（Tailwind 階段）才在專案放 `.prettierrc`（2 空格，分號與引號全班同一套）。React 專案再加 ESLint 與 `eslint-config-prettier`。規則寫在專案裡，不寫進個人的 `settings.json`。
+工具階段只裝建議的 VS Code 套件，並開啟工作區的存檔排版。第一次建立 Vite 專案時，才在專案放 Prettier 設定（2 空格、分號與引號全班同一套）；React 專案再加 ESLint。規則寫在專案裡，不寫進個人的使用者設定。
 
 # 本篇重點回顧
 
-約 120 小時分成六個階段：工具與 HTML、CSS、Tailwind、JavaScript、React、結業專案，最後佈上 GitHub Pages。React 分基礎、進階與 Router 三篇，合計仍約 24 小時。結業專案分切版與功能化兩篇。六份作業分別是頁首導覽、主視覺、行程卡片、行程詳情、報名表、頁尾。舊的 jQuery／Bootstrap 教材留著當選讀；這條路徑不上 TypeScript。
+- 全課約 120 小時：工具與 HTML 12、CSS 12、Tailwind 8、JavaScript 24、React 基礎與進階 18、React Router 8、結業專案 32，另有約 6 小時緩衝。
+- 主線是基本觀念加上專案用到的內容；標題以「選讀：」開頭的部分留給自學。
+- 講師複製完整範例講解觀念，學員自己讀程式、改程式，也可以請 AI 助手當家教。
+- 每篇講義從 HTML 起都有不計分的回家作業，題目取自結業專案。
+- 結業專案是旅行社網站；接上 Firebase 的那一篇是選讀。

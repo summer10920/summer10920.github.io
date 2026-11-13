@@ -12,11 +12,11 @@
     "postinstall": "patch-package"
   },
   "hexo": {
-    "version": "7.3.0"
+    "version": "8.1.2"
   },
   "dependencies": {
     "browserify": "^17.0.0",
-    "hexo": "^7.3.0",
+    "hexo": "^8.1.2",
     "hexo-cli": "^4.3.2",
     "hexo-codepen": "^0.1.1",
     "hexo-deployer-git": "^4.0.0",
@@ -27,7 +27,7 @@
     "hexo-generator-tag": "^2.0.0",
     "hexo-hide-posts": "^0.4.3",
     "hexo-renderer-ejs": "^2.0.0",
-    "hexo-renderer-marked": "^6.3.0",
+    "hexo-renderer-marked": "~6.3.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-tag-embed": "^1.0.0",

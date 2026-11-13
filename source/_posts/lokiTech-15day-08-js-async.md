@@ -10,25 +10,27 @@ date: 2026-08-30 10:07:00
 
 ![](assets/images/banner/js.png)
 
-計時器、網路與讀檔都不會把整頁停住。這一篇先看程式實際的執行順序，再用 Promise 與 async／await 把等待寫成一直線。接著用 Fetch 讀寫 JSON，並把清單留在瀏覽器裡，重新整理後還在。
+JavaScript 同一時間只做一件事，計時器、網路與讀檔卻都要等。這一篇從同步與非同步的差別談起，經過回呼與 try／catch／throw 的基本錯誤處理，再用 Promise 與 async／await 把等待寫成一直線。接著認識 JSON，用 fetch 讀寫資料並畫出載入中、成功、失敗三種畫面，最後用 Web Storage 讓清單重新整理後還在。選讀補充事件迴圈、race／any、計時器包成 Promise、取消與逾時、CORS、Cookie 與 session／token。
 
 <!-- more -->
 
 # 認識非同步
 
-JavaScript 一次只跑一支呼叫堆疊，計時器在排隊時，後面的程式仍會先跑完。這一章先用很短的實驗，看出寫在下面的程式不一定比較晚。事件迴圈放在選讀：看不懂可以跳過，不影響後面寫程式；看懂了，就能解釋執行順序，以及畫面為什麼會卡頓。
+JavaScript 同一時間只做一件事，要等很久的工作就先交給瀏覽器，自己繼續往下跑，所以寫在下面的程式不一定比較晚執行。這一章先看同步與非同步的差別，再看把「完成後要做的事」交出去的回呼函式，以及回呼一層包一層時的問題。事件迴圈放在選讀：看不懂可以跳過，不影響後面寫程式；看懂了，就能解釋更細的執行順序。
 
 ## 同步與非同步
 
-同步的程式會在這一列做完才走下一列。非同步的工作先登記給瀏覽器，這一列立刻結束，結果晚一點才回來。畫面因此還能回應點擊，代價是你不能假設下一列已經拿到結果。
+同步是一件做完才做下一件，非同步是先登記、晚點再收結果。這一節用三個小實驗看執行順序、單執行緒造成的卡住，以及非同步怎麼避免卡住。
 
 ### 執行順序
 
-延遲寫 0 只表示「最快也要等這一輪同步程式結束」，不是插隊到下一列。這一節把三個 `console.log` 排好，看 B 為什麼落在最後。
+非同步的程式不一定照寫的順序出結果。這一節用 `setTimeout` 排一件晚點才做的事，看它的結果為什麼落在最後。
 
 **觀念**
 
-呼叫堆疊上的程式會先跑完。`setTimeout` 只是把函式交給瀏覽器，就算延遲是 0，也要等這一段同步程式結束才輪到它。所以 A 與 C 先印，B 在後面。
+同步程式是一行做完才做下一行。非同步是先把工作登記給瀏覽器，這一行立刻結束，結果晚一點才回來。
+
+登記時交出去的函式，叫回呼（callback），意思是「等條件到了再回頭呼叫的函式」。就算延遲寫 0，回呼也要等現在這段同步程式全部做完才輪到它。
 
 ```html 04-js/pages/149-js-order.html
 <!DOCTYPE html>
@@ -53,10 +55,10 @@ JavaScript 一次只跑一支呼叫堆疊，計時器在排隊時，後面的程
 
 **解析**
 
-- A 在呼叫堆疊上，所以第一行就是 A。
-- setTimeout 登記完就返回，不會停在那一列等 B。
-- C 還在同一段同步程式裡，因此排在 B 前面。
-- 延遲 0 的意思是不會更早，不是立刻插入 C 的前面。
+- 頁面上只有那句說明，三行訊息都在 Console。
+- A 和 C 是同步程式，依寫的順序先印出。
+- `setTimeout` 登記完就返回，不會停在那一行等 B。
+- 所以 B 排在 C 之後：延遲 0 的意思是「最快也要等這一段同步程式結束」，不是插在前面。
 
 ```text
 A
@@ -64,48 +66,125 @@ C
 B
 ```
 
-{% note success %}
-**換你試試：**
-在 C 的後面再加一行同步的 log，文字是 D。B 仍然要在 D 之後。
-{% endnote %}
+本章的輸出區塊只列文字內容，和 Console 實際畫面（行號、顏色、錯誤圖示）略有不同。
 
-<details>
-<summary>參考答案</summary>
+### 單執行緒與阻塞
 
-D 與 A、C 一樣留在呼叫堆疊上，計時器裡的 B 要等這一段都結束。
-
-```diff 04-js/pages/149-js-order.html
-  // ...
-        }, 0);
-        console.log('C');
-+       console.log('D');
-      </script>
-    </body>
-  // ...
-```
-
-```text
-A
-C
-D
-B
-```
-
-</details>
-
-### 選讀：事件迴圈
-
-這一節是選讀。看不懂可以先跳過，後面的 Promise 與 Fetch 還是寫得成。看懂之後，你就能解釋為什麼有的訊息比較晚印出來，以及為什麼一段算很久的程式會讓按鈕暫時沒反應、畫面也不更新。
-
-#### 呼叫堆疊與單執行緒
-
-JavaScript 一次只做一件事。函式呼叫時會疊到上面，做完才拿掉，再回到上一個函式。這一節用三個互相呼叫的函式，把進入和離開的順序印在 Console。
+JavaScript 同一時間只做一件事，這個特性會直接影響畫面。這一節讓一個函式故意跑 3 秒，看頁面怎麼被卡住。
 
 **觀念**
 
-這種一次只做一件事的做法，叫做單執行緒（single thread）。正在跑的函式放在呼叫堆疊（call stack）最上面。它若再呼叫別的函式，新函式就疊上去，下面那個停在呼叫的那一列。
+執行緒（thread）是程式執行事情的一條路線。瀏覽器裡的 JavaScript 只有一條，叫做單執行緒（single thread），而且負責更新畫面的也是這一條。
 
-上面的函式整個跑完，才從呼叫堆疊拿掉。拿掉之後，下面的函式從停住的那一列繼續。所以每個函式的「離開」，都會晚於它呼叫出去的那些函式。
+函式還沒做完，就不會去做別的事，包括回應點擊與更新畫面。這種「一件事占住整條路線」的情況叫阻塞（blocking）。
+
+下面用 `Date.now()` 取得目前時間（毫秒），再用 `while` 反覆比較，直到 3 秒過去。這兩個都是選讀內容，這裡只拿來製造一段耗時的程式，詳見 {% post_link lokiTech-15day-06-js-basics %} 的 Date 與 while 選讀章節。
+
+```html 04-js/pages/152-js-block.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>單執行緒與阻塞</title>
+  </head>
+  <body>
+    <p>點一次按鈕，頁面會停住約 3 秒。這段時間按鈕不會回應，按鈕文字也不會更新。</p>
+    <button type="button" id="busy">開始</button>
+    <script>
+      const button = document.querySelector('#busy');
+      button.addEventListener('click', () => {
+        console.log('開始計算');
+        button.textContent = '計算中';
+        const end = Date.now() + 3000;
+        while (Date.now() < end) {
+          // 故意一直重複比較，讓這個函式 3 秒都不結束
+        }
+        button.textContent = '計算結束';
+        console.log('計算結束');
+      });
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 點下按鈕後，Console 先印出「開始計算」，按鈕文字已在程式裡改成「計算中」。
+- 接下來 3 秒，頁面停住：畫面上按鈕仍然顯示「開始」，也無法即時回應操作。瀏覽器要等這個函式做完，才有機會處理點擊與重繪畫面。
+- 函式結束後，按鈕才直接變成「計算結束」，中間的「計算中」從頭到尾沒有出現在畫面上。
+- 阻塞的原因不是工作多，而是這條唯一的路線被占住。下一節看如何讓「等待」不占路線。
+
+```text
+開始計算
+計算結束
+```
+
+### 非阻塞的等待
+
+阻塞的問題在於等待時還占著執行緒。這一節換成 `setTimeout` 等 3 秒，看頁面在等待期間還能不能操作。
+
+**觀念**
+
+非同步的做法是把等待的事情交給瀏覽器，JavaScript 登記完就繼續往下做，執行緒空出來，頁面就能回應點擊。這叫非阻塞（non-blocking）。
+
+計時器、網路請求與使用者的點擊，都是這樣處理：瀏覽器負責等，條件到了才回頭呼叫你交出的回呼。要算很久的運算則另有做法，例如交給後端，或交給 Web Worker（瀏覽器提供的另一條背景執行緒）。
+
+```html 04-js/pages/152b-js-nonblock.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>非阻塞的等待</title>
+  </head>
+  <body>
+    <p>先按「等 3 秒」，再連續按「計數」。計數會馬上增加，3 秒到了，下面的文字才改變。</p>
+    <button type="button" id="wait">等 3 秒</button>
+    <button type="button" id="count">計數 0</button>
+    <p id="message">尚未開始</p>
+    <script>
+      const waitButton = document.querySelector('#wait');
+      const countButton = document.querySelector('#count');
+      const message = document.querySelector('#message');
+
+      waitButton.addEventListener('click', () => {
+        message.textContent = '等待中';
+        setTimeout(() => {
+          message.textContent = '3 秒到了';
+        }, 3000);
+      });
+
+      let times = 0;
+      countButton.addEventListener('click', () => {
+        times += 1;
+        countButton.textContent = `計數 ${times}`;
+      });
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 按下「等 3 秒」，下方文字馬上變成「等待中」，頁面沒有停住。
+- 等待期間連續按「計數」，按鈕上的數字每按一次就加一，因為執行緒是空的。
+- 3 秒到了，瀏覽器呼叫回呼，下方文字才變成「3 秒到了」。
+- 和上一節對照：同樣是 3 秒，阻塞版什麼都不能做，非阻塞版可以繼續操作。代價是程式不能假設下一行已經拿到結果。
+
+### 選讀：事件迴圈
+
+這一節是選讀。看不懂可以先跳過，後面的 Promise 與 Fetch 還是寫得成。看懂之後，就能解釋回呼是排在哪裡、輪到的順序，以及有些回呼為什麼比計時器早。
+
+#### 呼叫堆疊
+
+上一節說執行緒一次只做一件事，這一節看它怎麼管理「正在做什麼」。管理的方式叫呼叫堆疊，這裡用三個互相呼叫的函式，把進入和離開的順序印在 Console。
+
+**觀念**
+
+正在跑的函式放在呼叫堆疊（call stack）最上面。它若再呼叫別的函式，新函式就疊上去，下面那個停在呼叫的那一行。
+
+上面的函式整個跑完，才從堆疊拿掉，下面的函式再從停住的地方繼續。所以每個函式的「離開」，都晚於它呼叫出去的那些函式。
 
 {% mermaid graph LR %}
     pushFirst["呼叫 first<br/>堆疊：first"] --> pushSecond["呼叫 second<br/>堆疊：first、second"]
@@ -121,7 +200,7 @@ JavaScript 一次只做一件事。函式呼叫時會疊到上面，做完才拿
     style popFirst fill:#e8f5e9
 {% endmermaid %}
 
-圖上從左到右是時間先後。堆疊在 third 執行時最高，因為第一、第二個函式都還在下面等。third 沒有再呼叫別人，所以它最先被拿掉。
+圖由左到右是時間先後。third 執行時堆疊最高，因為 first 與 second 都還停在下面等它。
 
 ```html 04-js/pages/150-js-stack.html
 <!DOCTYPE html>
@@ -157,80 +236,32 @@ JavaScript 一次只做一件事。函式呼叫時會疊到上面，做完才拿
 </html>
 ```
 
-```text
-進入 first
-進入 second
-進入 third
-離開 third
-離開 second
-離開 first
-```
-
 **解析**
 
-- 程式呼叫 `first()`，堆疊上只有 first，所以先印「進入 first」。
-- first 呼叫 second 後，second 在最上面。first 裡的「離開 first」要等 second 拿掉之後才執行。
-- second 再呼叫 third。third 沒有再呼叫別人，所以「進入 third」和「離開 third」連在一起。
-- third 從堆疊拿掉，回到 second，印出「離開 second」。second 接著也被拿掉。
-- 最後回到 first，印出「離開 first」。同一時間只有最上面那個函式在跑。
-
-{% note success %}
-**換你試試：**
-在 third 的兩個 log 中間呼叫 fourth。fourth 印出「進入 fourth」和「離開 fourth」。這兩行要夾在 third 的進入和離開之間。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才能印出離開。
-
-```diff 04-js/pages/150-js-stack.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
-+       const fourth = () => {
-+         console.log('進入 fourth');
-+         console.log('離開 fourth');
-+       };
-+ 
-        const third = () => {
-          console.log('進入 third');
-+         fourth();
-          console.log('離開 third');
-        };
-        // ...
-```
+- 頁面只有說明文字，六行訊息都在 Console。
+- first 先進入堆疊，所以最先印「進入 first」。
+- first 呼叫 second、second 再呼叫 third，三個函式依序疊上去，「進入」三行連續印出。
+- third 沒有再呼叫別人，所以它最先結束，印「離開 third」並被拿掉。
+- 堆疊往回一層一層拿掉，「離開」的順序正好和「進入」相反。
 
 ```text
 進入 first
 進入 second
 進入 third
-進入 fourth
-離開 fourth
 離開 third
 離開 second
 離開 first
 ```
 
-</details>
+#### 任務佇列
 
-#### 瀏覽器代為等待與任務佇列
-
-計時、讀取資料、等待點擊時，JavaScript 把晚一點要執行的函式交出去，就繼續往下跑。等待本身由瀏覽器處理。條件到了，那個函式才放進佇列，等呼叫堆疊空了再執行。
+回呼不會直接插進堆疊，而是先排隊。這一節用延遲 0 的計時器，逐步看回呼什麼時候被放上堆疊。
 
 **觀念**
 
-回呼（callback）是先交出去、等條件到了才被呼叫的函式。`setTimeout` 和 `fetch` 都把回呼交出去，自己這一行就結束。
+要等待的事交給瀏覽器的 Web API（瀏覽器提供的計時、網路等功能）去處理。條件到了，瀏覽器把回呼放進任務佇列（task queue）排隊。
 
-要等的那段時間交給瀏覽器 API（Web API）。Web API 負責計時、送出網路請求、接收點擊。登記完之後，後面的程式照樣執行。
-
-`fetch` 完成時的回呼，以及按鈕被點擊時的回呼，也是瀏覽器處理完才送出來。下面的示範只用延遲 0 的計時器，因為每一行印出的順序比較好逐行對。
-
-等待結束後，瀏覽器把回呼放進任務佇列（task queue）。回呼要等事件迴圈取出，才會執行。
-
-事件迴圈（event loop）每次看一次呼叫堆疊（call stack）。堆疊上還有程式時，它先不拿任務。堆疊空了，它才從任務佇列拿出一個任務，放上呼叫堆疊執行。
-
-這個任務做完、堆疊再次清空，事件迴圈再拿下一個。同樣的檢查會一直重複。
+事件迴圈（event loop）負責檢查呼叫堆疊。堆疊上還有程式時，它不拿任務；堆疊空了，才從任務佇列取出一個，放上堆疊執行。這個任務做完，就再取下一個，一直重複。
 
 {% mermaid graph LR %}
     jsNode["JS 程式"] --> webNode["瀏覽器等待<br/>Web API"]
@@ -250,7 +281,7 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>瀏覽器代為等待與任務佇列</title>
+    <title>任務佇列</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -265,147 +296,34 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 </html>
 ```
 
+**解析**
+
+- 第 1 步：堆疊執行第一行，印出「開始」。
+- 第 2 步：執行 `setTimeout`，回呼交給瀏覽器計時。延遲 0，所以瀏覽器馬上把它放進任務佇列，但這時還輪不到它。
+- 第 3 步：同步程式繼續執行，印出「結束」，這段程式才算結束。
+- 第 4 步：堆疊空了，事件迴圈從任務佇列取出回呼，放上堆疊。
+- 第 5 步：回呼執行，印出「計時器」，所以它排在「開始」與「結束」之後。
+- 前面的卡住實驗也是同樣原因：函式 3 秒都沒結束，堆疊一直不空，佇列裡的回呼就一直等。
+
 ```text
 開始
 結束
 計時器
 ```
-
-**解析**
-
-- 第 1 步：呼叫堆疊執行 `console.log('開始')`，先印出開始。
-- 第 2 步：執行 `setTimeout`。回呼交給瀏覽器 API 去計時，這一列到這裡就結束。延遲寫 0，表示時間一到就可以放進任務佇列。印出計時器是取出這個任務之後的事。
-- 第 3 步：JavaScript 繼續下一列，印出結束。到這裡，呼叫堆疊上的程式才結束。
-- 第 4 步：堆疊空了。瀏覽器已經把回呼放進任務佇列。事件迴圈拿出這一個任務，放上呼叫堆疊。
-- 第 5 步：回呼執行，印出計時器。所以計時器在開始和結束的後面。
-
-{% note success %}
-**換你試試：**
-在「結束」後面再登記一個延遲 0 的計時器，印出「計時器 2」。它要排在「計時器」後面，兩個都比「結束」晚。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個計時器都在同步程式裡登記，依照登記順序進入任務佇列。堆疊清空後，事件迴圈一個接一個拿出它們。
-
-```diff 04-js/pages/151-js-queue.html
-  // ...
-        }, 0);
-        console.log('結束');
-+       setTimeout(() => {
-+         console.log('計時器 2');
-+       }, 0);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-開始
-結束
-計時器
-計時器 2
-```
-
-</details>
-
-#### 長時間運算會卡住畫面
-
-呼叫堆疊一直留著程式時，事件迴圈要等它清空才取出下一個任務，瀏覽器也要等這時才重繪。這一節用一顆按鈕跑 3 秒的迴圈。點擊、計時器和畫面更新都會等這段迴圈結束。
-
-**觀念**
-
-點下按鈕後，程式用 `Date.now()` 記下 3 秒後的時間，再用 `while` 一直比較現在的時間有沒有超過。還沒超過就繼續比較，函式不結束，呼叫堆疊上就一直留著這個函式。
-
-這段時間再點按鈕，新的點擊會先由瀏覽器收下，函式要等堆疊清空才執行。延遲 0 的計時器也在任務佇列裡等。按鈕文字雖然在程式裡改過，瀏覽器要等這次任務結束才重繪，所以畫面上會直接看到最後的文字。
-
-工作若要算很久，就不要一次占滿呼叫堆疊。把它分成幾段，做完一段就讓堆疊清空；或把計算交給後端，頁面只等結果回來再更新。
-
-```html 04-js/pages/152-js-block.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>長時間運算會卡住畫面</title>
-  </head>
-  <body>
-    <p>點一次按鈕，看畫面與 Console。按鈕會一直顯示「開始」，計算結束才變成「計算結束」。</p>
-    <button type="button" id="busy">開始</button>
-    <script>
-      const button = document.querySelector('#busy');
-      button.addEventListener('click', () => {
-        console.log('開始計算');
-        button.textContent = '計算中';
-        setTimeout(() => {
-          console.log('計時器到了');
-        }, 0);
-        const end = Date.now() + 3000;
-        while (Date.now() < end) {
-          // 故意留在這個函式裡，讓呼叫堆疊一直有東西
-        }
-        button.textContent = '計算結束';
-        console.log('計算結束');
-      });
-    </script>
-  </body>
-</html>
-```
-
-```text
-開始計算
-計算結束
-計時器到了
-```
-
-**解析**
-
-- 第 1 步：點一次按鈕，回呼先印出「開始計算」，並把按鈕文字改成「計算中」。這時只改了文字資料，畫面還沒重繪。
-- 第 2 步：`setTimeout` 把印出「計時器到了」的回呼交給瀏覽器。回呼進入任務佇列，這時候還輪不到它。
-- 第 3 步：`while` 不斷用 `Date.now()` 和結束時間比較，直到 3 秒過去。函式還沒結束，呼叫堆疊一直没空。
-- 第 4 步：堆疊一直有這個函式，事件迴圈就先不拿任務。這 3 秒裡再點按鈕沒有反應，計時器還在佇列裡，畫面也不更新，按鈕仍顯示「開始」。
-- 第 5 步：迴圈結束，文字改成「計算結束」，並印出「計算結束」。兩次改文字都在同一個任務裡，重繪時直接看到「計算結束」。
-- 第 6 步：堆疊清空後，事件迴圈才執行計時器，印出「計時器到了」。久的計算要分段做，或交給後端，頁面才不會卡住。
-
-{% note success %}
-**換你試試：**
-在「計算結束」後面加一行，印出「堆疊清空」。它要在「計時器到了」前面。計時器仍要等這次回呼結束才跑。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-「堆疊清空」還寫在這一次點擊的回呼裡，所以它比任務佇列裡的計時器早。
-
-```diff 04-js/pages/152-js-block.html
-  // ...
-          button.textContent = '計算結束';
-          console.log('計算結束');
-+         console.log('堆疊清空');
-        });
-      </script>
-    // ...
-```
-
-```text
-開始計算
-計算結束
-堆疊清空
-計時器到了
-```
-
-</details>
 
 #### 微任務優先
 
-堆疊清空之後，任務佇列的下一個任務還要再等一批更早的工作。這一批叫做微任務，會整批先做完。Promise 的寫法下一章才學，這裡只要先認出 `then` 的回呼也屬於這一批。
+任務佇列之外還有一條更優先的佇列。這一節看它排在哪裡。Promise 的寫法後面才學，這裡先認得 Promise 的 `then` 回呼也走這一條。
+
+**一覽**
+
+- 同步程式：直接在呼叫堆疊上執行，最先做完。
+- 微任務（microtask）：每次堆疊清空後，事件迴圈先把微任務整批做完。`queueMicrotask` 用來排入微任務，Promise 的 `then` 回呼也屬於這一批。
+- 任務（task）：`setTimeout` 這類回呼，等微任務都清空，才取出一個執行。
 
 **觀念**
 
-微任務（microtask）排在每一個任務做完之後。呼叫堆疊清空時，事件迴圈先把當時的微任務整批做完，才去任務佇列拿下一個。`queueMicrotask` 就是把函式排進微任務。
-
-做微任務時如果又排了新的微任務，新的也算在這一批，會一起清完。下一章 Promise 的 `then` 收到的回呼也是微任務，所以它會早於 `setTimeout`。
+微任務執行時如果又排了新的微任務，新的也算在這一批，會一起做完，任務佇列才有機會被取用。因此 Promise 的回呼會早於同一時間點的 `setTimeout`。
 
 ```html 04-js/pages/153-js-micro.html
 <!DOCTYPE html>
@@ -431,63 +349,32 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 </html>
 ```
 
-```text
-同步
-同步結束
-微任務
-任務
-```
-
 **解析**
 
-- 「同步」和「同步結束」都在現在這個任務裡。呼叫堆疊還沒空，所以兩行先印完。
-- `queueMicrotask` 把「微任務」排進微任務這一批。任務佇列裡的「任務」要等這一批做完。
-- 堆疊清空後，事件迴圈先把這一批微任務做完，因此「微任務」比「任務」早。
-- `setTimeout` 的回呼在任務佇列。延遲即使寫 0，也要等微任務清空才輪到。
-
-{% note success %}
-**換你試試：**
-再排一個微任務，文字是「微任務 2」。它應該緊接在「微任務」後面，仍早於「任務」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個微任務都在堆疊清空時一次做完。任務佇列要等這一批微任務結束才進得來。
-
-```diff 04-js/pages/153-js-micro.html
-  // ...
-          console.log('微任務');
-        });
-+       queueMicrotask(() => {
-+         console.log('微任務 2');
-+       });
-        setTimeout(() => {
-          console.log('任務');
-        // ...
-```
+- 「同步」和「同步結束」都是同步程式，堆疊還沒空，所以先印完。
+- `queueMicrotask` 把「微任務」排進微任務佇列，`setTimeout` 把「任務」排進任務佇列。
+- 堆疊清空後，事件迴圈先清微任務，所以「微任務」比「任務」早，即使計時器的延遲是 0。
 
 ```text
 同步
 同步結束
 微任務
-微任務 2
 任務
 ```
-
-</details>
 
 ## 回呼函式
 
-回呼是把函式交給別人，等條件到了再呼叫。計時器已經在這樣做。這一節把「完成時呼叫哪個函式」寫成參數，然後看三層巢狀為什麼難讀。
+回呼是把函式交給別人，等條件到了再呼叫。上一節的計時器已經這樣做，這一節把它寫成自己的函式，再看多個非同步步驟接在一起時，程式會變成什麼樣子。
 
 ### callback 寫法
 
-參數的位置先講好：最後一個參數是完成時要呼叫的函式。呼叫端把函式傳進去，真正印出名字的時間是計時器到點之後，不是呼叫 `loadName` 的那一列。
+非同步的函式沒辦法直接把結果回傳給呼叫的人，常見做法是多收一個函式當參數，完成時用結果呼叫它。這一節用 `loadName` 示範這個寫法。
 
 **觀念**
 
-`loadName` 自己不決定怎麼使用名字，它只負責晚一點呼叫你傳進來的函式。主程式在登記之後繼續往下走，所以「已登記」會比名字更早出現。
+`loadName` 自己不決定怎麼使用名字，它只負責晚一點呼叫你傳進來的函式。慣例上，這個函式放在最後一個參數。
+
+呼叫端把函式傳進去之後，主程式繼續往下走，所以「已登記」會比名字更早出現。
 
 ```html 04-js/pages/154-js-callback.html
 <!DOCTYPE html>
@@ -495,7 +382,7 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>callback 寫法</title>
+    <title>callback</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -520,10 +407,10 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 **解析**
 
-- 開始與已登記是同步程式，會先印出來。
-- done 被當成參數傳進 loadName，這一刻還沒有被呼叫。
-- 約 10 毫秒後計時器呼叫 callback，Console 才出現小安。
-- 名字是回呼的參數，不是 loadName 的回傳值。loadName 沒有 return 這份名字。
+- 「開始」與「已登記」是同步程式，先印出來。
+- `done` 被當成參數傳進 `loadName`，傳進去的當下並沒有執行。
+- 約 10 毫秒後，計時器呼叫 callback，Console 才出現「小安」。
+- 名字是回呼收到的參數，不是 `loadName` 的回傳值；`loadName` 沒有 `return`，呼叫它的那一行拿不到名字。
 
 ```text
 開始
@@ -531,42 +418,15 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 小安
 ```
 
-{% note success %}
-**換你試試：**
-把回呼收到的名字改成「小林」。開始與已登記的順序不要改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-改的是計時器裡交給 callback 的引數。主程式那兩行仍是同步，所以還是先印。
-
-```diff 04-js/pages/154-js-callback.html
-  // ...
-        const loadName = (callback) => {
-          setTimeout(() => {
--           callback('小安');
-+           callback('小林');
-          }, 10);
-        };
-        // ...
-```
-
-```text
-開始
-已登記
-小林
-```
-
-</details>
-
 ### 巢狀地獄
 
-下一步要用上一步的結果時，回呼只能寫在上一個回呼裡面。三層還讀得懂，再深下去，錯誤處理會散在每一層，縮排也會一直往右。
+下一步要用上一步的結果時，只能把下一步寫在上一步的回呼裡面。這一節串三個步驟，看程式的形狀怎麼變化。
 
 **觀念**
 
-每一層都等自己的計時器，完成後才登記下一層。結果的順序仍然是第一步、第二步、第三步，但程式的形狀是橫向變深，而不是向下加一步。
+每一步都等自己的計時器，完成後才呼叫下一步。執行順序仍然是第一、第二、第三步，但程式碼不是往下加一行，而是一層包一層往右縮排。
+
+層數一多，這種寫法會很難讀，俗稱巢狀地獄（callback hell）。每一層若還要各自處理失敗，更容易出錯。Promise 就是為了解決這個問題而出現，下一章開始介紹。
 
 ```html 04-js/pages/155-js-nest.html
 <!DOCTYPE html>
@@ -579,15 +439,21 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      setTimeout(() => {
-        console.log('第一步');
+      const addOne = (number, callback) => {
         setTimeout(() => {
-          console.log('第二步');
-          setTimeout(() => {
-            console.log('第三步');
-          }, 10);
+          callback(number + 1);
         }, 10);
-      }, 10);
+      };
+
+      addOne(0, (first) => {
+        console.log(first);
+        addOne(first, (second) => {
+          console.log(second);
+          addOne(second, (third) => {
+            console.log(third);
+          });
+        });
+      });
     </script>
   </body>
 </html>
@@ -595,69 +461,170 @@ fourth 疊在 third 上面，所以它的進入和離開會先印完，third 才
 
 **解析**
 
-- 外層計時器先到，印出第一步，這時才登記第二層。
-- 第二步的計時器不跟第一個同時開始，所以總時間是三段相加。
-- 第三步被包在最裡面，要改順序就得改三層括號。
-- 這一支還沒有地方集中處理失敗。每一層都得自己再加一個錯誤回呼。
+- `addOne` 是前面 callback 寫法的應用：計算完成後，用結果呼叫傳進來的函式。
+- 第一層先拿到 1 並印出，才在裡面呼叫第二層，第二層拿到的是上一層的結果。
+- 三個計時器是接力，不是同時開始，所以總等待時間是三段相加，約 30 毫秒。
+- 最內層的 `third` 要往右縮三層才寫得到；要插入或調整一個步驟，就得改動整個巢狀結構。
 
 ```text
-第一步
-第二步
-第三步
+1
+2
+3
 ```
-
-{% note success %}
-**換你試試：**
-在第三步的回呼裡再印一行「做完」。它應該是 Console 的最後一行。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-做完寫在最內層，所以仍然要等三個計時器都跑過。它不會跑到第一步前面。
-
-```diff 04-js/pages/155-js-nest.html
-  // ...
-            setTimeout(() => {
-              console.log('第三步');
-+             console.log('做完');
-            }, 10);
-          }, 10);
-        // ...
-```
-
-```text
-第一步
-第二步
-第三步
-做完
-```
-
-</details>
 
 # Promise
 
-Promise 是一個代表未來結果的物件。你現在拿不到值，但可以先排好成功時做什麼、失敗時做什麼。這一章先看狀態，再把上一節的巢狀改成向下接的鏈。
+Promise 是一個代表未來結果的物件：現在還拿不到值，但可以先排好成功時做什麼、失敗時做什麼。這一章先學同步程式碼怎麼接住與主動丟出錯誤，因為 Promise 的失敗就是建立在這套機制上。接著看 Promise 的建立與三種狀態，再把上一章的巢狀回呼改寫成向下接的鏈，最後學怎麼同時等好幾件工作。
+
+## 錯誤處理基礎
+
+程式執行到一半出錯，預設會整段停住。這一節先學兩件事：用 try 與 catch 接住錯誤，讓程式能繼續；用 throw 在語言不會報錯的地方，自己把錯誤丟出來。
+
+### try 與 catch
+
+可能出錯的幾行放進 try，出錯就跳到 catch 處理。try 裡剩下的行不會再跑，catch 結束後，外面的程式照常繼續。
+
+**觀念**
+
+- 出錯時立刻離開 `try`，`catch` 的參數就是錯誤物件，用 message 可以讀到說明文字。
+
+- 它接得住執行到那一行才發生的錯誤。語法寫錯的程式在執行前就會整份失敗，要直接改掉那一行。
+
+```html 04-js/pages/77-js-try.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>try 與 catch 的基本結構</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      function readName(record) {
+        try {
+          return record.name.toUpperCase();
+        } catch (error) {
+          console.error(error.message);
+          return '無法讀取';
+        }
+      }
+
+      console.log(readName({ name: 'amy' }));
+      console.log(readName(null));
+      console.log('程式繼續');
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 有 name 的物件會把字母改成大寫，印出 AMY。
+- null 沒有 name 可讀，會出錯。catch 把 message 用錯誤層級印出，函式改回傳「無法讀取」。
+- 最後一行仍會印出，表示錯誤已被接住，外面的程式沒有停。
+
+```text
+AMY
+Cannot read properties of null (reading 'name')
+無法讀取
+程式繼續
+```
+
+### throw 與錯誤物件
+
+有些情況語言不會當成錯誤，例如除以 0 只會得到 Infinity，下一行照樣執行。這時要自己用 throw 把錯誤丟出去，最近的 catch 才接得到。丟出的若是用 `new Error` 建立的標準錯誤物件，就能讀到 name 與 message；丟出字串雖然也會進 catch，卻沒有這些資訊。
+
+**觀念**
+
+- `throw` 會立刻離開目前的函式，一路往外找最近的 catch。
+
+- `throw new Error('訊息')` 建立並丟出標準錯誤物件。name 預設是 Error，message 是傳入的字串。
+
+- 丟出字串或數字不會報錯，但 catch 拿到的只是那個值，沒有 name 與 message。
+
+```html 04-js/pages/79-js-throw.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>主動拋出錯誤</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      function divide(a, b) {
+        if (b === 0) {
+          throw new Error('除數不能為 0');
+        }
+        return a / b;
+      }
+
+      try {
+        console.log(divide(10, 2));
+        console.log(divide(10, 0));
+        console.log('這行不會印');
+      } catch (error) {
+        console.log(error.name);
+        console.log(error.message);
+      }
+
+      console.log('程式繼續');
+
+      try {
+        throw '不是 Error 物件';
+      } catch (error) {
+        console.log(typeof error);
+        console.log(error.name);
+        console.log(error.message);
+      }
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 10 除以 2 得到 5。除以 0 時 divide 主動丟錯，try 裡的下一行不會跑。
+- catch 印出 name 與 message。外面的「程式繼續」仍會執行，因為錯誤已經被接住。
+- 第二個 try 丟出的是字串，所以 typeof 印出 string，name 與 message 都是 undefined。實務上丟錯一律用 Error 物件。
+
+```text
+5
+Error
+除數不能為 0
+程式繼續
+string
+undefined
+undefined
+```
 
 ## 建立與使用
 
-用 `new Promise` 建立時，執行器函式會立刻同步執行。你在裡面呼叫 resolve 或 reject，狀態就從待定離開，而且只會離開一次。
+Promise 用 `new Promise` 建立。這一節先看 Promise 在什麼時候是什麼狀態，再學 then、catch、finally 三個方法怎麼接收結果。
 
 ### 三種狀態
 
-狀態只有三種，而且只會從待定走向其中一個終點。已經完成或已經拒絕之後，再呼叫 `resolve` 或 `reject` 都不會改寫結果。
+Promise 的狀態只有三種：待定（pending）、已完成（fulfilled）、已拒絕（rejected）。它只會從待定走向其中一個終點，定案之後再呼叫 resolve 或 reject 都不會改寫結果。建立時傳入的函式稱為執行器，它的兩個參數就是 resolve 與 reject。
 
 {% mermaid graph LR %}
 pendingNode["pending 待定"] --> fulfilledNode["fulfilled 已完成"]
 pendingNode --> rejectedNode["rejected 已拒絕"]
 {% endmermaid %}
 
-- `resolve` 把 Promise 收成已完成，並帶上一個值。之後的 `then` 會收到它。
-- `reject` 把 Promise 收成已拒絕，並帶上拒絕原因。之後的 `catch` 會收到它。
+**一覽**
+
+- `resolve(值)` 把 Promise 收成已完成並帶上值，之後的 then 會收到它。
+- `reject(原因)` 把 Promise 收成已拒絕並帶上原因，之後的 catch 會收到它，原因通常是 Error 物件。
 
 **觀念**
 
-執行器是同步的，所以「執行器」會比「同步結束」更早。真正把值印出來的 then 是微任務，排在這一段同步程式後面。第二個 Promise 先完成就定案，後面的 resolve 與 reject 都忽略。
+- 執行器同步執行，所以它的輸出會比外面後面的同步程式更早。
+
+- then 的回呼不會立刻跑，而是排進微任務佇列（等這一輪同步程式結束後才執行的待辦），因此輸出排在同步程式之後。
+
+- 第二個 Promise 第一次 resolve 就定案，後面的 resolve 與 reject 都被忽略。
 
 ```html 04-js/pages/156-js-promise.html
 <!DOCTYPE html>
@@ -692,10 +659,9 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 **解析**
 
-- 執行器在 new Promise 的當下就跑，所以它早於同步結束。
-- then 的回呼是微任務，因此完成排在同步結束後面。
-- 第二個 Promise 第一次 resolve 就變成已完成，第二次 resolve 不會改值。
-- 已經完成之後再 reject 不會把狀態改成已拒絕，也不會進到 catch。
+- 執行器在 new Promise 的當下就跑，所以「執行器」先印，接著才是「同步結束」。
+- 「完成」排在同步結束之後，因為 then 的回呼要等微任務。
+- 第二個 Promise 第一次 resolve 就變成已完成，之後的 resolve 不改值，reject 也不會把狀態改成已拒絕，所以不會有錯誤跑出來。
 
 ```text
 執行器
@@ -704,47 +670,19 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 第一次
 ```
 
-{% note success %}
-**換你試試：**
-把第一個 resolve 的文字改成「好了」。同步結束仍要在它前面。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-改的是完成時帶出的值。執行器仍然同步先跑，then 仍然等這一輪同步程式結束。
-
-```diff 04-js/pages/156-js-promise.html
-  // ...
-        new Promise((resolve) => {
-          console.log('執行器');
--         resolve('完成');
-+         resolve('好了');
-        }).then((value) => {
-          console.log(value);
-        // ...
-```
-
-```text
-執行器
-同步結束
-好了
-第一次
-```
-
-</details>
-
 ### then、catch、finally
 
-這三個方法都回傳一個新的 Promise，所以可以繼續往下接。then 收完成的值，catch 收拒絕的原因，finally 不接收那個值，只負責收尾。
+這三個方法都會回傳一個新的 Promise，所以可以一個接一個往下串。
 
-- `then` 在已完成時呼叫回呼，回傳新的 Promise。回呼的回傳值會變成下一個環節的完成值。
-- `catch` 在已拒絕時呼叫回呼，回傳新的 Promise。它用來接住前面丟出的錯誤。
-- `finally` 不論完成或拒絕都會呼叫回呼，回傳新的 Promise。回呼的回傳值不會取代原來的結果，除非回呼自己拋出錯誤。
+**一覽**
+
+- `then` 在已完成時呼叫回呼，回呼收到完成的值。回呼回傳的值會成為下一環的完成值。
+- `catch` 在已拒絕時呼叫回呼，用來接住前面丟出的錯誤或拒絕原因。
+- `finally` 不論成功或失敗都會呼叫回呼，回呼沒有參數，只負責收尾；它不改變原本的結果，除非回呼自己丟出錯誤。
 
 **觀念**
 
-拒絕的 Promise 會跳過 then，進到 `catch`。`finally` 接在後面，成功或失敗都會跑，適合關掉「讀取中」這種一定要收掉的狀態。
+已拒絕的 Promise 會跳過 then，直接進到最近的 catch。finally 接在最後，成功或失敗都會跑，適合收掉「讀取中」這種一定要結束的狀態。
 
 ```html 04-js/pages/157-js-then.html
 <!DOCTYPE html>
@@ -776,55 +714,29 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 **解析**
 
-- reject 讓這個 Promise 變成已拒絕，then 的回呼不會執行。
-- catch 收到 Error，印出的是 message，不是整個物件。
-- finally 沒有參數可用，它只保證收尾這一行會出現。
-- 若拿掉 catch，拒絕會變成沒有人接的錯誤，finally 仍會執行，但頁面主控台會留下未處理的拒絕。
+- reject 讓 Promise 變成已拒絕，then 的回呼不會執行。
+- catch 收到的是 Error 物件，這裡只印它的 message。
+- finally 不看成功或失敗，所以收尾一定會出現。
+- 若拿掉 catch，這個拒絕就沒有人接，finally 仍會執行，但 Console 會多出一行紅色的未處理拒絕（Uncaught (in promise)）。
 
 ```text
 讀取失敗
 收尾
 ```
 
-{% note success %}
-**換你試試：**
-改成 resolve('讀取完成')，並把 catch 留著。Console 應先出現讀取完成，再出現收尾，而且不該出現讀取失敗。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-完成時走 then，不走 catch。finally 不看成功或失敗，所以收尾還在。
-
-```diff 04-js/pages/157-js-then.html
-  // ...
-      <script>
-        new Promise((resolve, reject) => {
--         reject(new Error('讀取失敗'));
-+         resolve('讀取完成');
-        })
-          .then((value) => {
-            // ...
-```
-
-```text
-讀取完成
-收尾
-```
-
-</details>
-
 ## 串接與錯誤
 
-鏈的價值是每一步把結果交下去，錯誤則集中到一個 `catch`。這一節先看值怎麼傳，再看中間拋出錯誤時後面的 `then` 會被跳過，最後把巢狀回呼改寫成同一條鏈。
+鏈的價值有兩個：每一步把結果交給下一步，錯誤則集中在一個地方處理。這一節先看值怎麼往下傳，再看中間出錯時後面的 then 怎麼被跳過，最後把巢狀回呼改寫成同一條鏈。
 
 ### 鏈式傳值
 
-`then` 回呼 return 的一般值，會變成下一個 `then` 的參數。若 return 的是另一個 Promise，下一環會等那個 Promise 完成，再收到它的值。
+then 回呼 return 的一般值，會成為下一個 then 的參數。若 return 的是另一個 Promise，鏈會停下來等它完成，再把它的值交給下一環。
 
 **觀念**
 
-第一環把 1 加成 2，第二環再交給一個 10 毫秒後才完成的 Promise。最後印出的 3 不是同步算出來的，而是等那個 Promise resolve 之後才進到下一個 `then`。
+- `Promise.resolve(值)` 直接做出一個已完成的 Promise，常用來當作鏈的起點。
+
+- 第一環把 1 加成 2，第二環回傳一個 10 毫秒後才完成的 Promise。最後印出的 3 要等那個 Promise resolve 之後才算得出來。
 
 ```html 04-js/pages/158-js-chain.html
 <!DOCTYPE html>
@@ -858,50 +770,21 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 **解析**
 
-- Promise.resolve(1) 做出一個已經完成、值是 1 的 Promise。
 - 第一個 then 回傳 2，這個數字直接成為下一環的參數。
-- 第二個 then 回傳 Promise，鏈會停下來等它 resolve。
-- 最後一環收到的是 3，也就是 wait 裡 resolve 的那個值。
+- 第二個 then 回傳的是 Promise，鏈等它 resolve 之後，把 wait 裡交出的 3 往下傳。
+- 最後一環印出 3，大約在 10 毫秒之後。
 
 ```text
 3
 ```
 
-{% note success %}
-**換你試試：**
-第一環改成加 10。最後應印出 12。wait 的延遲不要改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-1 先加 10 得到 11，wait 再收到 12。延遲只影響何時印出，不影響最後的數字。
-
-```diff 04-js/pages/158-js-chain.html
-  // ...
-        };
-  
-        Promise.resolve(1)
--         .then((n) => n + 1)
-+         .then((n) => n + 10)
-          .then((n) => wait(n + 1))
-          .then((n) => {
-            // ...
-```
-
-```text
-12
-```
-
-</details>
-
 ### 集中錯誤處理
 
-鏈上任何一環拋出錯誤，或回傳一個被拒絕的 Promise，後面的 then 都會先被跳過，直到 catch。catch 若沒有再拋出錯誤，它回傳的 Promise 是完成的，所以後面還能繼續接。
+鏈上任何一環丟出錯誤，或回傳一個已拒絕的 Promise，後面的 then 都會被跳過，直到遇到 catch。catch 若沒有再丟出錯誤，它回傳的 Promise 就是已完成的，後面還能繼續接。
 
 **觀念**
 
-第二步用 throw 丟出錯誤。寫在它後面的 then 不會跑。`catch` 印出訊息之後，鏈恢復成完成，最後的「繼續」還是會印。
+第二步用 throw 丟出錯誤，緊接在後的 then 不會跑。`catch` 印出訊息之後，鏈恢復成已完成，所以最後的「繼續」仍會印。
 
 ```html 04-js/pages/159-js-error.html
 <!DOCTYPE html>
@@ -934,51 +817,23 @@ pendingNode --> rejectedNode["rejected 已拒絕"]
 
 **解析**
 
-- throw 會拒絕這一環回傳的 Promise，效果和 reject 相同。
-- 印出「跳過」的 then 在 catch 前面，所以這次不會執行。
-- catch 接住錯誤並印出 message。它沒有再 throw，鏈就恢復完成。
-- 最後一個 then 因此還是會跑，這也是收尾可以寫在 catch 後面的原因。
+- 在 then 裡 throw，效果和 reject 相同，這一環回傳的 Promise 變成已拒絕。
+- 印出「跳過」的 then 排在 catch 前面，所以不會執行。
+- catch 接住錯誤並印出 message。它沒有再 throw，鏈就恢復成已完成，最後的 then 才能執行，收尾工作因此也可以寫在 catch 後面。
+- 若 catch 裡再 throw 同一個錯誤，後面的 then 會繼續被跳過，錯誤交給更後面的 catch。
 
 ```text
 第二步失敗
 繼續
 ```
 
-{% note success %}
-**換你試試：**
-在 catch 裡改印「已處理」，並再 throw error。最後的「繼續」這次不該出現。
-{% endnote %}
+### 改寫巢狀回呼
 
-<details>
-<summary>參考答案</summary>
-
-catch 再拋出錯誤時，它回傳的 Promise 是拒絕的。後面的 then 會被跳過，而且這個拒絕沒有下一個 catch。
-
-```diff 04-js/pages/159-js-error.html
-  // ...
-          })
-          .catch((error) => {
--           console.log(error.message);
-+           console.log('已處理');
-+           throw error;
-          })
-          .then(() => {
-            // ...
-```
-
-```text
-已處理
-```
-
-</details>
-
-### 改寫巢狀地獄
-
-同樣三步，每一步回傳 Promise，下一步寫在 `then` 裡，而不是寫在回呼的括號深處。時間仍然是三段相加，因為下一步是在上一步完成之後才開始等。
+上一章用巢狀回呼串三個步驟，程式會一層一層往右縮。改成 Promise，每一步回傳 Promise，下一步接在 then 裡，鏈尾只要一個 catch。時間仍是三段相加，因為下一步要等上一步完成才開始。
 
 **觀念**
 
-step 等 10 毫秒後印出標籤並 resolve。鏈上每次都 return 下一個 step，讀的方向變成由上往下。失敗時只要鏈尾有一個 `catch`。
+step 等 10 毫秒後印出標籤並 resolve。每個 then 都 return 下一個 step，所以程式由上往下讀，形狀不再往右縮。
 
 ```html 04-js/pages/160-js-flat.html
 <!DOCTYPE html>
@@ -1013,62 +868,39 @@ step 等 10 毫秒後印出標籤並 resolve。鏈上每次都 return 下一個 
 
 **解析**
 
-- 第一步的計時器先開始。第二步要等它 resolve 之後才登記。
-- then 的回呼回傳下一個 Promise，鏈才會等待那 10 毫秒。
-- 若某一環改成 reject，後面的 step 不會開始，訊息會進到最後的 catch。
-- 這個寫法與巢狀回呼的差別在形狀：步驟往下加，錯誤處理留在鏈尾。
+- 第一步的計時器先開始，第二步要等它 resolve 之後才建立。
+- then 的回呼要 return 下一個 Promise，鏈才會等待那 10 毫秒；忘了 return，下一環不會等。
+- 若某一步改成 reject，後面的步驟不會開始，原因會進到最後的 catch。
+- 和巢狀回呼比，差別在形狀：步驟往下加，錯誤處理只留在鏈尾一處。
 
 ```text
 第一步
 第二步
 第三步
 ```
-
-{% note success %}
-**換你試試：**
-在第三步後面再接一個 then，印出「做完」。catch 留在最後。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-做完是第三步完成之後的下一環，所以它是最後一行。catch 沒有錯誤可接時不會印東西。
-
-```diff 04-js/pages/160-js-flat.html
-  // ...
-          .then(() => step('第二步'))
-          .then(() => step('第三步'))
-+         .then(() => {
-+           console.log('做完');
-+         })
-          .catch((error) => {
-            console.log(error.message);
-          // ...
-```
-
-```text
-第一步
-第二步
-第三步
-做完
-```
-
-</details>
 
 ## 組合方法
 
-有時要等的不是一步，而是好幾件同時開始的工作。組合方法接收一個 Promise 陣列，回傳另一個 Promise。差在「怎樣算完成」：全部成功、全部結束、最先結束，或第一個成功。
+有時要等的不是一步，而是好幾件同時開始的工作。組合方法接收一個 Promise 陣列，回傳另一個 Promise，差別在怎樣算結束。
+
+**一覽**
+
+- `Promise.all` 等全部成功，結果是依陣列順序排列的值；任一件失敗就立刻失敗。
+- `Promise.allSettled` 等全部結束，不論成功或失敗，永遠回傳已完成，結果記錄每件的狀態。
+- `Promise.race` 取最先結束的那一件，成功或失敗都算（選讀）。
+- `Promise.any` 取第一個成功的，全部失敗才失敗（選讀）。
 
 ### Promise.all 與 allSettled
 
-這兩個都會等陣列裡每一件工作結束，結果的順序跟完成的先後無關，跟你放進陣列的順序相同。差別在有人失敗時，整組要不要跟著失敗。
-
-- `Promise.all` 等全部完成。任何一件拒絕，回傳的 Promise 就拒絕，你只拿到那一個原因。其餘工作不會被取消，只是結果不再交給你。
-- `Promise.allSettled` 等全部結束，不論成功或失敗，回傳的 Promise 都會完成。值是陣列，每一格有 status，成功還有 value，失敗則有 reason。
+這兩個方法讓好幾件工作同時進行，結果的順序跟你放進陣列的順序相同，跟誰先完成無關。差別在有人失敗時：all 整組跟著失敗，allSettled 則把成功與失敗都收集起來。
 
 **觀念**
 
-task 用計時器模擬快慢與失敗。all 的兩件都成功，所以印出「甲,乙」，乙雖然比較早好，仍排在甲後面。allSettled 裡乙會失敗，整組還是完成，依序印出 fulfilled 與 rejected。
+- `Promise.all` 一有拒絕就立刻拒絕，只拿得到第一個失敗原因，其他工作不會被取消，只是結果不再交給你。
+
+- `Promise.allSettled` 的結果是陣列，每一格有 status，成功時另有 value，失敗時另有 reason。
+
+task 用計時器模擬快慢與失敗。第一組兩件都成功，乙雖然比較快，仍排在甲後面。第二組乙失敗，all 馬上拒絕；第三組同樣的情況，allSettled 仍然完成。
 
 ```html 04-js/pages/161-js-all.html
 <!DOCTYPE html>
@@ -1094,6 +926,10 @@ task 用計時器模擬快慢與失敗。all 的兩件都成功，所以印出�
         console.log(list.join(','));
       });
 
+      Promise.all([task('甲', 20, false), task('乙', 10, true)]).catch((error) => {
+        console.log('all 失敗：' + error.message);
+      });
+
       Promise.allSettled([task('甲', 20, false), task('乙', 10, true)]).then((list) => {
         list.forEach((item) => {
           console.log(item.status);
@@ -1106,60 +942,29 @@ task 用計時器模擬快慢與失敗。all 的兩件都成功，所以印出�
 
 **解析**
 
-- all 的結果依陣列順序是甲然後乙，不是誰先做完誰排前面。
-- 乙只要 10 毫秒，甲要 20 毫秒，all 仍會等到甲。
-- allSettled 的乙用 reject 結束，status 是 rejected，整組不會因此拒絕。
-- all 若有一件失敗，catch 只能拿到那一個原因，其他件的值不會出現在結果陣列裡。
+- 第二組在 10 毫秒乙失敗時就拒絕，所以「all 失敗：乙」最先印出，不必等甲。
+- 第一組要等到 20 毫秒甲完成，結果依陣列順序是「甲,乙」，不是誰先做完誰排前面。
+- 第三組不會因為乙失敗而拒絕，等兩件都結束後，依序印出 fulfilled 與 rejected。
+- 要知道哪一件失敗，就用 allSettled；只要有一件失敗就整組作廢，就用 all。
 
 ```text
+all 失敗：乙
 甲,乙
 fulfilled
 rejected
 ```
 
-{% note success %}
-**換你試試：**
-把 all 裡的乙改成失敗。all 改接 catch，印出 error.message。allSettled 那組不要改。
-{% endnote %}
+### 選讀：Promise.race 與 any
 
-<details>
-<summary>參考答案</summary>
-
-乙的名字就是拒絕原因。all 不會印出「甲,乙」，因為整組已經拒絕。allSettled 仍會印兩行 status。
-
-```diff 04-js/pages/161-js-all.html
-  // ...
-          });
-        };
-  
--       Promise.all([task('甲', 20, false), task('乙', 10, false)]).then((list) => {
--         console.log(list.join(','));
-+       Promise.all([task('甲', 20, false), task('乙', 10, true)]).catch((error) => {
-+         console.log(error.message);
-        });
-  
-        Promise.allSettled([task('甲', 20, false), task('乙', 10, true)]).then((list) => {
-          // ...
-```
-
-```text
-乙
-fulfilled
-rejected
-```
-
-</details>
-
-### Promise.race 與 any
-
-這兩個不等全部，只關心誰先到達終點。`race` 連失敗也算到達，`any` 只把成功當成到達。
-
-- `Promise.race` 回傳最先完成或最先拒絕的那一件。其他件仍會繼續跑，只是結果被忽略。
-- `Promise.any` 回傳第一個完成的值。全部都拒絕時，回傳的 Promise 才拒絕，錯誤名稱是 AggregateError。
+這兩個方法不等全部，只關心誰先到終點。race 連失敗也算到達，any 只把成功當成到達。
 
 **觀念**
 
-慢的那件要 30 毫秒，快的 10 毫秒就完成，所以 `race` 印出「快」。`any` 先遇到一件失敗，會略過它，等到後面那件成功。第三組兩件都失敗，才印出 AggregateError。
+- `Promise.race` 回傳最先結束的那一件的結果，成功或失敗都算。其他工作仍會繼續跑，只是結果被忽略。
+
+- `Promise.any` 回傳第一個成功的值。全部都失敗時才拒絕，錯誤的名稱是 AggregateError。
+
+慢的那件要 30 毫秒，快的 10 毫秒就完成，所以 race 印出「快」。any 先遇到一件失敗，會略過它，等後面那件成功。第三組兩件都失敗，才印出 AggregateError。
 
 ```html 04-js/pages/162-js-race.html
 <!DOCTYPE html>
@@ -1199,10 +1004,9 @@ rejected
 
 **解析**
 
-- race 在 10 毫秒時就完成，慢的那件 30 毫秒後仍會 resolve，只是沒有人再接收。
-- 第二組的失敗發生得更早，any 不會因此結束，所以成功還印得出來。
-- 第三組沒有任何一件完成，catch 拿到的名稱是 AggregateError。
-- race 若最快的那件是拒絕，整組就拒絕。any 要到每一件都拒絕才拒絕。
+- race 在 10 毫秒就有結果，慢的那件 30 毫秒後仍會 resolve，只是沒有人再接收。若最快的那件是失敗，race 就跟著失敗。
+- 第二組的失敗發生得更早，any 不會因此結束，所以 15 毫秒時成功仍能印出。
+- 第三組在 10 毫秒時所有工作都失敗，catch 拿到 AggregateError，所以它排在「成功」前面。
 
 ```text
 快
@@ -1210,49 +1014,18 @@ AggregateError
 成功
 ```
 
-{% note success %}
-**換你試試：**
-把 race 的「快」改成 10 毫秒就失敗。catch 改印「拒絕:」接上 error.message。另外兩組不要改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-最快落地的是拒絕，所以第一行變成拒絕:快。any 的兩組時間點不受這次修改影響。
-
-```diff 04-js/pages/162-js-race.html
-  // ...
-          });
-        };
-  
--       Promise.race([task('慢', 30, false), task('快', 10, false)]).then((name) => {
--         console.log(name);
-+       Promise.race([task('慢', 30, false), task('快', 10, true)]).catch((error) => {
-+         console.log('拒絕:' + error.message);
-        });
-  
-        Promise.any([task('失敗', 5, true), task('成功', 15, false)]).then((name) => {
-          // ...
-```
-
-```text
-拒絕:快
-AggregateError
-成功
-```
-
-</details>
-
 ## 選讀：把計時器與圖片載入包成 Promise
 
-計時器與圖片載入原本都是回呼。包成 Promise 之後，才能放進前面的鏈，也能在下一章用 `await` 等待。這一節不做新的狀態機，只把兩種「晚一點才知道結果」的工作收成同一個形狀。
+計時器與圖片載入原本都是用回呼通知結果。包成 Promise 之後，才能放進前面的鏈，也能用 async/await 等待。這一節把兩種「晚一點才知道結果」的工作收成同一個形狀。
 
-- `wait` 包住 `setTimeout`，時間到就 resolve，回傳 Promise。它沒有失敗的情況。
-- `loadImage` 用 `Image` 聽 load 與 error，成功時 resolve 那張圖，失敗時 reject。回傳值同樣是 Promise。
+**一覽**
+
+- `wait` 包住 setTimeout，時間到就 resolve。它沒有失敗的情況，所以不需要 reject。
+- `loadImage` 用 Image 建立圖片物件（不必放進頁面也會載入），聽它的 load 與 error 事件，成功時 resolve 那個圖片物件，失敗時 reject。
 
 **觀念**
 
-先等 10 毫秒印出「等完」，再載入一張內嵌的 1×1 圖。圖的位址是 data URI，不需要另外的檔案。載入成功後印出 `naturalWidth`，這張圖的寬度是 1。
+先等 10 毫秒印出「等完」，再載入一張內嵌的 1×1 圖。圖片位址是 data URI（把圖檔內容直接寫成一串文字），不需要另外的檔案。載入成功後印出 naturalWidth，也就是圖片檔本身的寬度，這裡是 1。
 
 ```html 04-js/pages/163-js-wrap.html
 <!DOCTYPE html>
@@ -1298,60 +1071,34 @@ AggregateError
 
 **解析**
 
-- setTimeout 的回呼直接把 resolve 交出去，時間到 Promise 就完成。
-- 圖片要先掛好 load 與 error，再指定 src。順序反了，快取的圖可能在你監聽之前就載完。
-- load 時 resolve 的是圖片元素，所以下一環讀得到 naturalWidth。
-- error 時拒絕的原因是 Error。這張 data URI 會成功，不會走到拒絕。
+- setTimeout 的回呼直接設成 resolve，時間一到 Promise 就完成。
+- 圖片先掛好 load 與 error 的監聽，再指定 src，這是避免漏接事件的慣用順序。
+- load 時 resolve 的是圖片物件，所以下一環讀得到 naturalWidth。
+- error 時拒絕的原因是 Error 物件。這張 data URI 能正常載入，不會走到拒絕。
 
 ```text
 等完
 1
 ```
-
-{% note success %}
-**換你試試：**
-把 wait 的時間改成 30，並在等完之前不要印別的字。寬度那一行仍應是 1。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-延遲只改何時印出等完。圖的寬度來自檔案本身，跟等了幾毫秒無關。
-
-```diff 04-js/pages/163-js-wrap.html
-  // ...
-        const tiny =
-          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  
--       wait(10)
-+       wait(30)
-          .then(() => {
-            console.log('等完');
-            // ...
-```
-
-```text
-等完
-1
-```
-
-</details>
 
 # async 與 await
 
-async 與 await 是寫 Promise 鏈的另一種形狀。`await` 會暫停這支函式，不會暫停整個分頁。函式外面的程式，以及畫面上的點擊，都還繼續走。
+async 與 await 是 Promise 的另一種寫法：把「等結果出來再接著做」寫成由上往下的一般程式，不必再串一長排 then。這一章先看基本寫法與錯誤處理，再學多件工作該依序等還是同時等。
 
 ## 基本寫法
 
-一支 async 函式一定回傳 Promise。你在裡面 `await` 另一個 Promise，完成時拿到值，拒絕時則變成可以用 try 接住的例外。
+兩個關鍵字各管一件事：async 決定函式回傳什麼，await 決定函式在哪裡等。這一節先看執行順序，再看等到的是失敗時怎麼接住。
 
 ### async 函式與 await
 
-呼叫 `async` 函式的那一列會立刻拿到 Promise，不會等到裡面的 `await` 結束。所以「已呼叫」會夾在「開始」和最後的數字中間。
+**一覽**
+
+- `async` 寫在函式前面，這支函式一定回傳 Promise。函式 return 的值，會成為 Promise 完成時的值；函式拋出的錯誤，會讓 Promise 被拒絕。
+- `await` 寫在 Promise 前面，在一般 script 裡只能用在 async 函式裡面（ES module 的最外層也能用，見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：ES Module」）。它暫停所在的這支函式，等 Promise 完成後取出值，再往下執行。
 
 **觀念**
 
-wait 在 10 毫秒後 resolve 它收到的毫秒數。run 印出開始之後才 await。函式返回時，內部停在 await，主程式接著印出已呼叫。數字 10 要等計時器到了才印。
+await 暫停的只有所在的那支函式，不是整個分頁。呼叫 async 函式的那一列會立刻拿到 Promise，外面的程式與畫面上的點擊都照常執行。
 
 ```html 04-js/pages/164-js-async.html
 <!DOCTYPE html>
@@ -1374,10 +1121,12 @@ wait 在 10 毫秒後 resolve 它收到的毫秒數。run 印出開始之後才 
         console.log('開始');
         const ms = await wait(10);
         console.log(ms);
+        return '完成';
       };
 
-      run();
-      console.log('已呼叫');
+      const result = run();
+      console.log('已呼叫', result);
+      result.then((value) => console.log(value));
     </script>
   </body>
 </html>
@@ -1385,60 +1134,28 @@ wait 在 10 毫秒後 resolve 它收到的毫秒數。run 印出開始之後才 
 
 **解析**
 
-- async 函式一被呼叫就開始同步執行，直到碰到第一個 await。
-- 開始因此早於已呼叫。已呼叫在 run 外面，不等待 wait。
-- await 拿到的是 resolve 的值，這裡就是傳進去的 10。
-- run() 的回傳值是 Promise。這支程式沒有再接 then，因為結果已經在函式裡印出。
+- async 函式被呼叫後，先同步執行到第一個 await 為止，所以「開始」最先印出。
+- 函式在 await 停住後，控制權回到外面，所以「已呼叫」早於 10。
+- 已呼叫那一行印出的是 Promise，表示 run 還沒結束；await 取得的值則是傳進 resolve 的 10。
+- return 的『完成』成為 Promise 的結果，要靠 then 才拿得到。
 
 ```text
 開始
-已呼叫
+已呼叫 Promise { <pending> }
 10
+完成
 ```
 
-{% note success %}
-**換你試試：**
-在 await 的下一行改印「等到了」。已呼叫仍應夾在開始與等到了中間。
-{% endnote %}
+本章的輸出區塊只列出文字內容，與 Console 實際畫面略有不同，例如 Console 會顯示成 `Promise {<pending>}`。
 
-<details>
-<summary>參考答案</summary>
+### async 函式的錯誤處理
 
-改的是 await 之後的那一行，所以它還是最後才印。函式外的已呼叫不會被 await 拖住。
-
-```diff 04-js/pages/164-js-async.html
-  // ...
-        const run = async () => {
-          console.log('開始');
--         const ms = await wait(10);
--         console.log(ms);
-+         await wait(10);
-+         console.log('等到了');
-        };
-  
-        run();
-        // ...
-```
-
-```text
-開始
-已呼叫
-等到了
-```
-
-</details>
-
-### try、catch、finally
-
-await 到一個被拒絕的 Promise 時，效果等於在那一行 throw。規則與上一篇的 try 相同：要接住就包在 `try` 裡，否則這支 async 函式回傳的 Promise 會變成拒絕。
-
-- `try` 包住可能拒絕的 await。拒絕會跳進 catch，不會繼續執行 try 裡剩下的行。
-- `catch` 收到那個 Error。這裡可以印出訊息。
-- `finally` 不論成功或失敗都會跑，適合收掉讀取中的狀態。
+await 的 Promise 被拒絕時，效果等於那一行直接拋出錯誤。所以接住的方法就是前面「錯誤處理基礎」學過的 try、catch 與 finally，不需要另一套語法，只是 try 裡面多了 await。
 
 **觀念**
 
-fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」被跳過。`catch` 印出失敗，`finally` 印出收尾。
+- 不包 try 時，錯誤會讓這支 async 函式回傳的 Promise 被拒絕。這個 Promise 若沒有人接，Console 會出現紅字的 Uncaught (in promise)。
+- 也可以由呼叫端接，在 run 回傳的 Promise 後面接 catch，做法見 Promise 章的「集中錯誤處理」。
 
 ```html 04-js/pages/165-js-try.html
 <!DOCTYPE html>
@@ -1446,7 +1163,7 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>try、catch、finally</title>
+    <title>async 函式的錯誤處理</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -1474,66 +1191,26 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
 
 **解析**
 
-- fail 拋出的錯誤會拒絕它回傳的 Promise。
-- await 那個 Promise 時，錯誤變成 run 裡的例外，所以進 catch。
-- 不會到寫在 await 後面、又在同一個 try 裡，因此這次不執行。
-- finally 在 catch 之後執行。若拿掉 try，run() 回傳的 Promise 會拒絕，而且沒有人接。
+- fail 拋出的錯誤拒絕了它回傳的 Promise，await 把拒絕變成 run 裡的例外，所以進 catch。
+- 「不會到」寫在 await 之後，且在同一個 try 裡，這次被跳過。
+- finally 在 catch 之後執行，不論有沒有出錯都會跑。
 
 ```text
 失敗
 收尾
 ```
 
-{% note success %}
-**換你試試：**
-把 fail 改成回傳 '完成'，不要 throw。Console 應印出完成，再印出收尾。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-沒有例外時不進 catch。await 的下一行會執行，finally 仍會收尾。
-
-```diff 04-js/pages/165-js-try.html
-  // ...
-      <script>
-        const fail = async () => {
--         throw new Error('失敗');
-+         return '完成';
-        };
-  
-        const run = async () => {
-          try {
--           await fail();
--           console.log('不會到');
-+           const value = await fail();
-+           console.log(value);
-          } catch (error) {
-            console.log(error.message);
-          // ...
-```
-
-```text
-完成
-收尾
-```
-
-</details>
-
 ## 依序與並行
 
-`await` 寫在下一行，就會等上一行結束才開始下一件。若兩件工作彼此不依賴，應同時開始，再用 `Promise.all` 等它們。用錯形狀時，總時間會變成相加，而不是取比較慢的那件。
+await 寫在下一行，就會等上一行結束才開始下一件。兩件工作若彼此不依賴，卻寫成上下兩行 await，總時間會變成相加，而不是取較慢的那一件。這一節比較兩種形狀，再看迴圈裡的 await。
 
-### 依序等待與 Promise.all 的差別
+### 依序等待與 Promise.all
 
-依序的第二個計時器，要等第一個印完才登記。並行的兩個計時器在同一刻登記。這一節用 Console 的交錯順序把這件事看清楚。
-
-- 連續兩行 `await` 會等前一件結束才開始下一件，總時間是相加。
-- `Promise.all` 讓陣列裡的工作同時開始，總時間看最慢的那一件。回傳值是結果陣列。
+連續兩行 await 是依序，第二件要等第一件結束才開始。Promise.all 則在同一刻開始陣列裡的全部工作，總時間看最慢的那一件，回傳值是依陣列順序排列的結果陣列。
 
 **觀念**
 
-四個計時器都是 20 毫秒，但依序乙要等依序甲完成才開始，所以它最後才印。並行的兩件與依序甲同時開始，20 毫秒時一起出現，接著才印「並行結束」。
+四個計時器都是 20 毫秒。依序乙要等依序甲完成才開始，所以最晚出現；其他三個同時開始，所以先出現。兩件工作若互相不依賴，用 Promise.all 同時跑；後一件要用前一件的結果時，才寫成上下兩行 await。
 
 ```html 04-js/pages/166-js-parallel.html
 <!DOCTYPE html>
@@ -1574,10 +1251,9 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
 
 **解析**
 
-- 依序甲、並行甲、並行乙三個計時器在一開始就登記，所以約 20 毫秒時連續出現。
-- 並行結束寫在 await Promise.all 的下一行，要等兩件並行都完成。
-- 依序乙的計時器在依序甲完成之後才登記，因此又晚了約 20 毫秒。
-- 兩件工作若互相不依賴，用 all 讓它們同時跑。後者要用前者的結果時，才寫成上下兩行 await。
+- 依序甲、並行甲、並行乙三個計時器一開始就登記，約 20 毫秒時連續出現。
+- 並行結束寫在 await Promise.all 的下一行，要等兩件並行都完成才印。
+- 依序乙的計時器在依序甲完成之後才登記，因此又晚約 20 毫秒。
 
 ```text
 依序甲
@@ -1586,54 +1262,20 @@ fail 一進來就拋出錯誤。run 用 await 呼叫它，所以「不會到」�
 並行結束
 依序乙
 ```
-
-{% note success %}
-**換你試試：**
-把並行甲與並行乙的延遲改成 50，依序的兩件維持 20。依序的兩行應先印完，並行結束變成最後一行。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-並行兩件 50 毫秒後才結束，依序乙在依序甲之後再 20 毫秒就印出。所以依序兩行會排到並行前面。
-
-```diff 04-js/pages/166-js-parallel.html
-  // ...
-        const oneByOne = async () => {
-          await task('依序甲', 20);
--         await task('依序乙', 20);
-+         await task('依序乙', 5);
-        };
-  
-        const together = async () => {
--         await Promise.all([task('並行甲', 20), task('並行乙', 20)]);
-+         await Promise.all([task('並行甲', 50), task('並行乙', 50)]);
-          console.log('並行結束');
-        };
-        // ...
-```
-
-```text
-依序甲
-依序乙
-並行甲
-並行乙
-並行結束
-```
-
-</details>
 
 ### 迴圈裡的 await
 
-for...of 會等候圈裡的 await，下一圈才開始。forEach 不會等回呼裡的 Promise，因為它不看回呼的回傳值。需要同時開始時，先用 map 做出 Promise 陣列，再交給 `Promise.all`。
+迴圈搭配 await 有三種寫法，行為各不相同。
 
-- `for...of` 配 `await` 會一圈等完再進下一圈，回傳值就是該圈 resolve 的值。
-- `map` 會立刻呼叫全部，回傳 Promise 陣列。再交給 `Promise.all` 才等到全部結果。
-- `forEach` 的回傳值是 undefined。寫在回呼裡的 `await` 不會讓外層迴圈停住。
+**一覽**
+
+- `for...of` 搭配 await：一圈等完才進下一圈，依序執行。
+- `map` 搭配 Promise.all：map 立刻呼叫全部，得到 Promise 陣列，Promise.all 再等全部完成，並行執行。
+- `forEach`：它不看回呼的回傳值，回呼裡的 await 只暫停回呼自己，迴圈本身不會停，forEach 的下一行也等不到結果，所以不適合需要等待的工作。demo 的最後一段用來驗證這一點。
 
 **觀念**
 
-load 每件 10 毫秒。for...of 三次是一段一段等，所以 1、2、3 之間各隔約 10 毫秒。迴圈結束後的 map 才同時發出三件，最後一行一次印出三個數字。
+每一件 load 要 10 毫秒。for...of 一件一件等，所以 1、2、3 各隔約 10 毫秒出現；迴圈結束後，map 一次發出三件，一次印出三個結果。最後換成 forEach，它的下一行立刻執行，這時一件都還沒完成。
 
 ```html 04-js/pages/167-js-for-await.html
 <!DOCTYPE html>
@@ -1661,6 +1303,12 @@ load 每件 10 毫秒。for...of 三次是一段一段等，所以 1、2、3 之
         }
         const all = await Promise.all(ids.map((id) => load(id)));
         console.log(all.join(','));
+
+        const done = [];
+        ids.forEach(async (id) => {
+          done.push(await load(id));
+        });
+        console.log(done.length);
       };
 
       run();
@@ -1671,67 +1319,37 @@ load 每件 10 毫秒。for...of 三次是一段一段等，所以 1、2、3 之
 
 **解析**
 
-- for...of 的每一圈都等到 load resolve，所以數字是一個一個出現。
-- map 會立刻把三個 load 都呼叫起來，Promise.all 再等最慢的那件。
-- 最後一行的順序仍是 1、2、3，因為 all 依陣列順序交回結果。
-- 若把 await 放進 forEach 的回呼，迴圈本身不會停，三件會一起開始，而且你無法在 forEach 的下一行等到它們。
+- for...of 的每一圈都等到 load 完成，所以數字是一個一個出現。
+- map 立刻把三個 load 都呼叫起來，Promise.all 再等最慢的那件。
+- 結果仍是 1、2、3，因為 Promise.all 依陣列順序交回結果，不依完成先後。
+- forEach 的回呼各自在 await 停住，迴圈不會等它們，所以緊接著的 done.length 是 0，結果還沒放進去。
 
 ```text
 1
 2
 3
 1,2,3
+0
 ```
-
-{% note success %}
-**換你試試：**
-把 ids 改成 [4, 5]。依序的兩行應是 4 與 5，最後一行是 4,5。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-迴圈與 all 都讀同一個陣列。陣列只剩兩格時，兩種寫法都只會處理 4 和 5。
-
-```diff 04-js/pages/167-js-for-await.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const ids = [1, 2, 3];
-+       const ids = [4, 5];
-  
-        const load = (id) => {
-          return new Promise((resolve) => {
-            // ...
-```
-
-```text
-4
-5
-4,5
-```
-
-</details>
 
 # JSON
 
-JSON 是一種文字格式，用來在程式與程式之間搬資料。它長得像物件實字，但規則更嚴。瀏覽器儲存與 Fetch 的 body 都要先變成這種文字，這一章先把文字與物件分開。
+JSON 是一種純文字格式，全名 JavaScript Object Notation，用來讓程式與程式之間交換資料。它長得像物件實字，規則卻嚴格得多。後面的 Fetch 常用它傳資料，Web Storage 則只能存文字，所以這一章先學物件與 JSON 文字怎麼互相轉換。
 
 ## JSON 格式
 
-JSON 只表達資料，不表達程式。鍵、字串、註解、尾端逗號這些地方，JavaScript 物件允許的寫法，JSON 常常不允許。
+JSON 只描述資料，不描述程式。這一節先看文字要符合什麼規則，再看兩個轉換方法，以及哪些值在轉換時會消失或改變。
 
 ### 語法規則與常見錯誤
 
-先記規則，再看違規時會發生什麼。`JSON.parse` 只接受合法的 JSON 文字，不合就拋出 `SyntaxError`，不會回傳一個修到一半的物件。
-
-- 鍵與字串都必須用雙引號。單引號或沒有引號的鍵會讓 `parse` 拋出 SyntaxError。
-- 不能寫註解，最後一項後面也不能留逗號。這兩種都是語法錯誤。
-- 內容只能是物件、陣列、字串、數字、布林與 null。函式、`undefined` 與 `NaN` 都不是 JSON。
+JSON 的規則比物件實字嚴格，所以順手把物件實字貼進去，常常就失敗。JSON.parse 只接受合法的 JSON 文字，不合法就拋出 SyntaxError，不會回傳修到一半的結果。
 
 **觀念**
 
-示範用的文字看起來像物件，但鍵沒有雙引號，字串用了單引號。parse 會失敗。接著 stringify 一個帶有 `undefined` 的物件，那個鍵會被拿掉，因為它沒有合法的 JSON 值可以寫。
+- 鍵與字串都要用雙引號，單引號或沒有引號的鍵不合法。
+- 不能寫註解，最後一項後面也不能留逗號。
+- 值只能是物件、陣列、字串、數字、布林與 null；函式、undefined、NaN 都不是 JSON。
+- parse 失敗是執行期錯誤，要用 try 與 catch 接住，寫法見前面的「錯誤處理基礎」。
 
 ```html 04-js/pages/168-js-json-rule.html
 <!DOCTYPE html>
@@ -1739,19 +1357,25 @@ JSON 只表達資料，不表達程式。鍵、字串、註解、尾端逗號這
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>語法規則與常見錯誤</title>
+    <title>JSON 語法規則與常見錯誤</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      try {
-        JSON.parse("{ name: '小安' }");
-        console.log('不該成功');
-      } catch (error) {
-        console.log(error.name);
-      }
+      const texts = [
+        '{"name":"小安"}',
+        "{ name: '小安' }",
+        '{"name":"小安",}',
+      ];
 
-      console.log(JSON.stringify({ name: '小安', note: undefined }));
+      for (const text of texts) {
+        try {
+          const data = JSON.parse(text);
+          console.log('成功', data.name);
+        } catch (error) {
+          console.log(error.name + '：' + error.message);
+        }
+      }
     </script>
   </body>
 </html>
@@ -1759,56 +1383,28 @@ JSON 只表達資料，不表達程式。鍵、字串、註解、尾端逗號這
 
 **解析**
 
-- 那串文字不是 JSON，所以不會印出不該成功。
-- 接住的是 SyntaxError。訊息內容會指出位置，這一支只印名稱。
-- stringify 的結果是雙引號字串，鍵名也有雙引號。
-- note 的值是 undefined，這個鍵不會出現在文字裡。函式鍵也會被同樣省掉。
+- 第一段文字合法，所以印出成功與名字。
+- 第二段鍵沒有引號、字串用單引號，第三段多了尾端逗號，兩段都拋出 SyntaxError，由 catch 印出名稱與訊息。
+- 訊息會指出出錯的位置（從 0 起算的第幾個字元）。訊息的措辭隨瀏覽器引擎與版本而不同，讀位置比背文字有用。
 
 ```text
-SyntaxError
-{"name":"小安"}
+成功 小安
+SyntaxError：Expected property name or '}' in JSON at position 2 (line 1 column 3)
+SyntaxError：Expected double-quoted property name in JSON at position 13 (line 1 column 14)
 ```
-
-{% note success %}
-**換你試試：**
-改 parse 合法的文字 '{"name":"小安"}'。第一行應變成物件的 name，第二行維持只有 name 的 JSON 文字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-合法文字可以 parse 成物件。stringify 那一行沒有改，undefined 的鍵仍然不會出現。
-
-```diff 04-js/pages/168-js-json-rule.html
-  // ...
-      <script>
-        try {
--         JSON.parse("{ name: '小安' }");
--         console.log('不該成功');
-+         const data = JSON.parse('{"name":"小安"}');
-+         console.log(data.name);
-        } catch (error) {
-          console.log(error.name);
-        // ...
-```
-
-```text
-小安
-{"name":"小安"}
-```
-
-</details>
 
 ### JSON.parse 與 JSON.stringify
 
-兩個方法方向相反。一個把文字變回值，一個把值收成文字。來回路過之後你拿到的是新物件，不是原來那個。
+兩個方法方向相反，一個把文字變回值，一個把值收成文字。
 
-- `JSON.parse` 接收字串，回傳物件、陣列或基本值。文字不合法時拋出 SyntaxError。
-- `JSON.stringify` 接收值，回傳字串。日期物件會先變成 ISO 時間文字，`parse` 不會自動還原成日期物件。
+**一覽**
+
+- `JSON.parse`：接收字串，回傳物件、陣列或基本值；字串不合法時拋出 SyntaxError。
+- `JSON.stringify`：接收值，回傳字串；預設不加空白，整段擠成一行。
 
 **觀念**
 
-`note` 先被收成文字，再被 parse 回來。Console 先看到那一整段文字，再看到欄位 `title`。最後比較兩個物件是不是同一個，結果是 true 表示它們不是同一個。
+物件先收成文字，再還原成物件。還原出來的是全新的物件，內容相同，但不是原來那一個，所以改其中一個不會影響另一個。
 
 ```html 04-js/pages/169-js-json.html
 <!DOCTYPE html>
@@ -1834,10 +1430,9 @@ SyntaxError
 
 **解析**
 
-- raw 是字串，所以第一行有大括號與雙引號，不是物件。
+- raw 是字串，所以第一行看得到大括號與雙引號，它已經不是物件。
 - back.title 是讀書，表示文字裡的欄位被還原了。
-- back !== note 是 true，parse 做出新物件，改 back 不會改到 note。
-- 若 raw 被人改壞，parse 會拋出 SyntaxError。使用儲存資料時要先準備接住它。
+- back !== note 是 true，表示 parse 做出了新物件。
 
 ```text
 {"title":"讀書","done":false}
@@ -1845,53 +1440,81 @@ SyntaxError
 true
 ```
 
-{% note success %}
-**換你試試：**
-在 note 加一個欄位 count，值是 2。第一行的文字應含有 count，並多印一行 back.count。
-{% endnote %}
+### 不會原樣保留的值
 
-<details>
-<summary>參考答案</summary>
-
-stringify 會把數字欄位一起寫進文字。parse 還原後 count 仍是數字 2，不是字串。
-
-```diff 04-js/pages/169-js-json.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const note = { title: '讀書', done: false };
-+       const note = { title: '讀書', done: false, count: 2 };
-        const raw = JSON.stringify(note);
-        const back = JSON.parse(raw);
-        // ...
-        console.log(back.title);
-        console.log(back !== note);
-+       console.log(back.count);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-{"title":"讀書","done":false,"count":2}
-讀書
-true
-2
-```
-
-</details>
-
-## 轉換與應用
-
-格式懂了之後，要把文字用回畫面上。這一節先從一段 JSON 文字畫出清單，再把程式裡的狀態收成文字。Fetch 之前，資料都還是你自己準備的字串。
-
-### 從文字還原資料
-
-伺服器或檔案給你的往往是文字。先 parse 成陣列，再用上一篇的方式做成 li。不要把整段 JSON 直接塞進 `innerHTML`。
+JSON 只認得前面列出的幾種值。物件裡有其他東西時，stringify 不會報錯，而是悄悄省略或改寫，還原後就和原物件不一樣。
 
 **觀念**
 
-`raw` 是陣列文字，兩筆各有名字與價格。parse 之後用 `forEach` 建立清單，並把名字印到 Console，方便你對照畫面。
+- 物件裡的 undefined 與函式，整個鍵會被省略。
+- 陣列裡的 undefined 與函式，會變成 null，因為陣列要保住位置。
+- NaN 與 Infinity 變成 null。
+- 日期物件變成 ISO 8601 格式的字串，parse 不會自動變回日期（日期物件見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：內建物件」）。
+- 物件自己指回自己（循環參照）或含有 BigInt 時，stringify 會直接拋出 TypeError。
+
+```html 04-js/pages/169b-js-json-lost.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stringify 不會保留的值</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const note = {
+        title: '讀書',
+        memo: undefined,
+        score: NaN,
+        tags: ['a', undefined],
+        created: new Date('2026-01-15T08:00:00Z'),
+        say() {},
+      };
+
+      const raw = JSON.stringify(note);
+      console.log(raw);
+
+      const back = JSON.parse(raw);
+      console.log(typeof back.created);
+      console.log('memo' in back, 'say' in back);
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- memo 與 say 兩個鍵都不見了，還原後用 in 檢查，結果都是 false。
+- score 變成 null，tags 裡的 undefined 也變成 null，陣列長度不變。
+- created 在文字裡是字串，還原後 typeof 仍是 string，要用日期時須自己轉。
+
+```text
+{"title":"讀書","score":null,"tags":["a",null],"created":"2026-01-15T08:00:00.000Z"}
+string
+false false
+```
+
+{% note info %}
+**replacer 與 reviver**
+stringify 的第二個參數可以是函式，逐一決定每個值怎麼寫出；parse 的第二個參數也是函式，在還原時逐一改寫。要把日期字串變回日期，可以這樣寫：
+
+```js
+JSON.parse(raw, (key, value) => (key === 'created' ? new Date(value) : value));
+```
+{% endnote %}
+
+## 轉換與應用
+
+格式與轉換方法都學完了，這一節把它們接回畫面：從一段 JSON 文字畫出清單，再把程式裡的狀態收成文字。Fetch 之前，資料都先用自己準備的字串代替。
+
+### 從文字還原資料
+
+伺服器或檔案給你的往往是一段文字。先 parse 成陣列，再用 DOM 一筆一筆建立清單項目。外部來的資料可能含有 HTML 標籤，所以放進畫面時用 textContent 當成文字顯示，不要拼成 HTML 字串。
+
+**觀念**
+
+raw 是陣列文字，兩筆各有名字與價格。parse 之後用迴圈為每一筆建立一個清單項目，並把名字印到 Console 對照。
 
 ```html 04-js/pages/170-js-json-read.html
 <!DOCTYPE html>
@@ -1900,10 +1523,6 @@ true
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>從文字還原資料</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-    </style>
   </head>
   <body>
     <ul id="list"></ul>
@@ -1925,52 +1544,22 @@ true
 
 **解析**
 
-- raw 使用雙引號，所以 parse 會成功，items 的長度是 2。
-- 每一列用 textContent 放入名字與價格，中間空一格。
-- Console 只印名字，價格留在畫面上那一列的文字裡。
-- 若 raw 少一個括號，整支程式會停在 parse，清單會是空的。
+- 頁面上出現兩列：「筆 25」與「紙 40」；Console 只印名字，價格留在畫面上。
+- raw 用雙引號，所以 parse 成功，items 的長度是 2。
+- 若 raw 少一個括號，parse 會拋出錯誤，這支 script 在那一行停下，清單會是空的。實務上會用 try 與 catch 包住。
 
 ```text
 筆
 紙
 ```
-
-{% note success %}
-**換你試試：**
-在文字陣列最後加一筆，名字是尺、價格是 15。Console 應多一行尺。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-parse 會得到三個物件。forEach 多跑一圈，所以清單與 Console 都多一筆。
-
-```diff 04-js/pages/170-js-json-read.html
-  // ...
-      <ul id="list"></ul>
-      <script>
--       const raw = '[{"name":"筆","price":25},{"name":"紙","price":40}]';
-+       const raw = '[{"name":"筆","price":25},{"name":"紙","price":40},{"name":"尺","price":15}]';
-        const items = JSON.parse(raw);
-        const list = document.querySelector('#list');
-        // ...
-```
-
-```text
-筆
-紙
-尺
-```
-
-</details>
 
 ### 把資料收成文字
 
-要送出或存起來之前，物件得先變成文字。`stringify` 的回傳值是字串，型別不會再是 object。這一節把結果放到 `pre`，也印到 Console。
+要存起來或送出去之前，物件得先收成文字。stringify 的第三個參數指定縮排的空格數，讓文字換行排版，方便人讀；中間的第二個參數這裡用不到，先填 null。
 
 **觀念**
 
-狀態只有標題與是否完成。收成文字後，`pre` 顯示同一段 JSON，Console 再印出它的型別，確認不是物件。
+狀態只有標題與是否完成。縮排版本放進畫面上的 pre，精簡版本與它的型別印在 Console，確認它是字串而不是物件。
 
 ```html 04-js/pages/171-js-json-text.html
 <!DOCTYPE html>
@@ -1979,19 +1568,17 @@ parse 會得到三個物件。forEach 多跑一圈，所以清單與 Console 都
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>把資料收成文字</title>
-    <style>
-      body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-    </style>
   </head>
   <body>
     <pre id="out"></pre>
     <script>
       const state = { title: '讀書', done: false };
-      const text = JSON.stringify(state);
-      document.querySelector('#out').textContent = text;
-      console.log(text);
-      console.log(typeof text);
+      const compact = JSON.stringify(state);
+      const pretty = JSON.stringify(state, null, 2);
+
+      document.querySelector('#out').textContent = pretty;
+      console.log(compact);
+      console.log(typeof compact);
     </script>
   </body>
 </html>
@@ -1999,71 +1586,46 @@ parse 會得到三個物件。forEach 多跑一圈，所以清單與 Console 都
 
 **解析**
 
-- stringify 不會在冒號後面加空格，這是正常的 JSON 文字。
-- pre 用 textContent 放入這段文字，所以畫面上看得到大括號。
-- typeof text 是 string。若直接把 state 交給只收文字的 API，會先被轉成不合用的形狀。
-- done 在文字裡是 false 這個詞，沒有再包一層引號。它仍是布林，不是字串。
+- 頁面上的 pre 顯示四行縮排的 JSON（含頭尾兩個大括號），因為 pre 會保留換行與空白。
+- Console 第一行是不縮排的精簡版，兩者內容相同，只差排版。
+- 精簡版的 typeof 是 string；縮排只增加空白與換行，不改變資料，所以傳輸與儲存通常用精簡版。
 
 ```text
 {"title":"讀書","done":false}
 string
 ```
 
-{% note success %}
-**換你試試：**
-把 title 改成「寫練習」。pre 與 Console 第一行都要出現這四個字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-欄位名稱仍是 title。改的是值，所以雙引號裡的文字跟著換，done 那一段還在。
-
-```diff 04-js/pages/171-js-json-text.html
-  // ...
-      <pre id="out"></pre>
-      <script>
--       const state = { title: '讀書', done: false };
-+       const state = { title: '寫練習', done: false };
-        const text = JSON.stringify(state);
-        document.querySelector('#out').textContent = text;
-        // ...
-```
-
-```text
-{"title":"寫練習","done":false}
-string
-```
-
-</details>
-
 # Fetch API
 
-Fetch 讓這一頁跟另一份資源說話，而且回傳 Promise，所以前面的寫法接得上。這一章先分清請求與回應，再讀本地的 JSON、把 JSON 送出去，最後把載入中的狀態畫回畫面上。
+Fetch 是瀏覽器內建、用來向網址要資料或送出資料的功能，呼叫後拿到 Promise，所以前面學的非同步寫法都接得上。這一章先認識請求與回應，再讀取本地的 JSON、把資料送出去，最後把載入中、成功、失敗三種狀態畫回畫面上。
 
 {% note info %}
 **以前怎麼發請求**
-早期是 XMLHttpRequest，jQuery 再把它包成 ajax。這一章只用 Fetch，呼叫後拿到的是 Promise。
+早期是 XMLHttpRequest，jQuery 再把它包成 ajax。現在的標準做法是 Fetch，這一章只用 Fetch。
 {% endnote %}
 
 ## 認識 HTTP
 
-瀏覽器送出請求，對方回傳回應。先認出這兩包東西裡有哪些部分，才不會把「狀態碼是 404」和「程式拋出例外」當成同一件事。
+HTTP 是瀏覽器與伺服器交談的規則：瀏覽器送出請求，伺服器回傳回應。這一節先認出請求與回應各有哪些部分，並分清楚「回應的狀態碼是 404」和「請求根本沒送出去」是兩件不同的事。
 
 ### 請求與回應的組成
 
-一次往返分成你送出去的內容，以及對方送回來的內容。這一節讀本地的使用者檔，先看狀態碼與內容類型，還不把本體解析成陣列。
+一次往返分成你送出去的請求，以及對方送回來的回應。這一節讀本地的使用者檔，只看狀態碼與內容類型，還不把本體解析成陣列。
 
 {% mermaid graph LR %}
-methodNode["方法與網址"] --> reqNode["請求"]
-headNode["標頭與 body"] --> reqNode
-reqNode --> serverNode["伺服器"]
-serverNode --> resNode["狀態碼、標頭、body"]
+reqNode["請求：方法、網址、標頭、body"] --> serverNode["伺服器"]
+serverNode --> resNode["回應：狀態碼、標頭、body"]
 {% endmermaid %}
 
-- 方法表示這次要做的事。讀取通常是 GET，它放在請求裡。
-- 網址指出資源在哪。標頭是附加說明，body 是本體。GET 通常沒有本體。
-- 回應帶回狀態碼、標頭與本體。狀態碼落在 2xx 時，`response.ok` 為 true。
+**一覽**
+
+- 方法：這次要做什麼，讀取用 GET。
+- 網址：資源在哪裡。
+- 標頭：附加說明，例如內容的格式。請求與回應都有。
+- body：本體，也就是真正傳送的資料。GET 不能帶 body。
+- 狀態碼：回應裡的三位數字，告訴你結果。落在 200 到 299 時，`response.ok` 為 true。
+
+這份使用者資料是本節要讀取的檔案。
 
 ```json 04-js/pages/data/users.json
 [
@@ -2074,12 +1636,12 @@ serverNode --> resNode["狀態碼、標頭、body"]
 
 {% note warning %}
 **要從本機伺服器開啟**
-直接雙擊時網址是 file://，瀏覽器會拒絕讀取旁邊的 JSON。請用本機伺服器開啟這一頁。
+直接雙擊時網址是 file://，瀏覽器會拒絕讀取旁邊的 JSON。請用 Live Server 或 Vite 這類本機伺服器開啟這一頁。
 {% endnote %}
 
 **觀念**
 
-fetch 先給你回應物件。這一支只印狀態碼、ok，以及內容類型裡有沒有 json。名字還留在本體裡。
+`fetch` 完成時先給你一個回應物件，裡面有狀態碼與標頭，本體還沒有解析。這支程式只印狀態碼、ok，以及內容類型裡有沒有 json。
 
 ```html 04-js/pages/172-js-http.html
 <!DOCTYPE html>
@@ -2108,59 +1670,33 @@ fetch 先給你回應物件。這一支只印狀態碼、ok，以及內容類型
 
 **解析**
 
-- 相對路徑會向現在這個網站要檔案，所以要用本機伺服器開啟，不能用 file://。
-- status 200 表示讀取成功，ok 因此是 true。
+- 網址 data/users.json 是相對路徑，會向目前這個網站要檔案，所以必須用本機伺服器開啟。
+- 狀態碼 200 表示讀取成功，ok 因此是 true。
 - 內容類型後面可能還接著字元集，所以只檢查有沒有 json 這個詞。
-- 還沒呼叫 json() 之前，回應本體仍是文字，程式裡還沒有使用者陣列。
+- 還沒呼叫 json() 之前，本體仍是文字，程式裡還沒有使用者陣列。
+
+Console 輸出如下。本章的輸出區塊只列文字內容，和實際 Console 畫面（行號、顏色）略有不同。
 
 ```text
 200
 true
 true
 ```
-
-{% note success %}
-**換你試試：**
-多印一行，看 response.url 是否包含 users.json。前三行不要改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-url 會被補成絕對位址。用 includes 看檔名，就不必把連接埠寫死。
-
-```diff 04-js/pages/172-js-http.html
-  // ...
-          console.log(response.ok);
-          console.log(type.includes('json'));
-+         console.log(response.url.includes('users.json'));
-        };
-  
-        main();
-      // ...
-```
-
-```text
-200
-true
-true
-true
-```
-
-</details>
 
 ### 狀態碼分類
 
-三位數字用百位數分組。先判斷落在哪一組，再去查個別數字。這一節用存在的檔與不存在的檔，對照 200 與 404。
+狀態碼用百位數分組，先看落在哪一組，再去查個別數字。這一節用存在的檔與不存在的檔，對照 200 與 404。
 
-- 2xx 表示成功。200 是一般成功，201 常用在新增之後。
-- 3xx 表示要改去別的網址。這一章不另外處理轉址。
-- 4xx 表示這次請求有問題。404 是資源不存在。
-- 5xx 表示伺服器處理失敗。請求有送到，但對方做不完。
+**一覽**
+
+- 2xx：成功。200 是一般成功，201 常用在新增之後。
+- 3xx：資源搬到別的網址，需要轉址。這一章不另外處理。
+- 4xx：這次請求有問題。404 是資源不存在。
+- 5xx：伺服器處理失敗。請求有送到，但對方做不完。
 
 **觀念**
 
-兩個 fetch 都會完成。一個讀得到清單，一個指向不存在的檔。差別印在狀態碼上，不會先變成例外。
+兩個請求都會完成，一個讀得到清單，一個指向不存在的檔。差別只印在狀態碼上，Promise 並不會因此拒絕。
 
 ```html 04-js/pages/173-js-status.html
 <!DOCTYPE html>
@@ -2188,51 +1724,24 @@ true
 
 **解析**
 
-- items.json 存在，所以狀態碼是 200。
-- missing.json 沒有這個檔，伺服器仍會回應，狀態碼是 404。
-- 404 屬於 4xx。fetch 的 Promise 還是完成，不會因為 404 就進 catch。
-- 5xx 也一樣是一份回應。只有請求根本送不出去時，Promise 才會拒絕。
+- items.json 存在，狀態碼是 200。
+- missing.json 沒有這個檔，伺服器仍然回應，狀態碼是 404，屬於 4xx。
+- 404 與 5xx 都是正常抵達的回應，所以 await 後照常往下執行。只有請求根本送不出去（斷線、被瀏覽器擋下）時，Promise 才會拒絕。
 
 ```text
 200
 404
 ```
 
-{% note success %}
-**換你試試：**
-把第一個網址也改成 data/missing.json。兩行都應是 404。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個請求都指向不存在的檔，所以兩個狀態碼相同。這仍然不是例外。
-
-```diff 04-js/pages/173-js-status.html
-  // ...
-      <script>
-        const main = async () => {
--         const okRes = await fetch('data/items.json');
-+         const okRes = await fetch('data/missing.json');
-          const missing = await fetch('data/missing.json');
-          console.log(okRes.status);
-          // ...
-```
-
-```text
-404
-404
-```
-
-</details>
-
 ## 取得資料
 
-讀取是這一章最常用的動作。先把本體變成陣列，再學會擋下 404，最後才把條件放進網址的查詢參數。
+讀取是最常用的動作。這一節先把本體變成陣列，再學會擋下 404 之類的失敗回應，最後把條件放進網址的查詢參數。
 
 ### fetch 與 response.json
 
-`fetch` 的 Promise 完成時，值是回應物件。`response.json` 會再回傳一個 Promise，因為把文字解析成值也要時間。兩個都要等待，而且本體只能讀一次。
+`fetch` 的 Promise 完成時，值是回應物件。`response.json()` 會再回傳一個 Promise，因為把文字解析成值也要時間，所以要等兩次。
+
+這份商品清單是後面幾個 demo 共用的資料。
 
 ```json 04-js/pages/data/items.json
 [
@@ -2244,7 +1753,7 @@ true
 
 **觀念**
 
-這支程式等回應，再等 json()。三個名字來自檔案裡的 name，不是寫死在 log 裡。
+程式先等回應，再等 json()，最後依序印出每個商品的名字。
 
 ```html 04-js/pages/174-js-fetch.html
 <!DOCTYPE html>
@@ -2273,10 +1782,9 @@ true
 
 **解析**
 
-- 第一個 await 結束時，手上還是回應物件，還沒有陣列。
-- json() 會把本體解析成值，所以還要第二個 await。
-- 檔案是陣列，forEach 依序印出三個名字。
-- 同一份回應的本體只能讀一次。再呼叫一次 json() 會失敗。
+- 第一個 await 結束時，手上是回應物件，還不是陣列。
+- 第二個 await 結束後才是解析好的陣列，forEach 依序印出三個名字。
+- 同一份回應的本體只能讀一次，再呼叫一次 json() 會出錯。
 
 ```text
 筆
@@ -2284,45 +1792,13 @@ true
 尺
 ```
 
-{% note success %}
-**換你試試：**
-改讀 data/users.json，並印出 city。應看到台北與台南。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-users.json 的欄位是 name 與 city。這一支改印城市，筆數仍是兩筆。
-
-```diff 04-js/pages/174-js-fetch.html
-  // ...
-      <script>
-        const main = async () => {
--         const response = await fetch('data/items.json');
-+         const response = await fetch('data/users.json');
-          const items = await response.json();
-          items.forEach((item) => {
--           console.log(item.name);
-+           console.log(item.city);
-          });
-        };
-        // ...
-```
-
-```text
-台北
-台南
-```
-
-</details>
-
 ### 檢查 response.ok
 
-狀態碼是回應的一部分，所以 404 與 500 仍會讓 fetch 完成。規則是：先看 `response.ok`，不是 2xx 就自己拋出錯誤。只有連不上、被瀏覽器擋下，或請求被中止時，Promise 才會拒絕，那時才進 catch，而且手上沒有狀態碼。
+規則是：先看 `response.ok`，不是 2xx 就自己拋出錯誤。因為 404 與 500 都是正常抵達的回應，fetch 不會替你拒絕。連不上、被瀏覽器擋下或請求被中止時，Promise 才會拒絕，這時才進 catch，而且手上沒有狀態碼。
 
 **觀念**
 
-load 先印出狀態碼，確認回應已經回來，再在不是 2xx 時拋出錯誤。catch 印到的是你拋出的訊息。
+load 先印狀態碼，不是 2xx 就拋出錯誤，讓 catch 統一處理。demo 先讀不存在的檔，再讀存在的檔，對照兩種結果。
 
 ```html 04-js/pages/175-js-ok.html
 <!DOCTYPE html>
@@ -2349,6 +1825,7 @@ load 先印出狀態碼，確認回應已經回來，再在不是 2xx 時拋出�
 
       const main = async () => {
         await load('data/missing.json');
+        await load('data/items.json');
       };
 
       main();
@@ -2360,60 +1837,35 @@ load 先印出狀態碼，確認回應已經回來，再在不是 2xx 時拋出�
 **解析**
 
 - 第一行 404 來自回應物件，代表 fetch 已經完成，不是網路失敗。
-- ok 為 false 時主動 throw，後面的 json() 就不會執行。
-- catch 印出的是你組出來的訊息。若是網路失敗，不會有第一行狀態碼。
-- 讀得到檔案時不該 throw。長度會印在狀態碼下面。
+- ok 為 false 時主動 throw，後面的 json() 就不會執行，catch 印出你組出來的訊息。
+- 第二次讀得到檔案，ok 為 true，沒有 throw，最後印出陣列長度。
+- 若是網路失敗，catch 印的會是瀏覽器給的訊息，而且前面不會有狀態碼那一行。
 
 ```text
 404
 狀態 404
-```
-
-{% note success %}
-**換你試試：**
-改抓 data/items.json。應印出 200，再印出 3，而且不出現「狀態 200」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-200 是成功，ok 為 true，所以不會 throw。json() 得到三筆，長度是 3。
-
-```diff 04-js/pages/175-js-ok.html
-  // ...
-        };
-  
-        const main = async () => {
--         await load('data/missing.json');
-+         await load('data/items.json');
-        };
-  
-        main();
-      // ...
-```
-
-```text
 200
 3
 ```
 
-</details>
-
 ### 查詢參數
 
-條件不要直接黏進網址字串裡。`URLSearchParams` 會幫你編碼，並用 `toString` 交出查詢字串。這一節改向公開的假 API 要資料，不再讀本地檔。
+查詢參數是接在網址問號後面的條件，例如 userId=1，伺服器依它篩選資料。條件不要自己用字串黏，`URLSearchParams` 會幫你編碼，再用 `toString()` 交出查詢字串。
 
-- `URLSearchParams` 用物件建立查詢參數，回傳參數物件。
-- `toString` 回傳已經編碼的查詢字串，不含開頭的問號。問號要自己接在路徑後面。
+- `URLSearchParams`：用物件建立查詢參數，每個欄位變成一組「名稱=值」。
+- `toString()`：回傳已編碼的查詢字串，不含開頭的問號，問號要自己接在路徑後面。
+- 中文與空白會被編碼成 % 開頭的碼，空白變成加號，伺服器收到後會還原。
+
+查詢參數要有伺服器理解它才有用，本地檔案做不到，所以這一節改向公開的假 API 要資料。
 
 {% note info %}
 **這是公開的假 API**
-jsonplaceholder.typicode.com 會回應讀取與寫入，但不會真的把資料存進去。重新讀取時，你新增的內容不會留下。
+jsonplaceholder.typicode.com 是專供練習的服務，會回應讀取與寫入，但不會真的存進資料。它允許其他網站跨來源讀取，所以從本機頁面呼叫沒問題；跨來源的限制見 {% post_link lokiTech-15day-08-js-async %} 的「選讀：同源政策與 CORS」。
 {% endnote %}
 
 **觀念**
 
-查詢字串寫成 userId=1。假 API 會回一組文章，第一筆的 userId 應是數字 1。
+第一組參數是篩選條件，第二組只用來展示編碼結果。假 API 依 userId 回傳文章，_limit 限制筆數。
 
 ```html 04-js/pages/176-js-query.html
 <!DOCTYPE html>
@@ -2427,13 +1879,15 @@ jsonplaceholder.typicode.com 會回應讀取與寫入，但不會真的把資料
     <p>結果在 DevTools 的 Console。</p>
     <script>
       const main = async () => {
-        const query = new URLSearchParams({ userId: '1' });
+        const query = new URLSearchParams({ userId: '1', _limit: '2' });
         console.log(query.toString());
+        console.log(new URLSearchParams({ keyword: '小安 台北' }).toString());
+
         const response = await fetch(
           'https://jsonplaceholder.typicode.com/posts?' + query.toString()
         );
         const posts = await response.json();
-        console.log(posts.length > 0);
+        console.log(posts.length);
         console.log(posts[0].userId);
       };
 
@@ -2445,59 +1899,29 @@ jsonplaceholder.typicode.com 會回應讀取與寫入，但不會真的把資料
 
 **解析**
 
-- toString 的結果沒有問號，問號是接在 posts 後面的那一個字元。
-- 這次網址指向別的網站，不需要你的本地 JSON 檔。
-- length > 0 用來確認有回資料，又不把筆數寫死。
-- 第一筆的 userId 是數字 1，和查詢參數是同一個人。
+- 第一行是 userId=1&_limit=2，多個參數用 & 相連，開頭沒有問號。
+- 第二行的中文被編碼，空白變成加號。
+- 請求的網址是 posts 後面接問號再接查詢字串，伺服器只回 userId 為 1 的兩篇文章。
+- 所以筆數是 2，第一筆的 userId 是 1。
 
 ```text
-userId=1
-true
+userId=1&_limit=2
+keyword=%E5%B0%8F%E5%AE%89+%E5%8F%B0%E5%8C%97
+2
 1
 ```
 
-{% note success %}
-**換你試試：**
-把 userId 改成 2。第一行應變成 userId=2，最後一行應是 2。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-參數改了，查詢字串與回來的 userId 一起改。中間那行仍只是在確認陣列不是空的。
-
-```diff 04-js/pages/176-js-query.html
-  // ...
-      <script>
-        const main = async () => {
--         const query = new URLSearchParams({ userId: '1' });
-+         const query = new URLSearchParams({ userId: '2' });
-          console.log(query.toString());
-          const response = await fetch(
-            // ...
-```
-
-```text
-userId=2
-true
-2
-```
-
-</details>
-
 ## 送出資料
 
-讀取用 GET。新增、整筆取代、改一部分、刪除，則換成別的方法，並把路徑指到同一種資源。這一節都打向同一個假 API，回應看得到，重新整理後那些寫入不會留在對方的清單裡。
+讀取用 GET；新增、整筆取代、改一部分、刪除，則換成別的方法，並把路徑指到同一種資源。這一節都打向同一個假 API，回應看得到，但寫入不會真的留在對方的清單裡。
 
 ### POST 送 JSON
 
-新增時方法用 POST，路徑指向集合而不是某一筆。body 必須是文字，物件要先 `stringify`。標頭要聲明這段文字是 JSON，對方才知道怎麼解析。
-
-**規則先看標頭。** 沒有 `Content-Type: application/json` 時，許多伺服器不會把 body 當成 JSON，回應裡的欄位就會是空的。
+新增時方法用 POST，路徑指向整個集合而不是某一筆。body 必須是文字，所以物件要先用 `JSON.stringify` 轉換；標頭要聲明 `Content-Type: application/json`，對方才知道要當成 JSON 解析，否則許多伺服器會讀不到欄位。
 
 **觀念**
 
-這支程式新增一則筆記。狀態碼 201 表示對方接受了新增。標題會在回應裡出現，但假 API 不會把它留到下一次讀取。
+這支程式新增一則筆記。狀態碼 201 表示新增成功，回應裡有你送出的標題與伺服器編的新編號。
 
 ```html 04-js/pages/177-js-post.html
 <!DOCTYPE html>
@@ -2519,6 +1943,7 @@ true
         const created = await response.json();
         console.log(response.status);
         console.log(created.title);
+        console.log(created.id);
       };
 
       main();
@@ -2530,56 +1955,31 @@ true
 **解析**
 
 - 方法是 POST，路徑是 /posts，表示在文章這個集合裡新增一筆。
-- headers 聲明本體是 JSON。body 是 stringify 之後的文字，不是物件。
-- 201 屬於 2xx，這次請求被接受。回應 JSON 裡看得到你送出的標題。
-- 再對 /posts 做一次 GET，不會看到這則新筆記。假 API 只模擬回應。
+- headers 聲明本體是 JSON，body 是 stringify 之後的文字，不是物件。
+- 201 屬於 2xx，所以 ok 為 true。回應的 JSON 帶回標題，以及伺服器給的編號 101。
+- 再對 /posts 做一次 GET，不會看到這則新筆記，假 API 只模擬回應。
 
 ```text
 201
 新筆記
+101
 ```
-
-{% note success %}
-**換你試試：**
-把 title 改成「第二則」。狀態碼仍應是 201，第二行改印第二則。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標題來回應的 JSON，也就是你放進 stringify 的那個欄位。方法與標頭都沒改。
-
-```diff 04-js/pages/177-js-post.html
-  // ...
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
--           body: JSON.stringify({ title: '新筆記', body: '第一行', userId: 1 }),
-+           body: JSON.stringify({ title: '第二則', body: '第一行', userId: 1 }),
-          });
-          const created = await response.json();
-          // ...
-```
-
-```text
-201
-第二則
-```
-
-</details>
 
 ### PUT、PATCH、DELETE 與 REST
 
-REST 是一種慣例：同一種資源用同一條路徑，動作靠方法區分，而不是靠 /update 或 /delete 這種動詞路徑。看到方法與路徑，就知道這次是讀、新增、整筆換掉、改一部分，還是刪除。
+REST 是一種慣例：同一種資源用同一條路徑，動作靠方法區分，而不是 /update、/delete 這類動詞路徑。看到方法與路徑，就知道這次是讀、新增、整筆換掉、改一部分，還是刪除。
 
-- GET 讀取。路徑不帶 id 時是整份清單，帶 id 時是單一筆。通常沒有 body。
-- POST 在集合路徑新增一筆，body 帶新資料。
-- PUT 整筆取代。路徑帶 id，body 要帶上這一筆的完整內容。
-- PATCH 只改一部分。路徑帶 id，body 只放要改的欄位。
-- DELETE 刪除。路徑帶 id，通常沒有 body。
+**一覽**
+
+- GET：讀取。路徑不帶 id 是整份清單，帶 id 是單一筆。沒有 body。
+- POST：在集合路徑新增一筆，body 帶新資料。
+- PUT：整筆取代。路徑帶 id，body 要帶這一筆的完整內容。
+- PATCH：只改一部分。路徑帶 id，body 只放要改的欄位。
+- DELETE：刪除。路徑帶 id，沒有 body。
 
 **觀念**
 
-三個請求都指向 posts/1，方法分別是整筆取代、部分更新與刪除。假 API 三個都會以 200 回應，而且不會真的改掉下一個人讀到的資料。
+三個請求都指向 posts/1，方法分別是整筆取代、部分更新與刪除。
 
 ```html 04-js/pages/178-js-rest.html
 <!DOCTYPE html>
@@ -2619,56 +2019,26 @@ REST 是一種慣例：同一種資源用同一條路徑，動作靠方法區分
 
 **解析**
 
-- 三個網址相同，差別在方法。路徑上的 1 指出是哪一筆文章。
-- PUT 的 body 帶了標題、本文與 userId，表示整筆要長這樣。
-- PATCH 只送 title，表示其他欄位維持不動。
-- DELETE 沒有 body。200 只表示這次回應成功，不表示你的本地檔被刪掉。
+- 三個網址相同，差別在方法；路徑上的 1 指出是哪一筆文章。
+- PUT 的 body 帶了標題、本文與 userId，表示整筆要長這樣；PATCH 只送 title，其他欄位維持不動。
+- DELETE 沒有 body，也就不需要設定標頭。
+- 假 API 三個都回 200。200 只表示這次回應成功，資料實際上沒有被改動。真實的伺服器也可能用 204（成功但沒有內容）回應刪除。
 
 ```text
 200
 200
 200
 ```
-
-{% note success %}
-**換你試試：**
-在三行狀態碼後面再印 putRes.ok。應是 true。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-200 屬於 2xx，所以 ok 是 true。三個方法的狀態碼那三行不變。
-
-```diff 04-js/pages/178-js-rest.html
-  // ...
-          console.log(patchRes.status);
-          console.log(deleteRes.status);
-+         console.log(putRes.ok);
-        };
-  
-        main();
-      // ...
-```
-
-```text
-200
-200
-200
-true
-```
-
-</details>
 
 ### FormData 送出表單
 
-表單已經可以用 `FormData` 讀欄位。把它直接當成 fetch 的 body 時，瀏覽器會自己加上含有邊界的內容類型。規則是不要自己設定 Content-Type。自己設成 JSON 或漏掉邊界時，對方會拆不開欄位。
+`FormData` 可以從表單收集所有欄位。把它直接放進 fetch 的 body，瀏覽器會自己加上內容類型與分隔欄位用的邊界，所以規則是不要手動設定 Content-Type。手動設成 JSON 或自己寫的值，邊界就對不上，對方拆不開欄位。
 
-這一支仍打向假 API。欄位值先印在 Console，確認讀得到；狀態碼只用來確認請求有送出。假 API 主要示範 JSON 本體，回應裡不一定看得到表單欄位。
+這個 demo 打向假 API。假 API 不會解析表單欄位，所以欄位值改用頁面上的文字顯示，確認 FormData 讀得到；狀態碼只用來確認請求有送出。
 
 **觀念**
 
-頁面載入後就送出表單。第一行是欄位值，第二行是狀態碼。沒有手動加 JSON 標頭。
+按下送出後，攔下表單預設的整頁送出，改由 fetch 發出請求，再把欄位值與狀態碼寫回頁面。
 
 ```html 04-js/pages/179-js-form.html
 <!DOCTYPE html>
@@ -2687,21 +2057,20 @@ true
       <input name="name" value="小安" required />
       <button type="submit">送出</button>
     </form>
+    <p id="result">按下送出後，結果顯示在這裡。</p>
     <script>
       const form = document.querySelector('#editor');
+      const result = document.querySelector('#result');
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const data = new FormData(form);
-        console.log(data.get('name'));
         const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
           method: 'POST',
           body: data,
         });
-        console.log(response.status);
+        result.textContent = `欄位 name：${data.get('name')}，狀態碼：${response.status}`;
       });
-
-      form.requestSubmit();
     </script>
   </body>
 </html>
@@ -2709,59 +2078,31 @@ true
 
 **解析**
 
-- preventDefault 先停掉表單預設的整頁送出，改由 fetch 發請求。
-- FormData 從表單收集欄位。get 讀到的是小安，這一步還不需要網路。
-- body 放 FormData 本身，沒有設定 Content-Type，邊界才不會弄丟。
-- 201 表示假 API 接受了這次 POST。回應內容不一定含有 name。
-
-```text
-小安
-201
-```
-
-{% note success %}
-**換你試試：**
-把輸入框的 value 改成小林。Console 第一行應變成小林，狀態碼仍是 201。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-送出前先把欄位改成小林。FormData 在 requestSubmit 時讀到的就是這個新值。
-
-```diff 04-js/pages/179-js-form.html
-  // ...
-          console.log(response.status);
-        });
-  
-+       document.querySelector('[name="name"]').value = '小林';
-        form.requestSubmit();
-      </script>
-    // ...
-```
-
-```text
-小林
-201
-```
-
-</details>
+- preventDefault 先停掉表單預設的整頁送出，否則頁面會重新載入。
+- 傳給 FormData 的是表單元素，它依各欄位的 name 收集值，所以 get('name') 讀到小安。
+- body 直接放 FormData 物件，沒有設定標頭。
+- 按下送出後，輸入框下方的文字變成「欄位 name：小安，狀態碼：201」；改輸入框的內容再送，欄位值會跟著變。
 
 ## 載入、成功與錯誤畫面
 
-網路不會在下一行就結束。畫面上要有載入中、完成、失敗三種樣子，而且都由同一份狀態畫出來。做法和上一篇的重繪相同：先改狀態，再呼叫 render。
+網路請求要等一段時間，畫面不能只在成功時才有內容。這一節先把「載入中、完成、失敗」三種樣子交給同一份狀態重繪，再把前面學的 fetch 與表單合成一個完整的小頁面。
+
+本節的 demo 都用 fetch 讀取相對路徑的檔案，必須用 Live Server 這類本機伺服器開啟。直接用檔案方式（網址以 file 開頭）開啟會讀不到。
 
 ### 三種狀態的重繪
 
-狀態只記現在是哪一種，以及成功時的陣列。render 先寫狀態文字，只有 ready 才把清單畫出來。失敗時清單是空的，避免留下上一輪的項目。
+做法和上一篇的狀態重繪相同：先改狀態，再呼叫 render。狀態只記現在是哪一種，以及成功時拿到的陣列；render 依狀態寫出文字，只有成功時才畫清單。
 
-- `loading` 表示請求還沒結束。清單先清掉，文字顯示載入中。
-- `ready` 表示本體已經變成陣列。這時才依陣列建立 li。
-- `error` 表示狀態碼不成功，或請求被拒絕。文字顯示讀取失敗，清單維持空白。
+**一覽**
+
+- `loading`：請求還沒結束。清單先清掉，文字顯示載入中。
+- `ready`：本體已經轉成陣列。這時才依陣列建立 li。
+- `error`：狀態碼不成功，或請求根本沒送達。文字顯示讀取失敗，清單維持空白。
 
 **觀念**
 
-載入函式先切到 loading 並印出這個字，故意等 200 毫秒，再讀 items.json。成功後印出 ready 與長度。按鈕可以再跑一次。
+- 每次載入都先清空舊資料再重畫，畫面就不會殘留上一輪的項目。
+- 失敗要自己判斷：伺服器回 404 時 fetch 並不會拒絕，所以要檢查 ok，不成功就丟出錯誤交給 catch。
 
 ```html 04-js/pages/180-js-loading.html
 <!DOCTYPE html>
@@ -2772,8 +2113,7 @@ true
     <title>三種狀態的重繪</title>
     <style>
       body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      button, input { font: inherit; }
-      form { display: flex; gap: 0.5rem; margin: 0.75rem 0; }
+      button { font: inherit; }
       li { margin: 0.35rem 0; }
     </style>
   </head>
@@ -2782,17 +2122,12 @@ true
     <ul id="list"></ul>
     <button type="button" id="reload">重新載入</button>
     <script>
-      const state = { status: 'idle', items: [] };
+      const state = { status: 'loading', items: [] };
       const statusEl = document.querySelector('#status');
       const list = document.querySelector('#list');
 
       const render = () => {
-        const label = {
-          idle: '尚未載入',
-          loading: '載入中',
-          ready: '完成',
-          error: '讀取失敗',
-        };
+        const label = { loading: '載入中', ready: '完成', error: '讀取失敗' };
         statusEl.textContent = label[state.status];
         list.replaceChildren();
         if (state.status !== 'ready') return;
@@ -2809,23 +2144,21 @@ true
         render();
         console.log(state.status);
         try {
+          // 故意等 200 毫秒，讓載入中停留在畫面上
           await new Promise((resolve) => setTimeout(resolve, 200));
           const response = await fetch('data/items.json');
           if (!response.ok) throw new Error(String(response.status));
           state.items = await response.json();
           state.status = 'ready';
-        } catch (error) {
+        } catch {
           state.status = 'error';
-          state.items = [];
         }
         render();
         console.log(state.status);
         console.log(state.items.length);
       };
 
-      document.querySelector('#reload').addEventListener('click', () => {
-        load();
-      });
+      document.querySelector('#reload').addEventListener('click', load);
       load();
     </script>
   </body>
@@ -2834,10 +2167,11 @@ true
 
 **解析**
 
-- 進函式就先改成 loading 並 render，所以會先看到載入中，即使檔案其實很快就回來。
-- 200 毫秒的等待只是為了把這個狀態留在畫面上。正式讀取時可以拿掉。
-- ok 才把陣列放進狀態。ready 之後 render 才建立三個 li。
-- 失敗時長度是 0，狀態文字是讀取失敗，不會把上一次的清單留在畫面上。
+- 頁面一開啟就先看到載入中，接著變成完成並列出三筆。程式故意多等 200 毫秒，讓載入中停留得久一點，正式讀取時可以拿掉。
+- 按下重新載入會再走一輪：清單清空、顯示載入中，然後重新讀取。
+- 把網址改成不存在的檔案時，404 會進入 catch，狀態變成 error，畫面只剩讀取失敗，Console 的長度是 0。
+
+Console 的輸出為了閱讀只列文字內容，和實際畫面（行號、顏色）略有不同。
 
 ```text
 loading
@@ -2845,46 +2179,17 @@ ready
 3
 ```
 
-{% note success %}
-**換你試試：**
-把網址改成 data/missing.json。Console 應變成 loading、error、0。畫面文字是讀取失敗。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-404 會進你丟出的錯誤，catch 把狀態改成 error。json() 不會被呼叫，items 保持空陣列。
-
-```diff 04-js/pages/180-js-loading.html
-  // ...
-          try {
-            await new Promise((resolve) => setTimeout(resolve, 200));
--           const response = await fetch('data/items.json');
-+           const response = await fetch('data/missing.json');
-            if (!response.ok) throw new Error(String(response.status));
-            state.items = await response.json();
-            // ...
-```
-
-```text
-loading
-error
-0
-```
-
-</details>
-
 ### 綜合練習：抓清單與新增
 
-這一頁同時有狀態文字、表單與清單。第一步只負責把本地檔畫出來。第二步補上載入與失敗，並在送出時 POST 到假 API，再把新的一筆推進自己的狀態。假 API 不會改寫你的 JSON 檔，所以重新整理後，新增的那筆會消失。
+這個頁面同時有狀態文字、表單與清單，把前面學的 fetch 讀取、POST 與重繪合在一起。分兩步：先只把本地檔畫出來，再補上載入與失敗狀態，並在送出時把新的一筆 POST 到線上的測試用 API（jsonplaceholder）。這個測試 API 只會假裝收下資料，不會真的存起來，所以重新整理後新增的那筆會消失。
 
 **第一步：畫出清單**
 
-先確認檔案讀得到、畫面上有三列。表單先放著，這一步還不聽送出。
+先確認檔案讀得到，畫面上有三列。這一步還沒處理表單，也沒有檢查失敗。
 
 **觀念**
 
-main 等 json() 之後，把每一筆做成 li，狀態文字寫成完成，並印出長度。
+main 等 json 轉好之後，把每一筆做成 li，狀態文字寫成完成，並印出長度。
 
 ```html 04-js/pages/181-js-items.html
 <!DOCTYPE html>
@@ -2932,51 +2237,22 @@ main 等 json() 之後，把每一筆做成 li，狀態文字寫成完成，並�
 
 **解析**
 
-- 這一支假設檔案存在，還沒有檢查 ok，也還沒有載入中的文字。
-- 三列的文字是名字、空白、價格，資料來自 items.json。
-- 表單按下去會整頁送出。第二步才改由 fetch 處理。
+- 畫面出現完成與三列文字，每列是名稱、空白、價格，資料來自 items.json。
+- 這一版假設檔案一定讀得到，沒有檢查 ok，也沒有載入中的文字。
+- 此時按新增，表單會以傳統方式整頁送出，頁面重新載入。第二步才改由 fetch 處理。
 - Console 的 3 用來對照畫面上的列數。
 
 ```text
 3
 ```
 
-{% note success %}
-**換你試試：**
-在每一列後面改印 item.name 到 Console。長度那一行留著，下面應依序是筆、紙、尺。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-forEach 多一行 log 就會依陣列順序印出名字。畫面的列數仍然是三。
-
-```diff 04-js/pages/181-js-items.html
-  // ...
-            li.textContent = item.name + ' ' + item.price;
-            list.append(li);
-+           console.log(item.name);
-          });
-          console.log(items.length);
-        // ...
-```
-
-```text
-3
-筆
-紙
-尺
-```
-
-</details>
-
 **第二步：補上狀態與新增**
 
-載入時先進入 loading。成功才畫清單，失敗就留下讀取失敗。表單通過檢查後，把名稱與價格送到假 API，回應成功才推進 state.items 並重畫。
+載入時先進入 loading，成功才畫清單，失敗就留下讀取失敗。送出表單時先檢查輸入，再把名稱與價格 POST 出去，回應成功才把新的一筆推進 state 並重畫。
 
 **觀念**
 
-load 會先印 loading。讀取成功後印 ready 與 3。送出時才會再印你輸入的名稱，這份自動執行的結果停在前三行。
+load 先印 loading，成功後印 ready 與 3。之後每新增一筆，會再印出那一筆的名稱。
 
 ```html 04-js/pages/181-js-items.html.final
 <!DOCTYPE html>
@@ -3028,7 +2304,7 @@ load 會先印 loading。讀取成功後印 ready 與 3。送出時才會再印�
           if (!response.ok) throw new Error(String(response.status));
           state.items = await response.json();
           state.status = 'ready';
-        } catch (error) {
+        } catch {
           state.status = 'error';
         }
         render();
@@ -3038,30 +2314,31 @@ load 會先印 loading。讀取成功後印 ready 與 3。送出時才會再印�
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
+        if (state.status !== 'ready') return;
         const data = new FormData(form);
         const name = String(data.get('name')).trim();
-        const price = Number(data.get('price'));
-        if (!name || Number.isNaN(price)) return;
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: name, body: String(price), userId: 1 }),
-        });
-        if (!response.ok) {
-          state.status = 'error';
-          render();
+        const priceText = String(data.get('price')).trim();
+        const price = Number(priceText);
+        if (!name || !priceText || Number.isNaN(price)) {
+          statusEl.textContent = '請輸入名稱與數字價格';
           return;
         }
-        const created = await response.json();
-        state.items.push({ id: created.id, name, price });
-        state.status = 'ready';
-        form.reset();
-        render();
-        console.log(name);
+        try {
+          const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: name, body: String(price), userId: 1 }),
+          });
+          if (!response.ok) throw new Error(String(response.status));
+          const created = await response.json();
+          state.items.push({ id: created.id, name, price });
+          form.reset();
+          render();
+          console.log(name);
+        } catch {
+          // 清單保持原樣，只提示新增失敗
+          statusEl.textContent = '新增失敗';
+        }
       });
 
       load();
@@ -3072,10 +2349,13 @@ load 會先印 loading。讀取成功後印 ready 與 3。送出時才會再印�
 
 **解析**
 
-- loading 時 render 會把清單清掉，所以不會先閃出舊資料。
-- 不是 2xx 就進 error，清單保持空白。
-- 名稱去掉空白後是空的，或價格不是數字，就直接 return，不會送出。
-- POST 成功後把這一筆推進陣列。假 API 不會更新 items.json，重新整理會回到檔案裡的三筆。
+- 載入中時 render 會把清單清掉，所以不會先閃出舊資料；讀取失敗時清單保持空白。
+- 名稱或價格去掉空白後是空的，或價格不是數字時（空字串轉成數字會變成 0，所以要另外檢查），只在文字區提示，不會送出請求。
+- 新增失敗（狀態碼不成功，或網路不通）只顯示新增失敗，原本的清單保持不動。這是新增動作的失敗，與讀取失敗不同，不該把已讀到的清單清掉。
+- POST 成功後清單多出一列，輸入框清空；重新整理會回到檔案裡的三筆。
+- 狀態還不是 ready 時按新增會被直接忽略，避免在載入中或失敗時加進清單。
+
+開啟頁面時的 Console：
 
 ```text
 loading
@@ -3083,46 +2363,24 @@ ready
 3
 ```
 
-{% note success %}
-**換你試試：**
-讀取成功後多印第一筆的 name。Console 最後一行應是筆。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-items[0] 就是檔案裡的第一個物件。送出表單的流程沒有改。
-
-```diff 04-js/pages/181-js-items.html.final
-  // ...
-          console.log(state.status);
-          console.log(state.items.length);
-+         console.log(state.items[0].name);
-        };
-  
-        form.addEventListener('submit', async (event) => {
-          // ...
-```
+在名稱輸入「膠帶」、價格輸入 30 後送出，清單多一列，Console 多一行：
 
 ```text
-loading
-ready
-3
-筆
+膠帶
 ```
-
-</details>
 
 ## 選讀：取消與逾時
 
-人可能在回應回來之前就離開這一步。`AbortController` 可以中止進行中的 fetch。`AbortSignal.timeout` 則在時間到時自己中止。被中止的 Promise 會拒絕，錯誤名稱是 AbortError，不會帶著 HTTP 狀態碼。
+使用者可能在回應回來之前就離開這一步，或是伺服器遲遲不回應。這一節介紹兩種中止進行中請求的方式：自己呼叫取消，或設定時限讓它自動中止。被中止的 fetch 會拒絕，不會給你回應物件，也沒有 HTTP 狀態碼。
 
-- `AbortController` 建立控制器，回傳的 signal 交給 fetch。呼叫 `abort` 就中止這次請求。
-- `AbortSignal.timeout` 回傳一個會在毫秒數到達時中止的 signal。時間內完成就不受影響。
+**一覽**
 
-**觀念**
+- `AbortController`：建立控制器，把它的 signal 交給 fetch；呼叫控制器的 abort 就中止這次請求，錯誤名稱是 AbortError。
+- `AbortSignal.timeout`：直接產生一個會在指定毫秒後自動中止的 signal，不需要控制器；時限到了的錯誤名稱是 TimeoutError，與主動取消不同。
 
-第一個請求立刻 abort，所以名稱是 AbortError。第二個給 3000 毫秒，本地檔會在時限內讀完，ok 是 true。
+### 取消請求
+
+signal 是控制器交給 fetch 的中止訊號。fetch 一發出就立刻 abort，這次請求沒有機會完成，會以 AbortError 拒絕。
 
 ```html 04-js/pages/182-js-abort.html
 <!DOCTYPE html>
@@ -3130,7 +2388,7 @@ ready
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：取消與逾時</title>
+    <title>選讀：取消請求</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -3145,11 +2403,6 @@ ready
         } catch (error) {
           console.log(error.name);
         }
-
-        const response = await fetch('data/items.json', {
-          signal: AbortSignal.timeout(3000),
-        });
-        console.log(response.ok);
       };
 
       main();
@@ -3160,56 +2413,72 @@ ready
 
 **解析**
 
-- abort 之後那個 fetch 會拒絕，不會給你回應物件。
-- catch 裡看 name。AbortError 表示被中止，不是 404。
-- timeout 的 signal 在時限內沒被中止，第二個請求就照常完成。
-- 取消時的錯誤名稱是 AbortError。畫面若要和讀取失敗分開，就不要共用同一句狀態文字。
+- 頁面只有一句說明，結果在 Console。
+- abort 之後 await 會拒絕並進入 catch，所以不會印出「不該完成」。
+- 名稱是 AbortError，表示是被中止，而不是 404 之類的伺服器回應。畫面若要分開顯示，取消時不該套用讀取失敗的文字。
 
 ```text
 AbortError
-true
 ```
 
-{% note success %}
-**換你試試：**
-拿掉 abort 那一行，並在 try 裡印出完成。第一行應變成完成，第二行仍是 true。
-{% endnote %}
+### 設定逾時
 
-<details>
-<summary>參考答案</summary>
+signal 的時限一到就自動中止。請求在時限內完成就不受影響；超過時限，fetch 以 TimeoutError 拒絕。`AbortSignal.timeout` 已是各主流瀏覽器都支援的標準功能。
 
-沒有人中止時，await 會拿到回應。這一支不讀本體，只確認它完成。
+```html 04-js/pages/182b-js-timeout.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>選讀：設定逾時</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const main = async () => {
+        // 時限內完成：照常拿到回應
+        const response = await fetch('data/items.json', {
+          signal: AbortSignal.timeout(3000),
+        });
+        console.log(response.ok);
 
-```diff 04-js/pages/182-js-abort.html
-  // ...
-          const controller = new AbortController();
-          const job = fetch('data/items.json', { signal: controller.signal });
--         controller.abort();
-          try {
-            await job;
--           console.log('不該完成');
-+           console.log('完成');
-          } catch (error) {
-            console.log(error.name);
-          // ...
+        // 先等 200 毫秒讓 50 毫秒的時限過期，再發請求
+        const signal = AbortSignal.timeout(50);
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        try {
+          await fetch('data/items.json', { signal });
+        } catch (error) {
+          console.log(error.name);
+        }
+      };
+
+      main();
+    </script>
+  </body>
+</html>
 ```
+
+**解析**
+
+- 第一個請求給 3000 毫秒，本地檔會在時限內讀完，ok 是 true。
+- 第二個 signal 只給 50 毫秒，程式先等 200 毫秒讓時限過期。已經中止的 signal 交給 fetch，fetch 會直接拒絕，名稱是 TimeoutError。真實情況是伺服器太慢，原理相同。
+- 逾時（TimeoutError）與主動取消（AbortError）名稱不同，可以在 catch 裡分開處理。
 
 ```text
-完成
 true
+TimeoutError
 ```
-
-</details>
 
 ## 選讀：同源政策與 CORS
 
-瀏覽器預設只讓這一頁讀「同一個來源」的回應內容。來源看的是協定、主機與連接埠，三個都相同才算同一個來源。別的網站若沒有在回應裡允許你這個來源，腳本就讀不到那份回應。
+瀏覽器預設只讓這一頁讀取「同一個來源」的回應內容。來源由協定、主機與連接埠組成，三個都相同才算同一個來源。對方網站若沒有在回應裡明確允許你的來源，腳本就讀不到那份回應。
 
-這不是伺服器沒開機。請求可能已經送達，瀏覽器仍會把這次 `fetch` 拒絕，錯誤名稱是 TypeError，看起來和斷線很像。要連同 cookie 一起送時才需要設定 `credentials`。對方必須明確允許你的來源，不能用萬用字元來配合帶憑證的請求。
+這個允許機制叫 CORS（跨來源資源共用），規則設定在對方的伺服器，由瀏覽器負責檢查。請求可能已經送達，瀏覽器卻仍會讓這次 fetch 拒絕，錯誤名稱是 TypeError，看起來和斷線很像。伺服器對伺服器的請求不受這道檢查限制，因為它只存在於瀏覽器。
 
 **觀念**
 
-example.com 沒有允許這個練習頁讀取它的內容，所以第一行是 TypeError。旁邊的 items.json 是同一個來源，ok 仍是 true。
+example.com 沒有允許這個練習頁讀取它的內容，所以第一行是 TypeError。旁邊的 items.json 與頁面同一個來源，ok 是 true。
 
 ```html 04-js/pages/183-js-cors.html
 <!DOCTYPE html>
@@ -3241,65 +2510,36 @@ example.com 沒有允許這個練習頁讀取它的內容，所以第一行是 T
 
 **解析**
 
-- 練習頁與 example.com 的主機不同，不是同一個來源。
-- 對方沒有允許這個來源時，fetch 拒絕，名稱是 TypeError。
-- 這種失敗沒有 response.status 可以讀，因為你拿不到回應物件。
-- 本地 JSON 與這頁同一個來源，不受這條跨來源規則影響。
+- 練習頁（本機網址）與 example.com 的主機不同，不是同一個來源。
+- 對方沒有允許這個來源，所以 fetch 拒絕，名稱是 TypeError，也拿不到狀態碼。CORS 的詳細訊息要看 DevTools 的 Console 與 Network。
+- 本地 JSON 與這頁同一個來源，不受跨來源規則影響。
+- 跨來源要連同 cookie 一起送時，須把 credentials 設成 include，而且對方必須回應明確的來源，不能使用萬用字元。
 
 ```text
 TypeError
 true
 ```
 
-{% note success %}
-**換你試試：**
-把跨來源網址改成 data/items.json，兩次都讀本地檔。第一行應變成沒被擋，第二行仍是 true。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-同一個來源的檔案可以讀到本體，try 裡的 log 會執行，不會進 catch。
-
-```diff 04-js/pages/183-js-cors.html
-  // ...
-        const main = async () => {
-          try {
--           await fetch('https://example.com/');
-+           await fetch('data/items.json');
-            console.log('沒被擋');
-          } catch (error) {
-            // ...
-```
-
-```text
-沒被擋
-true
-```
-
-</details>
-
 # 瀏覽器儲存
 
-重新整理之後，變數裡的清單會消失。瀏覽器提供的儲存可以把文字留在這台電腦的這個來源底下。這一章用 Web Storage 留下待辦，再選讀 cookie 與兩種登入之後怎麼認得人。
+重新整理之後，變數裡的待辦清單會消失。瀏覽器提供一塊小空間，可以把文字留在這台電腦上。這一章先學 Web Storage：兩種儲存區的差別、怎麼存物件，再用它讓待辦清單重新整理後還在。選讀的部分介紹 cookie，以及登入之後網站怎麼認得同一個人。
 
-## Web Storage
+## localStorage 與 sessionStorage
 
-`localStorage` 與 `sessionStorage` 都是鍵對應到字串。介面相同，差別在資料活多久。兩者都只屬於現在這個來源，別的網站讀不到。
+Web Storage 是瀏覽器提供的鍵值儲存：用一個名字（鍵）換一段文字（值）。它有兩個儲存區，介面完全相同，差別只在資料能活多久。兩者都只屬於目前的來源，也就是通訊協定、網域與埠號都相同的網站，其他來源的頁面讀不到。
 
-### localStorage 與 sessionStorage
+**一覽**
 
-兩個物件的方法一樣。寫入用 setItem，讀取用 getItem，刪除一筆用 removeItem。找不到鍵時 `getItem` 回傳 null，不會拋錯。
-
-- `localStorage` 在關掉分頁、關掉瀏覽器之後還在，直到你刪掉或程式清掉。適合留下待辦與偏好。
-- `sessionStorage` 只活在這個分頁。分頁關掉就沒了，重新整理還在。適合暫時的步驟。
-- `clear` 會刪掉這個來源底下該儲存區的每一個鍵。課堂不要對整個儲存區呼叫它。
-
-**容量與型別。** 值只能是字串。超出容量時 `setItem` 會拋錯，所以寫入大量資料前要知道它不是拿來放檔案的。
+- `localStorage`：關掉分頁或瀏覽器後資料仍在，同一來源的所有分頁共用，直到程式或使用者刪掉。適合留下偏好與待辦。
+- `sessionStorage`：只屬於單一分頁，重新整理還在，分頁關掉就消失，不同分頁各自獨立。適合暫時的步驟。
+- `setItem(鍵, 值)`：寫入一筆，同名的鍵會被覆蓋。
+- `getItem(鍵)`：讀出一筆，找不到時回傳 `null`，不會拋錯。
+- `removeItem(鍵)`：刪掉一筆。
+- `clear()`：刪掉該儲存區在這個來源底下的所有鍵。課堂練習不要呼叫它，以免清掉其他練習留下的資料。
 
 **觀念**
 
-兩個儲存各寫一筆，印出來，再刪掉 localStorage 的那一筆。sessionStorage 的值這時還在，但這一支沒有再讀它。
+值一律是字串。下面的 demo 各寫一筆到兩個儲存區，印出來，再刪掉 localStorage 那一筆，最後確認 sessionStorage 的值不受影響。
 
 ```html 04-js/pages/184-js-storage.html
 <!DOCTYPE html>
@@ -3318,6 +2558,7 @@ true
       console.log(sessionStorage.getItem('step'));
       localStorage.removeItem('color');
       console.log(localStorage.getItem('color'));
+      console.log(sessionStorage.getItem('step'));
     </script>
   </body>
 </html>
@@ -3325,59 +2566,43 @@ true
 
 **解析**
 
-- setItem 的兩個引數都是字串。color 這筆放在 localStorage。
-- step 放在 sessionStorage，讀法與 localStorage 相同。
-- removeItem 只刪 color。下一次 getItem 得到 null，不是空字串，也不會拋錯。
-- 重新整理後，若沒有再 remove，localStorage 的鍵還在。關掉分頁後，sessionStorage 的 step 會消失。
+- 頁面上只有說明文字，四行結果都在 Console。前兩行是剛寫進去的 teal 與 1。
+- `removeItem` 只刪 color，再讀同一個鍵得到 null，不是空字串。
+- step 在另一個儲存區，所以第四行仍是 1。
+- 重新整理後，localStorage 若沒有被刪就還在；關掉分頁後，sessionStorage 的 step 會消失。
+
+本章的 Console 輸出區塊只列出文字，和實際畫面（行號、引號、顏色）略有不同。
 
 ```text
 teal
 1
 null
+1
 ```
 
-{% note success %}
-**換你試試：**
-刪掉 color 之後再讀一次 step，並把寫入的 step 改成 2。最後兩行應是 null 與 2。
+**容量與限制**
+
+- 每個來源每種儲存區約有 5 MB 上下的空間，各瀏覽器略有差異。寫入超過容量會拋出 `QuotaExceededError`，所以它適合放小量文字，不適合放檔案；大量資料要改用 IndexedDB（瀏覽器內建的大容量資料庫，本課不介紹）。
+- 讀寫是同步的，資料量大時會卡住頁面。
+- 無痕視窗或使用者封鎖網站資料時，寫入可能失敗，正式的程式要用 `try` 與 `catch` 接住錯誤。
+- 同一來源的任何腳本都讀得到，所以不要放密碼或登入憑證。
+
+{% note info %}
+**用方法，不要用點語法**
+`localStorage.color = 'teal'` 也能寫入，但鍵名可能和內建方法撞名（例如叫 clear）。本課一律用 setItem 與 getItem。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+## 存物件與保存待辦清單
 
-removeItem 不影響另一個儲存區。step 改的是寫入的字串，getItem 就讀到 2。
-
-```diff 04-js/pages/184-js-storage.html
-  // ...
-      <script>
-        localStorage.setItem('color', 'teal');
--       sessionStorage.setItem('step', '1');
-+       sessionStorage.setItem('step', '2');
-        console.log(localStorage.getItem('color'));
-        console.log(sessionStorage.getItem('step'));
-        localStorage.removeItem('color');
-        console.log(localStorage.getItem('color'));
-+       console.log(sessionStorage.getItem('step'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-teal
-2
-null
-2
-```
-
-</details>
+儲存區只收字串，物件與陣列要先轉成 JSON 文字才能放進去，讀出來再轉回來。這一節先看轉換規則，再把上一篇的待辦清單接上 localStorage，做出重新整理後仍然保留的版本。
 
 ### 存物件要轉 JSON
 
-儲存區不收物件。你把物件交進去時，它會先被轉成 [object Object] 這段文字，之後 parse 就會拋錯。規則是寫入前 `stringify`，讀出後再 parse。文字不合法時要接住錯誤，退回預設資料。
+直接把物件交給 `setItem`，瀏覽器會先把它轉成 [object Object] 這段字，原本的內容就丟了，之後也無法還原。正確的做法是寫入前 `JSON.stringify`，讀出後 `JSON.parse`。
 
 **觀念**
 
-note 先變成文字再存。讀出來的 raw 是字串，parse 之後才有 title。示範結束就把這筆刪掉，避免留在你的瀏覽器裡。
+下面的 demo 先示範錯誤寫法，印出來是無用的字串；再示範正確寫法，讀出的 raw 是字串，parse 之後才有 title。結尾把兩個鍵都刪掉，不在你的瀏覽器裡留下東西。
 
 ```html 04-js/pages/185-js-storage-json.html
 <!DOCTYPE html>
@@ -3391,11 +2616,17 @@ note 先變成文字再存。讀出來的 raw 是字串，parse 之後才有 tit
     <p>結果在 DevTools 的 Console。</p>
     <script>
       const note = { title: '讀書', done: false };
+
+      localStorage.setItem('note-wrong', note);
+      console.log(localStorage.getItem('note-wrong'));
+
       localStorage.setItem('note', JSON.stringify(note));
       const raw = localStorage.getItem('note');
       const back = JSON.parse(raw);
       console.log(typeof raw);
       console.log(back.title);
+
+      localStorage.removeItem('note-wrong');
       localStorage.removeItem('note');
     </script>
   </body>
@@ -3404,55 +2635,28 @@ note 先變成文字再存。讀出來的 raw 是字串，parse 之後才有 tit
 
 **解析**
 
-- stringify 的結果才是 setItem 的第二個引數。
-- getItem 永遠給字串或 null。typeof raw 因此是 string。
-- parse 之後才讀得到 title。這個 back 是新物件。
-- 若 setItem 時直接放 note，存進去的會是 [object Object]，parse 會拋出 SyntaxError。
+- 第一行印出 [object Object]，這就是物件被直接存進去的結果。
+- `getItem` 永遠回傳字串或 null，所以第二行的 typeof raw 是 string。
+- parse 之後得到的 back 是一個新物件，讀得到 title；改它不會改到儲存區，要再 `setItem` 才會寫回。
+- 若對 [object Object] 呼叫 parse，會拋出 SyntaxError，所以讀取來路不明的文字時要用 `try` 與 `catch`，下一節就是這樣做。
 
 ```text
+[object Object]
 string
 讀書
 ```
 
-{% note success %}
-**換你試試：**
-把 title 改成「寫練習」，其餘流程不變。第二行應變成寫練習。
-{% endnote %}
+### 待辦清單重新整理後還在
 
-<details>
-<summary>參考答案</summary>
+上一篇的待辦清單把資料放在程式的 state，重新整理就回到最初兩筆。這一節沿用同一份 state、render 與兩個監聽，只在開啟時讀取、改動後寫回。鍵名用 todo-keep，不要呼叫 clear，避免刪到其他練習的資料。
 
-鍵名仍是 note。改的是物件裡的值，stringify 會把新標題寫進文字。
+#### 步驟 1：沿用待辦清單
 
-```diff 04-js/pages/185-js-storage-json.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const note = { title: '讀書', done: false };
-+       const note = { title: '寫練習', done: false };
-        localStorage.setItem('note', JSON.stringify(note));
-        const raw = localStorage.getItem('note');
-        // ...
-```
-
-```text
-string
-寫練習
-```
-
-</details>
-
-### 綜合練習：讓待辦清單重新整理後還在
-
-上一篇的待辦清單重新整理就回到最初兩筆。這一節沿用那份狀態、render 與兩個監聽，把同一份資料放進 `localStorage`。鍵名用 todo-keep，不要呼叫 clear，避免刪掉這個來源底下其他練習留下的鍵。
-
-**第一步：沿用待辦清單**
-
-先讓新增、切換與刪除在這份新頁面上能動。這一步還沒有讀寫儲存，所以重新整理一定回到程式裡的兩筆。
+先確認新增、切換與刪除在這份頁面上能動。這一步還沒有讀寫儲存，所以重新整理一定回到程式裡的兩筆。
 
 **觀念**
 
-狀態寫在程式裡。render 畫出兩列，Console 印出兩個標題，用來對照畫面。
+狀態寫在程式裡，render 把它畫成列表，Console 印出兩個標題，用來和畫面對照。
 
 ```html 04-js/pages/186-js-todo-keep.html
 <!DOCTYPE html>
@@ -3546,54 +2750,27 @@ string
 
 **解析**
 
-- 第二筆 done 是 true，標題會有刪除線。第一筆沒有。
-- 送出時推進一筆並重畫。重新整理後，新的那筆會消失。
-- 點擊仍由 ul 接收，用 data-action 分辨切換或刪除。
-- 這一步沒有 setItem，所以瀏覽器裡不會多出 todo-keep。
+- 頁面上有一個輸入框與新增鈕，下面兩列：讀講義，以及有刪除線的改練習檔，每列後面有切換與刪除鈕。
+- 送出表單會推進一筆並重畫；重新整理後，新增的那筆會消失。
+- 點擊由 ul 統一接收，用 data-action 分辨切換或刪除。
+- 這一步沒有呼叫 `setItem`，瀏覽器裡不會多出 todo-keep。
 
 ```text
 讀講義,改練習檔
 ```
 
-{% note success %}
-**換你試試：**
-把第二筆標題改成「交作業」。Console 應變成讀講義,交作業。重新整理後也還是這筆，因為它寫在程式裡。
-{% endnote %}
+#### 步驟 2：讀出與寫回
 
-<details>
-<summary>參考答案</summary>
-
-標題是狀態的一部分，不是從儲存讀出來的。改程式裡的字，每次開啟都是這句。
-
-```diff 04-js/pages/186-js-todo-keep.html
-  // ...
-          items: [
-            { id: 1, title: '讀講義', done: false },
--           { id: 2, title: '改練習檔', done: true },
-+           { id: 2, title: '交作業', done: true },
-          ],
-        };
-        // ...
-```
-
-```text
-讀講義,交作業
-```
-
-</details>
-
-**第二步：讀出與寫回**
-
-開啟時先讀 `todo-keep`。沒有這個鍵，或文字不是合法 JSON，或裡面沒有 items 陣列，就用程式裡的兩筆。新增、切換、刪除之後都 `stringify` 再寫回去。空陣列也要寫，這樣全部刪光之後，重新整理才不會又回到兩筆預設。
+開啟時先讀 todo-keep。沒有這個鍵、文字不是合法 JSON，或裡面沒有 items 陣列，就用程式裡的兩筆預設；其餘情況用讀到的資料。新增、切換、刪除之後都 `stringify` 再寫回，空陣列也要寫，這樣全部刪光後重新整理，才不會又回到兩筆預設。
 
 {% note info %}
 **若畫面不是預設兩筆**
-這個鍵若已經有舊資料，開啟時會先看到舊清單。到開發者工具刪掉 localStorage 的 todo-keep，再重新整理，就會回到預設。
+這個鍵若已有舊資料，開啟時會先看到舊清單。到 DevTools 的 Application 面板，在 Local storage 刪掉 todo-keep，再重新整理，就會回到預設。
 {% endnote %}
 
 **觀念**
 
-loadState 決定一開始的狀態。沒有舊資料時，Console 仍是兩個預設標題。之後每次改狀態都會 save。
+loadState 決定一開始的狀態，save 在每次改動後把狀態寫回。沒有舊資料時，畫面與 Console 都和步驟 1 相同。
 
 ```html 04-js/pages/186-js-todo-keep.html.final
 <!DOCTYPE html>
@@ -3711,51 +2888,32 @@ loadState 決定一開始的狀態。沒有舊資料時，Console 仍是兩個�
 
 **解析**
 
-- getItem 得到 null 時用 fallback，不會對 null 呼叫 parse。
-- parse 拋錯，或 items 不是陣列，也退回預設。壞資料不會讓整頁停住。
-- save 把 nextId 與 items 一起寫進去，下一筆才不會和舊 id 撞號。
-- 新增、切換、刪除都在改完狀態後 save。只 render、不 save 的話，重新整理還是會丟。
+- 第一次開啟時畫面與步驟 1 一樣。新增一筆或點切換之後重新整理，改動會留下來。
+- `getItem` 得到 null 就用預設，不會對 null 呼叫 parse。
+- parse 拋錯或 items 不是陣列，也退回預設，壞資料不會讓整頁停住。
+- save 把 nextId 與 items 一起寫入，下一筆才不會和舊的 id 撞號。
+- 只 render、忘了 save，重新整理就會丟掉改動。
+- 在別的分頁開同一個網址，會讀到同一份資料，因為 localStorage 是同來源共用。
 
 ```text
 讀講義,改練習檔
 ```
 
-{% note success %}
-**換你試試：**
-沒有舊資料時，把預設第二筆改成「交作業」。Console 應是讀講義,交作業。若 todo-keep 已有資料，先刪掉那個鍵再看。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-fallback 只在沒有可使用的儲存時出現。改的是這份預設標題，不是已經存過的清單。
-
-```diff 04-js/pages/186-js-todo-keep.html.final
-  // ...
-          items: [
-            { id: 1, title: '讀講義', done: false },
--           { id: 2, title: '改練習檔', done: true },
-+           { id: 2, title: '交作業', done: true },
-          ],
-        });
-        // ...
-```
-
-```text
-讀講義,交作業
-```
-
-</details>
-
 ## 選讀：Cookie
 
-Cookie 也是存在瀏覽器裡的一小段文字，但是每次對這個來源發請求都會自動帶上。`document.cookie` 讀到的是一整串還能被腳本看到的 cookie，不是物件。腳本讀不到設成 HttpOnly 的那些。
+Cookie 是瀏覽器替網站保存的一小段文字，和 Web Storage 的最大差別是：每次對該網站發請求，瀏覽器都會自動把它附在請求裡，伺服器也能寫入它。因此 cookie 適合伺服器要認得瀏覽器的情況，例如登入狀態；待辦、草稿與偏好不要放這裡，否則只是讓每次請求變重。
 
-待辦、草稿與偏好不要放這裡。它的空間小，又會跟著請求走，放大之後只是增加每次往返的負擔。登入識別若由伺服器寫成 HttpOnly，頁面腳本本來就不該自己重做一份。
+**一覽**
+
+- 大小：每個 cookie 約 4 KB，遠小於 Web Storage。
+- `max-age`：存活秒數，到期自動刪除；`max-age=0` 表示立刻刪除。沒寫的 cookie 通常在瀏覽器關閉時消失。
+- `SameSite`：跨網站請求要不要帶上它。`Strict` 只在同網站內帶，`Lax` 還包含從其他網站點連結進來，`None` 全部都帶且必須同時有 `Secure`。沒寫時，現行 Chrome 視為 `Lax`。
+- `Secure`：只在 HTTPS 連線送出。
+- `HttpOnly`：頁面腳本讀不到，只有伺服器收得到。只能由伺服器的回應設定，`document.cookie` 無法寫入這個屬性。
 
 **觀念**
 
-這支只寫一個 theme，確認讀得到，再用 max-age 設成 0 把它清掉。不要把清單 stringify 之後塞進 cookie。
+`document.cookie` 不是物件。每次賦值只新增或更新一個 cookie，讀取時卻得到所有腳本看得到的 cookie 串成一段文字，所以要用字串的 includes 找。下面的 demo 寫入 theme，確認讀得到，再用 `max-age=0` 刪掉，最後再確認一次。
 
 ```html 04-js/pages/187-js-cookie.html
 <!DOCTYPE html>
@@ -3768,9 +2926,10 @@ Cookie 也是存在瀏覽器裡的一小段文字，但是每次對這個來源�
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      document.cookie = 'theme=light';
+      document.cookie = 'theme=light; max-age=3600; SameSite=Lax';
       console.log(document.cookie.includes('theme=light'));
       document.cookie = 'theme=; max-age=0';
+      console.log(document.cookie.includes('theme=light'));
     </script>
   </body>
 </html>
@@ -3778,49 +2937,19 @@ Cookie 也是存在瀏覽器裡的一小段文字，但是每次對這個來源�
 
 **解析**
 
-- 指定 cookie 是用賦值一整段文字，不是 setItem。
-- 讀取時拿到的是這個頁面看得到的全部 cookie，所以用 includes 找 theme。
-- max-age 設成 0 表示立刻過期，用來刪掉剛剛那一筆。
-- 這份練習頁的請求以後不該為了待辦而多帶這段文字。應用資料請放 Web Storage。
+- 賦值的文字裡，第一段是名稱與值，分號後面是屬性。
+- 第一行印出 true，表示讀得到剛寫的 theme；刪除後第二行印出 false。
+- 刪除的做法是用同名再寫一次，並把 `max-age` 設成 0。
+- 請用 Live Server 這類網址開啟。直接雙擊開檔案（網址以 file 開頭）時，Chrome 多半不保存 cookie，兩行都會是 false。
 
 ```text
 true
+false
 ```
-
-{% note success %}
-**換你試試：**
-改存 theme=dark，includes 裡的字也改成 dark。Console 仍應是 true。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-寫入與檢查要用同一組名字與值。過期那一行仍然把 theme 清掉。
-
-```diff 04-js/pages/187-js-cookie.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       document.cookie = 'theme=light';
--       console.log(document.cookie.includes('theme=light'));
-+       document.cookie = 'theme=dark';
-+       console.log(document.cookie.includes('theme=dark'));
-        document.cookie = 'theme=; max-age=0';
-      </script>
-    // ...
-```
-
-```text
-true
-```
-
-</details>
 
 ## 選讀：Session 與 Token 認證
 
-登入成功之後，伺服器得在下一次請求時認得同一個人。常見有兩種做法。Session 把狀態留在伺服器，瀏覽器只留一組識別碼，通常放在 cookie，之後的請求會自動帶上。Token 由伺服器簽好交給瀏覽器，程式之後要自己放進標頭，常見的寫法是 Authorization 以 Bearer 開頭。
-
-這一節不做登入表單，也不把密碼送到任何地方。只把兩條流程放在一起看，並做出一個假的標頭字串，確認它的形狀。
+登入成功之後，伺服器必須在下一次請求認得同一個人，常見有兩種做法。Session 把登入狀態留在伺服器，瀏覽器只拿到一組沒有意義的識別碼，通常放在 cookie，之後的請求自動帶上。Token 則是伺服器簽發的一段憑證，由程式自己保存，每次請求再放進標頭，慣例是 Authorization 標頭、值以 Bearer 開頭。
 
 {% mermaid graph TD %}
 loginNode["登入成功"] --> sessionNode["伺服器建立 session"]
@@ -3831,13 +2960,19 @@ tokenNode --> keepNode["程式自己保存 token"]
 keepNode --> headerNode["之後放到 Authorization"]
 {% endmermaid %}
 
-- Session 的識別碼放在 cookie。瀏覽器自動附在請求上，伺服器再去對自己保存的狀態。
-- Token 放在程式拿得到的地方，例如記憶體或 Web Storage。每次請求由程式寫進標頭。
-- 兩者都不是把密碼存起來。密碼只在登入那一次送出，而且這一章沒有練習用的登入網址。
+- Session 的識別碼放在 `HttpOnly` 的 cookie，頁面腳本讀不到；因為瀏覽器會自動附上，伺服器要搭配 `SameSite` 等機制，防止別的網站借用這個自動附上的 cookie 偷偷發請求。
+- Token 常見的格式是 JWT（JSON Web Token）。它通常只有簽章保護，內容沒有加密，任何人都能解開讀，所以不要把機密放進去。
+- Token 放在 `localStorage`，重新整理後還在，但任何在頁面上執行的腳本（包括被注入的惡意程式）都讀得到。放在記憶體的變數比較難被長期偷走，但重新整理就消失。
+- 兩種做法都不需要瀏覽器保存密碼；密碼只在登入那一次送出。
+
+{% note warning %}
+**真正的登入交給現成服務**
+自己實作登入、密碼保存與 token 簽發很容易出錯。實務上會用現成的身分驗證服務，本課專案在選讀的 Firebase 文章裡用 Firebase Authentication。這一節只認識概念，不做登入表單，也不要把這裡的示範字串當成憑證。
+{% endnote %}
 
 **觀念**
 
-第一行描述 session 的請求會自己帶 cookie。第二行是程式組出來的 Bearer 標頭，token 只是示範字串，沒有送到任何伺服器。
+demo 把示範用的 token 組成 Authorization 標頭，放進 `fetch` 的選項物件。因為沒有發出請求，也不會送到任何伺服器。
 
 ```html 04-js/pages/188-js-auth.html
 <!DOCTYPE html>
@@ -3845,16 +2980,15 @@ keepNode --> headerNode["之後放到 Authorization"]
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：Session 與 Token</title>
+    <title>選讀：Token 與 Authorization 標頭</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const sessionFlow = '瀏覽器自動帶上 cookie';
       const token = 'demo-token';
-      const header = 'Bearer ' + token;
-      console.log(sessionFlow);
-      console.log(header);
+      const options = { headers: { Authorization: `Bearer ${token}` } };
+      console.log(options.headers.Authorization);
+      console.log(JSON.stringify(options));
     </script>
   </body>
 </html>
@@ -3862,56 +2996,113 @@ keepNode --> headerNode["之後放到 Authorization"]
 
 **解析**
 
-- session 那一行不是發請求，只是把自動帶上 cookie 這件事說出來。
-- header 以 Bearer 與一個空白開頭，後面才是 token。
-- 這個 demo-token 不是登入結果。不要把它抄去當真的憑證。
-- 若以後真的要附上標頭，是放在 fetch 的 headers，而不是放進網址。
+- 標頭值是 Bearer、一個空白，再接 token，所以第一行是 Bearer demo-token。
+- 第二行是選項物件轉成的文字：標頭放在 headers 裡，而不是放進網址，否則憑證會留在瀏覽紀錄與伺服器記錄中。
+- 真正要發請求時，把這個選項物件當作 `fetch` 的第二個引數。
 
 ```text
-瀏覽器自動帶上 cookie
 Bearer demo-token
+{"headers":{"Authorization":"Bearer demo-token"}}
 ```
 
-{% note success %}
-**換你試試：**
-把 token 改成 demo-2。第二行應變成 Bearer demo-2。第一行不要改。
-{% endnote %}
+# 回家作業
 
-<details>
-<summary>參考答案</summary>
+這份作業只用必教內容，資料取自專案的行程清單。請用 Live Server 或 Vite 開啟頁面，直接雙擊檔案時 `fetch` 讀不到本機的 JSON。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果。
 
-標頭是字串相接。token 變了，Bearer 這個詞還在前面。
+## 起始檔與資料
 
-```diff 04-js/pages/188-js-auth.html
-  // ...
-      <script>
-        const sessionFlow = '瀏覽器自動帶上 cookie';
--       const token = 'demo-token';
-+       const token = 'demo-2';
-        const header = 'Bearer ' + token;
-        console.log(sessionFlow);
-        // ...
+起始檔在練習專案的 `04-js/homework/08-homework.html`。行程與出發日的資料各是一支 JSON，放在同資料夾的 `data/tours.json` 與 `data/departures.json`。
+
+```html 04-js/homework/08-homework.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>08 回家作業</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 720px; }
+      #status { min-height: 1.5em; }
+      #tour-list { padding-left: 20px; }
+    </style>
+  </head>
+  <body>
+    <h1>行程列表</h1>
+    <p>請用 Live Server 開啟，直接雙擊檔案讀不到 JSON。</p>
+    <p>
+      <button id="reload" type="button">重新載入</button>
+      <button id="load-missing" type="button">讀取不存在的檔案</button>
+    </p>
+    <p id="status"></p>
+    <ul id="tour-list"></ul>
+    <p>收藏 <span id="fav-count">0</span> 筆</p>
+
+    <h2>報名</h2>
+    <form id="booking-form">
+      <label>姓名 <input name="name" required /></label>
+      <label>人數 <input name="people" type="number" min="1" max="8" required /></label>
+      <button type="submit">送出</button>
+    </form>
+    <p id="booking-result"></p>
+
+    <script>
+      // 資料在 data/tours.json 與 data/departures.json
+      // 在這裡開始寫
+    </script>
+  </body>
+</html>
 ```
 
-```text
-瀏覽器自動帶上 cookie
-Bearer demo-2
-```
+## 題目
 
-</details>
+### 題目一：讀取並顯示列表
+
+頁面載入時用 `fetch` 讀 `data/tours.json`，把行程顯示在 `#tour-list`。讀取期間 `#status` 顯示「載入中」，成功顯示「共 8 筆」，失敗顯示「讀取失敗」。
+
+完成後頁面有八筆行程，狀態列是「共 8 筆」。
+
+### 題目二：區分 HTTP 錯誤
+
+按「讀取不存在的檔案」，要讀的是一個不存在的路徑。這時 `fetch` 不會 reject，請檢查回應是否成功，並在 `#status` 顯示「HTTP 404」。網路中斷與 HTTP 錯誤要顯示不同的訊息。
+
+完成後按鈕按下去會看到「HTTP 404」，列表維持原樣。
+
+### 題目三：同時讀兩份資料
+
+用 `Promise.all` 同時讀 `tours.json` 與 `departures.json`，依行程編號把出發日的數量併進每一筆，列表上多顯示「N 個出發日」。
+
+完成後每一列都多了「2 個出發日」。
+
+### 題目四：載入期間停用按鈕
+
+把讀取流程寫成 `async` 函式，用 `try`、`catch`、`finally` 處理。「重新載入」按鈕在讀取期間要停用，不論成功或失敗結束後都要恢復。
+
+完成後連續快按兩次「重新載入」，第二次點擊在讀取期間不會有反應，結束後按鈕可再按。
+
+### 題目五：送出報名
+
+表單送出時不要換頁。用 `fetch` 以 POST 把姓名與人數轉成 JSON 送到 `https://jsonplaceholder.typicode.com/posts`，成功後把回應裡的 `id` 顯示在 `#booking-result`。送出期間按鈕停用。
+
+完成後頁面顯示「已收到，編號 101」。
+
+### 題目六：保存收藏
+
+每一列加一個「收藏」按鈕，收藏的行程編號存進 `localStorage`，`#fav-count` 顯示目前筆數。重新整理後收藏狀態仍要保留。
+
+完成後收藏兩筆、重新整理頁面，仍顯示「已收藏」且數字是 2。
 
 # 本篇重點回顧
 
-下面八句是這一篇要帶走的習慣。選讀的事件迴圈、圖片包裝、取消請求、跨來源與 cookie，可以晚一點再看。
+選讀章節有「選讀：事件迴圈」、「選讀：Promise.race 與 any」、「選讀：把計時器與圖片載入包成 Promise」、「選讀：取消與逾時」、「選讀：同源政策與 CORS」、「選讀：Cookie」、「選讀：Session 與 Token 認證」，其餘是必讀主線。
 
-- 同步程式先跑完。延遲 0 的計時器仍排在後面，微任務又比任務佇列更早。
-- 回呼可以把結果交給下一步，但層數一多就很難讀。Promise 用完成與拒絕把後續攤成一條鏈。
-- Promise.all 要全部成功，allSettled 保留每一件的結局。race 取最先落地的，any 取第一個成功。
-- async 函式回傳 Promise。await 只暫停這支函式。彼此無關的工作用 `Promise.all` 同時等。
-- JSON 的鍵與字串要用雙引號。`parse` 把文字變回值，`stringify` 把值收成文字。
-- `fetch` 遇到 404 或 500 仍會完成，要自己看 `ok`。只有送不出去或被中止時才會拒絕。
-- REST 用同一條路徑配上方法表示讀寫。送 JSON 時要帶內容類型，body 用 `stringify` 的結果。
-- `localStorage` 重新整理後還在，`sessionStorage` 只留在這個分頁。物件要先變成 JSON 文字再存。
+- JavaScript 只有一條執行緒，非同步把等待交給瀏覽器、完成後才呼叫回呼，所以頁面不會被卡住，但下一行也不能假設已拿到結果。
+- try 與 catch 能接住錯誤讓程式繼續，語言不會報錯的情況則要自己 `throw new Error` 丟出標準錯誤物件。
+- Promise 代表未來的結果，只會從待定走向已完成或已拒絕，用 then、catch、finally 串成一條鏈，錯誤集中在鏈尾處理。
+- `Promise.all` 同時等多件工作並依陣列順序交回結果，一件失敗就整組失敗，要保留每件的結局則改用 allSettled。
+- async 函式一定回傳 Promise，await 只暫停所在的函式，互不依賴的工作要同時等，總時間才不會相加。
+- JSON 的鍵與字串要用雙引號，parse 把文字還原成值、stringify 把值收成文字，undefined 與函式不會被保留。
+- fetch 遇到 404 或 500 仍會完成，所以要自己檢查 ok，並把載入中、成功、失敗三種狀態畫回畫面。
+- `localStorage` 關掉瀏覽器後仍在、sessionStorage 只屬於這個分頁，兩者都只收字串，物件要先轉成 JSON 文字再存。
 
 # 專有名詞中英對照
 
@@ -3919,82 +3110,75 @@ Bearer demo-2
 
 ## 認識非同步
 
-這一組從呼叫堆疊排到回呼。事件迴圈是選讀，用來解釋執行順序與畫面卡頓。
-
-- 呼叫堆疊（call stack）
-- 事件迴圈（event loop）
 - 同步（synchronous）
 - 非同步（asynchronous）
-- 單執行緒（single thread）
 - 回呼函式（callback）
-- 瀏覽器 API（Web API）
+- 事件迴圈（event loop）
+- 單執行緒（single thread）
+- 執行緒（thread）
+- 阻塞（blocking）
+- 非阻塞（non-blocking）
+- 計時器（timer）
+- 呼叫堆疊（call stack）
 - 任務佇列（task queue）
 - 微任務（microtask）
-- 微任務排程（queueMicrotask）
+- 任務（task）
 - 巢狀地獄（callback hell）
 
 ## Promise
 
-這一組是 Promise 的狀態、鏈與組合方法。async 的語法放在下一組。
-
-- 承諾（Promise）
+- 錯誤處理（error handling）
+- 拋出（throw）
+- 錯誤物件（error object）
 - 待定（pending）
 - 已完成（fulfilled）
 - 已拒絕（rejected）
-- 解決（resolve）
-- 拒絕（reject）
-- 承諾鏈（promise chain）
-- 全部完成（Promise.all）
-- 全部落定（Promise.allSettled）
-- 競速（Promise.race）
-- 任一成功（Promise.any）
-- 聚合錯誤（AggregateError）
+- 執行器（executor）
+- 未處理拒絕（unhandled rejection）
+- 鏈（promise chain）
+- 組合方法（Promise combinator）
 
 ## async 與 await
 
-這一組是把鏈寫成直式的語法。等待的仍是 Promise。
-
 - 非同步函式（async function）
-- 等待（await）
+- 例外（exception）
+- 依序（sequential）
+- 並行（parallel）
 
 ## JSON
 
-這一組是文字格式與兩個轉換方法。Fetch 的本體也會用到它們。
-
-- JSON
-- 剖析（parse）
-- 序列化（stringify）
+- JSON（JavaScript Object Notation）
+- 物件實字（object literal）
+- 循環參照（circular reference）
 
 ## Fetch API
 
-這一組依請求、讀取、寫入、中止與跨來源的順序排列。
-
+- 伺服器（server）
 - 請求（request）
 - 回應（response）
+- 狀態碼（status code）
 - 方法（method）
 - 標頭（header）
 - 本體（body）
-- 狀態碼（status code）
-- 成功旗標（ok）
-- 查詢參數（query string）
-- 網址搜尋參數（URLSearchParams）
-- 表述性狀態轉移（REST）
-- 表單資料（FormData）
-- 中止控制器（AbortController）
-- 中止訊號（AbortSignal）
+- 內容類型（Content-Type）
+- 轉址（redirect）
+- 查詢參數（query parameter）
+- 狀態（state）
+- 取消（abort）
+- 逾時（timeout）
+- 控制器（controller）
+- 中止訊號（signal）
 - 同源政策（same-origin policy）
+- 來源（origin）
 - 跨來源資源共用（CORS）
-- 憑證（credentials）
 
 ## 瀏覽器儲存
 
-這一組是留在瀏覽器裡的文字，以及兩種認得使用者的方式。
-
 - 網頁儲存（Web Storage）
-- 本地儲存（localStorage）
-- 工作階段儲存（sessionStorage）
-- Cookie
-- 工作階段（session）
-- 令牌（token）
-- 授權標頭（Authorization）
-
+- 鍵值儲存（key-value storage）
+- 無痕視窗（incognito window）
+- 認證（authentication）
+- 識別碼（session ID）
+- 憑證（credential）
+- 簽章（signature）
+- 加密（encryption）

@@ -10,17 +10,17 @@ date: 2026-08-30 10:10:00
 
 ![](assets/images/banner/react.png)
 
-網址決定現在畫哪一頁。這一篇用 React Router 8 資料模式的 `createBrowserRouter` 與 `RouterProvider`，從 `react-router` 引入，把 `03-react` 複製成 `04-react-router`，再把原本用按鈕切換的示範收成練習筆記網站。路由表、左側目錄、連結、路徑參數與查詢參數都接在同一份專案上。
+網址決定現在畫哪一頁。這一篇先說明路由是什麼、React Router 的宣告式、資料、框架三種模式怎麼選（專案用資料模式），再把 `03-react` 複製成 `04-react-router` 接上路由器，改成練習筆記網站：路由表與共用版型、`Link` 與 `NavLink`、路徑參數與查詢參數、找不到的頁面，接著用 `loader`、`action`、`Form`、`redirect` 與 `errorElement` 讀取並送出資料，並以 `useFetcher` 與 `useNavigation` 處理不換頁的送出與讀取中狀態。選讀有宣告式與框架模式、`useLocation`，以及部署到 GitHub Pages。
 
 <!-- more -->
 
 # 認識路由
 
-這一章先用狀態把選單與主畫面配在一起，看重新整理與網址各自少了什麼，再說明為什麼要另外找路由套件、React Router 負責什麼。課堂用資料模式，宣告式與框架模式留在同一節對照。可跑的路由表要等複製出 `04-react-router` 之後才開始寫。
+這一章先用狀態把選單與主畫面配在一起，看重新整理與網址各自少了什麼，再說明為什麼要另外找路由套件，以及 React Router 的三種使用模式怎麼選。課堂用資料模式，宣告式與框架模式留作選讀對照。可跑的路由器要等複製出 `04-react-router` 之後才開始寫。
 
 ## 狀態切頁
 
-還沒複製 04 之前，先在 `03-react` 裡試。選單與主畫面可以先放在同一個元件裡，用一個狀態決定現在畫哪一塊。按鈕改的是 `page`，主區就在首頁與清單之間切換。先看這份可跑的元件怎麼配在一起，再看重新整理與網址會停在哪裡。
+還沒有路由套件時，最直接的做法是把選單與主畫面放在同一個元件裡，用一個狀態決定現在畫哪一塊。按鈕改的是 `page`，主區就在首頁與清單之間切換。先看這份可跑的元件怎麼配在一起，再看重新整理與網址會停在哪裡。
 
 ```jsx 03-react/src/demos/86-state-pages.jsx
 import { useState } from 'react';
@@ -61,44 +61,22 @@ export default function StatePages() {
 **解析**
 
 - 按下「清單」之後，主區換成三個標題，網址列仍停在原來的路徑。
-- 每次重新整理，元件重新掛上，`useState` 又從起始值 `'home'` 開始，畫面就從最初的首頁重新來過。
-- 清單沒有自己的地址，所以無法把這一頁分享出去或收成書籤；瀏覽器的上一頁也回不到清單，因為歷史紀錄裡沒有這一筆。
-
-{% note success %}
-**換你試試：**
-把起始值改成 `'list'`。重新整理後應先看到三個標題，而不是「首頁」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改起始值。按鈕與資料留著。
-
-```diff 03-react/src/demos/86-state-pages.jsx
- // ...
- export default function StatePages() {
--  const [page, setPage] = useState('home');
-+  const [page, setPage] = useState('list');
- // ...
-```
-
-</details>
+- 每次重新整理，元件重新掛上，狀態又從起始值 `'home'` 開始，畫面回到最初的首頁。
+- 清單沒有自己的網址，所以無法分享、無法收成書籤；瀏覽器的上一頁也回不到清單，因為歷史紀錄裡沒有這一筆。
 
 ## React Router
 
-網址要對上元件、換頁要進瀏覽器歷史、重新整理要停在同一條路徑，這些事 React 本身不做。React Router 負責這一段，同一套畫面對應可以接成資料模式、宣告式或框架模式。課堂與結業專案用資料模式，另外兩種留作選讀對照。
+網址要對上元件、換頁要進瀏覽器歷史、重新整理要停在同一條路徑，這些事 React 本身不處理。上一節的狀態切頁只改了元件裡的值，網址完全沒動；若自己去聽瀏覽器的歷史事件，再加上巢狀版面、路徑參數與查詢字串，拆路徑與還原畫面都得自己寫。這一節說明專門處理這件事的套件 React Router 做什麼、有哪三種使用模式，以及課堂為什麼選資料模式。
 
-### 三種接法一覽
+### 路由套件做什麼
 
-React 只依狀態決定要渲染哪些元件，不處理網址。上一節的選單只改元件裡的狀態，所以網址沒有跟著變，重新整理也回到起點。手刻路由要自己聽瀏覽器的歷史事件，再依路徑換元件；巢狀版面、路徑參數與查詢字串加進來之後，外框要留著、編號要取出、問號後面的篩選要保留，拆路徑與還原畫面都得自己寫。這些工作和把資料畫進 DOM 是兩件事，所以改用專門做路由的套件。
-
-React Router 把現在的網址對到要畫的元件，並提供換頁用的連結與導覽 Hook，文件不用整頁重載。下面三件事三種接法都做得到。
+React Router 把現在的網址對到要畫的元件，並提供換頁用的連結與導覽 Hook，換頁時文件不用整頁重載。
 
 **一覽**
 
 - 對網址：讀現在的路徑，決定要畫哪一個元件。
-- 管歷史：把換頁推進瀏覽器歷史，上一頁與下一頁回到當時那個畫面，重新整理仍停在同一個路徑。
-- 換頁：連結改的是網址，文件不整頁重載，只有對上的元件換掉。
+- 管歷史：把換頁推進瀏覽器歷史，上一頁與下一頁回到當時的畫面，重新整理仍停在同一個路徑。
+- 換頁：連結只改網址，不整頁重載，只有對上的元件換掉。
 
 {% mermaid graph LR %}
   urlNode["網址"] --> routerNode["React Router"]
@@ -108,603 +86,99 @@ React Router 把現在的網址對到要畫的元件，並提供換頁用的連�
   style viewNode fill:#e8f5e9
 {% endmermaid %}
 
-套件把網址、歷史與換頁接起來。讀取可以留在頁面掛上之後，也可以寫在路由上、於進頁前完成。先看課堂要用的資料模式。
-
 {% note info %}
 **Next.js 自帶路由**
 Next.js 依檔案結構決定路徑（檔案路由，file-based routing），用 Next.js 的專案不必再裝 React Router。本課用 Vite，所以接 React Router。
 {% endnote %}
 
 {% note info %}
-**舊的套件名稱**
-v8 已移除套件 `react-router-dom`。v7 時它只是相容用的再出口。不要再安裝那個套件，也不要照舊文件的入口去引入。
+**舊的套件名稱 react-router-dom**
+React Router v7 以前，瀏覽器用的 API 要從 `react-router-dom` 引入；v7 把它們併進 `react-router`，`react-router-dom` 只剩轉出用的空殼，v8 則把這個套件移除。新專案只裝 `react-router`，也不要照舊文件從 `react-router-dom` 引入。
 {% endnote %}
 
-### 資料模式
+### 三種使用模式
 
-資料模式把路由寫成物件陣列，在元件外面交給 `createBrowserRouter`，再由 `RouterProvider` 畫出來。專案骨架仍是一般的 Vite 與 React。
+官方把 React Router 分成三種模式，由簡到繁是宣告式（Declarative）、資料（Data）、框架（Framework），後者包含前者的功能。差別在於路由設定寫在哪裡，以及能不能在進頁前載入資料、在送出表單時處理資料。
+
+**一覽**
+
+- 宣告式：用 `BrowserRouter` 包住應用，把路由寫成 JSX 元件，只負責對網址、換頁與連結的作用中狀態。
+- 資料：把路由寫成物件陣列，用 `createBrowserRouter` 建立路由器、`RouterProvider` 畫出來，再加上資料載入（`loader`）、表單處理（`action`）與等待中狀態。
+- 框架：資料模式再包上 Vite 插件，加入路由模組、型別安全的 API、程式碼切分，以及單頁（SPA）、伺服器端渲染（SSR）、靜態輸出等策略。
+
+課堂與結業專案用資料模式：專案要在進頁前讀資料、送出表單、顯示讀取中與錯誤頁，這些都是資料模式提供的；同時它仍是一般的 Vite 與 React 專案，入口與目錄結構不必改。
+
+資料模式的完整可跑範例從下一章開始，這一節先看它的樣子：路由器在元件外面建立，再交給 `RouterProvider`。
 
 {% mermaid graph TD %}
-  entry["src/main.jsx<br/>createRoot 渲染 App，不包 BrowserRouter"]
-  routes["src/App.jsx<br/>createBrowserRouter 與 RouterProvider"]
-  layout["src/layouts/MainLayout.jsx<br/>Link、Outlet、ScrollRestoration"]
-  page["src/pages/TripList.jsx"]
-  data["loader 進頁前，頁面用 useLoaderData"]
+  entry["main.jsx<br/>createRoot 渲染 App"]
+  routes["App.jsx<br/>createBrowserRouter 建立路由器<br/>RouterProvider 畫出來"]
+  layout["layouts<br/>共用版面，Outlet 放子頁"]
+  page["pages<br/>各頁元件，可帶 loader"]
   entry --> routes
   routes --> layout
   layout --> page
-  routes --> data
-  data --> page
-  classDef entryC fill:#e3f2fd,stroke:#1e88e5
-  classDef routesC fill:#fff3e0,stroke:#f9a825
-  classDef layoutC fill:#e3f2fd,stroke:#1e88e5
-  classDef pageC fill:#e8f5e9,stroke:#43a047
-  classDef dataC fill:#fff3e0,stroke:#f9a825
-  classDef differBlue fill:#e3f2fd,stroke:#fb8c00,stroke-width:2px
-  classDef differOrange fill:#fff3e0,stroke:#fb8c00,stroke-width:2px
-  classDef differGreen fill:#e8f5e9,stroke:#fb8c00,stroke-width:2px
-  class entry,layout differBlue
-  class routes,data differOrange
-  class page pageC
+  style entry fill:#e3f2fd
+  style routes fill:#fff3e0
+  style layout fill:#e3f2fd
+  style page fill:#e8f5e9
 {% endmermaid %}
-
-這份迷你範例的選單是首頁與行程清單，`/` 畫 `Home`，`/trips` 畫 `TripList`。`action`、`Form`、`redirect` 與 `errorElement` 寫在後面的「讀取與送出資料」，這一節只留一條 `loader`。三種接法都呼叫同一支 `getItems`，先寫在下面的假資料檔。
-
-#### 步驟 1：準備假資料
-
-三種接法都呼叫同一支 `getItems`，先放在 `src/api/fake-api.js`。
-
-```js src/api/fake-api.js
-/**
- * 讀取清單。三種接法都呼叫這個函式，差別只在誰、何時呼叫。
- * @returns {Promise<{ id: string, title: string }[]>}
- */
-export function getItems() {
-  return Promise.resolve([
-    { id: '1', title: '看海' },
-    { id: '2', title: '寫筆記' },
-  ]);
-}
-```
-
-**解析**
-
-- `getItems` 回傳一個已經完成的 Promise，內容是兩筆物件，標題依序是「看海」與「寫筆記」。
-- 三種接法都呼叫這支函式。這一節由 `loader` 在進頁前呼叫，後面兩節沿用同一支函式，只在程式裡引入。
-
-#### 步驟 2：入口
-
-`src/main.jsx` 用 `createRoot` 渲染 `App`，不包 `BrowserRouter`。
-
-```jsx src/main.jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.jsx';
-
-/**
- * 把應用掛上 #root。資料模式不在入口包 BrowserRouter。
- * createRoot(container) 的 container 是掛載點，render(element) 把元素畫進去。
- */
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
-```
-
-**解析**
-
-- 入口只從 `react`、`react-dom/client` 與 `./App.jsx` 引入。
-- `createRoot` 把樹掛上 `#root`，嚴格模式裡只有 `App`。
-
-#### 步驟 3：路由表
-
-路由物件陣列寫在 `src/App.jsx`，交給 `createBrowserRouter` 與 `RouterProvider`。
-
-```jsx src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import MainLayout from './layouts/MainLayout.jsx';
-import Home from './pages/Home.jsx';
-import TripList, { loader as tripLoader } from './pages/TripList.jsx';
-
-/**
- * 建立資料路由器。路由表是物件陣列，寫在元件外面，不要放進 state。
- * 每一筆用 path 對網址，用 element 指定已經建立的元素。
- * 也可以改寫 Component，傳入元件函式，由路由器建立元素。
- * index 為 true 時代表父路徑本身，同一筆不要再寫 path。
- * children 是巢狀子路由，畫進父層 element 裡的 Outlet。
- * loader 在該路由的元件畫出來之前執行，回傳 Promise 時路由器會等待，值交給 useLoaderData。
- * @param {object[]} routes 路由物件陣列
- * @returns {object} 資料路由器，交給 RouterProvider 的 router
- */
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <MainLayout />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: 'trips', element: <TripList />, loader: tripLoader },
-    ],
-  },
-]);
-
-/**
- * 把資料路由器畫進 React 樹。
- * @param {object} props
- * @param {object} props.router createBrowserRouter 的回傳值
- * @returns {React.ReactElement}
- */
-export default function App() {
-  return <RouterProvider router={router} />;
-}
-```
-
-**解析**
-
-- `createBrowserRouter` 收到路由物件陣列，回傳資料路由器。這個物件寫在元件外面，再交給 `RouterProvider`。
-- 父路由的 `element` 是版型。`index: true` 那一筆不寫 `path`，網址就是 `/`。`path: 'trips'` 與父路徑接成 `/trips`，並掛上清單的 `loader`。
-- 同一筆也可以改寫 `Component: Home`，傳入元件函式，由路由器建立元素。這一則用 `element`，和後面「啟用路由」的路由表相同。
-
-#### 步驟 4：版型
-
-`MainLayout` 放選單、`Outlet` 與 `ScrollRestoration`。
-
-```jsx src/layouts/MainLayout.jsx
-/**
- * Link 改網址且不整頁重載。
- * @param {object} props
- * @param {string} props.to 目標路徑
- * @param {React.ReactNode} props.children 連結文字
- * @returns {React.ReactElement}
- */
-/**
- * Outlet 畫出對上的子路由。沒有對上的子路由時是 null。
- * @returns {React.ReactElement | null}
- */
-/**
- * ScrollRestoration 在換頁後還原捲動位置。
- * 資料模式與框架模式可用，放在根版型一次。
- * @returns {React.ReactElement | null}
- */
-import { Link, Outlet, ScrollRestoration } from 'react-router';
-
-/** 共用版型。選單每頁都在，Outlet 依網址換成首頁或清單。 */
-export default function MainLayout() {
-  return (
-    <>
-      <header>
-        <nav>
-          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
-        </nav>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-      <ScrollRestoration />
-    </>
-  );
-}
-```
-
-**解析**
-
-- `Link` 的 `to` 是站內路徑，點下去改網址，文件不整頁重載。
-- `Outlet` 畫出對上的子路由，`/` 是首頁，`/trips` 是清單。
-- `ScrollRestoration` 放在根版型一次，換頁時還原捲動位置。
-
-#### 步驟 5：首頁
-
-首頁只回傳一個標題，後面兩種接法沿用這一份。
-
-```jsx src/pages/Home.jsx
-/** 路徑 / 的頁面。這一頁沒有自己的資料讀取。 */
-export default function Home() {
-  return <h1>首頁</h1>;
-}
-```
-
-**解析**
-
-- 首頁只畫一個標題。後面兩種接法的首頁元件相同，直接沿用這一份。
-
-#### 步驟 6：頁面與資料
-
-清單頁匯出 `loader`，進頁前讀資料，再用 `useLoaderData` 接。
-
-```jsx src/pages/TripList.jsx
-import { useLoaderData } from 'react-router';
-import { getItems } from '../api/fake-api.js';
-
-/**
- * 進 /trips 之前執行。回傳值就是 useLoaderData 的結果。
- * 路由器會等待這個 Promise。
- * @returns {Promise<{ id: string, title: string }[]>}
- */
-export function loader() {
-  return getItems();
-}
-
-/** 路徑 /trips 的頁面。 */
-export default function TripList() {
-  /**
-   * 讀取目前這條路由 loader 的回傳值。
-   * @returns {{ id: string, title: string }[]}
-   */
-  const items = useLoaderData();
-
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-**解析**
-
-- `loader` 在 `TripList` 畫出來之前執行，回傳的 Promise 由路由器等待，完成後的陣列就是 `useLoaderData()` 的結果。
-- 畫面上兩列是「看海」與「寫筆記」。這一頁沒有 `useEffect`。
-
 
 ### 選讀：宣告式
 
-宣告式把路由寫成 JSX，入口用 `BrowserRouter` 包住應用，頁面掛上之後才讀資料。課堂與結業專案用的是資料模式，這一節只對照寫法。
+宣告式是 React Router v6.4 以前的傳統寫法：入口用 `BrowserRouter` 包住應用，路由寫成 `Routes` 與 `Route` 的 JSX。它不提供 `loader` 與 `action`，資料要等元件掛上後，自己在 `useEffect` 裡讀。已有舊專案是這種寫法、或資料層另外處理（例如自己管快取）時才會選它。
 
-{% mermaid graph TD %}
-  entry["src/main.jsx<br/>BrowserRouter 包住 App"]
-  routes["src/App.jsx<br/>Routes 與 Route"]
-  layout["src/layouts/MainLayout.jsx<br/>Link、Outlet"]
-  page["src/pages/TripList.jsx"]
-  data["頁面掛上後，useEffect 呼叫 getItems"]
-  entry --> routes
-  routes --> layout
-  layout --> page
-  page --> data
-  classDef entryC fill:#e3f2fd,stroke:#1e88e5
-  classDef routesC fill:#fff3e0,stroke:#f9a825
-  classDef layoutC fill:#e3f2fd,stroke:#1e88e5
-  classDef pageC fill:#e8f5e9,stroke:#43a047
-  classDef dataC fill:#fff3e0,stroke:#f9a825
-  classDef differBlue fill:#e3f2fd,stroke:#fb8c00,stroke-width:2px
-  classDef differOrange fill:#fff3e0,stroke:#fb8c00,stroke-width:2px
-  classDef differGreen fill:#e8f5e9,stroke:#fb8c00,stroke-width:2px
-  class entry,layout differBlue
-  class routes,data differOrange
-  class page pageC
-{% endmermaid %}
-
-這一模式沒有 `loader` 與 `action`，官方的 `ScrollRestoration` 也不在這裡。假資料與首頁和資料模式相同，檔案是 `src/api/fake-api.js` 與 `src/pages/Home.jsx`。下面只寫入口、路由表、版型與清單頁的差別。
-
-#### 步驟 1：入口
-
-`src/main.jsx` 用 `BrowserRouter` 包住 `App`，再交給 `createRoot`。
-
-```jsx src/main.jsx
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+```jsx
+// main.jsx：BrowserRouter 聽網址，讓裡面的 Routes 讀得到目前路徑
 import { BrowserRouter } from 'react-router';
-import App from './App.jsx';
 
-/**
- * BrowserRouter 聽瀏覽器網址，讓子樹裡的 Routes 讀得到目前路徑。
- * 它沒有 router 屬性，路徑對應寫在子樹的 Route。
- * @param {object} props
- * @param {React.ReactNode} props.children 要聽網址的元件樹
- * @returns {React.ReactElement}
- */
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
 );
-```
 
-**解析**
-
-- `BrowserRouter` 包在 `App` 外面，裡面的 `Routes` 才讀得到目前路徑。
-- 入口仍用 `createRoot` 掛上 `#root`。引入來源是 `react-router`。
-
-#### 步驟 2：路由表
-
-路由寫成 `src/App.jsx` 裡的 `Routes` 與 `Route`。
-
-```jsx src/App.jsx
-/**
- * Routes 在子層 Route 裡挑符合目前網址的那一筆。
- * @param {object} props
- * @param {React.ReactNode} props.children 若干 Route
- * @returns {React.ReactElement | null}
- */
-/**
- * 一條路徑。path 是網址片段，element 是要畫的元素，children 是巢狀路由。
- * index 不寫 path，代表父路徑本身。宣告式的 Route 沒有 loader 與 action。
- * @param {object} props
- * @param {string} [props.path] 網址片段
- * @param {boolean} [props.index] 為 true 時對上父路徑
- * @param {React.ReactElement} [props.element] 要畫的元素
- * @param {React.ReactNode} [props.children] 巢狀的 Route
- * @returns {React.ReactElement | null}
- */
+// App.jsx：路由寫成 JSX。element 是對上時要畫的元素
 import { Route, Routes } from 'react-router';
-import MainLayout from './layouts/MainLayout.jsx';
-import Home from './pages/Home.jsx';
-import TripList from './pages/TripList.jsx';
 
-/**
- * 父路由畫版型，子路由畫進版型的 Outlet。
- * index 代表父路徑 / 本身；trips 與父路徑接成 /trips。
- */
-export default function App() {
+function App() {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout />}>
-        <Route index element={<Home />} />
-        <Route path="trips" element={<TripList />} />
-      </Route>
+      <Route path="/" element={<Home />} />
+      <Route path="trips" element={<TripList />} />
     </Routes>
   );
 }
 ```
 
-**解析**
-
-- `<Routes>` 依目前網址在子層 `<Route>` 裡挑一筆。`path` 對片段，`element` 是要畫的元素。
-- 父路由畫 `MainLayout`。`index` 不寫 `path`，網址是 `/`。`path="trips"` 接成 `/trips`。
-- 這些 `Route` 沒有 `loader` 屬性。資料不在進頁前讀。
-
-#### 步驟 3：版型
-
-版型仍是 `src/layouts/MainLayout.jsx`，只放 `Link` 與 `Outlet`。
-
-```jsx src/layouts/MainLayout.jsx
-/**
- * Link 改網址且不整頁重載。
- * @param {object} props
- * @param {string} props.to 目標路徑
- * @param {React.ReactNode} props.children 連結文字
- * @returns {React.ReactElement}
- */
-/**
- * Outlet 畫出對上的子路由。沒有對上的子路由時是 null。
- * @returns {React.ReactElement | null}
- */
-import { Link, Outlet } from 'react-router';
-
-/** 共用版型。選單每頁都在，Outlet 依網址換成首頁或清單。 */
-export default function MainLayout() {
-  return (
-    <>
-      <header>
-        <nav>
-          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
-        </nav>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </>
-  );
-}
-```
-
-**解析**
-
-- 版型只有 `Link` 與 `Outlet`。選單兩條分別前往 `/` 與 `/trips`。
-- 宣告式沒有官方的 `ScrollRestoration`，所以這裡不放。
-
-#### 步驟 4：頁面與資料
-
-清單頁在掛上之後，用 `useEffect` 呼叫 `getItems`。
-
-```jsx src/pages/TripList.jsx
-import { useEffect, useState } from 'react';
-import { getItems } from '../api/fake-api.js';
-
-/**
- * 路徑 /trips。宣告式沒有 loader，元件掛上後才讀 getItems。
- * getItems 與資料模式相同，檔案是 src/api/fake-api.js。
- */
-export default function TripList() {
-  /**
-   * 目前清單。useState 回傳 [目前值, 更新函式]，初值是空陣列。
-   * @param {{ id: string, title: string }[]} initialState 一開始的清單
-   * @returns {[{ id: string, title: string }[], function]}
-   */
-  const [items, setItems] = useState([]);
-
-  /**
-   * 元件掛上後執行。第二個引數是依賴陣列，空陣列表示只在掛上時跑一次。
-   * getItems 回傳 Promise，完成後用 setItems 寫進狀態。
-   * @param {function(): void} effect 掛上後要跑的函式
-   * @param {unknown[]} deps 依賴陣列
-   */
-  useEffect(() => {
-    getItems().then(setItems);
-  }, []);
-
-  return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.id}>{item.title}</li>
-      ))}
-    </ul>
-  );
-}
-```
-
-**解析**
-
-- 元件掛上後，`useEffect` 才呼叫 `getItems()`。Promise 完成時 `setItems` 把空陣列換成兩筆資料。
-- 路由表沒有 `loader`，頁面也沒有 `useLoaderData`。第一個畫面先是空清單，讀完才出現「看海」與「寫筆記」。
-
+這段只是對照用的片段，不放進練習專案。重點是路由設定寫在 JSX 裡，與資料模式的物件陣列不同。
 
 ### 選讀：框架模式
 
-框架模式在資料模式之上加上路由模組、伺服器端渲染（SSR）與程式碼切分，並由 Vite 插件負責打包。需要搜尋引擎最佳化（SEO）時，整個專案架構跟著這套走。課堂與結業專案用的是資料模式的 `createBrowserRouter`。
+框架模式把資料模式包成一整套架構：由 Vite 插件接手入口，路由登記在 `app/routes.ts`，每個頁面是一個匯出 `loader`、`action` 與元件的路由模組，伺服器端渲染（SSR）也在這個模式內。需要搜尋引擎最佳化（SEO）、或想直接採用一套完整框架時才會選它，和 Next.js 屬於同一類選擇。
 
-{% mermaid graph TD %}
-  entry["vite.config.ts<br/>reactRouter 接手入口，沒有自己寫的 main.jsx"]
-  routes["app/routes.ts"]
-  layout["app/root.tsx"]
-  page["app/routes/trips.tsx"]
-  data["loader 進頁前，頁面用 useLoaderData"]
-  entry --> routes
-  routes --> layout
-  layout --> page
-  routes --> data
-  data --> page
-  classDef entryC fill:#e3f2fd,stroke:#1e88e5
-  classDef routesC fill:#fff3e0,stroke:#f9a825
-  classDef layoutC fill:#e3f2fd,stroke:#1e88e5
-  classDef pageC fill:#e8f5e9,stroke:#43a047
-  classDef dataC fill:#fff3e0,stroke:#f9a825
-  classDef differBlue fill:#e3f2fd,stroke:#fb8c00,stroke-width:2px
-  classDef differOrange fill:#fff3e0,stroke:#fb8c00,stroke-width:2px
-  classDef differGreen fill:#e8f5e9,stroke:#fb8c00,stroke-width:2px
-  class entry,layout differBlue
-  class routes,data differOrange
-  class page differGreen
-{% endmermaid %}
+```ts
+// app/routes.ts：登記網址對應的模組檔，這裡沒有引入任何元件
+import { index, route } from '@react-router/dev/routes';
 
-是否開啟 SSR 寫在根目錄的 `react-router.config.ts`，內容是 `export default { ssr: true } satisfies Config`，型別從 `@react-router/dev/config` 引入。`package.json` 依賴 `react-router`，開發依賴是 `@react-router/dev`。假資料與首頁和資料模式相同，檔案是 `app/api/fake-api.ts` 與 `app/routes/home.tsx`。`action`、`Form`、`redirect` 與 `errorElement` 見「讀取與送出資料」。
-
-#### 步驟 1：入口
-
-`vite.config.ts` 放入 `reactRouter()`，由插件接手入口，不必自己寫 `main.jsx`。
-
-```ts vite.config.ts
-/**
- * 框架模式的 Vite 設定。plugins 放入 reactRouter() 之後，
- * 由插件接手開發與打包入口，專案裡不必自己寫 main.jsx。
- */
-import { reactRouter } from '@react-router/dev/vite';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [reactRouter()],
-});
-```
-
-**解析**
-
-- `reactRouter()` 來自 `@react-router/dev/vite`，負責開發伺服器與打包入口。
-- 這份設定裡沒有自己寫的 `main.jsx` 或 `RouterProvider`。
-
-#### 步驟 2：路由表
-
-路由表寫在 `app/routes.ts`，只登記模組路徑，不引入頁面元件。
-
-```ts app/routes.ts
-/**
- * index(file) 登記首頁模組，畫在 /，出現在 root.tsx 的 Outlet。
- * @param {string} file 相對 app 目錄的模組路徑
- * @returns {object} 一筆索引路由設定
- */
-/**
- * route(path, file) 登記一條網址。path 是網址樣式，file 是模組路徑。
- * @param {string} path 網址樣式，trips 會接到 /trips
- * @param {string} file 相對 app 目錄的模組路徑
- * @returns {object} 一筆路由設定
- */
-import { type RouteConfig, index, route } from '@react-router/dev/routes';
-
-/** 路徑對到模組檔。這份設定沒有 React 元件。 */
 export default [
   index('./routes/home.tsx'),
   route('trips', './routes/trips.tsx'),
-] satisfies RouteConfig;
+];
 ```
 
-**解析**
+```tsx
+// app/routes/trips.tsx：路由模組，loader 的結果由 loaderData 傳進元件
+import type { Route } from './+types/trips';
 
-- `app/routes.ts` 只登記模組路徑，不引入頁面元件。`index` 對上 `/`，`route('trips', ...)` 對上 `/trips`。
-- 改哪一個檔負責清單時，改的是 `route` 的第二個引數。讀取函式寫在那個模組裡，不寫在這份表。
-
-#### 步驟 3：版型
-
-`app/root.tsx` 同時是版型與 HTML 外殼，子路由畫進 `Outlet`。
-
-```tsx app/root.tsx
-/**
- * 根路由，是 routes.ts 每一筆的父層，並負責整份 HTML。
- * Link 的 to 是站內路徑。
- * Meta、Links 由框架填入 head。不用 React 19 原生 metadata 時要留這兩個。
- * Outlet 畫出子路由。ScrollRestoration 換頁後還原捲動，根版型放一次。
- * Scripts 填入框架的客戶端腳本。
- * @returns {React.ReactElement}
- */
-import {
-  Link,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from 'react-router';
-
-/** 根版型。角色等同 MainLayout，再加上整份 HTML 外框。 */
-export default function App() {
-  return (
-    <html lang="zh-Hant">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <nav>
-          <Link to="/">首頁</Link> | <Link to="/trips">行程清單</Link>
-        </nav>
-        <main>
-          <Outlet />
-        </main>
-        <ScrollRestoration />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-```
-
-**解析**
-
-- `app/root.tsx` 是每一條路由的父層，子路由畫進 `Outlet`。選單與資料模式相同，通往 `/` 與 `/trips`。
-- `ScrollRestoration` 放在這份根版型一次。`Scripts` 負責客戶端腳本，`Meta` 與 `Links` 填進 `head`。
-- 預設設定裡沒有學生自己寫的 `main.jsx`。入口由 Vite 插件接手。
-
-#### 步驟 4：頁面與資料
-
-清單模組 `app/routes/trips.tsx` 匯出 `loader`，進頁前讀資料，再用 `useLoaderData` 接。
-
-```tsx app/routes/trips.tsx
-import { useLoaderData } from 'react-router';
-import { getItems } from '../api/fake-api.ts';
-
-/**
- * 進 /trips 前執行。回傳值交給 useLoaderData，Promise 會被等待。
- * 框架模式也可把結果以 loaderData 屬性傳入元件，型別是 ./+types 的 Route.ComponentProps。
- * 這一則仍用 hook，方便和資料模式對照。
- * getItems 與前面相同，檔案是 app/api/fake-api.ts。
- * @returns {Promise<{ id: string, title: string }[]>}
- */
 export async function loader() {
-  return getItems();
+  return [{ id: '1', title: '看海' }];
 }
 
-/** 這一頁的元件。 */
-export default function TripList() {
-  /**
-   * 讀取這個路由模組 loader 的回傳值。
-   * @returns {{ id: string, title: string }[]}
-   */
-  const items = useLoaderData();
-
+export default function Trips({ loaderData }: Route.ComponentProps) {
   return (
     <ul>
-      {items.map((item) => (
+      {loaderData.map((item) => (
         <li key={item.id}>{item.title}</li>
       ))}
     </ul>
@@ -712,38 +186,29 @@ export default function TripList() {
 }
 ```
 
-**解析**
-
-- 框架在進入 `/trips` 之前呼叫這個模組匯出的 `loader`，`useLoaderData()` 拿到的就是 `getItems()` 的陣列。
-- 也可以改用 `Route.ComponentProps` 的 `loaderData` 屬性接同一份結果。這一則用 hook，和資料模式的清單頁同一種讀法。
-- `action`、`Form`、`redirect` 與 `errorElement` 的寫法見「讀取與送出資料」。
+這兩段同樣只是對照用的片段，需要另外用框架模式的專案範本建立，不屬於練習專案。
 
 ### 怎麼選
 
-三種接法都能把網址對上元件。差別在路由表放在哪一個檔、入口由誰掛上，以及資料在進頁前讀還是等頁面掛上再讀。
+三種模式都能把網址對上元件，官方的說法是它們都支援任何架構與部署方式，選擇的重點是想讓 React Router 替你做多少事。
 
-| | 資料模式 | 宣告式 | 框架模式 |
-| --- | --- | --- | --- |
-| 路由設定寫在哪個檔 | `src/App.jsx` 的路由物件 | `src/App.jsx` 的 `Routes` | `app/routes.ts` |
-| 入口 | `main.jsx` 渲染 `App`，由 `RouterProvider` 掛上 | `main.jsx` 以 `BrowserRouter` 包住 `App` | Vite 插件 `reactRouter()`，不自寫入口 |
-| 資料何時讀 | 進頁前，`loader` | 頁面掛上後，`useEffect` | 進頁前，路由模組的 `loader` |
-| loader / action | 有 | 沒有 | 有，寫在路由模組 |
-| ScrollRestoration | 有，放在根版型 | 沒有官方元件 | 有，放在 `root.tsx` |
-| 適合 | 課堂與後面的練習 | 薄寫法的對照 | 插件、路由模組與 SSR／SEO |
+- 想用最少的設定、或維持舊寫法：宣告式。
+- 想要資料載入與表單處理，又想自己掌控打包與資料層：資料模式，也就是課堂與結業專案的選擇。
+- 想要整套架構，包含 SSR 與型別安全的 API：框架模式。
 
-課堂和後面的 `04-react-router`（從 `03-react` 複製）都用資料模式，不為另外兩種各開一個專案。宣告式寫起來較薄，但沒有官方的 `ScrollRestoration`，也沒有 `loader` 與 `action`；要把 Vite 插件、路由模組與伺服器端渲染當成一整套架構時，再看框架模式或 Next.js。路由與連結接好之後，`loader` 與 `action` 寫在「讀取與送出資料」。
+後面的 `04-react-router` 從 `03-react` 複製而來，全程使用資料模式，不為另外兩種各開一個專案。
 
 # 啟用路由
 
-這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份，清掉舊的依賴再安裝，然後裝上 `react-router`，在 `App.jsx` 用 `createBrowserRouter` 與 `RouterProvider` 接上路由器。`main.jsx` 不用包 `BrowserRouter`。後面在同一份裡把按鈕切換改成路由表、左側目錄與各則筆記的網址。
+這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份，清掉舊的依賴再安裝，然後裝上 `react-router`，在 `App.jsx` 用 `createBrowserRouter` 與 `RouterProvider` 接上路由器。後面在同一份專案裡，把按鈕切換改成路由表、版面與各頁網址。
 
 ## 安裝與入口
 
-`04-react-router` 的起點就是 `03-react` 的成品：同一套 Vite、React 19 與示範元件。這一節只做複製、安裝，並在 `App.jsx` 接上路由器。`main.jsx` 維持直接渲染 `App`。路由表、版型與目錄在後面幾節接到同一份專案。
+`04-react-router` 的起點就是 `03-react` 的成品：同一套 Vite、React 19 與示範元件。這一節依序做複製、清依賴、安裝路由套件，最後在 `App.jsx` 接上路由器。Node 與 pnpm 前面已經裝過，這裡不重裝。
 
 ### 步驟 1：複製專案
 
-在 `studiesAdvanced` 倉庫根目錄，把 `03-react` 整份複製成 `04-react-router`。Node、nvs 與 pnpm 前面幾天已經裝過，這裡不要重裝。目的資料夾還不存在時才複製；已經有這份時，跳過複製，從下一步清依賴開始。
+在 `studiesAdvanced` 倉庫根目錄，把 `03-react` 整份複製成 `04-react-router`。
 
 macOS（終端機在倉庫根目錄）：
 
@@ -751,21 +216,13 @@ macOS（終端機在倉庫根目錄）：
 cp -R 03-react 04-react-router
 ```
 
-**解析**
-
-- 這是在 macOS 把 `03-react` 整份複製成 `04-react-router`。目的資料夾還不存在時才執行。
-
 Windows（PowerShell，同樣在倉庫根目錄）：
 
 ```powershell
 Copy-Item -Recurse 03-react 04-react-router
 ```
 
-**解析**
-
-- 這是同一道複製在 PowerShell 的寫法。
-
-複製完成後，打開 `04-react-router/package.json`，把 `name` 改成資料夾名稱。依賴先維持複製過來的 React 19，路由套件下一步再加。
+複製完成後，打開 `04-react-router/package.json`，把 `name` 改成與資料夾相同的名稱。依賴先維持複製過來的內容，路由套件下一步再加。
 
 ```json
 {
@@ -773,18 +230,14 @@ Copy-Item -Recurse 03-react 04-react-router
 }
 ```
 
-**解析**
-
-- 把 `name` 改成與資料夾相同的 `04-react-router`。依賴先維持複製過來的內容，路由套件下一步再加。
-
 {% note info %}
 **資料夾已經在倉庫裡**
-課堂倉庫的 `04-react-router` 就是這篇的練習專案，起點與 `03-react` 的成品相同，後面各節的示範檔也已經在裡面。此時不要再複製一次：macOS 的 `cp -R` 會把來源嵌進既有資料夾。直接做下一步。
+課堂倉庫的 `04-react-router` 就是這一章的練習專案，起點與 `03-react` 的成品相同，後面各節的示範檔也已經在裡面。此時不要再複製一次：macOS 的 `cp -R` 會把來源嵌進既有資料夾。直接做下一步。
 {% endnote %}
 
 ### 步驟 2：清掉依賴再安裝
 
-`node_modules` 與 `dist` 是這一台電腦裝出來、建出來的結果，不要跟著複製帶走。先刪掉這兩個資料夾，再在 `04-react-router` 裡重新 `pnpm install`，依賴才會對上這份 `package.json` 與鎖定檔。
+`node_modules` 與 `dist` 是這一台電腦裝出來、建出來的結果，不要跟著複製帶走。先刪掉這兩個資料夾，再在 `04-react-router` 裡重新安裝，依賴才會對上這份專案的 `package.json` 與鎖定檔。
 
 macOS：
 
@@ -794,10 +247,6 @@ cd 04-react-router
 pnpm install
 ```
 
-**解析**
-
-- 刪掉複製過來的 `node_modules` 與 `dist`，再於 `04-react-router` 重新安裝依賴。
-
 Windows（PowerShell）：
 
 ```powershell
@@ -806,10 +255,6 @@ cd 04-react-router
 pnpm install
 ```
 
-**解析**
-
-- 這是同一道清理與安裝在 PowerShell 的寫法。
-
 {% note info %}
 **已安裝過可跳過**
 這兩個資料夾本來就不在，或你已經在 `04-react-router` 成功跑過 `pnpm install`，就不必為了重跑再刪一次。
@@ -817,52 +262,22 @@ pnpm install
 
 ### 步驟 3：安裝路由套件
 
-終端機停在 `04-react-router`（上一步若已 `cd` 進去就不用再換）。用 pnpm 加上路由套件 8，React 維持 19。裝完後 `package.json` 的 `dependencies` 會出現 `react-router`，後面的 `import` 才找得到套件。
+終端機停在 `04-react-router`（上一步若已進入就不用再換）。用 pnpm 加上路由套件，主版本指定 8。
 
 ```bash
 pnpm add react-router@8
 ```
 
-**解析**
-
-- 裝上 `react-router` 8 之後，`package.json` 的 `dependencies` 會出現這個套件，後面的 `import` 才找得到它。
+裝完後 `package.json` 的 `dependencies` 會出現 `react-router`，後面的 `import` 才找得到它。這個版本要求 Node 22.22 以上、React 19.2.7 以上，本課的 Node 26 與 React 19 都符合。
 
 {% note info %}
 **已有 react-router 8 可跳過**
 倉庫這份的 `package.json` 已經寫入 `react-router` 8。你的專案裡若看得到這個依賴，確認版本即可，不必再裝一次。
 {% endnote %}
 
-### 步驟 4：createBrowserRouter
+### 步驟 4：建立路由器
 
-複製過來的 `src/main.jsx` 與 `03-react` 相同，嚴格模式裡直接渲染 `App`。資料模式不是在入口包一層 `BrowserRouter`，而是建立路由器物件，再交給 `RouterProvider`。這份專案把路由器寫在 `App.jsx`，`main.jsx` 不用改。
-
-```jsx
-/**
- * 建立使用 History API 的路由器。路由表是物件陣列。
- * @param {object[]} routes 每一筆含 path、index、element、children
- * @param {object} [opts]
- * @param {string} [opts.basename] 基底路徑。開發時由 BASE_URL 去掉結尾斜線
- * @returns {object} 路由器物件
- */
-const router = createBrowserRouter(routes, { basename });
-
-/**
- * 把路由器畫出來。由 App 回傳，入口不再包一層。
- * @param {object} props
- * @param {object} props.router createBrowserRouter 的回傳值
- * @returns {React.ReactElement}
- */
-const view = <RouterProvider router={router} />;
-```
-
-**解析**
-
-- 路由陣列交給 `createBrowserRouter`，回傳的物件再交給 `RouterProvider`。
-- 這個物件寫在元件函式外面，由 `App` 回傳 `RouterProvider`，入口不必再包一層。
-
-**觀念**
-
-`createBrowserRouter` 使用瀏覽器的 History API。網址是一般路徑，例如 `/items`，不是井字號後面的片段。會讀網址的元件要畫在 `RouterProvider` 裡面，所以路由器放在 `App`，`main.jsx` 只負責把 `App` 掛上 `#root`。開發伺服器已經會把未知路徑回傳同一份 `index.html`，重新整理子路徑也不會變成找不到檔案。`basename` 是 `createBrowserRouter` 的第二個參數，值用 Vite 的 `BASE_URL` 去掉結尾斜線。開發時 `BASE_URL` 預設是 `/`，去掉之後與從網站根目錄算起相同。子路徑怎麼跟著 `base` 變，留到部署那一節。
+複製過來的 `src/main.jsx` 與 `03-react` 相同，嚴格模式裡直接渲染 `App`，這份檔案不用改。
 
 ```jsx 04-react-router/src/main.jsx
 import { StrictMode } from 'react';
@@ -879,18 +294,22 @@ createRoot(document.getElementById('root')).render(
 
 **解析**
 
-- 這份入口與 `03-react` 相同，嚴格模式裡直接渲染 `App`。
-- 沒有包 `BrowserRouter`。路由器寫在下面的 `App.jsx` 草稿，路由表下一節再補。
-- 樣式仍由 `index.css` 引入。嚴格模式不取代路由，也不會幫你對路徑。
+- 資料模式不在入口包 `BrowserRouter`，入口只負責把 `App` 掛上 `#root`。
+- 路由器寫在 `App.jsx`，由 `App` 回傳 `RouterProvider`。
 
-下面是接上路由器的草稿，路由表下一節再換成版型與首頁。畫面應出現「路由已經接上」。
+**觀念**
 
-```jsx 04-react-router/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+`createBrowserRouter` 使用瀏覽器的歷史功能（History API），網址是一般路徑，例如 `/items`，不是井字號後面的片段。它收一個路由物件陣列，回傳路由器；路由器要寫在元件函式外面、只建立一次，再交給 `RouterProvider` 畫出來。
 
-/**
- * 路由器先接上。路由表下一節再寫進這個陣列。
- */
+引入的來源有兩處：`createBrowserRouter` 從 `react-router`，`RouterProvider` 從 `react-router/dom`。兩個入口的 `RouterProvider` 是同一個元件，差別在後者會接上 React DOM 的同步更新機制，官方建議瀏覽器應用都用 `react-router/dom`。
+
+下面是接上路由器的起點，路由表之後再換成版面與各頁。把內容放進 `src/App.jsx`，畫面應出現「路由已經接上」。
+
+```jsx 04-react-router/src/App-start.jsx
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
+
+// 路由器寫在元件外面，只建立一次，不要放進 state。
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const router = createBrowserRouter(
@@ -905,20 +324,21 @@ export default function App() {
 
 **解析**
 
-- `createBrowserRouter` 與 `RouterProvider` 都從 `react-router` 引入。
-- 第二個參數的 `basename` 用 `BASE_URL` 去掉結尾斜線。開發時效果與從網站根目錄算起相同。
-- 這一則的 `element` 只是一句話，用來確認路由器有畫出來。下一節改成版型與首頁。
+- 路由表目前只有一筆：路徑 `/` 對上一段文字，用來確認路由器有畫出來。
+- 第二個參數的基底路徑 `basename` 取自 Vite 的 `BASE_URL` 去掉結尾斜線。開發時 `BASE_URL` 是 `/`，去掉之後等於從網站根目錄算起；部署到子路徑時的做法留到部署那一節。
+- 開發伺服器遇到沒有對應檔案的路徑，會回傳同一份 `index.html`，所以直接在子路徑重新整理也不會找不到頁面。
 
 ## 路由表與版型
 
-複製過來的 `App` 仍用按鈕在示範之間切換。這一節改成路由表與共用版型，讓網址 `/` 畫出左側外框與首頁總覽。單則筆記、搜尋與找不到的頁面都沿用這兩個檔，後面再補進同一張表。
+複製過來的 `App` 還是用按鈕在示範之間切換。這一節改成路由表加共用版型：網址是 `/` 時，畫面左邊是全站外框，中間是首頁。路由表怎麼寫、版型怎麼留出位置、首頁怎麼接上，依序看。單則筆記、搜尋與找不到的頁面之後都會補進同一張表。下面用到的版型與首頁檔案，在後面兩節補上。
 
 **一覽**
 
-- 路由表是物件陣列，交給 `createBrowserRouter`。它比較目前網址，用第一筆對上的路由。
-- 每一筆用 `path` 對路徑、用 `element` 指定要畫的元素。`index: true` 表示跟父路徑同一個網址，這一筆只留 `index` 與 `element`。
-- `children` 是子路由。寫在父路由裡，才會畫進版型的 `Outlet`。
-- `Outlet` 是版型裡子路由出現的位置。畫什麼由路由表決定。
+- 路由表是物件陣列，交給 `createBrowserRouter`。路由器依路徑的具體程度挑出對上的那一筆，不是照陣列順序找第一筆。
+- 每一筆用 `path` 對路徑，再用 `element` 指定要畫的元素。
+- `children` 是子路由，寫在父路由裡，頁面才會畫進版型的 `Outlet`。
+- `index: true` 的那一筆跟父路徑是同一個網址，不寫 `path`。
+- `Outlet` 是版型裡留給子路由的位置，畫什麼由路由表決定。
 
 {% mermaid graph LR %}
   urlNode["網址 /"] --> tableNode["路由物件"]
@@ -934,57 +354,39 @@ export default function App() {
 
 ### 路由表
 
-路由表集中在 `src/App.jsx`，用物件陣列交給 `createBrowserRouter`。父路由的 `path` 是 `/`，`element` 是版型；`index: true` 那一筆跟父路徑同一個網址，所以打開網站根目錄時，版型中間是首頁。後面的單則筆記會寫成 `demos/:slug`，跟父路徑接成 `/demos/01-hello` 這種網址。`slug` 與範例檔名去掉 `.jsx` 相同。上一節的草稿整份換成下面這份。
-
-**語法**
-
-```jsx
-/**
- * 父路由。path 是網址，element 是要畫的元素，children 畫進版型的 Outlet。
- * @type {{ path: string, element: React.ReactElement, children: object[] }}
- */
-const layoutRoute = {
-  path: '/',
-  element: <MainLayout />,
-  children: [],
-};
-
-/**
- * 跟父路徑同一個網址的那一筆。index 為 true 時不寫 path。
- * @type {{ index: true, element: React.ReactElement }}
- */
-const indexRoute = { index: true, element: <Home /> };
-```
-
-**解析**
-
-- `path` 對路徑，`element` 指定要畫的元素。`index: true` 跟父路徑同一個網址。
-- `children` 寫在父路由裡，才會畫進版型的 `Outlet`。
+路由表集中寫在 `src/App.jsx`。外層路由的路徑是根目錄，元素是版型；內層放進 `children`，這種一層包一層的寫法叫巢狀路由：外層是一直留在畫面上的版型，內層是會換掉的那一頁。
 
 **觀念**
 
-這種寫在父路由 `children` 裡的做法是巢狀路由：外層負責一直留在畫面上的版型，內層負責換掉的那一頁。`element` 傳入的是已經建立的元素，例如 `<Home />`。路徑用小寫，根路徑寫成斜線。`basename` 仍是第二個參數，開發時與從網站根目錄算起相同。
+`index: true` 的子路由沒有自己的路徑，打開網站根目錄時就由它補在版型中間。
+
+之後的單則筆記會寫成 `demos/:slug`，其中冒號開頭的 slug 是動態片段（路徑中會變動的一段），細節留到路徑參數那一節。子路由的路徑不加開頭斜線，會自動接在父路徑後面，變成 /demos/01-hello 這種網址。
+
+`element` 收的是已經建立好的元素，也就是寫成 JSX 標籤的元件。官方文件的範例多半改寫 `Component`，直接傳元件函式，由路由器自己建立元素；兩種寫法都能用，本課這一節統一用 `element`，路由表因此一眼看得出畫什麼。
 
 ```jsx 04-react-router/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import MainLayout from './layouts/MainLayout.jsx';
 import Home from './pages/Home.jsx';
 
 /**
- * 路由表。父路由畫版型，index 在同一個網址畫首頁。
- * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。
+ * 路由表。外層路由畫版型，index 路由在同一個網址畫首頁。
+ * 子路由寫在 children 裡，才會畫進版型的 Outlet。
+ * basename 取自 Vite 的 BASE_URL。開發時是 /，去掉結尾斜線後等於空字串。
  */
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <MainLayout />,
-    children: [
-      { index: true, element: <Home /> },
-    ],
-  },
-], { basename });
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <MainLayout />,
+      children: [{ index: true, element: <Home /> }],
+    },
+  ],
+  { basename },
+);
 
 export default function App() {
   return <RouterProvider router={router} />;
@@ -993,51 +395,28 @@ export default function App() {
 
 **解析**
 
-- 路由表是陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 渲染。
-- 父路由的 `path` 是 `/`，`element` 是版型。`children` 裡 `index: true` 的那筆跟父路徑同一個網址，打開 `/` 時主區是 `Home`。
-- `basename` 來自 Vite 的 `BASE_URL`。開發時預設是 `/`，去掉結尾斜線後，路徑仍從網站根目錄算起。
-- 打開 `/` 時，畫面分成版型與首頁兩塊。別的路徑目前還沒有對應的頁，主區是空的。
+- 路由表是陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 畫出來。
+- 打開 `/` 時，外層的版型與 index 的首頁一起出現：版型是外框，首頁在 `Outlet` 的位置。
+- 別的路徑目前沒有對應的路由，主區是空的；找不到頁面的處理在後面的章節。
+- 這是這一節的起點，之後每加一種頁面，只是在 `children` 多寫一筆。
 
-{% note success %}
-**換你試試：**
-把首頁那筆暫時改成一段文字，確認主區出現「總覽」兩個字。看完改回 `Home`，後面的總覽仍用頁面元件。
+{% note info %}
+**不寫 path 的版型路由**
+外層路由也可以省略 `path`，只留 `element` 與 `children`：它不會在網址上多出一段，只是替底下的子路由包一層共用版型。本課的版型剛好是 `/`，所以直接寫 `path: '/'`。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
-
-`element` 可以是任何元素。這則只為了看主區換字，看完請改回首頁元件。
-
-```diff 04-react-router/src/App.jsx
- // ...
--      { index: true, element: <Home /> },
-+      { index: true, element: <p>總覽</p> },
- // ...
-```
-
-</details>
+{% note info %}
+**lazy：進到才載入的路由**
+路由物件的 `lazy` 可以改成進到那條路由時，才用動態 `import` 載入元件與 loader，縮小第一次載入的檔案。本課的頁面不多，不使用。
+{% endnote %}
 
 ### 版型
 
-版型負責左側與主區的外框，每一頁都共用。`Outlet` 不決定要畫哪一頁，它只留下子路由出現的位置。沒有它時，路由即使對上了，主區仍是空的。
+版型負責左側與主區的外框，每一頁都共用。`Outlet` 只負責留出位置：沒有它，路由即使對上，子路由的頁面也沒有地方出現。
 
-**語法**
+#### 步驟 1：Outlet
 
-```jsx
-/**
- * 子路由畫出來的位置。畫什麼由路由表決定。
- * @returns {React.ReactElement|null}
- */
-const slot = <Outlet />;
-```
-
-**解析**
-
-- `Outlet` 是子路由出現的位置。版型自己不決定要畫哪一頁。
-
-**觀念**
-
-左側這一則先放站名，目錄下一節再接上。主區的寬度與背景放在版型，各頁就沿用同一套。網址已經說明現在是哪一頁，版型不用再拿狀態去猜。
+這一步左側先只放站名，目錄下一節才接上。寬度與背景放在版型，各頁就沿用同一套；現在是哪一頁由網址決定，版型不用再靠狀態去判斷。
 
 ```jsx 04-react-router/src/layouts/MainLayout.jsx
 import { Outlet } from 'react-router';
@@ -1063,75 +442,55 @@ export default function MainLayout() {
 
 **解析**
 
-- `Outlet` 畫在 `main` 裡。子路由對上之後，頁面出現在這個位置，左側外框留著。
-- 寬螢幕時左側是一欄、右側是主區。窄螢幕時目錄在上、主區在下。
-- 站名這一則還是文字，連結下一章再換。
+- `Outlet` 畫在 `main` 裡。子路由對上之後，頁面出現在這個位置，左側外框一直留著。
+- 寬螢幕時左側是一欄、右側是主區；窄螢幕時目錄在上、主區在下。
+- 站名這一步只是文字，換成連結是之後連結與選單那一章的事。
 
-{% note success %}
-**換你試試：**
-在 `Outlet` 上面加一行「主區」。首頁標題仍應出現在這行下面。看完拿掉這一行，後面的版型不再留它。
-{% endnote %}
+#### 步驟 2：捲動還原
 
-<details>
-<summary>參考答案</summary>
+換頁後，視窗要回到頁面頂端；按瀏覽器的上一頁或下一頁，則要回到當時的捲動位置。資料模式提供 `ScrollRestoration`，放進版型、與 `Outlet` 同一層即可，不必自己寫捲動程式。宣告式模式沒有這個元件。
 
-那一行屬於版型，每一頁都會看到。首頁元件不用改。看完刪掉這一行。
+```jsx 04-react-router/src/layouts/MainLayout.jsx
+import { Outlet, ScrollRestoration } from 'react-router';
 
-```diff 04-react-router/src/layouts/MainLayout.jsx
- // ...
-       <main className="px-4 py-6">
-+        <p className="mb-3 text-sm text-stone-500">主區</p>
-         <Outlet />
- // ...
-```
-
-</details>
-
-換頁時要捲到頂部，按瀏覽器上一頁或下一頁時要回到當時的位置。資料模式提供官方的 `ScrollRestoration`，放在版型裡、與 `Outlet` 同層，不必自己寫 `window.scrollTo`。宣告式沒有這個元件。
-
-```diff 04-react-router/src/layouts/MainLayout.jsx
--import { Outlet } from 'react-router';
-+import { Outlet, ScrollRestoration } from 'react-router';
- // ...
-       <main className="px-4 py-6">
-         <Outlet />
-       </main>
-+      <ScrollRestoration />
-     </div>
- // ...
+/**
+ * 全站共用的外框。ScrollRestoration 放在 Outlet 同一層，
+ * 換頁時捲到頂部，上一頁、下一頁時還原先前的位置。
+ */
+export default function MainLayout() {
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-900 md:grid md:grid-cols-[18rem_1fr]">
+      <aside className="border-b border-stone-200 bg-white md:min-h-screen md:border-r md:border-b-0">
+        <div className="px-4 py-4 md:sticky md:top-0 md:max-h-screen md:overflow-y-auto">
+          <span className="font-semibold">練習筆記</span>
+        </div>
+      </aside>
+      <main className="px-4 py-6">
+        <Outlet />
+      </main>
+      <ScrollRestoration />
+    </div>
+  );
+}
 ```
 
 **解析**
 
-- `ScrollRestoration` 與 `Outlet` 同層，放在外層 `div` 裡、`main` 之後。
-- 用連結或 `navigate` 換頁時，視窗捲到頂部。
-- 按瀏覽器上一頁或下一頁時，還原離開那一頁之前的捲動位置。
+- `ScrollRestoration` 本身不畫出任何看得見的東西，只負責記住並還原每一個歷史紀錄的捲動位置。
+- 用連結或 `navigate` 換頁時，視窗捲到頂部；按上一頁或下一頁，回到離開那一頁之前的位置。
+- 整個應用只放一個。
 
 ### 首頁總覽
 
-首頁是打開網站時的第一眼，用來說明這份筆記站在做什麼。目錄的則數與主題下一節才從資料算出來，這一則先把總覽的句子放上。
-
-**語法**
-
-```jsx
-/**
- * 跟父路徑同一個網址的那一筆。index 為 true 時對上父路由自己的網址。
- * @type {{ index: true, element: React.ReactElement }}
- */
-const homeRoute = { index: true, element: <Home /> };
-```
-
-**解析**
-
-- 打開網站根目錄時，版型中間畫的是這個首頁元件。
+首頁是打開網站時的第一眼，說明這份筆記在做什麼。目錄的則數與主題名稱，下一節才會從資料算出來，這一步先放標題與說明。
 
 **觀念**
 
-首頁元件只負責主區的標題與說明。左側的站名來自版型，所以總覽出現時，外框已經在了。重新整理仍停在 `/`，因為現在這一頁有自己的網址。
+首頁只是一個普通的頁面元件，只管主區裡的內容。左側的站名來自版型，所以首頁出現時外框早就在了。重新整理仍停在 `/`，因為這一頁有自己的網址。
 
 ```jsx 04-react-router/src/pages/Home.jsx
 /**
- * 筆記總覽。這一則先放標題與說明，目錄與連結下一節再接上。
+ * 筆記總覽。這一步先放標題與說明，目錄與連結之後再接上。
  */
 export default function Home() {
   return (
@@ -1148,56 +507,24 @@ export default function Home() {
 **解析**
 
 - 打開 `/`，左側是「練習筆記」，主區是標題與那一句說明。
-- 重新整理仍停在 `/`，因為這一頁已經有自己的網址。
-
-{% note success %}
-**換你試試：**
-把主區標題改成「筆記總覽」。版型上的站名留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標題在首頁元件。版型的站名是另一行。
-
-```diff 04-react-router/src/pages/Home.jsx
- // ...
--      <h1 className="text-2xl font-bold">練習筆記</h1>
-+      <h1 className="text-2xl font-bold">筆記總覽</h1>
- // ...
-```
-
-</details>
+- 版型裡的站名與首頁裡的標題是兩個不同的元素，改其中一個不會影響另一個。
 
 ## 示範目錄
 
-目錄是這份筆記網站的清單。主題順序與每一則的 slug、標題、元件都放在同一份資料，左側選單與首頁總覽都讀它，換一則的標題時只改這一處。
+目錄是這份筆記網站的清單。主題順序，以及每一則的網址名稱、標題、元件，都放在同一份資料裡，左側選單與首頁總覽都讀它，要改標題時只改這一處。
 
 **一覽**
 
-- `topics` 是主題。每一筆有 `id` 與畫在畫面上的 `title`，陣列順序就是左側由上到下的順序。
-- `demos` 是單則筆記。`slug` 是範例檔名去掉 `.jsx`，與路徑 `/demos/:slug` 相同，`topic` 對到某個主題的 `id`，`Component` 是該則要畫出的元件。
+- `topics` 是主題，每一筆有 `id` 與畫在畫面上的 `title`，陣列順序就是左側由上到下的順序。
+- `demos` 是單則筆記：`slug` 是範例檔名去掉 `.jsx`，也是路徑 `/demos/:slug` 的一段；`topic` 對到某個主題的 `id`；`Component` 是該則要畫出的元件。
 
-**語法**
+### 步驟 1：目錄資料
 
-```jsx
-/**
- * 一則筆記在目錄裡的資料。
- * @typedef {object} DemoRecord
- * @property {string} slug 檔名去掉 .jsx，與路徑 /demos/:slug 相同
- * @property {string} title 畫在目錄上的標題
- * @property {string} topic 主題 id，對到 topics 裡的某一筆
- * @property {React.ComponentType} Component 該則要畫出的元件
- */
-```
+分組跟著編號走：同一段編號共用一個主題，左側才會一段接一段，順序與上課相同。
 
-**解析**
+每一則用一個物件描述，元件從範例檔用 `import` 引入。01 到 85 是前兩天寫好的範例，86 到 92 是後面「讀取與送出資料」那一章的示範，檔案已經在專案裡。
 
-- 每一則筆記用 `slug`、`title`、`topic` 與 `Component` 描述，之後目錄與總覽都讀這些欄位。
-
-**觀念**
-
-分組跟著編號走：同一段編號共用一個主題，左側才會一段接一段，上一則與下一則也才跟上課順序相同。這一則先把 slug 與標題印出來，點了還不會換頁；連結、路徑與搜尋都在後面加上。首頁改為讀同一份資料，主區的則數與主題名稱就跟左側一致。
+`import` 與 `export` 是 ES Module 的寫法，只要知道它是把別的檔案的東西取進來即可，細節見 {% post_link lokiTech-15day-06-js-basics %} 的選讀章節「ES Module」。
 
 ```js 04-react-router/src/data/catalog.js
 /**
@@ -1683,15 +1010,20 @@ export const demos = [
 
 **解析**
 
-- `topics` 與 `demos` 都寫在這一份資料裡。`slug` 等於範例檔名去掉 `.jsx`，與路徑 `/demos/:slug` 相同。
-- 換一則的標題或主題名稱時，只改這裡；左側目錄與首頁總覽都讀同一份。
+- `topics` 與 `demos` 都寫在這一份資料裡，其他檔案只用 `import` 讀取，不另外複製。
+- `slug` 等於範例檔名去掉 `.jsx`，與路徑 `/demos/:slug` 的那一段相同，所以之後可以拿網址反查資料。
+- 換一則的標題或主題名稱時，只改這裡；左側目錄與首頁總覽讀的是同一份。
+
+### 步驟 2：左側目錄
+
+目錄元件依 `topics` 的順序分組，同一主題的示範排在該組下面。這一步先把 slug 與標題印出來，還不能點；連結與目前頁的標示留到下一章。
 
 ```jsx 04-react-router/src/pages/DemoList.jsx
 import { demos, topics } from '../data/catalog.js';
 
 /**
  * 左側目錄。topics 決定分組順序，同一主題的示範排在該組下面。
- * 這一則先印出 slug 與標題。
+ * 這一步先印出 slug 與標題。
  */
 export default function DemoList() {
   return (
@@ -1720,22 +1052,46 @@ export default function DemoList() {
 
 **解析**
 
-- 目錄依 `topics` 的順序分組，每一則列出 `slug` 與標題。這一則先印出來，點了還不會換頁。
+- 每個主題畫成一個區塊：主題名稱是小標題，底下列出 `topic` 對上該主題 `id` 的那些示範。
+- 這份元件只負責顯示，沒有狀態；資料變了，畫面就跟著變。
 
-目錄放進版型的左側，首頁改成讀同一份主題與則數。
+### 步驟 3：目錄放進版型
 
-```diff 04-react-router/src/layouts/MainLayout.jsx
- import { Outlet, ScrollRestoration } from 'react-router';
-+import DemoList from '../pages/DemoList.jsx';
- // ...
-           <span className="font-semibold">練習筆記</span>
-+          <DemoList />
- // ...
+目錄掛在版型的左側、站名下面，每一頁共用同一份側欄。
+
+```jsx 04-react-router/src/layouts/MainLayout.jsx
+import { Outlet, ScrollRestoration } from 'react-router';
+import DemoList from '../pages/DemoList.jsx';
+
+/**
+ * 全站共用的外框。左側是站名與目錄，右側 Outlet 是子路由的主區。
+ */
+export default function MainLayout() {
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-900 md:grid md:grid-cols-[18rem_1fr]">
+      <aside className="border-b border-stone-200 bg-white md:min-h-screen md:border-r md:border-b-0">
+        <div className="px-4 py-4 md:sticky md:top-0 md:max-h-screen md:overflow-y-auto">
+          <span className="font-semibold">練習筆記</span>
+          <DemoList />
+        </div>
+      </aside>
+      <main className="px-4 py-6">
+        <Outlet />
+      </main>
+      <ScrollRestoration />
+    </div>
+  );
+}
 ```
 
 **解析**
 
-- 目錄元件掛在版型左側、站名下面。每一頁共用同一份側欄。
+- 目錄元件放在版型裡，不在任何一個頁面裡，所以換頁時它不會被換掉。
+- 版型沒有改變 `Outlet` 與 `ScrollRestoration` 的位置。
+
+### 步驟 4：首頁讀同一份資料
+
+首頁改成讀同一份目錄資料，主區的則數與主題名稱就會跟左側一致。
 
 ```jsx 04-react-router/src/pages/Home.jsx
 import { demos, topics } from '../data/catalog.js';
@@ -1748,7 +1104,7 @@ export default function Home() {
     <section>
       <h1 className="text-2xl font-bold">練習筆記</h1>
       <p className="mt-2 max-w-xl">
-        左側目錄列出前兩天的示範，並依主題分成幾組。這一頁把則數與主題名稱放在主區。
+        左側目錄列出全部示範，並依主題分成幾組。這一頁把則數與主題名稱放在主區。
       </p>
       <p className="mt-4">
         共 {demos.length} 則，分成 {topics.length} 個主題。
@@ -1766,54 +1122,38 @@ export default function Home() {
 **解析**
 
 - 重新整理 `/`，左側每個主題下面是該組的 slug 與標題，主區寫出則數，並依同樣的順序列出主題名稱。
-- 左側與主區都讀 `catalog.js`，改一處標題兩側會一起變。
-
-{% note success %}
-**換你試試：**
-把主題「元件」的標題改成「元件基礎」。左側第一組與主區清單應一起改名。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標題只寫在 `topics`。`demos` 用 `topic: 'component'` 對組，不用改每一則。
-
-```diff 04-react-router/src/data/catalog.js
- // ...
--  { id: 'component', title: '元件' },
-+  { id: 'component', title: '元件基礎' },
- // ...
-```
-
-</details>
+- 左側與主區都讀 `catalog.js`，改一處標題，兩側會一起變；例如把「元件」改成「元件基礎」，左側第一組與主區清單同時改名。
 
 # 連結與選單
 
-目錄上的文字要能換頁，而且要看得出現在停在哪一則。一般換頁用 `Link`，選單用 `NavLink` 多拿一個是否為目前頁的旗標。單則網址、上一則與下一則、目錄搜尋都接在同一份筆記網站上。
+筆記網站左側的目錄要能換頁，也要看得出現在停在哪一則。這一章先看換頁用的連結與選單，再看網址上會變的片段：路徑參數決定畫哪一則，查詢參數留住篩選條件。選讀補上讀取完整位置的方法。
 
 ## 連結
 
-一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。`Link` 看起來一樣是連結，點了只換網址，React Router 依新網址換掉對應的那一塊畫面，其餘不動。`NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，是的話自動加上 `active` class。分法很簡單：要依「是不是目前頁」換樣式的連結（選單、分頁）用 `NavLink`，其他一般連結都用 `Link`。所以首頁的「從第一則開始」用 `Link`，左側每一則與站名用 `NavLink`。點了首頁的 `Link` 進到 `/demos/01-hello` 後，左側對應的那一則會自動變成 active：`NavLink` 看的是目前網址，不管你從哪裡點進來。
+一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。React Router 提供兩個替代品：點了只改網址，由路由表換掉對應的那一塊畫面，其餘不動。這一節依序看一般連結與會標出目前頁的選單連結。
 
 **一覽**
 
-- `Link` 的 `to` 是目標路徑。它渲染成 `<a>`，點擊推進瀏覽器歷史，對上的元件換掉。
-- `NavLink` 同樣用 `to` 換頁。`className` 可以是函式，參數裡的 `isActive` 為真時表示這一條對上目前網址。
-- `end` 要求路徑完全符合。站名連到 `/` 時要加上，否則停在 `/demos/01-hello` 時首頁那一條也會算成使用中。
+- `Link` 是一般的換頁連結。`to` 是目標路徑，渲染成 `<a>`，點了推進瀏覽器歷史。
+- `NavLink` 是多一個功能的 `Link`：它知道自己是不是目前所在的頁，可以依此換樣式。
+
+分法很簡單：選單、分頁這類要標出目前頁的連結用 `NavLink`，其他都用 `Link`。
 
 {% mermaid graph LR %}
-  clickNode["點選單"] --> linkNode["NavLink 改網址"]
-  linkNode --> matchNode["路由表對上該則"]
-  matchNode --> flagNode["isActive 標出目前頁"]
+  clickNode["點連結"] --> linkNode["只改網址"]
+  linkNode --> matchNode["路由表對上新網址"]
+  matchNode --> viewNode["Outlet 換成新頁面"]
+  matchNode --> flagNode["NavLink 標出目前頁"]
   style clickNode fill:#e3f2fd
   style linkNode fill:#fff3e0
   style matchNode fill:#e3f2fd
+  style viewNode fill:#e8f5e9
   style flagNode fill:#e8f5e9
 {% endmermaid %}
 
-### Link
+### Link：換頁連結
 
-首頁主區需要一條前往第一則筆記的連結。它只要把人帶到 `/demos/01-hello`，不必知道自己是不是目前頁，所以用 `Link`。
+首頁主區需要一條前往第一則筆記的連結。它只要把人帶到那一則，不必知道自己是不是目前頁，所以用 `Link`。
 
 **語法**
 
@@ -1821,7 +1161,7 @@ export default function Home() {
 /**
  * 換頁連結。點了改網址，文件不整頁重載。
  * @param {object} props
- * @param {string} props.to 目標路徑
+ * @param {string} props.to 目標路徑，以 / 開頭是從網站根目錄算起
  * @param {string} [props.className] 連結的外觀
  * @param {React.ReactNode} props.children 連結文字
  * @returns {React.ReactElement}
@@ -1829,62 +1169,58 @@ export default function Home() {
 const jump = <Link to="/demos/01-hello">從第一則開始</Link>;
 ```
 
-**解析**
-
-- `to` 是目標路徑。`Link` 點了只改網址，文件不整頁重載。
-
 **觀念**
 
-`to` 寫的是路由路徑，從網站根目錄算起。第一則的 `slug` 是檔名 `01-hello`，所以路徑是 `/demos/01-hello`。單則的路由在路徑參數那一節才登記，連結可以先寫上；路由補上之後，點了主區就會換成那一則元件。
+`to` 以斜線開頭時是絕對路徑，不管現在停在哪一頁都指向同一處。不以斜線開頭的寫法是相對路徑，會接在目前這條路由的後面；它適合版型內的子頁互相連結，這份筆記站一律寫絕對路徑，比較不容易看錯。連結可以先寫上，路由還沒登記時點了只會落到找不到的頁面，登記之後同一條連結就生效。
 
-```diff 04-react-router/src/pages/Home.jsx
-+import { Link } from 'react-router';
- import { demos, topics } from '../data/catalog.js';
- // ...
-- * 筆記總覽。主題與則數來自目錄資料，主區先列出有哪些主題。
-+ * 筆記總覽。主題與則數來自目錄資料，Link 前往第一則。
-+ * Link 改的是網址，文件不整頁重載。
- // ...
--        左側目錄列出前兩天的示範，並依主題分成幾組。這一頁把則數與主題名稱放在主區。
-+        左側是前兩天的示範目錄。點一則就換到該則的網址，重新整理仍停在同一則，也可以把網址存成書籤。
- // ...
-       </ul>
-+      <p className="mt-4">
-+        <Link className="text-teal-800 underline" to="/demos/01-hello">
-+          從第一則開始
-+        </Link>
-+      </p>
-     </section>
- // ...
+```jsx 04-react-router/src/pages/Home.jsx
+import { Link } from 'react-router';
+import { demos, topics } from '../data/catalog.js';
+
+/**
+ * 筆記總覽。主題與則數來自目錄資料，Link 前往第一則。
+ * Link 改的是網址，文件不整頁重載。
+ */
+export default function Home() {
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">練習筆記</h1>
+      <p className="mt-2 max-w-xl">
+        左側是前兩天的示範目錄。點一則就換到該則的網址，重新整理仍停在同一則，也可以把網址存成書籤。
+      </p>
+      <p className="mt-4">
+        共 {demos.length} 則，分成 {topics.length} 個主題。
+      </p>
+      <ul className="mt-4 grid gap-1">
+        {topics.map((topic) => (
+          <li key={topic.id}>{topic.title}</li>
+        ))}
+      </ul>
+      <p className="mt-4">
+        <Link className="text-teal-800 underline" to="/demos/01-hello">
+          從第一則開始
+        </Link>
+      </p>
+    </section>
+  );
+}
 ```
 
 **解析**
 
-- 主區主題清單下面多一條底線連結，`to` 是 `/demos/01-hello`。
-- 路由表還沒有 `demos/:slug` 時，點了主區是空的；下一節補上路徑之後，同一條連結會打開第一則。
+- 主區清單下面有一條底線連結，點下去網址變成 `/demos/01-hello`，主區換成該則，左側外框沒有重新載入。
+- 這一頁的連結不需要知道自己是不是目前頁，所以用 `Link`，不用 `NavLink`。
 
-{% note success %}
-**換你試試：**
-把連結文字改成「打開第一則」。`to` 仍指向 `/demos/01-hello`。
-{% endnote %}
+### NavLink：標出目前頁
 
-<details>
-<summary>參考答案</summary>
+左側每一則與上方的站名都要能換頁，也要標出現在停在哪裡。`NavLink` 會自己比對目前網址，結果有三種方式可以拿來換樣式。
 
-文字在 `Link` 的內容。路徑留著。
+**一覽**
 
-```diff 04-react-router/src/pages/Home.jsx
- // ...
--          從第一則開始
-+          打開第一則
- // ...
-```
-
-</details>
-
-### NavLink
-
-左側每一則與上方的站名都要能換頁，也要標出現在停在哪裡。`NavLink` 的 `className` 收到 `isActive`，目前這一則用深色底，其餘維持淡色。站名連回 `/`，並加上 `end`。
+- `className` 與 `style` 可以寫成函式，參數是 `isActive` 與 `isPending`，回傳這一刻要用的類別或樣式。`children` 也可以是函式，用來改連結內的內容。
+- 沒有自己寫函式時，目前頁的連結會自動加上 `active` 這個 class；正要前往這個連結的網址、資料還在載入（網址尚未換掉）時是 `pending`。
+- 目前頁的連結也會自動帶上 `aria-current="page"`，讀屏軟體用它告訴使用者「現在在這一頁」，不必自己加。
+- `end` 要求路徑完全相同才算使用中，下面細說。
 
 **語法**
 
@@ -1893,9 +1229,8 @@ const jump = <Link to="/demos/01-hello">從第一則開始</Link>;
  * 會標出目前頁的連結。
  * @param {object} props
  * @param {string} props.to 目標路徑
- * @param {boolean} [props.end] 為 true 時，路徑要完全符合才算使用中
- * @param {function({ isActive: boolean }): string} [props.className] 依是否為目前頁回傳類別
- * @param {React.ReactNode} props.children 連結文字
+ * @param {boolean} [props.end] 為 true 時，網址要與 to 完全相同才算使用中
+ * @param {function({ isActive: boolean, isPending: boolean }): string} [props.className] 依狀態回傳類別
  * @returns {React.ReactElement}
  */
 const item = (
@@ -1903,103 +1238,81 @@ const item = (
     01-hello 函式元件
   </NavLink>
 );
+
+// 沒有 end：網址 /admin 與 /admin/bookings 都算使用中
+// 有 end：只有網址正好是 /admin 時才算使用中
+const parent = (
+  <NavLink to="/admin" end>
+    後台總覽
+  </NavLink>
+);
 ```
-
-**解析**
-
-- `className` 可以是函式，參數裡的 `isActive` 為真時表示這一條對上目前網址。
-- 站名連到 `/` 時要加 `end`，才不會在子路徑也算成使用中。
 
 **觀念**
 
-目錄的 `to` 用該則的 `slug` 接成 `/demos/` 加上檔名。`isActive` 為真時套深色底與白字，其餘只留一行淡色。站名若連到 `/` 卻沒有 `end`，往後只要路徑以斜線開頭，站名都會亮；加上 `end` 之後，只有停在總覽時站名才是使用中。
+比對預設看前綴：連結指向 `/admin` 時，網址 `/admin/bookings` 也算對上，因為它在 `/admin` 底下。這對「父項目在子頁仍亮著」很方便；若不要，就加 `end`。連到 `/` 的連結是特例：它本來就只在根路徑算使用中，加不加 `end` 都一樣，所以下面的站名不需要它。
 
-```diff 04-react-router/src/layouts/MainLayout.jsx
--import { Outlet, ScrollRestoration } from 'react-router';
-+import { NavLink, Outlet, ScrollRestoration } from 'react-router';
- import DemoList from '../pages/DemoList.jsx';
- // ...
--/**
-- * 全站共用的外框。左側先留目錄的位置，右側 Outlet 是子路由的主區。
-- */
-+/**
-+ * 全站共用的外框。左側是目錄，右側 Outlet 依網址換主區。
-+ * 標題連回首頁並加上 end，避免停在單則筆記時首頁仍顯示為使用中。
-+ */
- // ...
--          <span className="font-semibold">練習筆記</span>
-+          <NavLink
-+            to="/"
-+            end
-+            className={({ isActive }) =>
-+              isActive ? 'font-semibold text-teal-800' : 'font-semibold'
-+            }
-+          >
-+            練習筆記
-+          </NavLink>
- // ...
+左側目錄的 `NavLink` 在下面「查詢參數」那一節的 `DemoList.jsx` 裡。這一節先看版型：站名連回 `/`，只有停在總覽時才是深色字。
+
+```jsx 04-react-router/src/layouts/MainLayout.jsx
+import { NavLink, Outlet, ScrollRestoration } from 'react-router';
+import DemoList from '../pages/DemoList.jsx';
+
+/**
+ * 全站共用的外框。左側是目錄，右側 Outlet 依網址換主區。
+ * 站名連回 /，NavLink 只在停在總覽時才標成使用中。
+ */
+export default function MainLayout() {
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-900 md:grid md:grid-cols-[18rem_1fr]">
+      <aside className="border-b border-stone-200 bg-white md:min-h-screen md:border-r md:border-b-0">
+        <div className="px-4 py-4 md:sticky md:top-0 md:max-h-screen md:overflow-y-auto">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? 'font-semibold text-teal-800' : 'font-semibold'
+            }
+          >
+            練習筆記
+          </NavLink>
+          <DemoList />
+          <p className="mt-6 text-sm">
+            <NavLink
+              to="/where"
+              className={({ isActive }) =>
+                isActive
+                  ? 'text-teal-800 underline'
+                  : 'text-stone-600 underline'
+              }
+            >
+              位置
+            </NavLink>
+          </p>
+        </div>
+      </aside>
+      <main className="px-4 py-6">
+        <Outlet />
+      </main>
+      <ScrollRestoration />
+    </div>
+  );
+}
 ```
 
 **解析**
 
-- 站名改成連回 `/` 的 `NavLink`，並加上 `end`，只有停在總覽時才算使用中。
-
-```diff 04-react-router/src/pages/DemoList.jsx
--import { demos, topics } from '../data/catalog.js';
-+import { NavLink } from 'react-router';
-+import { demos, topics } from '../data/catalog.js';
- // ...
--                <li key={demo.slug} className="px-2 py-1 text-sm">
--                  {demo.slug} {demo.title}
-+                <li key={demo.slug}>
-+                  <NavLink
-+                    to={'/demos/' + demo.slug}
-+                    className={({ isActive }) =>
-+                      isActive
-+                        ? 'block rounded bg-teal-800 px-2 py-1 text-sm text-white'
-+                        : 'block rounded px-2 py-1 text-sm hover:bg-stone-100'
-+                    }
-+                  >
-+                    {demo.slug} {demo.title}
-+                  </NavLink>
-                 </li>
- // ...
-```
-
-**解析**
-
-- 路徑參數那一節補上路由之後，點「01-hello 函式元件」會到 `/demos/01-hello`，該列變成深色。
-- 回到總覽時，只有站名是深色字，目錄列恢復淡色。站名有加 `end`，所以停在子路徑時不會一直亮著。
-
-{% note success %}
-**換你試試：**
-把使用中那一列的底色改成 `bg-teal-900`。其餘列的類別留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改 `isActive` 為真時的那一串類別。
-
-```diff 04-react-router/src/pages/DemoList.jsx
- // ...
-                       isActive
--                        ? 'block rounded bg-teal-800 px-2 py-1 text-sm text-white'
-+                        ? 'block rounded bg-teal-900 px-2 py-1 text-sm text-white'
-                         : 'block rounded px-2 py-1 text-sm hover:bg-stone-100'
- // ...
-```
-
-</details>
+- 站名是連到 `/` 的 `NavLink`。停在總覽時是深色字，到了任何一則筆記就恢復一般顏色，因為 `/` 只在根路徑算使用中。
+- 版型同時掛上目錄元件、捲動還原與底下的「位置」連結；前兩者在上一章已經出現，「位置」連結在本章選讀那一節才說明。
+- 目錄裡的連結也是 `NavLink`。從首頁的 `Link` 進到 `/demos/01-hello` 後，左側對應的那一列會自動變深色，因為 `NavLink` 看的是目前網址，與怎麼點進來無關。
 
 ## 路徑參數
 
-每一則筆記共用同一個頁面元件，網址上的 slug 決定要畫哪一則。slug 就是範例檔名去掉 `.jsx`。這個會變的片段叫路徑參數。讀取用 `useParams`，上一則與下一則改網址用 `useNavigate`。
+每一則筆記共用同一個頁面元件，網址決定畫哪一則。網址裡會變的片段叫路徑參數：路由登記成 `demos/:slug`，冒號後面是參數名，`/demos/01-hello` 這個網址上它的值就是字串 `01-hello`。這一節看怎麼讀到它，以及怎麼用程式換到相鄰的一則。
 
 **一覽**
 
-- `useParams` 讀路徑上的參數，回傳的欄位都是字串。這裡的 `slug` 就是 `/demos/:slug` 裡那一段。
-- `useNavigate` 回傳一個函式。呼叫時傳入路徑，效果與點連結相同：推進歷史並換成對上的頁面。送出表單或按下「下一則」這種不是連結的動作才用它。
+- `useParams` 讀目前路徑上的參數，回傳物件，每個欄位都是字串；網址上沒有的參數是 `undefined`。
+- `useNavigate` 回傳一個函式，呼叫時傳入路徑，效果與點連結相同：推進歷史並換頁。它的第二個參數可以放選項，`replace: true` 讓新網址取代目前這一筆歷史，不留下上一頁；`state` 可以順便帶一份資料到新頁，新頁用 `useLocation().state` 讀。
 
 {% mermaid graph LR %}
   pathNode["/demos/01-hello"] --> paramsNode["useParams 得到 slug"]
@@ -2011,53 +1324,53 @@ const item = (
   style nextNode fill:#fff3e0
 {% endmermaid %}
 
-### useParams
-
-路徑寫成 `demos/:slug`。冒號後面的名字就是參數名，打開 `/demos/01-hello` 時，`slug` 是字串 `'01-hello'`。頁面用這個字串到目錄裡找同一筆，找到才畫出該則的 `Component`。
-
 **語法**
 
 ```jsx
 /**
  * 讀取目前路徑上的參數，欄位都是字串。
- * @returns {{ slug: string }} 與 path 裡的 :slug 同名
+ * @returns {{ slug: string }} 與路徑裡 :slug 同名
  */
 const { slug } = useParams();
+
+/**
+ * 取得換頁函式。
+ * @returns {(to: string, options?: { replace?: boolean, state?: unknown }) => void}
+ */
+const navigate = useNavigate();
+navigate('/demos/02-expr'); // 推進歷史，上一頁可以回來
+navigate('/demos/02-expr', { replace: true }); // 取代目前這一筆，上一頁不會回到舊的
 ```
-
-**解析**
-
-- `useParams` 讀路徑上的參數，欄位都是字串。這裡的 `slug` 就是 `/demos/:slug` 裡那一段。
 
 **觀念**
 
-目錄的 `slug` 也是字串，所以直接用 `===` 比較，不用先轉成數字。對不到任何一筆時，留在這一頁說明沒有這則，並給一條回總覽的連結。對得到時，主區先寫主題與標題，再把該則元件畫在下面。
+路由表要多一筆 `demos/:slug`。路由器依「具體程度」比對，而不是依寫的順序：固定文字的路徑比含參數的具體，含參數的又比星號具體，所以順序不影響結果。頁面用 `slug` 到目錄裡找同一筆：目錄的 `slug` 也是字串，直接用 `===` 比較，不用轉成數字。找不到時留在這一頁說明沒有這則；找到時畫出標題與該則的元件。
 
-```diff 04-react-router/src/App.jsx
- import MainLayout from './layouts/MainLayout.jsx';
-+import DemoPage from './pages/DemoPage.jsx';
- import Home from './pages/Home.jsx';
- // ...
-       { index: true, element: <Home /> },
-+      { path: 'demos/:slug', element: <DemoPage /> },
- // ...
+上一則與下一則的順序跟目錄陣列相同，所以先用 `findIndex` 找出這一則的位置，前一格是上一則、後一格是下一則，沒有時按鈕停用。
+
+下面的路由寫法是 `App.jsx` 中這幾筆的摘錄，完整的 `App.jsx` 還包含後面章節的路由。
+
+```jsx
+// App.jsx 的 children 裡的幾筆路由
+{ index: true, element: <Home /> },
+{ path: 'demos/:slug', element: <DemoPage /> },
+{ path: 'where', element: <WherePage /> },
+{ path: '*', element: <NotFoundPage /> },
 ```
 
-**解析**
-
-- 單則筆記共用 `DemoPage`，路徑參數 `:slug` 決定要畫哪一則。這條要寫在更寬鬆的路徑前面。
-
 ```jsx 04-react-router/src/pages/DemoPage.jsx
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { demos, topics } from '../data/catalog.js';
 
 /**
  * 單則筆記。useParams 的 slug 是字串，和目錄的 slug 相同才畫出 Component。
- * 對不到時留在這一頁，並用 Link 回總覽。
+ * 對不到時留在這一頁，並用 Link 回總覽。上一則與下一則跟著目錄陣列，用 useNavigate 改網址；第一則與最後一則的按鈕停用。
  */
 export default function DemoPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const demo = demos.find((item) => item.slug === slug);
+  const index = demos.findIndex((item) => item.slug === slug);
 
   if (!demo) {
     return (
@@ -2073,6 +1386,8 @@ export default function DemoPage() {
   }
 
   const topic = topics.find((item) => item.id === demo.topic);
+  const prev = demos[index - 1];
+  const next = demos[index + 1];
   const View = demo.Component;
 
   return (
@@ -2081,6 +1396,24 @@ export default function DemoPage() {
       <h1 className="mt-1 text-2xl font-bold">
         {demo.slug} {demo.title}
       </h1>
+      <div className="mt-4 flex gap-2">
+        <button
+          type="button"
+          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
+          disabled={!prev}
+          onClick={() => prev && navigate('/demos/' + prev.slug)}
+        >
+          上一則
+        </button>
+        <button
+          type="button"
+          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
+          disabled={!next}
+          onClick={() => next && navigate('/demos/' + next.slug)}
+        >
+          下一則
+        </button>
+      </div>
       <div className="mt-6">
         <View />
       </div>
@@ -2091,127 +1424,29 @@ export default function DemoPage() {
 
 **解析**
 
-- 點目錄的「01-hello 函式元件」，網址變成 `/demos/01-hello`，主區是該則的標題與元件，該列是深色。
-- 打開 `/demos/not-found`，主區是「沒有這則筆記」，因為目錄沒有這個 slug。重新整理仍停在同一個網址。
+- 點目錄的「01-hello 函式元件」，網址變成 `/demos/01-hello`，主區顯示標題、兩個按鈕與該則元件，目錄那一列是深色。
+- 「上一則」在第一則是淡色停用的；按「下一則」到 `/demos/02-expr`，深色列跟著移到下一則，瀏覽器的上一頁可以回到 `01-hello`，因為 `navigate` 推進了歷史。
+- 兩顆按鈕的 `onClick` 先檢查 `prev`、`next` 存在才讀 `slug`。按鈕停用時它們仍是 `undefined`；React Compiler 會把閉包裡用到的 `prev.slug` 當成相依值，在渲染時就先讀取，少了檢查，第一則與最後一則會整頁出錯。
+- 打開 `/demos/not-found`，路由對上了，只是目錄沒有這個 `slug`，所以顯示「沒有這則筆記」與回目錄的連結。
+- 這裡用按鈕示範 `navigate`。單純點了就去別頁的，用 `Link` 更好，因為使用者可以在新分頁開啟、搜尋引擎也看得到；`navigate` 留給非點擊的時機，例如計時結束或送出之後。
 
-{% note success %}
-**換你試試：**
-把對不到時的標題改成「目錄裡沒有這個編號」。回目錄的連結留著。
+{% note info %}
+**loader 也拿得到參數**
+資料章節的 `loader` 函式會收到物件參數，裡面的 `params` 與 `useParams` 的內容相同，例如 `params.slug`。需要在畫面前讀資料時，在 `loader` 裡用它；只要在畫面上顯示參數，才用 `useParams`。本站的目錄是直接 import 進來的，所以元件裡讀就夠了。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-這句話在找不到資料的那個分支。路由的 `:slug` 不用改。
-
-```diff 04-react-router/src/pages/DemoPage.jsx
- // ...
--        <h1 className="text-2xl font-bold">沒有這則筆記</h1>
-+        <h1 className="text-2xl font-bold">目錄裡沒有這個編號</h1>
- // ...
-```
-
-</details>
-
-### useNavigate
-
-上一則與下一則是按鈕，不是一開始就寫死的連結。按下去要改到相鄰那一則的網址，所以用 `useNavigate`。順序跟 `demos` 陣列相同，第一則沒有上一則，最後一則沒有下一則。
-
-**語法**
-
-```jsx
-/**
- * 取得換頁函式。傳入路徑後推進歷史，並畫出對上的頁面。
- * @returns {(to: string) => void}
- */
-const navigate = useNavigate();
-```
-
-**解析**
-
-- `useNavigate` 回傳一個函式。呼叫時傳入路徑，效果與點連結相同：推進歷史並換成對上的頁面。
-
-**觀念**
-
-先用 `find` 以 `slug` 對到目錄那一筆，對不到就留在「沒有這則筆記」。`findIndex` 取出同一筆的位置，前一格是上一則，後一格是下一則。按鈕在沒有相鄰筆記時停用。按得下時才呼叫 `navigate`，路徑是 `/demos/` 加上那一則的 `slug`。
-
-```diff 04-react-router/src/pages/DemoPage.jsx
--import { Link, useParams } from 'react-router';
-+import { Link, useNavigate, useParams } from 'react-router';
- // ...
-- * 對不到時留在這一頁，並用 Link 回總覽。
-+ * 對不到時留在這一頁，並用 Link 回總覽。上一則與下一則跟著目錄陣列，用 useNavigate 改網址；第一則與最後一則的按鈕停用。
- // ...
- export default function DemoPage() {
-   const { slug } = useParams();
-+  const navigate = useNavigate();
-   const demo = demos.find((item) => item.slug === slug);
-+  const index = demos.findIndex((item) => item.slug === slug);
- // ...
-   const topic = topics.find((item) => item.id === demo.topic);
-+  const prev = demos[index - 1];
-+  const next = demos[index + 1];
-   const View = demo.Component;
- // ...
-         {demo.slug} {demo.title}
-       </h1>
-+      <div className="mt-4 flex gap-2">
-+        <button
-+          type="button"
-+          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
-+          disabled={!prev}
-+          onClick={() => navigate('/demos/' + prev.slug)}
-+        >
-+          上一則
-+        </button>
-+        <button
-+          type="button"
-+          className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
-+          disabled={!next}
-+          onClick={() => navigate('/demos/' + next.slug)}
-+        >
-+          下一則
-+        </button>
-+      </div>
-       <div className="mt-6">
- // ...
-```
-
-**解析**
-
-- 停在 `/demos/01-hello` 時，「上一則」是淡的，按「下一則」會到 `/demos/02-expr`，目錄的深色列跟著移到下一則。
-- 瀏覽器的上一頁可以回到 `01-hello`，因為 `navigate` 會推進歷史。
-
-{% note success %}
-**換你試試：**
-把按鈕文字「上一則」改成「前一則」。「下一則」留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩個按鈕各管一個方向，只改上一則的文字。
-
-```diff 04-react-router/src/pages/DemoPage.jsx
- // ...
--          上一則
-+          前一則
- // ...
-```
-
-</details>
 
 ## 查詢參數
 
-目錄很長，用問號後面的查詢參數篩選要留下哪些列。`?q=狀態` 這種網址重新整理仍是同一組結果，也可以把篩過的目錄分享出去。讀與寫都用同一組 Hook。
+目錄很長時，可以用問號後面的查詢參數記住篩選條件。`?q=狀態` 這種網址重新整理仍是同一組結果，也可以把篩過的目錄分享給別人。路徑參數決定「哪一頁」，查詢參數則是同一頁的選項，兩者不要混用。
 
 **一覽**
 
-- `useSearchParams` 讀取目前的查詢，用法接近 `URLSearchParams`。`get('q')` 沒有該參數時是 `null`。
-- `setSearchParams` 寫回查詢並換掉網址上的問號後段。傳入空物件會清掉查詢。它改的是同一頁的網址，目錄元件不用因此換一條路由。
+- `useSearchParams` 回傳一對值：目前的查詢（用法接近瀏覽器的 `URLSearchParams`）與寫回查詢的函式。讀不到的參數，`get` 回傳 `null`。
+- 寫回函式可以傳物件，例如 `{ q: '狀態' }`；傳空物件會清掉查詢；也可以傳函式，參數是目前的查詢，回傳新的查詢，寫法與 `setState` 的函式形式類似。
+- 它會換掉網址並觸發一次換頁，所以第二個參數可以放與 `navigate` 相同的選項，輸入框每打一個字都寫入時，通常加 `replace: true`，避免歷史被塞滿。
 
 {% mermaid graph LR %}
-  inputNode["輸入框"] --> setNode["setSearchParams"]
+  inputNode["輸入框"] --> setNode["寫入查詢"]
   setNode --> urlNode["?q="]
   urlNode --> readNode["useSearchParams"]
   readNode --> listNode["篩過的目錄"]
@@ -2231,22 +1466,22 @@ const navigate = useNavigate();
  */
 const [params, setParams] = useSearchParams();
 
-/**
- * 讀一個參數。沒有這組參數時是 null。
- * @param {string} name 參數名
- * @returns {string|null}
- */
+// 讀：沒有這組參數時是 null
 const q = params.get('q');
+
+// 寫：物件、空物件（清掉查詢）、函式都可以，第二個參數是換頁選項
+setParams({ q: '狀態' }, { replace: true });
+setParams((prev) => {
+  prev.set('page', '2'); // 保留其他參數，只改 page
+  return prev;
+});
 ```
-
-**解析**
-
-- `useSearchParams` 讀取目前的查詢。`get('q')` 沒有該參數時是 `null`。
-- `setSearchParams` 寫回問號後段；傳入空物件會清掉查詢。
 
 **觀念**
 
-關鍵字比對 slug 或標題，大小寫忽略。某個主題篩完沒有留下任何一則，該組標題也不畫。輸入變成空字串時寫入空物件，網址回到沒有問號的路徑。目錄連到單則時把同一個 `q` 帶在路徑後面，否則一點進筆記，篩選就會不見。
+網址是這個篩選的唯一資料來源：輸入框的值直接讀自查詢，打字就是寫回查詢，不另外放一個狀態。函式形式適合「只改其中一個參數、保留其餘」。它不像 `setState` 會把同一輪的多次呼叫串起來，所以同一個事件裡要改多個參數，合併成一次呼叫。
+
+關鍵字比對 slug 或標題，大小寫忽略。篩完沒有留下任何一則的主題，標題也不畫。輸入變成空字串時寫入空物件，網址回到沒有問號的路徑。目錄連到單則時把同一個 `q` 帶在路徑後面，否則一點進筆記，篩選就不見了。
 
 ```jsx 04-react-router/src/pages/DemoList.jsx
 import { NavLink, useSearchParams } from 'react-router';
@@ -2255,7 +1490,8 @@ import { demos, topics } from '../data/catalog.js';
 /**
  * 左側目錄。topics 決定分組順序，同一主題的示範排在該組下面，篩完沒有項目的主題不畫。
  * NavLink 的 isActive 為真時，這一則用深色底標出目前頁。
- * 輸入框把關鍵字寫進查詢 q；空字串會清掉查詢。連到單則時帶上同一個 q，換頁後篩選還在。
+ * 輸入框把關鍵字寫進查詢 q；空字串會清掉查詢，replace 讓每次輸入取代同一筆歷史紀錄。
+ * 連到單則時帶上同一個 q，換頁後篩選還在。
  */
 export default function DemoList() {
   const [params, setParams] = useSearchParams();
@@ -2270,7 +1506,7 @@ export default function DemoList() {
 
   const onSearch = (event) => {
     const next = event.target.value;
-    setParams(next ? { q: next } : {});
+    setParams(next ? { q: next } : {}, { replace: true });
   };
 
   return (
@@ -2324,55 +1560,33 @@ export default function DemoList() {
 
 **解析**
 
-- 在總覽的網址加上 `?q=狀態`，或在左側輸入「狀態」，目錄只留下標題裡有這兩個字的列，網址列看得到 `q`。
+- 在左側輸入「狀態」，網址列出現 `?q=...`，目錄只留下標題含這兩個字的列；直接打開帶 `?q=狀態` 的網址，結果相同。
 - 清空輸入框後，問號消失，全部主題回到左側。重新整理仍是同一組篩選結果。
-
-{% note success %}
-**換你試試：**
-把輸入框的提示文字改成「篩選目錄」。篩選的參數名仍是 `q`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-提示文字是 `placeholder`。`setParams` 仍寫入 `q`。
-
-```diff 04-react-router/src/pages/DemoList.jsx
- // ...
-         value={q}
-         onChange={onSearch}
--        placeholder="搜尋筆記"
-+        placeholder="篩選目錄"
- // ...
-```
-
-</details>
+- 點篩過的某一則，網址變成 `/demos/…?q=…`，目錄的篩選仍在，那一列是深色。`NavLink` 判斷使用中只比對路徑，不看問號後面的部分。
+- 每次輸入都用 `replace`，所以打完一個字詞再按上一頁，會離開這一頁，不必逐字倒退。
 
 ## 選讀：位置資訊
 
-`useLocation` 把目前網址拆成路徑、查詢與雜湊，一次看完整段位置。它適合確認「現在瀏覽器實際停在哪裡」，例如搜尋之後問號還在不在。改 `location` 上的欄位不會換頁。
+`useLocation` 把目前網址拆成路徑、查詢與雜湊，一次看完整段位置。它適合確認「現在瀏覽器實際停在哪裡」，也可以讀 `navigate` 或 `Link` 的 `state` 帶來的資料。改它的欄位不會換頁，換頁仍用連結或 `navigate`。
 
 **語法**
 
 ```jsx
 /**
- * 讀取目前這一段位置。改欄位不會換頁。
+ * 讀取目前這一段位置。
  * @returns {object} location
- *   pathname：路徑名稱，例如 /where
- *   search：查詢字串，含問號。沒有查詢時是空字串
- *   hash：雜湊，含井字號。沒有時是空字串
+ *   pathname：路徑，例如 /where
+ *   search：查詢字串，含問號；沒有時是空字串
+ *   hash：雜湊，含井字號；沒有時是空字串
+ *   state：換頁時用 state 選項帶來的資料；沒有時是 null
  *   key：這一筆歷史紀錄的識別
  */
 const location = useLocation();
 ```
 
-**解析**
-
-- `useLocation` 一次讀出路徑、查詢與雜湊。改這些欄位不會換頁。
-
 **觀念**
 
-這一頁把路徑、查詢與雜湊印出來，用來核對筆記網站的網址。停在 `/where` 時，路徑是 `/where`，查詢與雜湊多半是空的。若網址加上 `?q=狀態#note`，三段會一起對上。位置在渲染時就讀得到，直接畫出來即可。
+位置在渲染時就讀得到，直接畫出來即可。這一頁把路徑、查詢與雜湊印出來，打開 `/where?q=狀態#note` 可以看到三段分開；沒有查詢或雜湊的網址，兩行都顯示「（沒有）」。路由表要補上 `where`（見路徑參數那一節的摘錄），版型底下的「位置」連結就能點進來，左側目錄仍在，因為這一頁也是版型的子路由。
 
 ```jsx 04-react-router/src/pages/WherePage.jsx
 import { useLocation } from 'react-router';
@@ -2397,74 +1611,21 @@ export default function WherePage() {
 
 **解析**
 
-- 這一頁把 `pathname`、`search`、`hash` 印出來。位置在渲染時就讀得到，直接畫即可。
-
-位置頁掛在版型裡面，左側目錄還在。站名下方加一條連到 `/where` 的連結，路由表補上 `where`。
-
-```diff 04-react-router/src/layouts/MainLayout.jsx
- // ...
-           <DemoList />
-+          <p className="mt-6 text-sm">
-+            <NavLink
-+              to="/where"
-+              className={({ isActive }) =>
-+                isActive
-+                  ? 'text-teal-800 underline'
-+                  : 'text-stone-600 underline'
-+              }
-+            >
-+              位置
-+            </NavLink>
-+          </p>
- // ...
-```
-
-**解析**
-
-- 站名下方加一條連到 `/where` 的 `NavLink`，方便打開位置頁核對網址。
-
-```diff 04-react-router/src/App.jsx
- import Home from './pages/Home.jsx';
-+import WherePage from './pages/WherePage.jsx';
- // ...
-       { path: 'demos/:slug', element: <DemoPage /> },
-+      { path: 'where', element: <WherePage /> },
- // ...
-```
-
-**解析**
-
-- 打開 `/where?q=狀態#note`，三行分別是路徑 `/where`、查詢 `?q=狀態`、雜湊 `#note`。左側目錄仍在。
-- 路由表的 `where` 寫在版型的 `children` 裡，所以這一頁仍包在同一份外框。
-
-{% note success %}
-**換你試試：**
-再印一行 `location.key`。同一個網址用連結進來與重新整理，這個 key 不一定相同。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`key` 是這一筆歷史紀錄的識別，路徑本身不含這一段。
-
-```diff 04-react-router/src/pages/WherePage.jsx
- // ...
-       <p>雜湊 {location.hash || '（沒有）'}</p>
-+      <p>紀錄 {location.key}</p>
-     </section>
- // ...
-```
-
-</details>
+- 停在 `/where` 時，路徑是 `/where`，查詢與雜湊顯示「（沒有）」。
+- 網址加上 `?q=狀態#note` 後，三行分別是 `/where`、查詢、`#note`；中文會是百分比編碼（`?q=%E7%8B%80%E6%85%8B`），因為 `search` 是瀏覽器網址原樣的字串，要解碼後的值用 `useSearchParams` 的 `get`。
 
 # 找不到的頁面
 
-沒有任何路由對上時，要有一頁說明找不到，並能回到目錄。星號路徑 `*` 接住剩下的網址。放在版型裡面或與版型並列，左側目錄會不會留下來，結果不同。筆記網站的完成版把星號放在版型裡，未知網址仍看得到目錄。
+沒有任何路由對上網址時，要有一頁說明找不到，並能回到目錄。這一章先看接住剩餘網址的星號路由，兩種放法的差別在左側目錄會不會留下來；再看沒有星號路由時，路由器怎麼處理對不上的網址，以及 `errorElement` 在哪個位置接手。
+
+## 星號路由
+
+路徑寫成 `*` 的路由叫星號路由（splat route），會對上前面所有路由都沒對上的網址。它的優先順序最低，固定路徑與含參數的路徑都會先被比對到，慣例上寫在最後一筆方便閱讀。星號放在哪一層，決定 404 會不會被版型包住。
 
 **一覽**
 
-- 分散式星號路由寫在版型的子路由裡。找不到時，目錄還在，主區換成 404。
-- 集中式星號路由與版型並列。找不到時，整頁換成 404，目錄一併卸下。
+- 星號在版型的 `children` 裡：未知網址仍畫進版型，目錄還在，主區換成 404。這是這份筆記站與最後專案採用的寫法。
+- 星號與版型並列：未知網址不走進版型，整頁只剩 404，目錄一併消失。
 
 {% mermaid graph LR %}
   missNode["對不上的網址"] --> nestNode["星號在版型內"]
@@ -2478,40 +1639,41 @@ export default function WherePage() {
   style dropNode fill:#ffebee
 {% endmermaid %}
 
-## 分散式星號路由
+### 星號放在版型裡
 
-把 `*` 放進版型的子路由，而且放在最後面。`/demos/01-hello` 這種更具體的路徑會先對上，剩下的網址才落到星號。未知網址仍留在版型裡，左側目錄不會被拿掉，主區換成找不到的那一頁，並附上回總覽的連結。
+404 頁只負責主區的說明與回目錄連結。星號接住的那一段網址，可以用 `useParams` 的 `'*'` 欄位讀到，開頭沒有斜線；網址是 `/no-such` 時，它的值是 `no-such`。
 
 **語法**
 
 ```jsx
 /**
- * 接住前面沒有對上的路徑。放在版型的 children 最後一筆時，主區換成這個元素，目錄留著。
+ * 接住前面沒有對上的路徑。放在版型 children 的最後一筆時，主區換成這個元素，目錄留著。
  * @type {{ path: string, element: React.ReactElement }}
  */
 const missed = { path: '*', element: <NotFoundPage /> };
+
+// 星號接住的那一段網址，在 params 的 '*' 欄位
+const { '*': rest } = useParams();
 ```
-
-**解析**
-
-- 星號接住前面沒有對上的路徑。放在版型 `children` 的最後一筆時，主區換成 404，目錄留著。
 
 **觀念**
 
-404 頁面只負責主區的說明與回目錄連結。回目錄的路徑是 `/`，點了主區回到總覽，左側仍是同一份版型。`demos/:slug` 比星號具體，所以 `/demos/01-hello` 不會掉進 404；`/demos/not-found` 會進單則頁面裡「沒有這則筆記」的分支，因為那條路由已經對上了，只是目錄沒有這個 slug。
+路由表的寫法見路徑參數那一節的摘錄：星號是版型 `children` 裡的一筆。`demos/:slug` 比星號具體，所以 `/demos/01-hello` 不會掉進 404；`/demos/not-found` 也不會，它對上的是單則頁面，只是目錄裡沒有這個 `slug`，顯示的是那一頁自己的「沒有這則筆記」。
 
 ```jsx 04-react-router/src/pages/NotFoundPage.jsx
-import { Link } from 'react-router';
+import { Link, useParams } from 'react-router';
 
 /**
  * 沒有路由對上時的主區。星號放在版型裡，左側目錄還在，這裡只換主區的說明。
- * 回目錄的 Link 指向 /，主區回到總覽。
+ * useParams 的 '*' 欄位是星號接住的那一段網址，回目錄的 Link 指向 /。
  */
 export default function NotFoundPage() {
+  const { '*': missed } = useParams();
+
   return (
     <section>
       <h1 className="text-2xl font-bold">找不到頁面</h1>
-      <p className="mt-2">這個網址沒有對上任何筆記。</p>
+      <p className="mt-2">網址 /{missed} 沒有對上任何筆記。</p>
       <p className="mt-2">
         <Link className="text-teal-800 underline" to="/">
           回目錄
@@ -2524,59 +1686,20 @@ export default function NotFoundPage() {
 
 **解析**
 
-- 404 頁只負責主區的說明，並提供一條回到 `/` 的連結。
+- 打開 `/no-such`，左側目錄還在，主區是「找不到頁面」，並寫出網址 `/no-such`。
+- 網址有多段時（例如 `/a/b`），`'*'` 的值是 `a/b`。
+- 點「回目錄」回到 `/`，主區是總覽，左側外框從頭到尾沒有換掉。
 
-```diff 04-react-router/src/App.jsx
- import Home from './pages/Home.jsx';
-+import NotFoundPage from './pages/NotFoundPage.jsx';
- import WherePage from './pages/WherePage.jsx';
- // ...
-- * 路由表。父路由畫版型，index 在同一個網址畫首頁。
-- * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。
-+ * 筆記網站的路由表。版型包住首頁、單則筆記、位置頁與找不到的頁面。
-+ * 子路由寫在父路由的 children 裡，才會畫進版型的 Outlet。星號放在最後，更具體的路徑先對上。
- // ...
-       { path: 'where', element: <WherePage /> },
-+      { path: '*', element: <NotFoundPage /> },
- // ...
-```
+### 星號與版型並列
 
-**解析**
-
-- 星號是版型 `children` 的最後一筆，仍包在版型裡，找不到時左側目錄還在。
-- 註解與完成的 `App.jsx` 相同：子路由寫在 `children`，更具體的路徑先對上。
-- 打開 `/no-such`，左側目錄還在，主區是找不到頁面。點「回目錄」會回到 `/`。
-
-{% note success %}
-**換你試試：**
-在標題下面加一行「路徑沒有對上」。回目錄的連結留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-說明寫在 404 元件。路由表不用為了這句話改路徑。
-
-```diff 04-react-router/src/pages/NotFoundPage.jsx
- // ...
-       <h1 className="text-2xl font-bold">找不到頁面</h1>
-+      <p className="mt-2">路徑沒有對上</p>
-       <p className="mt-2">這個網址沒有對上任何筆記。</p>
- // ...
-```
-
-</details>
-
-## 集中式星號路由
-
-星號與版型並列時，未知網址不會走進版型。目錄消失，整頁只剩 404。筆記站的未知路徑仍想留著目錄，所以完成版用上一則的分散式寫法。這一則用來對照兩種放法的差別。
+星號寫在最外層、與版型同級時，未知網址不會走進版型，目錄消失，整頁只剩 404 元件。這種寫法適合 404 想用完全不同外觀的網站；筆記站想讓使用者留在目錄旁，所以不採用。
 
 **語法**
 
 ```jsx
 /**
  * 星號與版型路由同級時，未知網址整頁換成 404，版型的目錄不會出現。
- * 完成的 04-react-router 不用這一種，星號仍留在 children 裡。
+ * 04-react-router 的完成版不用這一種。
  */
 const central = createBrowserRouter([
   {
@@ -2592,43 +1715,61 @@ const central = createBrowserRouter([
 
 **解析**
 
-- 星號與版型路由同級，不在 `children` 裡。找不到時整頁換成 404，目錄不會出現。
-- 完成的 `04-react-router` 不用這一種，星號仍留在版型的 `children`。
+- 星號與版型同級，不在 `children` 裡；找不到時整頁換成 404，目錄不會出現。
+- 兩種寫法選一種就好，不必同時放。
+
+## 對不上網址時的錯誤處理
+
+沒有星號路由時，路由器會把對不上的網址當成一個 404 錯誤，交給最上層那條路由的錯誤畫面處理；沒有指定時，顯示路由器內建的預設 404 畫面。錯誤畫面用路由上的 `errorElement` 指定，它不只處理 404：路由的 `loader`、`action` 或畫面出錯時，同樣由最近的那一層接手，下一章會實際用到。
+
+**一覽**
+
+- 星號路由：自己的元素當成一般頁面畫出來，不算錯誤，適合在版型內顯示 404。
+- `errorElement`：寫在路由物件上的錯誤畫面。出錯時，路由器由內往外找最近的一個，換掉那條路由原本要畫的內容。
+- `useRouteError` 取得錯誤內容；`isRouteErrorResponse` 判斷它是不是帶狀態碼的回應（例如 404）。
+
+**語法**
+
+```jsx
+import { isRouteErrorResponse, useRouteError } from 'react-router';
+
+/**
+ * 錯誤畫面。對不上網址、loader 或 action 丟出錯誤、畫面出錯都會來到這裡。
+ * @returns {React.ReactElement}
+ */
+function ErrorPage() {
+  const error = useRouteError();
+
+  // 帶狀態碼的回應，例如 404；其他錯誤是一般的 Error
+  if (isRouteErrorResponse(error)) {
+    return <h1>{error.status} {error.statusText}</h1>;
+  }
+  return <h1>出了點問題</h1>;
+}
+
+// 掛在路由上：這一層底下出的錯，由它接手
+const route = { path: '/', element: <MainLayout />, errorElement: <ErrorPage />, children: [] };
+```
 
 **觀念**
 
-子頁面的元件與上一則相同，差別是星號與版型路由同級，不在 `children` 裡。找不到頁就沒有側欄。兩種星號不要同時留著：版型裡的星號會先接住，外面的就不會輪到。看完這一則，把星號移回版型的 `children`，完成的 `04-react-router` 仍用分散式。
-
-{% note success %}
-**換你試試：**
-把星號暫時移到版型外面，打開 `/no-such`。目錄應消失。看完移回版型裡，確認目錄還在。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-目錄在不在，只看 404 有沒有被版型包住。下面是暫時移出去的差。看完請移回版型裡。
-
-```diff 04-react-router/src/App.jsx
- // ...
-       { path: 'where', element: <WherePage /> },
--      { path: '*', element: <NotFoundPage /> },
-     ],
-   },
-+  { path: '*', element: <NotFoundPage /> },
- ], { basename });
- // ...
-```
-
-</details>
+星號路由與 `errorElement` 分工不同：網址根本不存在，用星號路由在版型內顯示 404；某一則資料讀不到或表單送出失敗，用 `errorElement` 只換掉出錯的那一塊。兩者可以並存，因為星號會先接住所有對不上的網址，`errorElement` 就只處理真正的錯誤。`errorElement` 的位置決定受影響的範圍：寫在版型上，出錯時整個版型一起被換掉；寫在子路由上，版型仍在，只有那一塊主區換成錯誤畫面。讀不到資料時怎麼丟出 404、怎麼在子路由放 `errorElement`，在下一章的「errorElement」那一節示範。
 
 # 讀取與送出資料
 
-路由與連結接上之後，進頁前的讀取與表單送出寫在路由物件上。`loader` 在畫面前把資料準備好，`action` 接收 `Form` 的請求，寫進同一份筆記後相關的 `loader` 會自己再跑。每一則練習網址就是範例檔名去掉 `.jsx`，從 `/demos/86-loader` 到 `/demos/92-fetcher-key`。路徑裡若有 `notes/`，後面那一段仍是 `noteId`。這一章的七則都排在 `demos/:slug` 前面，才不會被路徑參數吃掉。
+路由與連結接上之後，頁面還要能取得資料，也要能把表單送出去。資料模式把這兩件事寫在路由物件上：進頁前先讀取資料，送出時由路由接手處理，讀取或送出出錯時有固定的畫面可以換。這一章依序學這幾個部分。
+
+- `loader`：進頁前執行的函式，回傳值由 `useLoaderData` 讀取。
+- `action`：接收 `Form` 送出的資料，回傳值由 `useActionData` 讀取。
+- `redirect`：`action` 完成後把使用者帶去另一個網址。
+- `errorElement`：`loader` 或 `action` 丟出錯誤時顯示的畫面。
+- `useFetcher` 與 `useNavigation`：不換頁的送出，以及換頁或送出時的「進行中」狀態。
+
+每一則練習的網址就是範例檔名去掉副檔名，從 86-loader 到 92-fetcher-key，網址前面加上 /demos/。
 
 {% note info %}
 **哪一種路由器能用**
-`loader`、`action`、`Form`、`useFetcher`、`errorElement` 以及這一章的相關 Hook，只配合資料路由器：`createBrowserRouter`、`createHashRouter`、`createMemoryRouter` 與 `RouterProvider`；框架模式則在路由模組匯出 `loader` 與 `action`。宣告式的 `BrowserRouter` 與 `Routes` 不能用這些，三種接法見[三種接法](#React-Router)。
+這一章的功能只配合資料路由器，也就是 createBrowserRouter、createHashRouter、createMemoryRouter 這幾個函式建立的路由器，再交給 RouterProvider。框架模式則是在路由模組裡匯出 loader 與 action。宣告式的 BrowserRouter 與 Routes 不支援，三種接法見[三種使用模式](#三種使用模式)。
 {% endnote %}
 
 {% mermaid graph TD %}
@@ -2644,7 +1785,7 @@ const central = createBrowserRouter([
   loader -->|"回傳值"| dataHook["useLoaderData"]
   dataHook --> comp
   comp -->|"Form method=post 或 useFetcher"| action
-  action -->|"回傳錯誤"| actionHook["useActionData"]
+  action -->|"回傳值"| actionHook["useActionData"]
   actionHook --> comp
   action -->|"redirect"| newUrl["換成新網址"]
   action -->|"throw"| err
@@ -2660,25 +1801,11 @@ const central = createBrowserRouter([
   style errHook fill:#ffebee
 {% endmermaid %}
 
-{% mermaid sequenceDiagram %}
-  participant U as 使用者
-  participant C as Component
-  participant A as action
-  participant L as loader
-  U->>C: 送出 Form
-  C->>A: POST 表單
-  A->>L: 路由器重跑 loader
-  L->>C: 新資料重畫
-  Note over C: useNavigation 依序是 submitting、loading、idle
-{% endmermaid %}
-
-`loader` 在進頁前把資料備好，頁面用 `useLoaderData` 接。`Form` 或 `useFetcher` 把欄位送到這條路由的 `action`；成功後路由器會再跑相關的 `loader`，或依 `redirect` 換到新網址。`action` 回傳的錯誤用 `useActionData` 顯示，`throw` 則交給 `errorElement`，由 `useRouteError` 讀取。細節見下面各節。
-
-`86-loader` 與 `89-error-element` 到 `91-navigation` 共用 `notes-db.js` 裡的陣列。`87-action` 與 `88-redirect-list` 用 `fake-api.js`，不寫這份檔案。重新整理開發伺服器會回到最初的兩筆。
+示範資料有兩個來源：86 與 89 到 91 讀寫 notes-db.js 裡的陣列，87 與 88 用 fake-api.js。陣列只存在記憶體，重新整理頁面就回到最初的「看海」與「寫筆記」兩筆。
 
 ## 用 loader 讀資料
 
-`loader` 是路由物件上的函式，在這個網址的元件畫出來之前執行。回傳的值由頁面裡的 `useLoaderData` 讀取。這一則只讀清單，還沒有表單。
+`loader` 是掛在路由物件上的函式，路由器在畫出這個網址的元件之前先執行它，等它做完才換頁。這一節先讀記憶體裡的清單，還沒有表單，目的是看清楚資料從 `loader` 流到畫面的路線。
 
 {% mermaid graph LR %}
   route["路由的 loader"] --> wait["進頁前執行"]
@@ -2692,7 +1819,14 @@ const central = createBrowserRouter([
 
 **觀念**
 
-`notes-db.js` 把陣列留在模組作用域，匯出讀取與寫入函式。`86-loader.jsx` 的 `loader` 呼叫 `listNotes`，把陣列放進 `notes`。頁面解構同一份結果，用 `map` 畫出標題。
+`loader` 收到一個物件，目前常用的是其中兩個欄位：
+
+- `request`：代表這次請求的標準 Request 物件，網址上的查詢參數可以從它的網址取得。
+- `params`：路徑參數，例如 `demos/:slug` 對上時的 `slug`。
+
+回傳什麼，元件裡的 `useLoaderData` 就拿到什麼；回傳 Promise 時路由器會等它完成。資料因此在畫面出現之前就備好，元件不必先畫一個空畫面，再靠 effect 與 state 補資料。
+
+示範的資料放在 notes-db.js。它把陣列留在模組變數裡，再匯出讀寫函式，讓不同檔案共用同一份資料。匯入與匯出的規則見選讀的 ES Module 一章：{% post_link lokiTech-15day-06-js-basics %}。
 
 ```js 04-react-router/src/examples/notes-db.js
 /** @type {{ id: string, title: string, done: boolean }[]} */
@@ -2739,9 +1873,10 @@ export const toggleNote = (id) => {
 
 **解析**
 
-- `listNotes`、`getNote`、`addNote`、`toggleNote` 都操作模組裡的同一份陣列。
-- `86-loader` 與 `89-error-element` 到 `91-navigation` 共用這份檔案。`87-action` 與 `88-redirect-list` 用 `fake-api.js`，不寫這裡。重新整理開發伺服器會回到最初的「看海」與「寫筆記」兩筆。
+- `listNotes` 回傳整份陣列，`getNote` 依 id 找一筆，找不到時回傳 `null`。
+- `addNote` 與 `toggleNote` 不直接改陣列，而是建立新陣列再取代舊的，和 state 的不可變更新是同一個習慣。
 
+下面是第一則 demo。
 
 ```jsx 04-react-router/src/examples/86-loader.jsx
 import { useLoaderData } from 'react-router';
@@ -2777,48 +1912,20 @@ export default function LoaderDemo() {
 
 **解析**
 
-- 打開 `/demos/86-loader` 會先跑 `loader`，畫面上是「看海」與「寫筆記」兩列，沒有另外的讀取中文字。
-- `useLoaderData` 拿到的就是 `loader` 的回傳值。這一則沒有 `useEffect`。
+- 打開 `/demos/86-loader`，路由器先跑 `loader`，畫面直接是「看海」與「寫筆記」兩列（剛重新整理時；在別的示範新增過筆記，這裡也會多出來）。從側欄點進來時，舊畫面會留著，直到資料備好才換頁。
+- 元件裡沒有 `useEffect` 也沒有 `useState`，資料完全來自 `useLoaderData`。
 
-路由要註冊在 `demos/:slug` 前面。`App.jsx` 用具名匯入把 `loader` 掛到 `demos/86-loader`。
+路由物件把 loader 與元件掛在一起。每個示範檔匯出的函式都叫 loader，所以 App.jsx 匯入時用 as 改名來區分。完整的路由表見前面的「路由表與版型」，這裡只看這一筆：
 
-```diff 04-react-router/src/App.jsx
- import WherePage from './pages/WherePage.jsx';
-+import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
- // ...
-+        { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
+```jsx
+{ path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
 ```
 
-**解析**
-
-- `demos/86-loader` 比 `demos/:slug` 更具體，所以這一則不會掉進單則筆記頁。
-- 用具名匯入把 `loader` 掛到這條路由，寫在 `demos/:slug` 前面。
-
-{% note success %}
-**換你試試：**
-在標題下面加一行，顯示目前有幾筆筆記。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-筆數用 `notes.length`。路由與 `loader` 不用改。
-
-```diff 04-react-router/src/examples/86-loader.jsx
- // ...
-       <h1 className="text-2xl font-bold">86 loader 讀資料</h1>
-+      <p className="mt-2">目前 {notes.length} 筆</p>
-       <ul className="mt-4 grid gap-2">
- // ...
-```
-
-</details>
+路由器依路徑的具體程度比對，`demos/86-loader` 比 `demos/:slug` 具體，所以與寫在路由表裡的先後無關。
 
 ## 用 action 與 Form 送出
 
-`Form method=post` 把欄位送到這條路由的 `action`，不會整頁換成另一份文件。`action` 用 `request.formData()` 讀欄位，再呼叫 `createItem` 對 jsonplaceholder 發出 POST，頁面用 `useActionData` 顯示伺服器回傳的那一筆。
+讀取之後是寫入。React Router 提供的 `Form` 送出時不會整頁重載，而是把欄位交給路由上的 action，路由器等它做完再更新畫面。這一節用一個「新增標題」的表單，看 action 怎麼讀欄位、怎麼回報錯誤。
 
 {% mermaid graph TD %}
   form["Form method=post"] --> action["action"]
@@ -2831,7 +1938,9 @@ export default function LoaderDemo() {
 
 **觀念**
 
-`form.get('title')` 是 FormData 的方法，用來讀取表單裡 name 為 `title` 的欄位，不是 HTTP 的 GET。沒有這個欄位時是 `null`。去掉空白後是空字串就回 `data({ errors: { title: '請填標題' } }, { status: 400 })`，有字才呼叫 `../api/fake-api.js` 的 `createItem({ title })`，把 `{ item }` 交給 `useActionData`。jsonplaceholder 不會把資料留下來，所以這一則不維護清單。
+action 與 loader 一樣收到 request，但它處理的是送出的內容。`await request.formData()` 取得 FormData（瀏覽器內建、存放表單欄位的物件），再用 `get` 依欄位名讀值；欄位不存在時是 null。這個 get 是 FormData 的方法，和 HTTP 的 GET 無關。
+
+action 的回傳值由頁面的 `useActionData` 讀取，第一次送出之前是 undefined。驗證不過時回傳帶 400 狀態碼的錯誤物件，表單與頁面都留在原處，才有地方顯示錯誤訊息。
 
 ```jsx 04-react-router/src/examples/87-action.jsx
 import { data, Form, useActionData } from 'react-router';
@@ -2898,57 +2007,22 @@ export default function ActionDemo() {
 
 **解析**
 
-- 填一個標題再按「新增」，畫面出現伺服器回傳的 id 與標題。網址仍是 `/demos/87-action`。
-- `<Form>` 是 React Router 的元件，會自己攔下瀏覽器預設的整頁送出，改把欄位交給 `action`，所以不用寫 `event.preventDefault()`。只有想在送出前擋下來（例如先跳確認）時，才在 `onSubmit` 裡呼叫它。
-- `form.get('title')` 是 FormData 的方法，用來讀取欄位名為 `title` 的值，不是向伺服器發 HTTP GET。
-- jsonplaceholder 接受 POST 後會回傳一筆帶 id 的物件，但不會真的存下來，所以這一則不用 `loader` 列清單，也不會看到列表變長。
-- 標題留白就送出時，`action` 回傳 `data({ errors: { title: '請填標題' } }, { status: 400 })`，輸入框下面出現這句話。這是回傳，不是 throw，所以頁面與表單都還在，才能顯示訊息。throw 會交給 `errorElement`，整頁被換成錯誤畫面。
-- `useActionData` 在第一次送出前是 `undefined`，所以用 `result?.errors?.title` 與 `result?.item` 讀取。
-- `data(..., { status: 400 })` 只設定回應的狀態碼，頁面讀到的仍是那份物件，讀法與直接回傳相同。
-- 同一份 `errors` 物件也可以交給 MUI 的 `TextField`，用 `error` 與 `helperText` 顯示該欄訊息。
+- 填一個標題再按「新增」，畫面出現伺服器回傳的 id 與標題，網址仍是 `/demos/87-action`。jsonplaceholder 接受 POST 並回傳帶 id 的物件，但不會真的存起來，所以這一則沒有清單。
+- `Form` 會自己攔下瀏覽器預設的整頁送出，不必寫 `event.preventDefault()`。只有想在送出前自己攔下來時，才在 `onSubmit` 裡呼叫它。
+- 沒有 `action` 屬性時，表單送到目前這條路由的 `action`。
+- 標題留白時，`action` 回傳 400 的錯誤物件，輸入框下面出現「請填標題」。這是回傳而不是 throw，頁面還在，才能顯示訊息；throw 會換成錯誤畫面，下一節說明。
+- `data(..., { status: 400 })` 只是替回應標上狀態碼，頁面讀到的仍是那份物件，讀法與直接回傳相同。另一個作用是：action 成功後路由器會重跑 loader 更新畫面（稱為重新驗證，見 useFetcher 一節），狀態碼不是 2xx 時就不會重跑。
+- 因為 `useActionData` 一開始是 `undefined`，所以寫成 `result?.errors?.title` 與 `result?.item`。
 
-```diff 04-react-router/src/App.jsx
- import LoaderDemo, { loader as loader86 } from './examples/86-loader.jsx';
-+import ActionDemo, {
-+  action as action87,
-+} from './examples/87-action.jsx';
- // ...
-         { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
-+        {
-+          path: 'demos/87-action',
-+          action: action87,
-+          Component: ActionDemo,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
+這條路由只掛 action 與元件，不需要 loader：
+
+```jsx
+{ path: 'demos/87-action', action: action87, Component: ActionDemo },
 ```
-
-**解析**
-
-- 這條路由掛 `action` 與 `Component`，不必再掛 `loader`。路徑寫在 `demos/:slug` 前面。
-
-{% note success %}
-**換你試試：**
-把空標題的錯誤改成「標題不可以空白」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改 `action` 回傳的那句話。
-
-```diff 04-react-router/src/examples/87-action.jsx
- // ...
--  if (!title) return data({ errors: { title: '請填標題' } }, { status: 400 });
-+  if (!title) return data({ errors: { title: '標題不可以空白' } }, { status: 400 });
- // ...
-```
-
-</details>
 
 ## redirect：送出後轉址
 
-編輯表單送出後，`action` 用 `updateItem` 寫入標題，並 `return redirect('/demos/88-redirect-list')`。路由器改去那個網址，並執行列表的 `loader`。
+資料寫入成功之後，使用者通常不該停在表單上，而是回到列表。`redirect` 產生一個轉址回應，action 把它回傳，路由器就改去那個網址，並執行新網址的 loader。這一節用列表加編輯頁兩條路由示範。
 
 {% mermaid graph TD %}
   subgraph route["Route"]
@@ -2966,9 +2040,11 @@ export default function ActionDemo() {
   action -->|"redirect"| listPath
 {% endmermaid %}
 
-列表與編輯是兩條路由。編輯頁的 `Form` 送到這一條的 `action`；`action` 呼叫 `updateItem` 後回傳 `redirect`。路由器改去列表路徑，並再跑列表的 `loader`，畫面上是新的標題。
+列表與編輯是兩條路由。編輯頁的表單送到這一條的 action，寫入後轉址，路由器改去列表路徑並重跑列表的 loader，畫面上就是新的標題。
 
 ### 步驟 1：列表頁
+
+列表路由只負責讀取：loader 取得清單，每一列連到編輯頁。
 
 ```jsx 04-react-router/src/examples/88-redirect-list.jsx
 import { Link, useLoaderData } from 'react-router';
@@ -3012,10 +2088,12 @@ export default function RedirectList() {
 
 **解析**
 
-- `loader` 進頁前呼叫 `getItems`，回傳 `{ items }`。頁面用 `useLoaderData` 接。
-- 每一列有「編輯」連到 `/demos/88-redirect-edit/:itemId`。
+- `loader` 進頁前呼叫 `getItems`，回傳 `{ items }`，頁面用 `useLoaderData` 接。
+- 每一列的「編輯」連到 `/demos/88-redirect-edit/:itemId`，`itemId` 是該筆的 id。
 
 ### 步驟 2：編輯頁
+
+編輯路由同時有 loader 與 action：前者依路徑參數找出要編輯的那一筆，後者把新標題寫回去，最後轉址。
 
 ```jsx 04-react-router/src/examples/88-redirect-edit.jsx
 import { Form, Link, redirect, useLoaderData } from 'react-router';
@@ -3086,67 +2164,41 @@ export default function RedirectEdit() {
 
 **解析**
 
-- `Form method="post"` 送到目前網址的 `action`，沒有 `action` 屬性。欄位只有標題。
-- `action` 讀取 `title`，呼叫 `updateItem` 寫入，最後一行是 `return redirect('/demos/88-redirect-list')`。路由器改去列表並跑列表的 `loader`，畫面上是新的標題。
-- `getItems` 與 `updateItem` 共用同一份還留在記憶體裡的清單，所以轉回去時列表會讀到剛改的標題。
+- `loader` 的 `params.itemId` 是路徑上的 id，用它找出這一筆，輸入框用 `defaultValue` 帶入目前標題。
+- `action` 讀 `title`、呼叫 `updateItem` 寫入，最後一行 `return redirect('/demos/88-redirect-list')` 把使用者帶回列表。
+- `getItems` 與 `updateItem` 共用同一份還留在記憶體裡的清單，所以回到列表時讀到的是剛改的標題。
 
-### 步驟 3：在 App.jsx 掛上兩條路由
+{% note info %}
+**return 還是 throw**
+redirect 回傳的是一個 Response 物件，在 action 或 loader 裡用 return 或 throw 效果相同。寫在函式最後一行就用 return；需要從輔助函式深處直接跳走時用 throw，例如「沒登入就轉去登入頁」的檢查。預設狀態碼是 302。
+{% endnote %}
 
-```diff 04-react-router/src/App.jsx
- import ActionDemo, { action as action87 } from './examples/87-action.jsx';
-+import RedirectList, {
-+  loader as loader88List,
-+} from './examples/88-redirect-list.jsx';
-+import RedirectEdit, {
-+  action as action88,
-+  loader as loader88Edit,
-+} from './examples/88-redirect-edit.jsx';
- // ...
-           Component: ActionDemo,
-         },
-+        {
-+          path: 'demos/88-redirect-list',
-+          loader: loader88List,
-+          Component: RedirectList,
-+        },
-+        {
-+          path: 'demos/88-redirect-edit/:itemId',
-+          loader: loader88Edit,
-+          action: action88,
-+          Component: RedirectEdit,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> }
- // ...
+### 步驟 3：在路由表掛上兩條路由
+
+兩條路由各有自己的路徑：列表只掛 loader，編輯頁掛 loader 與 action，路徑中的 :itemId 就是編輯頁 loader 讀到的 params.itemId。
+
+```jsx
+{
+  path: 'demos/88-redirect-list',
+  loader: loader88List,
+  Component: RedirectList,
+},
+{
+  path: 'demos/88-redirect-edit/:itemId',
+  loader: loader88Edit,
+  action: action88,
+  Component: RedirectEdit,
+},
 ```
 
 **解析**
 
-- 列表路徑是 `demos/88-redirect-list`，`loader` 回傳清單，`Component` 是預設匯出的列表。
-- 編輯路徑是 `demos/88-redirect-edit/:itemId`，掛上 `loader`、`action` 與編輯頁。`itemId` 是路徑上的項目 id。
-- 這兩條比 `demos/:slug` 更具體，所以寫在它前面。側欄只列列表那一則；編輯頁從列表點進去。
-
-{% note success %}
-**換你試試：**
-把儲存按鈕的文字改成「儲存並回列表」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改按鈕文字。
-
-```diff 04-react-router/src/examples/88-redirect-edit.jsx
- // ...
--          儲存
-+          儲存並回列表
- // ...
-```
-
-</details>
+- 側欄只列列表那一則，編輯頁是從列表點進去的。
+- 兩個檔案都匯出叫 `loader` 的函式，所以在 `App.jsx` 匯入時分別改名成 `loader88List` 與 `loader88Edit`。
 
 ## errorElement：拿不到資料時
 
-明細的 `loader` 找不到筆記時 `throw data('找不到', { status: 404 })`。頁面元件不會渲染，這條路由的 `errorElement` 改畫錯誤元件，元件用 `useRouteError` 與 `isRouteErrorResponse` 讀出被丟出的值。
+資料不一定拿得到，例如網址上的 id 根本不存在。這時 loader 不該回傳一份空資料讓頁面硬畫，而是丟出錯誤；路由器不再渲染這條路由的元件，改畫 `errorElement` 指定的畫面。這一節示範明細頁找不到筆記時的 404。
 
 {% mermaid graph TD %}
   loader["loader"] -->|"throw data"| err["errorElement"]
@@ -3156,11 +2208,16 @@ export default function RedirectEdit() {
   style hook fill:#ffebee
 {% endmermaid %}
 
-`data(body, { status })` 把一份內容和狀態碼包在一起。在 `loader` 裡必須 `throw`，不能 `return`，函式在這裡停住，頁面元件不會渲染。`isRouteErrorResponse` 分辨這是 `throw data()` 的回應（有 `.status` 與 `.data`），還是一般的 `Error`（有 `.message`）。驗證錯誤用 `return` 交給 `useActionData`，表單留在原頁；資料找不到則 `throw`，改由 `errorElement` 畫出。
+**觀念**
 
-{% note info %}
-沒有指定 errorElement 時，錯誤會往上找路由上最近一層的 errorElement，只替換那一層以下的畫面
-{% endnote %}
+`data(body, { status })` 把內容和狀態碼包在一起。在 loader 裡要用 throw 丟出它，函式才會停住、元件才不會渲染；如果只是 return，它會被當成正常資料。
+
+錯誤畫面用 `useRouteError` 讀出被丟出的值。這個值有兩種，用 `isRouteErrorResponse` 判斷是哪一種：
+
+- 丟出 data 時的路由錯誤回應，帶有 status（狀態碼）與 data（內容）。
+- 程式出錯時的一般 Error，帶有 message。
+
+錯誤會往上找最近一層有 `errorElement` 的路由，只換掉那一層以下的畫面。掛在明細路由時，版型留著，只換 `Outlet` 裡的主區；只掛在上層版型或都沒掛時，連版型一起被換掉。
 
 {% mermaid graph TD %}
   subgraph keep["errorElement 掛在子路由"]
@@ -3177,50 +2234,25 @@ export default function RedirectEdit() {
   style outDrop fill:#ffebee
 {% endmermaid %}
 
-`errorElement` 掛在明細路由時，只換掉版型 `Outlet` 裡的主區。只掛在版型上、或這一層都沒掛時，整份版型會被換掉。
+驗證錯誤與找不到資料要分開處理：使用者填錯欄位，用 return 把錯誤交給 useActionData，表單留在原頁；資料根本不存在，才用 throw 交給錯誤畫面。
 
-{% note info %}
-資料模式下，這個 404 只作用在畫面上，瀏覽器拿到的仍是 SPA 的 HTTP 200。只有框架模式的伺服器端渲染，才會把這個狀態碼當成真正的回應狀態送出。
-{% endnote %}
+路由表裡，只有明細那一條掛 errorElement。路徑的 :noteId 對上 notes/ 後面的任何一段，所以網址最後是 not-found 也是這條路由，`params.noteId` 的值就是 not-found。
 
-明細路由才掛 `errorElement`。`notes/:noteId` 對上 `notes/` 後面的任何一段，所以 `not-found` 走同一條路由。
-
-```diff 04-react-router/src/App.jsx
- import RedirectEdit, {
-   action as action88,
-   loader as loader88Edit,
- } from './examples/88-redirect-edit.jsx';
-+import ErrorElementDemo, {
-+  loader as loader89,
-+  NoteDetail,
-+  NoteMissing,
-+} from './examples/89-error-element.jsx';
- // ...
-           Component: RedirectEdit,
-         },
-+        {
-+          path: 'demos/89-error-element',
-+          loader: loader89,
-+          Component: ErrorElementDemo,
-+        },
-+        {
-+          path: 'demos/89-error-element/notes/:noteId',
-+          loader: loader89,
-+          Component: NoteDetail,
-+          errorElement: <NoteMissing />,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
+```jsx
+{
+  path: 'demos/89-error-element',
+  loader: loader89,
+  Component: ErrorElementDemo,
+},
+{
+  path: 'demos/89-error-element/notes/:noteId',
+  loader: loader89,
+  Component: NoteDetail,
+  errorElement: <NoteMissing />,
+},
 ```
 
-**解析**
-
-- 列表路徑是 `demos/89-error-element`，明細路徑是 `demos/89-error-element/notes/:noteId`，兩條共用 `loader89`。
-- 沒有 `noteId` 時 `loader` 回傳清單；有 `noteId` 時用 `getNote`，找不到就 `throw data('找不到', { status: 404 })`。
-- `errorElement: <NoteMissing />` 只寫在明細那一條。列表路由沒有 `errorElement`。
-- `demos/89-error-element/notes/:noteId` 對上 `notes/` 後面的任何一段，所以 `/demos/89-error-element/notes/not-found` 就是這條路由，`params.noteId` 為 `'not-found'`，不必再宣告一條路徑。
-
-`89-error-element.jsx` 放清單、明細，以及明細路由的錯誤畫面。
+89-error-element.jsx 放了清單、明細，以及明細路由的錯誤畫面。兩條路由共用同一個 loader：沒有 noteId 時回傳清單，有時找那一筆。
 
 ```jsx 04-react-router/src/examples/89-error-element.jsx
 import {
@@ -3341,36 +2373,35 @@ export function NoteMissing() {
 
 **解析**
 
-- 「打開一筆不存在的筆記」連到 `/demos/89-error-element/notes/not-found`。
-- `loader` `throw data(...)` 之後，`NoteDetail` 不會渲染，主區換成 `NoteMissing`。
-- `isRouteErrorResponse(error)` 為真，畫面出現標題「找不到」與 `error.data` 的「找不到」。
+- 「打開一筆不存在的筆記」連到 `/demos/89-error-element/notes/not-found`，`getNote` 回傳 `null`，`loader` 就 `throw data('找不到', { status: 404 })`。
+- `NoteDetail` 不會渲染，主區換成 `NoteMissing`，側欄與版型都還在。
+- `isRouteErrorResponse(error)` 為真，畫面標題是「找不到」，內文是 `error.data`，也就是 `data()` 的第一個引數。
 
-{% note success %}
-**換你試試：**
-把 404 丟出的文字改成「沒有這筆」。
+{% note info %}
+**errorElement 與 ErrorBoundary**
+路由物件上還有 `ErrorBoundary`，作用相同，但傳的是元件而不是元素，兩者不能同時使用。React Router 8 兩種都支援，官方文件現在以 ErrorBoundary 為主，這門課的專案沿用 errorElement。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
-
-`data` 的第一個引數就是 `error.data`。
-
-```diff 04-react-router/src/examples/89-error-element.jsx
- // ...
--  if (!note) throw data('找不到', { status: 404 });
-+  if (!note) throw data('沒有這筆', { status: 404 });
- // ...
-```
-
-</details>
+{% note info %}
+資料模式的網站是單頁應用，瀏覽器實際拿到的網頁仍是 HTTP 200，這個 404 只作用在畫面上。只有框架模式搭配伺服器端渲染，才會把狀態碼真的送出去。
+{% endnote %}
 
 ## 不換頁的送出與讀取中狀態
 
-有的送出不應該改網址，例如列表上把一筆標成完成。有的送出或換頁需要讓人看見「正在進行」。這兩則都是後面專案會用到的寫法：後台對話框用 `useFetcher` 留在列表頁，讀取中的提示用 `useNavigation`。
+有些送出不該改網址，例如在列表上把一筆標成完成；有些換頁或送出需要讓人看見「正在進行」。這一節的三則依序是：`useFetcher` 不換頁送出，`useNavigation` 顯示換頁時的進行中狀態，最後是專案裡的對話框常用的「用 key 共用 fetcher」。
 
 ### useFetcher
 
-`useFetcher` 拿得到一組自己的 `Form` 與 `submit`。送到的仍是這一條路由的 `action`，網址留在 `/demos/90-fetcher`。`action` 改完筆記後，`loader` 一樣會自己重跑。
+Form 送出算是一次導覽，路由器會照換頁的流程處理，也可能留下瀏覽歷史。`useFetcher` 取得一組自己的送出工具，送到的仍是這條路由的 action，但不算導覽，網址不動。它回傳的物件有這幾個成員：
+
+- `fetcher.Form`：用法與 `Form` 相同，送出時走 fetcher。
+- `fetcher.submit`：用程式送出，不一定要有表單。
+- `fetcher.load`：不經過導覽，直接執行某條路由的 `loader`。
+- `fetcher.state`：`idle`（閒置）、`submitting`（正在跑 `action`）、`loading`（正在重新讀取資料）。
+- `fetcher.data`：`action` 或 `loader` 最近一次的回傳值。fetcher 送出的結果只會出現在這裡，不會出現在 `useActionData`。
+- `fetcher.reset`：把 fetcher 清回沒有資料的閒置狀態。
+
+action 做完之後，路由器會自動重跑目前畫面上各條路由的 loader，讓畫面與資料一致，這個動作叫重新驗證（revalidation）。只有 action 的回應是 2xx 才會發生，所以這一則不必手動更新清單。
 
 {% mermaid sequenceDiagram %}
   participant U as 使用者
@@ -3394,11 +2425,9 @@ export function NoteMissing() {
   end
 {% endmermaid %}
 
-送出時 `fetcher.state` 依序是 idle、submitting、loading、idle。`submitting` 是正在跑 `action`，畫面常把按鈕停用，或改顯示「儲存中…」；接著的 `loading` 是路由器重跑 `loader`，可顯示讀取列。`fetcher.load()` 沒有 submitting，只走 idle、loading、idle。`fetcher.data` 是 `action` 或 `loader` 的回傳值。`useFetcher` 不會換頁，網址維持原樣。
-
 **觀念**
 
-每一列的按鈕包在 `fetcher.Form` 裡，用隱藏欄位帶 `id`。`toggleNote` 只翻轉那一筆的 `done`。
+每一列的按鈕包在 fetcher.Form 裡，用隱藏欄位帶 id。action 讀出 id 後翻轉那一筆，清單的更新則交給重新驗證。
 
 ```jsx 04-react-router/src/examples/90-fetcher.jsx
 import { useFetcher, useLoaderData } from 'react-router';
@@ -3465,54 +2494,168 @@ export default function FetcherDemo() {
 
 **解析**
 
-- 按下「標成完成」或「改回未完成」後，同一列的文字換成另一種狀態，網址仍是 `/demos/90-fetcher`。標題下面的「狀態」會依序顯示 submitting、loading，再回到 idle。
-- 寫入的是 `action` 裡的 `toggleNote`。清單更新是因為 `loader` 在 action 之後自動重跑。
+- 按下「標成完成」或「改回未完成」，同一列的文字換成另一種狀態，網址仍是 `/demos/90-fetcher`。標題下面的「狀態」依序是 submitting、loading、idle，讀記憶體很快，肉眼可能只看到一閃。
+- 寫入的是 `action` 裡的 `toggleNote`，清單會更新是因為 `loader` 在 `action` 之後自動重跑。
+- 所有列共用同一個 fetcher，「狀態」只反映最近一次送出。若每一列都要有自己的狀態，就把列拆成元件，各自呼叫 `useFetcher`。
 
-```diff 04-react-router/src/App.jsx
-+import FetcherDemo, {
-+  action as action90,
-+  loader as loader90,
-+} from './examples/90-fetcher.jsx';
- // ...
-           path: 'demos/89-error-element/notes/:noteId',
-           loader: loader89,
-           Component: NoteDetail,
-           errorElement: <NoteMissing />,
-         },
-+        {
-+          path: 'demos/90-fetcher',
-+          loader: loader90,
-+          action: action90,
-+          Component: FetcherDemo,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
+```jsx
+{
+  path: 'demos/90-fetcher',
+  loader: loader90,
+  action: action90,
+  Component: FetcherDemo,
+},
+```
+
+{% note info %}
+**不想重新驗證時**
+預設的重新驗證不必設定。想控制時，可以在路由物件上寫 `shouldRevalidate` 函式，回傳 false 就跳過；單次送出也能傳 `defaultShouldRevalidate={false}` 跳過。action 回傳 4xx 或 5xx 狀態碼（例如 400）時，預設也不重新驗證。
+{% endnote %}
+
+### useNavigation
+
+`useNavigation` 描述路由器此刻有沒有在換頁或送出表單，不包含 fetcher。它的 state 有三種值：
+
+- idle：閒置。
+- loading：正在跑 loader。
+- submitting：正在跑 action。
+
+{% mermaid sequenceDiagram %}
+  participant U as 使用者
+  participant C as Component
+  participant A as action
+  participant L as loader
+  alt 點選 Link
+    U->>C: 點連結
+    Note over C: navigation.state 是 loading
+    C->>L: 跑新頁面的 loader
+    L->>C: 畫新頁面
+    Note over C: navigation.state 是 idle
+  else 送出 Form
+    U->>C: 送出表單
+    Note over C: navigation.state 是 submitting
+    C->>A: 跑 action
+    Note over C: navigation.state 是 loading
+    A->>L: 路由器重跑 loader
+    L->>C: 新資料重畫
+    Note over C: navigation.state 是 idle
+  end
+{% endmermaid %}
+
+點連結到有 loader 的頁面時，依序是 idle、loading、idle；送出表單時依序是 idle、submitting、loading、idle，action 之後沒有 loader 要重跑時，loading 一閃而過。程式可以依 state 顯示讀取列，或在 submitting 期間停用按鈕，避免同一份表單連按兩次。
+
+**觀念**
+
+「重新讀取」連到同一頁但查詢參數 n 不同的網址，查詢參數一變，這條路由的 loader 就會重跑。為了讓進行中的畫面看得清楚，這一則的 loader 與 action 各等 400 毫秒；讀記憶體本來很快，實際專案不需要這段延遲。
+
+```jsx 04-react-router/src/examples/91-navigation.jsx
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useNavigation,
+  useSearchParams,
+} from 'react-router';
+import { addNote, listNotes } from './notes-db.js';
+
+/**
+ * 進頁前讀清單。這裡多等 400 毫秒，讓讀取中留在畫面上。
+ * 回傳值交給 useLoaderData。回傳 Promise 時路由器會等待。
+ * @returns {Promise<{ notes: { id: string, title: string, done: boolean }[] }>}
+ */
+export const loader = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  return { notes: listNotes() };
+};
+
+/**
+ * 接收目前路由的表單。同樣先等 400 毫秒。
+ * formData 與 form.get 讀取標題，有字才寫入。回傳 null，這一則沒有用 useActionData。
+ * @param {{ request: Request }} args
+ * @returns {Promise<null>}
+ */
+export const action = async ({ request }) => {
+  const form = await request.formData();
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  const title = String(form.get('title') ?? '').trim();
+  if (title) addNote(title);
+  return null;
+};
+
+/**
+ * Form method="post" 送到目前網址的 action，沒有 action 屬性。
+ * 送出期間用 navigation.state 停用按鈕。
+ */
+export default function NavigationDemo() {
+  /**
+   * 讀取這條路由 loader 的回傳值。
+   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
+   */
+  const { notes } = useLoaderData();
+  /**
+   * 路由器此刻的導覽。state 為 'idle'（閒置）、'loading'（正在跑 loader）或 'submitting'（正在跑 action）。
+   * @returns {{ state: 'idle' | 'loading' | 'submitting' }}
+   */
+  const navigation = useNavigation();
+  const [params] = useSearchParams();
+  const nonce = Number(params.get('n') ?? '0');
+  const pending =
+    navigation.state === 'loading' || navigation.state === 'submitting';
+  return (
+    <section>
+      <h1 className="text-2xl font-bold">91 useNavigation</h1>
+      <p className="mt-3">狀態：{navigation.state}</p>
+      {pending ? <p className="mt-3">讀取中</p> : null}
+      <p className="mt-3">
+        <Link
+          className="text-teal-800 underline"
+          to={`/demos/91-navigation?n=${nonce + 1}`}
+        >
+          重新讀取
+        </Link>
+      </p>
+      <Form method="post" className="mt-4 grid max-w-sm gap-3">
+        <input
+          name="title"
+          className="rounded border px-2 py-1"
+          placeholder="新的筆記標題"
+        />
+        <button
+          type="submit"
+          className="rounded bg-teal-800 px-3 py-1 text-white disabled:opacity-40"
+          disabled={navigation.state === 'submitting'}
+        >
+          新增
+        </button>
+      </Form>
+      <ul className="mt-4 grid gap-2">
+        {notes.map((note) => (
+          <li key={note.id}>{note.title}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 ```
 
 **解析**
 
-- 這條路由同時掛 `loader`、`action` 與 `Component`，路徑寫在 `demos/:slug` 前面。送出後網址仍停在 `/demos/90-fetcher`。
+- 點「重新讀取」，「狀態」變成 loading 並出現「讀取中」，約 400 毫秒後回到 idle。換頁期間舊內容仍留在畫面上。
+- 按「新增」，狀態先是 submitting（約 400 毫秒，按鈕停用），接著 loading（`loader` 再等 400 毫秒），清單出現新的一筆後回到 idle。
+- 按鈕只在 `submitting` 時停用，`loading` 階段已經可以再按。若要整段都鎖住，改成 `state !== 'idle'`。
 
-{% note success %}
-**換你試試：**
-已完成時，按鈕文字改成「取消完成」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-```diff 04-react-router/src/examples/90-fetcher.jsx
- // ...
--                {note.done ? '改回未完成' : '標成完成'}
-+                {note.done ? '取消完成' : '標成完成'}
- // ...
+```jsx
+{
+  path: 'demos/91-navigation',
+  loader: loader91,
+  action: action91,
+  Component: NavigationDemo,
+},
 ```
 
-</details>
+### 用 key 共用 fetcher
 
-#### 用 key 共用 fetcher
-
-頁面與表單各自呼叫 `useFetcher({ key })`，只要 `key` 相同，拿到的就是同一個 fetcher。表單只負責送出，頁面在渲染時讀 `fetcher.data`，有尚未處理的新結果就關閉表單或更新畫面。再次打開前呼叫 `fetcher.reset()`，清掉上一次留下的資料。
+常見的流程是：按下按鈕彈出對話框，送出成功後關掉對話框並顯示提示。對話框元件關起來就卸載，但送出的結果頁面還需要。解法是兩邊呼叫 `useFetcher({ key })` 時傳同一把 key，路由器就讓它們共用同一個 fetcher：表單只負責送出，頁面在渲染時讀結果。沒有 key 時，每個元件各有自己的 fetcher。
 
 {% mermaid graph TD %}
   subgraph share["useFetcher({ key })"]
@@ -3524,7 +2667,9 @@ export default function FetcherDemo() {
   page -->|"有新結果，關閉表單"| ui["畫面"]
 {% endmermaid %}
 
-兩個元件傳入同一把 `key`，路由器就讓它們共用一份 fetcher。`action` 的回傳值寫在 `fetcher.data`。頁面在渲染時用 `seen` 比對，同一筆結果只處理一次；再次打開時 `reset()` 把資料清掉。
+**觀念**
+
+頁面在渲染時檢查：fetcher 閒置、有新的提示，而且這份資料還沒處理過，就關起表單並記下提示。「處理過」用一個 state 記住那份資料，讓同一筆結果只處理一次。這樣不需要 effect，因為在渲染中以條件式設定自己元件的 state 是 React 允許的寫法。表單關掉後，只要頁面還在用這把 key，fetcher 與它的資料就留著；再次打開表單前呼叫 `reset`，把 fetcher 清回沒有資料的狀態。
 
 ```jsx 04-react-router/src/examples/92-fetcher-key.jsx
 import { useState } from 'react';
@@ -3633,237 +2778,118 @@ export default function FetcherKeyDemo() {
 **解析**
 
 - 頁面與 `NoticeForm` 都呼叫 `useFetcher({ key: 'notice-form' })`，拿到同一個 fetcher。
-- 按「送出」後，`action` 回傳 `{ notice: '已送出：看海' }`。頁面在渲染時發現這是尚未處理的新結果，關起表單並在標題下面顯示這句提示。網址仍是 `/demos/92-fetcher-key`。
-- 再按「打開表單」時，`fetcher.reset()` 清掉上一次的 `data`。若不呼叫 `reset()`，共用 fetcher 還留著舊結果。
+- 按「送出」後，`action` 回傳 `{ notice: '已送出：看海' }`。頁面渲染時發現這是沒處理過的新結果，關起表單，並在標題下方顯示提示，網址仍是 `/demos/92-fetcher-key`。
+- 再按「打開表單」時，`reset()` 清掉上一次的 `data`。同一筆結果不會被重複處理是靠 `seen`，`reset` 只是讓 fetcher 回到乾淨的起點。
 
-```diff 04-react-router/src/App.jsx
-+import FetcherKeyDemo, {
-+  action as action92,
-+} from './examples/92-fetcher-key.jsx';
- // ...
-           Component: NavigationDemo,
-         },
-+        {
-+          path: 'demos/92-fetcher-key',
-+          action: action92,
-+          Component: FetcherKeyDemo,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> }
- // ...
+```jsx
+{
+  path: 'demos/92-fetcher-key',
+  action: action92,
+  Component: FetcherKeyDemo,
+},
 ```
-
-**解析**
-
-- 這條路由掛 `action` 與 `Component`，路徑寫在 `demos/:slug` 前面。送出後網址仍停在 `/demos/92-fetcher-key`。
-
-{% note success %}
-**換你試試：**
-把送出按鈕的文字改成「送出並關閉」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-只改按鈕文字。
-
-```diff 04-react-router/src/examples/92-fetcher-key.jsx
- // ...
--          送出
-+          送出並關閉
- // ...
-```
-
-</details>
-
-### useNavigation
-
-`useNavigation` 描述路由器此刻在做什麼。`state` 為 `loading` 是正在跑 loader，`submitting` 是正在跑 action，`idle` 是閒置。這一則的 `loader` 與 `action` 各等 400 毫秒，只為了讓「讀取中」留在畫面上看得清楚。專案裡的記憶體讀取不必做這個延遲。
-
-{% mermaid sequenceDiagram %}
-  participant U as 使用者
-  participant C as Component
-  participant A as action
-  participant L as loader
-  alt 點選 Link
-    U->>C: 點連結
-    Note over C: navigation.state 是 loading
-    C->>L: 跑新頁面的 loader
-    L->>C: 畫新頁面
-    Note over C: navigation.state 是 idle
-  else 送出 Form
-    U->>C: 送出表單
-    Note over C: navigation.state 是 submitting
-    C->>A: 跑 action
-    Note over C: navigation.state 是 loading
-    A->>L: 路由器重跑 loader
-    L->>C: 新資料重畫
-    Note over C: navigation.state 是 idle
-  end
-{% endmermaid %}
-
-點連結時 `navigation.state` 依序是 idle、loading、idle，畫面可顯示讀取列。送出 `Form` 時依序是 idle、submitting、loading、idle；`submitting` 期間可把按鈕停用，或改顯示「儲存中…」。`useNavigation` 追蹤的是換頁，網址會改變。
-
-**觀念**
-
-「重新讀取」用查詢 `n` 換一個網址，同一條路由的 `loader` 會再跑。送出表單時，按鈕在 `submitting` 期間停用。
-
-```jsx 04-react-router/src/examples/91-navigation.jsx
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useNavigation,
-  useSearchParams,
-} from 'react-router';
-import { addNote, listNotes } from './notes-db.js';
-
-/**
- * 進頁前讀清單。這裡多等 400 毫秒，讓讀取中留在畫面上。
- * 回傳值交給 useLoaderData。回傳 Promise 時路由器會等待。
- * @returns {Promise<{ notes: { id: string, title: string, done: boolean }[] }>}
- */
-export const loader = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  return { notes: listNotes() };
-};
-
-/**
- * 接收目前路由的表單。同樣先等 400 毫秒。
- * formData 與 form.get 讀取標題，有字才寫入。回傳 null，這一則沒有用 useActionData。
- * @param {{ request: Request }} args
- * @returns {Promise<null>}
- */
-export const action = async ({ request }) => {
-  const form = await request.formData();
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  const title = String(form.get('title') ?? '').trim();
-  if (title) addNote(title);
-  return null;
-};
-
-/**
- * Form method="post" 送到目前網址的 action，沒有 action 屬性。
- * 送出期間用 navigation.state 停用按鈕。
- */
-export default function NavigationDemo() {
-  /**
-   * 讀取這條路由 loader 的回傳值。
-   * @returns {{ notes: { id: string, title: string, done: boolean }[] }}
-   */
-  const { notes } = useLoaderData();
-  /**
-   * 路由器此刻的導覽。state 為 'idle'（閒置）、'loading'（正在跑 loader）或 'submitting'（正在跑 action）。
-   * @returns {{ state: 'idle' | 'loading' | 'submitting' }}
-   */
-  const navigation = useNavigation();
-  const [params] = useSearchParams();
-  const nonce = Number(params.get('n') ?? '0');
-  const pending =
-    navigation.state === 'loading' || navigation.state === 'submitting';
-  return (
-    <section>
-      <h1 className="text-2xl font-bold">91 useNavigation</h1>
-      <p className="mt-3">狀態：{navigation.state}</p>
-      {pending ? <p className="mt-3">讀取中</p> : null}
-      <p className="mt-3">
-        <Link
-          className="text-teal-800 underline"
-          to={`/demos/91-navigation?n=${nonce + 1}`}
-        >
-          重新讀取
-        </Link>
-      </p>
-      <Form method="post" className="mt-4 grid max-w-sm gap-3">
-        <input
-          name="title"
-          className="rounded border px-2 py-1"
-          placeholder="新的筆記標題"
-        />
-        <button
-          type="submit"
-          className="rounded bg-teal-800 px-3 py-1 text-white disabled:opacity-40"
-          disabled={navigation.state === 'submitting'}
-        >
-          新增
-        </button>
-      </Form>
-      <ul className="mt-4 grid gap-2">
-        {notes.map((note) => (
-          <li key={note.id}>{note.title}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-```
-
-**解析**
-
-- 點「重新讀取」或按「新增」時，標題下面的「狀態」會變成 loading 或 submitting，並出現「讀取中」，大約 400 毫秒後清單才換成新的結果，狀態回到 idle。
-- 這段等待只寫在這一則的 `loader` 與 `action`。記憶體裡的讀取本身很快，專案不必複製這個 `setTimeout`。
-- 送出期間按鈕停用，避免同一份表單連按兩次。
-
-```diff 04-react-router/src/App.jsx
-+import NavigationDemo, {
-+  action as action91,
-+  loader as loader91,
-+} from './examples/91-navigation.jsx';
- // ...
-           path: 'demos/90-fetcher',
-           loader: loader90,
-           action: action90,
-           Component: FetcherDemo,
-         },
-+        {
-+          path: 'demos/91-navigation',
-+          loader: loader91,
-+          action: action91,
-+          Component: NavigationDemo,
-+        },
-         { path: 'demos/:slug', element: <DemoPage /> },
- // ...
-```
-
-**解析**
-
-- 這條路由同時掛 `loader`、`action` 與 `Component`，路徑寫在 `demos/:slug` 前面。
-
-{% note success %}
-**換你試試：**
-把這一則的等待改成 800 毫秒，看完再改回 400。兩處 `setTimeout` 一起改。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-```diff 04-react-router/src/examples/91-navigation.jsx
- // ...
--  await new Promise((resolve) => setTimeout(resolve, 400));
-+  await new Promise((resolve) => setTimeout(resolve, 800));
- // ...
--  await new Promise((resolve) => setTimeout(resolve, 400));
-+  await new Promise((resolve) => setTimeout(resolve, 800));
- // ...
-```
-
-看完把 800 改回 400。專案的記憶體 loader 不要加這段等待。
-
-</details>
 
 # 選讀：部署到 GitHub Pages
 
-`pnpm build` 產生的 `dist` 就是一般靜態檔案，網站從 `/` 開始，首頁是 `dist/index.html`。放上 GitHub Pages 後，從首頁點左側目錄進 `/demos/01-hello` 都正常。問題出在直接打開或重新整理 `/demos/01-hello`：GitHub Pages 是純靜態主機，會去找 `demos/01-hello` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
+`pnpm build` 產生的 `dist` 資料夾就是一般的靜態檔案，GitHub Pages 可以免費代管。這一章先說明用 GitHub Actions 自動建置與發佈的流程，以及專案頁網址多出一段子路徑時要設定的 `base`。接著處理單頁應用程式在靜態主機上最常見的問題：直接打開或重新整理 `/demos/01-hello` 會得到 404，解法有 `404.html` 與 `createHashRouter` 兩種。
 
-GitHub Pages 不能設定「其他路徑都改走 `index.html`」的規則，常見的做法有兩種：
+## 建置與發佈
 
-- 用 `404.html` 接住：找不到檔案時 GitHub 會回傳 `404.html`。讓它的內容和 `index.html` 一樣，React 照樣載入，React Router 再依網址畫出那一頁。
-- 改用 `createHashRouter`：路徑放在 `#` 後面，伺服器永遠只收到首頁的請求。同一份路由表，只換建立路由器的函式。
+GitHub Pages 是純靜態主機，只負責把檔案送出去。這一節看如何讓 GitHub 在每次推送後自動建置，並設定專案頁需要的子路徑。
 
-## 404.html
+### 用 GitHub Actions 發佈
+
+GitHub Actions 是 GitHub 內建的自動化服務，推送程式碼時可以替你執行指令。發佈步驟是：到倉庫的 Settings → Pages，把 Build and deployment 的 Source 改成 GitHub Actions；再在倉庫根目錄新增工作流程檔 `.github/workflows/deploy.yml`。
 
 **觀念**
 
-每次 `pnpm build` 之後，把 `dist/index.html` 複製成 `dist/404.html`，再把 `dist` 部署上去。打包後的檔名帶有雜湊，所以每次建置都要重新複製，不能沿用舊的那份。
+工作流程做四件事：取得程式碼、安裝套件並建置、把 `dist` 打包成 Pages 的上傳檔、部署出去。其中後三個動作是 GitHub 官方提供的 Pages 專用動作。下面的範例依 Vite 官方文件的寫法調整成 pnpm，練習倉庫的專案在子資料夾，所以建置指令要指定資料夾；若你的專案就在倉庫根目錄，拿掉 `working-directory` 與路徑前綴即可。
+
+```yaml
+# .github/workflows/deploy.yml（說明用，不在練習專案內）
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm install -g pnpm
+      - run: pnpm install --frozen-lockfile
+        working-directory: 04-react-router
+      - run: pnpm build
+        working-directory: 04-react-router
+      # SPA 的 404 備援，下一節說明
+      - run: cp dist/index.html dist/404.html
+        working-directory: 04-react-router
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: 04-react-router/dist
+      - id: deployment
+        uses: actions/deploy-pages@v5
+```
+
+**解析**
+
+- `permissions` 授權工作流程寫入 Pages，`environment` 的名稱 `github-pages` 讓部署結果顯示在倉庫的 Environments。
+- 每次推送到 `main`，或在 Actions 頁面手動執行，就會重新建置並覆蓋上一版網站。
+- 動作版本以撰寫時 Vite 官方文件列出的為準；實際使用時請對照該頁，動作升版很快。
+- `cp` 那一步是 Linux 指令，只在 GitHub 的 Ubuntu 機器上執行，不影響你本機的 Windows 或 Mac。
+
+### 專案頁的 base
+
+網址有兩種形式。用 `帳號.github.io` 倉庫本身或自訂網域，網站從 `/` 開始，什麼都不用設。一般倉庫的專案頁網址是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段，打包後的 JS 與 CSS 要到這段底下找，否則整頁會是空白。
+
+解法是在 `vite.config.js` 設定 `base` 選項，只需在 `defineConfig` 裡加上這一項：
+
+```js
+export default defineConfig({
+  base: '/倉庫名稱/', // 專案頁才需要；其餘設定照舊
+  // plugins: [...]
+});
+```
+
+練習專案的路由已經配合好：`App.jsx` 用 `import.meta.env.BASE_URL` 算出 `basename` 交給路由器。`base` 一改，`BASE_URL` 跟著變，路由就從這段子路徑算起，元件裡的 `to="/demos/01-hello"` 都不用改。
+
+## 重新整理後的 404
+
+單頁應用程式只有一份 `index.html`，網址其實是 React Router 在瀏覽器裡畫出來的。靜態主機不知道這件事，這一節說明問題的成因與兩種解法。
+
+### 為什麼會 404
+
+從首頁點目錄進 `/demos/01-hello` 都正常，因為這是瀏覽器內的換頁，沒有向伺服器要新文件。問題出在直接輸入網址或按重新整理：伺服器會去找 `demos/01-hello` 這個檔案，找不到就回 404，React 根本沒機會載入。開發時沒遇過，是因為 Vite 的開發伺服器對未知路徑一律回 `index.html`。
+
+GitHub Pages 無法設定「其他路徑都改走 `index.html`」的規則，常見的做法有兩種：
+
+- 用 `404.html` 接住：找不到檔案時 GitHub 會回傳 `404.html`，讓它的內容和 `index.html` 一樣，React 照樣載入，路由器再依網址畫出那一頁。
+- 改用 `createHashRouter`：路徑放在 `#` 後面，伺服器永遠只收到首頁的請求。
+
+### 404.html 備援
+
+**觀念**
+
+每次建置後，把 `dist/index.html` 複製成 `dist/404.html` 再部署。打包後的檔名帶有雜湊，所以每次都要重新複製，不能沿用舊的。上一節的工作流程已經包含這一步；本機要試的話可以手動執行：
 
 ```bash
 cp dist/index.html dist/404.html
@@ -3871,208 +2897,202 @@ cp dist/index.html dist/404.html
 
 **解析**
 
-- 每次 `pnpm build` 之後，把剛產出的 `dist/index.html` 複製成 `dist/404.html`，再部署 `dist`。
+- 使用者重新整理 `/demos/01-hello` 時，GitHub 找不到該檔，改送 `404.html`，瀏覽器載入同一份程式，路由器看網址就畫出對應頁面。
+- 這份回應的 HTTP 狀態碼仍是 404。瀏覽器照樣畫出頁面，使用者看不出差別，但搜尋引擎會把它當成錯誤頁，需要被收錄的網站不適合這個做法。
+- 本機的 `pnpm preview` 和開發伺服器一樣會把未知路徑改送 `index.html`，所以在本機看不出 404 問題，要部署後才會遇到。
 
-也可以寫進 `package.json`，建置完自動複製：
-
-```diff 04-react-router/package.json
- "scripts": {
--  "build": "vite build",
-+  "build": "vite build && cp dist/index.html dist/404.html",
- // ...
-```
-
-**解析**
-
-- 之後每次 `pnpm build` 會自動複製，不必再手打那道指令。
-- 這份 `404.html` 回傳時，HTTP 狀態碼仍是 404，但瀏覽器照樣畫出頁面，使用者看到的就是正確的那一則。
-
-{% note info %}
-**網址多一段子路徑時：**
-用 `帳號.github.io` 本身或自訂網域，網站就從 `/` 開始，什麼都不用設。若是一般倉庫的專案頁，網址會是 `https://帳號.github.io/倉庫名稱/`，多了 `/倉庫名稱/` 這段。這時要在 `vite.config.js` 設 `base: '/倉庫名稱/'`，讓打包後的檔案去這段底下找。路由的 `basename` 已經寫在 `createBrowserRouter` 的第二個參數，值是 `import.meta.env.BASE_URL.replace(/\/$/, '')`。`base` 一改，`BASE_URL` 跟著變，路由也從這段算起。元件裡的 `to="/demos/01-hello"` 都不用改。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-在 `04-react-router` 執行 `pnpm build`，再執行 `pnpm preview`，打開首頁後點進任一則，再直接重新整理，看看會發生什麼事。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`pnpm preview` 跟開發伺服器一樣會把未知路徑改送 `index.html`，所以重新整理也正常。換到 GitHub Pages 就不會這樣，所以才需要 `404.html`。
-
-</details>
-
-## createHashRouter
-
-`createHashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01-hello`。伺服器收到的路徑只有 `#` 前面那一段，靜態主機只要能打開 `index.html` 即可。代價是網址比較不好讀。`App` 已經回傳 `RouterProvider`，不能再在外面加 `HashRouter`。要試井字號網址，把同一份路由表的 `createBrowserRouter` 暫時換成 `createHashRouter`。平常完成版仍用 `createBrowserRouter`。
-
-**語法**
-
-```jsx
-/**
- * 與 createBrowserRouter 同一份路由表，網址改放在井字號後面。
- * @param {object[]} routes 路由物件陣列
- * @param {object} [opts]
- * @param {string} [opts.basename] 基底路徑，可省略
- * @returns {object} 交給 RouterProvider 的路由器
- */
-const router = createHashRouter(routes, { basename });
-```
-
-**解析**
-
-- 與 `createBrowserRouter` 使用同一份路由表，只是網址改放在井字號後面。
-- 仍交給 `RouterProvider`，不必另外包 `HashRouter`。
+### createHashRouter
 
 **觀念**
 
-下面只換建立路由器的函式，路由表、目錄與 `to` 都維持原樣。井字號後面的變化不會向伺服器要一份新文件，所以不必為 `/demos/01-hello` 準備 `404.html`。這是觀念示範，沒有另外的練習檔。看完改回 `createBrowserRouter`。
+`createHashRouter` 把目前頁面放在 `#` 後面，例如 `/#/demos/01-hello`。伺服器只會收到 `#` 前面的路徑，靜態主機只要能打開 `index.html` 就夠了，不需要 `404.html`。代價是網址比較不好看，搜尋引擎也不易分辨各頁。
 
-```diff 04-react-router/src/App.jsx
--import { createBrowserRouter, RouterProvider } from 'react-router';
-+import { createHashRouter, RouterProvider } from 'react-router';
- // ...
--const router = createBrowserRouter([
-+const router = createHashRouter([
- // ...
+它和 `createBrowserRouter` 接收同樣的路由表與選項（包含 `basename`），回傳的路由器同樣交給 `RouterProvider`。換用時只改建立路由器的那一行，其餘不動：
+
+```jsx
+import { createHashRouter, RouterProvider } from 'react-router';
+
+const router = createHashRouter(routes, { basename });
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
 ```
 
 **解析**
 
-- `RouterProvider` 不用換。不能在 `App` 外面再包 `HashRouter`，因為 `App` 已經把路由器畫出來了。
-- 路由物件與 `basename` 留著。第一則的網址會像 `http://localhost:5173/#/demos/01-hello`。
-- 重新整理仍停在該則。做完把函式改回 `createBrowserRouter`。
+- `routes` 與 `basename` 都是原來的變數，換掉的只有建立路由器的函式。
+- 這只在資料模式（Data Mode）可用，不能再於外面包 `HashRouter`；`RouterProvider` 已經負責畫出路由。
+- 本課的完成版仍用 `createBrowserRouter`，只有在主機無法提供 `404.html` 備援時才改用 `createHashRouter`。
 
-{% note success %}
-**換你試試：**
-對照兩種網址：`createBrowserRouter` 的 `/demos/01-hello`，以及 `createHashRouter` 的 `/#/demos/01-hello`。目錄的 `to` 都不必改。看完改回 `createBrowserRouter`。
+{% note info %}
+有 `404.html` 與 `createHashRouter` 以外的選項：改放到支援「改寫規則」的主機（例如 Firebase Hosting 的 rewrite），所有路徑都回 `index.html`，網址乾淨且狀態碼正常。Firebase 的部署步驟見後面的選讀文章。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+# 回家作業
 
-`to` 寫的是路由路徑。兩種路由器都會把它接到自己的網址形式。平常完成版留在 `createBrowserRouter`。只有在靜態主機無法用 `404.html` 回到同一頁時，才暫時改看 `createHashRouter`。
+這份作業只用必教內容，資料取自專案的行程清單，題目依序累加。請用 `pnpm dev` 開啟練習專案，再到 `/homework.html`：作業用雜湊路由，網址會是 `homework.html#/tours`。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果，自己對照即可。
 
-</details>
+## 起始檔
+
+起始檔在練習專案的 `04-react-router/` 裡：`homework.html` 是入口頁，`src/homework/main.jsx` 建立路由器，`src/homework/data.js` 提供模擬的行程與報名資料（每個函式都會延遲約三百毫秒，模擬網路）。
+
+```jsx 04-react-router/src/homework/main.jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { createHashRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
+import '../index.css';
+
+const router = createHashRouter([
+  { path: '/', element: <p>在這裡開始寫</p> },
+]);
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
+);
+```
+
+```js 04-react-router/src/homework/data.js
+const tours = [
+  { id: 'taipei-beitou', title: '台北大稻埕與北投溫泉三日', region: '台北', theme: '城市', days: 3, price: 18600 },
+  { id: 'keelung-jiufen', title: '基隆北海岸與九份兩日', region: '基隆', theme: '海岸', days: 2, price: 9200 },
+  { id: 'hualien-taroko', title: '花蓮太魯閣與七星潭四日', region: '花蓮', theme: '山海', days: 4, price: 26800 },
+  { id: 'taitung-chishang', title: '台東池上與成功海岸三日', region: '台東', theme: '山海', days: 3, price: 21400 },
+  { id: 'tainan-anping', title: '台南府城與安平兩日', region: '台南', theme: '古都', days: 2, price: 8800 },
+  { id: 'kaohsiung-qijin', title: '高雄港都與旗津三日', region: '高雄', theme: '城市', days: 3, price: 14200 },
+  { id: 'kinmen-villages', title: '金門聚落與戰地三日', region: '金門', theme: '離島', days: 3, price: 16800 },
+  { id: 'kyoto-nara', title: '京都嵐山、伏見與奈良五日', region: '京都', theme: '日本', days: 5, price: 52800 },
+];
+
+const bookings = [];
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export async function getTours() {
+  await wait(300);
+  return tours;
+}
+
+export async function getTour(id) {
+  await wait(300);
+  return tours.find((tour) => tour.id === id) ?? null;
+}
+
+export async function addBooking(booking) {
+  await wait(400);
+  const saved = { ...booking, id: bookings.length + 1 };
+  bookings.push(saved);
+  return saved;
+}
+
+export async function getBookings() {
+  await wait(300);
+  return bookings;
+}
+```
+
+## 題目
+
+### 題目一：版型與導覽
+
+建立一個版型路由，頁首有「首頁」「行程」「報名」三個導覽連結，目前所在的連結要有不同外觀；各頁內容顯示在版型的出口。先為三個路徑各建立一個只有標題的頁面。
+
+完成後點三個連結會換頁但頁首不會重新載入，目前頁面的連結是亮的。
+
+### 題目二：用 loader 讀行程列表
+
+行程頁用 loader 取得 `getTours()` 的結果並顯示成列表。換頁讀取期間在頁首顯示「載入中」。
+
+完成後點「行程」先看到「載入中」，約半秒後出現八筆行程。
+
+### 題目三：用網址保存篩選
+
+在行程頁加主題篩選，選到的主題寫進網址的查詢參數（例如 `?theme=城市`），列表依網址顯示。重新整理頁面後篩選仍在。
+
+完成後點「城市」網址多出 `?theme=城市`，列表剩兩筆；貼上這個網址重新開啟，結果相同。
+
+### 題目四：詳情頁與找不到
+
+每筆行程可以點進詳情頁，路徑帶行程編號，用 loader 讀取單筆資料。編號不存在時要丟出 404，並由路由的錯誤畫面顯示「找不到這個行程」。
+
+完成後點進任一行程顯示標題、天數與價格；把網址的編號改成不存在的值，看到「找不到這個行程」。
+
+### 題目五：報名表單與轉址
+
+在報名頁放一個表單（姓名、行程、人數），用 action 呼叫 `addBooking` 儲存，成功後轉址到一個顯示報名清單的頁面，清單用 loader 讀取 `getBookings()`。送出期間按鈕要停用並顯示「送出中」。
+
+完成後送出表單，頁面轉到報名清單並看到剛才那筆；送出的過程中按鈕無法重複點擊。
 
 # 本篇重點回顧
 
-- `04-react-router` 由 `03-react` 複製後再裝 `react-router`。課堂用資料模式的 `createBrowserRouter` 與 `RouterProvider`；宣告式與框架模式只留作選讀對照。
-- 同一份專案把按鈕切換改成練習筆記：`MainLayout` 左側是目錄，主區是 `Outlet`，同層的 `ScrollRestoration` 負責換頁捲動。
-- 目錄資料在 `src/data/catalog.js`，依主題分組；選單用 `NavLink` 的 `isActive`，連回首頁的那一條要加 `end`。
-- 單則筆記的路徑是 `/demos/:slug`，`useParams` 取出字串 slug，slug 與範例檔名去掉 `.jsx` 相同。篩選用 `?q=` 與 `useSearchParams`。星號 `*` 放在版型裡時，找不到仍留著目錄。
-- `loader` 在畫面前讀資料，頁面用 `useLoaderData` 接。`Form method="post"` 進到 `action`；`87-action` 用 `useActionData` 顯示 `createItem` 回傳的項目，或依欄位回傳的錯誤。後面幾則寫入後，`loader` 會自動重跑。
-- 編輯表單送出後，`action` 用 `updateItem` 寫入標題，再 `return redirect('/demos/88-redirect-list')`。列表的 `loader` 接著重跑，畫面上是新標題。
-- 明細找不到時 `throw data(..., { status: 404 })`，頁面元件不渲染，由這條路由的 `errorElement` 用 `useRouteError` 讀取。沒有指定 `errorElement` 時，錯誤往上找最近一層，只替換那一層以下的畫面。`useFetcher` 送出但不換頁；同一個 `key` 的 `useFetcher` 會共用一份狀態，頁面在渲染時讀 `fetcher.data`；`useNavigation` 讀取讀取中與送出中。
-- `demos/86-loader` 到 `demos/92-fetcher-key` 要寫在 `demos/:slug` 前面。91 的 400 毫秒等待只為了看得到 pending，記憶體讀取不必複製。
-- 選讀：`useLocation`、GitHub Pages 的 `404.html`，以及 `createHashRouter`。網址有子路徑時才需要 `base` 與 `basename`。
+選讀的部分是「選讀：宣告式」、「選讀：框架模式」、「選讀：位置資訊」與「選讀：部署到 GitHub Pages」，其餘都是課堂主線。
+
+- 路由讓網址決定畫哪一頁，並能保留瀏覽歷史與重新整理後的位置；React Router 有宣告式、資料、框架三種模式，課堂使用資料模式。
+- 專案由 `03-react` 複製並安裝 `react-router`，路由器以 `createBrowserRouter` 建立，再交給 RouterProvider 畫出來。
+- 路由表是物件陣列，路由器依路徑的具體程度比對，共用的版型用 `children` 與 Outlet 放進各頁。
+- 換頁用 Link，選單要標出目前頁就用 NavLink，連到 `/` 的 NavLink 只在根路徑算使用中。
+- 網址上會變的片段用路徑參數與 `useParams` 讀取，要保存篩選條件則用查詢參數與 `useSearchParams`。
+- 沒有路由對上時用星號路由接住，放在版型的 `children` 裡就能在 404 時保留左側目錄。
+- 路由用 `loader` 在進頁前讀資料，用 `action` 搭配 Form 接收送出，成功後以 redirect 轉址。
+- 資料拿不到時丟出錯誤由 `errorElement` 顯示，不換頁的送出用 `useFetcher`，換頁與送出的進行中狀態則用 `useNavigation` 讀取。
 
 # 專有名詞中英對照
 
-下面依這篇的大章收集會拿去搜尋的詞。中文在前，括號裡是英文關鍵字，順序跟文章第一次出現時一樣。
-
 ## 認識路由
 
-這一組是網址怎麼對上畫面，以及課堂用的資料模式。宣告式、`BrowserRouter`、`Routes`、`Route` 是選讀對照。框架模式也是選讀。
-
 - 路由（routing）
-- 資料模式（data mode）
-- createBrowserRouter
-- 資料路由器（data router）
-- RouterProvider
-- 捲動還原（ScrollRestoration）
-- 換頁前讀取（loader）
-- useLoaderData
-- 表單送出（action）
-- 錯誤頁（errorElement）
-- 連結（Link）
-- 舊套件入口（react-router-dom）
-- 選讀對照：宣告式（declarative mode）
-- 選讀對照：瀏覽器路由（BrowserRouter）
-- 選讀對照：路由表（Routes）
-- 選讀對照：路由（Route）
-- 框架模式（framework mode）
-- Remix
-- 伺服器端渲染（SSR）
-- 程式碼切分（code splitting）
-- 搜尋引擎最佳化（SEO）
+- 資料模式（Data Mode）
+- 宣告式模式（Declarative Mode）
+- 框架模式（Framework Mode）
 - 檔案路由（file-based routing）
-- HydratedRouter
-- Next.js
-- 路由設定（routes.ts）
+- 伺服器端渲染（SSR）
+- 搜尋引擎最佳化（SEO）
+- 程式碼切分（code splitting）
 - 路由模組（route module）
-- 路由元件屬性（Route.ComponentProps）
 
 ## 啟用路由
 
-這一組是把複製來的專案接上資料模式、路由表、版型與目錄資料。`basename` 是 `createBrowserRouter` 的第二個參數。
-
-- 歷史 API（History API）
-- 索引路由（index route）
-- 路徑（path）
-- 代稱（slug）
-- 元素（element）
-- 子路由（children）
-- 插槽（Outlet）
-- 巢狀路由（nested route）
+- 歷史功能（History API）
 - 基底路徑（basename）
-- BASE_URL
+- 路由表（route table）
+- 巢狀路由（nested route）
+- 索引路由（index route）
+- 子路由（child route）
+- 動態片段（dynamic segment）
+- 版型（layout）
+- 捲動還原（ScrollRestoration）
 
 ## 連結與選單
 
-這一組從連結、選單、路徑參數、查詢參數排到選讀的位置物件。`useNavigate` 用在上一則、下一則這種按鈕。
-
-- 目標路徑（to）
-- 導覽連結（NavLink）
+- 換頁連結（Link）
+- 絕對路徑（absolute path）
+- 相對路徑（relative path）
 - 使用中（isActive）
-- 完全符合（end）
-- 路徑參數（param）
-- useParams
-- 導覽函式（useNavigate）
+- 路徑參數（path param）
 - 查詢參數（search params）
-- useSearchParams
-- 設定查詢（setSearchParams）
 - 位置（location）
-- useLocation
-- 路徑名稱（pathname）
-- 查詢字串（search）
 - 雜湊（hash）
-- 紀錄鍵（key）
-
-## 讀取與送出資料
-
-這一組是路由上的讀取與送出。`Form` 是元件，`data()` 用來丟出帶狀態碼的路由錯誤。
-
-- 雜湊路由器（createHashRouter）
-- 記憶體路由器（createMemoryRouter）
-- 換頁前讀取（loader）
-- useLoaderData
-- 表單送出（action）
-- 表單（Form）
-- useActionData
-- 重新驗證（revalidation）
-- 重新導向（redirect）
-- 路由錯誤資料（data()）
-- 錯誤元件（errorElement）
-- 路由錯誤回應（isRouteErrorResponse）
-- useRouteError
-- 不換頁的送出（useFetcher）
-- 共用的 fetcher（useFetcher key）
-- 導覽狀態（useNavigation）
 
 ## 找不到的頁面
 
-這一組是星號路徑的兩種放法。差別在 404 還包不包得住版型與目錄。
-
 - 星號路由（splat route）
-- 分散式星號路由（nested splat route）
-- 集中式星號路由（central splat route）
+- 錯誤畫面（errorElement）
+
+## 讀取與送出資料
+
+- 資料路由器（data router）
+- 不可變更新（immutable update）
+- 狀態碼（status code）
+- 重新驗證（revalidation）
+- 轉址（redirect）
+- 路由錯誤回應（route error response）
 
 ## 選讀：部署到 GitHub Pages
 
-這一組是讓靜態主機接住子路徑的做法。`base` 管打包；`basename` 沿用前面 `createBrowserRouter` 的第二個參數。
-
-- 建置基底（base）
-- 雜湊路由（HashRouter）
+- 靜態主機（static host）
+- 專案頁（project page）
+- 子路徑（subpath）
+- 改寫規則（rewrite）

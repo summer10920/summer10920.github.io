@@ -10,25 +10,25 @@ date: 2026-08-30 10:11:00
 
 ![](assets/images/banner/react.png)
 
-這一章做洛奇旅行的切版：把 React、MUI 與 Tailwind 收成一個多頁網站。先建立佔位頁並接到路由，再組出外框（頁首、主導覽、頁尾）；外框下層先放標記，再逐一換成真正的元件，假資料跟著一起補齊。切版最後會打包並用 Live Server 預覽產物；網站要怎麼接住內頁的重新整理，留到下一篇部署時再寫。
+這一章做洛奇旅行的切版：把 React、MUI 與 Tailwind 收成一個多頁網站。先建好專案與樣式，接著用佔位頁搭起路由，再組出外框（頁首、主導覽、頁尾）：外框先放標記，再逐一換成真正的元件；之後各頁換成真正的畫面，假資料跟著補齊。切版最後會打包並用 Live Server 預覽產物；網站要怎麼接住內頁的重新整理，留到選讀的下一篇部署時再寫。
 
 <!-- more -->
 
 # 建立專案
 
-先產生一支能打包的 Vite 專案，沿用 {% post_link lokiTech-15day-09-react-basics %} 的 ESLint 與 Prettier，再把 MUI 與 Tailwind 要的套件和層級裝上。頁面內容等路由接通之後才寫。
+先產生一支能打包的 Vite 專案，沿用 {% post_link lokiTech-15day-09-react-basics %} 的 ESLint 與 Prettier，再裝上 MUI 與 Tailwind，並排好兩套樣式的層疊順序。頁面內容等路由接通之後才寫。
 
 ## Vite 專案
 
-`pnpm create vite` 會產生 React 需要的入口。選 JavaScript 時它不會附上 `jsconfig.json`，這份檔要自己加，編輯器才能把 `src` 當成同一個專案。清掉計數器範本之後，把第 9 篇的 ESLint 與 Prettier 帶進來，這個資料夾就是後面每一步的起點。
+用 `pnpm create vite` 產生 React 專案的骨架。範本不附 `jsconfig.json`，要自己加，編輯器才能把原始碼資料夾當成同一個專案。清掉計數器範本、帶進第 9 篇的 ESLint 與 Prettier 之後，這個資料夾就是後面每一步的起點。
 
 ### 步驟 1：建立專案
 
 {% note info %}
-已經裝過 Node.js 24 與 pnpm 的人跳過工具鏈，直接在空目錄建立專案。剛重灌的電腦先照 {% post_link lokiTech-15day-04-tailwind %} 把 Node 24 與 pnpm 裝好。
+已經裝過 Node.js 26 與 pnpm 的人跳過工具鏈，直接在空目錄建立專案。剛重灌的電腦，先照 {% post_link lokiTech-15day-04-tailwind %} 的「建立 Node 開發環境」裝好 Node 26 與 pnpm。
 {% endnote %}
 
-在空目錄執行下面這行，框架選 React，變體選 JavaScript，資料夾取名 `06-project-init`。
+在空目錄執行下面這行，專案名稱填 `06-project-init`，框架選 React，語言選 JavaScript。
 
 ```bash
 pnpm create vite
@@ -48,13 +48,13 @@ pnpm create vite
 
 **解析**
 
-- 瀏覽器先載入 `index.html`，再依腳本去拉 `main.jsx`，之後的畫面都由 React 畫進 `#root`。
-- `vite.config.js` 裡的 `react()` 把 JSX 轉成瀏覽器能執行的 JavaScript。
-- `createRoot` 只呼叫一次。元件與狀態的寫法見 {% post_link lokiTech-15day-09-react-basics %}。
+- 瀏覽器先載入 `index.html`，再依其中的 `script` 載入 `main.jsx`，之後的畫面都由 React 畫進 `#root`。
+- `vite.config.js` 裡的 `react()` 是 Vite 的 React 外掛，負責處理 JSX 與開發時的即時更新。
+- 入口的 `createRoot` 只呼叫一次，元件與狀態的寫法見 {% post_link lokiTech-15day-09-react-basics %}。
 
 ### 步驟 2：加入 jsconfig.json
 
-剛才產生的骨架沒有 `jsconfig.json`。接下來在專案根目錄自己建立這份檔，讓 Cursor 或 VS Code 知道哪些檔屬於同一個 JavaScript 專案。沒有它時，編輯器常把每個 `.jsx` 當成獨立檔，跨檔跳轉和「找出所有引用」會找不到。
+剛才產生的骨架沒有 `jsconfig.json`。接下來在專案根目錄自己建立這份檔，讓 Cursor 或 VS Code 知道哪些檔屬於同一個 JavaScript 專案。沒有它時，編輯器可能把每個 `.jsx` 當成獨立檔，跨檔跳轉與「找出所有引用」的結果會不完整。
 
 ```json 06-project-init/jsconfig.json
 {
@@ -71,16 +71,16 @@ pnpm create vite
 
 **解析**
 
-- `include` 寫 `src`，編輯器會把 `src` 底下的檔當成同一個專案。
+- `include` 寫 `src`，編輯器就把 `src` 底下的檔當成同一個專案。
 - `moduleResolution` 設成 `bundler`，解析 import 的方式和 Vite 一致。
 - `jsx` 設成 `react-jsx`，編輯器才會把 JSX 當成合法語法。
 - `checkJs` 設成 `false`，不要用 TypeScript 的型別規則去檢查這些 JavaScript 檔。
-- 不必寫 `baseUrl`。這個專案的 import 都是相對路徑，不需要它。TypeScript 6 也已把它標成即將移除。
+- 不必寫 `baseUrl`。這個專案的 `import` 都是相對路徑，不需要它；TypeScript 6 已把它標為棄用，預定在 7 移除。
 - Vite 打包不會讀這份檔。少了它網站一樣能建置，少的是編輯器的跨檔能力。
 
 ### 步驟 3：清掉範本
 
-計數器、標誌圖與 `App.css` 刪掉。Vite 附的 `public/vite.svg` 一併換成我們自己的網站圖示。套件名稱改成 `loki-travel`，`App` 只留標題。`react`、`react-dom`、`vite`、`@vitejs/plugin-react` 的版本與完成品對齊。
+把計數器、標誌圖與 `App.css` 刪掉，範本附的網站圖示換成自己的，套件名稱改成 `loki-travel`，`App` 只留標題。React、Vite 與外掛的版本則和完成品對齊。
 
 先對齊 `package.json`。
 
@@ -91,7 +91,7 @@ pnpm create vite
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "scripts": {
     "dev": "vite",
@@ -114,8 +114,8 @@ pnpm create vite
 
 **解析**
 
-- `dependencies` 只留 `react` 與 `react-dom`。Vite 與外掛放在 `devDependencies`，打包後的靜態檔不依賴它們。
-- `type` 設成 `module`，設定檔才能用 `import`。`engines` 把 Node.js 定在 24 以上。
+- 網站執行時要用的 React 與 React DOM 放在 `dependencies`；Vite 與外掛只在開發時用，打包後的靜態檔不依賴它們。
+- `type` 設成 `module`，設定檔才能用 `import` 語法。Node.js 版本則由 `engines` 限定在 26 以上。
 
 開發伺服器的設定與 React Compiler 寫在 `vite.config.js`。
 
@@ -133,11 +133,11 @@ export default defineConfig({
 
 **解析**
 
-- `plugins` 先接 `@vitejs/plugin-react`，再接 `@rolldown/plugin-babel`，並放入 `reactCompilerPreset()`。
-- Vite 本身已經不用 Babel 轉 JSX，但目前穩定的 React Compiler 仍是 Babel 外掛，所以只有這一步會用到 Babel；Rust 版已經有了，但還在實驗階段。
+- `plugins` 先放 `react()`，再放 `babel(...)`：`@rolldown/plugin-babel` 負責帶入 React Compiler 的預設組合 `reactCompilerPreset()`。
+- React 外掛本身不用 Babel 處理 JSX，但 React Compiler 目前以 Babel 外掛的形式提供，所以只有這一步用到 Babel。
 - `server` 與 `preview` 只聽 `localhost`，開發伺服器與預覽都不會綁到區網位址。
 
-如果剛才是從 Vite 範本建的，開發套件還要補裝一次。
+範本不附這三個 Compiler 套件，要另外補裝。
 
 ```bash
 pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-compiler@^1.0.0
@@ -145,7 +145,7 @@ pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-
 
 **解析**
 
-- 這三個套件對應 `vite.config.js` 用到的 Compiler 設定，版本範圍與完成品相同。
+- 這三個套件就是 `vite.config.js` 的 Compiler 設定所需，版本範圍與完成品相同。
 
 網站圖示換成自己的檔，放在 `public`。
 
@@ -158,8 +158,8 @@ pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-
 
 **解析**
 
-- 這個專案用的是 `favicon.svg`，瀏覽器分頁會顯示圓角方塊與「洛」字。
-- 為什麼放在 `public`：Vite 打包時會把 `src` 裡被 import 的檔編進產物，但網站圖示是 `index.html` 用網址去載入的，沒有經過 import。`public` 裡的檔會原樣複製到網站根目錄，所以 `href="/favicon.svg"` 對應的就是 `public/favicon.svg`。
+- 這個圖示是 `favicon.svg`，瀏覽器分頁會顯示綠底圓角方塊與「洛」字。
+- 網站圖示放在 `public`：這個資料夾的檔不經打包，原樣複製到網站根目錄，所以網址 `/favicon.svg` 對應的就是這份檔。
 
 `index.html` 的標題與圖示路徑一併改掉。
 
@@ -169,6 +169,7 @@ pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="洛奇旅行：台灣本島小團與京都短團，每團最多 8 人，一天只排一段路。" />
     <title>洛奇旅行</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
@@ -181,8 +182,8 @@ pnpm add -D @babel/core@^8.1.0 @rolldown/plugin-babel@^0.3.1 babel-plugin-react-
 
 **解析**
 
-- Vite 範本的網站圖示是 `public/vite.svg`，`index.html` 裡也有一條指向 `/vite.svg` 的連結。刪掉那張圖，改放自己的檔，並把 `href` 改成對應的檔名。
-- 以後要換圖示，只要替換 `public` 裡的檔，或改 `href` 指向新檔。
+- 範本原本附 `public/vite.svg`，`index.html` 的 `link` 也指向它。刪掉那張圖，改放自己的檔，並把 `href` 改成新檔名。
+- `title` 是分頁上的文字，`lang="zh-Hant"` 標明頁面語言是繁體中文。
 
 入口檔只負責掛上 `App`。
 
@@ -201,7 +202,7 @@ createRoot(document.getElementById('root')).render(
 
 **解析**
 
-- `main.jsx` 引入樣式，並用 `createRoot` 把 `App` 畫在 `#root`。嚴格模式維持打開。
+- `main.jsx` 先引入樣式，再用 `createRoot` 把 `App` 畫進 `#root`，並維持用 `StrictMode` 包住。
 
 `App` 先只留標題。
 
@@ -213,7 +214,7 @@ export default function App() {
 
 **解析**
 
-- 這個 `App` 沒有狀態，也沒有路由，畫面只有「洛奇旅行」。
+- 這個 `App` 沒有狀態與路由，畫面只有一行大標題「洛奇旅行」。
 
 樣式檔先清空，下一步才接 Tailwind。
 
@@ -223,11 +224,11 @@ export default function App() {
 
 **解析**
 
-- `index.css` 此刻沒有規則，只留一行註解提醒下一步。
+- `index.css` 此刻沒有任何規則，只留一行註解。
 
 ### 步驟 4：沿用 ESLint 與 Prettier
 
-第 9 篇已經在 `03-react` 接好檢查與排版。這一節把同一套設定帶進這個專案，規則與用法見 {% post_link lokiTech-15day-09-react-basics %}。
+第 9 篇已經在 `03-react` 接好程式碼檢查與排版。這一步把同一套設定帶進這個專案，規則與用法見 {% post_link lokiTech-15day-09-react-basics %}。
 
 先放 Prettier 的設定。
 
@@ -241,9 +242,9 @@ export default function App() {
 
 **解析**
 
-- `.prettierrc` 和第 9 篇的 `03-react` 相同。
+- 這份 `.prettierrc` 與 `03-react` 的相同：要分號、單引號、縮排兩格。
 
-再放 ESLint 的設定。頁面檔會同時匯出元件與 `loader`、`action`。`react-refresh/only-export-components` 預設只准匯出元件，所以用 `allowExportNames` 放行這兩個名字。
+再放 ESLint 的設定。頁面檔會同時匯出元件與 `loader`、`action`，而規則 `react-refresh/only-export-components` 只准檔案匯出元件，所以用 `allowExportNames` 放行這兩個名字。
 
 ```js 06-project-init/eslint.config.js
 import js from '@eslint/js';
@@ -283,10 +284,10 @@ export default defineConfig([
 
 **解析**
 
-- `eslint.config.js` 和第 9 篇的 `03-react` 相同，只多了 `allowExportNames`。
-- 最後一項是 `eslintConfigPrettier`，檢查時不要和 Prettier 搶著改空格與引號。
+- 這份設定和 `03-react` 的相同，只多了放行 `loader` 與 `action` 的那一段。
+- 最後一項 `eslintConfigPrettier` 關掉與排版衝突的規則，ESLint 就不會和 Prettier 搶著改空格與引號。
 
-編輯器設定從 repo 根目錄的 `.vscode` 複製 `settings.json` 與 `extensions.json` 到 `06-project-init/.vscode/`，做法見 {% post_link lokiTech-15day-09-react-basics %}。可略過複製 `placeholder.code-snippets`。
+編輯器設定從練習 repo 根目錄的 `.vscode` 複製 `settings.json` 與 `extensions.json` 兩份檔到 `06-project-init/.vscode/`，內容與用途見 {% post_link lokiTech-15day-09-react-basics %}。`placeholder.code-snippets` 可以略過。
 
 ```bash
 mkdir -p .vscode
@@ -295,7 +296,7 @@ cp ../.vscode/settings.json ../.vscode/extensions.json .vscode/
 
 **解析**
 
-- `.vscode` 的 `settings.json` 與 `extensions.json` 從 repo 根目錄複製，做法見 {% post_link lokiTech-15day-09-react-basics %}。
+- 複製之後，VS Code 開啟這個資料夾時就會套用存檔自動排版與 ESLint 修正，並建議安裝對應的擴充套件。
 
 接著安裝對應的開發套件。版本範圍與完成品相同。
 
@@ -336,17 +337,17 @@ pnpm add -D prettier@^3.9.10 eslint@^10.14.0 eslint-config-prettier@^10.1.8 @esl
 
 **解析**
 
-- `scripts.lint` 是 `eslint .`。開發套件的版本範圍與完成品相同。
+- `scripts.lint` 讓 `pnpm lint` 對整個專案跑 ESLint。
 
 ## 樣式與主題
 
-這一節先認識 MUI，用一顆按鈕確認主題有接到畫面上，再把 Tailwind 接進來並排好層疊順序。色票只寫在 `tokens`，字型與圖示字型接著載入。各元件的圓角、class 與圖示覆寫，留到該元件第一次出現的小節再補。
+這一節先認識 MUI，用一顆按鈕確認主題有接到畫面上，再把 Tailwind 接進來並排好層疊順序。接著把色票集中寫在 `tokens`，最後載入字型與圖示字型。各元件的圓角與樣式覆寫，留到該元件第一次出現時再補。
 
 ### 步驟 1：安裝套件
 
-這一步把後面會用到的套件裝進 `06-project-init`：路由、MUI 與它的樣式執行期，以及 Tailwind。版本範圍與完成品相同。
+這一步把後面會用到的套件裝進 `06-project-init`：路由、MUI 與它的樣式引擎，以及 Tailwind。版本範圍與完成品相同。
 
-先執行下面兩行。網站執行時需要的套件用 `pnpm add`，只在開發與打包時需要的用 `pnpm add -D`。
+網站執行時要用的套件用 `pnpm add`，只在開發與打包時用的加 `-D`。
 
 ```bash
 pnpm add react-router@^8.5.1 @mui/material@^9.5.0 @emotion/react@^11.14.0 @emotion/styled@^11.14.1
@@ -355,8 +356,8 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 
 **解析**
 
-- 路由元件從 `react-router` 引入。`createBrowserRouter` 與 `RouterProvider` 的寫法見 {% post_link lokiTech-15day-11-react-router %}。
-- MUI 9 的樣式執行期是 Emotion，所以兩個 `@emotion` 套件要一起裝。
+- 路由 API 都從 `react-router` 引入，只有 `RouterProvider` 例外，要從 `react-router/dom` 引入。`createBrowserRouter` 與 `RouterProvider` 的寫法見 {% post_link lokiTech-15day-11-react-router %}。
+- MUI 預設用 Emotion 產生樣式，所以兩個 `@emotion` 套件要一起裝。
 - Tailwind 4 用 `@tailwindcss/vite` 接進 Vite，主題寫在 CSS 裡，不必另建 `tailwind.config.js`。
 
 裝完之後，`package.json` 會多出這些欄位。
@@ -392,14 +393,14 @@ pnpm add -D tailwindcss@^4.3.3 @tailwindcss/vite@^4.3.3
 
 **解析**
 
-- `dependencies` 裝進 `react-router`、`@mui/material` 與兩個 `@emotion` 套件。打包後的網站會用到它們。
+- 打包後的網站會用到路由、MUI 與兩個 Emotion 套件，所以它們裝進 `dependencies`。
 - `tailwindcss` 與 `@tailwindcss/vite` 放在 `devDependencies`。它們只參與開發與打包，打包後的靜態檔不依賴它們。
 
 ### 步驟 2：認識 MUI
 
-MUI（Material UI）是一套 React 元件庫。按鈕、輸入框、對話框都有現成元件，色與字級集中在一份主題，不必每個元件各寫一份 CSS。
+MUI（Material UI）是一套 React 元件庫。按鈕、輸入框、對話框都有現成元件，顏色與字級集中在一份主題（theme），不必每個元件各寫一份 CSS。
 
-這一步會依序改三個檔案：建立主題、在入口把主題交給畫面、再用一顆實心按鈕確認有接上。這顆按鈕只是暫時的測試畫面，後續章節會重新設計 `App`。
+這一步依序改三個檔案：建立主題、在入口把主題交給畫面，再用一顆實心按鈕確認有接上。這顆按鈕只是暫時的測試畫面，下一章就換成路由表。
 
 先建一份主題，裡面只放主色。
 
@@ -417,8 +418,8 @@ export default theme;
 
 **解析**
 
-- `createTheme` 建立主題物件。傳進去的設定會變成之後元件讀到的預設色與字級。
-- 這一步的 `palette.primary.main` 先寫主色 `#1F6B4A`。完整色票與字級留到後面的步驟再補。
+- `createTheme` 建立主題物件，傳進去的設定會蓋過 MUI 的預設色與字級。
+- 這一步只設 `palette.primary.main`，先寫主色 `#1F6B4A`，完整色票與字級留到步驟 4 再補。
 
 主題建好之後，還要在入口把它交給畫面。
 
@@ -443,9 +444,8 @@ export default theme;
 
 **解析**
 
-- `ThemeProvider` 把主題交給子樹裡的 MUI 元件。它要包在外面，裡面的 `Button` 才讀得到這份 `palette`。
-- `CssBaseline` 清掉瀏覽器給 `body` 的預設外距，並套上主題的文字色與背景色。渲染之後，`body` 的 `margin` 是 0。
-- `import './index.css'` 留在 `main.jsx` 最上面，樣式會在 `render` 之前進到頁面。
+- `ThemeProvider` 把主題交給它底下的 MUI 元件，要包在外面，裡面的 `Button` 才讀得到這份 `palette`。
+- `CssBaseline` 是 MUI 的全域重置：清掉瀏覽器給 `body` 的預設外距，並套上主題的文字色與背景色。
 
 最後把畫面暫時換成一顆實心按鈕。
 
@@ -459,14 +459,14 @@ export default function App() {
 
 **解析**
 
-- `Button` 是 MUI 的現成元件。`variant="contained"` 會用 `palette.primary.main` 當底色。
-- 少了前面的 `ThemeProvider`，這顆按鈕只用 MUI 內建主題，讀不到我們寫的主色。
+- `Button` 是 MUI 的現成元件，`variant="contained"` 用 `palette.primary.main` 當底色。
+- 重整後會看到一顆深綠色的「洛奇旅行」按鈕。少了 `ThemeProvider`，它會變成 MUI 內建的藍色。
 
 ### 步驟 3：Tailwind 與層疊層級
 
-先把 Tailwind 的 Vite 外掛接上，`index.css` 才能 `@import 'tailwindcss'`。接著要處理兩套樣式誰蓋過誰。
+這一步把 Tailwind 接進 Vite，並處理 MUI 與 Tailwind 兩套樣式誰蓋過誰。
 
-沒有放進 layer 的規則，優先度高過任何有分層的規則。Tailwind 的 preflight 放在 `base`，會把按鈕內距歸零。MUI 的按鈕樣式若落在層級外面，後面的 class 就改不到它。`enableCssLayer` 把 MUI 收進中間的 `mui` 層：preflight 清不掉按鈕內距，排在最後的 utilities 仍蓋得過元件。
+CSS 的 layer（圖層）可以把規則分組並排定先後：沒放進任何 layer 的規則，優先度高過所有有分層的規則；有分層的規則之間，後面的層蓋過前面的層。Tailwind 的 preflight（重置樣式）放在 base 層，會把按鈕內距歸零；而 MUI 的樣式若落在層外，Tailwind 的 class 又蓋不過它。`enableCssLayer` 把 MUI 收進夾在中間的 mui 層：preflight 清不掉按鈕內距，排在最後的 utilities 層仍蓋得過元件。
 
 {% mermaid graph LR %}
   themeL["theme"] --> baseL["base"]
@@ -475,16 +475,15 @@ export default function App() {
   compL --> utilL["utilities"]
 {% endmermaid %}
 
-箭頭往右，後層蓋過前層。這五個名字是 CSS 圖層的名稱，用來決定誰蓋過誰。其中的 `theme` 是 Tailwind 內建的圖層名，跟下一步才會寫的 `theme.js` 不是同一個東西。
+箭頭往右，後層蓋過前層。其中的 `theme` 是 Tailwind 內建的圖層名，跟步驟 4 才會寫的 `theme.js` 不是同一個東西。各層放的內容如下：
 
-design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 `--color-action`，值是那一個綠色；之後 class 與元件都引用這個名字，不必到處抄色碼。
+- `theme` 層放 design token，也就是幫顏色、字級、圓角取的名字，例如步驟 4 會寫的 `--color-action`；class 與元件引用名字，不必到處抄色碼。
+- `base` 層放 preflight，以及步驟 4 才寫的 `body` 樣式。
+- `mui` 層放 MUI 元件的樣式。
+- `components` 層留給自己寫的元件 class，這個專案沒有用到。
+- `utilities` 層放 Tailwind 的工具 class，所以間距與欄數蓋得過 MUI。
 
-- `theme` 這層就是放這些 design token 的地方。
-- `base` 這層放 preflight，以及下一步才寫的 `body`。
-- `components` 這層留給之後自己寫的元件 class。這一章的按鈕與頂列改由 MUI 主題控制。
-- `utilities` 這層放 Tailwind 的工具 class，所以欄數與間距蓋得過 MUI。
-
-接下來會依序改三個檔案：在 `index.css` 宣告這份層級順序並引入 Tailwind，在 Vite 接上 Tailwind 外掛，最後讓 MUI 的樣式進到剛才宣告的 `mui` 層。
+這一步依序改三個檔案：在 `index.css` 宣告層級順序並引入 Tailwind，在 `vite.config.js` 接上 Tailwind 外掛，最後在 `main.jsx` 讓 MUI 的樣式進到 `mui` 層。
 
 ```css 06-project-init/src/index.css
 /* 宣告層級順序，後層可以蓋過前層。mui 是我們插入的層名，必須和 MUI 寫死的名稱相同。 */
@@ -495,9 +494,9 @@ design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 
 
 **解析**
 
-- `@layer theme, base, mui, components, utilities;` 是在宣告 Tailwind 要把樣式掛進哪些圖層，以及後層可以蓋過前層。`@import 'tailwindcss'` 之後，design token、reset、元件 class、工具 class 會分別掛到 `theme`、`base`、`components`、`utilities`。
-- 中間多出來的 `mui` 是我們自己寫的圖層名，Tailwind 沒有提供這一層。沒有這一行，Tailwind 仍會用自己的預設順序，裡面沒有 `mui`。層名為什麼必須叫 `mui`，下一小步接上 `enableCssLayer` 時再看。
-- 這一行要寫在 `@import` 之前，而且整份專案只宣告一次。它不寫顏色，也不會去讀 `theme.js`。
+- 第一行 `@layer` 只宣告圖層順序，不放任何規則。`@import 'tailwindcss'` 之後，Tailwind 的 token、preflight、元件 class、工具 class 會分別掛到 theme、base、components、utilities 四層。
+- 中間的 mui 是我們自己插入的層名，Tailwind 預設的順序裡沒有它。層名為什麼必須叫 mui，看最後一份 `main.jsx` 就知道。
+- 這一行要寫在 `@import` 之前，`index.css` 裡只宣告這一次。
 
 再把 Tailwind 外掛加進 Vite。
 
@@ -521,8 +520,8 @@ design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 
 
 **解析**
 
-- `plugins` 同時留著 `react()` 與 `tailwindcss()`。少了後者，`@import 'tailwindcss'` 不會被處理。
-- `server` 與 `preview` 仍只聽 `localhost`，這一節只加外掛，不要拿掉這兩段。
+- `plugins` 多了 `tailwindcss()`。少了它，`@import 'tailwindcss'` 不會被處理，Tailwind 的 class 不會生效。
+- `server` 與 `preview` 的設定不變。
 
 最後讓 MUI 把自己的樣式放進剛才宣告的 `mui` 層，並依官方 Vite 作法補上圖層順序的宣告。
 
@@ -552,24 +551,22 @@ design token 是幫顏色、字級、圓角取的名字。例如稍後會寫的 
 
 **解析**
 
-- `StyledEngineProvider` 要包住會渲染 MUI 的那一層。`enableCssLayer` 是布林值，只負責打開這個行為，沒有屬性可以傳入層名。
-- 打開之後，MUI 會把元件樣式包成 `@layer mui { ... }`。這裡的 `mui` 是 MUI 套件寫死的預設名稱，我們的程式裡看不到、也改不到這一行。
-- 所以上一步 `@layer` 清單裡也必須寫同樣的字 `mui`，瀏覽器才會把 MUI 的規則放進我們插入的那一層。兩邊名稱對不上，MUI 的樣式就進不了這個順序。
-- 沒有這層包裹，MUI 的樣式會落在層級外面，優先度高過 Tailwind，後面的工具 class 就蓋不過去。
-- `GlobalStyles` 必須是 `StyledEngineProvider` 的第一個子元件。它再寫一次和 `index.css` 相同的 `@layer theme, base, mui, components, utilities;`，讓瀏覽器在任何 MUI 元件樣式出現之前，先鎖定圖層順序。
-- 只有 `index.css` 那一行還不夠：Vite 用 JavaScript 把這份 CSS 注入頁面，MUI 的樣式也由 JavaScript 注入。若 Emotion 先建立起 `mui` 這一層，之後就無法再把它插回 `base` 與 `components` 中間，Tailwind 的 preflight 會清掉按鈕內距，也會讓 Select 的外框消失。
-- 這是 Material UI 文件給 Vite 專案的作法，層級順序的字串必須和 `index.css` 那一行相同。
+- `StyledEngineProvider` 要包住會渲染 MUI 的那一層。`enableCssLayer` 是布林值，只負責打開分層，不能傳入層名。
+- 打開之後，MUI 會把元件樣式包進名為 `mui` 的 layer，這個名稱由 MUI 決定，我們改不了。所以 `index.css` 的 `@layer` 清單必須寫同樣的 `mui`，MUI 的規則才會落在我們排好的位置。
+- 沒有這層包裹，MUI 的樣式會落在層外，優先度高過 Tailwind，工具 class 就蓋不過去。
+- `GlobalStyles` 把和 `index.css` 相同的順序宣告再寫一次，並放在 `StyledEngineProvider` 的第一個位置（MUI 的 Tailwind v4 整合文件對 Vite 專案的範例就是這樣放）。原因是 MUI 的樣式由 JavaScript 動態注入，順序宣告若沒有先於 MUI 的樣式出現，`mui` 層可能先被建立，排到 `base` 與 `components` 之前。
+- 兩處的順序字串必須完全相同。
 
 {% note info %}
 **打包時只會讀 index.css 的層級宣告**
-Vite 把 CSS 打包成 stylesheet 時，不會讀到 GlobalStyles 裡的那一行。index.css 若少了這行，產出會回到 Tailwind 沒有 mui 的預設順序，我們插入 mui 的客製就丟失了。GlobalStyles 是 React 渲染時才套用規則，因此開發模式靠它能正常顯示。
+Vite 把 CSS 打包成 stylesheet 時，不會讀到 `GlobalStyles` 裡的那一行。`index.css` 若少了這行，產出會回到 Tailwind 沒有 `mui` 的預設順序，我們插入 `mui` 的客製就丟失了。`GlobalStyles` 是 React 渲染時才套用規則，因此開發模式靠它能正常顯示。
 {% endnote %}
 
 ### 步驟 4：主題與色票
 
-色票只寫一份，放在 `theme.js` 的 `tokens`。MUI 與 Tailwind 都從這裡取值，樣式表裡不再抄一份色碼。`index.css` 不會引入 `theme.js`；真正引入它的是 `main.jsx`。
+色票只寫一份，放在 `theme.js` 匯出的 `tokens`。MUI 與 Tailwind 都從這裡取值，樣式表裡不再抄一份色碼。引入這份檔的是入口檔，樣式表本身不會 import 它。
 
-這一步會依序改三個檔案：先把 `theme.js` 換成完整色票，再於 `main.jsx` 引入它、把色票寫成 CSS 變數，最後讓 `index.css` 去讀這些變數。元件自己的 class 與 MUI 覆寫這一步還不寫。
+這一步會依序改三個檔案：先把 `theme.js` 換成完整色票，再於入口檔引入它、把色票寫成 CSS 變數，最後讓樣式表去讀這些變數。元件自己的 class 與 MUI 覆寫這一步還不寫。
 
 先把 `theme.js` 整份換掉，上一步的主色收進 `tokens.action`。
 
@@ -644,13 +641,13 @@ export default theme;
 
 **解析**
 
-- `tokens` 是唯一的色票來源。後面 Tailwind 與 MUI 都從這裡取值，不再各抄一份色碼。
-- `applyTokens` 把每個鍵名原樣接在 `--loki-` 後面。例如 `tokens` 裡的 `actionHover` 會變成 `--loki-actionHover`，不會改成連字號。
-- `createTheme` 的 `palette` 要拿色碼算對比，所以直接讀 `tokens` 裡的十六進位。帶字的主按鈕用 `tokens.action`，不用較亮的 `tokens.primary`。
-- `cssVariables` 讓 MUI 另外寫出自己的 CSS 變數。Tailwind 不讀那些名字，只讀 `--loki-*`。
-- 字型名稱下一步再換。這一步的 `fontFamily` 仍是系統無襯線字。
+- `tokens` 是唯一的色票來源，MUI 與 Tailwind 都從這裡取值。
+- `applyTokens` 把每個鍵名原樣接在 `--loki-` 後面，所以 `actionHover` 會變成 `--loki-actionHover`，不會改成連字號。
+- MUI 的 `palette` 直接讀 `tokens` 的十六進位色碼，因為 MUI 要拿色碼計算對比色。帶字的主按鈕用 `action`，不用較亮的 `primary`。
+- `cssVariables: true` 讓 MUI 另外產生自己的 CSS 變數；Tailwind 不讀那些，只讀 `--loki-*`。
+- `fontFamily` 這一步仍是系統字型，步驟 5 才換。
 
-`theme.js` 要在 `main.jsx` 引入。`theme` 繼續交給 `ThemeProvider`；`applyTokens` 則在繪製之前，把 `tokens` 寫成網頁根節點上的 `--loki-*`。
+入口檔引入 `theme.js` 之後，主題照舊交給 Provider；繪製之前，再由 `applyTokens` 把色票寫成網頁根節點上的 CSS 變數。
 
 ```diff 06-project-init/src/main.jsx
  // ...
@@ -666,9 +663,9 @@ export default theme;
 
 **解析**
 
-- `import theme, { applyTokens } from './theme.js'` 是專案裡引入這份色票的地方。`index.css` 不會、也不能去 import 它。
-- `theme` 傳進 `ThemeProvider`，MUI 元件才讀得到 `palette`。
-- `applyTokens()` 寫在 `render` 之前，第一批畫面就讀得到 `--loki-*`。寫在後面，第一幀可能會先出現沒有色票的樣子。
+- 入口檔是唯一引入 `theme.js` 的地方，`index.css` 不會也不能 import 它。
+- `theme` 照舊傳給 `ThemeProvider`，MUI 元件才讀得到 `palette`。
+- `applyTokens()` 寫在 `render` 之前，第一批畫面就讀得到 `--loki-*`；寫在後面，第一幀可能會先出現沒有色票的樣子。
 
 色票變成 CSS 變數之後，`index.css` 才去讀它們。檔案開頭的 `@layer` 與上一步相同，沒有改動。
 
@@ -699,7 +696,7 @@ export default theme;
   --shadow-card: 0 10px 28px rgb(31 42 68 / 8%);
 }
 
-/* 全站基底：頁面底色與文字、選取顏色、鍵盤焦點外框，以及減少動畫。 */
+/* 全站基底：頁面底色與文字、選取顏色，以及減少動畫。 */
 @layer base {
   body {
     margin: 0;
@@ -712,11 +709,6 @@ export default theme;
   ::selection {
     background: #d8f3e6;
     color: var(--loki-ink);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--loki-action);
-    outline-offset: 3px;
   }
 
   * {
@@ -732,20 +724,35 @@ export default theme;
     }
   }
 }
+
+/* 鍵盤焦點外框。放在 components 層，才蓋得過 mui 層裡 MUI 按鈕自己清掉的 outline；
+   頁尾是深色底，外框改白色，對比才夠。 */
+@layer components {
+  :focus-visible {
+    outline: 2px solid var(--loki-action);
+    outline-offset: 3px;
+  }
+
+  footer :focus-visible {
+    outline-color: var(--loki-white);
+  }
+}
 ```
 
 **解析**
 
-- 第一行 `@layer theme, base, mui, components, utilities;` 仍是上一步宣告的掛載順序，跟色票無關。這裡的 `theme` 是 Tailwind 的圖層名，不是 `theme.js`。
-- `@theme inline` 才是在讀 `--loki-*`，並對到 Tailwind 的顏色名稱。例如 `--color-action: var(--loki-action);` 讓 class `bg-action`、`text-action` 去用這個色。
-- `@layer base { ... }` 是把規則放進已經宣告好的 `base` 層，用同一組變數設定頁面底色、文字色、選取範圍與鍵盤焦點。它跟第一行「列出有哪些層」是兩件事。
-- Tailwind 的色名用連字號，所以會看到 `--color-action-hover: var(--loki-actionHover);`。左邊是 Tailwind 要的名字，右邊是上一份 `theme.js` 裡 `actionHover` 被 `applyTokens` 寫出來的變數。
+- 第一行的 `@layer` 沿用步驟 3 的順序，跟色票無關。
+- `@theme inline` 才是讀 `--loki-*` 的地方，它把變數對到 Tailwind 的色名：`--color-action: var(--loki-action);` 讓 `bg-action`、`text-action` 這類 class 可以用。
+- Tailwind 色名用連字號，所以有 `--color-action-hover: var(--loki-actionHover);`。左邊是 Tailwind 要的名字，右邊是 `applyTokens` 寫出的變數。
+- `@layer base { ... }` 把規則放進已宣告的 `base` 層，用同一組變數設定頁面底色、文字色與選取色，並在使用者偏好減少動態時關掉動畫。
+- 鍵盤焦點外框放在 `components` 層，而不是 `base`：MUI 的按鈕在 `mui` 層裡把自己的 outline 清掉，`base` 排在 `mui` 前面蓋不過它，`components` 排在後面才蓋得過。頁尾是深色底，所以那裡的外框改成白色。
+- 重整後，頁面底色變成米白的 `paper`，文字是深藍的 `ink`。
 
 ### 步驟 5：字型與圖示
 
-介面用 Noto Sans TC，標題用 Noto Serif TC。Material Symbols Outlined 是圖示字型：元素的文字內容寫圖示名稱，字型把名稱畫成圖。
+介面用 Noto Sans TC，標題用 Noto Serif TC。Material Symbols Outlined 是圖示字型：元素的文字內容寫圖示名稱，字型就把名稱畫成圖。
 
-這一步會依序改三個檔案：在 `index.html` 載入字檔、讓 MUI 的標題與按鈕改用這兩套字、再讓 Tailwind 與圖示 class 也用同一套字檔。圖示元件留到頁首再寫。
+這一步依序改三個檔案：在 `index.html` 載入字型、讓 MUI 的標題與按鈕改用這兩套字，再讓 Tailwind 也用同一組字型，並加上圖示 class。圖示元件留到版面那一章再寫。
 
 ```diff 06-project-init/index.html
  // ...
@@ -768,7 +775,7 @@ export default theme;
 **解析**
 
 - 兩個 `preconnect` 先跟字型服務建立連線，後面的樣式表下載會快一些。
-- 圖示字型的網址帶 `display=block`，字檔到達前先不顯示名稱。內文字型用 `display=swap`，先用後備字再換。
+- 圖示字型的網址帶 `display=block`，字檔到達前先不顯示文字，避免畫面上先閃出一串圖示英文名。內文字型用 `display=swap`，先用後備字，載入後再換成 Noto。
 
 字檔載進來之後，讓 MUI 的標題與按鈕改用這兩套字。
 
@@ -819,9 +826,9 @@ export default theme;
 
 **解析**
 
-- 預設的 `fontFamily` 改成 Noto Sans TC，內文與多數元件會用無襯線。
-- `h1`、`h2`、`h3` 另外指定 Noto Serif TC，標題元件才會用襯線。
-- `button` 維持無襯線，避免按鈕文字跟著標題變成襯線字。
+- 預設的 `fontFamily` 改成 Noto Sans TC，內文與多數元件用無襯線。
+- `h1`、`h2`、`h3` 另外指定 Noto Serif TC，標題才用襯線。
+- `button` 明確指定無襯線，按鈕文字就不會受標題字型影響。
 
 最後讓 Tailwind 與圖示 class 也用同一套字檔。
 
@@ -832,8 +839,7 @@ export default theme;
 +  --font-serif: 'Noto Serif TC', ui-serif, serif;
    --color-primary: var(--loki-primary);
  // ...
-       animation: none !important;
-     }
+     outline-color: var(--loki-white);
    }
  }
 +
@@ -857,22 +863,22 @@ export default theme;
 
 **解析**
 
-- `--font-sans` 與 `--font-serif` 給 Tailwind 的 `font-sans`、`font-serif`。MUI 的 `typography` 已經在上一份程式各自寫過字型名稱。
-- 圖示 class 的用意寫在 `index.css` 的註解裡。頁首的 `Icon` 會把名稱放進帶這個 class 的 `span`，元件本身留到頁首再寫。
+- `--font-sans` 與 `--font-serif` 讓 Tailwind 的 `font-sans`、`font-serif` class 對到同一組字型。
+- `.material-symbols-outlined` 指定圖示字型，並用 `font-feature-settings: 'liga'` 把英文名稱（例如 `menu`）連成一個圖形。之後的 `Icon` 元件會把名稱放進帶這個 class 的 `span`。
 
 # 路由與版面
 
-先做佔位頁與路由表，重整後先看到各頁標題。再組 `SiteLayout`，頁首、主導覽與頁尾先放標記，並接到路由當外框。之後把標記換成真正的元件，再逐頁換成真正的畫面。
+這一章先用佔位頁與路由表，讓每個網址都有頁可看。接著組出整站外框 `SiteLayout`：頁首、主導覽與頁尾先放標記並接到路由，再逐一換成真正的元件。最後補上找不到頁面時的畫面。
 
-這一章的檔案用 feature-based（功能目錄）來放。跨頁元件放 `_shared`，整站外框放 `layout`。
+檔案依 feature-based（依功能分資料夾）的方式放：各頁與它專用的元件放在 `features` 下的功能目錄，跨頁共用的放 `_shared`，整站外框放 `layout`，找不到頁面與路由錯誤頁放 `pages`。
 
 ## 路由表
 
-這一節先寫佔位頁，再寫路由表。此時還沒有整站外框，重整後會看到各頁的大標題，外框下一節再加。`main.jsx` 維持主題那一步，直接渲染 `App`。各頁開始讀資料時，再把該頁的 `loader` 掛上路由。
+這一節先寫佔位頁，再寫路由表。此時還沒有整站外框，每個網址只會看到頁名；外框下一節再加。入口檔不用改，仍然渲染 `App`。
 
 ### 步驟 1：建立佔位頁
 
-路由表裡還沒寫的頁，先用佔位頁顯示頁名。檔案放在 `_shared`。
+每一頁都還沒做，先用同一個佔位元件顯示頁名。它跨頁共用，放在 `_shared`。
 
 ```jsx 06-project-init/src/_shared/Placeholder.jsx
 export default function Placeholder({ title }) {
@@ -886,16 +892,17 @@ export default function Placeholder({ title }) {
 
 **解析**
 
-- 佔位頁只顯示頁名。`title` 畫成正文裡的大標題。
-- 佔位頁的 `main` 用跟完成頁相同的寬度與直向間距，換上真正的頁面時外框不會跳。
-- 十二頁都換成真正的元件之後，自行評估刪掉 `Placeholder.jsx`。
+- 佔位頁只把 `title` 畫成 `h1` 大標題。
+- 它的 `main` 用和多數內頁相同的最大寬度與上下間距，換成真正的頁面時版面不會跳。
+- 路由表裡的頁都換成真正的元件後，就沒有路由再引用它；完成品仍保留這個檔，刪不刪都不影響。
 
 ### 步驟 2：寫路由表
 
-先前那顆測試按鈕從這裡換成路由表。在 `App.jsx` 用 `createBrowserRouter` 建立扁平的路由物件陣列，再交給 `RouterProvider`。這一版不引入 `SiteLayout`，每個路徑直接渲染對應的佔位頁。
+先前那顆測試按鈕在這裡換成路由表。`App.jsx` 用 `createBrowserRouter` 建立路由物件陣列，再交給 `RouterProvider`。這一版還沒有外框，每個路徑直接渲染對應的佔位頁。用 `pnpm dev` 啟動後，把網址改成 `/tours` 並重整，就會看到「行程列表」。
 
 ```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import Placeholder from './_shared/Placeholder.jsx';
 
 const router = createBrowserRouter([
@@ -920,17 +927,16 @@ export default function App() {
 
 **解析**
 
-- `createBrowserRouter` 把路由物件陣列做成路由器。`App` 回傳 `RouterProvider`，由它依照目前網址畫出對上的頁。
-- 此刻還沒有外框，每個路徑直接渲染對應的 `Placeholder`。
-- `index: true` 就是 `/`。`booking/:id` 與 `admin/login` 和較短的 path 寫在同一層，各自對自己的網址。
-- `booking` 是報名表，行程與梯次用查詢字串傳遞，例如 `/booking?tourId=hualien-taroko&departureId=2026-12-18`。`booking/:id` 是完成頁，`id` 是訂單編號。查詢字串不是路徑的一段，這兩條不會互相擋住。
-- `tours/:id` 的 `id` 等詳情頁才用 `useParams` 讀取。路徑參數見第 11 篇。
-- 星號放在最後，前面的路徑都沒對上才會進來。
-- 重整之後只會看到佔位頁的大標題，還沒有頁首與頁尾。
+- `createBrowserRouter` 把路由物件陣列做成路由器，`App` 回傳 `RouterProvider`，由它依目前網址畫出對上的頁。
+- `index: true` 對應 `/`；其餘路由都在同一層，各用一個 `path` 對應一個網址。
+- 報名表的路徑是 `/booking`，行程與梯次用查詢字串傳遞，例如 `/booking?tourId=hualien-taroko&departureId=2026-12-18`；完成頁是 `/booking/:id`，`id` 是訂單編號。查詢字串不算路徑的一段，所以這兩條不會互相擋住。
+- `tours/:id` 的 `id` 是路徑參數，等詳情頁才用 `useParams` 讀取，見 {% post_link lokiTech-15day-11-react-router %}。
+- `*` 的優先度最低，前面都沒對上的網址才會落到它。
+- 畫面上只有各頁的大標題，還沒有頁首與頁尾。
 
 ## 規劃 SiteLayout
 
-路由已經接上。這一節要組出整站外框 `SiteLayout`。它拆成跨頁使用的 `Icon`、頁首下層的 `SiteNav`、`SiteHeader`、`SiteFooter`，最後由 `SiteLayout` 把頁首、中間的 `Outlet`、頁尾和 `ScrollRestoration` 組起來。先組出 `SiteLayout`，頁首、主導覽與頁尾先放標記，並把它接到路由當父路由，就可以在畫面上對照，再逐一換成真正的元件。登入鈕仍只是連到 `/login` 的連結，後面談到時再寫。
+路由已經接上。這一節組出整站外框 `SiteLayout`：它包住頁首、頁尾與中間放各頁的位置，頁首裡又有主導覽與圖示。做法是先用文字標記放好頁首、主導覽與頁尾，並把外框接到路由當父路由，在畫面上確認位置，再逐一換成真正的元件。頁首的登入鈕在這裡只是連到 `/login` 的連結，登入頁之後再做。
 
 ```
 src/
@@ -955,7 +961,7 @@ src/
 
 ### 步驟 1：下層標記與 SiteLayout
 
-先寫頁首、主導覽與頁尾的標記元件，再組 `SiteLayout`。接著把它接到路由當父路由，畫面上就能對照外框。頁首會渲染主導覽，所以之後換主導覽時，效果出現在頁首的位置。
+先寫頁首、主導覽與頁尾的標記元件，再組 `SiteLayout`，最後把它接到路由當父路由。頁首會渲染主導覽，所以之後換掉主導覽時，效果會出現在頁首裡。
 
 主導覽先放標記。
 
@@ -967,7 +973,7 @@ export default function SiteNav() {
 
 **解析**
 
-- 此刻只顯示「主導覽」幾個字。之後換成真正的連結時，效果會出現在頁首裡。
+- 此刻只顯示「主導覽」三個字。
 
 頁首先放標記，並先渲染主導覽。
 
@@ -986,9 +992,9 @@ export default function SiteHeader() {
 
 **解析**
 
-- 頁首現在只是一段標題和主導覽標記，下一步再換成 `AppBar`。
+- 頁首此刻只有「頁首」兩個字，加上下面的主導覽標記。真正的頁首在步驟 4 換上。
 
-頁尾用 `mt-auto` 讓它靠下，因為 `SiteLayout` 是直向的 flex。
+頁尾用 `mt-auto`，在直向排列的 flex 容器（`SiteLayout`）裡把它推到最下面。
 
 ```jsx 06-project-init/src/layout/components/SiteFooter.jsx
 export default function SiteFooter() {
@@ -998,9 +1004,9 @@ export default function SiteFooter() {
 
 **解析**
 
-- 頁尾此刻只顯示「頁尾」。真正的站名、聯絡與探索連結稍後再換。
+- 頁尾此刻只顯示「頁尾」。真正的內容在步驟 5 換上。
 
-外框把頁首、中間的 `Outlet` 與頁尾組起來，並在頁尾後面放上 `ScrollRestoration`。
+外框把頁首、中間的 `Outlet` 與頁尾組起來，並在最後放上 `ScrollRestoration`。
 
 ```jsx 06-project-init/src/layout/SiteLayout.jsx
 import { Outlet, ScrollRestoration } from 'react-router';
@@ -1023,14 +1029,15 @@ export default function SiteLayout() {
 
 **解析**
 
-- `SiteLayout` 先把頁首、`Outlet`、頁尾組起來。頁首、主導覽與頁尾此刻只是標記，之後再換。
-- `Outlet` 渲染子路由對上的元件，頁首與頁尾留在外面。
-- 換頁要捲到頂部，按上一頁或下一頁要還原當時的位置，所以用官方的 `ScrollRestoration`，不必自己寫 `scrollTo`。它與 `Outlet` 同層，放在 `SiteFooter` 之後。
+- 最外層是直向的 flex 容器，高度至少一個螢幕（`min-h-screen`）；中間的 `flex-1` 區塊撐滿剩餘高度，頁尾因此貼在底部。
+- `Outlet` 畫出子路由對上的元件，頁首與頁尾留在外面。
+- `ScrollRestoration` 讓換頁後回到頁面頂端、按上一頁或下一頁時還原當時的捲動位置，不必自己寫捲動程式，用法見 {% post_link lokiTech-15day-11-react-router %}。
 
-接著更新 `App.jsx`，引入 `SiteLayout`，把十二條路徑收進父路由的 `children`。這是第一次用外框包住子路由。
+接著更新 `App.jsx`：引入外框，把十二條路由收進父路由的 `children`。
 
 ```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import SiteLayout from './layout/SiteLayout.jsx';
 import Placeholder from './_shared/Placeholder.jsx';
 
@@ -1061,14 +1068,14 @@ export default function App() {
 
 **解析**
 
-- 父路由的 `element` 是 `SiteLayout`。`children` 裡的路徑都畫在它的 `Outlet`。
-- 重整之後會看到頁首（含「主導覽」）、中間佔位頁的標題，以及頁尾。之後換主導覽、頁首、頁尾時，效果會出現在這個外框裡。
+- 父路由沒有 `path`，只提供外框：`element` 是 `SiteLayout`，`children` 裡的頁都畫在它的 `Outlet`。
+- 重整後，由上而下會看到「頁首」與「主導覽」、佔位頁的標題，以及「頁尾」。
 
 ### 步驟 2：圖示元件
 
-標記已經在畫面上。接下來逐一換成真正的元件：先做圖示，再換主導覽，然後補頁首會用到的樣式與主題，最後換頁首與頁尾。換完重整，就能在剛才的外框裡看到連結與頁尾內容。
+標記已經在畫面上，接下來逐一換成真正的元件：先做圖示，再換主導覽，然後補頁首要用的主題設定，最後換頁首與頁尾。
 
-樣式那一節已經引入 Material Symbols 字型，也寫好了圖示 class。現在寫一個元件，把圖示名稱放進帶那個 class 的 `span`。
+「樣式與主題」那一節已經引入圖示字型，也寫好了圖示 class。現在寫一個元件，把圖示名稱放進帶那個 class 的 `span`。
 
 ```jsx 06-project-init/src/_shared/Icon.jsx
 export default function Icon({ name, className = '' }) {
@@ -1085,12 +1092,13 @@ export default function Icon({ name, className = '' }) {
 
 **解析**
 
-- `name` 是圖示名稱，字型會把這個名稱畫成圖。頁首的選單稍後會傳 `menu`。
-- `className` 留給呼叫端再加顏色或間距。
+- `name` 是圖示名稱，字型會把它畫成圖。頁首的選單按鈕稍後會傳 `menu`。
+- `className` 讓呼叫端再加顏色或間距。
+- `aria-hidden="true"` 讓輔助科技略過它，不會把圖示的英文名稱唸出來。
 
 ### 步驟 3：主導覽
 
-把主導覽的 placeholder 換成真正的元件。此時它已出現在頁首裡，換完就能在畫面上看到連結。頁首的桌面列與手機選單會顯示同一組連結，所以導覽獨立成一個元件。
+把主導覽的標記換成真正的元件。頁首的桌面列與手機選單要顯示同一組連結，所以導覽獨立成一個元件。換完重整，頁首裡會出現「行程」「關於」「我的報名」三個連結。
 
 ```jsx 06-project-init/src/layout/components/SiteNav.jsx
 import { NavLink } from 'react-router';
@@ -1117,14 +1125,14 @@ export default function SiteNav({ onNavigate, id }) {
 
 **解析**
 
-- `NavLink` 會帶 `isActive`。目前這一項用實心膠囊，其餘維持文字。寫法見第 11 篇。
-- `item` 寫成函式而不是字串，因為 class 要依目前是不是這一頁而改變。
-- `onNavigate` 給手機選單用：點了連結就關掉選單。桌面版沒有這層選單，傳進去也不影響畫面。
-- `id` 讓外層指定這個導覽的識別。桌面導覽稍後會設成 `site-nav`。
+- `NavLink` 會把 `isActive` 傳給 `className` 函式，目前所在頁的那一項畫成實心膠囊，其餘只有文字，寫法見 {% post_link lokiTech-15day-11-react-router %}。
+- `item` 是函式而不是字串，因為 class 要依是不是目前頁而改變。
+- `onNavigate` 給手機選單用：點了連結就收起選單。
+- `id` 讓呼叫端替 `nav` 指定識別，頁首會替桌面版的導覽設成 `site-nav`。
 
 ### 步驟 4：組出 SiteHeader
 
-頁首會用到 MUI 的頂列、按鈕與手機選單（`Drawer`）。這些元件的長相集中寫在 `theme.js`，之後都會跟著套用，不必在每個元件裡再寫一遍。
+頁首會用到 MUI 的頂列（`AppBar`）、按鈕（`Button`）與從側邊滑出的面板（`Drawer`，手機選單用）。這些元件的長相集中寫在 `theme.js`，全站的同類元件都會跟著套用，不必在每個元件裡重寫。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -1185,14 +1193,13 @@ export default function SiteNav({ onNavigate, id }) {
 **解析**
 
 - `shape.borderRadius` 先設成 12，作為元件的預設圓角。
-- `MuiButton` 的 `root` 把圓角改成 999，按鈕變成膠囊。
-- `disableElevation` 設成 true，按鈕預設不再帶陰影。
-- 實心主按鈕與次按鈕的顏色來自 palette（`primary` / `secondary`），與 `tokens` 是同一組色票。
-- `MuiAppBar` 設成半透明、貼在上緣、沒有陰影，底邊加一條分隔線。
-- `MuiDrawer` 從右側打開，紙張左側做成圓角。
-- `MuiBackdrop` 是手機選單後面那層半透明遮罩。
+- `MuiButton` 的 `root` 把圓角改成 `999`，按鈕變成膠囊；`disableElevation` 設成 `true`，按鈕預設不帶陰影。
+- 實心按鈕的顏色來自 `palette` 的 `primary` 與 `secondary`，和 `tokens` 是同一組色票。
+- `MuiAppBar` 設成半透明並模糊背景、沒有陰影，底邊一條分隔線；貼在上緣是 `SiteHeader` 用 `position` 決定的。
+- `MuiDrawer` 的面板寬 280，圓角寫在右側兩個角。
+- `MuiBackdrop` 是面板打開時後面那層半透明遮罩。
 
-接著把頁首的 placeholder 換成真正的 `SiteHeader`。左邊是站名，右邊是導覽與登入；窄螢幕改成一顆選單按鈕，點了之後從右側抽出同一組連結。
+接著把頁首的標記換成真正的 `SiteHeader`。左邊是站名，右邊是導覽與登入鈕；窄螢幕改成一顆選單按鈕，點了之後從右側滑出同一組連結。
 
 ```jsx 06-project-init/src/layout/components/SiteHeader.jsx
 import { useState } from 'react';
@@ -1246,15 +1253,16 @@ export default function SiteHeader() {
 
 **解析**
 
-- 頂列設成 sticky，捲動時貼在視窗上緣。加上 `component="header"` 之後，輸出的是 header 元素，id 是 `site-header`。
-- 頁首的根是 `AppBar`，`id` 是 `site-nav` 會放在主導覽上。站名連到 `/`。
-- 桌面版用 `hidden` 搭配 `md:flex` 顯示導覽與登入鈕。選單按鈕加上 `md:hidden`，只在窄螢幕出現。
-- 登入鈕寫成 `component={Link}`，並指定連到 `/login`。看起來像按鈕，行為是路由連結。
-- 手機選單是否打開由 `useState` 控制。導覽的 `onNavigate` 接到 `close`，點了連結就關選單。手機選單按鈕的 id 是 `nav-toggle`。
+- `AppBar` 的 `position="sticky"` 讓頂列捲動時貼在視窗上緣；`component="header"` 讓它輸出成 `header` 元素。站名是連到 `/` 的 `Link`。
+- 桌面版用 `hidden` 加 `md:flex` 顯示導覽與登入鈕，選單按鈕用 `md:hidden`，只在窄螢幕出現。`md` 是 Tailwind 的斷點，寬度 768px 以上算桌面。
+- 登入鈕寫成 `component={Link}`，外觀是按鈕，行為是路由連結，連到 `/login`。
+- 選單開關由 `useState` 的 `open` 控制；把 `close` 傳給導覽，點了連結就收起選單。
+- `aria-expanded` 與 `aria-controls` 告訴輔助科技這顆按鈕控制哪個面板、目前是否展開；`site-header`、`site-nav`、`nav-toggle` 這幾個 id 是給這些屬性與之後的程式識別用的。
+- 重整後，寬畫面看到站名、三個連結與「登入」；把視窗縮窄，改成「選單」按鈕，點下去從右側滑出同一組連結。
 
 ### 步驟 5：組出 SiteFooter
 
-把頁尾的 placeholder 換成真正的 `SiteFooter`。內容是站名、聯絡方式與探索連結。後台入口放在頁尾最底下，不放進前台選單。
+把頁尾的標記換成真正的 `SiteFooter`，內容是站名、聯絡方式與探索連結。後台入口放在頁尾最底下，不放進前台選單。最底下的年份用 `new Date().getFullYear()` 取得，`Date` 見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：內建物件」。
 
 ```jsx 06-project-init/src/layout/components/SiteFooter.jsx
 import { Link } from 'react-router';
@@ -1266,7 +1274,7 @@ export default function SiteFooter() {
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-3 md:gap-8 md:py-24">
         <div>
           <p className="font-serif text-2xl font-semibold">洛奇旅行</p>
-          <p className="mt-3 text-lg text-foam">上午走路，下午留白。</p>
+          <p className="mt-3 text-lg text-foam">每團最多 8 人的小團旅行。</p>
           <p className="mt-4 text-base leading-relaxed text-white/90">
             台灣本島小團，以及一條京都短團。出團前用 email 對一次名單。
           </p>
@@ -1326,13 +1334,14 @@ export default function SiteFooter() {
 
 **解析**
 
-- 頁尾用深色背景 `bg-ink`。中等寬度以上分成三欄。
-- 電話與地址前面的圖示呼叫剛才的 `Icon`，名稱分別是 `call` 與 `location_on`。
-- 「探索」放行程與關於兩條連結。後台登入單獨放在最底下，前台選單不放後台連結。
+- 頁尾用深色背景 `bg-ink`，寬度到 `md` 以上分成三欄：站名、聯絡我們、探索。
+- 電話與地址前面的圖示呼叫剛才的 `Icon`，名稱是 `call` 與 `location_on`。
+- 「探索」放行程與關於兩條連結；「後台登入」連到 `/admin/login`，單獨放在最底下。
+- 重整後拉到頁面底部，會看到深色頁尾。
 
 ## 找不到頁面
 
-星號路由對不到前面任何一條時，渲染 `NotFoundPage`。對不到資料的 `loader` 則 `throw data('找不到頁面', { status: 404 })`。兩者都要留著頁首與頁尾，所以 `errorElement` 不掛在 `SiteLayout`，而掛在版型與各頁之間那層沒有 `path` 的路由。
+網址對不上任何路由時，要顯示找不到頁面；之後各頁的 `loader` 查不到資料時，會 `throw data('找不到頁面', { status: 404 })`，也要顯示同一個畫面。兩種情況都要留著頁首與頁尾，所以 `errorElement` 不掛在外框，而掛在外框與各頁之間那層沒有 `path` 的路由。
 
 {% mermaid graph TD %}
   layout["SiteLayout 頁首、Outlet、頁尾"] --> gate["沒有 path 的那一層"]
@@ -1348,13 +1357,13 @@ export default function SiteFooter() {
   style other fill:#ffebee
 {% endmermaid %}
 
-頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著。若把 `errorElement` 掛在 `SiteLayout` 上，整份版型會被換掉。`RouteErrorPage` 在 `isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈errorElement：拿不到資料時〉](/2026/08-30/lokiTech-15day-11-react-router/#errorElement：拿不到資料時)。
+頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著；若把 `errorElement` 掛在外框上，整份版型會被換掉。`RouteErrorPage` 遇到 404 就渲染找不到頁面的畫面，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈errorElement：拿不到資料時〉](/2026/08-30/lokiTech-15day-11-react-router/#errorElement：拿不到資料時)。
 
-這一節寫 `NotFoundPage` 與 `RouteErrorPage`，並接到路由。
+這一節寫 `NotFoundPage` 與 `RouteErrorPage`，再接到路由。
 
 ### 步驟 1：組出 NotFoundPage
 
-超大的「404」放在標題上面，再放說明與兩顆按鈕。
+先寫找不到頁面的畫面：超大的「404」在上，下面是標題、說明與兩顆按鈕。
 
 ```jsx 06-project-init/src/pages/NotFoundPage.jsx
 import { Link, useNavigate } from 'react-router';
@@ -1389,18 +1398,18 @@ export default function NotFoundPage() {
 ```
 
 {% note info %}
-React 19 把元件裡的 `<title>` 提升到文件的 `<head>`。元件卸載時這段標題會拿掉，下一頁的 `<title>` 會接上。`<title>` 裡面只能是一個字串，依資料組標題時要用模板字串寫成一整段，例如 `` <title>{`${tour.title} · 洛奇旅行`}</title> ``。
+React 19 會把元件裡的 `<title>` 提升到文件的 `<head>`，元件卸載時這段標題跟著拿掉，下一頁的標題接上。`<title>` 的內容必須是單一字串，依資料組標題時要用模板字串寫成一整段，行程詳情頁會示範。
 {% endnote %}
 
 **解析**
 
-- 這一頁的 `<title>` 是「找不到頁面 · 洛奇旅行」。React 19 會把它放到文件的 `<head>`。
-- 超大的「404」用 serif 粗體。標題是「找不到這個頁面」，內文說明這個網址沒有對應的頁面。
-- 「返回上一頁」呼叫 `navigate(-1)`，回到瀏覽紀錄的上一筆。「回首頁」連到 `/`。
+- 分頁標題變成「找不到頁面 · 洛奇旅行」。
+- 「404」用 `font-serif` 粗體；下面的標題「找不到這個頁面」用 MUI 的 `Typography`。
+- 「返回上一頁」呼叫 `useNavigate` 取得的 `navigate(-1)`，回到瀏覽紀錄的上一筆；「回首頁」是連到 `/` 的按鈕。
 
 ### 步驟 2：接到路由
 
-先寫負責判斷錯誤的 `RouteErrorPage`，再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
+先寫負責判斷錯誤種類的 `RouteErrorPage`。
 
 ```jsx 06-project-init/src/pages/RouteErrorPage.jsx
 import { isRouteErrorResponse, useRouteError } from 'react-router';
@@ -1434,12 +1443,14 @@ export default function RouteErrorPage() {
 
 **解析**
 
-- `useRouteError` 讀到被丟出的值。`isRouteErrorResponse(error)` 且 `status` 是 404 時渲染 `NotFoundPage`；其他路由錯誤顯示 `error.data`，一般的 `Error` 顯示 `error.message`。
+- `useRouteError` 讀到被丟出的值，`isRouteErrorResponse` 判斷它是不是 `data()` 做出的路由錯誤回應。狀態碼是 404 就渲染 `NotFoundPage`。
+- 其他錯誤顯示「發生錯誤」：路由錯誤回應用 `error.data` 當說明，一般的 `Error` 用 `error.message`，都沒有時顯示「請稍後再試」。
 
 再把星號路由與沒有 `path` 的錯誤層接到 `App.jsx`。
 
 ```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import SiteLayout from './layout/SiteLayout.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import RouteErrorPage from './pages/RouteErrorPage.jsx';
@@ -1477,9 +1488,10 @@ export default function App() {
 
 **解析**
 
-- 星號路由仍是 `NotFoundPage`，包在版型裡。網址對不上任何路徑時，頁首與頁尾還在。
-- 沒有 `path` 的那一層只掛 `errorElement`。子路由的 `loader` 丟出 404 時停在這裡，只換 `Outlet` 裡的畫面，頁首與頁尾留著。
-- 其他還沒寫的頁仍用佔位。之後各頁的 `loader` 對不到資料時丟 404，不在元件裡 `return <NotFoundPage />`。
+- `*` 路由直接渲染 `NotFoundPage`。它在版型裡，所以網址對不上時，頁首與頁尾還在。
+- 沒有 `path` 的那一層只掛 `errorElement`。子路由的 `loader` 丟出 404 時，錯誤停在這層，只換掉 `Outlet` 裡的畫面。
+- 其他頁仍是佔位頁。之後各頁的 `loader` 查不到資料時丟 404，不在元件裡自己 `return <NotFoundPage />`。
+- 試試網址 `/no-such`，會看到頁首、404 畫面與頁尾。
 
 # 前台頁面
 
@@ -1509,9 +1521,9 @@ export default function App() {
 
 ## 記憶體資料
 
-首頁、行程、報名與後台讀的是同一份清單。清單放在模組最外層的陣列，函式直接改這個陣列。這不是 React 狀態，也沒有 Context。`App` 只渲染 `RouterProvider`。頁面在 `loader` 裡呼叫 `getTours`、`getTour` 這類函式，再用 `useLoaderData` 拿到結果。寫入放在 `action`。
+首頁、行程、報名與後台讀的是同一份清單，放在模組最外層的陣列，函式直接改這個陣列。這不是 React 狀態，也沒有 Context，`App` 只渲染路由。（後台在後面的章節才會做。）頁面在 `loader` 裡呼叫取資料的函式，再用 `useLoaderData` 拿到結果；寫入放在 `action`。
 
-`saveTour` 會呼叫後台的 `tourFromDraft`。這一節先把 `store.js` 整份放上，並放兩個稍後會被各頁換掉的起點：報名種子先是空陣列，`tourFromDraft` 先原樣回傳草稿。
+`saveTour` 會呼叫後台的 `tourFromDraft`。這一節先把資料模組整份放上，其中兩處是稍後會被各頁換掉的起點：報名種子先是空陣列，該函式先原樣回傳草稿。
 
 行程種子先留空，等各頁用到再補。
 
@@ -1597,10 +1609,10 @@ export const createBooking = (input) => {
 
 **解析**
 
-- `tours` 與 `bookings` 是模組裡的 `let`。`getTours`、`getTour`、`getBookings`、`getBooking` 只讀當下的陣列。
-- `createBooking` 組出 `id` 為 `local-` 加時間戳、狀態 `pending` 的一筆，插到同一個 `bookings` 陣列最前面並回傳。完成頁依網址上的 id 去找這一筆。重新整理後回到種子。
-- `saveTour` 先用 `tourFromDraft`。有錯誤就回傳那句話；新增時 id 是 `tour-` 加時間戳，編輯時沿用原來的 id。
-- `deleteTour` 依 id 濾掉行程。`setBookingStatus` 只改那一筆的 `status`，不從清單移除。
+- 行程與報名各是模組裡的一個 `let` 陣列，`getTours`、`getBooking` 這類讀取函式只讀當下的內容。
+- `createBooking` 組出一筆 `id` 為 `local-` 加時間戳、狀態 `pending` 的報名，插到陣列最前面並回傳。完成頁依網址上的 `id` 去找這一筆。重新整理後回到種子。
+- `saveTour` 先用 `tourFromDraft`。有錯誤就回傳那句話；新增時 `id` 是 `tour-` 加時間戳，編輯時沿用原來的 `id`。
+- `deleteTour` 依 `id` 濾掉行程。`setBookingStatus` 只改那一筆的 `status`，不從清單移除。
 - 頁面不要 import 陣列來自己改狀態。進入路由時由 `loader` 讀，表單送出由 `action` 寫，寫完後 `loader` 會再跑。
 
 ## 首頁
@@ -1612,7 +1624,7 @@ export const createBooking = (input) => {
 {% mermaid graph TD %}
   page["HomePage 首頁"] --> slider["HeroSlider 輪播"]
   page --> search["HeroSearch 搜尋表單"]
-  page --> intro["IntroBanner 把日子排鬆"]
+  page --> intro["IntroBanner 簡介橫幅"]
   page --> featured["FeaturedTours 熱門行程"]
   page --> themes["ThemeSection 依主題找路"]
   page --> reasons["ReasonSection 為什麼選我們"]
@@ -1669,11 +1681,11 @@ export default function TourCard() {
 
 - 先回傳標記文字。稍後傳入的 `tour` 此刻先不必接收。
 
-「把日子排鬆」先放標記。
+「簡介橫幅」先放標記。
 
 ```jsx 06-project-init/src/features/home/components/IntroBanner.jsx
 export default function IntroBanner() {
-  return <p className="mt-12">把日子排鬆</p>;
+  return <p className="mt-12">簡介橫幅</p>;
 }
 ```
 
@@ -1729,7 +1741,7 @@ export default function ReviewSection() {
 
 - 先回傳標記文字，標出旅客怎麼說的位置。
 
-接著把零件組進 `HomePage`。行程由這一頁的 `loader` 呼叫 `getTours`，元件用 `useLoaderData` 讀取。頁面只組區塊，不寫各區的標題與內容。
+接著把零件組進 `HomePage`。行程由這一頁的 `loader` 取得，元件用 `useLoaderData` 讀取。頁面只組區塊，不寫各區的標題與內容。
 
 ```jsx 06-project-init/src/features/home/HomePage.jsx
 import { useLoaderData } from 'react-router';
@@ -1766,7 +1778,7 @@ export default function HomePage() {
 **解析**
 
 - `featured` 是標成精選的行程，同時送給輪播與 `FeaturedTours`。一筆精選都沒有時，輪播改拿陣列前面四筆，避免主視覺是空的。
-- `HeroSearch` 接在輪播後面。把日子排鬆、熱門行程、依主題找路、為什麼選我們、旅客怎麼說，各由對應的區塊元件自己畫標題與內容。
+- `HeroSearch` 接在輪播後面。簡介橫幅、熱門行程、依主題找路、為什麼選我們、旅客怎麼說，各由對應的區塊元件自己畫標題與內容。
 
 接著把路由表裡的首頁佔位換成 `HomePage`。
 
@@ -1782,7 +1794,7 @@ export default function HomePage() {
 
 **解析**
 
-- 首頁換成 `HomePage`，其他路徑仍用 `Placeholder`。`loader` 從 `HomePage` 一起匯入，掛在首頁那條路由。
+- 首頁換成 `HomePage`，其他路徑仍用佔位頁。`loader` 從同一個檔一起匯入，掛在首頁那條路由。
 
 ### 步驟 2：搜尋表單
 
@@ -1790,9 +1802,9 @@ export default function HomePage() {
 
 #### 共用的 FieldSelect
 
-首頁下拉選單、行程列表的篩選、報名表和後台表單都會用到下拉選單。MUI 的 `Select` 每次都要搭配 `FormControl`、`InputLabel`，再把選項做成 `MenuItem`；這段包法若在各頁重寫，之後要改標籤或選單對應就要改很多處。所以先抽一個共用的 `FieldSelect` 放在 `src/_shared`，呼叫端只傳 `id`、`label`、`value`、`onChange` 與 `options`。
+首頁、行程列表、報名表和後台表單都會用到下拉選單。MUI 的 `Select` 每次都要搭配標籤與選項元件，這段包法若在各頁重寫，之後要改標籤或選單對應就要改很多處。所以先抽一個共用的 `FieldSelect` 放在共用資料夾，呼叫端只傳 id、標籤、目前值、變更函式與選項。
 
-Select 的箭頭改成圖示字型。`ms` 產生一顆帶圖示名稱的 `span`，`MuiSelect` 用它取代預設的 SVG。
+Select 的箭頭改成圖示字型：`ms` 產生一顆帶圖示名稱的 span，取代 Select 預設的 SVG。
 
 ```diff 06-project-init/src/theme.js
 +import { createElement } from 'react';
@@ -1880,7 +1892,7 @@ export default function FieldSelect({
 - `InputLabel` 的 `id` 和 Select 的 `labelId` 對上，點標籤會作用在這個選單上。
 - `hiddenLabel` 為真時，標籤加上 `sr-only`，畫面上不再顯示；Select 也不再傳 `label`，避免為了騰出標籤空間而多出一截空白。
 - `onChange` 只把 `event.target.value` 往外傳，呼叫端收到的是字串，不必自己拆事件。
-- `options` 是 `{ value, label }` 陣列。`value` 送給表單，`label` 顯示給使用者；空白的 `value` 用 `'all'` 當 key，避免 React 收到空字串 key。
+- `options` 是 `{ value, label }` 陣列：`value` 送給表單，`label` 顯示給使用者。空白的值用 `'all'` 當 `key`，避免 React 收到空字串 `key`。
 
 #### 搜尋表單的 HeroSearch
 
@@ -1979,16 +1991,14 @@ export default function HeroSearch() {
 **解析**
 
 - 地區與天數各用一組 `useState`，預設是空字串，對應選項裡的「不限」。
-- `regions` 與 `dayOptions` 從行程的 `mock.data.js` 引入，再對成 `{ value, label }`。天數的 `value` 轉成字串，因為 Select 的值是字串；畫面標籤寫成「3 天」這種格式。
+- 地區與天數選項從行程的 `mock.data.js` 引入，再對成 `{ value, label }`。天數的 `value` 轉成字串，因為 `Select` 的值是字串；畫面標籤寫成「3 天」這種格式。
 - 送出時先 `preventDefault`，再用 `URLSearchParams` 組查詢字串。有選到地區或天數才寫進參數，然後導到 `/tours`。真正比對篩選條件是列表頁的工作。
 - 「看全部行程」是 `Link`，不帶查詢字串，直接進列表。
-- 外層的定位與負邊距寫在這個元件裡。一般寬度在輪播下方留空隙；大螢幕加上負邊距與較高的層級，讓搜尋表單往上疊在輪播底部。
+- 外層的定位寫在這個元件裡。一般寬度在輪播下方留空隙（`mt-8`）；`lg` 以上改用負邊距（`lg:-mt-20`），搭配 `z-20` 的層級，讓搜尋表單往上疊在輪播底部。
 
 ### 步驟 3：輪播
 
-左右切換的 IconButton 改成圓形。
-
-價格要顯示成貨幣格式，先寫 `format.js`。輪播會用到行程的封面、標題與出團日，把空的 `tours` 換成四筆精選。
+輪播要顯示價格、封面、標題與出團日。先寫價格的貨幣格式 `format.js`，再把空的 `tours` 換成四筆精選，最後把左右切換的 `IconButton` 改成圓形，再換成真正的輪播。
 
 ```js 06-project-init/src/format.js
 export const ntd = (value) =>
@@ -1999,7 +2009,7 @@ export const ntd = (value) =>
 
 - `ntd` 把數字依台灣地區習慣加上千分位，並在前面寫上 `NT$`。
 
-把空的 `tours` 換成這四筆。後面仍接著已有的 `regions` 與 `dayOptions`。
+把空的 `tours` 換成這四筆。後面仍接著已有的地區與天數選項。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
 -export const tours = [];
@@ -2057,10 +2067,10 @@ export const ntd = (value) =>
 
 **解析**
 
-- 空的 `tours` 換成這四筆精選。後面仍接著已有的 `regions` 與 `dayOptions`。
-- 輪播會用到封面、標題與出團日，價格用剛剛的 `ntd` 格式化。
+- 空的 `tours` 換成這四筆精選（`featured: true`），後面仍接著已有的 `regions` 與 `dayOptions`。
+- 每筆的 `departures` 是出團日陣列，輪播取第一個出團日組報名連結；價格由 `ntd` 格式化。
 
-接著把 IconButton 改成圓形。
+接著把 `IconButton` 改成圓形。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -2083,7 +2093,7 @@ export const ntd = (value) =>
 
 **解析**
 
-- 圓角 `999` 讓按鈕變圓，輪播左右鍵會用到，之後其他 IconButton 也會變成圓形。
+- 圓角 `999` 讓按鈕變圓，輪播左右鍵會用到，之後其他 `IconButton` 也會變成圓形。
 
 接著把輪播的 placeholder 換成真正的元件。
 
@@ -2124,7 +2134,7 @@ export default function HeroSlider({ slides }) {
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none ${itemIndex === index ? 'opacity-100' : 'opacity-0'}`}
         />
       ))}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/45 to-ink/25" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35" />
       <IconButton
         aria-label="上一張"
         onClick={() => go(index - 1)}
@@ -2192,9 +2202,9 @@ export default function HeroSlider({ slides }) {
 - 「立即報名」連到報名頁，帶上這筆行程與第一個出團日。「看行程」連到該筆詳情。
 - 底部圓點與左右鈕都會呼叫 `go`。當前那張的圓點換成強調色。
 
-### 步驟 4：把日子排鬆
+### 步驟 4：簡介橫幅
 
-把「把日子排鬆」的 placeholder 換成真正的元件。
+把簡介橫幅的 placeholder 換成真正的元件。
 
 ```jsx 06-project-init/src/features/home/components/IntroBanner.jsx
 import Typography from '@mui/material/Typography';
@@ -2207,13 +2217,12 @@ export default function IntroBanner() {
           variant="h2"
           className="text-balance text-4xl leading-snug text-white md:text-5xl"
         >
-          <span className="whitespace-nowrap">把日子排鬆，</span>
+          <span className="whitespace-nowrap">小團旅行，</span>
           <br />
-          <span className="whitespace-nowrap">把路走慢。</span>
+          <span className="whitespace-nowrap">每天只走一段路。</span>
         </Typography>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foam">
-          每團最多 8
-          人。地名寫清楚，一天只排一段路，下午留給自己。京都五日不含國際機票。
+          每團最多 8 人。地名寫清楚，下午留給自己。京都五日不含國際機票。
         </p>
       </div>
     </section>
@@ -2227,7 +2236,7 @@ export default function IntroBanner() {
 
 ### 步驟 5：熱門行程
 
-把熱門行程的 placeholder 換成 `FeaturedTours`，並補卡片與標籤的主題。真正的行程卡片等到列表再換，首頁這裡會一起更新。
+把熱門行程的 placeholder 換成 `FeaturedTours`，並在 MUI 主題補上卡片與標籤的樣式。真正的行程卡片等到行程列表再換，首頁這裡會一起更新。
 
 ```jsx 06-project-init/src/features/home/components/FeaturedTours.jsx
 import Typography from '@mui/material/Typography';
@@ -2333,7 +2342,7 @@ export const themeLinks = [
 
 **解析**
 
-- 每個主題有標題、說明與圖片路徑，供下一步的列表使用。
+- 每個主題有 `theme` 名稱、`places` 說明與 `image` 圖片網址，供下面的 `ThemeSection` 使用。`shot` 只是把圖片編號組成完整網址。
 
 接著把「依主題找路」的 placeholder 換成真正的元件。
 
@@ -2355,12 +2364,12 @@ export default function ThemeSection() {
             <li key={item.theme}>
               <Link
                 to={`/tours?theme=${item.theme}`}
-                className="group relative flex min-h-52 overflow-hidden rounded-card shadow-card"
+                className="relative flex min-h-52 overflow-hidden rounded-card shadow-card transition-shadow duration-300 hover:shadow-xl motion-reduce:transition-none"
               >
                 <img
                   src={item.image}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
                 <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
@@ -2384,7 +2393,7 @@ export default function ThemeSection() {
 - 標題「依主題找路」與導讀寫在這個元件裡。
 - 每個主題是連到 `/tours` 的 `Link`，查詢字串帶上 `theme`。
 - 圖片鋪滿連結，下方漸層把文字托出來。
-- 游標移上去圖片會放大。系統偏好減少動態時關掉過渡與縮放。
+- 游標移上去時，整張連結的陰影加深，圖片本身不動；系統偏好減少動態時關掉過渡。
 
 ### 步驟 7：為什麼選我們
 
@@ -2405,7 +2414,7 @@ export default function ThemeSection() {
 +  },
 +  {
 +    title: '一天不排滿',
-+    body: '上午走路，下午留白。景點之間不靠購物站填時間。',
++    body: '下午沒有行程。景點之間不靠購物站填時間。',
 +  },
 +  { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
 +];
@@ -2459,9 +2468,7 @@ export default function ReasonSection() {
 
 ### 步驟 8：旅客怎麼說
 
-星星改用圖示字型。實心星加上 `FILL` 1，空心星維持線框。
-
-補上四則評價，並把這份檔案整理成 `reviews`、`reasons`、`themeLinks` 的順序，與完成品一致。
+這一步先補四則評價，再把星星改成圖示字型：實心星加上 `FILL` 1，空心星維持線框。評價資料並入 `mock.data.js`，檔案整理成評價、理由、主題連結的順序，與完成品一致。
 
 ```js 06-project-init/src/features/home/mock.data.js
 export const reviews = [
@@ -2502,7 +2509,7 @@ export const reasons = [
   },
   {
     title: '一天不排滿',
-    body: '上午走路，下午留白。景點之間不靠購物站填時間。',
+    body: '下午沒有行程。景點之間不靠購物站填時間。',
   },
   { title: '住下來', body: '同一趟行程盡量不每天換飯店，行李不必每天收。' },
 ];
@@ -2546,7 +2553,7 @@ export const themeLinks = [
 
 **解析**
 
-- `reviews` 每則有編號、對應行程、作者、分數與內文。列表稍後用 `tourId` 回查標題。
+- `reviews` 每則有編號、對應行程 `tourId`、作者、分數與內文。`ReviewSection` 稍後用 `tourId` 回查行程標題。
 - 這份檔案現在收齊 `reviews`、`reasons`、`themeLinks`。為了和完成品一致，把評價放在最上面，理由與主題卡片跟在後面。
 
 接著把星星換成圖示字型。
@@ -2561,6 +2568,7 @@ export const themeLinks = [
 +        icon: ms('star', { style: { fontVariationSettings: "'FILL' 1" } }),
 +        emptyIcon: ms('star'),
 +      },
++      styleOverrides: { iconFilled: { color: tokens.action } },
 +    },
    },
  // ...
@@ -2570,6 +2578,7 @@ export const themeLinks = [
 
 - 實心與空心都用圖示字型 `star`，實心再加上 `fontVariationSettings` 的 `FILL` 1。
 - 寫在 `MuiRating` 的 `defaultProps`，之後的 Rating 都會換成這組。
+- `styleOverrides` 把實心星星改成 `action` 綠色：MUI 預設的琥珀色放在白底上只有 1.88:1，看不清楚。
 
 接著把「旅客怎麼說」的 placeholder 換成真正的元件。
 
@@ -2614,13 +2623,13 @@ export default function ReviewSection() {
 
 - 標題「旅客怎麼說」與導讀寫在這個元件裡。
 - `titleOf` 用行程編號回查標題，找不到就空字串。
-- 每則是 `figure` 卡片：只讀的星星、引言，以及說明列出作者、分數與標題。
+- 每則是 `figure` 卡片：只讀的星星、引言，再用 `figcaption` 列出作者、分數與行程標題。
 
 ## 行程列表
 
 列表要八筆，並依網址上的查詢參數篩選、排序。主題、價格區間與排序選項是這一頁才補進 `features/tours/mock.data.js`。
 
-這一節要組出 `ToursPage`。畫面拆成篩選列 `TourFilters`、沒有結果時的 `TourEmpty`，以及首頁已接到的 `TourCard`。篩選列再用共用的 `FieldSelect`。下面先組出這一頁並接到路由，篩選列先放標記，再補資料、換成真正的篩選列，最後把行程卡片的 placeholder 換成真正的元件。
+這一節要組出 `ToursPage`。畫面拆成篩選列、沒有結果時的提示，以及首頁已接到的行程卡片，篩選列再用共用的 `FieldSelect`。下面先組出這一頁並接到路由，篩選列先放標記，再補資料、換成真正的篩選列，最後把行程卡片的 placeholder 換成真正的元件。
 
 {% mermaid graph TD %}
   page["ToursPage"] --> filters["TourFilters"]
@@ -2631,7 +2640,7 @@ export default function ReviewSection() {
 
 ### 步驟 1：組出 ToursPage
 
-先把列表頁組起來並接到路由，後面寫篩選列時才能在畫面上對照。篩選列先放標記。價格比對先一律當成符合，下一節再換成區間算法，列表頁才編譯得過。主題與價格區間也等下一節再補，這一步先看到標題與行程卡片。
+先把列表頁組起來並接到路由，後面寫篩選列時才能在畫面上對照。篩選列先放標記；價格比對先一律當成符合，步驟 2 再換成區間算法，列表頁才編譯得過。行程的主題欄位也留到步驟 2 補，所以這一步在 `/tours` 看得到標題、「4 筆行程」與四張卡片位置的標記文字。
 
 篩選列先放標記。
 
@@ -2643,7 +2652,7 @@ export default function TourFilters() {
 
 **解析**
 
-- 先回傳標記文字，標出篩選列的位置。真正的下拉下一步再換。
+- 先回傳標記文字，標出篩選列的位置。真正的下拉等步驟 3 再換。
 
 沒有符合條件時的空狀態寫成 `TourEmpty`。
 
@@ -2680,7 +2689,7 @@ export default function TourEmpty({ onClear }) {
 
 **解析**
 
-- `matchPrice` 此刻固定回傳 true。下一節再依區間換成真正的算法。
+- `matchPrice` 此刻固定回傳 `true`，步驟 2 再依區間換成真正的算法。
 
 接著組出列表頁。
 
@@ -2749,10 +2758,10 @@ export default function ToursPage() {
 
 **解析**
 
-- `visible` 在 render 時依網址的地區、天數、主題，以及 `matchPrice`，濾出行程再排序。
+- 篩選條件都從網址的查詢參數讀；`visible` 在 render 時依地區、天數、主題與 `matchPrice` 濾出行程，再排序。
 - 沒寫排序時用價格由低到高。天數由短到長時，天數相同再比價格。
 - 有結果時顯示筆數，每張卡片傳 `showTheme`，主題 Chip 才會出現。
-- 沒有結果時，同一個 `id="tour-list"` 裡改顯示 `TourEmpty`。空狀態才不會落在這個節點外面。
+- 沒有結果時，改在同一個 `id="tour-list"` 容器裡顯示 `TourEmpty`；清除條件是把查詢參數清空。
 
 接著把 `/tours` 換成這一頁。
 
@@ -2772,9 +2781,9 @@ export default function ToursPage() {
 
 ### 步驟 2：這一頁要用的資料
 
-列表要能依主題與價格區間篩選，先把缺的行程與選項補進 `mock.data.js`。
+列表要能依主題與價格區間篩選，先把缺的欄位、行程與選項補進 `mock.data.js`。
 
-先補上其餘行程。
+先替已有行程補上 `theme`，再加入其餘四筆行程，湊成八筆。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
  // ...
@@ -2852,9 +2861,9 @@ export default function ToursPage() {
 
 **解析**
 
-- 已有行程補上 `theme`，並加上列表會用到的其餘行程。
+- 原本四筆各加一個 `theme`，另新增基隆、台南、高雄、金門四筆，每筆都有 `theme`。
 
-再補主題與價格區間的選項。
+再補價格區間與排序的選項。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
  // ...
@@ -2879,7 +2888,7 @@ export default function ToursPage() {
 
 **解析**
 
-- 主題與價格區間的選項寫在同一份 `mock.data.js`，給篩選列的下拉使用。
+- `priceBands` 與 `sortOptions` 都是 `{ value, label }` 陣列，寫在同一份 `mock.data.js`，給篩選列的下拉使用。
 
 價格區間怎麼算符合，寫在 `format.js`。
 
@@ -2897,13 +2906,13 @@ export default function ToursPage() {
 
 **解析**
 
-- 沒有帶區間時直接回傳 true，這筆價格算符合。
-- `lt10000` 是小於一萬；`10000-20000` 從一萬起、不到兩萬；`20000-30000` 與 `gt30000` 同樣用各自的上下界。
-- 不認得的區間也回傳 true。
+- 沒有帶區間時直接回傳 `true`，這筆價格算符合。
+- `lt10000` 是小於一萬；`10000-20000` 與 `20000-30000` 含下界、不含上界；`gt30000` 是三萬以上。
+- 不認得的區間也回傳 `true`。
 
 ### 步驟 3：篩選列
 
-把篩選列的 placeholder 換成真正的元件。每個下拉一改，就把該項條件寫進或移出網址，列表會跟著更新。地區、天數、價格與排序直向排列，`md` 以上改成四欄，選取的值都會看得到。
+把篩選列的 placeholder 換成真正的元件。每個下拉一改，就把該項條件寫進或移出網址，列表會跟著更新。
 
 ```jsx 06-project-init/src/features/tours/components/TourFilters.jsx
 import { useSearchParams } from 'react-router';
@@ -2999,8 +3008,7 @@ export default function TourFilters() {
 
 **解析**
 
-- 篩選條件放在查詢參數，重新整理還在。
-- 地區、天數、價格與排序都從目前的網址讀出來，四個下拉各自對上這些值。
+- 篩選條件放在查詢參數，重新整理還在；四個下拉的目前值都從網址讀出來。
 - 沒寫排序時當成 `price-asc`。
 - `set` 會從現有的查詢參數複製一份再改。選到值就寫進對應的鍵；選回不限就刪掉該鍵。其他條件維持原樣，網址上已有的 `theme` 也會留著。
 - 排序仍是價格低到高時也刪掉 `sort`，網址就不必每筆都帶這個預設值。
@@ -3012,7 +3020,7 @@ export default function TourFilters() {
 把步驟 1 留下的行程卡片 placeholder 換成真正的元件。價格後面要標單位，京都那筆還要註明不含國際機票，先把 `perPerson` 補進 `format.js`。
 
 {% note info %}
-首頁的熱門行程已經引用 `features/tours/components/TourCard.jsx`，當時先放 placeholder。這一節換成真正的卡片後，首頁那裡也會一起更新。首頁與行程列表都會用到它，但它是行程卡片，所以留在 `tours`，不必搬到 `_shared`。
+首頁的熱門行程已經引用行程卡片 `TourCard`，當時先放 placeholder。這一節換成真正的卡片後，首頁也會一起更新。首頁與行程列表都會用到它，但它屬於行程這個功能，所以不必搬到共用資料夾。
 {% endnote %}
 
 ```diff 06-project-init/src/format.js
@@ -3044,13 +3052,13 @@ export default function TourCard({ tour, showTheme = false }) {
     <Card
       component={Link}
       to={`/tours/${tour.id}`}
-      className="group flex h-full flex-col overflow-hidden text-inherit no-underline"
+      className="flex h-full flex-col overflow-hidden text-inherit no-underline transition-shadow duration-300 hover:shadow-xl motion-reduce:transition-none"
     >
       <CardMedia
         component="img"
         image={tour.cover}
         alt=""
-        className="aspect-[4/3] w-full object-cover transition duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        className="aspect-[4/3] w-full object-cover"
       />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap gap-2">
@@ -3088,16 +3096,16 @@ export default function TourCard({ tour, showTheme = false }) {
 
 **解析**
 
-- 整張 `Card` 本身就是連到詳情頁的 `Link`，所以內層按鈕寫成 `span` 並加上 `tabIndex={-1}`，鍵盤只需對卡片聚焦一次，不會再對內層按鈕停一次。
-- 封面用 `CardMedia`。游標移上去會稍微放大；系統偏好減少動態時關掉過渡與縮放。
-- 地區用次要色 Chip，天數用框線 Chip。`showTheme` 預設是關閉的；列表頁若要顯示主題再傳 `true`。
+- 整張 `Card` 本身就是連到詳情頁的 `Link`，所以內層按鈕寫成 span 並加上 `tabIndex={-1}`，鍵盤只需對卡片聚焦一次，不會再對內層按鈕停一次。
+- 封面用 `CardMedia`。游標移上去時，整張卡片的陰影加深，圖片本身不動；系統偏好減少動態時關掉過渡。
+- 地區用次要色 Chip，天數用框線 Chip。`showTheme` 預設是 `false`，所以首頁不顯示主題；列表頁傳 `true`，才多一顆主題 Chip。
 - 價格用 `ntd` 格式化，後面跟著 `perPerson` 的單位文字。
 
 ## 行程詳情
 
 詳情頁補上圖集、亮點、每日行程、費用與每一梯的名額，並用報名種子計算剩餘人數。「立即報名」直接連到 `/booking`，並帶上這筆行程與選到的出發日。
 
-這一節要組出 `TourDetailPage`。先組出這一頁並接到路由，各個畫面區塊先放標記，再補齊行程欄位，最後逐一換成真正的元件。取消與退款仍寫在頁面上，不另拆元件。畫面拆成這些零件：
+這一節要組出 `TourDetailPage`。先組出這一頁並接到路由，各個畫面區塊先放標記，再補齊行程欄位，最後逐一換成真正的元件。取消與退款直接寫在頁面上，不另拆元件。畫面拆成這些零件：
 
 - `TourHeader`
 - `Gallery`
@@ -3143,7 +3151,7 @@ src/features/tours/
 
 ### 步驟 1：組出 TourDetailPage
 
-先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。頁首、圖集、亮點、每日行程、費用說明、出發日、報名卡片與底部報名列先放標記。出團梯次的標記給出發日使用。
+先把詳情頁組起來並接到路由，後面換零件時才能在畫面上對照。頁首、圖集、亮點、每日行程、費用說明、出發日、報名卡片與底部報名列先放標記。另外多一個出發梯次列表的標記，等出發日區塊換成真正的元件時才會用到。
 
 頁首先放標記。
 
@@ -3215,7 +3223,7 @@ export default function DepartureList() {
 
 **解析**
 
-- 先回傳標記文字，標出出發梯次列表的位置。出團梯次的標記給出發日使用。
+- 先回傳標記文字，標出出發梯次列表的位置。目前沒有任何元件引用它，所以畫面上還看不到。
 
 手機出發日先放標記。
 
@@ -3253,7 +3261,7 @@ export default function MobileBookingBar() {
 
 - 先回傳標記文字，標出窄螢幕底部報名列的位置。
 
-詳情頁會對 `highlights` 做 `map`。每一筆行程的 `featured` 前面先補上 `highlights: []`，否則開到詳情會中斷。八筆都要補。下一步整檔換成有圖集與每日行程的版本時，這行會被蓋掉。
+之後的亮點元件會對 `highlights` 做 `map`，所以每一筆行程先在 `featured` 欄位前補上 `highlights: []`，八筆都要補。下一步整檔換成有圖集與每日行程的版本時，這行會被蓋掉。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
      departures: [{ id: '2026-12-04', date: '2026-12-04' }],
@@ -3263,7 +3271,7 @@ export default function MobileBookingBar() {
 
 **解析**
 
-- 每筆行程先補上空的 `highlights`，詳情頁對它做 `map` 時才不會中斷。下一步會換成完整內容。
+- 每筆行程先補上空的 `highlights`，之後亮點元件對它做 `map` 時才不會出錯。下一步會換成完整內容。
 
 報名種子先留空。
 
@@ -3273,7 +3281,7 @@ export const bookings = [];
 
 **解析**
 
-- 種子目前是空陣列，下一節換成四筆。這一頁只讀，還不能新增。`store.js` 會讀這份檔。
+- 種子目前是空陣列，下一步換成四筆。`store.js` 會讀這份檔當起始資料，詳情頁只讀它、不寫入。
 
 剩餘名額先固定回 0，下一節換成真正的算法。
 
@@ -3287,9 +3295,9 @@ export const bookings = [];
 
 **解析**
 
-- `seatsLeft` 此刻固定回傳 0，詳情頁才編譯得過。下一節再依訂單人數換成真正的算法。
+- `seatsLeft` 此刻固定回傳 0，讓後面引用它的元件先能運作。下一步再依報名人數換成真正的算法。
 
-接著把各個畫面區塊組進詳情頁。這些目前是標記。對不到行程時，`loader` 丟出 404，由稍早接到路由的 `RouteErrorPage` 處理。然後把路由表裡的詳情佔位換掉。
+接著把各個畫面區塊組進詳情頁，它們目前都是標記。對不到行程時，`loader` 丟出 404，由稍早接到路由的 `RouteErrorPage` 處理。組好後把路由表裡的詳情佔位換掉。
 
 ```jsx 06-project-init/src/features/tours/TourDetailPage.jsx
 import { useState } from 'react';
@@ -3355,11 +3363,11 @@ export default function TourDetailPage() {
 
 **解析**
 
-- `loader` 用 `params.id` 呼叫 `getTour`，頁面用 `useLoaderData` 讀行程。分頁標題用行程名稱。選中的梯次預設第一筆。
-- 對不到行程時 `throw data('找不到頁面', { status: 404 })`。錯誤停在沒有 `path` 的那一層，`RouteErrorPage` 畫出 `NotFoundPage`，頁首與頁尾留著。說明見[找不到頁面](#找不到頁面)。
-- 左欄依序組上頁首、圖集、亮點、每日行程、費用與出發日。取消與退款仍寫在頁面上。
-- 寬螢幕右欄是報名卡片，用 `sticky` 停在離頂一段的位置。窄螢幕另外固定一條底部報名列。
-- 右側選梯與底部固定列的「立即報名」使用 `bookTo`，網址是 `/booking?tourId=` 加上這筆行程 id，以及 `departureId=` 加上選到的梯次。這一頁把選中的出發日與 `bookTo` 算好，再傳給報名卡片與底部報名列。
+- `loader` 用網址上的 `id` 呼叫 `getTour`，頁面用 `useLoaderData` 讀行程。分頁標題用行程名稱。選中的梯次預設第一筆。
+- 對不到行程時 `throw data('找不到頁面', { status: 404 })`。錯誤停在沒有 path 的那一層，由錯誤頁畫出找不到頁面，頁首與頁尾留著。說明見[找不到頁面](#找不到頁面)。
+- 左欄依序組上頁首、圖集、亮點、每日行程、費用與出發日，取消與退款的標題與文字直接寫在這一頁。
+- 寬螢幕分成兩欄，右欄是報名卡片；窄螢幕則另外固定一條底部報名列。目前兩者都只是標記，換成真正的元件後，報名卡片才會用 `sticky` 停在離頂一段的位置。
+- `bookTo` 是 `/booking` 加上查詢參數 `tourId`（這筆行程的 `id`）與 `departureId`（選到的梯次）。這一頁先算好選中的梯次與 `bookTo`，再傳給報名卡片與底部報名列，兩處的「立即報名」都連到它。
 
 接著把詳情路徑換上。
 
@@ -3675,7 +3683,10 @@ export const sortOptions = [
 
 **解析**
 
-- 八筆行程補上圖集、亮點、每日行程、費用與出發梯次。這份是這一節的完整檔。
+- 八筆行程補上圖集、亮點、每日行程、費用與出發梯次，這份是這一步的完整檔。
+- `images` 給圖集，`intro` 與 `highlights` 給亮點，`itinerary` 給每日行程，`includes` 與 `excludes` 給費用說明，`departures` 給出發日與報名卡片。
+- 每一梯多了 `capacity`，是 `seatsLeft` 計算剩餘名額的上限。
+- `shot` 把 Unsplash 的圖片編號組成網址，`stay` 只是把三項費用收成陣列，讓多筆行程少寫重複的字。
 
 把上一步的空陣列換成這四筆。
 
@@ -3743,7 +3754,7 @@ export const bookings = [
 
 **解析**
 
-- 報名種子換成四筆，詳情頁才能算出剩餘人數。姓名與「我的報名」範例不一致，兩頁各自照自己的清單。
+- 報名種子換成四筆，狀態有待確認、已確認與已取消，詳情頁才算得出各梯的剩餘人數。
 
 接著把剩餘名額換成真正的算法。
 
@@ -3766,12 +3777,13 @@ export const bookings = [
 
 **解析**
 
-- `seatsLeft` 用該梯 `capacity` 減去同一行程、同一梯、狀態不是 `cancelled` 的人數加總。
-- `Math.max(0, …)` 讓結果不會小於 0。人數先用 `Number` 轉過再加。
+- `seatsLeft` 用該梯 `capacity` 減去同一行程、同一梯、狀態不是 `cancelled` 的人數加總，所以待確認的報名也先佔名額。
+- `Math.max(0, …)` 讓結果不會小於 0。人數先用 `Number` 轉成數字再加。
+- 換上後可在詳情頁對照：台北大稻埕那團 12 月 4 日一梯剩餘 6 人，台南那團 11 月 28 日一梯因為唯一的報名已取消，仍是 8 人。
 
 ### 步驟 3：頁首
 
-把頁首的 placeholder 換成真正的元件。這裡放回列表的連結、地區與主題標籤、標題，以及只在窄螢幕出現的價格。
+把頁首的標記換成真正的元件。這裡放回列表的連結、地區與主題標籤、標題，以及只在窄螢幕出現的價格。
 
 ```jsx 06-project-init/src/features/tours/components/TourHeader.jsx
 import { Link } from 'react-router';
@@ -3813,11 +3825,11 @@ export default function TourHeader({ tour }) {
 **解析**
 
 - 連結回到 `/tours`。三個標籤分別是地區、主題與天數。地區用填色，另外兩個用外框。
-- 標題是這筆行程的名稱。價格只在 `lg` 以下顯示，後面加「/ 人」。寬螢幕的價格寫在右側報名卡片。
+- 標題是這筆行程的名稱。價格只在 `lg` 以下顯示，後面加「/ 人」；寬螢幕的價格改寫在右側報名卡片。
 
 ### 步驟 4：圖集
 
-把圖集的 placeholder 換成真正的元件。圖集用一張大圖加一排縮圖，點縮圖就換大圖。
+把圖集的標記換成真正的元件。圖集用一張大圖加一排縮圖，點縮圖就換大圖。
 
 ```jsx 06-project-init/src/features/tours/components/Gallery.jsx
 import { useState } from 'react';
@@ -3863,13 +3875,14 @@ export default function Gallery({ images, title }) {
 
 **解析**
 
-- `active` 記住目前大圖的索引。沒有圖片時不渲染。
-- 大圖的 alt 用 `title`。縮圖的 alt 留空；點一張就換成大圖，縮圖預設調暗成 `opacity-60`；目前那張設為 `disabled`（已經在看，不必再按），由 `disabled:opacity-100` 恢復全亮，看得出目前顯示的是哪一張。
+- `active` 記住目前大圖的索引。沒有圖片時回傳 `null`，不畫任何東西。
+- 大圖的 `alt` 用行程名稱，縮圖的 `alt` 留空，改由按鈕的 `aria-label` 說明。
+- 點一張縮圖就換成大圖。縮圖預設調暗成 `opacity-60`，目前那張設為 `disabled`（已經在看，不必再按），由 `disabled:opacity-100` 恢復全亮，看得出正在顯示哪一張。
 - 縮圖列超出寬度時可以橫向捲動。
 
 ### 步驟 5：亮點
 
-把亮點的 placeholder 換成真正的元件。介紹段落與亮點列表寫在一起。
+把亮點的標記換成真正的元件。介紹段落與亮點列表寫在一起。
 
 ```jsx 06-project-init/src/features/tours/components/TourHighlights.jsx
 import Typography from '@mui/material/Typography';
@@ -3895,14 +3908,14 @@ export default function TourHighlights({ intro, highlights }) {
 
 **解析**
 
-- 介紹是一行較大的正文，接在圖集後面。
-- 「亮點」標題下面用三欄網格列出每一則。窄螢幕改成上下排。每一則鋪上 mist 底。
+- 介紹是一段字級較大的正文，接在圖集後面。
+- 「亮點」標題下面用網格列出每一則，`sm` 以上三欄並排，更窄的螢幕改成上下排，每一則鋪上 `mist` 底。
 
 ### 步驟 6：每日行程
 
-把每日行程的 placeholder 換成真正的元件。標題與說明寫進這個元件，每一天收成一組手風琴，一次只展開一則。
+把每日行程的標記換成真正的元件。每一天收成一組手風琴（點標題展開內容的區塊），一次只展開一則。
 
-手風琴的圓角、邊線與展開圖示補進主題。展開圖示沿用 `ms`。
+先把手風琴的圓角、邊線與展開圖示補進主題，展開圖示沿用前面的 `ms`。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -3947,7 +3960,7 @@ export default function TourHighlights({ intro, highlights }) {
 - `MuiAccordionSummary` 的展開圖示沿用 `ms('expand_more')`。摘要列的最小高度與左右留白寫在 `styleOverrides`。
 - 關於頁的常見問題會沿用同一組手風琴。
 
-接著換成真正的每日行程元件。標題「每日行程」與下面那行說明寫在元件裡面，頁面不必再放這個標題。摘要列會寫出第幾天與當天標題，收合時仍看得到這一天在做什麼。
+接著換成真正的每日行程元件。摘要列寫出第幾天與當天標題，收合時仍看得到這一天在做什麼。
 
 ```jsx 06-project-init/src/features/tours/components/Itinerary.jsx
 import { useState } from 'react';
@@ -3992,13 +4005,13 @@ export default function Itinerary({ days }) {
 
 **解析**
 
-- 標題與「展開每一天，看當天去哪裡、晚上住哪裡。」寫在這個元件裡，詳情頁不再另外放這個標題。
+- 「每日行程」標題與下面那行說明寫在這個元件裡，詳情頁不再另外放標題。
 - `open` 記目前展開的天數。再開另一天時，前一則會合上。
-- 摘要列寫「第 N 天 · 標題」，內容是當天說明。外觀套用剛剛寫進主題的手風琴覆寫。
+- 摘要列寫「第 N 天 · 標題」，展開後的內容是當天說明。外觀套用剛剛寫進主題的手風琴覆寫。
 
 ### 步驟 7：費用說明
 
-把費用說明的 placeholder 換成真正的元件。費用包含與不含各成一欄。這一頁沒有再為費用加標題，兩個欄位的標題已經寫在元件裡。
+把費用說明的標記換成真正的元件。費用包含與不含各成一欄，兩欄的標題寫在元件裡，詳情頁不必再加標題。
 
 ```jsx 06-project-init/src/features/tours/components/FareBox.jsx
 import Typography from '@mui/material/Typography';
@@ -4026,12 +4039,12 @@ export default function FareBox({ includes, excludes }) {
 
 **解析**
 
-- `Column` 把標題與條列收成一欄。兩欄在窄螢幕改成上下排，較寬時並排。
-- 元件本身帶了 `mt-14`，詳情頁直接放上來即可，不必再加 h2。
+- `Column` 把標題與條列收成一欄。兩欄在窄螢幕上下排，`sm` 以上並排。
+- 外框自帶 `mt-14`，與上方區塊的間距由元件自己處理。
 
 ### 步驟 8：出團梯次
 
-把出團梯次的 placeholder 換成真正的元件。每一梯列出日期與剩餘名額。按鈕直接連到報名頁。出發日區塊下一步再組進來。
+把出團梯次的標記換成真正的元件。每一梯列出日期與剩餘名額，按鈕直接連到報名頁。這個元件要等下一步的出發日區塊引用後，畫面上才看得到。
 
 ```jsx 06-project-init/src/features/tours/components/DepartureList.jsx
 import { Link } from 'react-router';
@@ -4077,7 +4090,7 @@ export default function DepartureList({ tour, bookings }) {
 
 ### 步驟 9：出發日
 
-把窄螢幕的出發日區塊換成真正的元件。標題與說明寫在這裡，列表沿用剛剛的 `DepartureList`。
+把窄螢幕的出發日標記換成真正的元件。標題與說明寫在這裡，列表沿用剛剛的 `DepartureList`。縮到 `lg` 以下就能在每日行程與費用說明之後看到它。
 
 ```jsx 06-project-init/src/features/tours/components/MobileDepartures.jsx
 import Typography from '@mui/material/Typography';
@@ -4100,12 +4113,12 @@ export default function MobileDepartures({ tour, bookings }) {
 
 **解析**
 
-- 這個區塊只在 `lg` 以下出現。寬螢幕改在右側報名卡片選出發日。
-- 說明寫出最近一梯的日期與剩餘人數。下面沿用 `DepartureList`，把 `tour` 與 `bookings` 傳下去。
+- 這個區塊只在 `lg` 以下出現，寬螢幕改在右側報名卡片選出發日。
+- 說明寫出第一梯的日期與剩餘人數。下面沿用 `DepartureList`，把 `tour` 與 `bookings` 傳下去。
 
 ### 步驟 10：報名卡片
 
-把右側報名卡片的 placeholder 換成真正的元件。寬螢幕才顯示，並用 `sticky` 停在離頂一段的位置。
+把右側報名卡片的標記換成真正的元件。它只在 `lg` 以上顯示，並用 `sticky` 停在離頂一段的位置，捲動長頁面時仍在畫面右側。
 
 ```jsx 06-project-init/src/features/tours/components/BookingCard.jsx
 import { Link } from 'react-router';
@@ -4140,7 +4153,7 @@ export default function BookingCard({
           <dd>{tour.departures[0]?.capacity ?? 8} 人</dd>
         </div>
       </dl>
-      <div className="mt-6 grid gap-3">
+      <div className="mt-6 divide-y divide-line border-y border-line">
         {tour.departures.map((departure) => {
           const on = departure.id === selected.id;
           return (
@@ -4148,7 +4161,8 @@ export default function BookingCard({
               key={departure.id}
               type="button"
               onClick={() => onSelect(departure.id)}
-              className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
+              aria-pressed={on}
+              className={`block w-full px-3 py-3 text-left ${on ? 'bg-mist text-action' : ''}`}
             >
               <span className="block font-medium">{departure.date}</span>
               <span className="text-base text-muted">
@@ -4173,14 +4187,14 @@ export default function BookingCard({
 
 **解析**
 
-- 價格用強調色圓底。id 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
+- 價格用強調色圓底。`id` 是 `kyoto-nara` 時，價格下多一行「不含國際機票」。
 - 定義列表寫出天數與團體上限。團體上限取第一梯的 `capacity`，沒有時用 8。
-- 每一梯是一顆按鈕。選中那顆換成操作色邊與 mist 底，並寫出剩餘人數。按下時呼叫 `onSelect`，把該梯 id 交回詳情頁。
+- 每一梯是一顆按鈕。選中那顆換成操作色邊與 `mist` 底，並寫出剩餘人數。按下時呼叫 `onSelect`，把該梯 `id` 交回詳情頁。
 - 「立即報名」連到頁面算好的 `bookTo`。
 
 ### 步驟 11：底部報名列
 
-把窄螢幕底部固定列的 placeholder 換成真正的元件。
+把窄螢幕底部固定列的標記換成真正的元件。
 
 ```jsx 06-project-init/src/features/tours/components/MobileBookingBar.jsx
 import { Link } from 'react-router';
@@ -4271,7 +4285,7 @@ export default function BookingSummary() {
 
 - 先回傳標記文字，標出右側摘要的位置。
 
-接著把步驟條、表單與摘要組進報名頁。這三個目前是標記。然後把路由表裡的報名佔位換掉。
+接著把步驟條、表單與摘要組進報名頁，它們目前都是標記。組好後把路由表裡的報名佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingPage.jsx
 import { data, redirect, useLoaderData } from 'react-router';
@@ -4333,9 +4347,9 @@ export default function BookingPage() {
 
 **解析**
 
-- 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程與梯次走查詢字串，路徑仍是 `/booking`，不會和完成頁的 `/booking/:id` 撞在一起。
+- 查詢沒帶 `tourId` 時用 `hualien-taroko`。出發日對不到查詢參數時用第一梯。行程與梯次走查詢字串，路徑仍是 `/booking`，不會和完成頁撞在一起。
 - 有帶 `tourId` 但對不到行程，或行程沒有出發日時，找不到就丟 404，導向路由上最近的 `errorElement`。
-- 左欄是 `BookingForm`，右欄是 `BookingSummary`。大螢幕右欄用 `sticky` 停在離頂一段的位置，等換成真正的摘要就能對照。
+- 左欄是 `BookingForm`，右欄是 `BookingSummary`，兩者目前都是標記。大螢幕（`lg` 以上）才分成兩欄。
 
 接著把 `/booking` 換成這一頁。
 
@@ -4363,9 +4377,9 @@ export default function BookingPage() {
 
 ### 步驟 2：步驟條
 
-把步驟條的 placeholder 換成真正的元件。報名頁與完成頁共用同一組步驟文字與樣式。
+把步驟條的標記換成真正的元件。報名頁與完成頁共用同一組步驟文字與樣式。
 
-步驟圓點改成圖示字型。完成的步驟畫勾，進行中的步驟用實心圓。
+先改步驟圓點：完成的步驟畫勾，進行中的步驟用實心圓，圖示沿用圖示字型。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -4392,6 +4406,7 @@ export default function BookingPage() {
  // ...
          emptyIcon: ms('star'),
        },
+       styleOverrides: { iconFilled: { color: tokens.action } },
      },
 +    MuiStepLabel: {
 +      defaultProps: { slots: { stepIcon: StepIcon } },
@@ -4401,8 +4416,8 @@ export default function BookingPage() {
 
 **解析**
 
-- 完成的步驟是操作色圓底，裡面是 `check`。進行中的步驟同樣是操作色圓底，文字是步驟編號；還沒到的用線條底與 muted 字。
-- 寫在 `MuiStepLabel` 的 `slots.stepIcon`，之後的 Stepper 都會換成這組。
+- 完成的步驟是操作色圓底，裡面是 `check` 圖示。進行中的步驟同樣是操作色圓底，裡面是步驟編號；還沒到的步驟用 `line` 色底與 `muted` 字。
+- 這組圖示寫在 `MuiStepLabel` 的 `slots.stepIcon`，之後所有 Stepper 都會套用。
 
 接著換成真正的步驟條元件。
 
@@ -4439,13 +4454,13 @@ export default function BookingSteps({ activeStep }) {
 
 **解析**
 
-- `steps` 是「選出發日」「填寫資料」「送出確認」三步，寫在這個元件裡。報名頁與完成頁共用同一組文字與樣式。
-- 父層傳入 `activeStep`。第一步「選出發日」已在詳情頁選梯次時完成，所以報名頁的 `activeStep` 是 1，停在「填寫資料」。
+- `steps` 是「選出發日」「填寫資料」「送出確認」三步，寫在這個元件裡。
+- 父層傳入 `activeStep`（從 0 起算）。第一步「選出發日」已在詳情頁選梯次時完成，所以報名頁傳 1，停在「填寫資料」。
 - 標籤的字級與字重寫在 `sx` 裡。
 
 ### 步驟 3：報名表單
 
-把報名表單的 placeholder 換成真正的元件。文字欄的外框圓角補進主題。
+把報名表單的標記換成真正的元件。先把文字欄的外框圓角補進主題。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -4571,18 +4586,20 @@ export default function BookingForm({ tour, departure }) {
 
 **解析**
 
-- 姓名與 email 唯讀，值是頁內的 `preview`：林可、`lin@example.com`。人數預設 `'2'`，小計用單價乘上人數，再交給 `ntd`。
-- 電話去掉空白後是空的就不能送出。失焦或按過送出才把欄位標成錯誤；電話一旦有內容，上方的錯誤提示會清掉。
-- `<Form method="post">` 把欄位送到這一頁的 `action`。電話空白時 `action` 回傳 `{ error }`，表單用 `useActionData` 顯示。有電話時 `action` 呼叫 `createBooking`，帶上行程、梯次、人數、預覽姓名與 email、電話與小計，再 `redirect` 到 `/booking/` 加上回傳的 `row.id`。送出期間 `useNavigation` 的 `state` 是 `submitting`，按鈕會停用。
-- 表單的 `id` 是 `booking-form`。上方的成功 `Alert` 寫出同一組預覽姓名與 email。提示框的外觀，等完成頁再補進主題。
+- 姓名與 email 是唯讀欄位，值取自頁內的 `preview`（林可、`lin@example.com`），上方的成功 `Alert` 也寫同一組。人數預設是字串 `'2'`，小計用單價乘上人數，再交給 `ntd`。
+- 這一頁沒有登入，所以姓名與 email 透過 `type="hidden"` 的隱藏欄位連同行程、梯次、人數與小計一起送出，電話則由使用者填寫。
+- `<Form method="post">` 把欄位送到這一頁的 `action`。電話去掉空白後是空的，`action` 就回傳錯誤訊息，由 `useActionData` 讀到後顯示在表單上方。
+- 電話欄位的紅字提示在失焦後，或 `action` 回傳錯誤後出現；使用者輸入內容後，紅字會消失，上方的錯誤 `Alert` 則留到下次送出才更新。
+- 電話有內容時，`action` 呼叫 `createBooking` 寫入記憶體資料，再用 `redirect` 導向 `/booking/` 加上新訂單的 `id`。
+- 送出期間 `useNavigation` 的狀態是 `submitting`，按鈕會停用。提示框的外觀，等完成頁再補進主題。
 
 {% note info %}
-`replace: true` 會用完成頁取代瀏覽紀錄裡的表單頁。按上一頁不會回到已送出的表單，而是回到進表單之前的那一頁。
+`<Form>` 的 `replace` 會用完成頁取代瀏覽紀錄裡的表單頁（官方文件：不想讓使用者按上一頁回到表單時使用）。按上一頁不會回到已送出的表單，而是回到進表單之前的那一頁。
 {% endnote %}
 
 ### 步驟 4：這趟行程
 
-把右側摘要的 placeholder 換成真正的元件。
+把右側摘要的標記換成真正的元件。
 
 ```jsx 06-project-init/src/features/booking/components/BookingSummary.jsx
 import Typography from '@mui/material/Typography';
@@ -4623,14 +4640,14 @@ export default function BookingSummary({ tour, departure }) {
 
 **解析**
 
-- 右側列出標題、出發日、天數與每人價格。大螢幕用 `sticky` 停在離頂一段的位置。
+- 右側列出行程名稱、出發日、天數與每人價格。`lg` 以上用 `sticky` 停在離頂一段的位置，表單較長時仍看得到。
 - 行程與梯次由父層傳入，這一層只負責畫摘要。
 
 ## 報名完成
 
-送出後會進到 `/booking/:id`。`id` 是剛才那筆訂單的編號。種子資料裡已有的編號，例如 `/booking/b1`，也會顯示對應的那一筆；對不到的 id 則渲染 `NotFoundPage`。
+送出後會進到 `/booking/:id`，id 是剛才那筆訂單的編號。種子資料裡已有的編號，例如 `/booking/b1`，也會顯示對應的那一筆；對不到的 id 則渲染找不到頁面。
 
-這一節要組出 `BookingResultPage`。步驟條沿用上一節的 `BookingSteps`，明細先放標記，再換成 `BookingReceipt`。這一頁留下成功 `Alert`，所以先把提示框的外觀補進主題。
+這一節要組出報名完成頁 `BookingResultPage`。步驟條沿用上一節的 `BookingSteps`，明細先放標記，再換成 `BookingReceipt`。這一頁會用到成功提示框，所以先把提示框的外觀補進主題。
 
 {% mermaid graph TD %}
   page["BookingResultPage"] --> steps["BookingSteps"]
@@ -4639,7 +4656,7 @@ export default function BookingSummary({ tour, departure }) {
 
 ### 步驟 1：組出 BookingResultPage
 
-先把提示框的圓角、色票與圖示補進主題。關閉鈕也改成圖示字型。接著組出完成頁並接到路由，後面換零件時才能在畫面上對照。狀態對照先寫進 `format.js`，明細先放標記。步驟條沿用上一節已經換成的 `BookingSteps`。
+先把提示框的圓角、色票與圖示補進主題，關閉鈕也改成圖示字型。接著把狀態對照寫進 `format.js`，明細先放標記，再組出完成頁並接到路由，後面換零件時才能在畫面上對照。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -4672,6 +4689,7 @@ export default function BookingSummary({ tour, departure }) {
  // ...
          emptyIcon: ms('star'),
        },
+       styleOverrides: { iconFilled: { color: tokens.action } },
      },
      MuiStepLabel: {
        defaultProps: { slots: { stepIcon: StepIcon } },
@@ -4695,10 +4713,10 @@ export default function BookingSummary({ tour, departure }) {
 
 **解析**
 
-- `iconMapping` 把成功、資訊、警告、錯誤換成 `check_circle`、`info`、`warning`、`error`。關閉鈕用 `ms('close')`。`CloseIcon` 寫在 `SelectArrow` 與已經有的 `StepIcon` 之間。
-- 外框圓角 16，內容垂直置中。
-- 這份主題開了 `cssVariables`，標準提示的底色、文字與圖示色來自 `palette.Alert`。資訊用 mist 底、ink 字、操作色圖示；成功用 mist 底、操作色字與圖示。這些色票會蓋掉 Material UI 預設的資訊藍。
-- 這一頁的成功提示、以及上一節表單裡的成功與錯誤提示，都會套到這組。
+- `iconMapping` 把成功、資訊、警告、錯誤四種提示換成各自的圖示；關閉鈕用 `ms('close')`，由新加的 `CloseIcon` 提供。
+- 外框圓角是 16，內容垂直置中。
+- 這份主題開了 `cssVariables`，標準提示的底色、文字與圖示色來自 `palette.Alert`。資訊用 `mist` 底、`ink` 字、操作色圖示；成功用 `mist` 底、操作色字與圖示。這些色票會蓋掉 Material UI 預設的資訊藍。
+- 圓角與圖示套用到所有提示，包含上一節表單裡的成功與錯誤提示；色票只改資訊與成功兩種。
 
 三個狀態代碼對到中文，完成頁和後面的報名清單都讀這一份。
 
@@ -4718,7 +4736,7 @@ export default function BookingSummary({ tour, departure }) {
 
 **解析**
 
-- `statusLabel` 把 `pending`、`confirmed`、`cancelled` 對成「待確認」、「已確認」、「已取消」。對不到時顯示「待確認」。
+- `statusLabel` 把三種狀態碼（`pending`、`confirmed`、`cancelled`）對成「待確認」「已確認」「已取消」。對照表本身沒有預設值，對不到時怎麼顯示，由使用它的元件各自決定。
 
 明細先放標記。
 
@@ -4730,9 +4748,9 @@ export default function BookingReceipt() {
 
 **解析**
 
-- 先回傳標記文字，標出完成頁明細的位置。下一步再換成真正的 `BookingReceipt`。
+- 先回傳標記文字，標出完成頁明細的位置。
 
-接著組出完成頁。步驟條沿用 `BookingSteps`，`activeStep` 是 2。明細目前是標記。然後把路由表裡的完成頁佔位換掉。
+接著組出完成頁。步驟條沿用 `BookingSteps`，`activeStep` 傳 2。組好後把路由表裡的完成頁佔位換掉。
 
 ```jsx 06-project-init/src/features/booking/BookingResultPage.jsx
 import { data, Link, useLoaderData } from 'react-router';
@@ -4781,9 +4799,10 @@ export default function BookingResultPage() {
 
 **解析**
 
-- `loader` 用網址上的 `id` 呼叫 `getBooking`。找不到時丟 404，導向路由上最近的 `errorElement`。找得到時這一頁的 `<title>` 是「報名已送出 · 洛奇旅行」。種子裡的 `/booking/b1` 可以直接打開。
-- `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文。狀態仍是 `pending`、`confirmed`、`cancelled`，沒有另外的草稿狀態。
-- 成功 `Alert` 套用剛才補進主題的提示框外觀。明細目前是標記，下一步再換成 `BookingReceipt`。兩顆按鈕分別去我的報名與行程列表。
+- `loader` 用網址上的 `id` 呼叫 `getBooking`。找不到時丟 404，導向路由上最近的 `errorElement`。種子裡的 `/booking/b1` 可以直接打開。
+- `BookingSteps` 的 `activeStep` 是 2，停在第三步。Chip 用 `statusLabel` 把狀態碼換成中文，對不到時顯示「待確認」。
+- 成功 `Alert` 套用剛才補進主題的提示框外觀。明細目前只是標記，下一步再換成 `BookingReceipt`。
+- 兩顆按鈕分別連到我的報名與行程列表。
 
 接著把 `/booking/:id` 換成這一頁。
 
@@ -4810,7 +4829,7 @@ export default function BookingResultPage() {
 
 ### 步驟 2：這筆內容
 
-把明細的 placeholder 換成真正的元件。
+把明細的標記換成真正的元件。送出一筆報名後，就能在完成頁看到這份明細。
 
 ```jsx 06-project-init/src/features/booking/components/BookingReceipt.jsx
 import Typography from '@mui/material/Typography';
@@ -4852,12 +4871,12 @@ export default function BookingReceipt({ row }) {
 
 **解析**
 
-- 明細列出行程、日期、人數、電話與小計。小計那一列用較大的操作色數字。
-- 狀態用 `statusLabel` 換成中文；對不到對照表時，明細改顯示原本的代碼。
+- 明細列出行程、日期、人數、電話、小計與狀態。小計那一列用較大的操作色數字。
+- 狀態用 `statusLabel` 換成中文，對不到對照表時，明細改顯示原本的狀態碼。
 
 ## 我的報名
 
-直接打開 `/me` 就列出 `mySamples`。這四筆是預覽清單，欄位比後台那四筆少，而且不放進同一個匯出。
+直接打開 `/me` 就列出 `mySamples`。這四筆是專為這一頁寫的預覽清單，欄位比報名種子 `bookings` 少，也不併進 `bookings`。
 
 這一節要組出 `MyBookingsPage`。先組出這一頁並接到路由，單筆列先放標記，再換成真正的元件，最後再補還沒有報名時的提示。畫面拆成這個零件：
 
@@ -4914,8 +4933,8 @@ export default function BookingReceipt({ row }) {
 
 **解析**
 
-- `mySamples` 是這一頁的預覽清單，不匯入後台種子。清單就是這四筆，不依 email 過濾，也不讀 Store 裡剛送出的那幾筆。
-- 後台那四筆種子不會出現在這一頁。
+- `mySamples` 是這一頁的預覽清單，內容固定四筆，不依 email 過濾，也不讀 Store。
+- 因此剛在報名頁送出的那一筆不會出現在這一頁。
 
 單筆列先放標記。
 
@@ -4927,9 +4946,9 @@ export default function MyBookingRow() {
 
 **解析**
 
-- 先回傳標記文字。標題「你的報名」與列表外框組在頁面上時，每一筆先渲染這個標記。
+- 先回傳標記文字，標出每一筆報名的位置。標題「你的報名」與列表外框寫在頁面上。
 
-接著組出我的報名頁。單筆列目前是標記。清單先一律畫出來。
+接著組出我的報名頁。單筆列目前是標記，清單先一律畫出來。
 
 ```jsx 06-project-init/src/features/booking/MyBookingsPage.jsx
 import Typography from '@mui/material/Typography';
@@ -4968,8 +4987,8 @@ export default function MyBookingsPage() {
 
 **解析**
 
-- 清單目前一律畫出來。空陣列時的提示，最後一步再補。
-- 副標是靜態說明。這一頁沒有取消按鈕。
+- 清單目前一律畫出來，空陣列時的提示留到最後一步再補。
+- 副標是靜態說明，要改期或取消請來信或來電，所以這一頁沒有取消按鈕。
 
 接著把 `/me` 換成這一頁。
 
@@ -4989,7 +5008,7 @@ export default function MyBookingsPage() {
 
 ### 步驟 2：單筆報名
 
-把單筆列的 placeholder 換成真正的元件。
+把單筆列的標記換成真正的元件。換上後每一筆會顯示狀態標籤、行程名稱與四項資料。
 
 ```jsx 06-project-init/src/features/booking/components/MyBookingRow.jsx
 import Chip from '@mui/material/Chip';
@@ -5047,12 +5066,12 @@ export default function MyBookingRow({
 
 **解析**
 
-- `chipColor` 把 `pending`、`confirmed`、`cancelled` 對到 `primary`、`secondary`、`error`。標籤文字用 `statusLabel`，對不到時顯示原來的狀態碼。
+- `chipColor` 把待確認、已確認、已取消依序對到 `primary`、`secondary`、`error` 三種顏色。標籤文字用 `statusLabel`，對不到時顯示原來的狀態碼。
 - 出發日、人數、電話與小計排成一列定義列表。小計用 serif、操作色，並用 `ntd` 格式化。
 
 ### 步驟 3：還沒有報名
 
-清單是空陣列時，不要畫空的列表外框。
+最後補上還沒有報名時的畫面：清單是空陣列時，不畫空的列表外框，改顯示提示與前往行程列表的按鈕。
 
 ```diff 06-project-init/src/features/booking/MyBookingsPage.jsx
 +import { Link } from 'react-router';
@@ -5117,8 +5136,8 @@ export default function MyBookingRow({
 
 **解析**
 
-- `mySamples` 是空陣列時才顯示「還沒有報名」與「去看行程」。把 `mySamples` 暫時改成空陣列就能看到這段提示。
-- 有資料時維持標題「你的報名」與列表。
+- `mySamples.length` 是 0 時才顯示「還沒有報名」與「去看行程」；有資料時維持標題「你的報名」與列表。
+- 想在畫面上看到提示，可以暫時把 `mock.data.js` 裡的 `mySamples` 改成空陣列，看完再改回來。
 
 ## 關於
 
@@ -5128,7 +5147,7 @@ export default function MyBookingRow({
 
 ### 步驟 1：組出 AboutPage
 
-常見問題先寫進 `mock.data.js`，再寫關於頁。寫完後下一步接到路由，重整就能看到這一頁。
+常見問題先寫進 `mock.data.js`，再寫關於頁。下一步接到路由後，打開 `/about` 就能看到這一頁。
 
 ```js 06-project-init/src/features/about/mock.data.js
 export const faqs = [
@@ -5155,7 +5174,7 @@ export const faqs = [
 
 **解析**
 
-- 常見問題寫在 `features/about/mock.data.js`，關於頁只負責展開與收合。
+- 常見問題是一組 `q`（問題）與 `a`（答案）的陣列，關於頁負責把它們畫成可展開與收合的清單。
 
 接著寫關於頁。
 
@@ -5219,7 +5238,6 @@ export default function AboutPage() {
 - `open` 記目前展開的索引，一次只開一則；再開另一則時前一則會合上。
 - 手風琴外觀沿用主題裡已經設過的覆寫，這裡只傳問題與答案。
 - 上方是一段品牌說明。執照區塊的字號「交觀甲 999999 號」是教材用的虛構號碼。
-- 這一頁不讀 Store，也不檢查登入。
 
 ### 步驟 2：接到路由
 
@@ -5241,13 +5259,13 @@ export default function AboutPage() {
 
 ## 登入
 
-登入頁畫出 Google 對話框。主按鈕不寫入狀態，也不導頁。返回首頁與關閉對話框都導回 `/`。頁首維持登入連結。
+登入頁用對話框畫出「用 Google 帳號繼續」的提示，主按鈕不寫入狀態，也不導頁；「返回首頁」與關閉對話框都導回 `/`。真正的 Google 登入留到選讀的 {% post_link lokiTech-15day-13-project-travel-api %}。
 
-這一節先寫 `LoginPage`，再讓已經存在的 `SiteHeader` 依路徑切換登入按鈕的文字與連結。它們不是上下層關係。
+這一節先寫 `LoginPage`，再讓已經存在的 `SiteHeader` 依路徑切換登入按鈕的文字與連結。
 
 ### 步驟 1：登入頁
 
-登入對話框的圓角補進主題。
+先把登入對話框的圓角補進主題。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -5281,12 +5299,7 @@ export default function LoginPage() {
   return (
     <main className="flex-1">
       <title>用 Google 帳號繼續 · 洛奇旅行</title>
-      <Dialog
-        open
-        onClose={() => navigate('/')}
-        fullWidth
-        maxWidth="xs"
-      >
+      <Dialog open onClose={() => navigate('/')} fullWidth maxWidth="xs">
         <DialogTitle className="font-serif text-4xl leading-tight">
           用 Google 帳號繼續
         </DialogTitle>
@@ -5311,9 +5324,9 @@ export default function LoginPage() {
 
 **解析**
 
-- Dialog 維持打開。關閉或「返回首頁」都導回 `/`。
-- 「用 Google 帳號繼續」沒有 `onClick`，這一章不導頁，也不寫入狀態。
-- 內文說明報名和我的報名會使用 Google 的姓名與 email，不另外設定密碼。登入與讀自己的訂單留到下一篇。
+- `Dialog` 的 `open` 恆為真，所以進到 `/login` 就一直開著。關閉（`onClose`）或按「返回首頁」都用 `navigate('/')` 導回首頁。
+- 「用 Google 帳號繼續」沒有 `onClick`，按了沒有反應，也不寫入任何狀態。
+- 內文說明報名和我的報名會使用 Google 的姓名與 email，不另外設定密碼。登入與讀自己的訂單，留到選讀的 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 接著把 `/login` 換成這一頁。
 
@@ -5333,7 +5346,7 @@ export default function LoginPage() {
 
 ### 步驟 2：更新頁首
 
-登入頁已經接上。這一節改已經存在的 `SiteHeader`：前台仍是連到 `/login` 的「登入」，路徑以 `/admin` 開頭時改成「後台登入」。沒有頭像，也沒有登出。導覽與站名仍是前台的樣子，後台選單留到下一章再換。
+登入頁已經接上。這一步改已經存在的 `SiteHeader`：前台仍是連到 `/login` 的「登入」，路徑以 `/admin` 開頭時改成「後台登入」。導覽與站名仍是前台的樣子，後台選單留到下一章再換。
 
 ```diff 06-project-init/src/layout/components/SiteHeader.jsx
  import { useState } from 'react';
@@ -5378,22 +5391,20 @@ export default function LoginPage() {
 **解析**
 
 - 前台按鈕文字是「登入」，連到 `/login`。路徑以 `/admin` 開頭時，按鈕文字是「後台登入」，連到 `/admin/login`。
-- 用 `useLocation().pathname.startsWith('/admin')` 判斷。`/admin/login` 也算後台路徑。
-- 登入鈕抽成 `account`，桌面與抽屜共用同一份。
-- 這一章不依登入狀態改頁首，也沒有頭像或登出。站名與導覽仍是前台的寫法。
+- 用 `useLocation().pathname.startsWith('/admin')` 判斷，`/admin/login` 也算後台路徑。
+- 登入鈕抽成 `account`，桌面版頁首與手機抽屜共用同一份。
+- 這一章不依登入狀態改頁首，沒有頭像也沒有登出。
 
 
 # 後台
 
-這一章把後台頁組出來。後台頁可直接打開預覽，身份檢查留到下一篇。打包與預覽寫在下一章。
+這一章先讓頁首換成後台的樣子，再依序組出後台登入、行程管理與報名清單三頁。後台頁都能直接用網址打開預覽，身份檢查留到選讀的 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 ## 後台選單
 
-後台沿用同一份 `SiteHeader` 與 `SiteLayout`，不必另做一組頁首。登入那一節已經用 `useLocation().pathname.startsWith('/admin')` 讓登入按鈕在後台路徑改成「後台登入」。這一節用同一個條件，把導覽與站名也換成後台的樣子。
+後台沿用同一份頁首與外框，不必另做一組。登入那一節已經用 `useLocation().pathname.startsWith('/admin')` 判斷路徑，讓登入按鈕在後台路徑改成「後台登入」。這一節用同一個條件，把導覽與站名也換成後台的樣子。
 
-後台導覽有兩條 `NavLink`：行程管理連到 `/admin`，並加上 `end`，這樣 `/admin/bookings` 才不會被當成行程管理的作用中連結；報名清單連到 `/admin/bookings`。站名改成「洛奇旅行 · 後台」，連到 `/admin`。
-
-兩頁已經能用頁首切換，所以行程管理與報名清單不必再做一排分頁。
+後台導覽有兩條 `NavLink`：行程管理連到 `/admin`，並加上 `end`，這樣 `/admin/bookings` 才不會被當成行程管理的作用中連結；報名清單連到 `/admin/bookings`。站名改成「洛奇旅行 · 後台」，連到 `/admin`。兩頁既然能用頁首切換，頁面內就不必再做一排分頁。
 
 ```diff 06-project-init/src/layout/components/SiteHeader.jsx
  import { useState } from 'react';
@@ -5456,11 +5467,11 @@ export default function LoginPage() {
 
 - 後台不另做頁首，外框仍是 `SiteLayout`。
 - `admin` 仍用 `pathname.startsWith('/admin')` 判斷，`/admin/login` 也算後台。
-- `/admin` 的 `NavLink` 加 `end`，否則以 `/admin` 開頭的路徑都會亮起行程管理。
+- `/admin` 的連結加 `end`，否則以 `/admin` 開頭的路徑都會亮起行程管理。
 - 站名在後台改連 `/admin`，文字是「洛奇旅行 · 後台」。前台仍連 `/`，文字仍是「洛奇旅行」。
-- 行程管理與報名清單用頁首切換即可，不必再做一排分頁。
+- 打開 `/admin`，頁首導覽換成「行程管理」「報名清單」兩個連結，目前所在的那個會是實心底色。
 
-後台頁放在 `features/admin/`。下面每一節會先說明該頁拆哪些元件，再用圖畫出誰組誰，先組出該頁並放 placeholder、接到路由，再逐一換成真正的零件，以便在畫面上對照。
+後台頁放在 `features/admin/`，目錄如下。下面每一節先說明該頁拆哪些元件、用圖畫出誰組誰，再組出該頁並放 placeholder、接到路由，最後逐一換成真正的零件，讓每一步都能在畫面上對照。
 
 ```
 src/features/admin/
@@ -5480,13 +5491,11 @@ src/features/admin/
 
 ## 後台登入
 
-後台登入頁畫出 email 與密碼欄位。送出時只 `preventDefault`，不前往 `/admin`。要看後台時直接打開 `/admin`。
-
-這一節沒有再拆畫面零件，直接寫 `AdminLoginPage`。
+後台登入頁畫出 email 與密碼欄位，送出時只呼叫 `preventDefault`，不前往 `/admin`；要看後台就直接打開 `/admin`。這一節沒有再拆畫面零件，直接寫 `AdminLoginPage`。
 
 ### 步驟 1：組出 AdminLoginPage
 
-`Paper` 的圓角補進主題。
+登入卡片用 MUI 的 `Paper`，先把它的圓角補進主題，與前台的卡片同樣是 24px。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -5509,7 +5518,7 @@ src/features/admin/
 
 - `MuiPaper` 的 `rounded` 圓角設成 24。
 
-接著寫後台登入頁。白底與陰影仍用這三個 utility。
+接著寫後台登入頁。圓角、白底與陰影沿用前面頁面的 `rounded-card`、`bg-white`、`shadow-card`。
 
 ```jsx 06-project-init/src/features/admin/AdminLoginPage.jsx
 import { useState } from 'react';
@@ -5560,10 +5569,9 @@ export default function AdminLoginPage() {
 
 **解析**
 
-- 表單 `onSubmit` 呼叫 `preventDefault`。email 與密碼留在這一頁的 state，不送出、不導頁。
-- 要看行程管理時直接打開 `/admin`。
-- 說明寫後台使用 email 與密碼，接上資料層時再接到 Authentication。
-- `Paper` 的 `elevation` 設成 0，避免再疊一層預設陰影。`component` 設成 `form`。
+- 打開 `/admin/login`，頁首已是後台的樣子，頁面有 email、密碼兩個欄位與「登入」鈕。按下去不會換頁，因為表單 `onSubmit` 呼叫了 `preventDefault`。
+- email 與密碼只留在這一頁的 state，不送到任何地方。頁內說明提到的 Authentication，要到選讀的下一篇才接。
+- `Paper` 的 `component="form"` 讓它成為表單元素；`elevation={0}` 去掉預設陰影，避免與 `shadow-card` 疊兩層。
 
 ### 步驟 2：接到路由
 
@@ -5585,7 +5593,7 @@ export default function AdminLoginPage() {
 
 ## 行程管理
 
-後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用 textarea 一行一則。主題選項跟首頁主題卡片用同一份清單，這一頁才從 `themeLinks` 導出 `themes`。後台兩頁用頁首切換。
+後台表單要寫出前台會讀到的欄位。圖庫、每日行程與出發梯次用可增刪的列來編，費用包含與費用不含比照亮點，用多行文字欄一行一則。主題選項跟首頁主題卡片用同一份清單，所以這一頁才從 `themeLinks` 導出 `themes`。
 
 新增與編輯共用同一個 Dialog。沒有帶入行程是新增，有帶入是編輯。用這一頁的 state 控制開關，不另開路由。刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
 
@@ -5607,7 +5615,7 @@ export default function AdminLoginPage() {
 
 ### 步驟 1：組出 AdminToursPage
 
-先把行程管理組起來並接到路由。表格與表單先放標記。`loader` 讀清單，`open` 與 `tour` 控制 Dialog。
+先把行程管理組起來並接到路由，表格與表單先放標記。`loader` 讀清單，`open` 與 `tour` 這兩個 state 控制 Dialog。
 
 表格先放標記。
 
@@ -5640,7 +5648,7 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
-- 此刻只畫出對話框標題與關閉。真正的欄位留到行程表單再換。
+- 此刻只有依新增或編輯切換的對話框標題，`onClose` 讓點背景或按 Esc 能關閉。真正的欄位留到步驟 6 再補。
 
 接著組出行程管理頁。表格與表單目前是標記。
 
@@ -5702,9 +5710,9 @@ export default function AdminToursPage() {
 
 **解析**
 
-- 直接打開 `/admin` 就看得到這一頁。`loader` 回傳 `getTours()`。`open` 與 `tour` 控制 Dialog。新增時 `tour` 是 `null`，編輯時帶入該筆。不另開路由。
-- 「新增行程」把 `tour` 清掉並打開 Dialog。表格的 `onEdit` 帶入該筆再開窗；表格還是標記時不會用到。
-- `key` 依開窗與行程編號重掛表單，草稿才會是這一筆的資料。兩頁用頁首切換。
+- 直接打開 `/admin` 就看得到這一頁：標題「行程管理」、「新增行程」鈕，下面只有「行程表格」這行標記。`loader` 回傳 `getTours()`。
+- `open` 與 `tour` 控制 Dialog：新增時 `tour` 是 `null`，編輯時帶入該筆，不另開路由。按「新增行程」會跳出標題為「新增行程」的對話框；表格的 `onEdit` 要等表格換成真的元件才會用到。
+- `key` 依開窗與行程編號重掛表單，表單的草稿才會從這一筆的資料開始。
 
 接著把 `/admin` 換成這一頁。路由先接上 `loader`。
 
@@ -5726,10 +5734,12 @@ export default function AdminToursPage() {
 
 **解析**
 
-- `/admin` 從 `Placeholder` 換成 `AdminToursPage`，並接上 `loader`。報名清單仍是佔位。
-- `/admin` 與 `/admin/bookings` 這一章不檢查身份。打開網址就看得到行程管理與報名清單。身份檢查留到下一篇。
+- `/admin` 從佔位頁換成 `AdminToursPage`，並接上 `loader`。報名清單仍是佔位。
+- 這一章不檢查身份，打開網址就看得到。
 
 ### 步驟 2：這一頁要用的資料
+
+表單的主題下拉要有選項清單，先在行程資料檔補上。
 
 ```diff 06-project-init/src/features/tours/mock.data.js
 +import { themeLinks } from '../home/mock.data.js';
@@ -5834,12 +5844,17 @@ export const tourFromDraft = (draft) => {
 
 **解析**
 
-- `tourFromDraft` 把草稿轉成完整行程。空的網址列會略過，封面用圖庫第一張。每日行程的 `day` 依列序自動編成 1、2、3。出發梯次的 `id` 仍用日期。亮點與費用依換行拆開，去掉空白行。
-- 標題去掉空白後是空的，回傳「標題要填」，不寫入。回傳的行程不含 id；新增時由 Store 用 `tour-` 加上當下時間做成 id，編輯時沿用原來的 `editingId`。這樣 `/tours/:id` 與報名的 `tourId` 才會保持穩定。
+- `tourFromDraft` 把表單的草稿轉成完整的行程物件，轉換規則有四條：
+  - 空的網址列會略過，封面用圖庫第一張。
+  - 每日行程的 `day` 依列序自動編成 1、2、3。
+  - 出發梯次的 `id` 用日期。
+  - 亮點與費用依換行拆開，去掉空白行。
+- 標題去掉空白後是空的，回傳「標題要填」，不寫入。
+- 回傳的行程不含 `id`：新增時由 Store 用 `tour-` 加上當下時間做成 `id`，編輯時沿用原來的 `editingId`。`id` 不變，詳情頁網址與報名的 `tourId` 才會保持穩定。
 
 ### 步驟 3：行程表格
 
-表頭鋪上 mist，分隔線用色票的 `line`。
+先在主題裡設定表格儲存格：表頭鋪上 `mist` 底色，分隔線用色票的 `line`。
 
 ```diff 06-project-init/src/theme.js
  // ...
@@ -5863,7 +5878,7 @@ export const tourFromDraft = (draft) => {
 
 **解析**
 
-- 儲存格的分隔線用色票的 `line`。表頭字重 700、mist 底、文字用 ink。桌機表格會套到。
+- 儲存格的分隔線用 `line`；表頭字重 700、底色 `mist`、文字 `ink`。這份樣式之後報名清單的表格也沿用。
 
 接著把行程表格的 placeholder 換成真正的元件。操作欄先放「編輯」。
 
@@ -5947,10 +5962,10 @@ export default function TourTable({ tours, onEdit }) {
 
 **解析**
 
-- `tours` 是這一頁傳進來的清單。`onEdit` 是「編輯」要呼叫的函式。
-- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有編輯。價格用 `ntd`。
-- 操作欄的按鈕用實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，不加 `size="small"`。「編輯」與報名清單的「查看」用主色。
-- 「編輯」把該筆交給 `onEdit`，頁面會打開同一個 Dialog。
+- `tours` 是頁面傳進來的清單，`onEdit` 是「編輯」要呼叫的函式。打開 `/admin` 會看到八筆行程。
+- `md` 以上用表格，窄螢幕改成一筆一張卡片，兩邊都有「編輯」。價格用 `ntd` 轉成貨幣格式。
+- 操作鈕是實心、沒有陰影的主色鈕，字級與 Dialog 裡的動作鈕相同，所以不加 `size="small"`。
+- 按「編輯」會把該筆交給 `onEdit`，頁面打開同一個 Dialog，標題變成「編輯行程」；欄位要到步驟 6 才有。
 
 ### 步驟 4：草稿工具
 
@@ -6028,9 +6043,9 @@ export default function TourTable({ tours, onEdit }) {
 
 **解析**
 
-- `empty` 與 `draftFromTour`、`tourFromDraft` 留在 `tourDraft.js`。`empty()` 每次回傳一份新的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。
+- 草稿相關函式都留在 `tourDraft.js`。`empty()` 每次回傳一份新的空白草稿，主題預設「城市」，圖庫、每日行程與出發梯次各先放一列空白，名額預設 8。
 - `draftFromTour` 把行程轉成表單：亮點與費用用換行接回一段文字；圖庫、每日行程與出發梯次做成列。沒有列時各放一列空白，方便接著改。
-- 每一列有一個只活在草稿裡的 `id`，當 React 的 `key`；刪列或重排時才不會用 index 對錯列。存檔時 `tourFromDraft` 會拿掉它，圖庫存回網址字串，出發梯次的 `id` 仍用日期。
+- 每一列有一個只活在草稿裡的 `id`，當 React 的 `key`；刪列或重排時才不會用 `index` 對錯列。存檔時 `tourFromDraft` 會拿掉它，圖庫存回網址字串，出發梯次的 `id` 仍用日期。
 
 ### 步驟 5：DraftRows
 
@@ -6092,8 +6107,9 @@ export default function DraftRows({
 
 **解析**
 
-- `DraftRows` 負責多列輸入的新增與刪除。列的 `key` 用草稿上的 `id`，新增一列時再補一個新的 `id`。`blank` 本身不含 `id`。
-- 各列的欄位由呼叫端用 `children` 傳進去，下一步的 `TourForm` 會用它來畫圖庫、每日行程與出發梯次。
+- `DraftRows` 負責多列輸入的新增與刪除：「刪除」用 `filter` 拿掉那一列，新增鈕在 `items` 後面接上一份 `blank`，並補一個新的 `id`。列的 `key` 用草稿上的 `id`。
+- 每一列裡要放哪些欄位，由呼叫端用 `children` 這個函式傳進來。下一步的 `TourForm` 會用它畫出圖庫、每日行程與出發梯次。
+- 這個元件還沒有人使用，所以畫面上暫時看不到變化。
 
 ### 步驟 6：行程表單
 
@@ -6236,9 +6252,9 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
-- 沒有帶入行程是新增，有帶入是編輯。標題依此切換。草稿存在元件的 state，新增用 `empty()`，編輯用 `draftFromTour`。
-- 文字欄用 `set`，主題與精選直接改 `draft`。
-- 儲存是 `type="button"`，此刻不會送出。取消呼叫 `onClose`。
+- 沒有帶入行程是新增，有帶入是編輯，標題依此切換。草稿存在元件自己的 state，新增用 `empty()` 起頭，編輯用 `draftFromTour(tour)` 起頭；打開「新增行程」是空白欄位，打開「編輯」則看到該筆的內容。
+- 文字欄共用 `set(key)` 產生 `onChange`；主題與精選的值不是從 `event.target.value` 來，所以直接改 `draft`。
+- 儲存是 `type="button"`，此刻不會送出；取消呼叫 `onClose`。
 
 #### 步驟 6-2：接上 DraftRows
 
@@ -6361,13 +6377,14 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
-- `setList` 用來改圖庫、每日行程與出發梯次這三組列。
-- 圖庫第一張會當作列表與輪播的封面。空的網址列在存檔時會略過。
-- 每日行程顯示「第 n 天」，存檔時再編成 `day`。出發梯次填出發日與名額。
+- `setList(key)` 用來整組換掉圖庫、每日行程或出發梯次的列。
+- 表單下方多了三組列，各有「刪除」與「新增一張」「新增一天」「新增一梯」鈕。
+- 圖庫第一張會當作列表與輪播的封面，空的網址列在存檔時會略過。
+- 每日行程只顯示「第 n 天」，存檔時才編成 `day`。出發梯次填出發日與名額。
 
 #### 步驟 6-3：送出草稿
 
-用 `useFetcher` 送出草稿。送出期間按鈕不能再按。失敗時在表單上方顯示錯誤。`action` 下一步再接到路由。
+用 `useFetcher` 送出草稿：送出期間按鈕不能再按，失敗時在表單上方顯示錯誤。`action` 與路由要到下一步才接上，所以這一步完成後先不要按「儲存」。
 
 ```diff 06-project-init/src/features/admin/components/TourForm.jsx
 -import { useState } from 'react';
@@ -6446,10 +6463,10 @@ export default function TourForm({ open, tour, onClose }) {
 
 **解析**
 
-- `useFetcher({ key: 'tour-form' })` 與頁面共用同一個 fetcher。`fetcher.submit` 只負責送出，不會回傳 `action` 的結果。
-- 送出時帶 `intent: 'save'`、`editingId` 與 JSON 字串的 `draft`。用 `fetcher.submit`，不會換頁。
-- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示，避免送出途中還拿舊錯誤。
-- 儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。`onClose` 只給取消鈕用。
+- `useFetcher({ key: 'tour-form' })` 的 `key` 讓表單與頁面拿到同一個 `fetcher`。表單用 `fetcher.submit` 只負責送出，不會回傳 `action` 的結果，結果由頁面讀。
+- 送出的資料帶 `intent: 'save'`、`editingId` 與轉成 JSON 字串的 `draft`，送出後不會換頁。
+- `error` 只在 `fetcher.state` 是 `idle` 且有 `fetcher.data.error` 時顯示，避免送出途中還顯示舊的錯誤。
+- 儲存改成 `type="submit"`，`fetcher` 不是 `idle` 時按鈕不能按。`onClose` 只給取消鈕用。
 
 #### 步驟 6-4：接到 action，成功後關閉並提示
 
@@ -6514,6 +6531,7 @@ export default function NoticeSnackbar({ notice, onClose }) {
 +    setOpen(false);
 +    setNotice(save.data.notice);
 +  }
++
    const close = () => setOpen(false);
 +  const openTour = (item) => {
 +    save.reset();
@@ -6521,25 +6539,25 @@ export default function NoticeSnackbar({ notice, onClose }) {
 +    setOpen(true);
 +  };
  // ...
-         <Button
-           variant="outlined"
+-        <Button
+-          variant="outlined"
 -          onClick={() => {
 -            setTour(null);
 -            setOpen(true);
 -          }}
-+          onClick={() => openTour(null)}
-         >
+-        >
++        <Button variant="outlined" onClick={() => openTour(null)}>
            新增行程
          </Button>
  // ...
-       <TourTable
-         tours={tours}
+-      <TourTable
+-        tours={tours}
 -        onEdit={(item) => {
 -          setTour(item);
 -          setOpen(true);
 -        }}
-+        onEdit={openTour}
-       />
+-      />
++      <TourTable tours={tours} onEdit={openTour} />
        <TourForm
          key={open ? (tour?.id ?? 'create') : 'closed'}
          open={open}
@@ -6553,9 +6571,10 @@ export default function NoticeSnackbar({ notice, onClose }) {
 
 **解析**
 
-- `action` 讀 `editingId` 與 `draft`，交給 `saveTour`。失敗回傳 `{ error }`，成功回傳 `{ notice: '已儲存這筆行程', saved: true }`。loader 會再跑一次，列表立刻更新。
-- 頁面用 `useFetcher({ key: 'tour-form' })` 讀表單的送出結果。`save` 回到 `idle` 且有尚未處理的 `{ saved: true }` 時，關閉 Dialog 並把 `notice` 交給 `NoticeSnackbar`。`seenSave` 記住已經處理過的結果，同一筆不會再跑一次。
-- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，避免重開時還顯示舊的錯誤。
+- `action` 讀編輯中的 `id` 與草稿，交給 `saveTour`。失敗回傳 `{ error }`，成功回傳 `{ notice: '已儲存這筆行程', saved: true }`。`action` 跑完後 `loader` 會再跑一次，所以列表立刻更新，新增的行程排在最前面。
+- 頁面用同一個 `key` 的 `save` 讀送出結果。回到 `idle` 且有尚未處理的 `saved: true` 時，就關閉 Dialog，並把提示文字交給 `NoticeSnackbar`。這段直接寫在渲染過程中比對，不用 `useEffect`；`seenSave` 記住已處理的結果，同一筆不會重複處理。
+- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，重開時才不會還顯示舊的錯誤。
+- 在畫面上試一次：標題留空按儲存，表單上方出現紅色的「標題要填」；填好標題再儲存，Dialog 關閉，畫面下方出現「已儲存這筆行程」。
 
 同一個 `key` 的寫法見[第十一篇〈用 key 共用 fetcher〉](/2026/08-30/lokiTech-15day-11-react-router/#用-key-共用-fetcher)。
 
@@ -6583,7 +6602,7 @@ export default function NoticeSnackbar({ notice, onClose }) {
 
 ### 步驟 7：刪除行程
 
-刪除放在列表操作欄，確認後才從列表拿掉，不寫在編輯表單裡。
+最後補上刪除。先寫確認用的 Dialog。
 
 ```jsx 06-project-init/src/features/admin/components/DeleteTourDialog.jsx
 import Button from '@mui/material/Button';
@@ -6662,7 +6681,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 
 **解析**
 
-- 桌機表格與窄螢幕卡片都加上「刪除」，交給頁面的 `onDelete`。「刪除」用錯誤色，不用輪廓樣式。
+- 桌機表格與窄螢幕卡片都加上「刪除」，交給頁面的 `onDelete`。「刪除」用 `color="error"` 的實心鈕。
 
 頁面加上刪除的 `action` 分支，並接上確認 Dialog。
 
@@ -6730,6 +6749,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 +    setDeletingTour(null);
 +    setNotice(remove.data.notice);
 +  }
+ 
    const close = () => setOpen(false);
    const openTour = (item) => {
      save.reset();
@@ -6737,11 +6757,8 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
      setOpen(true);
    };
  // ...
-       <TourTable
-         tours={tours}
-         onEdit={openTour}
-+        onDelete={setDeletingTour}
-       />
+-      <TourTable tours={tours} onEdit={openTour} />
++      <TourTable tours={tours} onEdit={openTour} onDelete={setDeletingTour} />
        <TourForm
          key={open ? (tour?.id ?? 'create') : 'closed'}
          open={open}
@@ -6754,7 +6771,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 +        onClose={() => setDeletingTour(null)}
 +        onConfirm={() =>
 +          remove.submit(
-+            { intent: 'delete', id: deletingTour.id },
++            { intent: 'delete', id: deletingTour?.id },
 +            { method: 'post' },
 +          )
 +        }
@@ -6767,14 +6784,16 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 **解析**
 
 - `action` 看到 `intent` 是 `delete` 就呼叫 `deleteTour`，回傳「已刪除這筆行程」。
-- 操作欄的「刪除」先把該筆放到 `deletingTour`，打開確認 Dialog。確認後用 `remove.submit` 送出，不會換頁。送出期間「刪除」不能再按。
-- `remove` 回到 `idle` 且有尚未顯示過的 `notice` 時，關閉確認 Dialog 並交給 `NoticeSnackbar`。`seenRemove` 記住已經處理過的結果，同一筆不會再跑一次。模式與儲存的 `seenSave` 相同。
+- 操作欄的「刪除」先把該筆放到 `deletingTour`，打開確認 Dialog。確認後用 `remove.submit` 送出，不會換頁，送出期間「刪除」不能再按。
+- `remove` 是另一個沒有 `key` 的 `fetcher`，不與表單共用。它回到 `idle` 且有尚未處理的 `notice` 時，關閉確認 Dialog 並交給 `NoticeSnackbar`，同一筆也只處理一次，做法與儲存相同。
+- `onConfirm` 裡寫 `deletingTour?.id`，用 `?.` 是刻意的：`deletingTour` 在沒有要刪的行程時是 `null`，而 React Compiler 會在渲染時就先讀閉包用到的 `deletingTour.id`，直接寫 `.id` 會讓整頁在渲染時出錯。
+- 在畫面上試一次：按「刪除」先看到確認視窗，按「留下」只關閉視窗；按確認的「刪除」，那一列消失，畫面下方出現「已刪除這筆行程」。
 
 ## 報名清單
 
-清單讀的是詳情頁已經放進 Store 的那四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態。按「儲存」才送出。重新整理就回到種子。兩頁用頁首切換，模式跟行程管理相同。
+清單讀的是詳情頁已經放進 Store 的四筆種子，再加上這次在瀏覽器裡送出的報名。列表只放摘要，點「查看」才用 Dialog 看明細並改狀態，按「儲存」才送出；改的是記憶體，重新整理就回到種子。做法與行程管理相同。
 
-這一節要組出 `AdminBookingsPage`。畫面拆成 `BookingFilters`、`BookingTable`、`BookingForm`，成功提示沿用 `NoticeSnackbar`。先組出這一頁並接到路由，表格與明細先放標記，再換成表格與篩選，然後組出明細與送出。
+這一節要組出 `AdminBookingsPage`。畫面拆成篩選列、表格與明細表單，成功提示沿用 `NoticeSnackbar`。先組出這一頁並接到路由，表格與明細先放標記，再換成表格與篩選，然後組出明細與送出。
 
 {% mermaid graph TD %}
   page["AdminBookingsPage"] --> filters["BookingFilters"]
@@ -6785,7 +6804,7 @@ export default function DeleteTourDialog({ tour, busy, onClose, onConfirm }) {
 
 ### 步驟 1：組出 AdminBookingsPage
 
-先把報名清單組起來並接到路由。表格與明細先放標記。`loader` 讀清單，`open` 與 `booking` 控制 Dialog。
+先把報名清單組起來並接到路由，表格與明細先放標記。`loader` 讀清單，`open` 與 `booking` 這兩個 state 控制 Dialog。
 
 表格先放標記。
 
@@ -6868,8 +6887,9 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- 直接打開 `/admin/bookings` 就看得到這一頁。`loader` 回傳 `getBookings()`。`open` 與 `booking` 控制 Dialog。點「查看」時帶入該筆再開窗。不另開路由。表格還是標記時不會用到 `onView`。
-- `key` 依開窗與報名編號重掛表單，狀態才會是這一筆的資料。兩頁用頁首切換。
+- 直接打開 `/admin/bookings` 就看得到這一頁：標題「報名清單」，下面只有「報名表格」這行標記。`loader` 回傳 `getBookings()`。
+- `open` 與 `booking` 控制 Dialog：點「查看」時帶入該筆再開窗，不另開路由。表格還是標記時，`onView` 還不會被用到。
+- `key` 依開窗與報名編號重掛表單，表單的狀態才會從這一筆的資料開始。
 
 接著把 `/admin/bookings` 換成這一頁。路由先接上 `loader`。
 
@@ -6894,11 +6914,11 @@ export default function AdminBookingsPage() {
 
 **解析**
 
-- `/admin/bookings` 從 `Placeholder` 換成 `AdminBookingsPage`，並接上 `loader`。星號路由先前已接上 `NotFoundPage`。
+- `/admin/bookings` 從佔位頁換成 `AdminBookingsPage`，並接上 `loader`。
 
 ### 步驟 2：報名表格
 
-把報名表格的 placeholder 換成真正的元件。列表只放摘要與「查看」。點「查看」打開 Dialog。表頭與分隔線沿用行程表格在 `theme.js` 補的 `MuiTableCell` 樣式。
+把報名表格的 placeholder 換成真正的元件。列表只放摘要與「查看」，表頭與分隔線沿用行程表格在 `theme.js` 補的 `MuiTableCell` 樣式。
 
 ```jsx 06-project-init/src/features/admin/components/BookingTable.jsx
 import Button from '@mui/material/Button';
@@ -6983,13 +7003,13 @@ export default function BookingTable({ bookings, onView }) {
 
 **解析**
 
-- 列表只放行程、出發日、姓名、狀態與「查看」。完整欄位寫在明細 Dialog 裡。
-- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心鈕、沒有陰影，字級與 Dialog 裡的動作鈕相同，用主色。
-- 「查看」把該筆交給 `onView`，頁面會打開同一個 Dialog。
+- 列表只放行程、出發日、姓名、狀態與「查看」，完整欄位留給明細 Dialog。狀態用 `statusLabel` 轉成「待確認」「已確認」「已取消」。打開 `/admin/bookings` 會看到四筆報名。
+- `md` 以上是表格，窄螢幕是卡片，兩邊都有「查看」。按鈕樣式跟行程列表的「編輯」相同：實心、沒有陰影的主色鈕。
+- 按「查看」會把該筆交給 `onView`，頁面打開同一個 Dialog，標題是「報名明細」；明細內容在步驟 4 才補。
 
 ### 步驟 3：篩選
 
-狀態、姓名與日期的篩選寫成 `BookingFilters`。三個欄位的值與變更都由頁面傳入。
+狀態與姓名的篩選、出發日的排序寫成 `BookingFilters`，頁面再用這三個值算出要顯示的報名。
 
 ```jsx 06-project-init/src/features/admin/components/BookingFilters.jsx
 import MenuItem from '@mui/material/MenuItem';
@@ -7042,7 +7062,7 @@ export default function BookingFilters({
 
 **解析**
 
-- 三個欄位的值與變更都由頁面傳入。狀態選項的標籤沿用 `statusLabel`，「全部」對應 `all`。
+- `BookingFilters` 自己不存狀態，三個欄位的值與變更都由頁面傳入。狀態選項的標籤沿用 `statusLabel`，「全部」對應 `all`。
 
 把篩選接到這一頁。有結果才渲染表格，否則顯示「沒有符合的報名」。
 
@@ -7109,8 +7129,8 @@ export default function BookingFilters({
 
 **解析**
 
-- 狀態、姓名與出發日由 `BookingFilters` 負責篩選與排序。表格拿到的是篩完的 `shown`。
-- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。把狀態改成篩不到的值、或把姓名關鍵字打成對不上的字，就能看到這段提示。
+- 篩選與排序在頁面裡算：先依狀態，再依姓名是否包含關鍵字，最後依出發日排序，結果是 `shown`，表格改拿它來畫。
+- 有結果才渲染 `BookingTable`，否則顯示「沒有符合的報名」。例如姓名打成對不上的字，就能看到這段提示。
 
 ### 步驟 4：報名明細
 
@@ -7187,12 +7207,13 @@ export default function BookingForm({ open, booking, onClose }) {
 
 **解析**
 
-- 完整的行程、出發日、聯絡人、email、電話、人數與金額寫在 Dialog 裡。狀態下拉在底部。
-- 儲存是 `type="button"`，此刻不會送出。取消呼叫 `onClose`。
+- 按「查看」，Dialog 列出行程、出發日、聯絡人、email、電話、人數與金額，底部是狀態下拉。`Row` 把「標籤加值」這一行抽成小元件。
+- 狀態的初始值取自這一筆的 `status`；`key` 重掛表單，所以每次開窗都從該筆的狀態開始。
+- 儲存是 `type="button"`，此刻不會送出；取消呼叫 `onClose`。
 
 ### 步驟 5：送出狀態
 
-用 `useFetcher` 把新狀態送到這一頁的 `action`。表單只負責送出；成功後由頁面關閉 Dialog，並交給 `NoticeSnackbar` 顯示提示。
+用 `useFetcher` 把新狀態送到這一頁的 `action`。表單只負責送出；成功後由頁面關閉 Dialog，並交給 `NoticeSnackbar` 顯示提示。`action` 與路由在後面兩段才接上，接好之前不要按「儲存」。
 
 ```diff 06-project-init/src/features/admin/components/BookingForm.jsx
  import { useState } from 'react';
@@ -7213,7 +7234,7 @@ export default function BookingForm({ open, booking, onClose }) {
    const [status, setStatus] = useState(booking?.status ?? 'pending');
  
 +  const commit = () => {
-+    fetcher.submit({ id: booking.id, status }, { method: 'post' });
++    fetcher.submit({ id: booking?.id, status }, { method: 'post' });
 +  };
 +
 +  const submit = (event) => {
@@ -7258,8 +7279,9 @@ export default function BookingForm({ open, booking, onClose }) {
 
 **解析**
 
-- `useFetcher({ key: 'booking-form' })` 與頁面共用同一個 fetcher。按「儲存」才把 `id` 與新狀態用 `fetcher.submit` 送出，不會換頁，也不回傳 `action` 的結果。
-- `error` 只在 `idle` 且有 `fetcher.data.error` 時顯示。儲存改成 `type="submit"`。`fetcher` 不是 `idle` 時按鈕不能按。`onClose` 只給取消鈕用。
+- `useFetcher({ key: 'booking-form' })` 的 `key` 讓表單與頁面拿到同一個 `fetcher`，做法與行程表單相同。按「儲存」才用 `fetcher.submit` 把 `id` 與新狀態送出，不會換頁，結果由頁面讀。
+- `fetcher.submit` 裡寫 `booking?.id`：Dialog 關閉時 `booking` 是 `null`，而 React Compiler 會在渲染時先讀閉包用到的值，所以要用 `?.`，原因同前面的 `deletingTour?.id`。
+- `error` 只在 `fetcher` 回到 `idle` 且有錯誤資料時顯示。儲存改成 `type="submit"`，`fetcher` 不是 `idle` 時按鈕不能按；`onClose` 只給取消鈕用。
 
 接著在頁面加上 `action`，並接上提示。
 
@@ -7334,9 +7356,10 @@ export default function BookingForm({ open, booking, onClose }) {
 
 **解析**
 
-- `action` 讀 `id` 與 `status`，交給 `setBookingStatus`，回傳「已更新報名狀態」。loader 會再跑一次，列表立刻更新。
-- 頁面用 `useFetcher({ key: 'booking-form' })` 讀表單的送出結果。`save` 回到 `idle` 且有尚未處理的 `notice` 時，關閉 Dialog 並交給先前行程管理抽好的 `NoticeSnackbar`。`seenSave` 記住已經處理過的結果，同一筆不會再跑一次。提示約 3.2 秒後或按下關閉會清掉，位置在畫面下方置中。關窗後才看得到。
-- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，避免重開時還顯示舊的錯誤。
+- `action` 讀 `id` 與狀態，交給 `setBookingStatus`，回傳「已更新報名狀態」。`action` 跑完後 `loader` 會再跑一次，列表立刻更新。
+- 頁面用同一個 `key` 的 `save` 讀送出結果。回到 `idle` 且有尚未處理的 `notice` 時，關閉 Dialog 並交給先前抽好的 `NoticeSnackbar`，結果同樣只處理一次。
+- 提示在 Dialog 關閉後出現在畫面下方置中，約 3.2 秒後或按關閉就消失。
+- 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，重開時才不會還顯示舊的狀態。
 
 把 `action` 接到 `/admin/bookings`。
 
@@ -7362,76 +7385,139 @@ export default function BookingForm({ open, booking, onClose }) {
 
 ### 步驟 6：改為已取消的確認
 
-若要把狀態改成「已取消」，儲存前先開確認 Dialog。這就是這筆訂單的刪除：訂單是帳務紀錄，留下紀錄才能對帳，剩餘名額也只排除已取消的人。這一章不提供刪除鈕，也不從陣列拿掉那一筆。
+把狀態改成「已取消」前，先開一個確認 Dialog。取消就是這筆訂單的「刪除」：訂單是帳務紀錄，要留下才能對帳，算剩餘名額時也只排除已取消的人。這種只改狀態、不真的移除資料的做法叫軟刪除（soft delete），所以這一章不提供刪除鈕，也不從陣列拿掉那一筆。
 
-```diff 06-project-init/src/features/admin/components/BookingForm.jsx
-   const [status, setStatus] = useState(booking?.status ?? 'pending');
-+  const [confirmCancel, setConfirmCancel] = useState(false);
- 
-   const commit = () => {
- // ...
-   const submit = (event) => {
-     event.preventDefault();
-+    if (status === 'cancelled' && booking.status !== 'cancelled') {
-+      setConfirmCancel(true);
-+      return;
-+    }
-     commit();
-   };
- 
-   return (
--    <Dialog
--      open={open}
--      onClose={onClose}
--      fullWidth
--      maxWidth="sm"
--      scroll="paper"
--    >
-+    <>
-+      <Dialog
-+        open={open}
-+        onClose={onClose}
-+        fullWidth
-+        maxWidth="sm"
-+        scroll="paper"
-+      >
-         <form onSubmit={submit}>
- // ...
-         </form>
-       </Dialog>
-+      <Dialog open={confirmCancel} onClose={() => setConfirmCancel(false)}>
-+        <DialogTitle>改為已取消？</DialogTitle>
-+        <DialogContent>
-+          紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
-+        </DialogContent>
-+        <DialogActions className="gap-2 p-4">
-+          <Button onClick={() => setConfirmCancel(false)}>返回</Button>
-+          <Button
-+            color="error"
-+            variant="contained"
-+            onClick={() => {
-+              setConfirmCancel(false);
-+              commit();
-+            }}
-+          >
-+            確認取消
-+          </Button>
-+        </DialogActions>
-+      </Dialog>
-+    </>
-   );
- }
+```jsx 06-project-init/src/features/admin/components/BookingForm.jsx
+import { useState } from 'react';
+import { useFetcher } from 'react-router';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FieldSelect from '../../../_shared/FieldSelect.jsx';
+import { ntd, statusLabel } from '../../../format.js';
+
+const statuses = ['pending', 'confirmed', 'cancelled'];
+
+const Row = ({ label, value }) => (
+  <div className="flex justify-between gap-4">
+    <dt className="text-muted">{label}</dt>
+    <dd className="text-right">{value}</dd>
+  </div>
+);
+
+/**
+ * 報名明細 Dialog。open 控制開關，booking 是這一筆報名，onClose 只給取消鈕。
+ * useFetcher({ key: 'booking-form' }) 與 AdminBookingsPage 共用同一個 fetcher；只負責送出新狀態，結果由頁面讀取。
+ * @param {{ open: boolean, booking: object | null, onClose: () => void }} props
+ * @returns {JSX.Element}
+ */
+export default function BookingForm({ open, booking, onClose }) {
+  const fetcher = useFetcher({ key: 'booking-form' });
+  const error =
+    fetcher.state === 'idle' && fetcher.data?.error ? fetcher.data.error : '';
+  const [status, setStatus] = useState(booking?.status ?? 'pending');
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
+  const commit = () => {
+    fetcher.submit({ id: booking?.id, status }, { method: 'post' });
+  };
+
+  const submit = (event) => {
+    event.preventDefault();
+    if (status === 'cancelled' && booking.status !== 'cancelled') {
+      setConfirmCancel(true);
+      return;
+    }
+    commit();
+  };
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        scroll="paper"
+      >
+        <form onSubmit={submit}>
+          <DialogTitle>報名明細</DialogTitle>
+          <DialogContent className="grid gap-4 pt-2">
+            {booking ? (
+              <dl className="grid gap-2 text-base">
+                <Row label="行程" value={booking.tourTitle} />
+                <Row label="出發日" value={booking.date} />
+                <Row label="聯絡人" value={booking.name} />
+                <Row label="Email" value={booking.email} />
+                <Row label="電話" value={booking.phone} />
+                <Row label="人數" value={booking.people} />
+                <Row label="金額" value={ntd(booking.subtotal)} />
+              </dl>
+            ) : null}
+            {error ? <Alert severity="error">{error}</Alert> : null}
+            <FieldSelect
+              id="booking-status"
+              label="狀態"
+              value={status}
+              onChange={setStatus}
+              options={statuses.map((item) => ({
+                value: item,
+                label: statusLabel[item],
+              }))}
+            />
+          </DialogContent>
+          <DialogActions className="flex-wrap gap-2 p-4">
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={fetcher.state !== 'idle'}
+            >
+              儲存
+            </Button>
+            <Button type="button" onClick={onClose}>
+              取消
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <Dialog open={confirmCancel} onClose={() => setConfirmCancel(false)}>
+        <DialogTitle>改為已取消？</DialogTitle>
+        <DialogContent>
+          紀錄會留下，以便對帳與計算名額。這就是這筆訂單的刪除。
+        </DialogContent>
+        <DialogActions className="gap-2 p-4">
+          <Button onClick={() => setConfirmCancel(false)}>返回</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              setConfirmCancel(false);
+              commit();
+            }}
+          >
+            確認取消
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+}
 ```
 
 **解析**
 
-- 要把狀態從尚未取消改成「已取消」時，先打開確認 Dialog，不直接送出。按「確認取消」才呼叫 `commit`。
-- 已經是「已取消」再按儲存，不會再出現確認。按「返回」只關掉確認，明細 Dialog 還在。
+- 把狀態從尚未取消改成「已取消」時，`submit` 先打開確認 Dialog，不直接送出；按「確認取消」才呼叫 `commit`。
+- 原本就是「已取消」的報名再按儲存，不會出現確認。按「返回」只關掉確認，明細 Dialog 還在。
+- 在畫面上試一次：把任一筆改成「已取消」按儲存，看到確認視窗；確認後明細關閉，列表上那一筆的狀態變成「已取消」，畫面下方出現「已更新報名狀態」。
 
-十二條路徑到這裡都已換成完成品裡的頁面。把整份 `App.jsx` 再看一次。`Placeholder` 至此沒有人引用，把 import 拿掉。檔案本身自行評估刪掉。
+十二條路徑到這裡都已換成真正的頁面，下面是整份 `App.jsx`。`Placeholder` 已經沒有人引用，所以 import 拿掉；`_shared/Placeholder.jsx` 這個檔案可以留著，也可以刪掉。
 
 ```jsx 06-project-init/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import SiteLayout from './layout/SiteLayout.jsx';
 import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
 import ToursPage, {
@@ -7513,11 +7599,12 @@ export default function App() {
 
 **解析**
 
-- 十二條路徑都已換成完成品裡的頁面，含各頁的 `loader` 與 `action`。`Placeholder` 至此沒有人引用，把 import 拿掉。
+- 十二條路徑都接上了真正的頁面，含各頁的 `loader` 與 `action`。
+- 這一份把前面的 `element: <X />` 改寫成 `Component: X`，由路由器自己建立元素，兩種寫法效果相同，見 {% post_link lokiTech-15day-11-react-router %} 的說明。
 
 # 打包與預覽
 
-切版到這裡，原始碼應與 `05-project-prototype` 一致。先打包看產出，再用 Live Server 打開 `dist/` 預覽。
+切版到這裡，原始碼應與 `05-project-prototype` 一致。這一章先打包出可以上線的靜態檔，再在本機打開 `dist/` 確認成品。
 
 ## 打包
 
@@ -7529,52 +7616,54 @@ pnpm build
 
 **解析**
 
-- React 與 Vite 是開發時的工具。打包之後，瀏覽器收到的是標準的 HTML、CSS 與 JS，不需要再跑開發伺服器。
+- 開發時用的 Vite 開發伺服器與 JSX 都不會原樣上線。打包之後，瀏覽器收到的是標準的 HTML、CSS 與 JS，不需要再跑開發伺服器。
 
-終端機會印出類似下面的內容。檔名後面的雜湊會隨內容改變。
+終端機會印出類似下面的內容。模組數量與檔案大小會依套件版本而不同；檔名後面那串雜湊（hash）由檔案內容算出，內容一改就跟著變。
 
 ```
 vite v8.3.5 building client environment for production...
 transforming...
-✓ 735 modules transformed.
+✓ 745 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/index.html                   0.96 kB │ gzip:   0.51 kB
-dist/assets/index-Bwjy5Lhn.css   26.97 kB │ gzip:   5.88 kB
-dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
+dist/assets/index-CroQNFc3.css   26.79 kB │ gzip:   5.80 kB
+dist/assets/index--hhJhqnP.js   718.16 kB │ gzip: 226.72 kB
 
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 421ms
+✓ built in 2.37s
 ```
 
 **解析**
 
-- 這則警告代表打包後的 JS 超過 500 kB。這一章先看到產出長什麼樣子；下一篇部署時再把套件拆成較小的檔。
-- 打開 `dist/`，會看到 `index.html`（網站的進入點）、從 `public/` 原樣複製過來的 `favicon.svg`，以及 `assets/` 裡打包後的樣式與程式。
+- 這則警告代表打包後的 JS 超過 500 kB，只是提醒，不影響使用。這一章先看產出長什麼樣子；選讀的下一篇部署時，再把套件拆成較小的檔。
+- 打包完成後，專案根目錄多了 `dist/`：裡面有網站的進入點 `index.html`、從 `public` 原樣複製過來的 `favicon.svg`，以及 `assets/` 裡打包後的樣式與程式。
 
 ## 預覽
 
-用編輯器的 Live Server（或任何靜態檔伺服器）把 `dist/` 當成網站根目錄打開。首頁與點進內頁都看得到畫面。
+用編輯器的 Live Server（或任何靜態檔伺服器）把 `dist/` 當成網站根目錄打開。首頁與從頁首點進的內頁，都看得到跟開發時一樣的畫面。
 
 **解析**
 
-- 若在內頁按重新整理，Live Server 會回自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有 `index.html` 一張進入點，內頁的網址是前端路由。這個問題留到下一篇部署時，用轉送設定處理。
+- 若在內頁按重新整理，Live Server 會回自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有 `index.html` 一張進入點，內頁的網址是前端路由。這個問題留到選讀的下一篇部署時，用轉送設定處理。
+- 專案另有 `pnpm preview`（Vite 內建的預覽伺服器），對不到檔案的路徑會回 `index.html`，在內頁重新整理不會 404。它只是本機看成品用，不能拿來上線。
 
-切版到此為止。同一份畫面怎麼改成 Firestore 與登入，見 {% post_link lokiTech-15day-13-project-travel-api %}。
+切版到此為止，這就是課程的結業專案。想再把同一份畫面接上 Firestore 與登入，見選讀的 {% post_link lokiTech-15day-13-project-travel-api %}。
 
 # 本篇重點回顧
 
-- Vite 專案加上 `jsconfig.json`、React Compiler 的 Babel 外掛，再安裝 React Router、MUI、Emotion 與 Tailwind。頁面檔的 `loader` 與 `action` 用 ESLint 的 `allowExportNames` 放行。
-- `@layer` 只寫在 `index.css` 第一行。MUI 進入 `mui` 層之後，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
-- 先把佔位頁用 `createBrowserRouter` 與 `RouterProvider` 接上，再以 `SiteLayout` 的 `Outlet` 共用頁首頁尾並用 `ScrollRestoration` 處理捲動；各頁先組出來，再把標記換成真正的區塊元件。
-- 假資料隨著頁面追加。畫面改的是記憶體，重新整理回到種子。後台行程與報名都是列表加 Dialog，用頁面 state 控制開關，不另開路由。行程刪除在列表操作欄，確認後才拿掉。圖庫是網址列，封面用第一張。訂單改為已取消即軟刪，不從清單移除那一筆。後台沿用同一份 `SiteHeader`，兩頁用頁首切換，不必再做一排分頁。
-- `/login`、`/booking`、`/booking/:id`、`/me`、`/admin`、`/admin/login`、`/admin/bookings` 都能直接打開。對不到的路徑與錯誤的 id 都渲染 `NotFoundPage`。登入與讀自己的訂單留到下一篇。
-- `pnpm build` 產出 `dist/` 裡的 HTML、CSS 與 JS。用 Live Server 預覽時，內頁重新整理會拿到靜態伺服器的 404，下一篇部署再處理。
-- 切版在這一章結束。Firebase、雲端讀寫與登入寫在下一篇。這一章的資料在 `store.js`，由 `loader` 與 `action` 呼叫。
+- 專案用 Vite 建立，加上 `jsconfig.json`，用 `@rolldown/plugin-babel` 接上 React Compiler，再裝路由、MUI、Emotion 與 Tailwind；頁面檔匯出的 `loader` 與 `action` 由 ESLint 的 `allowExportNames` 放行。
+- 色票只寫在 `tokens`，MUI 與 Tailwind 共用；`@layer` 讓 MUI 進入 `mui` 層，preflight 清不掉按鈕內距，utilities 仍蓋得過元件。
+- 路由先用佔位頁、`createBrowserRouter` 與 `RouterProvider` 接好，再由外框的 `Outlet` 共用頁首頁尾，並用 `ScrollRestoration` 處理捲動；對不到的路徑與錯誤的 id 都渲染找不到頁面。
+- 資料放在 `store.js` 的記憶體模組，頁面用 `loader` 讀、用 `action` 或 `useFetcher` 寫；畫面改的是記憶體，重新整理就回到種子。
+- 前台每一頁都是先組出來接到路由，再把標記換成真正的區塊元件，涵蓋首頁、行程列表、詳情、報名與完成、我的報名、關於與登入。
+- 後台沿用同一份 `SiteHeader`，依路徑切換成後台選單；行程與報名都是列表加 Dialog，用頁面 state 控制開關，不另開路由。
+- 表單用共用 `key` 的 `useFetcher` 送到頁面的 `action`，成功後關窗並用 `NoticeSnackbar` 提示；行程刪除要先確認，訂單改為已取消則是軟刪除。
+- `pnpm build` 產出 `dist/` 的 HTML、CSS 與 JS，用 Live Server 預覽時內頁重新整理會 404；Firebase、雲端讀寫與登入都留到選讀的下一篇。
 
 # 專有名詞中英對照
 
@@ -7611,6 +7700,8 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - 索引路由（index route）
 - 路徑參數（route parameter）
 - 查詢參數（search parameter）
+- 導覽連結（NavLink）
+- 抽屜（Drawer）
 - 佔位元件（placeholder）
 - 找不到頁（not found）
 
@@ -7623,6 +7714,8 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - 表單送出（action）
 - 錯誤元件（errorElement）
 - 不換頁的送出（useFetcher）
+- 輪播（carousel）
+- 步驟條（stepper）
 - 唯讀欄位（read-only field）
 
 ## 後台
@@ -7634,9 +7727,13 @@ dist/assets/index-316pLljF.js   690.25 kB │ gzip: 214.62 kB
 - 對話框（Dialog）
 - 提示條（Snackbar）
 - 軟刪除（soft delete）
+- 共用的 fetcher（fetcher key）
+- 元件重掛（remount）
 
 ## 打包與預覽
 
 - 打包（build）
 - 預覽（preview）
 - 產物目錄（dist）
+- 雜湊（hash）
+- 前端路由（client-side routing）

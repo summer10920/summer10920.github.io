@@ -1,5 +1,5 @@
 ---
-title: "結業專案：洛奇旅行（二）功能化"
+title: "結業專案：洛奇旅行（二）功能化（選讀）"
 categories:
   - 職訓課程
   - 本年度課程
@@ -10,23 +10,25 @@ date: 2026-08-30 10:12:00
 
 ![](assets/images/banner/react.png)
 
+這一篇整篇是選讀，不佔上課時間。切版（上一篇）做完就是課程的結業專案；想把它接上真正的雲端資料，才照這一篇做：課堂還有餘裕時，可以請 AI 代理（例如 Claude Code）對照本文一步步幫你做，否則就留到回家自己完成。
+
 切版做完之後，這一章把同一份洛奇旅行的行程與報名接到雲端。前台用 Google 登入報名，並查詢自己的訂單。後台使用 Firebase Authentication 的 email 與密碼。資料放在 Cloud Firestore。下面的路徑寫 `07-project-final`。人還在自己的 `06-project-init` 裡時，資料夾名稱換成那一份，檔案相對位置相同。
 
 <!-- more -->
 
-# 從切版繼續
+# 選讀：從切版繼續
 
 這一章沿用第 12 篇結束時的畫面、路由與色票。先選定一份專案並啟動，再看清楚哪些讀寫仍停在這次開啟的記憶體裡。後面才一次換一層。
 
 ## 複製並啟動
 
-兩種起點改的是同一套檔案。已經裝過 Node.js 24 與 pnpm 的人直接做下面兩步。剛重灌的電腦先照 {% post_link lokiTech-15day-04-tailwind %} 把 Node 24 與 pnpm 裝好。
+兩種起點改的是同一套檔案。已經裝過 Node.js 26 與 pnpm 的人直接做下面兩步。剛重灌的電腦先照 {% post_link lokiTech-15day-04-tailwind %} 把 Node 26 與 pnpm 裝好。
 
 ### 步驟 1：選定專案
 
 跟著 {% post_link lokiTech-15day-12-project-travel %} 做完的人，`06-project-init` 已經與 `05-project-prototype` 相同。留在那個資料夾，跳到下一步。
 
-還沒做完、或想直接拿切版完成品的人，在 `studiesAdvanced` 倉庫根目錄把 `05-project-prototype` 複製成 `07-project-final`。目的資料夾還不存在時才複製。`05-project-prototype` 留著對切版，後面的修改寫在複本。
+還沒做完、或想直接拿切版完成品的人，在練習倉庫根目錄把切版完成品 `05-project-prototype` 複製成 `07-project-final`。目的資料夾還不存在時才複製。切版原件留著對照，後面的修改寫在複本。
 
 macOS（終端機在倉庫根目錄）：
 
@@ -47,7 +49,7 @@ Copy-Item -Recurse 05-project-prototype 07-project-final
 
 ### 步驟 2：安裝並啟動
 
-`node_modules` 與 `dist` 是這一台電腦裝出來、建出來的結果。複製之後先刪掉，再安裝，然後啟動。人已經在自己的 `06-project-init` 裡、依賴也裝過時，直接執行 `pnpm dev`。
+安裝與建置產生的資料夾（`node_modules`、`dist`）是這一台電腦的產物，複製之後先刪掉，再安裝並啟動。已經在自己的專案資料夾、依賴也裝過的人，直接啟動開發伺服器即可。
 
 macOS（以複本為例；沿用第 12 篇的人把路徑換成 `06-project-init`）：
 
@@ -80,7 +82,7 @@ pnpm dev
 
 **解析**
 
-- 色票、路由表與契約 id（`site-header`、`nav-toggle`、`tour-list`、`booking-form`）維持不變，後面的功能加在這些頁面之上。
+- 色票、路由表與切版約定的元素 id（如 `site-header`、`booking-form`）維持不變，後面的功能加在這些頁面之上。
 
 ## 記憶體狀態與本章範圍
 
@@ -92,9 +94,11 @@ pnpm dev
   loader --> pages["頁面"]
 {% endmermaid %}
 
-前台用 Google 登入。報名寫進訂單，文件帶上 `uid`。我的報名只查這個 `uid`。後台用 email 與密碼登入。行程改從雲端讀寫，新增、修改與刪除都寫進 Firestore。剩餘名額要掃過所有訂單才算得出來，旅客不能讀別人的訂單，所以前台改顯示每團名額。訂單不提供實體刪除，把狀態改為已取消就是軟刪。
+前台用 Google 登入，報名時寫成一筆訂單，文件帶上登入者的 `uid`，我的報名只查這個 `uid`。後台用 email 與密碼登入，行程改從雲端讀寫，新增、修改與刪除都寫進 Firestore。
 
-這一章結束時，頁面的 `loader` 與 `action` 呼叫同一組服務函式，服務函式再呼叫 Firestore。登入狀態由根路由的 `loader` 讀取。未登入要進報名或後台時，`loader` 重新導向登入頁。密碼以外的帳號打開後台時，頁面顯示說明與按鈕，不把人趕去別的網址。
+剩餘名額要掃過所有訂單才算得出來，但旅客不能讀別人的訂單，所以前台改顯示每團名額。訂單不提供實體刪除，把狀態改為已取消就是軟刪。
+
+這一章結束時，頁面的路由資料讀取（`loader`）與表單處理（`action`）都呼叫同一組服務函式，服務函式再呼叫 Firestore。登入狀態由根路由讀取，未登入要進報名或後台時，導向登入頁。密碼以外的帳號打開後台時，頁面顯示說明與按鈕，不把人趕去別的網址。
 
 {% mermaid graph LR %}
   page["頁面"] --> api["api.js"]
@@ -110,9 +114,9 @@ pnpm dev
 - 切版的登入對話框沒有接 Authentication。這一章前台改為 `signInWithPopup`，後台改為 `signInWithEmailAndPassword`。
 - 行程文件用原本的 id，例如 `hualien-taroko`，詳情網址不用改。
 - 訂單由 Firestore 編號。集合名稱是 `orders`。每筆帶登入者的 `uid`。
-- 色票與十二條既有路由維持不變。多出來的只有種子頁 `/seed`。
+- 色票與切版的十二條路由維持不變。多出來的是種子頁 `/seed` 與登出用的 `/logout`。
 
-# 認識 Firebase
+# 選讀：認識 Firebase
 
 Firebase 是 Google 提供的後端服務，專案在瀏覽器裡用它的 JavaScript SDK 呼叫。這一章只用其中兩項：Cloud Firestore 存文件，Authentication 同時用於前台 Google 登入與後台 email／密碼。先知道這兩項各自負責什麼，再建立專案、把設定交給 Vite。
 
@@ -129,7 +133,7 @@ Firestore 是文件資料庫。資料分成集合與文件。集合是一疊文�
 
 Authentication 管的是「這個人是誰」。前台用 Google 登入，後台用 email 與密碼。它不負責這個人能不能讀某一筆訂單。能不能讀寫是 Firestore 安全規則的事，留到最後一節。規則用 token 裡的 `sign_in_provider` 分辨這兩種登入。規則生效之前，資料庫先放在測試模式，種子才寫得進去。
 
-Spark 方案的「Other Authentication services」包含 email／密碼與 Google 這類登入，這兩項在免費用量內，不必另外付費購買 Google 登入，也不必綁付款方式。不要啟用電話驗證：簡訊按則計費，而且 Spark 不能用。不要升級 Firebase Authentication with Identity Platform。升級後計費方式不同：Spark 改為每日活躍使用者上限，Blaze 超過免費用量才計費。這一章不用多重要素驗證、SAML、blocking functions。
+這一章只開 email／密碼與 Google 兩種登入，開通前可在 Firebase 的價格頁確認目前的免費額度。不要啟用電話驗證：簡訊按則計費，專案得連結 Cloud Billing 帳戶才能使用。也不要升級 Firebase Authentication with Identity Platform，升級後改用另一套計費方式，這一章用不到多重要素驗證、SAML 與 blocking functions。
 
 {% note info %}
 **金鑰會出現在前端**
@@ -138,14 +142,14 @@ Spark 方案的「Other Authentication services」包含 email／密碼與 Googl
 
 **解析**
 
-- 集合裡可以沒有文件。第一次讀 `tours` 會得到空陣列，不是例外。
-- 文件 id 可以自己指定，也可以讓 Firestore 產生。行程用前者，訂單用後者。
+- 集合還沒有任何文件時，第一次讀 `tours` 會得到空陣列，不是例外。
+- 文件 id 可以自己指定，也可以讓 Firestore 產生。種子與編輯既有行程用指定的 id，後台新增的行程與每筆訂單由 Firestore 產生。
 - Authentication 的登入狀態由 SDK 記在這台瀏覽器。`loader` 會先等 `auth.authStateReady()`，再讀 `currentUser`。
-- 測試模式約 30 天內允許所有讀寫。它不是這一章的正式規則。
+- 測試模式會開放所有人讀寫，主控台還會限期關閉（天數以建立時畫面為準）。它只適合開發，不是這一章的正式規則。
 
 ## 建立專案與初始化
 
-設定只寫在這三個地方：Firebase 主控台的專案、本機的 `.env.local`、`src/firebase.js`。後面的服務函式只向 `firebase.js` 拿 `db` 與 `auth`，不再抄金鑰。
+設定只寫在三個地方：Firebase 主控台的專案、本機的環境變數檔 `.env.local`、初始化檔 `src/firebase.js`。後面的服務函式只向初始化檔拿資料庫與驗證物件，不再抄金鑰。
 
 ### 步驟 1：建立 Firebase 專案
 
@@ -161,7 +165,7 @@ Authentication 的登入方式先不要開。Google 留到前台登入那一節�
 
 ### 步驟 3：環境變數
 
-Vite 只把以 `VITE_` 開頭的變數放進瀏覽器端的 `import.meta.env`。沒有這個前綴的變數，元件讀不到。範例檔進版控，值留空。真正的金鑰寫在 `.env.local`，這個檔名已經被 `*.local` 忽略。再補上 `.env` 與 `.env.*`，避免有人把金鑰寫進別的檔名後 commit。`!.env.example` 必須放在 `.env.*` 後面，範例檔才不會被一起忽略。
+Vite 只把以 `VITE_` 開頭的變數放進瀏覽器端，沒有這個前綴的變數，元件讀不到。範例檔進版控、值留空，真正的金鑰寫在 `.env.local`，這個檔名已被忽略規則涵蓋。下面的修改再補上其他 `.env` 開頭的檔名，避免有人把金鑰寫進別的檔名後 commit；範例檔用反向規則排除，而且必須放在後面，才不會被一起忽略。
 
 ```diff 07-project-final/.gitignore
  *.local
@@ -181,7 +185,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
-複製範例再填值。主控台的 `apiKey` 填進 `VITE_FIREBASE_API_KEY`，其餘欄位同樣加上 `VITE_FIREBASE_` 前綴，駝峰改成大寫底線。
+複製範例再填值。主控台設定物件的欄位名稱，加上 `VITE_FIREBASE_` 前綴並把駝峰改成大寫底線，就是變數名稱，例如 `apiKey` 對應 `VITE_FIREBASE_API_KEY`。
 
 ```bash
 cp .env.example .env.local
@@ -191,12 +195,12 @@ cp .env.example .env.local
 
 {% note info %}
 **還沒有金鑰也能打包**
-`.env.local` 留空時，後面的頁面會顯示尚未設定。`pnpm build` 不會因為缺少金鑰失敗。要讓打包後的網站真的連上 Firebase，得在有填好 `.env.local` 的電腦上建置。
+`.env.local` 留空時，後面的頁面會顯示尚未設定，`pnpm build` 也不會因為缺少金鑰失敗。要讓打包後的網站真的連上 Firebase，得在有填好金鑰的電腦上建置。
 {% endnote %}
 
 ### 步驟 4：安裝 SDK 並初始化
 
-在專案資料夾安裝 Firebase。pnpm 12 預設不執行依賴的安裝腳本，除非在 `pnpm-workspace.yaml` 明確允許。`@firebase/util` 與 `protobufjs` 的 postinstall 是套件自己的準備步驟，允許之後 `pnpm install` 才會以成功結束。
+在專案資料夾安裝 Firebase。pnpm 12 預設不執行依賴的安裝腳本，除非在 `pnpm-workspace.yaml` 明確允許。Firebase 依賴的兩個套件各有 `postinstall`（套件自己的準備步驟），允許之後 `pnpm install` 才會以成功結束。
 
 先安裝套件。
 
@@ -235,7 +239,7 @@ pnpm 12 要允許套件的 postinstall，安裝才會成功結束。
 
 - `pnpm-workspace.yaml` 明確允許 `@firebase/util` 與 `protobufjs` 的安裝腳本。
 
-初始化集中在一個檔。沒有 `apiKey` 或 `projectId` 時不呼叫 `initializeApp`，開發伺服器不會在啟動當下因空設定崩潰。熱更新會再執行這個檔，已經建立過的 App 就沿用。
+初始化集中在一個檔。缺少金鑰或專案 id 時不呼叫 `initializeApp`，開發伺服器就不會在啟動當下因空設定崩潰。熱更新會再執行這個檔，已經建立過的 App 就沿用。
 
 ```js 07-project-final/src/firebase.js
 import { getApps, initializeApp } from 'firebase/app';
@@ -268,19 +272,25 @@ export const auth = app ? getAuth(app) : null;
 
 **解析**
 
-- `firebaseReady` 為假時，`db` 與 `auth` 都是 `null`。頁面讀取時才丟出 `missingFirebaseMessage`，這句話只宣告在這個檔。
+- `firebaseReady` 為假時，資料庫與驗證物件都是 `null`。服務函式被呼叫時才丟出錯誤，錯誤文字只宣告在這個檔。
 - `getFirestore` 與 `getAuth` 拿到的是同一份 App 上的兩項服務。
 - 環境變數在建置時被寫進產物。沒有填值的建置，連線用的字串是空的。
 
-# 讀寫介面
+# 選讀：讀寫介面
 
-頁面不要直接呼叫 Firestore。讀寫收成 `src/api.js` 的服務函式。路由的 `loader` 呼叫這些函式，頁面用 `useLoaderData` 接結果。非預期的失敗交給 `errorElement`。讀取中由版型的 `useNavigation` 顯示。
+頁面不要直接呼叫 Firestore。讀寫收成 `src/api.js` 的服務函式，路由的 `loader` 呼叫它們，頁面用 `useLoaderData` 接結果。非預期的失敗交給錯誤頁，讀取中的提示由版型顯示。
 
 ## 服務函式
 
-`src/api.js` 是這一章唯一會 import Firestore 方法的檔。`database` 在每次讀寫時檢查 `db`。沒有初始化就丟出上面那句錯誤，呼叫端用 `catch` 接。
+`src/api.js` 是這一章唯一讀寫 Firestore 文件的檔。每次讀寫都先檢查資料庫是否已初始化，沒有就丟出上面那句錯誤，呼叫端用 `try/catch` 接。
 
-`getDocs` 讀整個集合，`getDoc` 讀一份文件。`setDoc` 寫到指定 id，行程用這個，id 就是切版裡的 `tour.id`。`addDoc` 讓 Firestore 產生 id，訂單用這個。`updateDoc` 只改帶上去的欄位。`serverTimestamp` 由伺服器填寫入時間，清單依它由新到舊。
+服務函式主要用到下面幾個 Firestore 方法，另有 `query`、`where`、`orderBy` 組出查詢條件，`deleteDoc` 刪除文件。
+
+- `getDocs` 讀整個集合，`getDoc` 讀一份文件。
+- `setDoc` 寫到指定 id。種子與編輯既有行程用它，id 就是切版裡的 `tour.id`。
+- `addDoc` 讓 Firestore 產生 id。訂單與後台新增的行程用它。
+- `updateDoc` 只改帶上去的欄位。
+- `serverTimestamp` 由伺服器填寫入時間，清單依它由新到舊。
 
 種子函式走訪 `src/features/tours/mock.data.js`。文件已經存在就略過，所以按鈕可以重複按，不會蓋掉主控台裡改過的欄位。回傳值是這次新寫入的筆數。主題選項仍寫在程式裡的同一份清單，行程文件只存 `theme` 字串，不必另做主題資料表。
 
@@ -381,18 +391,18 @@ export const updateOrderStatus = async (id, status) => {
 
 **解析**
 
-- 回傳的物件帶上 `id`。畫面的 `key` 與網址用的是這個欄位，不是 Firestore 內部另存的一份。
+- 回傳的物件把文件編號放進 `id`，畫面的 `key` 與網址都用這個欄位。
 - `getTour` 找不到文件時回傳 `null`，詳情頁把它畫成找不到頁面。
-- `getOrder` 寫法相同，讀的是 `orders` 集合。文件不存在時回傳 `null`。規則不允許讀時，`getDoc` 會失敗，完成頁同樣畫成找不到頁。`id` 是 `addDoc` 產生的文件編號，能不能讀由規則把關：主人或管理員才讀得到。
-- `createOrder` 把呼叫端傳來的欄位原樣寫入，其中包含 `uid`。回傳的物件帶上 `addDoc` 產生的 `id`，還不含伺服器時間戳。完成頁用這個 id 再呼叫 `getOrder` 讀一次。
+- `getOrder` 讀 `orders` 集合的一份文件，不存在時回傳 `null`。規則不允許讀時 `getDoc` 會失敗，完成頁同樣畫成找不到頁；能不能讀由規則把關，只有主人或管理員讀得到。
+- `createOrder` 把呼叫端傳來的欄位原樣寫入，其中包含 `uid`。回傳的物件帶上 Firestore 產生的文件編號，還不含伺服器時間戳；完成頁用這個編號再讀一次訂單。
 - `listOrders` 的 `orderBy('createdAt')` 是單一欄位排序，Firestore 會自動建索引。每筆訂單都要有 `createdAt`，缺了這個欄位的文件不會出現在結果裡。管理員清單用這個函式。
-- `listMyOrders` 只下 `uid` 條件。`where` 再加 `orderBy` 會要複合索引，所以新到舊的排序放在瀏覽器。
+- `listMyOrders` 只下 `uid` 條件。同時加上排序會要求複合索引，所以新到舊的排序放在瀏覽器。
 
 ## 路由上的讀取
 
-切版的 `loader` 已經會呼叫 `store.js`。這一章把那些呼叫換成 `api.js`，並刪掉記憶體模組。等待中的畫面放在 `SiteLayout`：`useNavigation().state === 'loading'` 時，在 `Outlet` 上面顯示「讀取中」。`loader` 丟出的錯誤仍進到沒有 `path` 的那層 `errorElement`。
+切版的 `loader` 原本呼叫記憶體模組，這一章換成 `api.js` 並刪掉記憶體模組。換頁讀取中的提示放在 `SiteLayout`：導覽狀態是 `loading` 時，在內容區上方顯示「讀取中」。`loader` 丟出的錯誤仍進到沒有路徑的那層路由上的錯誤頁。
 
-沒有填 Firebase 時，讀取函式回傳 `{ firebaseReady: false }`，頁面渲染 `AccessNotice` 的 `MissingFirebase`，裡面是 `missingFirebaseMessage`。這不是例外，所以不會進到錯誤頁。
+沒有填 Firebase 時，讀取函式回傳 `{ firebaseReady: false }`，頁面改渲染 `MissingFirebase`，顯示未設定的說明。這不是例外，所以不會進到錯誤頁。
 
 先刪掉記憶體模組。
 
@@ -474,15 +484,17 @@ export default function SiteLayout() {
 
 **解析**
 
-- `SiteLayout` 在 `loading` 時多一行「讀取中」。送出表單時的 `submitting` 不在這裡顯示，按鈕自己看 `useNavigation`。
+- `SiteLayout` 在 `loading` 時多一行「讀取中」。送出表單時的 `submitting` 狀態不在這裡顯示，由按鈕自己依 `useNavigation` 處理。
 
-# 接到畫面
+# 選讀：接到畫面
 
-服務函式接上之後，首頁、行程列表與詳情改由 `loader` 呼叫 `listTours` 或 `getTour`。種子頁把 `mock.data.js` 寫進 `tours`，而且要先通過管理員檢查。報名與我的報名改走訂單文件，並帶上登入者的 `uid`。
+服務函式接上之後，首頁、行程列表與詳情的 loader 改呼叫服務函式讀行程。種子頁把範例行程寫進雲端，而且要先通過管理員檢查。報名與我的報名改走訂單文件，並帶上登入者的 `uid`。
 
 ## 行程讀取與種子
 
-首頁、列表與詳情的 `loader` 先看 `firebaseReady`。還沒設定就回傳空清單或 `null`，頁面改畫 `MissingFirebase`。詳情找不到文件時丟 404，導向路由上最近的 `errorElement`。種子頁的 `loader` 使用 `requireAdmin`。不是密碼登入時回傳 `denied: true`，頁面顯示警告與前往後台登入的按鈕。
+首頁、列表與詳情的 loader 先看 `firebaseReady`。還沒設定就回傳空清單或空值，頁面改畫「未設定」的提示。詳情找不到文件時丟 404，導向路由上最近的錯誤頁。
+
+種子頁的 loader 使用 `requireAdmin`；不是密碼登入時，頁面顯示警告與前往後台登入的按鈕。
 
 先改首頁的 `loader` 與畫面。
 
@@ -769,12 +781,10 @@ export default function SeedPage() {
 
 **解析**
 
-- `/seed` 的 `action` 呼叫 `seedTours`。已存在的文件略過。未登入會被 `requireAdmin` 帶到 `/login?next=...`。
+- 種子頁的 `action` 呼叫 `seedTours`，已存在的文件略過。未登入會被 `requireAdmin` 帶到登入頁。
 - Google 帳號進得了種子網址，但 `denied` 為真，畫面停在說明，不會呼叫寫入。
 
-詳情頁的名額不再掃訂單。梯次、報名卡與手機出發日改顯示每團名額。
-
-出發日列表改顯示每團名額。
+詳情頁的名額不再掃訂單，出發日列表、報名卡與手機出發日三處都改顯示每團名額。先改出發日列表。
 
 ```jsx 07-project-final/src/features/tours/components/DepartureList.jsx
 import { Link } from 'react-router';
@@ -811,7 +821,7 @@ export default function DepartureList({ tour }) {
 
 - 不再呼叫 `seatsLeft` 去掃訂單。畫面上的名額改讀梯次自己的 `capacity`。
 
-報名卡同樣改顯示每團名額。
+報名卡改法相同。
 
 ```jsx 07-project-final/src/features/tours/components/BookingCard.jsx
 import { Link } from 'react-router';
@@ -840,7 +850,7 @@ export default function BookingCard({ tour, selected, onSelect, bookTo }) {
           <dd>{tour.departures[0]?.capacity ?? 8} 人</dd>
         </div>
       </dl>
-      <div className="mt-6 grid gap-3">
+      <div className="mt-6 divide-y divide-line border-y border-line">
         {tour.departures.map((departure) => {
           const on = departure.id === selected.id;
           return (
@@ -848,7 +858,8 @@ export default function BookingCard({ tour, selected, onSelect, bookTo }) {
               key={departure.id}
               type="button"
               onClick={() => onSelect(departure.id)}
-              className={`rounded-card border px-4 py-3 text-left ${on ? 'border-action bg-mist' : 'border-line bg-white'}`}
+              aria-pressed={on}
+              className={`block w-full px-3 py-3 text-left ${on ? 'bg-mist text-action' : ''}`}
             >
               <span className="block font-medium">{departure.date}</span>
               <span className="text-base text-muted">
@@ -875,7 +886,7 @@ export default function BookingCard({ tour, selected, onSelect, bookTo }) {
 
 - 名額來源與出發日列表相同，改讀該梯的 `capacity`。
 
-手機出發日一併對齊。
+手機出發日最後對齊。
 
 ```jsx 07-project-final/src/features/tours/components/MobileDepartures.jsx
 import Typography from '@mui/material/Typography';
@@ -901,11 +912,15 @@ export default function MobileDepartures({ tour }) {
 
 ## 登入、頁首與報名
 
-根路由的 `id` 是 `root`，`loader` 是 `auth.js` 的 `rootLoader`。它等待 `auth.authStateReady()`，回傳目前的使用者快照。頁首用 `useRouteLoaderData('root')` 讀這份結果。登出是對 `/logout` 的 `fetcher` POST，`action` 呼叫 `signOut` 再 `redirect('/')`。
+根路由取名為 root，它的 `loader` 是 `rootLoader`：等驗證狀態確定後，回傳目前的使用者快照。
 
-`requireUser` 在沒有使用者時丟出 `redirect` 到 `/login?next=...`。`safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑。登入頁的 `action` 呼叫 `signInWithPopup`，成功後 `redirect` 到 `next`。頁面沒有在 effect 裡 `navigate`。
+頁首用 `useRouteLoaderData('root')` 讀這份結果。登出是對 `/logout` 的 `fetcher` POST，`action` 呼叫 `signOut` 再導回首頁。
 
-報名頁的 `loader` 同樣先 `requireUser`。表單改為唯讀的姓名與 email，電話仍手填。`action` 呼叫 `createOrder`，帶上 `uid`，再 `redirect` 到 `/booking/${id}`。
+未登入時，`requireUser` 丟出重新導向到前台登入頁 `/login`（後台也一樣），網址帶 `next` 記住原本要去的頁面。`safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑，避免被導去外部網站。
+
+登入頁的 action 呼叫 `signInWithPopup`，成功後導向 `next`。這個彈出視窗要先在主控台啟用 Google 登入：Authentication 的「登入方式」新增提供者 Google，開啟後選一個專案支援電子郵件並儲存。本機測試時，授權網域需含 `localhost`（見最後一節）。
+
+報名頁的 `loader` 同樣先 `requireUser`。表單改為唯讀的姓名與 email，電話仍手填。送出時 `action` 呼叫 `createOrder`，帶上登入者的 `uid`，再導向以訂單編號為網址的完成頁。
 
 先寫驗證相關的服務函式。
 
@@ -967,13 +982,14 @@ export const logoutAction = async () => {
 **解析**
 
 - `session` 在沒有初始化時回傳 `firebaseReady: false` 與 `user: null`。有初始化才等 auth 狀態。
-- `requireUser` 未登入時丟出 `redirect('/login?next=...')`。`requireAdmin` 先經過 `requireUser`，再檢查 `provider === 'password'`。
-- `safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑。`rootLoader` 回傳目前的使用者快照。登出的 `action` 呼叫 `signOut` 再 `redirect('/')`。
+- `requireUser` 未登入時丟出重新導向到登入頁。`requireAdmin` 先做同樣的登入檢查，再確認登入方式是密碼（`provider === 'password'`）。
+- `safeNext` 只接受以單斜線開頭、且不是 `//` 的路徑。`rootLoader` 回傳目前的使用者快照。登出的 action 呼叫 `signOut` 再導回首頁。
 
-根路由補上 `id: 'root'`、`rootLoader`，並加上 `/logout`。
+根路由補上 id、`rootLoader`，並加上 `/logout` 這條路由。
 
 ```jsx 07-project-final/src/App.jsx
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import { logoutAction, logoutLoader, rootLoader } from './auth.js';
 import SiteLayout from './layout/SiteLayout.jsx';
 import HomePage, { loader as homeLoader } from './features/home/HomePage.jsx';
@@ -1285,12 +1301,7 @@ export default function LoginPage() {
   return (
     <main className="flex-1">
       <title>用 Google 帳號繼續 · 洛奇旅行</title>
-      <Dialog
-        open
-        onClose={() => navigate('/')}
-        fullWidth
-        maxWidth="xs"
-      >
+      <Dialog open onClose={() => navigate('/')} fullWidth maxWidth="xs">
         <DialogTitle className="font-serif text-4xl leading-tight">
           用 Google 帳號繼續
         </DialogTitle>
@@ -1323,7 +1334,7 @@ export default function LoginPage() {
 
 **解析**
 
-- Google 視窗由 `signInWithPopup` 打開。取消或失敗時 `action` 回傳錯誤，`useActionData` 顯示在對話框裡。成功後 `redirect` 到 `next`。頁面沒有在 effect 裡 `navigate`。
+- Google 視窗由 `signInWithPopup` 打開。取消或失敗時 action 回傳錯誤，`useActionData` 顯示在對話框裡。成功後導向 `next`，頁面沒有在 effect 裡手動換頁。
 
 報名頁的 `loader` 先 `requireUser`。
 
@@ -1365,7 +1376,7 @@ export const action = async ({ request }) => {
     return {
       error:
         name.trim() && email.includes('@')
-          ? '請填電話'
+          ? '請填電話，此欄必填'
           : '請確認 Google 帳號帶有姓名與 email，並填電話',
     };
   const row = await createOrder({
@@ -1406,7 +1417,7 @@ export default function BookingPage() {
 
 **解析**
 
-- 未登入會被帶到 `/login?next=...`。`action` 呼叫 `createOrder`，帶上 `uid`，再 `redirect` 到 `/booking/${id}`。
+- 未登入會被帶到登入頁，網址帶 `next`。`action` 呼叫 `createOrder` 並帶上 `uid`，再導向完成頁（`/booking/` 加訂單編號）。
 
 報名表的姓名與 email 改成唯讀。
 
@@ -1561,7 +1572,7 @@ export default function BookingResultPage() {
 
 **解析**
 
-- `loader` 用 `getOrder`。找不到時丟 404，導向路由上最近的 `errorElement`。
+- `loader` 用 `getOrder`。找不到、規則不允許讀，或訂單的 `uid` 不是目前登入者時，都丟 404，導向路由上最近的 `errorElement`，畫出找不到頁面。
 
 明細跟著改讀這一筆訂單。
 
@@ -1681,9 +1692,9 @@ export default function MyBookingsPage() {
 
 **解析**
 
-- `loader` 先 `requireUser`，再呼叫 `listMyOrders(uid)`，不再讀 `mySamples`。
+- loader 先 `requireUser`，再呼叫 `listMyOrders(uid)`，不再讀 mySamples。
 
-報名種子補上 `uid`，對應 Firestore 訂單的欄位。`mySamples` 仍留在檔裡，但我的報名已改讀 `listMyOrders`，不再 import 它。
+報名種子補上 `uid`，對應 Firestore 訂單的欄位。範例資料仍留在檔裡，但我的報名已改讀雲端訂單，不再使用它。
 
 ```js 07-project-final/src/features/booking/mock.data.js
 /** 後台清單。姓名與「我的報名」範例不一致，兩頁各自照靜態模板。 */
@@ -1787,15 +1798,19 @@ export const mySamples = [
 
 - 後台那四筆種子補上 `uid`。`mySamples` 還在同一份檔裡，但我的報名不會再 import 它。
 
-# 管理員、規則與部署
+# 選讀：管理員、規則與部署
 
 前台已經能讀行程、能以 Google 帳號寫自己的訂單。這一節補上 email／密碼登入，後台清單改讀 Firestore，最後貼上安全規則，並把網站部署到 Firebase Hosting。
 
 ## 登入與受保護畫面
 
-後台登入頁的 `action` 呼叫 `signInWithEmailAndPassword`，成功後 `redirect('/admin')`。行程管理與報名清單的 `loader` 都呼叫 `requireAdmin`。沒有設定 Firebase 時頁面畫 `MissingFirebase`。已登入但不是密碼時畫 `AdminDenied`，並留一顆到 `/admin/login` 的按鈕。
+後台帳號要先在主控台準備：Authentication 的「登入方式」啟用「電子郵件／密碼」（不開電子郵件連結登入），再到「使用者」分頁新增一組 email 與密碼，這就是管理員。網站本身沒有註冊表單。
 
-行程的新增、修改與刪除仍是列表上的對話框。`useFetcher` 把表單送到這一條路由的 `action`，網址留在 `/admin`。`saveTour` 與 `deleteTour` 寫進 `tours`。
+後台登入頁的 action 呼叫 `signInWithEmailAndPassword`，成功後導向 `/admin/bookings`。
+
+行程管理與報名清單的 loader 都呼叫 `requireAdmin`。沒有設定 Firebase 時畫出未設定的提示；已登入但不是密碼登入時畫警告畫面，並留一顆到後台登入的按鈕。
+
+行程的新增、修改與刪除仍是列表上的對話框。`useFetcher` 把表單送到這一條路由的 `action`，網址留在 `/admin`；`action` 再呼叫服務函式把結果寫進雲端。
 
 先接後台登入頁。
 
@@ -1885,7 +1900,7 @@ export default function AdminLoginPage() {
 
 **解析**
 
-- 登入表單沒有 effect。錯誤訊息來自 `useActionData`，送出中用 `useNavigation` 停用按鈕。成功後 `redirect('/admin')`。
+- 登入表單沒有 effect。錯誤訊息來自 `useActionData`，送出中用 `useNavigation` 停用按鈕。成功後 `redirect('/admin/bookings')`。
 
 行程管理的 `loader` 改呼叫 `requireAdmin`，寫入改走 Firestore。
 
@@ -2032,7 +2047,7 @@ export default function AdminToursPage() {
         onClose={() => setDeletingTour(null)}
         onConfirm={() =>
           remove.submit(
-            { intent: 'delete', id: deletingTour.id },
+            { intent: 'delete', id: deletingTour?.id },
             { method: 'post' },
           )
         }
@@ -2046,11 +2061,12 @@ export default function AdminToursPage() {
 **解析**
 
 - `requireAdmin` 先經過 `requireUser`。未登入的人會離開這個網址；登入方式不對的人留在原頁，看到警告。
-- 刪除用 `remove.submit`，帶 `intent: 'delete'`。儲存由 `TourForm` 用 `key: 'tour-form'` 的 fetcher 送出草稿。頁面在渲染時比對尚未處理的結果，成功就關窗並把 `notice` 交給 `NoticeSnackbar`。打開 Dialog 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
+- 刪除用 `remove.submit` 送出，帶 `intent: 'delete'`。儲存由 `TourForm` 用 key 為 `tour-form` 的另一個 `fetcher` 送出草稿。
+- 頁面在渲染時比對尚未處理的結果，成功就關窗並把通知交給 `NoticeSnackbar`。打開 `Dialog` 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
 
 ## 訂單清單與狀態
 
-報名清單的 `loader` 呼叫 `listOrders`。改狀態的 `action` 呼叫 `updateOrderStatus`。對話框用 `useFetcher` 留在 `/admin/bookings`。訂單沒有實體刪除，狀態改成已取消就從作業流程拿掉，文件還在。
+報名清單的 `loader` 呼叫 `listOrders`，改狀態的 `action` 呼叫 `updateOrderStatus`。對話框用 `fetcher` 送出，網址留在 `/admin/bookings`。訂單沒有實體刪除，狀態改成已取消就從作業流程拿掉，文件還在。
 
 ```jsx 07-project-final/src/features/admin/AdminBookingsPage.jsx
 import { useState } from 'react';
@@ -2188,7 +2204,7 @@ export default function AdminBookingsPage() {
 **解析**
 
 - 篩選、搜尋與排序仍在瀏覽器裡做，對的是 `loader` 已經拿回來的陣列。
-- 狀態送出後 `loader` 重跑，列表換成雲端上的新狀態。頁面用 `key: 'booking-form'` 的 fetcher 在渲染時讀取結果，成功就關窗並寫入 `notice`。打開 Dialog 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
+- 狀態送出後 loader 重跑，列表換成雲端上的新狀態。頁面用 key 為 `booking-form` 的 `fetcher` 在渲染時讀取結果，成功就關窗並寫入通知。打開 `Dialog` 時呼叫 `save.reset()`，避免重開時還顯示舊的錯誤。
 - 這一頁同樣先看 `firebaseReady` 與 `denied`，沒有通過就不會呼叫 `listOrders`。
 
 ## 安全規則與 Firebase Hosting
@@ -2197,7 +2213,9 @@ export default function AdminBookingsPage() {
 
 ### 步驟 1：貼上規則
 
-`tours` 任何人可讀，管理員可寫。種子與後台表單都走這條規則，所以要先用後台帳號登入再寫入。`orders` 的新增要已登入，而且新文件的 `uid` 等於 `request.auth.uid`，`status` 是 `pending`，姓名、email、電話是字串，人數是 1 到 8 的整數。讀取限文件主人或密碼登入的管理員。更新只限管理員。刪除不開放；把狀態改為已取消就是訂單的軟刪。
+`tours` 任何人可讀，管理員可寫。種子與後台表單都走這條規則，所以要先用後台帳號登入再寫入。
+
+`orders` 的新增要已登入，而且新文件的 `uid` 等於登入者的 `request.auth.uid`，狀態是 `pending`，姓名、email、電話是字串，人數是 1 到 8 的整數。讀取限文件主人或密碼登入的管理員，更新只限管理員，刪除不開放；把狀態改為已取消就是訂單的軟刪。
 
 ```text 07-project-final/firestore.rules
 rules_version = '2';
@@ -2240,7 +2258,7 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 - 未登入時，行程列表仍看得到。
 - 未登入時，`/booking` 會到 `/login?next=...`。Google 登入後送出的訂單帶有自己的 `uid`。
 - Google 登入者打不開 `/admin` 的表單，也打不開 `/admin/bookings` 的清單。email／密碼登入後可以新增、修改、刪除行程，也看得到全部訂單並能改狀態。
-- `/me` 只列出自己的 `uid`。未登入或 Google 登入時，`/seed` 會失敗；後台帳號登入後可以寫入種子。
+- `/me` 只列出自己的訂單。未登入打開 `/seed` 會被帶到登入頁，Google 登入則只看到說明；後台帳號登入後才能寫入種子。
 
 {% mermaid graph TD %}
   guest["未登入"] --> readTours["可讀 tours"]
@@ -2253,16 +2271,16 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 
 **解析**
 
-- `allow write` 涵蓋建立、更新與刪除。行程公開可讀，寫入限 `isAdmin()`。訂單的 `delete` 仍是 `false`，因為訂單是帳務紀錄，改為已取消即軟刪。
-- `isOwner` 比對文件上的 `uid` 與 `request.auth.uid`。`isAdmin` 再要求 `sign_in_provider == 'password'`。
+- `allow write` 涵蓋建立、更新與刪除。行程公開可讀，寫入限 `isAdmin()`。訂單不開放刪除（`delete` 為 false），因為訂單是帳務紀錄，改為已取消即軟刪。
+- `isOwner` 比對文件上的 uid 與登入者的 `request.auth.uid`。`isAdmin` 再要求登入方式是密碼。
 - `request.auth` 是 Authentication 帶上來的身分。沒登入時是 `null`。Google 登入時它不是 `null`，所以不能再用「有登入」代表管理員。
 - 新增時多檢查 `status`、姓名、email、電話與人數。表單仍先擋空的電話。規則擋的是直接呼叫 SDK 的請求。
 
 ### 步驟 2：部署到 Firebase Hosting
 
-第 12 篇用 Live Server 打開 `dist/` 時，內頁重新整理會拿到伺服器自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有 `index.html` 一張進入點，內頁的網址是前端路由。Firebase Hosting 用轉送把任意路徑都交給 `index.html`，由前端路由接著畫，這就是 SPA 要的設定。
+第 12 篇用 Live Server 打開 `dist/` 時，內頁重新整理會拿到伺服器自己的 404，因為磁碟上沒有 `/tours` 這種實體路徑。React 網站只有一張進入頁 `index.html`，內頁的網址是前端路由。Firebase Hosting 用轉送把任意路徑都交給它，由前端路由接著畫，這就是單頁應用（SPA）要的設定。
 
-在專案根目錄加上 `firebase.json`。`public` 指向打包後的 `dist`。`rewrites` 把所有路徑轉到 `/index.html`。
+在專案根目錄加上 `firebase.json`：對外提供的目錄指向打包後的 dist，轉送規則把所有路徑轉到 `/index.html`。
 
 ```json 07-project-final/firebase.json
 {
@@ -2281,11 +2299,11 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 
 **解析**
 
-- `public` 是 Hosting 對外提供的目錄，必須是 `pnpm build` 產出的 `dist/`，不是 `src/`。
-- `rewrites` 的 `source` 是 `**`，`destination` 是 `/index.html`。無論是 `/tours` 還是 `/booking/某段 id`，Hosting 都回這張進入點，不會先回 404。
+- `public` 是 Hosting 對外提供的目錄，必須是建置產出的 `dist/`，不是原始碼的 `src/`。
+- `rewrites` 的來源 `**` 代表所有路徑，目的地是 `/index.html`，而且只在該路徑沒有對應檔案時才轉送。無論是 `/tours` 還是 `/booking/` 加某段 id，Hosting 都回這張進入頁，不會先回 404。
 - 忽略清單把設定檔、隱藏檔與 `node_modules` 排除在上傳之外。`.env.local` 本來就不會進 `dist/`，發布前仍要確認它沒有被 commit。
 
-第 12 篇打包後的 JS 超過 500 kB，終端機會出現體積警告。這一節把 React、MUI 與 Firebase 拆成獨立檔，畫面不變。Firebase 那包大約 570 kB，`chunkSizeWarningLimit` 只把警告門檻調到 600，不改變檔案內容。金鑰在建置當下寫進這包。要發布能連線的版本，就在填好 `.env.local` 的電腦上執行 `pnpm build`。
+第 12 篇打包後的 JS 超過 500 kB，終端機會出現體積警告。這一節把 React、MUI 與 Firebase 拆成獨立檔，畫面不變。`chunkSizeWarningLimit` 只調整警告門檻，不改變檔案內容。
 
 ```diff 07-project-final/vite.config.js
  export default defineConfig({
@@ -2303,7 +2321,7 @@ Firestore 主控台打開規則分頁，用這份取代測試模式的內容，�
 +        codeSplitting: {
 +          groups: [
 +            {
-+              test: /node_modules\/(?:react-dom|react-router|\/react\/)/,
++              test: /node_modules\/(?:react|react-dom|react-router)\//,
 +              name: 'react',
 +            },
 +            {
@@ -2342,25 +2360,25 @@ pnpm build
 ```
 vite v8.3.5 building client environment for production...
 transforming...
-✓ 753 modules transformed.
+✓ 771 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/index.html                             1.28 kB │ gzip:   0.59 kB
-dist/assets/index-DN8BqvV-.css             26.99 kB │ gzip:   5.87 kB
+dist/assets/index-DH4_-ABJ.css             26.92 kB │ gzip:   5.83 kB
 dist/assets/rolldown-runtime-WkwZ5CU-.js    0.59 kB │ gzip:   0.36 kB
-dist/assets/index-tv_4qAQo.js              67.89 kB │ gzip:  19.56 kB
-dist/assets/react-DvrgipTh.js             304.79 kB │ gzip:  96.20 kB
-dist/assets/mui-HmigsoZj.js               314.62 kB │ gzip:  95.16 kB
-dist/assets/firebase-D9Cpe2Kg.js          569.15 kB │ gzip: 170.61 kB
+dist/assets/index-DyVrHxsD.js             110.78 kB │ gzip:  35.10 kB
+dist/assets/react-H9wOv-UQ.js             318.42 kB │ gzip: 100.36 kB
+dist/assets/mui-BUB7IzpO.js               301.53 kB │ gzip:  90.84 kB
+dist/assets/firebase-C_y40IS3.js          569.17 kB │ gzip: 170.63 kB
 
-✓ built in 521ms
+✓ built in 2.61s
 ```
 
 **解析**
 
-- React、MUI、Firebase 會變成 `dist/assets/` 裡分開的 JS。檔名後面的雜湊會隨內容改變。
+- 檔名後面的雜湊會隨內容改變，每個拆出來的檔案各有一份。
 
-若專案根目錄還沒有 `.firebaserc`，先用 Firebase CLI 對到這個專案，再部署：
+若專案根目錄還沒有 `.firebaserc`，先安裝 Firebase CLI（套件 `firebase-tools`），用 `firebase login` 登入，再用 `firebase use` 選定這個專案，最後部署。
 
 ```bash
 firebase deploy
@@ -2368,21 +2386,21 @@ firebase deploy
 
 **解析**
 
-- `dist/` 已在 `.gitignore`。要更新線上網站時，先 `pnpm build` 再 `firebase deploy`，不要把 `node_modules` 推進去。
-- 授權網域預設包含 `localhost`。發布後若使用 Firebase 給的網域或自訂網域，再把那個網域加進 Authentication 的授權網域。
+- 建置產物資料夾已在 `.gitignore`，不會進版控。更新線上網站時，先 `pnpm build` 再 `firebase deploy`。
+- 2025 年 4 月 28 日之後建立的專案，授權網域預設不含 `localhost`；本機測試登入前，先到 Authentication 的設定頁手動加入。發布後若使用 Firebase 給的網域或自訂網域，再把那個網域加進 Authentication 的授權網域。
 
 # 本篇重點回顧
 
-- 前台用 `signInWithPopup` 做 Google 登入。訂單寫入 `uid`。`/me` 用 `where('uid', '==', user.uid)` 讀自己的訂單。
+- 前台用 `signInWithPopup` 做 Google 登入。訂單寫入 uid，我的報名只查自己的 uid。
 - 後台用 `signInWithEmailAndPassword`。管理員帳號在主控台手動新增。網站沒有 email 註冊表單。
-- 主控台啟用「Google」與「電子郵件／密碼」。不要啟用電話。不要升級 Identity Platform。
+- 主控台的 Authentication 啟用「Google」與「電子郵件／密碼」。不要啟用電話。不要升級 Identity Platform。
 - Firebase 的網頁設定放在 `.env.local`，以 `VITE_` 開頭。範例檔是 `.env.example`。金鑰不要 commit。
-- `src/api.js` 集中 Firestore 讀寫。頁面用 `loader` 與 `useLoaderData` 接結果，非預期錯誤進 `errorElement`。讀取中由 `useNavigation` 顯示在版型裡。
-- `/seed` 把 `mock.data.js` 寫進 `tours`，`loader` 要求管理員。已存在的文件略過。Google 帳號只看到說明，不會寫入。
+- `src/api.js` 集中 Firestore 讀寫。頁面透過 loader 接結果，非預期錯誤進錯誤頁，讀取中的提示顯示在版型裡。
+- 種子頁把範例行程寫進 `tours`，`loader` 要求管理員。已存在的文件略過，Google 帳號只看到說明，不會寫入。
 - 未登入進報名或後台時，`loader` 重新導向 `/login?next=...`。密碼以外的帳號留在後台頁，看到警告與按鈕。登出是對 `/logout` 的 POST。
 - `firestore.rules` 讓行程公開可讀、管理員可寫。訂單的讀取限主人或密碼登入者，更新只限密碼登入者，刪除不開放；改為已取消即軟刪。
-- 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到或沒有權限就渲染 `NotFoundPage`。
-- 部署使用 Firebase Hosting：`firebase.json` 的 `public` 是 `dist`，`rewrites` 把所有路徑轉到 `/index.html`，內頁重新整理才不會先拿到主機的 404。`rolldownOptions` 的 `codeSplitting` groups 把 React、MUI 與 Firebase 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
+- 完成頁依網址上的訂單 id 呼叫 `getOrder`。讀不到、沒有權限或不是自己的訂單，就丟 404，由錯誤頁畫出找不到頁面。
+- 部署使用 Firebase Hosting：`firebase.json` 的轉送規則把所有路徑交給 `/index.html`，內頁重新整理才不會先拿到主機的 404。React、MUI 與 Firebase 用 `codeSplitting` 拆檔。連得上雲端的產物，要在有 `.env.local` 的電腦上建置。
 
 # 專有名詞中英對照
 
@@ -2417,7 +2435,6 @@ firebase deploy
 
 ## 接到畫面
 
-- 查詢快照（query snapshot）
 - 文件識別碼（document id）
 - 使用者識別碼（uid）
 - 彈出視窗登入（signInWithPopup）

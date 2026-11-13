@@ -10,7 +10,7 @@ date: 2026-08-30 10:06:00
 
 ![](assets/images/banner/js.png)
 
-瀏覽器把這一頁收成物件之後，JavaScript 才碰得到畫面。這一篇從 window 與 document 開始，接著選取、改寫、建立節點，再把點擊、輸入與送出接上函式。最後用一份資料重畫清單。網路請求與瀏覽器儲存留到下一篇。
+瀏覽器把分頁與這一份 HTML 都收成物件，JavaScript 才碰得到畫面。這一篇先分清 BOM 與 DOM，並決定 script 何時執行；接著選取、改寫與建立節點，再用事件與表單接上使用者的操作，最後讓清單由一份狀態重畫出來。選讀補充瀏覽紀錄、視窗尺寸、剪貼簿與列印、navigator、requestAnimationFrame、事件的捕獲與冒泡，以及打地鼠小遊戲。網路請求與瀏覽器儲存留到下一篇。
 
 <!-- more -->
 
@@ -20,7 +20,7 @@ JavaScript 在瀏覽器裡不是獨自存在，它一開始就站在分頁提供
 
 ## BOM 與 DOM
 
-瀏覽器物件模型（Browser Object Model）描述分頁本身，文件物件模型（Document Object Model）描述這一份 HTML。文件物件掛在分頁物件上，所以改網址與改標題是兩層不同的物件，卻從同一個起點走下去。
+瀏覽器給 JavaScript 兩組物件：瀏覽器物件模型（Browser Object Model，簡稱 BOM）描述分頁與瀏覽器本身，文件物件模型（Document Object Model，簡稱 DOM）描述分頁裡的這一份 HTML。文件物件掛在分頁物件底下，所以改網址與改標題是兩層不同的物件，卻從同一個起點走下去。
 
 {% mermaid graph LR %}
 windowNode["window"] --> locationNode["location"]
@@ -29,13 +29,16 @@ windowNode --> navigatorNode["navigator"]
 windowNode --> documentNode["document"]
 {% endmermaid %}
 
+location 是目前網址，history 是這個分頁的瀏覽紀錄，navigator 是瀏覽器與裝置的資訊，三者屬於 BOM，下一章逐一使用。document 屬於 DOM，之後操作畫面都從它開始。這一節先看 window 與 document 的關係，再看文件如何組成一棵樹。本章的輸出區塊只列出 Console 的文字內容，和實際畫面（行號、顏色）略有不同。
+
 ### window 與 document
 
-window 代表這個分頁，是瀏覽器裡的全域物件。document 是它的一個屬性，指向目前這份文件。這一節只確認兩者的關係，還不改畫面上的文字。
+window 是瀏覽器分頁裡的全域物件，也就是程式隨處讀得到的最外層物件。document 掛在它身上，兩種寫法拿到的是同一個東西。
 
 **觀念**
 
-瀏覽器分頁的全域物件是 window，文件物件 document 就掛在它身上，兩種讀法拿到的是同一個物件。用 const 宣告的名字留在程式裡，不會自動變成這個全域物件的屬性。
+- 直接寫 document，瀏覽器會往全域物件找，找到的就是 window 上的那一份。同理，瀏覽器提供的函式例如 setTimeout 也掛在 window 上，所以平常可省略前綴。
+- 自己用 const 或 let 宣告的名字留在程式裡，不會變成 window 的屬性。只有舊式的 var 會，這是現在不用它的原因之一。
 
 ```html 04-js/pages/85-js-window.html
 <!DOCTYPE html>
@@ -60,53 +63,25 @@ window 代表這個分頁，是瀏覽器裡的全域物件。document 是它的�
 
 **解析**
 
-- 第一行是 true，因為全域物件的 window 屬性還是指回自己。
-- 第二行是 true，直接寫 document 就是在讀 window 上的那份文件。
-- course 用 const 宣告，第三行印出 undefined，它沒有被掛到 window 上。
-- 舊式的 var 才會變成全域物件的屬性。這一課不使用那種宣告。
+- 第一行是 true，因為 window 上有個屬性叫 window，指回它自己。
+- 第二行是 true，直接寫的 document 就是 window 的那份文件。
+- 第三行是 undefined，course 只活在這段程式裡，並沒有被掛到 window 上。
 
 ```text
 true
 true
 undefined
 ```
-
-{% note success %}
-**換你試試：**
-在最後再印出 `'setTimeout' in window`。確認計時器函式一開始就在全域物件上。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-setTimeout 是瀏覽器放在 window 上的函式，所以 in 的結果是 true。course 仍然不是 window 的屬性，第三行還是 undefined。
-
-```diff 04-js/pages/85-js-window.html
-  // ...
-        const course = 'DOM';
-        console.log(window.course);
-+       console.log('setTimeout' in window);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-true
-true
-undefined
-true
-```
-
-</details>
 
 ### DOM 樹
 
-document 裡面的標籤會組成一棵樹。html 是樹根元素，head 與 body 是它的兩個子元素，你寫在 body 裡的標題與段落再往下長。程式之後都是沿著這棵樹找到節點。
+document 裡面的標籤會組成一棵樹，上層元素包著下層元素。html 是樹根，head 與 body 是它的兩個子元素，寫在 body 裡的標題與段落再往下長。程式之後都是沿著這棵樹找到節點。
 
 **觀念**
 
-文件節點的最外層元素可以用 documentElement 拿到，它就是 html。head 與 body 則是 document 上現成的兩個屬性，對應樹的左右兩枝。這一節只印出標籤名，往下數子節點留到選取那一節。
+- 最外層的 html 元素用 document.documentElement 拿到。
+- head 與 body 是 document 上現成的屬性，對應樹的兩枝。
+- 這一節只印出標籤名；怎麼往下找 main、標題與段落，留到選取元素那一節。
 
 {% mermaid graph TD %}
 documentNode["document"] --> htmlNode["html"]
@@ -142,94 +117,33 @@ mainNode --> pNode["p 段落"]
 
 **解析**
 
-- 第一行是 HTML，也就是畫面上那棵樹的根元素。
-- 第二行是 HEAD，第三行是 BODY，對應 html 底下的兩枝。
-- 標籤名由 tagName 讀出時是大寫。
-- body 裡的 main、標題與段落已經在樹上，這一支程式還沒有走下去讀它們。
+- 第一行是 HTML，第二行是 HEAD，第三行是 BODY。HTML 文件裡的標籤名由 tagName 讀出時一律是大寫。
+- 這支程式只讀了樹的第一層，沒有走進 main 底下，那部分留到選取元素。
 
 ```text
 HTML
 HEAD
 BODY
 ```
-
-{% note success %}
-**換你試試：**
-再印出 document.title。它應是這份 HTML 的 title，也就是「DOM 樹」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-title 是文件的標題文字，讀的是 head 裡的 title 元素。前三行的標籤名不變。
-
-```diff 04-js/pages/86-js-dom-tree.html
-  // ...
-        console.log(document.head.tagName);
-        console.log(document.body.tagName);
-+       console.log(document.title);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-HTML
-HEAD
-BODY
-DOM 樹
-```
-
-</details>
 
 ## script 載入時機
 
-瀏覽器由上往下讀 HTML。script 若在元素還沒被讀到時就執行，文件裡的 body 仍是 null，後面的程式就會失敗。這一節看四種做法：把 script 放在 body 尾端、加上 defer、等 DOMContentLoaded，以及模組腳本。
+瀏覽器由上往下讀 HTML，讀到 script 就先執行它。如果 script 寫在元素之前，執行當下那些元素還不在樹上，連 body 都還是 null，後面的程式就會失敗。這一節看幾種讓程式晚一點執行的做法，由簡單到常用依序介紹。
+
+**一覽**
+
+- 放在 body 尾端：最直接，前面的元素都讀完了才輪到程式。
+- `defer`：script 可以留在 head，等整份 HTML 解析完才執行，要搭配外部檔。
+- `DOMContentLoaded`：程式自己登記一個事件，等文件解析完再跑。
+- 模組腳本：預設就有 defer 的時機，是選讀。
 
 ### 放在 body 尾端
 
-上一篇的課堂 demo 把 script 放在 body 最後。放在最後時，前面的元素已經進到樹上，程式讀得到 body。外部檔是實務做法；為了閱讀方便，課堂 demo 把程式寫在同一份 HTML 裡。
+最簡單的辦法是把 script 寫在要用的元素後面。瀏覽器讀到它時，前面的元素都已經在樹上。
 
 **觀念**
 
-瀏覽器讀到沒有 defer 的 script 會先停下來執行，再繼續往下讀 HTML。把 script 放在 body 尾端，執行當下 body 已經存在，tagName 讀得到。
-
-```html 04-js/pages/87-js-script-end.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>script 放在 body 尾端</title>
-  </head>
-  <body>
-    <p id="message">頁面文字</p>
-    <script>
-      console.log(document.body.tagName);
-    </script>
-  </body>
-</html>
-```
-
-**解析**
-
-- script 寫在段落後面，瀏覽器先把段落放進樹，再執行這段 script。
-- document.body 已經是那個 body 元素，所以印出 BODY。
-- 段落的 id 這時也已經在文件裡，只是這一支程式還沒有去選它。
-
-```text
-BODY
-```
-
-{% note success %}
-**換你試試：**
-把 script 移到 head，並拿掉任何 defer。程式改印 document.body 本身，確認結果是 null，頁面不要因此丟出錯誤。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-script 在 head 裡立刻執行時，瀏覽器還沒讀到 body，所以 document.body 是 null。這就是程式要嘛放在尾端、要嘛延後執行的原因。
+瀏覽器讀到沒有 defer 的 script，會先停下來執行完，才繼續往下讀 HTML。所以 head 裡的 script 看不到 body，body 尾端的 script 則看得到。實務上常把程式放進外部檔，這一章為了閱讀方便，除了外部檔的示範，其餘都寫在同一份 HTML。
 
 ```html 04-js/pages/87-js-script-end.html
 <!DOCTYPE html>
@@ -243,26 +157,31 @@ script 在 head 裡立刻執行時，瀏覽器還沒讀到 body，所以 documen
     </script>
   </head>
   <body>
-    <p id="message">頁面文字</p>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      console.log(document.body.tagName);
+    </script>
   </body>
 </html>
 ```
 
+**解析**
+
+- Console 先出現 null，這是 head 裡的 script 印的：它執行時瀏覽器還沒讀到 body。
+- 接著出現 BODY，這是 body 尾端的 script 印的：段落已經在樹上，body 也就存在了。
+
 ```text
 null
+BODY
 ```
-
-</details>
 
 ### defer
 
-外部檔可以留在 head，只要 script 帶有 src 並加上 defer。瀏覽器先下載，等整份文件解析完再依序執行，畫面就不會被一支很大的程式檔卡住。
-
-內嵌的 script 沒有 src，寫上 defer 也不會延後。課堂 demo 為了閱讀方便把程式寫在同一份 HTML，所以這一頁把程式放在 body 尾端，執行時機和外部檔的 defer 同一類。
+程式放在 body 尾端，要等 HTML 讀到最後才開始下載，檔案一長就拖慢載入；現在的寫法是把外部檔留在 head，並加上 defer。瀏覽器一邊讀 HTML 一邊下載它，等整份文件解析完才依序執行。
 
 **觀念**
 
-defer 只對有 src 的 script 生效，告訴瀏覽器先把 HTML 讀完再執行。多支 defer 會依照它們在文件裡的順序執行。這一頁沒有另開檔，改把同一段程式放在 body 尾端，執行時 body 已經存在。
+defer 只對有 src 的 script 生效，內嵌的 script 加了也不會延後。多支 defer 會照它們在文件裡的順序執行。這一頁因此把程式拆成一支外部檔。
 
 ```html 04-js/pages/88-js-defer.html
 <!DOCTYPE html>
@@ -271,66 +190,38 @@ defer 只對有 src 的 script 生效，告訴瀏覽器先把 HTML 讀完再執�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>defer</title>
+    <script defer src="88-js-defer.js"></script>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script>
-      console.log(document.body.tagName);
-    </script>
   </body>
 </html>
 ```
 
+```js 04-js/pages/88-js-defer.js
+console.log(document.body.tagName);
+```
+
 **解析**
 
-- script 在段落後面，所以不會在 head 裡提前執行。
-- 執行時 body 已經在樹上，印出 BODY。這和外部檔加上 defer 的時機同一類。
-- 段落仍留在畫面上，程式只寫進 Console。
+- script 寫在 head，卻在 body 解析完之後才執行，所以 Console 印出 BODY，不是 null。
 
 ```text
 BODY
 ```
 
-{% note success %}
-**換你試試：**
-把 script 移到 head，不要加 defer，程式改印 `document.body`。重新整理後，Console 應出現 null。看完再移回 body 尾端。
+{% note info %}
+**async 與 defer 不同**：`async` 是下載完就立刻執行，不等 HTML，多支之間的順序也不固定，適合各自獨立的程式（例如統計碼）。要操作頁面元素的程式用 defer。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-沒有 defer 的內嵌 script 在 head 裡會立刻執行，當時 body 還沒出現，所以印出 null。移回 body 尾端之後，才會再印出 BODY。外部檔若要留在 head，要加上 defer 才會延後。
-
-```html 04-js/pages/88-js-defer.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>defer</title>
-    <script>
-      console.log(document.body);
-    </script>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-  </body>
-</html>
-```
-
-```text
-null
-```
-
-</details>
 
 ### DOMContentLoaded
 
-有時外部檔必須放在 head，又不能加 defer。這時改聽文件解析完成的事件，等樹建好再讀 body。事件的綁法下一章會展開，這裡先用它把執行時機延後。
+有時程式必須寫在 head 的內嵌 script，又不能用 defer。這時改成請瀏覽器在文件解析完時通知程式，這個通知就是 DOMContentLoaded 事件。
 
 **觀念**
 
-DOMContentLoaded 在瀏覽器解析完 HTML 時發出，當時圖片可以還沒下載完。這一頁的 script 放在 head，才能在登記當下看到 body 仍是 null。其他課堂 demo 把程式放在 body 尾端。外部檔若也放在 head 又沒有 defer，同樣要等這個事件。
+- DOMContentLoaded 在 HTML 解析完、defer 的程式跑完之後發出，不等圖片下載完；等到圖片等資源都載完才發出的是 window 的 load 事件。
+- 事件的綁法下一章才會展開，這裡只要知道：用 addEventListener 先登記一個函式，等事件發生才執行它。
 
 ```html 04-js/pages/89-js-ready.html
 <!DOCTYPE html>
@@ -340,6 +231,8 @@ DOMContentLoaded 在瀏覽器解析完 HTML 時發出，當時圖片可以還沒
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DOMContentLoaded</title>
     <script>
+      console.log(document.body);
+
       document.addEventListener('DOMContentLoaded', () => {
         console.log(document.body.tagName);
       });
@@ -353,51 +246,24 @@ DOMContentLoaded 在瀏覽器解析完 HTML 時發出，當時圖片可以還沒
 
 **解析**
 
-- script 在 head，而且沒有 defer，所以一讀到標籤就執行到 addEventListener。
-- 監聽只是先登記，函式要等文件解析完才跑，因此印出的是 BODY。
-- 若在監聽外面直接讀 tagName，body 仍是 null，那一行會失敗。
-
-```text
-BODY
-```
-
-{% note success %}
-**換你試試：**
-在 addEventListener 之前先印出 document.body。第一行應是 null，事件裡那一行仍是 BODY。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-登記監聽的那一刻，解析還沒走到 body，所以第一行是 null。等 DOMContentLoaded 發生，第二行才印出 BODY。
-
-```diff 04-js/pages/89-js-ready.html
-  // ...
-      <title>DOMContentLoaded</title>
-      <script>
-+       console.log(document.body);
-+ 
-        document.addEventListener('DOMContentLoaded', () => {
-          console.log(document.body.tagName);
-        // ...
-```
+- 第一行 null 來自事件外面的程式：它在 head 裡立刻執行，當時 body 還沒出現。
+- 第二行 BODY 來自事件裡的函式：登記時只是先記下，等文件解析完才執行，這時 body 已經存在。
+- 若搭配 defer 或把程式放在 body 尾端，通常就不需要這個事件。
 
 ```text
 null
 BODY
 ```
 
-</details>
+### 選讀：模組腳本
 
-### 模組腳本
-
-上一篇選讀把程式拆成模組時，script 要加上 type="module"。這種腳本會延後執行，就算標籤寫在 head，也會等文件解析完。
+程式拆成多支檔案時，script 要寫成模組（寫法見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：ES Module」）。模組腳本的載入時機有個好處：不用另外加 defer。
 
 **觀念**
 
-模組腳本預設就有 defer 的時機，而且一份檔案一個作用域。標籤放在 head 時，這支程式仍會在 body 出現之後才執行，所以讀得到 tagName。
-
-需要 import 與 export 時必須拆成多個檔。這一頁借用同一種外部 script，其他課堂 demo 則把程式寫在同一份 HTML。
+- 外部模組腳本預設就像加了 defer，標籤寫在 head 也會等文件解析完才執行。
+- 模組檔必須透過網址（本機伺服器或 Vite）開啟；直接用檔案路徑開啟時，瀏覽器會因跨來源限制而拒絕載入它。
+- 這一頁沒用到 import 與 export，只借它示範載入時機。
 
 ```html 04-js/pages/90-js-module.html
 <!DOCTYPE html>
@@ -420,56 +286,20 @@ console.log(document.body.tagName);
 
 **解析**
 
-- type 設成 module 之後，這支檔不會在讀到標籤時立刻執行。
-- 執行時文件已經解析完，所以印出 BODY。
-- 這一支還沒有使用匯出與匯入，只借用模組腳本的載入時機。
-
-```text
-BODY
-```
-
-{% note success %}
-**換你試試：**
-拿掉 type="module"，程式改印 document.body。確認 Console 出現 null，再把模組型別加回去。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-拿掉模組型別後，head 裡的 script 會立刻執行，document.body 仍是 null。加回 type="module" 才會延後到印出 BODY。
-
-```diff 04-js/pages/90-js-module.html
-  // ...
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>模組腳本</title>
--     <script type="module" src="90-js-module.js"></script>
-+     <script src="90-js-module.js"></script>
-    </head>
-    <body>
-      // ...
-```
-
-```js 04-js/pages/90-js-module.js
-console.log(document.body);
-```
-
-```text
-null
-```
-
-</details>
+- script 在 head，卻印出 BODY，因為模組腳本等到文件解析完才執行。
+- 沒有 type 屬性的同一支檔會在 head 立刻執行，並印出 null。
 
 # BOM
 
-瀏覽器物件模型是掛在 `window` 上的物件與函式。這一章先處理網址與導覽，再看視窗、瀏覽器資訊、列印與計時。會換頁、捲動或列印的動作都包成函式，打開頁面後在 Console 自己呼叫，結果看 DevTools 的 Console。
+瀏覽器物件模型（BOM）是瀏覽器掛在 `window` 上的一組物件與函式，用來操作瀏覽器本身，而不是網頁內容。這一章先處理網址與導覽，再看視窗、瀏覽器資訊、列印與計時。會換頁、捲動或列印的動作都包成函式，打開頁面後在 Console 自己呼叫，結果看 DevTools 的 Console。輸出區塊只列出文字內容，和 Console 實際畫面（行號、引號、顏色）略有不同。
 
 ## 認識 window
 
-`window` 是這個分頁的全域物件。直接寫屬性名稱，就等於從它再點一次。網址、視窗與瀏覽器資訊都從這裡往下找。
+BOM 的一切都從 window 開始：網址、瀏覽紀錄、視窗尺寸與瀏覽器資訊，都是它底下的物件。這一節先看 window 本身的性質，再用一覽認識最常用的五個物件。
 
 ### 全域物件
 
-直接寫 `innerWidth`，讀到的就是 `window.innerWidth`，兩邊是同一個值。用 const 或 let 宣告的名字只留在自己的程式裡。底下這些物件也掛在 window 上，後面按用途拆開來用。
+`window` 是這個分頁的全域物件，也就是整個分頁共用、隨處都能直接取用的最上層物件。直接寫名字，等於從 window 再點一次。下圖是後面會用到的物件，它們都掛在 window 上，所以寫 `location` 與寫 `window.location` 是同一個東西。
 
 {% mermaid graph LR %}
 windowNode["window"] --> locationNode["location"]
@@ -491,11 +321,10 @@ windowNode --> documentNode["document"]
     <p>結果在 DevTools 的 Console。</p>
     <script>
       console.log(window.innerWidth === innerWidth);
-
-      const label = 'bom';
-      let count = 1;
-      console.log(window.label);
-      console.log(window.count);
+      console.log(window.location === location);
+      console.log(window.history === history);
+      console.log(window.navigator === navigator);
+      console.log(window.screen === screen);
     </script>
   </body>
 </html>
@@ -503,56 +332,26 @@ windowNode --> documentNode["document"]
 
 ```text
 true
-undefined
-undefined
+true
+true
+true
+true
 ```
 
 **解析**
 
-- 第一行是 true。直接寫名字，與從 `window` 點出來，是同一個值。
-- 後兩行是 undefined。`const` 與 `let` 不會變成全域屬性。
-
-{% note warning %}
-**const 與 let**
-`const` 與 `let` 不會變成 window 的屬性。舊式的 var 才會掛上去，這一課不用。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-在最後印出 `typeof window.alert`。內建函式會得到 `'function'`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-alert 一開始就掛在 window 上，所以 typeof 是 `'function'`。這一行只詢問型別，不會把對話框叫出來。label 與 count 仍然不是 window 的屬性。
-
-```diff 04-js/pages/91-js-global.html
-  // ...
-        console.log(window.label);
-        console.log(window.count);
-+       console.log(typeof window.alert);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-true
-undefined
-undefined
-function
-```
-
-</details>
+- 五行都是 true，直接寫名字與從 window 點出來，讀到的是同一個東西。
+- 這也是為什麼平常寫 location、history 時不必加 window 前綴。
 
 ### 常用的 BOM 物件
 
-下面常用的五個物件都掛在 `window` 上，直接寫名字就讀得到。各用一句話記它負責什麼，後面的小節再拆開使用。
+下面五個物件都掛在 window 上，直接寫名字就讀得到，後面的小節會逐一使用。
+
+**一覽**
 
 - `location` 讀寫網址，也可以導向或重新載入。
 - `history` 在瀏覽紀錄裡返回、前進，或改寫目前這一筆。
-- `navigator` 讀語言與連線，也可以寫入剪貼簿。
+- `navigator` 讀語言與連線狀態，也可以寫入剪貼簿。
 - `screen` 讀整塊螢幕的寬高，不隨視窗拉窄而變。
 - `document` 指向這一份 HTML，改內容留到下一章。
 
@@ -560,14 +359,16 @@ function
 
 ## 網址與導覽
 
-`location` 管網址列現在的內容，`history` 管這個分頁走過的紀錄。先讀出網址的各段，再決定要導向、重新載入，或在紀錄之間往返。不重新載入也能改網址的寫法放在選讀。
+`location` 管網址列現在的內容，`history` 管這個分頁走過的紀錄。這一節先讀出網址的各段，特別是查詢字串，因為頁面常靠它接收參數。接著學導向與重新載入，最後用選讀看紀錄往返，以及不重新載入就能改網址的寫法。
 
-### 讀取網址（location）
+### 讀取網址
 
-一個網址由協定、主機、路徑、查詢字串與 hash 組成。`location` 把每一段拆成屬性，讀出來就能判斷目前在哪一頁、帶了什麼參數。
+一個網址由協定、主機、路徑、查詢字串與片段組成。`location` 把每一段拆成屬性，讀出來就能判斷目前在哪一頁、帶了什麼參數。
+
+**一覽**
 
 - `href` 回傳完整網址。
-- `origin` 回傳協定、主機與連接埠。
+- `origin` 回傳協定、主機與連接埠，三者合起來決定網站的來源。
 - `protocol` 回傳協定，會帶著最後的冒號。
 - `host` 回傳主機與連接埠。
 - `pathname` 回傳路徑。
@@ -611,57 +412,144 @@ http:
 
 **解析**
 
-- 第一行是完整網址，後面幾行是把它拆開的結果，用 Live Server 開啟與直接開檔時，協定和主機會不同。
-- search 包含開頭的問號，hash 包含開頭的井字號，沒有這兩段時都是空字串。
-- 這支程式只有讀取，沒有改任何屬性，所以頁面不會跳走。
+- 第一行是完整網址，後面六行依序是它拆開的各段。協定與主機會依你開啟頁面的方式而不同。
+- `search` 包含開頭的問號，`hash` 包含開頭的井字號；網址沒有這兩段時，兩者都是空字串。
+- 這支程式只讀取、不改任何屬性，所以頁面不會跳走。
 
-{% note info %}
-查詢字串若要取出單一參數，可以用 `new URLSearchParams(location.search).get('page')`，會得到字串 `'2'`。
-{% endnote %}
+### 讀取查詢參數
 
-{% note success %}
-**換你試試：**
-指定 `location.hash = 'next'` 後再印一次 location.hash，確認網址列只多了 `#next`，頁面沒有整頁重新載入。
-{% endnote %}
+查詢字串是網址裡問號之後的一串「名稱=值」，用 `&` 隔開，例如 `?page=2&tag=js`。列表頁用它指定第幾頁，搜尋頁用它帶關鍵字。`location.search` 只給整串文字，要取出單一參數，就交給內建的 `URLSearchParams`：把查詢字串傳進去，得到一個可以逐項查詢的物件。
 
-<details>
-<summary>參考答案</summary>
+**一覽**
 
-指定 hash 時不必自己加井字號，瀏覽器會補上，所以印出 `#next`。改 hash 只是移到同一份文件的片段，不會向伺服器重新要一整頁。
+- `get` 回傳指定名稱的第一個值，一律是字串，沒有這個名稱時是 `null`。
+- `getAll` 回傳指定名稱的全部值，是陣列，沒有時是空陣列。
+- `has` 回傳這個名稱是否存在，是 true 或 false。
 
-```diff 04-js/pages/92-js-location.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       console.log(location.href);
--       console.log(location.origin);
--       console.log(location.protocol);
--       console.log(location.host);
--       console.log(location.pathname);
--       console.log(location.search);
-        console.log(location.hash);
-+       location.hash = 'next';
-+       console.log(location.hash);
-      </script>
-    </body>
-  // ...
+```html 04-js/pages/92b-js-search-params.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>讀取查詢參數</title>
+  </head>
+  <body>
+    <p>點下面的連結換一組查詢字串，結果在 DevTools 的 Console。</p>
+    <ul>
+      <li><a href="?page=2&tag=js&tag=css">?page=2&amp;tag=js&amp;tag=css</a></li>
+      <li><a href="?keyword=台北">?keyword=台北</a></li>
+      <li><a href="92b-js-search-params.html">沒有查詢字串</a></li>
+    </ul>
+    <script>
+      const params = new URLSearchParams(location.search);
+
+      console.log(location.search);
+      console.log(params.get('page'));
+      console.log(params.get('tag'));
+      console.log(params.getAll('tag'));
+      console.log(params.has('keyword'));
+      console.log(params.get('keyword'));
+
+      const page = Number(params.get('page') ?? 1);
+      console.log(page);
+    </script>
+  </body>
+</html>
+```
+
+點第一個連結，網址變成 `?page=2&tag=js&tag=css`，Console 是：
+
+```text
+?page=2&tag=js&tag=css
+2
+js
+(2) ['js', 'css']
+false
+null
+2
+```
+
+點第二個連結，網址帶的是 `?keyword=台北`，Console 是：
+
+```text
+?keyword=%E5%8F%B0%E5%8C%97
+null
+null
+[]
+true
+台北
+1
+```
+
+點第三個連結，沒有查詢字串，`location.search` 是空字串，`get` 全部回傳 `null`，`has` 是 false，最後的 page 是 1。
+
+**解析**
+
+- 每個連結都只改查詢字串，所以頁面重新載入，程式重跑一次，Console 顯示新的結果。
+- `get('page')` 得到的是字串 `'2'`，不是數字。要當數字用就包 `Number`。
+- 同一個名稱出現兩次時，`get` 只拿第一個，要全部就用 `getAll`。
+- 中文在網址裡會被編碼成 `%E5%8F%B0%E5%8C%97`，所以 `location.search` 是編碼後的樣子；`get` 會自動解碼，拿到的是「台北」。
+- 參數缺少時 `get` 回傳 `null`。`Number(null)` 是 0，所以預設值要先用 `?? 1` 補上，再轉成數字。
+
+### 組出查詢字串
+
+反過來要把物件組成查詢字串時，也用 `URLSearchParams`。它會自動把中文與特殊字元編碼，不必自己拼接字串。組好的字串可以接在路徑後面，變成新的網址，常用在換頁或搜尋。
+
+**一覽**
+
+- `new URLSearchParams(物件)` 用物件的每一組屬性建立查詢參數。
+- `set` 設定指定名稱的值，名稱已存在就覆蓋。
+- `append` 再加上一組同名的值，不覆蓋。
+- `toString` 回傳不含問號的查詢字串，放進樣板字串時會自動呼叫。
+
+```html 04-js/pages/92c-js-build-query.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>組出查詢字串</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const query = new URLSearchParams({ page: 2, keyword: '台北' });
+      console.log(query.toString());
+
+      query.set('page', 3);
+      query.append('tag', 'js');
+      console.log(query.toString());
+
+      console.log(`${location.pathname}?${query}`);
+    </script>
+  </body>
+</html>
 ```
 
 ```text
-
-#next
+page=2&keyword=%E5%8F%B0%E5%8C%97
+page=3&keyword=%E5%8F%B0%E5%8C%97&tag=js
+/01-html-css-js/04-js/pages/92c-js-build-query.html?page=3&keyword=%E5%8F%B0%E5%8C%97&tag=js
 ```
 
-</details>
+**解析**
 
-### 導向與重新載入（location）
+- 第一行：物件裡的數字 2 會被轉成文字，「台北」被編碼，兩組參數用 `&` 連起來。
+- 第二行：`set` 把 page 改成 3，`append` 在最後加上 tag，原有的 keyword 不變。
+- 第三行：樣板字串把路徑、問號與查詢字串接成完整的相對網址，可以交給下一節的導向使用。後面 fetch 請求資料時，也是用同樣的方式組出網址。
 
-要用程式換頁時，可以指定 `location.href`，或呼叫 assign、replace 這兩個方法。href 與 assign 效果相同，都會在瀏覽紀錄新增一筆，使用者按「上一頁」可以回到原頁；replace 則用新網址取代目前這一筆紀錄，原頁就回不去了。reload 不換網址，只是把目前這一頁重新載入。
+### 導向與重新載入
 
-- 指定 `href` 會導向並新增一筆紀錄。
-- `assign` 同樣導向並新增一筆紀錄，上一頁可以回來。
-- `replace` 導向並取代目前紀錄，上一頁回不到原頁。
+要用程式換頁時，可以指定網址，或呼叫 assign、replace 兩個方法，差別在瀏覽紀錄。紀錄是這個分頁走過的每一頁，使用者按「上一頁」就是往回走一筆。重新載入則不換網址。
+
+**一覽**
+
+- 指定 `href` 導向新網址，並新增一筆紀錄，按上一頁可以回到原頁。
+- `assign` 效果與指定 href 相同，只是寫成方法呼叫。
+- `replace` 導向新網址，並用它取代目前這一筆紀錄，按上一頁回不到原頁。
 - `reload` 重新載入目前這一頁，不換網址。
+- 指定 `hash` 只移到同一份文件的片段，不重新載入，也會新增一筆紀錄。
 
 導向會讓頁面立刻離開，如果直接寫在檔案裡，一開頁就會跳走。所以這個範例把每種寫法包成函式，打開頁面後在 Console 自己呼叫。
 
@@ -698,49 +586,27 @@ http:
 
 **解析**
 
+- 頁面一打開，Console 只印出目前頁面的路徑，不會自己跳走，因為三種寫法都包在函式裡，要呼叫才會執行。
 - 在 Console 輸入 `goAssign()` 會跳到 92 號頁面，按上一頁可以回到這一頁。
 - 重新打開這一頁再輸入 `goReplace()`，同樣跳到 92 號頁面，但按上一頁會跳過這一頁，回到更早的頁面。
-- `reloadPage()` 不換網址，Console 會被清空並重新印出目前頁面。
-- 三種寫法都包在函式裡，只有呼叫時才會導向，頁面打開時不會自己跳走。
+- `reloadPage()` 不換網址，頁面重新載入後，Console 預設會被清空，再重新印出目前頁面。
 
 {% note info %}
-登入成功後要讓使用者能回上一頁時用 assign；導向錯誤頁或登入檢查失敗時用 replace，避免使用者按上一頁又回到不該停留的頁面。
+一般換頁用 assign，讓使用者能按上一頁回來。登入成功後導向首頁，或登入檢查失敗而導向登入頁時用 replace，避免使用者按上一頁又回到不該停留的頁面。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-新增一個 `goHref` 函式，用指定 location.href 的方式導向同一個目標，並確認它跟 goAssign 一樣可以按上一頁回來。
-{% endnote %}
+### 選讀：返回與前進
 
-<details>
-<summary>參考答案</summary>
+瀏覽紀錄的往返由 history 負責。這一節用網址片段造出幾筆紀錄，再從 Console 呼叫函式來往返。
 
-指定 href 與呼叫 assign 都會新增一筆瀏覽紀錄，所以兩者按上一頁的結果相同。
+**一覽**
 
-```diff 04-js/pages/93-js-redirect.html
-  // ...
-          location.replace(target);
-        };
-  
-+       const goHref = () => {
-+         location.href = target;
-+       };
-+ 
-        const reloadPage = () => {
-          location.reload();
-        // ...
-```
-
-</details>
-
-### 返回與前進（history）
-
-`back` 回到上一筆紀錄，`forward` 前往下一筆。相對步數交給 go，筆數看 length，四個都在 history 上。這一節用網址片段造出幾筆紀錄，再從 Console 呼叫函式來往返。
-
-- `back` 回到上一筆，不回傳有用的值。
-- `forward` 前往下一筆，不回傳有用的值。
+- `back` 回到上一筆紀錄。
+- `forward` 前往下一筆紀錄。
 - `go` 依整數步數移動，負數往回、正數往前，0 會重新載入。
-- `length` 回傳紀錄筆數。步數超出範圍時，頁面留在原地，筆數也不增加。
+- `length` 回傳紀錄筆數。
+
+前三個都不回傳有用的值，而且移動是非同步的，呼叫之後網址要等一下才會變。步數超出範圍時，頁面留在原地。
 
 {% mermaid graph LR %}
 olderNode["更早的紀錄<br/>back"] --> nowNode["目前這一筆"]
@@ -787,14 +653,12 @@ nowNode --> newerNode["下一筆<br/>forward"]
 </html>
 ```
 
-空白分頁直接打開時，Console 是：
+第一次打開時，Console 是下面的樣子。`length` 會把這個分頁先前瀏覽過的頁面也算進去，所以你看到的數字可能不同，這裡以 4 為例：
 
 ```text
 #three
 4
 ```
-
-從練習選單點進來時，`length` 會把更早的頁面算進去，數字比 4 大。三段片段仍各加一筆。
 
 呼叫 goBack()，等網址變成 `#two`，再呼叫 showPlace()：
 
@@ -805,60 +669,26 @@ nowNode --> newerNode["下一筆<br/>forward"]
 
 **解析**
 
-- 片段還是空的時候才連寫 one、two、three，瀏覽器會補上井字號，停在 `#three`。
-- 空白分頁的第一筆是打開這一頁，再加上三段片段，所以 `length` 是 4。
-- `goBack` 與 `goSteps` 不會在同一輪立刻改掉網址。等網址變了再呼叫 showPlace。
-- 往返只在既有紀錄裡移動，length 維持原數字。`go(0)` 才會重新載入。
-- 重新載入後網址仍帶著片段，if 就不會再累加。`go(20)` 這種超出範圍的步數會停在原頁。
-
-{% note success %}
-**換你試試：**
-在 if 裡再加一段，把 hash 設成 `'four'`。先把網址列的井字號與後面的字刪掉再重新整理。
-
-然後呼叫 goSteps(-1)，等網址變了再 showPlace，片段是 `#three`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多寫一段 four 之後，空白分頁的 length 變成 5，停在 `#four`。goSteps(-1) 回到 `#three`，筆數仍是 5。網址已經帶有片段時，if 不會重跑，所以要先清掉井字號再重新整理。
-
-```diff 04-js/pages/94-js-history.html
-  // ...
-          location.hash = 'two';
-          location.hash = 'three';
-+         location.hash = 'four';
-        }
-  
-        const showPlace = () => {
-          // ...
-```
-
-載入時：
-
-```text
-#four
-5
-```
-
-呼叫 goSteps(-1)，等網址變了再呼叫 showPlace()：
-
-```text
-#three
-5
-```
-
-</details>
+- 片段還是空的時候才連寫 one、two、three，瀏覽器會補上井字號，網址停在 `#three`。
+- 這個例子的分頁原本有 1 筆紀錄，再加上三段片段，所以 `length` 是 4。
+- goBack 與 goSteps 不會在同一輪立刻改掉網址，要等網址變了再呼叫 showPlace。
+- 往返只在既有紀錄裡移動，`length` 維持原數字；`go(0)` 才會重新載入，`go(20)` 這種超出範圍的步數會停在原頁。
+- 重新載入後網址仍帶著片段，if 條件不成立，就不會再累加紀錄。
 
 ### 選讀：pushState 與 replaceState
 
-`pushState` 多加一筆紀錄，並帶上一小包資料，文件不會重新載入。`replaceState` 改的是目前這一筆，筆數不增加。
+改 hash 只能產生網址片段。要在不重新載入的前提下，把紀錄與網址整個換掉，就用 `pushState` 與 `replaceState`。後面 React Router 換頁時不重載整頁，靠的就是這組方法。
 
-- `pushState` 多加一筆紀錄並寫入 state，文件不重新載入。
+**一覽**
+
+- `pushState` 新增一筆紀錄並寫入資料，文件不重新載入。
 - `replaceState` 改寫目前這一筆，筆數不增加。
-- 第一個引數會變成 `history.state`，還沒寫過時是 null。
-- 第二個引數是標題，現在的瀏覽器不用，傳空字串。
-- 第三個引數是新的網址片段。
+
+兩者的參數相同：
+
+- 第一個是要保存的資料，之後從 `history.state` 讀出，還沒寫過時是 null。
+- 第二個是標題，現在的瀏覽器不使用，傳空字串。
+- 第三個是新的網址，這個範例只換片段。
 
 ```html 04-js/pages/95-js-state.html
 <!DOCTYPE html>
@@ -866,7 +696,7 @@ nowNode --> newerNode["下一筆<br/>forward"]
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：pushState 與 replaceState</title>
+    <title>pushState 與 replaceState</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -883,7 +713,7 @@ nowNode --> newerNode["下一筆<br/>forward"]
 </html>
 ```
 
-空白分頁直接打開時：
+第一次打開時，最後一行的筆數同樣依分頁先前的紀錄而定，這裡以 2 為例：
 
 ```text
 1
@@ -891,61 +721,27 @@ nowNode --> newerNode["下一筆<br/>forward"]
 replaced
 2
 ```
-
-從選單進來時，最後一行會把更早的頁面算進去。`replaceState` 不會讓這個數字再加 1。
 
 **解析**
 
 - `pushState` 讓網址片段變成 `#one`，state 的 page 是 1，文件沒有整頁重載。
-- `replaceState` 改掉目前這一筆的 state，所以接著印出 replaced，筆數停在原地。
-- 按上一頁時瀏覽器會發出 `popstate`。這一節先不監聽。
+- `replaceState` 改掉目前這一筆的 state，所以接著印出 replaced，筆數維持 push 之後的數字，沒有再加 1。
+- 使用者按上一頁時，瀏覽器會發出 `popstate` 事件通知頁面。事件留到下一章，這裡先不監聽。
 
-{% note success %}
-**換你試試：**
-再 pushState 一筆 page 為 2 的資料，片段用 `#two`，然後印出 `history.state.page` 與 history.length。最後的 page 是 2，筆數比剛才多 1。
-{% endnote %}
+## 選讀：視窗與畫面
 
-<details>
-<summary>參考答案</summary>
-
-第二次 pushState 變成目前這一筆，所以 page 是 2。空白分頁上，replace 之後的筆數是 2，再 push 一次變成 3。
-
-```diff 04-js/pages/95-js-state.html
-  // ...
-        console.log(history.state.note);
-        console.log(history.length);
-+ 
-+       history.pushState({ page: 2 }, '', '#two');
-+       console.log(history.state.page);
-+       console.log(history.length);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-1
-#one
-replaced
-2
-2
-3
-```
-
-</details>
-
-## 視窗與畫面
-
-這一節看視窗、螢幕與捲動。尺寸先印在一起對照，捲動再另外改位置。系統深色與寬度斷點留在選讀。
+瀏覽器視窗的大小、螢幕的大小與頁面捲到哪裡，都可以用程式讀出來。這一節依序看尺寸、捲動，以及用程式問目前符合哪一種媒體查詢。
 
 ### 視窗與螢幕尺寸
 
-視窗內部的尺寸會跟著拉動邊緣改變，整塊螢幕的像素則維持不變。內部寬高與像素比在 `window` 上，螢幕寬高在 `screen` 上。兩組數字放在同一份輸出，才看得出差別。
+視窗和螢幕是兩件事：拉動視窗邊緣，視窗的尺寸會變，整塊螢幕的尺寸不會變。視窗相關的屬性掛在 `window` 上，螢幕相關的掛在 `screen` 上，這裡把兩組數字印在一起對照。
 
-- `innerWidth` 與 `innerHeight` 是視窗內部可排版的寬高，不含四周工具列。
-- `outerWidth` 是外框寬度。側邊沒有捲軸時，它可能與內部寬相同。
-- `screen.width` 是整塊螢幕的寬，不隨視窗拉窄而變。`availWidth` 再扣掉系統工作列。
-- `devicePixelRatio` 是一個 CSS 像素對應幾個實體像素。高密度螢幕常見 2，一般螢幕常是 1。
+**一覽**
+
+- `innerWidth` 與 `innerHeight`：頁面可排版的區域尺寸，單位是 CSS 像素。若有垂直捲軸，寬度會包含捲軸。
+- `outerWidth` 與 `outerHeight`：整個瀏覽器視窗的尺寸，連工具列與邊框都算進去，所以不會比內部尺寸小。
+- `screen.width` 與 `screen.availWidth`：整塊螢幕的寬，以及扣掉系統工作列之後的可用寬。
+- `devicePixelRatio`：一個 CSS 像素對應幾個實體像素。高密度螢幕常是 2，一般螢幕是 1；瀏覽器縮放頁面時，這個數字也會跟著變。
 
 ```html 04-js/pages/96-js-size.html
 <!DOCTYPE html>
@@ -958,83 +754,53 @@ replaced
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      console.log(innerWidth);
-      console.log(innerHeight);
-      console.log(outerWidth);
-      console.log(screen.width);
-      console.log(screen.availWidth);
-      console.log(devicePixelRatio);
+      console.log('innerWidth', innerWidth);
+      console.log('innerHeight', innerHeight);
+      console.log('outerWidth', outerWidth);
+      console.log('screen.width', screen.width);
+      console.log('screen.availWidth', screen.availWidth);
+      console.log('devicePixelRatio', devicePixelRatio);
     </script>
   </body>
 </html>
 ```
 
-下面是某一種視窗與螢幕的例子，實際數字以你的裝置為準：
+下面是某一台電腦的例子，實際數字以你的裝置為準。本篇的輸出區塊只列出文字內容，和 Console 實際畫面（行號、顏色）略有不同。
 
 ```text
-1185
-800
-1200
-1440
-1440
-2
+innerWidth 1200
+innerHeight 780
+outerWidth 1200
+screen.width 1440
+screen.availWidth 1440
+devicePixelRatio 2
 ```
 
 **解析**
 
-- 前兩行是視窗內部的寬與高。拉動視窗邊緣後重新整理，這兩個數字會變。
-- 第三行是外框寬度。頁面還沒有高到出現捲軸時，它常與第一行相同。
-- 第四行是整塊螢幕的寬。把瀏覽器拉窄再重新整理，它仍維持螢幕大小。
-- 第五行是扣掉系統工作列之後的可用寬度，不會大於螢幕寬。
-- 最後一行是 `devicePixelRatio`。它掛在 window 上，直接寫名字即可。
-
-{% note success %}
-**換你試試：**
-再印出 `outerHeight` 與 `screen.height`。含工具列時外框高度通常更大，螢幕高度則不隨視窗拉窄而變。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-outerHeight 把工具列算進視窗高度，所以通常大於 innerHeight。screen.height 是整塊螢幕的高，不隨視窗拉窄而變。前六行仍是內部寬高、外框寬、螢幕寬、可用寬與像素比。
-
-```diff 04-js/pages/96-js-size.html
-  // ...
-        console.log(screen.availWidth);
-        console.log(devicePixelRatio);
-+       console.log(outerHeight);
-+       console.log(screen.height);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-1185
-800
-1200
-1440
-1440
-2
-900
-900
-```
-
-</details>
+- 頁面上只有那句說明，六個數字都印在 Console。
+- 前兩行是頁面區域的寬與高。程式只在載入時讀一次，所以拉動視窗後要重新整理，才會印出新的數字。
+- 第三行的外框寬度一定不小於內部寬度。視窗最大化時兩者常常相同。
+- 第四、五行是螢幕的寬，不會因為視窗拉窄而改變；可用寬度扣掉工作列，不會大於螢幕寬。
+- 最後一行是像素比。`innerWidth` 這類掛在 window 上的名字，前面的 `window.` 可以省略；螢幕的數字則要保留 `screen.`。
 
 ### 捲動位置
 
-捲動距離放在 `scrollX` 與 `scrollY`，單位是像素，停在最左上角時兩個都是 0。要改位置就用 scrollTo 或 scrollBy。這兩個方法掛在 window 上，包成函式後在 Console 呼叫，頁面才會動。
+頁面捲動的距離放在 `scrollX` 與 `scrollY`，單位是像素，停在最左上角時都是 0。要用程式移動位置，就呼叫 `scrollTo` 或 `scrollBy`。
 
-- `scrollX` 與 `scrollY` 回傳目前捲動的像素，停在左上角時都是 0。
-- `scrollTo` 移到指定的 top 與 left，不回傳有用的值。
-- `scrollBy` 在目前位置上再加一段距離，也不回傳有用的值。
-- 選項 behavior 設成 smooth 就是平滑，設成 auto 就是立刻跳。
+**一覽**
+
+- `scrollX` 與 `scrollY`：讀出目前水平與垂直的捲動距離。
+- `scrollTo`：直接移到指定位置。
+- `scrollBy`：在目前位置上再加一段距離。
+- 選項 `behavior`：`smooth` 是平滑移動，`instant` 是立刻跳過去；預設的 `auto` 則交給 CSS 的 scroll-behavior 決定，沒有設定時就是立刻跳。
 
 {% mermaid graph LR %}
 topNode["scrollY 為 0"] --> downNode["scrollBy 往下加"]
 downNode --> backNode["scrollTo 回到 0"]
 {% endmermaid %}
+
+下面的函式要在 Console 呼叫才會執行，頁面才會動。
 
 ```html 04-js/pages/97-js-scroll.html
 <!DOCTYPE html>
@@ -1075,7 +841,7 @@ downNode --> backNode["scrollTo 回到 0"]
 0
 ```
 
-呼叫 scrollDown()，等捲動停下來再呼叫 showScroll()：
+呼叫 `scrollDown()`，等捲動停下來再呼叫 `showScroll()`：
 
 ```text
 0
@@ -1084,49 +850,18 @@ downNode --> backNode["scrollTo 回到 0"]
 
 **解析**
 
-- 載入時頁面在最上方，所以 scrollX 與 scrollY 都是 0。
-- `scrollDown` 用 scrollBy 往下加 400，`behavior` 是平滑。
-- 平滑捲動還沒停時就印位置，scrollY 仍可能是 0。等它停了再呼叫 showScroll。
-- `scrollTop` 用 scrollTo 回到左上角，同樣是平滑移動。
+- 頁面是一段 1800 像素高的空白加上底部文字，所以可以往下捲。
+- 載入時停在最上方，所以兩個距離都是 0。
+- `scrollDown` 用 `scrollBy` 往下加 400 像素，頁面會平滑地往下滑。
+- 平滑捲動還沒停時就印位置，垂直距離可能還在中間值。等畫面停下來再呼叫 `showScroll`，才會是 400。
+- `scrollTop` 用 `scrollTo` 回到左上角，同樣是平滑移動；回去後再印位置，兩個數字會回到 0。
 
-{% note success %}
-**換你試試：**
-把下移距離從 400 改成 800。等捲動停下來再看 `scrollY`，約是 800。
-{% endnote %}
+### 媒體查詢與深色模式
 
-<details>
-<summary>參考答案</summary>
+CSS 用 `@media` 描述「寬度超過多少」「系統是深色」這類條件。JavaScript 也能問同樣的問題：`matchMedia` 接收一段媒體查詢文字，回傳一份查詢結果，其中的 `matches` 是目前是否符合，符合是 true，不符合是 false。
 
-scrollBy 的 top 改成 800 之後，停下來的垂直距離約是 800。scrollTop 仍回到 0。
-
-```diff 04-js/pages/97-js-scroll.html
-  // ...
-        };
-  
-        const scrollDown = () => {
--         scrollBy({ top: 400, left: 0, behavior: 'smooth' });
-+         scrollBy({ top: 800, left: 0, behavior: 'smooth' });
-        };
-  
-        const scrollTop = () => {
-          // ...
-```
-
-```text
-0
-800
-```
-
-</details>
-
-### 選讀：媒體查詢與深色模式
-
-`matchMedia` 讀的是瀏覽器目前是否符合某段媒體查詢。`(prefers-color-scheme: dark)` 用來問系統是不是深色。
-
-直接寫名字就等於 `window.matchMedia`，寬度斷點也用同一種問法。
-
-- `matchMedia` 回傳一份查詢結果，不是布林。
-- `matches` 回傳目前是否符合，符合是 true，不符合是 false。
+- `(prefers-color-scheme: dark)` 問系統或瀏覽器是否設為深色。
+- `(min-width: 800px)` 問視窗寬度是否至少 800 像素。
 
 ```html 04-js/pages/98-js-media.html
 <!DOCTYPE html>
@@ -1134,16 +869,16 @@ scrollBy 的 top 改成 800 之後，停下來的垂直距離約是 800。scroll
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：媒體查詢與深色模式</title>
+    <title>媒體查詢與深色模式</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      console.log(darkQuery.matches);
+      const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+      console.log('深色模式', darkQuery.matches);
 
       const wideQuery = matchMedia('(min-width: 800px)');
-      console.log(wideQuery.matches);
+      console.log('寬度至少 800', wideQuery.matches);
     </script>
   </body>
 </html>
@@ -1152,60 +887,36 @@ scrollBy 的 top 改成 800 之後，停下來的垂直距離約是 800。scroll
 系統是淺色、視窗寬過 800 像素時：
 
 ```text
-false
-true
+深色模式 false
+寬度至少 800 true
 ```
 
 **解析**
 
-- `window.matchMedia` 與直接寫名字是同一個函式。
-- 回傳的是查詢結果，不是布林。`matches` 才是目前是否符合。
-- 系統是淺色時第一行是 false。視窗寬過 800 像素時，第二行是 true。
-- 改了系統深色或把視窗拉窄之後，要重新整理才會換成新的結果。
-- 這一節不監聽偏好的後續變化。
+- 頁面只有說明文字，兩行結果在 Console。
+- `matchMedia` 回傳的是查詢結果，不是布林，要讀它的 `matches` 才知道符不符合。
+- 程式只在載入時印一次，系統切成深色或視窗拉窄之後，Console 不會自動更新。
+- `darkQuery` 留在頁面裡，所以可以直接在 Console 輸入 `darkQuery.matches`，不必重新整理就能讀到最新結果。
+- 這裡只讀目前的狀態。要在狀態改變的當下收到通知，需要事件的做法，見本篇後面的事件章節。
 
-{% note success %}
-**換你試試：**
-再讀 `(max-width: 600px)`。視窗比 600 像素窄時，這一列是 true。
+{% note info %}
+**樣式優先用 CSS**
+只是換顏色或版面時，直接在 CSS 寫 `@media`，Tailwind 的 `dark:` 也是同一套機制。只有需要依結果執行程式（例如換成另一組資料）時，才用 `matchMedia`。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三段問的是視窗是否夠窄。寬過 800 像素時，最小寬度那列是 true，最大寬度 600 那列是 false。把視窗拉窄到 600 以下再重新整理，後兩列會對調。
-
-```diff 04-js/pages/98-js-media.html
-  // ...
-        const wideQuery = matchMedia('(min-width: 800px)');
-        console.log(wideQuery.matches);
-+ 
-+       const narrowQuery = matchMedia('(max-width: 600px)');
-+       console.log(narrowQuery.matches);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-false
-true
-false
-```
-
-</details>
 
 ## 選讀：瀏覽器資訊
 
-`navigator` 提供語言、連線與識別字串，剪貼簿也從這個物件寫入。整節都是選讀，做完網址與視窗再看即可。
+`navigator` 是代表瀏覽器本身的物件：提供偏好語言、連線狀態與識別字串，剪貼簿也從它寫入。這一節先讀語言與連線，再看識別字串，最後把文字寫進剪貼簿。
 
-### 語言與連線（navigator）
+### 語言與連線
 
-`navigator.language` 是瀏覽器偏好的語言，`navigator.onLine` 表示瀏覽器是否認為目前有網路。這一節只讀這些值，不改瀏覽器的設定。
+`navigator` 有幾個屬性只讀、不改瀏覽器的設定，這一節只讀取它們。
 
-- `language` 回傳偏好語言的字串，繁體中文環境常見 zh-TW。
-- `languages` 回傳偏好語言清單，第一個多半與 language 相同。
-- `onLine` 回傳瀏覽器是否認為有網路，型別是布林。
-- `userAgent` 回傳一長串識別文字，內容會隨版本改變。
+**一覽**
+
+- `language`：瀏覽器偏好的語言，回傳字串，繁體中文環境常見 zh-TW。
+- `languages`：偏好語言的陣列，第一個多半與 `language` 相同。
+- `onLine`：瀏覽器認為目前有沒有網路，回傳布林。
 
 ```html 04-js/pages/99-js-navigator.html
 <!DOCTYPE html>
@@ -1218,77 +929,81 @@ false
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      console.log(navigator.language);
-      console.log(navigator.onLine);
+      console.log('language', navigator.language);
+      console.log('languages', navigator.languages);
+      console.log('onLine', navigator.onLine);
+    </script>
+  </body>
+</html>
+```
+
+繁體中文的 Chrome、目前有網路時：
+
+```text
+language zh-TW
+languages ['zh-TW', 'zh', 'en-US', 'en']
+onLine true
+```
+
+**解析**
+
+- 第一行是偏好語言。網站常用它決定預設要顯示哪種語言。
+- 第二行是陣列，依偏好順序排列，內容隨你的瀏覽器語言設定而不同。
+- 第三行的 `onLine` 只是參考：`false` 比較可信，代表一定連不出去；`true` 只代表有接上網路，不保證真的連得到網站。要確定連線，應該實際發出請求，再處理失敗的情況。
+
+### 識別字串 userAgent
+
+`navigator.userAgent` 是使用者代理字串（user agent）。瀏覽器每次向伺服器要網頁時，都會附上這串文字自我介紹，JavaScript 也讀得到同一串。
+
+```html 04-js/pages/99b-js-useragent.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>識別字串 userAgent</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
       console.log(navigator.userAgent);
     </script>
   </body>
 </html>
 ```
 
-下面是一台 Mac 上的 Chrome、繁體中文、目前有網路的例子。第三行的版本號會依你的瀏覽器不同：
+下面是一台 Mac 上的 Chrome 的例子，版本號依你的瀏覽器而不同：
 
 ```text
-zh-TW
-true
 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36
 ```
 
 **解析**
 
-- 第一行是偏好語言。繁體中文的環境常見 `zh-TW`。
-- 第二行在瀏覽器認為有網路時是 `true`。它代表瀏覽器眼中的連線狀態。
-- 第三行是 `userAgent`，中文叫使用者代理字串。瀏覽器每次向伺服器要網頁時，都會附上這串文字自我介紹，JS 也讀得到同一串。
-
 這串文字由幾段組成，從左到右大致是：
 
-- `Mozilla/5.0` 是早年留下的開頭。現在幾乎所有瀏覽器都這樣寫，已經沒有實際意義。
-- 括號裡的 `Macintosh; Intel Mac OS X 10_15_7` 是作業系統。Windows 會寫成 Windows NT 10.0，手機會出現 iPhone 或 Android。
-- `AppleWebKit/537.36 (KHTML, like Gecko)` 是排版引擎。寫「像 Gecko」是為了讓只認 Firefox 的舊網站也願意給正常版面。
-- `Chrome/141.0.0.0` 才是真正的瀏覽器與版本。
-- 結尾的 `Safari/537.36` 也是為了相容舊網站而加上的，並不代表你在用 Safari。
+- `Mozilla/5.0` 是早年留下的開頭，現在幾乎所有瀏覽器都這樣寫，沒有實際意義。
+- 括號裡是作業系統。Windows 會出現 Windows NT 10.0，手機會出現 iPhone 或 Android。
+- `AppleWebKit/537.36 (KHTML, like Gecko)` 是排版引擎的標示。「像 Gecko」是為了讓只認 Firefox 的舊網站也願意給正常版面。
+- `Chrome/141.0.0.0` 才是真正的瀏覽器與主版本號。
+- 結尾的 `Safari/537.36` 同樣是為了相容舊網站，並不代表你在用 Safari。
 
-所以同一串裡同時出現 Mozilla、Gecko、Chrome、Safari，是瀏覽器互相模仿留下的歷史包袱。近年瀏覽器還會刻意把部分資訊固定住，例如較新的 macOS 也一律寫成 10_15_7，版本號後面幾位也常被歸零，避免被拿來追蹤使用者。
+同一串裡同時出現 Mozilla、Gecko、Chrome、Safari，是瀏覽器互相模仿留下的歷史包袱。Chrome 還刻意把細節固定住：macOS 版本永遠寫成 10_15_7，版本號後三段也一律是 0，避免被拿來辨識個別使用者。
 
 {% note warning %}
 **識別字串不可靠**
-`userAgent` 適合拿來看看，不適合拿來寫判斷，因為內容會變、還會互相模仿，猜錯的機率很高。想知道某個功能能不能用，與其猜「這是哪一種瀏覽器」，不如直接檢查那個功能存不存在，例如寫 `if (navigator.clipboard)`：有就使用，沒有就改用別的做法。這種寫法叫做功能偵測。
+`userAgent` 適合拿來看看，不適合拿來寫判斷，因為內容會變、還會互相模仿。想知道某個功能能不能用，與其猜這是哪一種瀏覽器，不如直接檢查那個功能存不存在，例如 `if (navigator.clipboard)`：有就使用，沒有就改用別的做法。這種寫法叫做功能偵測。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-再印出 `navigator.languages[0]`。它多半與第一行相同。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-languages 是偏好語言的清單，第一個多半就是 language。最後一行仍是那串識別文字。
-
-```diff 04-js/pages/99-js-navigator.html
-  // ...
-        console.log(navigator.onLine);
-        console.log(navigator.userAgent);
-+       console.log(navigator.languages[0]);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-zh-TW
-true
-Mozilla/5.0 ...
-zh-TW
-```
-
-</details>
 
 ### 寫入剪貼簿
 
-剪貼簿是 `navigator.clipboard`，寫入用 `writeText`。呼叫包成函式，在 Console 執行。
+`navigator.clipboard.writeText` 把一段文字寫進系統剪貼簿，之後就可以在別處貼上。瀏覽器對這件事有幾個限制：
 
-它回傳 Promise，成功時用 `.then` 接下一行，Promise 的細節在下一篇。
+- 頁面必須是安全連線：https，或本機的 localhost、127.0.0.1（Live Server 用的就是後者）。不在安全連線時，`navigator.clipboard` 根本不存在。
+- 頁面必須在前景並取得焦點。在 DevTools 的 Console 輸入程式時，焦點在 DevTools 而不是頁面，常會失敗，錯誤訊息類似 Document is not focused。
+- 實務上要由使用者的點擊觸發，所以這個 demo 用按鈕。按鈕與 `addEventListener` 在本篇後面的事件章節才說明，這裡先照著用。
+
+寫入需要時間，`writeText` 回傳的是 Promise（代表一件還沒完成的事），成功後用 `.then` 接下一步。Promise 的細節見 {% post_link lokiTech-15day-08-js-async %}。
 
 ```html 04-js/pages/100-js-clipboard.html
 <!DOCTYPE html>
@@ -1299,75 +1014,43 @@ zh-TW
     <title>寫入剪貼簿</title>
   </head>
   <body>
-    <p>在 DevTools 的 Console 呼叫 copyText()。</p>
+    <button type="button">複製文字</button>
     <script>
-      const copyText = () => {
+      const button = document.querySelector('button');
+
+      button.addEventListener('click', () => {
         navigator.clipboard.writeText('BOM').then(() => {
           console.log('已複製');
         });
-      };
+      });
 
-      console.log('呼叫 copyText()');
+      console.log('等待點擊');
     </script>
   </body>
 </html>
 ```
 
-載入時先印出提示。在 localhost 呼叫 copyText() 且成功時，會再多一行：
+載入時先印出提示。點擊按鈕且成功時，再多一行：
 
 ```text
-呼叫 copyText()
+等待點擊
 已複製
 ```
 
 **解析**
 
-- 頁面打開時只印出提示，不會自己寫進剪貼簿。
-- 寫入的文字是 BOM，成功後 `.then` 才印已複製。
-- 第二行要比第一行晚出現，因為要等 Promise 完成。
+- 頁面上有一個「複製文字」按鈕，載入時只印出「等待點擊」，不會自己寫進剪貼簿。
+- 點擊按鈕後，文字 BOM 被寫進剪貼簿；到任何輸入框按貼上，就會看到它。
+- 「已複製」比「等待點擊」晚出現，因為要等寫入完成才執行 `.then` 裡的函式。
+- 若寫入被拒絕，Console 會出現紅色的 NotAllowedError，多半是網址不在安全連線，或頁面沒有焦點。
 
-{% note info %}
-**安全連線與 Promise**
-`writeText` 要在 https 或 localhost 下使用，Live Server 的 127.0.0.1 算 localhost。Promise 的寫法見 {% post_link lokiTech-15day-08-js-async %}。從 Console 呼叫時若出現錯誤，多半是網址不在安全連線，或瀏覽器還要求一次點擊。
-{% endnote %}
+## 選讀：列印與對話框
 
-{% note success %}
-**換你試試：**
-把寫入的文字改成 `'history'`，成功時改印 `已寫入`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-writeText 的引數改成 history，then 裡的文字改成已寫入。呼叫方式仍是 copyText()。
-
-```diff 04-js/pages/100-js-clipboard.html
-  // ...
-      <script>
-        const copyText = () => {
--         navigator.clipboard.writeText('BOM').then(() => {
--           console.log('已複製');
-+         navigator.clipboard.writeText('history').then(() => {
-+           console.log('已寫入');
-          });
-        };
-        // ...
-```
-
-```text
-呼叫 copyText()
-已寫入
-```
-
-</details>
-
-## 列印與對話框
-
-`print` 會打開系統的列印對話框。確認、警示與輸入是另外三個會把程式停住的函式，詳細做法在前一篇。這一節先講列印，再簡單列出另外三個。
+`print` 會打開系統的列印對話框；`alert`、`confirm`、`prompt` 是另外三個內建對話框。這四個函式有一個共通點：對話框關掉之前，這個分頁的程式會停在原地等待。
 
 ### 列印
 
-`print` 是 window 的方法，會打開列印對話框，預設印出目前這一頁。對話框關掉之前，函式裡的下一行不會跑。若直接寫在檔案最外層，一開頁就會跳出，所以包成函式再從 Console 呼叫。
+`print` 是 window 的方法，打開列印對話框，預設印出目前這一頁。對話框開著的期間，下一行程式不會跑，要等對話框關掉才繼續。若直接寫在檔案最外層，一開頁就會跳出對話框，所以先包成函式，再從 Console 呼叫。
 
 ```html 04-js/pages/101-js-print.html
 <!DOCTYPE html>
@@ -1381,7 +1064,9 @@ writeText 的引數改成 history，then 裡的文字改成已寫入。呼叫方
     <p>在 DevTools 的 Console 呼叫 printPage()。</p>
     <script>
       const printPage = () => {
+        console.log('列印之前');
         print();
+        console.log('列印之後');
       };
 
       console.log('呼叫 printPage() 會打開列印對話框');
@@ -1390,40 +1075,7 @@ writeText 的引數改成 history，then 裡的文字改成已寫入。呼叫方
 </html>
 ```
 
-```text
-呼叫 printPage() 會打開列印對話框
-```
-
-**解析**
-
-- 頁面打開時只印出提示，不會自己跳出列印。
-- 在 Console 呼叫 `printPage` 才會打開對話框。
-- 按取消就回到這一頁，網址與文件都留在原地。
-
-{% note success %}
-**換你試試：**
-在 `print` 前後各印「列印之前」和「列印之後」。關掉對話框才看得到第二句。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-print 會停住這個分頁。先印出「列印之前」，對話框關掉之後才印「列印之後」。載入時的那行提示仍然先出現。
-
-```diff 04-js/pages/101-js-print.html
-  // ...
-      <script>
-        const printPage = () => {
-+         console.log('列印之前');
-          print();
-+         console.log('列印之後');
-        };
-  
-        console.log('呼叫 printPage() 會打開列印對話框');
-      // ...
-```
-
-呼叫 printPage() 並關掉對話框之後：
+呼叫 `printPage()` 並關掉對話框之後：
 
 ```text
 呼叫 printPage() 會打開列印對話框
@@ -1431,22 +1083,29 @@ print 會停住這個分頁。先印出「列印之前」，對話框關掉之�
 列印之後
 ```
 
-</details>
+**解析**
+
+- 頁面打開時只印出提示，不會自己跳出列印。
+- 在 Console 呼叫 `printPage` 才會打開對話框，「列印之前」先出現。
+- 「列印之後」要等對話框關掉才會出現，這就是程式被停住的證明。
+- 按取消只是關掉對話框，網址與頁面內容都留在原地。
 
 {% note info %}
 **另開視窗**
-`window.open` 會開出新分頁或新視窗。呼叫當下若沒有使用者的點擊，瀏覽器通常會把這個視窗擋下來。
+`window.open` 會開出新分頁或新視窗。瀏覽器只允許在使用者點擊的當下呼叫，否則會把它當成彈出廣告擋下來，並回傳 `null`。
 {% endnote %}
 
 ### alert、confirm 與 prompt
 
-這三個函式在 {% post_link lokiTech-15day-06-js-basics %} 已經看過完整示範。這裡只記用途、回傳值，以及它們會把程式停住。三者都掛在 window 上。
+這三個函式在 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：alert、confirm 與 prompt」已有完整示範，這裡只回顧用途與回傳值，再和 `print` 搭配。
 
-- `alert` 只顯示訊息，按掉之後回傳 `undefined`。
-- `confirm` 讓人選確定或取消，回傳 true 或 false。
-- `prompt` 回傳輸入的字串，按取消得到 `null`。
+**一覽**
 
-對話框關掉之前，函式裡的下一行不會跑，頁面的點擊也一起停。所以可以先用 `confirm` 問過，再決定要不要呼叫 `print`。
+- `alert`：只顯示訊息，沒有可用的回傳值。
+- `confirm`：讓人選確定或取消，回傳 true 或 false。
+- `prompt`：讓人輸入文字，回傳輸入的字串，按取消得到 `null`。
+
+三者和 `print` 一樣會停住程式，所以可以先用 `confirm` 問過，再決定要不要呼叫 `print`。
 
 ```html 04-js/pages/102-js-confirm.html
 <!DOCTYPE html>
@@ -1473,7 +1132,7 @@ print 會停住這個分頁。先印出「列印之前」，對話框關掉之�
 </html>
 ```
 
-載入時只印出提示。呼叫 printIfConfirmed() 之後要先關掉確認框，才看得到 true 或 false：
+載入時只印出提示。呼叫 `printIfConfirmed()` 並按確定後，先印出 true，接著打開列印對話框：
 
 ```text
 呼叫 printIfConfirmed()
@@ -1482,72 +1141,39 @@ true
 
 **解析**
 
-- 頁面打開時只印出提示，不會自己跳出確認或列印。
-- `confirm` 會停住這個分頁。印出 ok 的那一行要等對話框關掉才出現。
-- 按確定時 ok 是 true，接著才呼叫 print。按取消時是 false，不會列印。
-- 按取消就回到這一頁，網址與文件都留在原地。
-
-{% note success %}
-**換你試試：**
-按取消時改印「已取消」，按確定仍開啟列印。不要再印出 ok。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-按取消才走進 else，印出已取消，並且不會列印。按確定仍呼叫 print，Console 不會多出已取消。載入時的提示還是先出現。
-
-```diff 04-js/pages/102-js-confirm.html
-  // ...
-        const printIfConfirmed = () => {
-          const ok = confirm('要列印這一頁嗎');
--         console.log(ok);
-          if (ok) {
-            print();
-+         } else {
-+           console.log('已取消');
-          }
-        };
-        // ...
-```
-
-按取消並關掉對話框之後：
-
-```text
-呼叫 printIfConfirmed()
-已取消
-```
-
-</details>
+- 頁面打開時只印出提示，不會自己跳出確認框。
+- `confirm` 會停住這個分頁，印出 ok 的那一行要等確認框關掉才出現。
+- 按確定時 ok 是 true，接著呼叫 `print`；按取消時 ok 是 false，只印出 false，不會列印。
 
 ## 計時器
 
-計時器把函式排進稍後的工作，程式不會停在那一行乾等。setTimeout 做一次，setInterval 每隔一段做一次。兩者都回傳識別碼，要取消就交給對應的 clear 函式。這一節先把結果印在 Console。選讀再看 `requestAnimationFrame`，它對齊下一次畫面更新。
+程式預設一行接著一行跑完，不會自己等。計時器讓你把一個函式先登記起來，時間到了再由瀏覽器呼叫它，程式本身不用停在原地乾等。這一節先看只執行一次的 setTimeout，再看每隔一段時間重複的 setInterval，以及怎麼取消它們。選讀最後介紹對齊畫面更新的 requestAnimationFrame。
 
-- `setTimeout` 排程一次，回傳識別碼，交給 `clearTimeout` 取消。
-- `setInterval` 依間隔重複，回傳的識別碼交給 `clearInterval`。
+**一覽**
+
+- 執行一次：`setTimeout(函式, 毫秒)` 等了指定毫秒之後呼叫一次函式；`clearTimeout(識別碼)` 在它執行之前取消。
+- 重複執行：`setInterval(函式, 毫秒)` 每隔指定毫秒就呼叫一次，直到被停止；`clearInterval(識別碼)` 負責停止。
+- 兩個 set 函式都回傳識別碼，是一個用來指認這個計時器的數字。要取消時，把識別碼交給對應的 clear 函式。
+- 交給計時器的函式叫回呼函式（callback）：不是現在執行，而是時間到了由別人呼叫。
+
+{% mermaid graph LR %}
+setNode["setTimeout 或 setInterval"] --> idNode["識別碼"]
+idNode --> clearNode["clear 函式取消"]
+idNode --> runNode["時間到，執行函式"]
+{% endmermaid %}
 
 {% note info %}
-**時間只保證不會更早**
-延遲的毫秒是下限。分頁切到背景時，瀏覽器可能把計時器拖得更晚。
+**毫秒是最短等待時間**
+1000 毫秒是 1 秒。這個數字是保證至少等多久，不是準時，因為時間到了還要等目前的程式跑完才輪到。分頁切到背景時，瀏覽器也會把計時器放慢，Chrome 對背景分頁大約每秒才檢查一次。
 {% endnote %}
 
 ### setTimeout 與 clearTimeout
 
-setTimeout 登記一次工作。還沒到點就可以用回傳的識別碼取消；到點之後再取消也不會拋錯，只是工作已經做完。
+setTimeout 登記一次工作：等待指定的毫秒後，呼叫函式一次，之後就結束。這一節分三步：先看它怎麼運作、再看它何時真正執行、最後看如何取消。
 
-- `setTimeout` 登記一次函式，至少等待第二個引數的毫秒，回傳識別碼。
-- `clearTimeout` 用那個識別碼取消。識別碼對不上時，什麼都不會發生。
+#### 延遲執行一次
 
-{% mermaid graph LR %}
-setNode["setTimeout"] --> idNode["識別碼"]
-idNode --> clearNode["clearTimeout 取消"]
-idNode --> runNode["到點執行"]
-{% endmermaid %}
-
-**觀念**
-
-setTimeout 的第一個引數是到點要呼叫的函式，第二個是至少等待的毫秒。回傳值交給 clearTimeout 就會取消這一次。識別碼要留在變數裡，臨時寫出來的計時器沒有名字可取消。
+第一個引數是到時要呼叫的函式，第二個是等待的毫秒。登記之後程式繼續往下跑，不會停在這一行。
 
 ```html 04-js/pages/103-js-timeout.html
 <!DOCTYPE html>
@@ -1555,75 +1181,126 @@ setTimeout 的第一個引數是到點要呼叫的函式，第二個是至少等
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>setTimeout 與 clearTimeout</title>
+    <title>setTimeout</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const pending = setTimeout(() => {
-        console.log('這句不該出現');
-      }, 500);
-      clearTimeout(pending);
+      console.log('開始');
 
       setTimeout(() => {
         console.log('一秒後');
       }, 1000);
+
+      console.log('結束');
     </script>
   </body>
 </html>
 ```
 
-**解析**
-
-- pending 那次在 500 毫秒前就被取消，Console 不會出現「這句不該出現」。
-- 第二個計時器沒有取消，大約一秒後印出「一秒後」。
-- 兩次呼叫各自有識別碼，clearTimeout 只會取消你交出去的那一個。
-- 頁面上的說明文字保持原樣，結果只在 Console。
-
 ```text
+開始
+結束
 一秒後
 ```
 
-{% note success %}
-**換你試試：**
-把第二個延遲改成 2000，印出的文字改成「兩秒後」。被取消的那句仍然不可以出現。
+**解析**
+
+- 頁面只有說明文字，結果在 Console。
+- 「開始」與「結束」幾乎同時印出，因為 setTimeout 只負責登記，不會讓程式停下來等一秒。
+- 大約一秒後，才印出計時器裡的「一秒後」。
+- 計時器只執行一次，印完之後不會再有新的輸出。
+
+{% note warning %}
+**交出函式，不要直接呼叫**
+第一個引數要是函式本身，例如箭頭函式。若寫成 `setTimeout(show(), 1000)`，`show()` 會立刻執行，交給計時器的只是它的回傳值，到時什麼都不會發生。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+#### 計時器何時執行
 
-clearTimeout 仍拿 pending 的識別碼，所以 500 毫秒那次不會執行。留下的計時器等兩秒，印出「兩秒後」。
+時間到了，計時器的函式也不會立刻插隊。瀏覽器會等目前這一段程式全部跑完，才輪到它。即使延遲寫 0 毫秒也一樣。
 
-```diff 04-js/pages/103-js-timeout.html
-  // ...
-        clearTimeout(pending);
-  
-        setTimeout(() => {
--         console.log('一秒後');
--       }, 1000);
-+         console.log('兩秒後');
-+       }, 2000);
-      </script>
-    </body>
-  // ...
+```html 04-js/pages/103b-js-timeout-order.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>計時器何時執行</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      console.log('第一行');
+
+      setTimeout(() => {
+        console.log('計時器，延遲 0 毫秒');
+      }, 0);
+
+      console.log('第二行');
+    </script>
+  </body>
+</html>
 ```
 
 ```text
-兩秒後
+第一行
+第二行
+計時器，延遲 0 毫秒
 ```
 
-</details>
+**解析**
+
+- 計時器寫在中間，卻最後才印出，因為它要等這個 script 全部執行完才有機會跑。
+- 這是計時器最重要的規則：登記的函式一律在目前的程式結束之後才執行，後面的 setInterval、事件與非同步請求也都遵守同一個規則。
+- 這個規則背後的機制，在 {% post_link lokiTech-15day-08-js-async %} 的「選讀：事件迴圈」有完整說明。
+
+#### 取消計時器
+
+登記時拿到的識別碼要存進變數。在時間到之前呼叫 `clearTimeout`，這個計時器就不會執行。
+
+```html 04-js/pages/103c-js-clear-timeout.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>clearTimeout</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const pending = setTimeout(() => {
+        console.log('這句不會出現');
+      }, 500);
+      console.log('識別碼', pending);
+
+      clearTimeout(pending);
+      console.log('已取消');
+    </script>
+  </body>
+</html>
+```
+
+識別碼的數字可能不同：
+
+```text
+識別碼 1
+已取消
+```
+
+**解析**
+
+- 識別碼在瀏覽器裡是一個正整數；每個計時器各有一個。
+- 計時器登記後馬上被 `clearTimeout` 取消，所以過了 500 毫秒，Console 也不會出現「這句不會出現」。
+- 時間到了之後才取消，不會出錯，只是函式早已執行完，取消沒有效果。
+- 識別碼只能取消它所屬的那一個計時器；沒有存下識別碼的計時器，就沒有辦法取消。
 
 ### setInterval 與 clearInterval
 
-setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼要交給 clearInterval，不能拿去給 clearTimeout 用在語意上雖然多半仍能停，課堂仍配對使用，避免之後讀程式的人看錯。
+setInterval 和 setTimeout 的差別只有一點：它不會自己結束，而是每隔指定的毫秒就呼叫一次，直到你用 clearInterval 停止，或是頁面被關掉。第一次呼叫也要等一個間隔之後，不是登記時立刻執行。
 
-- `setInterval` 依間隔重複呼叫函式，回傳識別碼。
-- `clearInterval` 用那個識別碼停下。課堂把 set 與 clear 配成同一對。
-
-**觀念**
-
-間隔函式裡要自己決定何時停。把 setInterval 的回傳值留在變數，數到目標就 clearInterval。沒有清除的間隔會一直佔著這個分頁。
+停止的時機要由函式自己判斷：把回傳的識別碼存起來，數到目標就呼叫 `clearInterval`。沒有清除的間隔會一直執行，直到分頁關閉。取消時用配對的 clear 函式，程式比較好讀。
 
 ```html 04-js/pages/104-js-interval.html
 <!DOCTYPE html>
@@ -1651,58 +1328,23 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
 </html>
 ```
 
+```text
+1
+2
+3
+已停止
+```
+
 **解析**
 
-- count 用 let，因為每次間隔都要加 1。
-- 大約每 400 毫秒印出 1、2、3。
-- 數到 3 時用同一個 id 清除，後面不再繼續加。
-- 「已停止」印出之後，這個間隔就結束了。
-
-```text
-1
-2
-3
-已停止
-```
-
-{% note success %}
-**換你試試：**
-改成數到 5 才 clearInterval，停止訊息仍印在最後一個數字後面。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件改成 5 之後，間隔會多跑兩次才清除。識別碼仍是同一個 id。
-
-```diff 04-js/pages/104-js-interval.html
-  // ...
-          count += 1;
-          console.log(count);
--         if (count === 3) {
-+         if (count === 5) {
-            clearInterval(id);
-            console.log('已停止');
-          // ...
-```
-
-```text
-1
-2
-3
-4
-5
-已停止
-```
-
-</details>
+- `count` 用 let 宣告，因為每次呼叫都要加 1。
+- 大約每 400 毫秒印出一個數字：1、2、3，第一個數字在 400 毫秒之後才出現。
+- 數到 3 時，用同一個識別碼呼叫 `clearInterval`，之後不會再有輸出。
+- 如果拿掉 `clearInterval`，數字會一直印下去，直到你關掉頁面。
 
 ### 選讀：requestAnimationFrame
 
-`requestAnimationFrame` 把函式排到下一次畫面更新，並回傳識別碼。`cancelAnimationFrame` 用這個識別碼取消。它只排一次，這一節不在回呼裡再排下一次。
-
-- `requestAnimationFrame` 把函式排到下一次畫面更新，回傳識別碼。
-- `cancelAnimationFrame` 用那個識別碼取消這一次。
+`requestAnimationFrame` 把函式排到「下一次畫面更新之前」執行，回傳識別碼，`cancelAnimationFrame` 用它取消。它專門給動畫使用：畫面常見每秒更新 60 次（高更新率螢幕更多），函式的執行時機剛好對齊畫面，比用 setTimeout 估算更順暢；分頁在背景時它也會暫停，不浪費運算。要連續播放，就必須在函式裡再登記下一次；這一節只預約一次。
 
 ```html 04-js/pages/105-js-frame.html
 <!DOCTYPE html>
@@ -1710,7 +1352,7 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：requestAnimationFrame</title>
+    <title>requestAnimationFrame</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -1724,7 +1366,7 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
 </html>
 ```
 
-第一行的數字是識別碼，每次可能不同。重點是它比下一幀更早出現。
+識別碼的數字可能不同：
 
 ```text
 已預約 1
@@ -1733,58 +1375,38 @@ setInterval 會依間隔重複呼叫，直到你清除它。回傳的識別碼�
 
 **解析**
 
-- 同步的那行先印出識別碼，回呼裡的文字等下一次畫面更新才出現。
-- 識別碼交給 `cancelAnimationFrame` 就能取消這一次。
-- 這一節只預約一幀。
-
-{% note success %}
-**換你試試：**
-用 `cancelAnimationFrame` 取消剛才的識別碼，讓下一幀不會出現。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-取消之後，回呼不會再印下一幀。Console 只留下已取消與識別碼。
-
-```diff 04-js/pages/105-js-frame.html
-  // ...
-          console.log('下一幀');
-        });
--       console.log('已預約', id);
-+       cancelAnimationFrame(id);
-+       console.log('已取消', id);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-已取消 1
-```
-
-</details>
+- 「已預約」先印出，因為這一行是目前程式的一部分；「下一幀」要等目前程式結束、畫面準備更新時才出現，規則和計時器相同。
+- 識別碼可以交給 `cancelAnimationFrame` 取消這一次預約。
+- 只是讓畫面動起來時，優先用 CSS 的 transition 或 animation；需要用程式逐幀計算位置時，才用 `requestAnimationFrame`。
 
 # DOM
 
-文件物件模型是那棵已經建好的樹。這一章先把節點選出來，再改內容、屬性與 class，最後建立、搬移與移除節點。事件下一章才綁。程式仍在載入時跑一次，畫面會立刻變成結果。
+DOM（文件物件模型）是瀏覽器讀完 HTML 之後，在記憶體裡建好的一棵節點樹，JavaScript 透過這棵樹讀取與改寫畫面。這一章先把節點選出來，再改內容、屬性與 class，最後建立、搬移與移除節點；綁定事件留到後面的章節。本章的程式都放在頁面最後，載入時跑一次，所以畫面一打開就是改寫後的結果。
 
 ## 選取元素
 
-選取是後面所有改寫的起點。一個選擇器對上一個元素時用 querySelector，對上一整組時用 querySelectorAll。找不到時兩者的回傳值不一樣，先分清楚再呼叫方法。
+要改畫面上的任何東西，第一步都是先拿到它。這一節從最常用的 CSS 選擇器開始，再學怎麼在一塊範圍裡找、沿著樹往上往下往旁邊走，選讀則介紹舊程式裡常見的另一組寫法。
 
-- `querySelector` 回傳第一個符合的元素，找不到時是 null。
-- `querySelectorAll` 回傳查詢當下的節點清單，沒有符合時長度是 0。
+**一覽**
+
+- `querySelector`：用 CSS 選擇器找，回傳第一個符合的元素；沒有符合時回傳 null。
+- `querySelectorAll`：回傳所有符合的元素，裝在一份 NodeList 裡；沒有符合時是長度 0 的清單，不是 null。
+- 節點關係：已經拿到一個元素，再用 `parentElement`、`children`、`nextElementSibling` 這類屬性走到它的上下左右。
+- 選讀的 `getElementById` 與 `getElementsBy…` 系列：依 id、class、標籤名找，舊程式很常見。
 
 ### querySelector
 
-querySelector 從呼叫它的那個節點往下，在它的子孫層裡依文件順序找出第一個符合選擇器的元素。寫成 `document.querySelector` 時，起點就是整份文件。這一節先從 document 找起，並練習選不到時怎麼先停下來。
+`querySelector` 在呼叫它的節點底下，由上到下找出第一個符合選擇器的元素。寫成 `document.querySelector` 時，範圍就是整份文件。這一節先看找得到與找不到兩種結果，以及找不到時怎麼避免出錯。
 
 **觀念**
 
-選擇器寫法和 CSS 相同，id 用井字號，class 用句點。找到就回傳那個元素；沒有符合的元素時回傳 null，這時不能再點出方法。
+- 選擇器寫法和 CSS 相同：id 用井字號，class 用句點，標籤直接寫名稱。符合的元素不只一個時，只回傳最前面那一個。
+- 找不到時回傳 null，意思是「沒有這個元素」。對 null 讀屬性或改文字會丟出錯誤，所以要先確認。
+- 找不到最常見的原因有兩個：選擇器打錯，或程式比元素更早執行。本課 script 都放在 body 最後，元素已經存在。
 
-所以不一定要從 document 開始。`querySelector` 也掛在每個元素上，先選到某個容器，再對它呼叫，搜尋範圍就只剩那個容器的子孫，同名 class 只會對上那一塊裡面的元素，容器本身不算在內。
+保護的方法有兩種。只讀取時，用第 06 篇學過的 `?.`，沒有元素就得到 undefined；要改寫時，用 if 先判斷，因為 `?.` 不能放在指派的左邊。
+
+demo 裡的 `textContent` 是元素裡的文字內容，指派新字串畫面就會改變，下一節再詳細說明。
 
 ```html 04-js/pages/106-js-query.html
 <!DOCTYPE html>
@@ -1801,8 +1423,12 @@ querySelector 從呼叫它的那個節點往下，在它的子孫層裡依文件
       const title = document.querySelector('#title');
       title.textContent = '已選到標題';
 
+      const note = document.querySelector('.note');
+      note.textContent = '這是補充';
+
       const missing = document.querySelector('#missing');
       console.log(missing);
+      console.log(missing?.textContent);
       if (missing) {
         missing.textContent = '有找到';
       }
@@ -1811,43 +1437,34 @@ querySelector 從呼叫它的那個節點往下，在它的子孫層裡依文件
 </html>
 ```
 
-**解析**
+Console（本章的輸出區塊只列出文字，和 Console 實際畫面的行號、顏色略有不同）：
 
-- 第一個選擇器對上 h1，所以標題變成「已選到標題」。
-- `#missing` 在這份文件裡不存在，Console 印出 null。
-- if 先擋住 null，後面那行就不會去改一個不存在的元素。
-
-{% note success %}
-**換你試試：**
-再選到 class 為 note 的段落，把文字改成「這是補充」。標題與 null 的判斷留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-class 選擇器會對上那個段落。缺的 id 仍然是 null，所以 if 裡面不會執行。
-
-```diff 04-js/pages/106-js-query.html
-  // ...
-          missing.textContent = '有找到';
-        }
-+ 
-+       const note = document.querySelector('.note');
-+       note.textContent = '這是補充';
-      </script>
-    </body>
-  // ...
+```text
+null
+undefined
 ```
 
-</details>
+**解析**
+
+- 畫面上標題變成「已選到標題」，段落變成「這是補充」，前者用 id 選擇器、後者用 class 選擇器選到。
+- `#missing` 在文件裡不存在，所以第一行 Console 是 null。
+- 第二行用 `?.` 讀取，null 擋住了後面的 textContent，結果是 undefined，沒有出錯。
+- if 的條件是 null，不成立，所以不會去改一個不存在的元素。
+
+{% note info %}
+**選擇器本身寫錯**
+選擇器文字不合法（例如只寫一個 `#` 沒有名稱）時，會直接丟出錯誤，而不是回傳 null。null 只代表「語法正確，但文件裡沒有符合的元素」。
+{% endnote %}
 
 ### querySelectorAll
 
-一次要改同一組元素時，改問 querySelectorAll。回傳的清單可以走訪，就算一個都沒有，也不會是 null。
+一次要改同一組元素時，改用 `querySelectorAll`。它回傳一份清單，可以逐項走訪；就算一個都沒找到，也不會是 null。
 
 **觀念**
 
-回傳值是 NodeList，長度用 length 讀。它記得的是查詢當下的那些元素，之後再插入的新元素不會自動跑進這份清單。清單本身沒有 map，要逐項處理就用 forEach。從某個元素呼叫時，範圍只有它的後代。
+回傳的是 NodeList，一種節點清單：有 length 與順序，但不是真正的陣列，所以沒有 map。它有 forEach，要用 map 或 filter 時，先用展開語法轉成陣列。
+
+另一個特性是「靜態」：清單只記得查詢當下找到的元素，之後文件再多出符合的元素，這份清單不會自動增加。選讀的最後一節會用 demo 驗證這件事。
 
 ```html 04-js/pages/107-js-query-all.html
 <!DOCTYPE html>
@@ -1865,56 +1482,45 @@ class 選擇器會對上那個段落。缺的 id 仍然是 null，所以 if 裡�
     </ul>
     <script>
       const items = document.querySelectorAll('.item');
+      console.log(items.length);
+
+      const names = [...items].map((item) => item.textContent);
+      console.log(names);
 
       items.forEach((item, index) => {
         item.textContent = `${index + 1}. ${item.textContent}`;
       });
 
-      console.log(items.length);
+      const none = document.querySelectorAll('.missing');
+      console.log(none.length);
     </script>
   </body>
 </html>
 ```
 
-**解析**
+Console：
 
-- 選擇器對上三個 li，length 是 3。
-- forEach 的 index 從 0 開始，畫面上的序號改從 1 顯示。
-- 原本文字被讀出來再組回去，所以蘋果仍在第一列。
-- 清單是空的時 length 為 0，forEach 只是不跑，不會丟出錯誤。
-
-{% note success %}
-**換你試試：**
-序號保留，每項文字後面再接上「（清單）」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-模板字串可以把序號、原本文字與後綴接成一次指派。三列都會帶上同一個後綴。
-
-```diff 04-js/pages/107-js-query-all.html
-  // ...
-        const items = document.querySelectorAll('.item');
-  
-        items.forEach((item, index) => {
--         item.textContent = `${index + 1}. ${item.textContent}`;
-+         item.textContent = `${index + 1}. ${item.textContent}（清單）`;
-        });
-  
-        console.log(items.length);
-      // ...
+```text
+3
+['蘋果', '香蕉', '橘子']
+0
 ```
 
-</details>
+**解析**
+
+- 選擇器對上三個 li，所以 length 是 3。
+- 展開後得到真正的陣列，才能用 map 把每項文字收集起來。
+- 畫面上三列依序變成「1. 蘋果」「2. 香蕉」「3. 橘子」；forEach 的 index 從 0 開始，所以顯示時加 1。
+- 沒有符合的選擇器得到長度 0 的清單，forEach 對它只是不執行，不會丟出錯誤。
 
 ### 在容器裡找
 
-querySelector 與 querySelectorAll 可以改從某一塊元素呼叫，搜尋就縮在那一塊裡面。同名 class 散落在不同區塊時，就不會互相抓到。這一節用新聞區與商品區比對數量。
+這兩個方法不只掛在 document 上，每個元素也有。先選到某一塊容器，再從它呼叫，搜尋範圍就縮到那一塊的後代裡，散落在不同區塊的同名 class 不會互相抓到。這一節用新聞區與商品區，比對範圍縮小前後的差別。
 
 **觀念**
 
-這兩個方法文件上有，元素上也有。搜尋起點是呼叫它的那個節點，範圍是後代。容器自己要改由父層或 document 來選。
+- 搜尋範圍是呼叫它的節點的後代，容器本身不算在內，所以容器自己要改從父層或 document 選。
+- 回傳規則不變：`querySelector` 找不到是 null，`querySelectorAll` 沒有符合是空清單。
 
 ```html 04-js/pages/108-js-query-scope.html
 <!DOCTYPE html>
@@ -1955,59 +1561,35 @@ null
 
 **解析**
 
-- 整頁有三段 class 為 item 的段落，所以第一個長度是 3。
-- 從商品區往下找，只剩商品一，長度是 1。
-- 商品區自己的 id 不在它的後代裡，第三行是 null。
-- 新聞區的第一段是新聞一，商品區的同名 class 沒有被改到。
-
-{% note success %}
-**換你試試：**
-只把新聞區第一個 .item 的文字改成「頭條」。商品區不要動。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-範圍縮在新聞區，所以只有頭條被改寫。兩區的數量仍是 3 與 1。
-
-```diff 04-js/pages/108-js-query-scope.html
-  // ...
-        console.log(shop.querySelectorAll('.item').length);
-        console.log(shop.querySelector('#shop'));
-+       news.querySelector('.item').textContent = '頭條';
-        console.log(news.querySelector('.item').textContent);
-      </script>
-    // ...
-```
-
-```text
-3
-1
-null
-頭條
-```
-
-</details>
+- 頁面上沒有任何變化，因為程式只讀取、沒有改寫。
+- 整份文件有三個 class 為 item 的段落，所以第一行是 3。
+- 從商品區往下找，只剩商品一，所以第二行是 1。
+- 商品區自己的 id 不在它的後代裡，所以第三行是 null。
+- 從新聞區找到的第一個 item 是新聞一，不會誤抓到商品區那一段。
 
 ### 節點關係
 
-選到一個元素之後，可以沿樹往上、往下或往旁走，也可以問它自己符不符合某個選擇器。這一節以 section#card 為中心，四個方向分開看。文件裡外層是 article#story，中間是 main#app。
+選到一個元素之後，可以沿著樹往上、往下或往旁邊走，不必每次都回到 document 重選。這一節以 section#card 為中心，分往上、往下、同層與判斷四個方向。
+
+**一覽**
 
 - 往上
-    - `parentElement` 是直接父元素，沒有父元素時回傳 null。
-    - `closest` 從自己往上找最近的符合者，含自己，找不到回傳 null。
+    - `parentElement`：直接父元素，沒有時回傳 null。
+    - `closest`：從自己開始往上找最近的符合者，包含自己，找不到回傳 null。
 - 往下
-    - `children` 是直接子元素的即時集合，只算元素。
-    - `firstElementChild` 與 `lastElementChild` 是第一個與最後一個子元素，沒有時回傳 null。
-    - `querySelector` 找第一個後代，`querySelectorAll` 找全部後代，範圍不含自己。
+    - `children`：直接子元素的集合，只算元素。
+    - `firstElementChild` 與 `lastElementChild`：第一個與最後一個子元素，沒有時回傳 null。
+    - 後代搜尋沿用上一節的 `querySelector` 與 `querySelectorAll`。
 - 同層
-    - `previousElementSibling` 是前一個元素兄弟，沒有時回傳 null。
-    - `nextElementSibling` 是後一個元素兄弟，沒有時回傳 null。
+    - `previousElementSibling`：前一個元素兄弟，沒有時回傳 null。
+    - `nextElementSibling`：後一個元素兄弟，沒有時回傳 null。
 - 判斷
-    - `matches` 回答自己是否符合選擇器，回傳 true 或 false，不去找別的元素。
+    - `matches`：回答「我自己符不符合這個選擇器」，回傳 true 或 false，不去找別的元素。
+
+下面是 demo 共用的結構：外層 article#story 包著 main#app，main 裡依序是 p#intro、section#card、p#outro，卡片裡有 h2#heading、p#text、button#action。
 
 {% mermaid graph TD %}
-story["article#story<br/>closest 祖先"] --> app["main#app<br/>parentElement"]
+story["article#story<br/>closest 找到的祖先"] --> app["main#app<br/>parentElement"]
 app --> intro["p#intro<br/>previousElementSibling"]
 app --> card["section#card<br/>被選到的元素"]
 app --> outro["p#outro<br/>nextElementSibling"]
@@ -2016,20 +1598,14 @@ card --> text["p#text"]
 card --> action["button#action<br/>lastElementChild"]
 {% endmermaid %}
 
-{% note info %}
-**元素與文字節點**
-`parentNode` 與 `childNodes` 會把換行空白算成文字節點。
-
-`nextSibling` 同樣會算到旁邊的空白。找元素時用帶 Element 的版本。
-{% endnote %}
-
 #### 往上
 
-父元素是包住它的那一層。還要再往上時，用選擇器找最近的祖先，自己如果已經符合也算。這一節從卡片出發，把兩層的 id 寫回狀態列。
+父元素是直接包住它的那一層；要找更外層、符合某個條件的祖先，就用 `closest`。這一節從卡片出發，把兩層祖先的 id 寫到畫面上。
 
 **觀念**
 
-parentElement 只看直接包住卡片的 main。closest 會一路往上，直到碰到符合的 article，找不到就停在 null。
+- `parentElement` 只看緊鄰的上一層。
+- `closest` 一路往上，碰到第一個符合選擇器的就回傳；自己符合時回傳自己，一路都沒有就是 null。
 
 ```html 04-js/pages/109-js-up.html
 <!DOCTYPE html>
@@ -2051,12 +1627,15 @@ parentElement 只看直接包住卡片的 main。closest 會一路往上，直�
         <p id="outro">結語</p>
       </main>
     </article>
-    <p id="status"></p>
+    <p id="result"></p>
     <script>
       const card = document.querySelector('#card');
-      const status = document.querySelector('#status');
-      status.textContent = `${card.parentElement.id} / ${card.closest('article').id}`;
+      const result = document.querySelector('#result');
+      result.textContent = `${card.parentElement.id} / ${card.closest('article')?.id}`;
+
+      console.log(card.closest('section') === card);
       console.log(card.closest('aside'));
+      console.log(card.closest('aside')?.id);
     </script>
   </body>
 </html>
@@ -2065,49 +1644,26 @@ parentElement 只看直接包住卡片的 main。closest 會一路往上，直�
 Console：
 
 ```text
+true
 null
+undefined
 ```
 
 **解析**
 
-- 卡片的直接父元素是 main，所以狀態列前半是 app。
-- closest 找到外層 article，後半是 story。
-- 文件裡沒有 aside，Console 是 null。
-
-{% note success %}
-**換你試試：**
-把 Console 那行改成 closest('#text')。#text 在卡片裡面，不是祖先。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-closest 含自己、再往祖先找。卡片自己不是 #text，祖先也不是，所以仍是 null。狀態列維持 app / story。
-
-```diff 04-js/pages/109-js-up.html
-  // ...
-        const status = document.querySelector('#status');
-        status.textContent = `${card.parentElement.id} / ${card.closest('article').id}`;
--       console.log(card.closest('aside'));
-+       console.log(card.closest('#text'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-null
-```
-
-</details>
+- 畫面最下方的結果列顯示「app / story」：卡片的直接父元素是 main，`closest` 往上找到 article。
+- 卡片自己就是 section，所以第一行是 true，這是 `closest` 含自己的證據。
+- 文件裡沒有 aside，所以第二行是 null。
+- 回傳可能是 null 時，用 `?.` 接後面的屬性，得到 undefined 而不是出錯。
 
 #### 往下
 
-往下可以只看下一層，也可以用選擇器把所有後代找出來。這一節先數卡片的直接子元素，再只在卡片裡找段落。
+往下可以只看緊鄰的下一層，也可以用選擇器把範圍內所有後代找出來。這一節先數卡片的子層，再只在卡片裡找段落。
 
 **觀念**
 
-children 只算元素，第一個與最後一個用 firstElementChild、lastElementChild。從卡片呼叫 querySelectorAll 時，範圍停在卡片的後代。
+- `children` 只包含元素，是會隨文件改變的即時集合，細節留到選讀；它有 length，也能用索引取值。
+- `childNodes` 則連標籤之間的換行與縮排都算進去，那些是文字節點。找元素時用 children 與帶 Element 的屬性比較直覺。
 
 ```html 04-js/pages/110-js-down.html
 <!DOCTYPE html>
@@ -2129,13 +1685,13 @@ children 只算元素，第一個與最後一個用 firstElementChild、lastElem
         <p id="outro">結語</p>
       </main>
     </article>
-    <p id="status"></p>
     <script>
       const card = document.querySelector('#card');
       console.log(card.children.length);
       console.log(card.firstElementChild.id);
       console.log(card.lastElementChild.id);
       console.log(card.querySelectorAll('p').length);
+      console.log(card.childNodes.length);
     </script>
   </body>
 </html>
@@ -2148,51 +1704,29 @@ Console：
 heading
 action
 1
+7
 ```
 
 **解析**
 
-- 卡片下一層有標題、段落、按鈕，長度是 3。
-- 第一個子元素是 heading，最後一個是 action。
-- 卡片裡的段落只有內文那一段，前言在卡片外面，所以長度是 1。
+- 頁面上只有排好的文字與按鈕，程式沒有改動它。
+- 卡片下一層有標題、段落、按鈕，所以 children 長度是 3；第一個與最後一個子元素的 id 是 heading 與 action。
+- 前言在卡片外面，卡片裡的 p 只有內文那一個，所以第四行是 1。
+- childNodes 是 7：三個元素加上它們前後的四段換行縮排。
+- 沒有子元素時，`firstElementChild` 是 null，和前面的 `?.` 搭配使用。
 
-{% note success %}
-**換你試試：**
-再印出 childNodes.length。它會把標籤之間的換行也算進去。
+{% note info %}
+**元素與文字節點**
+`childNodes`、`firstChild` 與 `nextSibling` 這組屬性會把換行空白也算成文字節點。要找元素時，用名稱帶 Element 的那一組。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-三個元素之間與前後各有換行，所以 childNodes 的長度是 7。前四行維持元素的結果。
-
-```diff 04-js/pages/110-js-down.html
-  // ...
-        console.log(card.lastElementChild.id);
-        console.log(card.querySelectorAll('p').length);
-+       console.log(card.childNodes.length);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-3
-heading
-action
-1
-7
-```
-
-</details>
 
 #### 同層
 
-同一層的鄰居不包含父元素，也不包含自己的子元素。這一節讀卡片左右兩邊的元素 id。
+同一層的鄰居，指的是和自己有同一個父元素的前後元素，不包含父元素，也不包含自己的子元素。這一節讀卡片前後的元素，再看邊界上沒有鄰居的情況。
 
 **觀念**
 
-previousElementSibling 與 nextElementSibling 只認元素。標籤之間的換行不會變成兄弟。
+`previousElementSibling` 與 `nextElementSibling` 只認元素，標籤之間的換行不會當成兄弟。排在最前面的元素沒有前一個兄弟，回傳 null，再往下讀 id 就會出錯，要用 `?.`。
 
 ```html 04-js/pages/111-js-side.html
 <!DOCTYPE html>
@@ -2214,11 +1748,13 @@ previousElementSibling 與 nextElementSibling 只認元素。標籤之間的換�
         <p id="outro">結語</p>
       </main>
     </article>
-    <p id="status"></p>
     <script>
       const card = document.querySelector('#card');
+      const intro = document.querySelector('#intro');
       console.log(card.previousElementSibling.id);
       console.log(card.nextElementSibling.id);
+      console.log(intro.previousElementSibling);
+      console.log(intro.previousElementSibling?.id);
     </script>
   </body>
 </html>
@@ -2229,49 +1765,24 @@ Console：
 ```text
 intro
 outro
+null
+undefined
 ```
 
 **解析**
 
-- 卡片前面的元素是前言，id 是 intro。
-- 後面的元素是結語，id 是 outro。
-- 標題在卡片裡面，不會被算成同層鄰居。
-
-{% note success %}
-**換你試試：**
-再印出 #intro 的 previousElementSibling。前言已經是 main 裡的第一個元素。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-前言沒有更前面的元素兄弟，所以第三行是 null。前兩行仍是 intro 與 outro。
-
-```diff 04-js/pages/111-js-side.html
-  // ...
-        console.log(card.previousElementSibling.id);
-        console.log(card.nextElementSibling.id);
-+       console.log(document.querySelector('#intro').previousElementSibling);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-intro
-outro
-null
-```
-
-</details>
+- 頁面上沒有變化，只有 Console 有輸出。
+- 卡片前面的鄰居是前言，後面是結語，id 分別是 intro 與 outro。
+- 標題在卡片裡面，是子元素，不會被算成同層鄰居。
+- 前言是 main 裡的第一個元素，前面沒有兄弟，所以第三行是 null，第四行用 `?.` 讀 id 得到 undefined。
 
 #### 判斷
 
-有時不必再找一個元素，只要知道手上這顆符不符合選擇器。matches 回答的是布林值。
+有時不需要再找一個元素，只想知道手上這一顆符不符合某個選擇器。`matches` 就是專門回答這件事。
 
 **觀念**
 
-matches 檢查元素自己。它不往上，也不往下，不符合時回傳 false，不會回傳 null。
+`matches` 只檢查元素自己，不往上也不往下，結果是布林值，不符合時是 false，不是 null。後面做事件委派時，常用它判斷被點到的是哪一種元素。
 
 ```html 04-js/pages/112-js-match.html
 <!DOCTYPE html>
@@ -2293,7 +1804,6 @@ matches 檢查元素自己。它不往上，也不往下，不符合時回傳 fa
         <p id="outro">結語</p>
       </main>
     </article>
-    <p id="status"></p>
     <script>
       const card = document.querySelector('#card');
       console.log(card.matches('section'));
@@ -2312,49 +1822,28 @@ false
 
 **解析**
 
-- 卡片是 section，第一行是 true。
-- 它不是段落，第二行是 false。
-- 這個方法不回傳元素，所以沒有找到或沒找到的 null。
+- 頁面沒有變化，兩行結果都在 Console。
+- 卡片是 section，所以第一行是 true。
+- 卡片不是段落，所以第二行是 false；即使它的子元素裡有 p，也不影響結果。
 
-{% note success %}
-**換你試試：**
-再印出 #text 是否符合 p。那一顆是段落。
-{% endnote %}
+### 選讀：getElementById 與 getElementsBy 系列
 
-<details>
-<summary>參考答案</summary>
+這是舊程式、舊文章與第三方範例裡仍常見的另一組找元素寫法，讀得懂才改得動。新的程式以前面的 `querySelector` 與 `querySelectorAll` 為主，這一節只建立對照。
 
-內文那顆段落符合 p，第三行是 true。卡片的兩個結果留著。
+**一覽**
 
-```diff 04-js/pages/112-js-match.html
-  // ...
-        console.log(card.matches('section'));
-        console.log(card.matches('p'));
-+       console.log(document.querySelector('#text').matches('p'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-true
-false
-true
-```
-
-</details>
-
-### 選讀：getElementById 與 getElements 系列
-
-舊程式、文章與第三方範例仍常出現這組寫法，讀得到才能改。新的程式以 querySelector 與 querySelectorAll 為主。這一節只把對照建立起來，後面的練習仍用選擇器。
+- `getElementById`：依 id 找一個元素，回傳元素或 null，只能從 document 呼叫。
+- `getElementsByClassName` 與 `getElementsByTagName`：依 class 或標籤名找一組元素，回傳 HTMLCollection，可以從任何元素呼叫。
+- `getElementsByName`：依表單欄位的 name 屬性找，回傳的是即時的 NodeList。
 
 #### getElementById
 
-getElementById 用 id 找一顆元素。參數是 id 文字本身。這一節拿它和選擇器對到的結果比對，並看找不到時的回傳值。
+`getElementById` 用 id 找一個元素，參數就是 id 文字本身。這一節拿它和選擇器的結果比對，並看找不到時的回傳值。
 
 **觀念**
 
-參數不要加井字號。找到就回傳那顆元素，找不到回傳 null，結果與 querySelector 配上同一個 id 選擇器相同。
+- 參數不加井字號。
+- 找到就回傳那個元素，找不到回傳 null，和 `querySelector` 配上同一個 id 選擇器的結果完全相同。
 
 ```html 04-js/pages/113-js-by-id.html
 <!DOCTYPE html>
@@ -2365,7 +1854,6 @@ getElementById 用 id 找一顆元素。參數是 id 文字本身。這一節拿
     <title>getElementById</title>
   </head>
   <body>
-    <h1 id="title">原標題</h1>
     <ul id="list">
       <li class="item">蘋果</li>
       <li class="item">香蕉</li>
@@ -2388,44 +1876,21 @@ null
 
 **解析**
 
-- 兩種寫法對上同一顆 ul，第一行是 true。
-- getElementById 的參數是 list，井字號只出現在選擇器那一邊。
-- missing 不在文件裡，第二行是 null。
-
-{% note success %}
-**換你試試：**
-用 getElementById 選到 title，把文字改成「已用 id 選到」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標題被改寫。兩行 Console 仍是 true 與 null，因為清單與 missing 沒有變。
-
-```diff 04-js/pages/113-js-by-id.html
-  // ...
-        console.log(list === document.querySelector('#list'));
-        console.log(document.getElementById('missing'));
-+       document.getElementById('title').textContent = '已用 id 選到';
-      </script>
-    </body>
-  // ...
-```
-
-```text
-true
-null
-```
-
-</details>
+- 畫面上是一份兩項的清單，程式只讀取、沒有改動。
+- 兩種寫法選到同一個 ul，所以第一行是 true；井字號只出現在選擇器那一邊。
+- missing 不在文件裡，所以第二行是 null，要和 `querySelector` 一樣先確認再使用。
 
 #### 即時集合
 
-getElementsByClassName 與 getElementsByTagName 一次拿回一組元素。getElementsByName 依 name 找，表單欄位較常見，回傳的也是即時集合，這一節不另做練習。下面用 class 對照選擇器，看新增一列之後誰的長度會變。
+`getElementsByClassName` 與 `getElementsByTagName` 回傳的 HTMLCollection，和 `querySelectorAll` 的 NodeList 最大差別在於是否「即時」。這一節新增一個 li，看兩份結果誰會跟著變長。
 
 **觀念**
 
-回傳值是 HTMLCollection，文件一改它就跟著變，而且沒有 forEach。逐項走訪用 for...of，或先用 Array.from 轉成陣列。querySelectorAll 回傳的 NodeList 停在查詢當下，而且可以 forEach。
+- HTMLCollection 是即時集合：文件一改，它的內容馬上跟著變。它沒有 forEach，逐項走訪用 for...of，要 map 或 filter 先用 `Array.from` 轉成陣列。
+- `querySelectorAll` 的 NodeList 是靜態的，停在查詢當下，而且有 forEach。
+- 前面節點關係的 `children` 也是即時的 HTMLCollection。
+
+demo 用到的 `createElement` 與 `append`，會在後面建立節點的章節詳細說明，這裡只把它們當成「讓文件多出一個元素」的動作。
 
 ```html 04-js/pages/114-js-live.html
 <!DOCTYPE html>
@@ -2477,68 +1942,35 @@ Console：
 
 **解析**
 
-- 新增之前兩邊都是 2。
-- 多了一顆 li 之後，即時集合的長度變成 3，節點清單仍是 2。
-- for...of 走訪的是變長之後的集合，所以印出蘋果、香蕉、橘子。
-- 節點清單沒有自動收進橘子。它有 forEach，即時集合沒有。
-
-{% note success %}
-**換你試試：**
-再印出 getElementsByTagName('li') 的長度，並用 Array.from 把查詢當下的清單轉成陣列後 forEach，印出每一項文字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-標籤名那份也是即時集合，三顆 li 都算進去，長度是 3。forEach 走的是新增前的清單，只剩蘋果與香蕉。
-
-```diff 04-js/pages/114-js-live.html
-  // ...
-          console.log(item.textContent);
-        }
-+ 
-+       console.log(document.getElementsByTagName('li').length);
-+       Array.from(snap).forEach((item) => {
-+         console.log(item.textContent);
-+       });
-      </script>
-    </body>
-  // ...
-```
-
-```text
-2
-2
-3
-2
-蘋果
-香蕉
-橘子
-3
-蘋果
-香蕉
-```
-
-</details>
+- 畫面上的清單從兩項變成三項，最後一項是橘子。
+- 新增之前，即時集合與靜態清單的長度都是 2。
+- 新增之後，即時集合變成 3，靜態清單仍是 2，沒有自動收進橘子。
+- for...of 走訪的是變長之後的即時集合，所以印出蘋果、香蕉、橘子。
+- `getElementsByTagName` 同樣是即時集合；`getElementsByName` 則是即時的 NodeList。
 
 ## 操作元素
 
-選到元素之後才能改它。先改文字與標記，再分清 `attribute` 與 `property`：日常直接改欄位，屬性方法只留給少數情況，最後讀畫面上算完的樣式、尺寸與位置。事件下一章才綁，需要人去觸發的函式先在 Console 呼叫。
+選到元素之後，下一步是改它。這一節先改元素裡的文字與標記，再分清標籤上的 attribute 與物件上的 property，接著學日常最常用的寫法：直接讀寫 property、用 `classList` 切換樣式。選讀則是讀瀏覽器排版後的樣式、尺寸與位置。事件要到下一章才綁，所以需要人去觸發的函式，先在 Console 輸入呼叫。
 
 ### 內容
 
-讀者看到的文字，和瀏覽器要解析的標記，是兩件事。隱藏起來的字也未必會跟著出現。下面先分清純文字的兩種讀法，再寫元素裡面的標記，最後看連元素自己一起換掉。
+元素裡的內容有兩種讀法：讀者看到的純文字，以及瀏覽器要解析的標記（HTML 標籤組成的字串）。選哪一種，決定了內容會不會被當成標籤處理，也決定了安全性。這一節先看純文字，再看標記，最後看連元素自己一起換掉的寫法。
+
+**一覽**
+
+- 純文字：`textContent` 讀寫子樹裡全部的文字，包含被 CSS 藏起來的；`innerText` 只讀畫面上看得到的文字。
+- 元素裡面的標記：`innerHTML` 讀寫元素內部的 HTML 字串，寫入時會被解析成子元素。
+- 連元素自己：`outerHTML` 讀寫的字串包含元素自己的標籤，寫入時整顆元素被換掉。
 
 #### textContent 與 innerText
 
-兩種都讀寫元素裡的文字。差別在於會不會看 CSS，以及會不會為了答案去排版。這一節用一段被藏起來的字把兩邊分開。
-
-- `textContent` 讀寫子樹的純文字，隱藏的字也包含在內。
-- `innerText` 讀寫畫面上看得到的文字，會先排版再回答。
+兩者都能讀寫元素裡的文字，差別在於讀的時候看不看 CSS。下面用一段被 `display: none` 藏起來的字，把兩種讀法分開。
 
 **觀念**
 
-textContent 把子樹裡的文字接起來，display 設成 none 的內容也算。innerText 依畫面上看得到的結果來讀，隱藏的字不會出現，而且讀的時候會觸發排版。
+- `textContent` 把子樹裡所有文字接起來，不管有沒有顯示。
+- `innerText` 依畫面上看得到的結果讀，隱藏的字不算；讀的時候瀏覽器得先算出版面，文字很多時比 `textContent` 慢。
+- 指派時，兩者都把原本的子元素換成一段純文字，內容裡的角括號不會被當成標籤。
 
 ```html 04-js/pages/115-js-content.html
 <!DOCTYPE html>
@@ -2559,8 +1991,6 @@ textContent 把子樹裡的文字接起來，display 設成 none 的內容也算
 </html>
 ```
 
-Console：
-
 ```text
 可見隱藏
 可見
@@ -2568,51 +1998,22 @@ Console：
 
 **解析**
 
-- 第一行把可見與隱藏接在一起，是可見隱藏。
-- 第二行只剩畫面上的可見。
-- innerText 會先排版才回答，文字很多時比另一種讀法慢。
-
-{% note success %}
-**換你試試：**
-把 textContent 設成「可見」，再印一次 innerText。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-整段被換成可見之後，沒有隱藏的子元素，innerText 也是可見。
-
-```diff 04-js/pages/115-js-content.html
-  // ...
-        console.log(box.textContent);
-        console.log(box.innerText);
-+       box.textContent = '可見';
-+       console.log(box.innerText);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-可見隱藏
-可見
-可見
-```
-
-</details>
+- 頁面上只看得到「可見」，後面的 span 設了 `display: none`。
+- Console 第一行是 `textContent` 的結果，連隱藏的字也接進來，所以是「可見隱藏」。
+- 第二行是 `innerText` 的結果，只剩畫面上的「可見」。
+- 本節的輸出區塊只列出文字內容，和 Console 實際畫面（行號、引號、顏色）略有不同。
 
 #### innerHTML
 
-讀寫的是元素裡面的標記。寫進去的字串會被解析成子節點，原來的子元素整段被換掉。使用者打的字不要從這裡放進頁面。
-
-- `innerHTML` 讀出裡面目前的標記字串。
-- 指派新字串，或用 `+=` 接上一段，都會清掉原子元素再整段重建。
+`innerHTML` 讀寫的是元素內部的標記。寫入的字串會被解析成子元素，原本的子元素整批丟掉，再重新建立。
 
 **觀念**
 
-指派新字串時，瀏覽器先清掉全部子元素，再依字串建立新的。原本子元素上的監聽不會留在新內容裡，輸入框裡打過的字也不會出現在畫面上。`+=` 會先讀出整段標記再整段寫回，連剛建立的子元素也會被換成新的一顆。
+- 讀取時，得到內部子元素組成的 HTML 字串。
+- 指派新字串，或用 `+=` 接上一段，都是清掉全部子元素再重建。已經存起來的子元素變數會指向舊的、已離開頁面的元素。
+- `+=` 看起來只是接上一段，其實是先讀出整段標記，再整段寫回。
 
-使用者打的字串若放進來，角括號會被當成標籤，這是跨站腳本攻擊（XSS）。純文字用 `textContent`。
+下面的 demo 先讀出標記，再用 `+=` 接上一段，最後檢查原本選到的元素。`isConnected` 是元素的布林 property，表示它現在還在不在頁面上。
 
 ```html 04-js/pages/116-js-inner.html
 <!DOCTYPE html>
@@ -2623,102 +2024,91 @@ Console：
     <title>innerHTML</title>
   </head>
   <body>
-    <div id="card">
-      <input id="name" value="小明" />
-      <button id="save" type="button">儲存</button>
-    </div>
-    <p id="plain"></p>
+    <div id="card"><b id="title">標題</b></div>
     <script>
       const card = document.querySelector('#card');
-      const name = document.querySelector('#name');
-      const save = document.querySelector('#save');
-      name.value = '改過';
-      save.addEventListener('click', () => {
-        console.log('按過');
-      });
-      console.log(name.value);
+      const title = document.querySelector('#title');
 
-      card.innerHTML = '<b id="mark">粗體</b>';
-      const mark = document.querySelector('#mark');
+      console.log(card.innerHTML);
       card.innerHTML += '<i>斜體</i>';
       console.log(card.innerHTML);
-      console.log(mark.isConnected);
-      console.log(mark === document.querySelector('#mark'));
-      console.log(name.isConnected);
-      console.log(save.isConnected);
+
+      console.log(title.isConnected);
+      console.log(title === document.querySelector('#title'));
     </script>
   </body>
 </html>
 ```
 
-Console：
-
 ```text
-改過
-<b id="mark">粗體</b><i>斜體</i>
-false
-false
+<b id="title">標題</b>
+<b id="title">標題</b><i>斜體</i>
 false
 false
 ```
 
 **解析**
 
-- 第一行是改過的輸入值。按鈕上此時已有點擊監聽。
-- 標記那行是 `+=` 之後的結果，畫面上是粗體與斜體。
-- mark 在接上斜體之前就選到了。重建後它的 isConnected 是 false，和重新選到的 b 也不是同一顆。
-- name 與 save 的 isConnected 都是 false。輸入值與監聽留在舊節點上，畫面上沒有原來的輸入框與按鈕。
+- 頁面上出現粗體的「標題」，後面接著斜體的「斜體」。
+- 第一行是接上斜體之前的標記字串，第二行是接上之後的結果。
+- 變數 `title` 是在接上之前選到的。重建後它的 `isConnected` 是 false，表示這顆舊元素已經離開頁面。
+- 重新選到的 `#title` 和 `title` 比較也是 false，兩者長得一樣，卻是不同的兩顆元素。
+- 所以這種寫法不適合在畫面上有輸入框、已選好元素的區塊使用，輸入框裡打的字也會跟著被重建而消失。
 
-{% note warning %}
-**不要插入來路不明的字串**
-字串會被解析成標籤，使用者打的內容放進來就有跨站腳本攻擊（XSS）的風險。純文字放進 `textContent`。只有程式自己寫死的一小段標記，才偶爾交給 `innerHTML`。
-{% endnote %}
+**不要把使用者的字串交給 innerHTML**
 
-{% note success %}
-**換你試試：**
-把 `'<b>純文字</b>'` 放進 #plain 的 textContent，並印出 textContent。畫面上要看得到角括號。
-{% endnote %}
+跨站腳本攻擊（XSS，cross-site scripting）是指：攻擊者讓你的頁面把他寫的程式當成自己的來執行。只要把使用者輸入、網址參數、API 回傳這類不是你寫死的字串交給 innerHTML，就可能發生。下面的 demo 把同一段含標籤的字串寫進兩處，一處當純文字，一處當標記；後者的圖片載入失敗時，會執行 `onerror` 裡的程式。
 
-<details>
-<summary>參考答案</summary>
+```html 04-js/pages/116b-js-xss.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>innerHTML 與 XSS</title>
+  </head>
+  <body>
+    <p id="safe"></p>
+    <div id="unsafe"></div>
+    <script>
+      const userInput = `<img src="x" onerror="console.log('被執行了')">`;
 
-textContent 不解析標記，b 會照字串留在畫面上。上面的卡片仍是粗體與斜體。
-
-```diff 04-js/pages/116-js-inner.html
-  // ...
-        console.log(name.isConnected);
-        console.log(save.isConnected);
-+ 
-+       const plain = document.querySelector('#plain');
-+       plain.textContent = '<b>純文字</b>';
-+       console.log(plain.textContent);
-      </script>
-    </body>
-  // ...
+      document.querySelector('#safe').textContent = userInput;
+      document.querySelector('#unsafe').innerHTML = userInput;
+    </script>
+  </body>
+</html>
 ```
 
 ```text
-改過
-<b id="mark">粗體</b><i>斜體</i>
-false
-false
-false
-false
-<b>純文字</b>
+被執行了
 ```
 
-</details>
+**解析**
+
+- 第一段（`#safe`）把整串當成純文字，頁面上直接看到 `<img ...>` 這串字，沒有任何東西被執行。
+- 第二段（`#unsafe`）把字串解析成真的圖片。圖片網址不存在，載入失敗就觸發 `onerror`，Console 出現「被執行了」，另外還會有一行圖片 404 的錯誤。
+- 實際攻擊時，這裡的程式可能是偷走登入資訊、偽造畫面，而不只是印一行字。
+
+{% note warning %}
+**innerHTML 的使用原則**
+
+- 使用者的字串一律用 `textContent`，它不解析標記，最安全。
+- 只有程式自己寫死、不含外部資料的標記，才適合交給 `innerHTML`。
+- 只擋 `<script>` 標籤並不夠：透過 `innerHTML` 插入的 `<script>` 雖然不會執行，但像上例的事件屬性照樣會執行。
+- 真的需要顯示使用者提供的 HTML（例如文章編輯器的內容），要先經過消毒（sanitize，移除危險標籤與屬性），常見做法是使用 DOMPurify 這類套件。瀏覽器內建的 `setHTML` 是同類功能，但目前還不是各主流瀏覽器都支援，不建議當作唯一的防線。
+- 後面的 React 預設就會把文字當純文字，需要插入 HTML 時才要特別寫 `dangerouslySetInnerHTML`，名字就是在提醒這件事。
+{% endnote %}
 
 #### outerHTML
 
-讀出來的字串包含元素自己的開始與結束標籤。寫入時，瀏覽器用解析出來的節點換掉這顆元素。原來的變數不會自動改指到換上的那顆。
-
-- `outerHTML` 讀取時連同元素自己的標籤。
-- 指派新字串會把元素本身換掉，變數仍指向舊元素。
+`outerHTML` 的字串包含元素自己的開始與結束標籤。寫入時，瀏覽器解析新字串，用新元素把原本那顆換掉。
 
 **觀念**
 
-讀取時，字串從自己的開始標籤排到結束標籤。指派之後舊元素離開頁面，再改舊變數，畫面仍是新節點上的文字。
+- 讀取時，得到從元素自己的開始標籤到結束標籤的完整字串。
+- 指派新字串後，原本的元素離開頁面，但變數仍指向它，不會自動改指新元素。
+- 寫入的字串同樣會被解析成標籤，使用者輸入的限制和 `innerHTML` 相同。
 
 ```html 04-js/pages/117-js-outer.html
 <!DOCTYPE html>
@@ -2733,18 +2123,18 @@ false
     <script>
       const note = document.querySelector('#note');
       console.log(note.outerHTML);
+
       note.outerHTML = '<p id="note">新公告</p>';
       const next = document.querySelector('#note');
       console.log(note.isConnected);
       console.log(note === next);
+
       note.textContent = '改舊的';
       console.log(next.textContent);
     </script>
   </body>
 </html>
 ```
-
-Console：
 
 ```text
 <p id="note">舊公告</p>
@@ -2755,74 +2145,27 @@ false
 
 **解析**
 
-- 第一行包含 p 自己的標籤，文字是舊公告。
-- 舊變數的 isConnected 是 false，它和重新選到的元素比較也是 false。
-- 舊變數改成改舊的之後，重新選到的文字仍是新公告。要改畫面，得改重新選到的那顆。
+- 頁面上最後只有一行「新公告」，舊的 p 已經被換掉。
+- 第一行包含 p 自己的標籤，這是換掉之前讀到的字串。
+- 舊變數 `note` 的 `isConnected` 是 false，和重新選到的 `next` 比較也是 false。
+- 對舊變數改文字，畫面不會變，所以最後一行仍是「新公告」。要改畫面，必須改重新選到的那顆。
 
-{% note warning %}
-**寫入 outerHTML 的注意事項**
+{% note info %}
+**要換掉整顆元素時**
 
-寫入後變數仍指向舊元素。舊元素已經離開頁面，`isConnected` 是 false。再改它，畫面不會變，要重新 `querySelector` 才拿得到新元素。
-
-舊元素上的事件監聽跟著舊節點離開畫面。新元素沒有那些監聽。
-
-剛 `createElement`、還沒插入頁面時，元素沒有父節點，指派後沒有變化。`document.documentElement` 的父節點是文件，不能整顆換掉，指派會丟出 NoModificationAllowedError。
-
-和 innerHTML 一樣會把字串解析成標籤，使用者輸入有跨站腳本攻擊（XSS）的風險。
-
-要換掉整顆元素時，用 `replaceWith`，或建立新元素再插上，比指派字串清楚。
+指派 `outerHTML` 比較少用，因為變數會失效，舊元素上的事件監聽也不會留在新元素上。比較清楚的做法是先建立新元素再放進頁面，下一節「節點操作」會教。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-把指派的字串改成 `<section id="note">新公告</section>`，再印出兩顆元素的 tagName。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-頁面上換成 section，舊變數仍是原來的 p。第一行還是換掉之前讀到的標記。
-
-```diff 04-js/pages/117-js-outer.html
-  // ...
-        const note = document.querySelector('#note');
-        console.log(note.outerHTML);
--       note.outerHTML = '<p id="note">新公告</p>';
-+       note.outerHTML = '<section id="note">新公告</section>';
-        const next = document.querySelector('#note');
-        console.log(note.isConnected);
-        // ...
-        note.textContent = '改舊的';
-        console.log(next.textContent);
-+       console.log(next.tagName);
-+       console.log(note.tagName);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-<p id="note">舊公告</p>
-false
-false
-新公告
-SECTION
-P
-```
-
-</details>
 
 ### attribute 與 property
 
-文字和標記改的是元素裡面。標籤上寫的 `attribute` 是當初的字串，DOM 物件上的 `property` 是目前狀態。多數會對應並一起更新，下面三處不一樣。
-
-- 讀 `href` 這個 property 會得到完整網址，標籤上仍是相對路徑。
-- 輸入框的 `value`，property 是現在框裡的文字，attribute 停在一開始的值。
-- 標籤上的 class 對應 `className`，兩邊字串會一起改。
+同一個元素有兩個地方存放設定：HTML 標籤上寫的字串叫 attribute，瀏覽器依標籤建立的 DOM 物件上的欄位叫 property。多數時候兩邊同步，但初始值與完整網址這類情況會分開，下面先用三個例子看出差別。
 
 **觀念**
 
-日常改 property 就好。屬性方法讀的是標籤上的原始字串，下一節再談何時才需要。下面用輸入框和連結把三處差異印出來。
+- attribute 是標籤上原本寫的字串，讀取時用方法 `getAttribute`；property 是物件上的欄位，代表元素目前的狀態。
+- 輸入框的 `value`：property 是框裡現在的文字，attribute 停在標籤一開始寫的值。
+- 連結的 `href`：property 讀出來是完整網址，attribute 仍是標籤上寫的相對路徑。
+- 標籤上的 `class` 與 property 的 `className` 是同一段字串，只是欄位名稱不同，因為 class 是 JavaScript 的關鍵字。
 
 ```html 04-js/pages/118-js-prop.html
 <!DOCTYPE html>
@@ -2833,24 +2176,25 @@ P
     <title>attribute 與 property</title>
   </head>
   <body>
-    <input id="name" type="text" value="原始" />
+    <input id="nameInput" type="text" value="原始" />
     <a id="link" class="nav" href="/tour">行程</a>
     <script>
-      const name = document.querySelector('#name');
+      const nameInput = document.querySelector('#nameInput');
       const link = document.querySelector('#link');
-      name.value = '目前';
-      console.log(name.getAttribute('value'));
-      console.log(name.value);
+
+      nameInput.value = '目前';
+      console.log(nameInput.getAttribute('value'));
+      console.log(nameInput.value);
+
       console.log(link.getAttribute('href'));
       console.log(link.href);
+
       console.log(link.getAttribute('class'));
       console.log(link.className);
     </script>
   </body>
 </html>
 ```
-
-Console：
 
 ```text
 原始
@@ -2863,64 +2207,27 @@ nav
 
 **解析**
 
-- 第一行仍是標籤上的原始，第二行才是框裡的目前。
-- 第三行是標籤上的 /tour，第四行被補成完整網址。主機以你開這頁的位址為準，下面用 Live Server 當例子。
-- 後兩行都是 nav。class 和 className 是同一段字，欄位不叫 class。
+- 頁面上是一個輸入框，裡面的字已經被改成「目前」，旁邊有一條「行程」連結。
+- 前兩行：標籤上的 value 仍是「原始」，property 才是框裡現在的「目前」。
+- 中間兩行：標籤上寫 `/tour`，property 被補成完整網址。主機與埠號依你開頁面的位址而定，這裡以 Live Server 為例。
+- 最後兩行都是 nav，兩個欄位名稱不同，內容是同一段 class 字串。
 
-{% note success %}
-**換你試試：**
-把 className 設成 'nav current'，再印 getAttribute('class') 與 className。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-改 className 之後，標籤上的 class 跟著變成兩個名字。前面六行不變。
-
-```diff 04-js/pages/118-js-prop.html
-  // ...
-        console.log(link.getAttribute('class'));
-        console.log(link.className);
-+       link.className = 'nav current';
-+       console.log(link.getAttribute('class'));
-+       console.log(link.className);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-原始
-目前
-/tour
-http://127.0.0.1:5500/tour
-nav
-nav
-nav current
-nav current
-```
-
-</details>
+日常直接讀寫 property 就好，標籤上的原始字串只在少數情況才需要，下一節說明。
 
 ### 屬性方法
 
-已經有對應的 property，上一節直接改就好。沒有對應欄位、自訂屬性，或想讀 HTML 原本寫的值，才用屬性方法。讀寫的都是標籤上的字串。
+想讀標籤上寫的原始字串，或操作沒有對應 property 的自訂屬性時，要改用方法。這一節學這四個讀寫標籤的方法，demo 以 `aria-label`（給讀屏軟體的標籤）為例。
 
-讀原始字串，或問屬性在不在。
+**一覽**
 
-- `getAttribute` 讀標籤上的字，沒有該屬性時回傳 null。
-- `hasAttribute` 只問在不在，回傳 true 或 false。
-
-寫上一段字，或把屬性拿掉。
-
-- `setAttribute` 把字串寫回標籤，沒有該屬性就先加上。
-- `removeAttribute` 從標籤拿掉屬性，之後再讀是 null。
-
-`toggleAttribute` 會在有無之間切換，第二個引數可以強制加上或拿掉。日常少用，這裡不展開。
+- 讀：`getAttribute` 讀標籤上的字串，沒有該屬性時回傳 null；`hasAttribute` 只問在不在，回傳 true 或 false。
+- 寫：`setAttribute` 把字串寫回標籤，沒有該屬性就先加上；`removeAttribute` 從標籤拿掉屬性。
+- 另有 `toggleAttribute` 在有無之間切換，日常少用，這裡不展開。
 
 **觀念**
 
-`aria-label` 沒有同名 property，所以用方法改。自訂屬性也沒有對應欄位。想讀相對路徑時，方法拿得到標籤上寫的那段，href 則會補成完整網址。
+- 這些方法讀寫的永遠是字串，寫入的值會被轉成字串。
+- 有對應 property 的設定（如 `value`、`href`），日常直接改 property；方法留給原始字串與自訂屬性。
 
 ```html 04-js/pages/119-js-attr.html
 <!DOCTYPE html>
@@ -2931,101 +2238,63 @@ nav current
     <title>屬性方法</title>
   </head>
   <body>
-    <button type="button" id="go" aria-label="收藏行程">收藏</button>
-    <a id="link" href="/tour">行程</a>
+    <button type="button" id="fav" aria-label="收藏商品">收藏</button>
     <script>
-      const go = document.querySelector('#go');
-      const link = document.querySelector('#link');
-      console.log(go.getAttribute('aria-label'));
-      go.setAttribute('aria-label', '已收藏');
-      console.log(go.getAttribute('aria-label'));
-      console.log(go.hasAttribute('aria-label'));
-      go.removeAttribute('aria-label');
-      console.log(go.getAttribute('aria-label'));
-      go.setAttribute('data-note', '熱門');
-      console.log(go.getAttribute('data-note'));
-      console.log(link.getAttribute('href'));
-      console.log(link.href);
+      const fav = document.querySelector('#fav');
+
+      console.log(fav.getAttribute('aria-label'));
+      fav.setAttribute('aria-label', '已收藏');
+      console.log(fav.getAttribute('aria-label'));
+      console.log(fav.hasAttribute('aria-label'));
+
+      fav.removeAttribute('aria-label');
+      console.log(fav.hasAttribute('aria-label'));
+      console.log(fav.getAttribute('aria-label'));
+
+      fav.setAttribute('data-note', '熱門');
+      console.log(fav.getAttribute('data-note'));
     </script>
   </body>
 </html>
 ```
 
-Console：
-
 ```text
-收藏行程
+收藏商品
 已收藏
 true
+false
 null
 熱門
-/tour
-http://127.0.0.1:5500/tour
 ```
 
 **解析**
 
-- 第一行是標籤上的收藏行程，第二行被改成已收藏。
-- 第三行 true 表示屬性還在。拿掉之後，下一行是 null。
-- data-note 是自訂屬性，沒有對應欄位，寫進去再讀是熱門。
-- 後兩行是同一條連結。方法讀到 /tour，href 是完整網址。主機以你開這頁的位址為準。
+- 頁面上只有一顆「收藏」按鈕，屬性的變化只出現在標籤裡，要用 DevTools 的 Elements 面板才看得到。
+- 第一、二行是同一個 `aria-label` 改寫前後的字串。
+- 第三行 true 表示屬性還在；移除之後 `hasAttribute` 變成 false，`getAttribute` 則回傳 null，兩種問法對應兩種結果。
+- 最後一行：`data-note` 原本不存在，`setAttribute` 先加上再讀回「熱門」。
 
-{% note success %}
-**換你試試：**
-再印一次 hasAttribute('aria-label')。移除之後應該是 false。
-{% endnote %}
+### 透過 property 讀寫
 
-<details>
-<summary>參考答案</summary>
+有對應欄位時，直接讀寫 property 是日常做法，寫法短、型別也比較好用。這一節依欄位型態分五種：一般字串、布林、自訂資料、class 與行內樣式。
 
-aria-label 已經拿掉，所以最後一行是 false。data-note 還在。前面七行不變。
+**一覽**
 
-```diff 04-js/pages/119-js-attr.html
-  // ...
-        console.log(link.getAttribute('href'));
-        console.log(link.href);
-+       console.log(go.hasAttribute('aria-label'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-收藏行程
-已收藏
-true
-null
-熱門
-/tour
-http://127.0.0.1:5500/tour
-false
-```
-
-</details>
-
-### property 存取（推薦）
-
-上一節的方法留在少數情況。有對應欄位時，直接讀寫 property，這是日常做法。下面五段都掛在元素物件上，回傳的東西不一樣。
-
-- 一般欄位直接改 `id`、src、alt、href、value。
-- 布林欄位用 true 或 false 開關 `hidden`、disabled 與 checked。
-- `dataset` 讀寫 data- 開頭的自訂資料，得到的都是字串。
-- `classList` 管現在有哪些 class，一次加減一個名字。
-- `style` 只管行內樣式，樣式表裡的規則碰不到。
+- 一般欄位：`id`、`src`、`alt`、`href`、`value` 等，直接指派字串。
+- 布林欄位：`hidden`、`disabled`、`checked` 設成 true 或 false 來開關。
+- `dataset`：讀寫 `data-` 開頭的自訂資料，值都是字串。
+- `classList`：管理元素現在有哪些 class，一次加減一個名字。
+- `style`：讀寫行內樣式，樣式表裡的規則碰不到。
 
 #### 一般 property
 
-字串欄位用點指定新值就好。`src` 與 `href` 讀出來是完整網址。輸入框的 value 前面看過，改的是框裡現在的字，標籤上不一定跟著變。
-
-- `id` 讀寫識別名稱，寫入後標籤上變成同一個字。
-- `alt` 讀寫替代文字，圖片載不到時顯示這段。
-- `src` 讀寫圖片位址，讀欄位得到完整網址。
-- `href` 讀寫連結位址，讀欄位同樣是完整網址。
-- `value` 讀寫輸入框現在的文字。
+字串型的欄位用點直接指定新值。圖片、連結與輸入框是最常見的三種，下面一次改完，再把結果印出來。
 
 **觀念**
 
-下面一次改圖片、連結和輸入框。id 與 alt 寫進去就印出來。`src` 改成相對路徑後，`getAttribute` 讀到的仍是 cover.png。href 設成完整網址，印出來就是這段。value 改的是框裡現在的字。
+- 寫入 `id`、`alt`、`href`、`src` 與 `value` 都是直接指派字串。
+- 讀 `src` 與 `href` 會得到完整網址；要看標籤上寫的字串，才用 `getAttribute`。
+- `value` 改的是輸入框現在的文字，不是標籤上的初始值。
 
 ```html 04-js/pages/120-js-field.html
 <!DOCTYPE html>
@@ -3038,27 +2307,28 @@ false
   <body>
     <img id="photo" alt="舊說明" src="photo.png" />
     <a id="link" href="/tour">行程</a>
-    <input id="name" type="text" value="原始" />
+    <input id="nameInput" type="text" value="原始" />
     <script>
       const photo = document.querySelector('#photo');
       const link = document.querySelector('#link');
-      const name = document.querySelector('#name');
+      const nameInput = document.querySelector('#nameInput');
+
       photo.id = 'cover';
       photo.alt = '夏季特賣';
       photo.src = 'cover.png';
       console.log(photo.id);
       console.log(photo.alt);
       console.log(photo.getAttribute('src'));
+
       link.href = 'https://example.com/tour';
       console.log(link.href);
-      name.value = '目前';
-      console.log(name.value);
+
+      nameInput.value = '目前';
+      console.log(nameInput.value);
     </script>
   </body>
 </html>
 ```
-
-Console：
 
 ```text
 cover
@@ -3070,55 +2340,20 @@ https://example.com/tour
 
 **解析**
 
-- id 改成 cover，alt 改成夏季特賣。兩張圖故意不放，載不到時會看到替代文字。
-- 第三行是標籤上的 cover.png。直接讀 src 會得到完整網址。
-- href 設成完整網址，印出來就是這段。
-- value 從原始改成目前，這一行是框裡的文字。
-
-{% note success %}
-**換你試試：**
-再印 getAttribute('value') 與 value，對照標籤上的原始值。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-框裡已是目前，標籤上的 value 仍是原始。前面五行不變，最後兩行是原始與目前。
-
-```diff 04-js/pages/120-js-field.html
-  // ...
-        name.value = '目前';
-        console.log(name.value);
-+       console.log(name.getAttribute('value'));
-+       console.log(name.value);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-cover
-夏季特賣
-cover.png
-https://example.com/tour
-目前
-原始
-目前
-```
-
-</details>
+- 頁面上，圖片檔案故意不存在，所以顯示的是替代文字「夏季特賣」；旁邊是「行程」連結與一個內容為「目前」的輸入框。
+- 前兩行是改完的 `id` 與 `alt`。第三行是標籤上的 `cover.png`：改 `src` 時寫的是相對路徑，標籤上就是這段字。
+- 第四行：`href` 設成完整網址，印出來就是這段。
+- 最後一行是輸入框現在的文字。
 
 #### 布林 property
 
-上一節那些欄位是字串。hidden、disabled、checked 是布林，要設 true 或 false，不要把 false 這個字寫進標籤。標籤上這類叫布林屬性，物件上則是布林 property。
-
-- `hidden` 為 true 時，元素不佔版面。
-- `disabled` 為 true 時，不能按、也不能改。
-- `checked` 為 true 時，方塊是勾選的，不要拿 value 判斷。
+布林型的欄位只有 true 與 false 兩種值。標籤上這類屬性只看有沒有寫出來，所以在 property 上要設 true 或 false，不要把 false 當成字串寫進標籤。
 
 **觀念**
 
-按鈕一開始帶著 `disabled`。設成 false 之後，屬性從標籤消失，按鈕就可以按。`checked` 用來表示有沒有勾，不要拿 value 判斷。hidden 設成 true 時，按鈕離開版面。
+- `hidden` 為 true，元素不佔版面，等於沒有顯示。
+- `disabled` 為 true，按鈕不能按、輸入框不能改。
+- `checked` 為 true，核取方塊是勾選的。判斷有沒有勾要看它，不要看 `value`，核取方塊的 `value` 是送出時的值，不會因為勾不勾而改變。
 
 ```html 04-js/pages/121-js-bool.html
 <!DOCTYPE html>
@@ -3134,6 +2369,7 @@ https://example.com/tour
     <script>
       const go = document.querySelector('#go');
       const ok = document.querySelector('#ok');
+
       go.disabled = false;
       console.log(go.disabled);
       go.hidden = true;
@@ -3145,8 +2381,6 @@ https://example.com/tour
 </html>
 ```
 
-Console：
-
 ```text
 false
 true
@@ -3155,58 +2389,26 @@ true
 
 **解析**
 
-- disabled 設成 false，按鈕可以按。
-- hidden 設成 true，按鈕從版面消失。
-- checked 設成 true，方塊變成勾選。
+- 標籤上的按鈕本來是 `disabled`，程式先把它設成 false，所以第一行是 false。
+- 接著 `hidden` 設成 true，按鈕離開版面，所以頁面最後只剩下一個已勾選的核取方塊。
+- 三行輸出對應三個布林欄位目前的值。
 
 {% note warning %}
-**布林不要寫成字串**
-`setAttribute` 的第二個引數一律是字串。把 disabled 加回標籤時，即使寫成 false 這個字，屬性只要在，`disabled` 就是 true，按鈕又不能按。要打開按鈕，把 disabled 設成 false。
+**布林屬性不要用字串**
+
+標籤上的布林屬性，只要寫出來就是 true，內容是什麼都不重要。若用 `setAttribute('disabled', 'false')`，屬性仍然存在，按鈕還是不能按。要打開按鈕，把 `disabled` 設成 false。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-把 hidden 設回 false，再印一次。按鈕會回到版面，而且可以按。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-hidden 回到 false 之後，按鈕重新出現。前面三行不變，disabled 仍是 false，checked 仍是 true。
-
-```diff 04-js/pages/121-js-bool.html
-  // ...
-        ok.checked = true;
-        console.log(ok.checked);
-+       go.hidden = false;
-+       console.log(go.hidden);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-false
-true
-true
-false
-```
-
-</details>
 
 #### dataset
 
-前面用 `setAttribute` 寫得進自訂屬性。編號這類 data- 開頭的資料改走 `dataset`，不用自己拼前綴。讀到的值都是字串。
-
-名字對上屬性，寫入後標籤會跟著多一段。
-
-- `dataset.userId` 對上 data-user-id，沒有該欄位時是 undefined。
-- `getAttribute` 要寫完整屬性名，沒有該屬性時回傳 null。
-- 指定 level 會加上 data-level，讀回來仍是字串，不是數字。
+`data-` 開頭的自訂屬性是 HTML 提供給你放自訂資料的地方，例如項目編號、狀態。`dataset` 讓你不用手動拼出前綴，直接用名字讀寫。
 
 **觀念**
 
-下面先讀 userId，再寫入 level。兩種讀法都是字串，所以 7 不是數字。
+- 屬性名稱的連字號會被改成小駝峰：`data-user-id` 對應 `dataset.userId`。
+- 沒有該欄位時，讀到 undefined。
+- 讀出來一律是字串，需要數字時要自己轉，例如 `Number('7')`。
+- 指派 `dataset.level` 會在標籤上加上 `data-level`。
 
 ```html 04-js/pages/122-js-dataset.html
 <!DOCTYPE html>
@@ -3220,8 +2422,10 @@ false
     <p id="item" data-user-id="7">商品</p>
     <script>
       const item = document.querySelector('#item');
+
       console.log(item.dataset.userId);
       console.log(item.getAttribute('data-user-id'));
+
       item.dataset.level = '2';
       console.log(item.dataset.level);
       console.log(item.getAttribute('data-level'));
@@ -3229,8 +2433,6 @@ false
   </body>
 </html>
 ```
-
-Console：
 
 ```text
 7
@@ -3241,55 +2443,23 @@ Console：
 
 **解析**
 
-- 前兩行都是 7。dataset 用小駝峰，getAttribute 用完整屬性名，值都是字串。
-- 寫入 level 之後，標籤上多了 data-level，後兩行都是 2。
-
-{% note success %}
-**換你試試：**
-再設 dataset.unit 為 '支'，印出 getAttribute('data-unit')。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-unit 沒有連字號，對上的屬性名是 data-unit。最後一行是支。前面四行不變。
-
-```diff 04-js/pages/122-js-dataset.html
-  // ...
-        console.log(item.dataset.level);
-        console.log(item.getAttribute('data-level'));
-+       item.dataset.unit = '支';
-+       console.log(item.getAttribute('data-unit'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-7
-7
-2
-2
-支
-```
-
-</details>
+- 頁面上只有一行「商品」，資料都放在標籤裡，要用 DevTools 的 Elements 面板才看得到。
+- 前兩行都是 7：用 `dataset.userId` 與完整屬性名 `data-user-id` 讀到同一個字串。
+- 寫入 `level` 之後，標籤多了 `data-level="2"`，後兩行都是 2。
+- 7 與 2 都是字串，若要拿來運算必須先轉成數字。
 
 #### classList
 
-前面用 `className` 會把 class 整段換掉。`classList` 是 property 回傳的物件，加減的是個別名字。顏色留在樣式表，下面讓盒子先變大，再換成另一個狀態。
+class 是控制外觀最常用的開關：樣式寫在樣式表，程式只負責決定元素現在帶哪些 class。`className` 是一整段字串，改它等於整段換掉，容易把別的 class 一起洗掉；`classList` 則是一個物件，一次只加減一個名字，所以改 class 時優先用它。
 
-加上、拿掉，或依目前狀態切換。
+**一覽**
 
-- `add` 與 `remove` 可以一次傳多個 class。
-- `toggle` 省略第二個引數時，在有無之間切換。
-- 第二個引數是布林時，改成強制加上或拿掉。
-- `contains` 回傳現在有沒有這個 class。
-- `replace` 拿掉舊名並放入新名，舊名不存在時不會放新的。
+- 加減：`add` 與 `remove` 可一次傳入多個名字。
+- 切換：`toggle` 在有無之間切換並回傳切換後有沒有；第二個引數是布林時，強制加上或拿掉。
+- 查詢：`contains` 回傳現在有沒有這個名字。
+- 替換：`replace` 把舊名換成新名，舊名不存在時什麼都不做。
 
-**觀念**
-
-一次加上 on 與 big。`toggle` 的第二個引數是 false，所以原本沒有的 hit 不會被加上。`replace` 再拿掉 big、放上 hit。
+下面的 demo 先加上兩個 class，切換同一個名字兩次，再換成另一個。
 
 ```html 04-js/pages/123-js-class.html
 <!DOCTYPE html>
@@ -3309,75 +2479,43 @@ unit 沒有連字號，對上的屬性名是 data-unit。最後一行是支。�
     <p id="box">盒子</p>
     <script>
       const box = document.querySelector('#box');
+
       box.classList.add('on', 'big');
-      box.classList.toggle('hit', false);
-      console.log(box.classList.contains('on'));
+      box.classList.toggle('big');
+      box.classList.toggle('big');
+      console.log(box.classList.contains('big'));
+
       box.classList.replace('big', 'hit');
       console.log(box.classList.contains('big'));
+      console.log(box.className);
     </script>
   </body>
 </html>
 ```
 
-Console：
-
 ```text
 true
 false
+on hit
 ```
 
 **解析**
 
-- add 一次放上 on 與 big，盒子出現青色背景與較大的字。
-- toggle 的第二個引數是 false，hit 被強制拿掉，不會因為原本沒有就反被加上。
-- replace 拿掉 big、放上 hit。樣式表裡 hit 寫在 on 後面，背景改成綠色。
-- 第一行是 true，第二行是 false。
-
-{% note info %}
-**狀態用 class，數字才用 style**
-外觀的開關留在 class。寬度、座標這類每次不同的數字，才寫進行內樣式。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-用 toggle 把 on 強制拿掉，再印一次 contains('on')。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-強制拿掉之後，盒子只剩 hit。第三行是 false。
-
-```diff 04-js/pages/123-js-class.html
-  // ...
-        box.classList.replace('big', 'hit');
-        console.log(box.classList.contains('big'));
-+       box.classList.toggle('on', false);
-+       console.log(box.classList.contains('on'));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-true
-false
-false
-```
-
-</details>
+- 頁面上最後是一個淺綠色背景、字沒有放大的盒子，過程中的變化會一閃而過。
+- `add` 一次加上 `on` 與 `big`；`toggle('big')` 第一次拿掉、第二次又加回，所以第一行是 true。
+- `replace` 把 `big` 換成 `hit`，所以第二行是 false，字也回到原本大小。
+- 樣式表裡 `hit` 寫在 `on` 後面，同樣權重時後面的規則勝出，背景是 `hit` 的綠色。
+- 最後一行用 `className` 看整段字串，可見 class 現在是 on 與 hit。
 
 #### style
 
-class 管的是狀態，顏色留在樣式表。算出來的數字才寫進 `style`。它是 property 回傳的物件，只碰行內樣式，屬性名用小駝峰。
-
-- 行內樣式用小駝峰讀寫，例如 `backgroundColor`。
-- 把值設成空字串，會清掉那一條行內樣式。
-- `setProperty` 用來寫入 `--gap` 這類 CSS 變數。
+`style` 讀寫的是元素的行內樣式，屬性名稱用小駝峰，例如 `backgroundColor`。行內樣式的優先權很高，樣式表很難蓋過它，所以狀態的開關不要寫在這裡，交給 `classList`；只有寬度、座標這類算出來才知道的數字，才適合用 `style`。
 
 **觀念**
 
-背景色寫進 `backgroundColor`。變數名字以兩條減號開頭，style 物件沒有這種欄位，改用 `setProperty`。讀回來的顏色常常是 rgb 寫法。
+- 把值設成空字串，會清掉那一條行內樣式。
+- CSS 變數（以兩條減號開頭）不是物件上的欄位，要用 `setProperty` 寫、`getPropertyValue` 讀。
+- 它只管行內樣式，讀不到樣式表裡的規則（選讀一節用 `getComputedStyle` 讀最終結果）。
 
 ```html 04-js/pages/124-js-style.html
 <!DOCTYPE html>
@@ -3394,17 +2532,17 @@ class 管的是狀態，顏色留在樣式表。算出來的數字才寫進 `sty
     <p id="box">盒子</p>
     <script>
       const box = document.querySelector('#box');
+
       box.style.backgroundColor = '#ccfbf1';
       box.style.setProperty('--gap', '8px');
       box.style.marginTop = 'var(--gap)';
+
       console.log(box.style.backgroundColor);
       console.log(box.style.getPropertyValue('--gap'));
     </script>
   </body>
 </html>
 ```
-
-Console：
 
 ```text
 rgb(204, 251, 241)
@@ -3413,56 +2551,27 @@ rgb(204, 251, 241)
 
 **解析**
 
-- 背景色寫進行內樣式，盒子多了一塊青色。
-- 讀回來的顏色是 rgb(204, 251, 241)，不是當初的十六進位。
-- 變數 --gap 是 8px，上邊界用這個變數，所以盒子往下移一點。
-
-{% note success %}
-**換你試試：**
-把 backgroundColor 設成空字串，再印一次。變數留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-空字串清掉行內背景，樣式表沒有另設背景，青色就消失。第三行是空的。
-
-```diff 04-js/pages/124-js-style.html
-  // ...
-        console.log(box.style.backgroundColor);
-        console.log(box.style.getPropertyValue('--gap'));
-+       box.style.backgroundColor = '';
-+       console.log(box.style.backgroundColor);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-rgb(204, 251, 241)
-8px
-
-```
-
-</details>
+- 頁面上的盒子多了一塊淺青色背景，上方也空出 8px 的距離。
+- 第一行讀回的是 `rgb(204, 251, 241)`，瀏覽器把當初寫的十六進位色碼轉成 rgb 形式。
+- 第二行是 CSS 變數 `--gap` 的值 8px。上邊界 `marginTop` 引用了這個變數，所以盒子往下移了一點。
 
 ### 選讀：讀取畫面結果
 
-前面改的是元素上的 property。這一節讀的是瀏覽器算完、畫在畫面上的結果，不會寫回你設過的欄位。樣式問最終值，位置問排版之後的矩形。
+前面讀寫的都是你設過的欄位。這一節讀的是瀏覽器排版完成後的結果：最終樣式、元素的實際尺寸與位置。這些值是算出來的，不能直接寫回去。
 
-- `getComputedStyle` 讀最終樣式，唯讀。
-- 尺寸與位置讀排版之後的寬高與座標，也可以把元素捲進視窗。
+**一覽**
+
+- 最終樣式：`getComputedStyle` 回傳套用所有規則後的樣式，唯讀。
+- 尺寸與位置：`getBoundingClientRect` 回傳相對視窗的矩形；`offsetWidth` 與 `offsetHeight` 回傳含框線的整數寬高；`scrollIntoView` 把元素捲進視窗。
 
 #### getComputedStyle
 
-上一節的 `style` 讀不到樣式表裡的顏色。`getComputedStyle` 是 window 的方法，直接寫名字就能呼叫。它讀算完的最終樣式，每個值都是字串，而且唯讀。
-
-- `style.color` 只看行內樣式，樣式表裡的顏色讀不到。
-- `getComputedStyle` 回傳算完的結果，不能拿來改值。
+`style` 只讀行內樣式，樣式表裡設的顏色它讀不到。`getComputedStyle` 是 window 的方法，可以直接寫名字呼叫，回傳元素最終生效的樣式，每個值都是字串，而且不能改。
 
 **觀念**
 
-這一頁的文字顏色寫在樣式表。第一行是空字串，第二行是 rgb 形式。狀態仍優先改 class，這裡只示範怎麼讀。
+- 回傳的是算完的值，例如寫成十六進位的顏色會變成 rgb 形式。
+- 只拿來讀。要改外觀，仍是改 class 或行內樣式。
 
 ```html 04-js/pages/125-js-computed.html
 <!DOCTYPE html>
@@ -3486,8 +2595,6 @@ rgb(204, 251, 241)
 </html>
 ```
 
-Console：
-
 ```text
 
 rgb(15, 118, 110)
@@ -3495,50 +2602,19 @@ rgb(15, 118, 110)
 
 **解析**
 
-- 第一行是空字串，因為顏色不在行內樣式。
-- 第二行是樣式表上的 #0f766e，以 rgb(15, 118, 110) 出現。
-- 狀態仍優先改 class。這裡只示範怎麼讀已經生效的值。
-
-{% note success %}
-**換你試試：**
-把 style.color 設成 'rgb(15, 118, 110)'，再印一次 style.color。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-寫進行內之後，style.color 才讀得到。第三行與計算後的顏色相同。
-
-```diff 04-js/pages/125-js-computed.html
-  // ...
-        console.log(box.style.color);
-        console.log(getComputedStyle(box).color);
-+       box.style.color = 'rgb(15, 118, 110)';
-+       console.log(box.style.color);
-      </script>
-    </body>
-  // ...
-```
-
-```text
-
-rgb(15, 118, 110)
-rgb(15, 118, 110)
-```
-
-</details>
+- 頁面上是一行深青色的「盒子」，顏色來自樣式表。
+- 第一行是空字串（上面的區塊裡是空行），因為顏色沒有寫在行內樣式。
+- 第二行是樣式表上的 `#0f766e` 轉成的 rgb(15, 118, 110)。
 
 #### 尺寸與位置
 
-顏色問的是最終樣式。元素多大、離視窗多遠，要等排版之後才知道，而且不是你設過的 property。下面把讀尺寸和捲到某一段包成函式，打開頁面後在 Console 自己呼叫。
-
-- `getBoundingClientRect` 回傳相對視窗的矩形，裡面有 top、left、width、height。
-- `offsetWidth` 與 `offsetHeight` 回傳含框線的整數寬高。
-- `scrollIntoView` 把元素捲進視窗，不回傳有用的值。
+元素有多大、離視窗邊緣多遠，要排版完才知道。下面的 demo 載入時先印出一次，再留下兩個函式，讓你在 Console 輸入名字呼叫，觀察捲動前後的差別。
 
 **觀念**
 
-矩形的 top 會跟著捲動變。`offsetWidth` 是含框線的整數寬。`scrollIntoView` 把 behavior 設成 smooth 就是平滑移動。
+- `getBoundingClientRect` 回傳的矩形有 top、left、width、height，位置相對視窗，所以頁面捲動時 top 會跟著變。
+- `offsetWidth` 與 `offsetHeight` 是含 padding 與框線的整數尺寸。
+- `scrollIntoView` 把元素捲到可見處，傳入 `behavior: 'smooth'` 會平滑移動。
 
 ```html 04-js/pages/126-js-rect.html
 <!DOCTYPE html>
@@ -3548,124 +2624,86 @@ rgb(15, 118, 110)
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>尺寸與位置</title>
     <style>
-      #box { display: inline-block; padding: 8px; border: 2px solid #0f766e; }
+      body { margin: 0; }
+      .gap-top { height: 240px; }
+      .gap-bottom { height: 900px; }
+      #box { width: 120px; height: 40px; padding: 8px; border: 2px solid #0f766e; }
     </style>
   </head>
   <body>
-    <div style="height: 240px"></div>
-    <p id="box">目標</p>
-    <div style="height: 900px"></div>
+    <div class="gap-top"></div>
+    <div id="box">目標</div>
+    <div class="gap-bottom"></div>
     <p id="end">頁面底部</p>
     <script>
+      const box = document.querySelector('#box');
+
       const showBox = () => {
-        const box = document.querySelector('#box');
         const rect = box.getBoundingClientRect();
-        console.log(Math.round(rect.top));
-        console.log(box.offsetWidth);
+        console.log(rect.top);
+        console.log(rect.height);
+        console.log(box.offsetHeight);
       };
 
       const goEnd = () => {
         document.querySelector('#end').scrollIntoView({ behavior: 'smooth' });
       };
 
-      console.log('呼叫 showBox() 或 goEnd()');
+      showBox();
+      console.log('在 Console 輸入 goEnd() 捲到底部，再輸入 showBox() 看 top 的變化');
     </script>
   </body>
 </html>
 ```
 
-Console：
-
 ```text
-呼叫 showBox() 或 goEnd()
-260
-68
+240
+60
+60
+在 Console 輸入 goEnd() 捲到底部，再輸入 showBox() 看 top 的變化
 ```
 
 **解析**
 
-- 載入時只印出提示，頁面不會自己捲動。
-- showBox 的第一個數字是目標離視窗頂端的距離，實際數字以你的畫面為準。
-- 第二個數字是含框線的寬。offsetHeight 則是含框線的高。
-- goEnd 會平滑捲到頁面底部那一段。
-
-{% note success %}
-**換你試試：**
-showBox 再多印 offsetHeight。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三個數字是含框線的高度。提示與前兩個數字仍會先出現。下面的高度只是一種視窗的例子。
-
-```diff 04-js/pages/126-js-rect.html
-  // ...
-          console.log(Math.round(rect.top));
-          console.log(box.offsetWidth);
-+         console.log(box.offsetHeight);
-        };
-  
-        const goEnd = () => {
-          // ...
-```
-
-```text
-呼叫 showBox() 或 goEnd()
-260
-68
-40
-```
-
-</details>
+- 頁面上方有一段空白，接著是帶框線的「目標」方塊，再往下是一大段空白與底部的文字。
+- 載入時頁面還沒捲動，印出三個數字：top 是 240，是方塊離視窗上緣的距離；height 與 offsetHeight 都是 60（內容 40 加上 padding 16 與框線 4）。
+- 在 Console 輸入 `goEnd()`，頁面平滑捲到底部。
+- 捲動之後再輸入 `showBox()`，top 會變小，方塊捲出視窗上緣時甚至是負數；height 不受捲動影響。
+- `getBoundingClientRect` 的數字可能帶小數（例如縮放或變形時），`offsetHeight` 一定是整數。
 
 ## 節點操作
 
-頁面載入時還沒有的列，要用程式建立後再插進樹。已經在樹上的節點若再插入別處，瀏覽器是把它搬走，不是複製一份。複製、移除與清空留在下一節。
+頁面載入時還沒有的內容，要用程式做出新節點，再放進樹裡。這一節先學建立與插入，再看搬移、複製與移除，最後用 template 一次做出很多列。
 
 ### 建立與插入
 
-新的節點先被做出來，再決定放在目標的哪一邊。四個方法對上四個位置，舊的寫法只要看得懂即可。下面這張圖以 p#target 為中心。
+做新節點分兩步：先建立，再決定放在目標的哪個位置。放進去之前，新節點只存在記憶體裡，畫面上看不到。
+
+**一覽**
 
 - 建立
-    - `createElement` 做出一顆還沒掛上文件的元素。
-    - `createTextNode` 做出純文字節點，沒有自己的標籤。
-    - `cloneNode` 複製節點，留到下一節再練。
-- 以目標為基準
-    - `before` 放在目標同層的前面，可一次放多個節點或字串。
+    - `createElement` 做出一顆還沒掛上文件的元素，引數是標籤名稱。
+    - `createTextNode` 做出純文字節點，沒有標籤。
+- 插入（以目標元素為基準，一次可放多個節點或字串，字串會變成純文字）
+    - `before` 放在目標同層的前面。
     - `prepend` 放在目標內部的最前面。
     - `append` 放在目標內部的最後面。
     - `after` 放在目標同層的後面。
-- 位置字串
-    - `beforebegin` 就是 before 那個位置。
-    - `afterbegin` 就是 prepend 那個位置。
-    - `beforeend` 就是 append 那個位置。
-    - `afterend` 就是 after 那個位置。
-- 搬移
-    - 把已在頁面上的節點再插一次就是搬走，文件裡仍只有一顆。
 
 {% mermaid graph TD %}
-beforeNode["before / beforebegin<br/>目標前面"] --> targetNode["p#target"]
-targetNode --> startNode["prepend / afterbegin<br/>內部最前"]
-targetNode --> endNode["append / beforeend<br/>內部最後"]
-afterNode["after / afterend<br/>目標後面"]
-targetNode --> afterNode
+beforeNode["before：目標前面"] --- targetNode["p#target"]
+targetNode --> startNode["prepend：內部最前"]
+targetNode --> endNode["append：內部最後"]
+targetNode --- afterNode["after：目標後面"]
 {% endmermaid %}
 
-{% note info %}
-**舊的插入寫法**
-`appendChild` 與 `insertBefore` 一次只收一顆節點，而且會回傳那顆節點。現在的 before、prepend、append、after 可以混用節點與字串，字串會變成純文字。課堂用新的四個方法。
-{% endnote %}
-
-同一個目標可以同時示範四個插入點。字串若直接放進這四個方法，會變成純文字。這一節改用元素與一個文字節點，讓位置在畫面上分開。
+before 與 after 把節點放在目標的旁邊，成為兄弟；prepend 與 append 把節點放進目標裡面，成為子節點。
 
 **觀念**
 
-before 與 after 是目標的兄弟。prepend 與 append 在目標裡面。createTextNode 做出的文字沒有標籤，接在終點後面。
-
-`insertAdjacentElement` 與 `insertAdjacentHTML` 用前面那四個位置字串，效果與四個方法相同。
-
-`insertAdjacentText` 插入的是純文字，不會被解析成標籤。
+- 同一個節點只能在樹上的一個位置。把已經在頁面上的節點再插入別處，是把它搬走，文件裡仍只有一顆。
+- 新元素的文字用 `textContent` 設定，內容一律當作純文字，不會被解析成標籤，用在使用者輸入的資料上也安全。
+- 下面的 demo 為了讓位置在畫面上分開，改用元素與一個文字節點，而不是直接傳字串。
 
 ```html 04-js/pages/127-js-create.html
 <!DOCTYPE html>
@@ -3680,7 +2718,6 @@ before 與 after 是目標的兄弟。prepend 與 append 在目標裡面。creat
       <p id="target">目標</p>
     </div>
     <script>
-      const stage = document.querySelector('#stage');
       const target = document.querySelector('#target');
 
       const before = document.createElement('p');
@@ -3700,73 +2737,39 @@ before 與 after 是目標的兄弟。prepend 與 append 在目標裡面。creat
       target.after(after);
 
       target.append(document.createTextNode('尾端文字'));
-
-      const labels = [];
-      for (const node of stage.children) labels.push(node.textContent);
-      console.log(labels.join(' | '));
     </script>
   </body>
 </html>
 ```
 
-Console：
-
-```text
-前面 | 起點目標終點尾端文字 | 後面
-```
-
 **解析**
 
-- 舞台上的三列依序是前面、目標內部的文字、後面。
-- 目標內部從左到右是起點、目標、終點、尾端文字，所以中間沒有空格。
-- `before` 放在目標同層前面，位置字串是 `beforebegin`。
-- `prepend` 放在目標內部最前，位置字串是 `afterbegin`。
-- `append` 放在目標內部最後，位置字串是 `beforeend`。
-- `after` 放在目標同層後面，位置字串是 `afterend`。
+- 頁面由上到下共三列：第一列「前面」，第二列「起點目標終點尾端文字」，第三列「後面」。
+- 「前面」與「後面」是 p 元素，插在目標的兄弟位置，所以各自獨立成一列。
+- 起點與終點是 span，放進目標裡面，原本的文字「目標」夾在中間；最後的文字節點接在終點之後。目標內部沒有空格，所以第二列的文字連在一起。
 
-{% note success %}
-**換你試試：**
-把「前面」再 append 到 #stage。觀察它從第一列變成最後一列，而且沒有變兩顆。
+{% note info %}
+**舊的與另一組插入寫法**
+
+- 舊程式常見 `appendChild` 與 `insertBefore`：一次只收一顆節點，不收字串，會回傳那顆節點。
+- 另有 insertAdjacent 開頭的三個方法（Element、Text、HTML），用四個位置字串指定地點，分別對應 before、prepend、append、after。
+- 其中 insertAdjacentHTML 會把字串解析成標籤，內含使用者輸入時有被插入惡意標籤的風險，改用 textContent 或前面的方法。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-已在頁面上的節點再插入就是搬移。第二行只剩一顆「前面」，而且在最後。
-
-```diff 04-js/pages/127-js-create.html
-  // ...
-        for (const node of stage.children) labels.push(node.textContent);
-        console.log(labels.join(' | '));
-+ 
-+       stage.append(before);
-+       const moved = [];
-+       for (const node of stage.children) moved.push(node.textContent);
-+       console.log(moved.join(' | '));
-      </script>
-    </body>
-  // ...
-```
-
-```text
-前面 | 起點目標終點尾端文字 | 後面
-起點目標終點尾端文字 | 後面 | 前面
-```
-
-</details>
 
 ### 移動、複製與移除
 
-同一個節點在文件裡只會有一個位置。把已經存在的節點再 append 到別處，它會從舊位置消失並出現在新位置。要留下原件，就先複製。
+節點建好之後，常要調整位置、留下複本，或把不要的拿掉。這一節用清單項目看這幾個動作。
 
-- `cloneNode` 複製節點。引數 true 時連子節點一起複製，回傳的新節點還沒掛上文件。
-- 把已在頁面上的節點再插入別處是搬移，文件裡仍只有一顆。
-- `remove` 把節點從樹上拿掉。
-- `replaceChildren` 不帶引數時清掉全部子節點。
+**一覽**
+
+- `cloneNode` 複製節點，回傳還沒掛上文件的新節點。引數 true 連子節點一起複製（深複製），false 只複製元素本身。
+- 搬移沒有專屬方法：把已在頁面上的節點交給 prepend、append 等方法，它就從舊位置移到新位置。
+- `remove` 呼叫在節點上，把自己從樹上拿掉。
+- `replaceChildren` 呼叫在父元素上，不帶引數時清空全部子節點；帶節點時，用它們取代原本的內容。
 
 **觀念**
 
-cloneNode(true) 連子節點一起複製，回傳的是新節點，還沒有掛上文件。remove 把節點從樹上拿掉。replaceChildren 不帶引數時，會清掉全部子節點。
+要留下原件就先複製再插入；直接插入原件則是搬移。複製時 id 也會一起複製，同一頁出現重複的 id 不符合 HTML 規定，選取時也只會拿到第一顆，所以複本通常要改掉或拿掉 id。
 
 ```html 04-js/pages/128-js-node-move.html
 <!DOCTYPE html>
@@ -3774,7 +2777,7 @@ cloneNode(true) 連子節點一起複製，回傳的是新節點，還沒有掛�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>移動、複製與移除</title>
+    <title>移動與複製</title>
   </head>
   <body>
     <ul id="list">
@@ -3784,10 +2787,12 @@ cloneNode(true) 連子節點一起複製，回傳的是新節點，還沒有掛�
     <script>
       const list = document.querySelector('#list');
       const first = document.querySelector('#first');
+      const second = document.querySelector('#second');
+
       const copy = first.cloneNode(true);
+      copy.removeAttribute('id');
       list.append(copy);
 
-      const second = document.querySelector('#second');
       list.prepend(second);
     </script>
   </body>
@@ -3796,48 +2801,58 @@ cloneNode(true) 連子節點一起複製，回傳的是新節點，還沒有掛�
 
 **解析**
 
-- 複製出來的「第一」被 append 到結尾，原來的第一列還在。
-- `#second` 本來就在清單裡，prepend 是把它搬到最前，不會變成兩顆。
-- true 代表深複製。傳 false 時只複製元素自己，裡面的文字不會跟著走。
+- 清單由上到下是「第二」「第一」「第一」，共三列。
+- 最後一列是複本，原來的「第一」還在；複本先拿掉 id，避免頁面上出現兩個 first。
+- 「第二」本來就在清單裡，prepend 把它搬到最前面，沒有變成兩顆。
 
-{% note success %}
-**換你試試：**
-改成先 replaceChildren 清空清單，再 append 一列「只剩這項」。
-{% endnote %}
+接著看移除與清空。
 
-<details>
-<summary>參考答案</summary>
+```html 04-js/pages/128b-js-node-remove.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>移除與清空</title>
+  </head>
+  <body>
+    <ul id="fruits">
+      <li>蘋果</li>
+      <li id="banana">香蕉</li>
+      <li>橘子</li>
+    </ul>
+    <ul id="drinks">
+      <li>紅茶</li>
+      <li>綠茶</li>
+    </ul>
+    <script>
+      const banana = document.querySelector('#banana');
+      banana.remove();
 
-replaceChildren 拿掉原本的兩列與任何複製。畫面上只留下新建立的那一列。
-
-```diff 04-js/pages/128-js-node-move.html
-  // ...
-      <script>
-        const list = document.querySelector('#list');
--       const first = document.querySelector('#first');
--       const copy = first.cloneNode(true);
--       list.append(copy);
-+       list.replaceChildren();
-  
--       const second = document.querySelector('#second');
--       list.prepend(second);
-+       const item = document.createElement('li');
-+       item.textContent = '只剩這項';
-+       list.append(item);
-      </script>
-    </body>
-  // ...
+      const drinks = document.querySelector('#drinks');
+      const item = document.createElement('li');
+      item.textContent = '只剩這項';
+      drinks.replaceChildren(item);
+    </script>
+  </body>
+</html>
 ```
 
-</details>
+**解析**
+
+- 第一份清單剩下「蘋果」與「橘子」，香蕉被 remove 從樹上拿掉。
+- 第二份清單原有的兩項都不見，只剩新做的「只剩這項」，因為 replaceChildren 先清空再放入。
+- 被 remove 的節點只是離開了頁面，變數 banana 仍抓得到它，可以再插回去。
 
 ### 選讀：template 元素
 
-同一種列要做很多次時，可以把骨架放在 template 裡。template 的內容不會直接出現在畫面上，程式複製之後再填文字、再插入。
+同一種列要做很多次時，可以把骨架寫在 template 裡。template 的內容不會顯示在頁面上，程式複製它之後填入資料，再放進清單。這個寫法就是用程式重複產生畫面，React 的元件之後會把這件事做得更簡單。
 
 **觀念**
 
-template.content 是一份文件片段。cloneNode(true) 複製出片段，查詢與填值都在片段上做完，最後 append 到真正的清單。片段插進去時，外層不會多包一層。
+- template 的 content 是一份文件片段（放子節點的暫時容器），不屬於頁面。
+- 每次要一列，就對 content 做一次 cloneNode(true)，在片段裡找到元素、填入文字，最後 append 到清單。
+- 片段被插入時，只有它裡面的子節點進入清單，片段本身不會多包一層。
 
 ```html 04-js/pages/129-js-template.html
 <!DOCTYPE html>
@@ -3855,10 +2870,13 @@ template.content 是一份文件片段。cloneNode(true) 複製出片段，查�
     <script>
       const list = document.querySelector('#list');
       const row = document.querySelector('#row');
-      const fragment = row.content.cloneNode(true);
+      const names = ['筆', '紙', '尺'];
 
-      fragment.querySelector('.name').textContent = '筆';
-      list.append(fragment);
+      for (const name of names) {
+        const fragment = row.content.cloneNode(true);
+        fragment.querySelector('.name').textContent = name;
+        list.append(fragment);
+      }
     </script>
   </body>
 </html>
@@ -3866,63 +2884,33 @@ template.content 是一份文件片段。cloneNode(true) 複製出片段，查�
 
 **解析**
 
-- template 自己不佔畫面上的一列，清單一開始是空的。
-- 複製後在片段裡找到 span，文字改成「筆」。
-- append 片段時，瀏覽器放入的是裡面的 li。
-
-{% note success %}
-**換你試試：**
-用同樣的步驟再加一列，文字是「紙」。畫面上要有兩列。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-每次 cloneNode 都得到新的片段，改其中一列不會改到另一列，也不會改到 template 原本的骨架。
-
-```diff 04-js/pages/129-js-template.html
-  // ...
-        const list = document.querySelector('#list');
-        const row = document.querySelector('#row');
--       const fragment = row.content.cloneNode(true);
-  
--       fragment.querySelector('.name').textContent = '筆';
--       list.append(fragment);
-+       const pen = row.content.cloneNode(true);
-+       pen.querySelector('.name').textContent = '筆';
-+       list.append(pen);
-+ 
-+       const paper = row.content.cloneNode(true);
-+       paper.querySelector('.name').textContent = '紙';
-+       list.append(paper);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
+- 頁面上出現三列：筆、紙、尺。template 本身不顯示。
+- 迴圈每一圈都從 content 複製出一份新的片段，所以各列互不影響，template 裡的骨架也沒有被改到。
+- append 之後，進入清單的是片段裡的 li，不是片段本身。
 
 # DOM 事件
 
-到這裡為止，程式都在載入時改一次畫面。事件讓函式改在使用者動作時才跑。這一章先綁定與解除，再讀事件物件，然後處理輸入、鍵盤、委派與表單送出。捕獲與冒泡的完整階段放在選讀。
+到這裡為止，程式都在載入時改一次畫面。事件讓函式改在使用者動作時才跑。這一章先學綁定與解除，再讀事件物件，然後處理輸入、鍵盤、委派與表單送出。捕獲與冒泡的完整階段放在選讀。
 
 ## 綁定與解除
 
-監聽是「這個元素發生這件事時，呼叫這個函式」。函式要留成同一個參考，之後才拿得掉。同一個事件可以疊好幾個函式，也可以聲明只跑一次。
+事件是瀏覽器通知「這裡發生了某件事」，例如點擊、輸入、按鍵。監聽（listener）是預先交給某個元素的函式：該元素發生指定事件時，瀏覽器就呼叫它。這一節學怎麼登記監聽，以及怎麼拿掉。
 
-- `addEventListener` 登記一份監聽，同一事件可以疊很多份。
-- `removeEventListener` 用同一個函式參考拿掉其中一份，匿名函式對不上就拿不掉。
+**一覽**
+
+- `addEventListener` 登記一份監聽，引數是事件名稱、函式與選項；同一個事件可以疊很多份，依登記順序執行。
+- `removeEventListener` 拿掉一份監聽，事件名稱與函式要和登記時相同；匿名函式每寫一次都是新函式，對不上就拿不掉。
+- 選項是第三個引數的物件：`once` 讓監聽跑一次後自動移除，`passive` 與 `capture` 留到後面的章節。
 
 ### addEventListener
 
-點擊是第一個要接上的事件。按鈕被按下時改寫狀態文字，並另外登記一個只會執行一次的監聽。
-
-- `addEventListener` 用事件名與函式登記一份監聽，同一事件可以疊很多份。
-- 選項 `once` 讓這份跑完第一次就被移除。
+最常見的事件是點擊。登記監聽時，函式是「交給瀏覽器、以後再呼叫」，所以只寫函式本身，不加括號呼叫。
 
 **觀念**
 
-addEventListener 的第一個引數是事件名，第二個是函式。選項 `{ once: true }` 讓這個函式在第一次之後就被拿掉。
+- 事件名稱是字串，不加 on，例如點擊就是 click。
+- 同一個元素、同一個事件可以登記多份監聽，彼此不會蓋掉對方。
+- 函式內部想改畫面，就用前面學過的方式選取元素後修改。
 
 ```html 04-js/pages/130-js-listen.html
 <!DOCTYPE html>
@@ -3934,18 +2922,20 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
   </head>
   <body>
     <button type="button" id="go">點我</button>
-    <p id="status">尚未點</p>
+    <p id="output">尚未點</p>
     <script>
-      const status = document.querySelector('#status');
+      const output = document.querySelector('#output');
       const go = document.querySelector('#go');
+      let count = 0;
 
       go.addEventListener('click', () => {
-        status.textContent = '點過了';
+        count += 1;
+        output.textContent = `已點 ${count} 次`;
       });
 
       go.addEventListener('click', () => {
-        console.log('只會看到一次');
-      }, { once: true });
+        console.log('第二份監聽也跑了');
+      });
     </script>
   </body>
 </html>
@@ -3953,41 +2943,56 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
 
 **解析**
 
-- 兩份監聽都綁在同一個按鈕的 click 上，第一下會先改文字，再印出那句。
-- 第二份帶有 once，所以從第二下開始 Console 不再出現那句。
-- 第一份沒有 once，之後每次點擊仍會把文字設成「點過了」。
+- 載入時畫面顯示「尚未點」，監聽只是登記好，函式還沒執行。
+- 每點一下按鈕，段落文字更新成「已點 1 次」「已點 2 次」，依此類推。
+- 每點一下，Console 也印出一行「第二份監聽也跑了」；兩份監聽都跑，順序就是登記順序。
 
-{% note success %}
-**換你試試：**
-把只會跑一次的那份改成設定文字「首次點過了」，不要再印到 Console。觀察第一下與第二下的文字。
-{% endnote %}
+接著看選項 `once`。它適合只該發生一次的事，例如第一次載入的歡迎訊息。
 
-<details>
-<summary>參考答案</summary>
+```html 04-js/pages/130b-js-once.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>once 選項</title>
+  </head>
+  <body>
+    <button type="button" id="go">點我</button>
+    <p id="welcome">尚未點</p>
+    <p id="total">累計 0 次</p>
+    <script>
+      const welcome = document.querySelector('#welcome');
+      const total = document.querySelector('#total');
+      const go = document.querySelector('#go');
+      let count = 0;
 
-同一個點擊會依登記順序執行。第一下先寫成「點過了」，再被改成「首次點過了」。第二下只剩第一份監聽。
+      go.addEventListener('click', () => {
+        welcome.textContent = '第一次點擊的歡迎訊息';
+      }, { once: true });
 
-```diff 04-js/pages/130-js-listen.html
-  // ...
-        });
-  
-        go.addEventListener('click', () => {
--         console.log('只會看到一次');
-+         status.textContent = '首次點過了';
-        }, { once: true });
-      </script>
-    // ...
+      go.addEventListener('click', () => {
+        count += 1;
+        total.textContent = `累計 ${count} 次`;
+      });
+    </script>
+  </body>
+</html>
 ```
 
-</details>
+**解析**
+
+- 第一下點擊後，兩個段落都變了：「第一次點擊的歡迎訊息」與「累計 1 次」。
+- 第二下之後，歡迎訊息不再更新，因為帶 once 的那份監聽跑完第一次就被移除；累計次數則每次點擊都增加。
 
 ### removeEventListener
 
-解除監聽時，瀏覽器用函式參考來辨認是哪一份。匿名函式各寫一次就是不同的函式，對不上，也就拿不掉。
+瀏覽器靠函式的參考辨認要拿掉哪一份監聽，所以要先把函式存進變數，登記與解除都傳同一個變數。事件名稱也要相同，這裡都是 click。
 
 **觀念**
 
-把函式先存進變數，addEventListener 與 removeEventListener 都傳這同一個變數。事件名也要相同，這裡都是 click。
+- 解除只認得「同一個函式」。直接把匿名箭頭函式寫在括號裡，之後就沒有辦法再指到它。
+- 拿掉的是那一份監聽，同一個元素上的其他監聽不受影響。
 
 ```html 04-js/pages/131-js-unlisten.html
 <!DOCTYPE html>
@@ -3998,22 +3003,21 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
     <title>removeEventListener</title>
   </head>
   <body>
-    <p id="status">0</p>
+    <p id="output">0</p>
     <button type="button" id="go">加一</button>
-    <button type="button" id="stop">停止</button>
+    <button type="button" id="stopButton">停止</button>
     <script>
-      const status = document.querySelector('#status');
+      const output = document.querySelector('#output');
       const go = document.querySelector('#go');
-      const stop = document.querySelector('#stop');
+      const stopButton = document.querySelector('#stopButton');
 
       const onClick = () => {
-        const count = Number(status.textContent) + 1;
-        status.textContent = String(count);
+        output.textContent = Number(output.textContent) + 1;
       };
 
       go.addEventListener('click', onClick);
 
-      stop.addEventListener('click', () => {
+      stopButton.addEventListener('click', () => {
         go.removeEventListener('click', onClick);
       });
     </script>
@@ -4023,166 +3027,54 @@ addEventListener 的第一個引數是事件名，第二個是函式。選項 `{
 
 **解析**
 
-- 按下「加一」時，onClick 把段落裡的數字加 1。
-- 按下「停止」後，同一個 onClick 被移除，再按「加一」不會增加。
-- 停止鈕自己的監聽是另一個函式，不受這次移除影響。
+- 按「加一」時，段落裡的數字每次加 1。
+- 按「停止」之後，同一個 onClick 被拿掉，再按「加一」，數字不會再變。
+- 「停止」按鈕自己的監聽是另一個函式，所以不受這次移除影響。
 
-{% note success %}
-**換你試試：**
-在 onClick 裡，數字變成 3 時就移除自己。停止鈕仍然可以提前移除。
+{% note info %}
+**舊式寫法：on 屬性**
+
+舊程式與舊教學常見在標籤上寫 `onclick="fromHtml()"`，或在程式裡指派 `button.onclick = 函式`。這兩種寫法一顆元素同一事件只能留一份，後寫的會蓋掉前面的；也不能帶 once 這類選項，標籤上的寫法還會被嚴格的內容安全政策（CSP）擋掉。它們仍然能運作，所以要看得懂，但新的程式都用 addEventListener。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-函式執行中可以拿自己的參考去解除。第三次點擊把數字設成 3 之後，這份監聽已經不在了。
-
-```diff 04-js/pages/131-js-unlisten.html
-  // ...
-          const count = Number(status.textContent) + 1;
-          status.textContent = String(count);
-+         if (count === 3) {
-+           go.removeEventListener('click', onClick);
-+         }
-        };
-  
-        go.addEventListener('click', onClick);
-        // ...
-```
-
-</details>
-
-### 選讀：onclick 等舊式寫法
-
-HTML 屬性與元素上的 onclick 都還在規格裡，舊程式與舊教學很常見，所以要看得懂。新的程式一律用 addEventListener。這一節用三顆按鈕把三種寫法並排。
-
-- HTML 屬性把一段字串寫在標籤上，只能呼叫全域函式。
-- 指派給 `onclick` 只能留一個函式，後寫的會蓋掉前面的。
-- `addEventListener` 可以疊很多份，也能帶上只跑一次或捕獲階段的選項。
-
-**觀念**
-
-標籤上的 onclick 是一段字串，只能呼叫全域函式，函式宣告才會變成全域，const 則不會。把函式指派給元素的 onclick 時，一顆元素只能留一個，後寫的蓋掉前面的，解除時設回 null。它不能設定 once 或 capture。嚴格的內容安全政策會擋掉寫在標籤上的事件。
-
-```html 04-js/pages/132-js-onclick.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：onclick</title>
-  </head>
-  <body>
-    <button type="button" id="old" onclick="fromHtml()">HTML 屬性</button>
-    <button type="button" id="prop">屬性指派</button>
-    <button type="button" id="modern">addEventListener</button>
-    <p id="status">尚未點</p>
-    <script>
-      const status = document.querySelector('#status');
-
-      function fromHtml() {
-        status.textContent = '來自 HTML 屬性';
-      }
-
-      const prop = document.querySelector('#prop');
-      prop.onclick = () => {
-        status.textContent = '第一個函式';
-      };
-      prop.onclick = () => {
-        status.textContent = '只剩第二個';
-      };
-
-      const modern = document.querySelector('#modern');
-      modern.addEventListener('click', () => {
-        console.log('第一份');
-      });
-      modern.addEventListener('click', () => {
-        console.log('第二份');
-      });
-    </script>
-  </body>
-</html>
-```
-
-Console：
-
-```text
-第一份
-第二份
-```
-
-**解析**
-
-- 點第一顆時，狀態變成來自 HTML 屬性。那份程式是字串，而且呼叫全域函式。
-- 第二顆被指派兩次，畫面上只剩只剩第二個。第一個函式已經被蓋掉。
-- 第三顆的兩份監聽都會執行。點下去時 Console 先出現第一份，再出現第二份。
-- 舊式寫法沒有被規格移除。新程式仍用 addEventListener，才能疊加、移除，並帶上選項。
-
-{% note success %}
-**換你試試：**
-在兩次指派之後，把第二顆的 onclick 設成 null。再點它應沒有反應。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-設成 null 會清掉這顆按鈕的舊式監聽。第三顆的兩份 addEventListener 仍會印出。
-
-```diff 04-js/pages/132-js-onclick.html
-  // ...
-          status.textContent = '只剩第二個';
-        };
-+       prop.onclick = null;
-  
-        const modern = document.querySelector('#modern');
-        modern.addEventListener('click', () => {
-          // ...
-```
-
-```text
-第一份
-第二份
-```
-
-</details>
 
 ## event 物件
 
-監聽的函式會收到一個事件物件，裡面有這次動作的資訊。最常用的是實際點到誰、監聽掛在誰身上，以及要不要取消瀏覽器原本會做的事。
+監聽的函式會收到一個事件物件，裡面記錄這次動作的細節。這一節先總覽常用的屬性與方法，再依序看實際點到誰、指標座標、鍵盤資訊，以及取消瀏覽器的預設動作。
+
+**一覽**
 
 - 共通
-    - `type` 是這次事件的名字，例如 click。
-    - `target` 是實際發生事件的那個元素。
-    - `currentTarget` 是這份監聽登記的元素，和 target 可以不同。
-    - `timeStamp` 回傳從頁面載入到這次事件的毫秒數。
-- 滑鼠
-    - `clientX` 與 `clientY` 是相對視窗左上角的座標。
-    - `pageX` 與 `pageY` 是相對整份文件左上角，有捲動時會比視窗座標大。
-    - `offsetX` 與 `offsetY` 是相對事件目標內緣的座標。
-    - `button` 回傳哪一個按鍵，0 是左鍵。
+    - `type` 是事件的名字，例如 click。
+    - `target` 是實際發生事件的元素。
+    - `currentTarget` 是登記這份監聽的元素，可能與 target 不同。
+    - `timeStamp` 是從頁面載入到事件發生的毫秒數。
+- 指標（滑鼠、觸控、手寫筆都適用）
+    - `clientX`、`clientY` 從視窗左上角算起。
+    - `pageX`、`pageY` 從整份文件左上角算起，捲動後比視窗座標大。
+    - `offsetX`、`offsetY` 從 target 的內緣算起。
+    - `pointerType` 說明來源，值是 mouse、touch 或 pen。
+    - `button` 是按下的鍵，0 是左鍵。
 - 鍵盤
-    - `key` 是這一刻產生的字，會受到 Shift 與輸入法影響。
-    - `code` 是鍵盤上的位置，例如 KeyS，不跟著輸入法改變。
-    - `repeat` 在按住不放、重複觸發時回傳 true。
-    - `ctrlKey` 與 `metaKey` 表示 Ctrl 或 ⌘ 是否按住，回傳布林。
-    - `shiftKey` 與 `altKey` 表示另外兩個修飾鍵是否按住。
+    - `key` 是這次按鍵產生的字。
+    - `code` 是按下的實體位置，例如 KeyS。
+    - `repeat` 在按住不放、連續觸發時是 true。
+    - `ctrlKey`、`metaKey`、`shiftKey`、`altKey` 各自表示修飾鍵是否按住，值是布林。
 - 方法
-    - `preventDefault` 取消瀏覽器這次的預設動作，傳播還會繼續。
-    - `stopPropagation` 從這一層打斷後續傳播。
+    - `preventDefault` 取消瀏覽器這次的預設動作，事件仍會繼續傳播。
+    - `stopPropagation` 從這一層打斷後續傳播，傳播的規則放在後面的事件委派一節。
 
 {% mermaid graph LR %}
 pageNode["文件左上角<br/>pageX pageY"] --> viewNode["視窗左上角<br/>clientX clientY"]
 viewNode --> padNode["元素內緣<br/>offsetX offsetY"]
 {% endmermaid %}
 
-
 ### target 與 currentTarget
 
-監聽可以掛在父元素上，點擊卻發生在子元素。事件物件用兩個屬性把這兩層分開。
+監聽可以掛在父元素上，點擊卻發生在子元素，這時就要分清楚兩個角色。這一節點擊清單，把兩個屬性的值顯示出來。
 
 **觀念**
 
-target 是實際被點到的元素。currentTarget 是這份監聽登記的那個元素。點清單裡的文字時，兩者通常不是同一個節點。
+登記監聽的元素只有一個，實際被點到的元素卻會隨位置不同。把一份監聽掛在清單上，就能處理所有列的點擊，再靠 target 判斷是哪一列。
 
 ```html 04-js/pages/133-js-target.html
 <!DOCTYPE html>
@@ -4194,16 +3086,16 @@ target 是實際被點到的元素。currentTarget 是這份監聽登記的那�
   </head>
   <body>
     <ul id="menu">
-      <li>蘋果</li>
+      <li>蘋果 <b>熱門</b></li>
       <li>香蕉</li>
     </ul>
-    <p id="status"></p>
+    <p id="output">點選清單裡的文字</p>
     <script>
       const menu = document.querySelector('#menu');
-      const status = document.querySelector('#status');
+      const output = document.querySelector('#output');
 
       menu.addEventListener('click', (event) => {
-        status.textContent = `${event.target.tagName} / ${event.currentTarget.id}`;
+        output.textContent = `target：${event.target.tagName}，currentTarget：${event.currentTarget.id}`;
       });
     </script>
   </body>
@@ -4212,41 +3104,21 @@ target 是實際被點到的元素。currentTarget 是這份監聽登記的那�
 
 **解析**
 
-- 監聽掛在 ul 上，所以 currentTarget 的 id 是 menu。
-- 點到文字時，target 是那顆 li，標籤名是 LI。
-- 點在兩顆 li 上，第二段都是 menu，第一段都是 LI。
+- 頁面一開始顯示「點選清單裡的文字」。點擊後，段落會改成「target：…，currentTarget：menu」。
+- currentTarget 永遠是 menu，因為監聽登記在 ul 上。
+- 點到「香蕉」或「蘋果」這幾個字時，target 是那顆 li，顯示 LI。
+- 點到「熱門」時，target 是裡面的 b，顯示 B，因為它才是最內層被點到的元素；currentTarget 仍是 menu。
+- 要拿被點到那一列的資訊，用 target 而不是 currentTarget。
 
-{% note success %}
-**換你試試：**
-改成把 event.target 的文字寫進狀態段落。點蘋果時段落應是「蘋果」。
-{% endnote %}
+### 指標座標
 
-<details>
-<summary>參考答案</summary>
-
-target 就是被點到的 li，textContent 是那一列的文字。currentTarget 這次沒有寫出來。
-
-```diff 04-js/pages/133-js-target.html
-  // ...
-        const status = document.querySelector('#status');
-  
-        menu.addEventListener('click', (event) => {
--         status.textContent = `${event.target.tagName} / ${event.currentTarget.id}`;
-+         status.textContent = event.target.textContent;
-        });
-      </script>
-    // ...
-```
-
-</details>
-
-### 滑鼠座標
-
-同一種移動會帶出三組座標。這一節先在方塊上即時顯示視窗座標與元素內座標，再讓點擊把小圓點放到游標的位置。
+同一次移動會帶出三組座標，差別只在從哪裡開始量。這一節先把三組數字顯示出來比較，再用其中一組把圓點放到點擊的位置。這裡用 pointer 系列事件，滑鼠、觸控與手寫筆都會觸發。
 
 **觀念**
 
-clientX 與 clientY 從視窗左上角算起，捲動頁面時這組數字會變。offsetX 與 offsetY 從事件目標的內緣算起，圓點要用這組才會落在方塊裡。pageX 與 pageY 從整份文件的左上角算起，有捲動時比視窗座標大。
+- 視窗座標不理會捲動，頁面往下捲，同一個內容位置的數字就不同。
+- 文件座標包含捲走的部分，所以捲動之後會比視窗座標大。
+- 方塊內座標與頁面位置無關，適合「在這個元素裡的哪一點」這種需求。
 
 ```html 04-js/pages/134-js-pointer.html
 <!DOCTYPE html>
@@ -4254,25 +3126,59 @@ clientX 與 clientY 從視窗左上角算起，捲動頁面時這組數字會變
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>滑鼠座標</title>
+    <title>指標座標</title>
     <style>
-      #pad { position: relative; height: 160px; background: #ccfbf1; }
-      #dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: #0f766e; left: 0; top: 0; }
+      body { height: 1600px; }
+      #pos { position: sticky; top: 0; margin: 0; padding: 8px; height: 4.5em; background: #fef3c7; white-space: pre-line; }
+      #pad { height: 160px; margin: 40px; background: #ccfbf1; }
     </style>
   </head>
   <body>
-    <p id="pos">在方塊上移動滑鼠</p>
-    <div id="pad"><span id="dot"></span></div>
+    <p id="pos">在方塊上移動指標</p>
+    <div id="pad"></div>
     <script>
       const pos = document.querySelector('#pos');
       const pad = document.querySelector('#pad');
-      const dot = document.querySelector('#dot');
 
-      pad.addEventListener('mousemove', (event) => {
-        const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY}`;
-        pos.textContent = text;
-        console.log(text);
+      pad.addEventListener('pointermove', (event) => {
+        pos.textContent = [
+          `視窗座標 ${event.clientX}, ${event.clientY}`,
+          `文件座標 ${event.pageX}, ${event.pageY}`,
+          `方塊內座標 ${event.offsetX}, ${event.offsetY}`,
+        ].join('\n');
       });
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 頁面上方的黃色橫條固定在視窗頂端，內容分成視窗、文件、方塊內三行（橫條高度固定，方塊不會被擠動），數字跟著指標變動，也可能帶小數。
+- 頁面沒有捲動時，視窗與文件座標相同。往下捲動一段後，視窗座標仍從視窗頂端算起，文件座標則多出捲走的高度。
+- 方塊內座標從方塊左上角開始，指標剛進入左上角時接近 0, 0。
+- 方塊離視窗左緣約 48px（外距加上 body 的預設外距），所以方塊內的 X 會比視窗的 X 小約 48。
+
+下面的 demo 用方塊內座標放置圓點：點哪裡，圓點就出現在哪裡。
+
+```html 04-js/pages/134b-js-pointer-dot.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用方塊內座標放置圓點</title>
+    <style>
+      #pad { position: relative; height: 160px; margin: 40px; background: #ccfbf1; }
+      #dot { position: absolute; left: 0; top: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #0f766e; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <p>點一下方塊，圓點會移到點擊的位置</p>
+    <div id="pad"><span id="dot"></span></div>
+    <script>
+      const pad = document.querySelector('#pad');
+      const dot = document.querySelector('#dot');
 
       pad.addEventListener('click', (event) => {
         dot.style.left = `${event.offsetX}px`;
@@ -4283,53 +3189,19 @@ clientX 與 clientY 從視窗左上角算起，捲動頁面時這組數字會變
 </html>
 ```
 
-Console：
-
-```text
-180, 90 / 24, 16
-```
-
 **解析**
 
-- 斜線前是視窗座標，斜線後是方塊內座標。數字跟著游標變，下面只是某一點的例子。
-- 點在方塊裡時，圓點的 left 與 top 用的是 offset，所以會落在游標下方。
-- 若改用 client 來放圓點，捲動或方塊不在原點時，位置會偏掉。
-
-{% note success %}
-**換你試試：**
-mousemove 的文字再補上 pageX 與 pageY，放在斜線之後的下一組。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三組是文件座標。方塊還沒被捲走時，它會和視窗座標很接近。
-
-```diff 04-js/pages/134-js-pointer.html
-  // ...
-        const dot = document.querySelector('#dot');
-  
-        pad.addEventListener('mousemove', (event) => {
--         const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY}`;
-+         const text = `${event.clientX}, ${event.clientY} / ${event.offsetX}, ${event.offsetY} / ${event.pageX}, ${event.pageY}`;
-          pos.textContent = text;
-          console.log(text);
-        // ...
-```
-
-```text
-180, 90 / 24, 16 / 180, 90
-```
-
-</details>
+- 點擊方塊後，圓點的中心會移到點擊處。
+- 圓點用 left 與 top 定位，基準是方塊，所以數字要用方塊內座標；改用視窗座標，位置就會偏掉。
+- 圓點設成 pointer-events: none，指標會穿過它，target 永遠是方塊；否則點到圓點本身時，offset 會改從圓點算起。
 
 ### 鍵盤資訊
 
-keydown 帶來的不只是字，還有這顆鍵在鍵盤上的位置、是否為重複觸發，以及有沒有按住修飾鍵。這一節把這些資訊寫上畫面，並用一組快捷鍵擋掉瀏覽器的存檔。
+keydown 除了按下的字，還帶有這顆鍵的實體位置、是否為重複觸發，以及修飾鍵的狀態。這一節把這些值顯示在頁面上。
 
 **觀念**
 
-key 是這一刻產生的字，Shift 或輸入法會讓它改變。code 是物理位置，KeyS 不會因為輸入法換成中文就改掉。repeat 在按住不放時變成 true。ctrlKey、metaKey、shiftKey、altKey 是四個布林。
+key 與 code 回答不同的問題：key 問「產生了什麼字」，會隨 Shift、鍵盤配置與輸入法改變；code 問「按的是哪一顆鍵」，只看位置。判斷按了哪個鍵時用這兩個屬性，舊的 keyCode 已不建議使用。
 
 ```html 04-js/pages/135-js-keyinfo.html
 <!DOCTYPE html>
@@ -4338,13 +3210,14 @@ key 是這一刻產生的字，Shift 或輸入法會讓它改變。code 是物�
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>鍵盤資訊</title>
+    <style>
+      #info { white-space: pre-line; }
+    </style>
   </head>
   <body>
     <p id="info">按任意鍵</p>
-    <p id="saved"></p>
     <script>
       const info = document.querySelector('#info');
-      const saved = document.querySelector('#saved');
 
       document.addEventListener('keydown', (event) => {
         const mods = [
@@ -4353,69 +3226,35 @@ key 是這一刻產生的字，Shift 或輸入法會讓它改變。code 是物�
           event.shiftKey ? 'Shift' : '',
           event.altKey ? 'Alt' : '',
         ].filter(Boolean);
-        const text = `${event.key} / ${event.code} / ${event.repeat} / ${mods.join('+')}`;
-        info.textContent = text;
-        console.log(text);
-        if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-          event.preventDefault();
-          saved.textContent = '已儲存';
-        }
+
+        info.textContent = [
+          `key：${event.key}`,
+          `code：${event.code}`,
+          `repeat：${event.repeat}`,
+          `修飾鍵：${mods.join('+') || '無'}`,
+        ].join('\n');
       });
     </script>
   </body>
 </html>
 ```
 
-Console：
-
-```text
-a / KeyA / false / 
-```
-
 **解析**
 
-- 按 a 時，key 是 a、code 是 KeyA、repeat 是 false。下面是這種按法的例子。
-- 按住 Shift 再按同一顆鍵，key 可能變成 A，code 仍是 KeyA。
-- 切換輸入法之後，key 可能變成中文，code 仍指向原來的位置。
-- Ctrl 或 ⌘ 配上 s 時，preventDefault 擋掉瀏覽器存檔，畫面出現已儲存。
-
-{% note success %}
-**換你試試：**
-改成 key 是 k 時顯示「已搜尋」，同樣擋掉預設動作。S 那組不要留著。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-組合鍵改看 k。畫面寫已搜尋，瀏覽器不會因為這個鍵去執行它原本的動作。
-
-```diff 04-js/pages/135-js-keyinfo.html
-  // ...
-          info.textContent = text;
-          console.log(text);
--         if ((event.ctrlKey || event.metaKey) && event.key === 's') {
-+         if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-            event.preventDefault();
--           saved.textContent = '已儲存';
-+           saved.textContent = '已搜尋';
-          }
-        });
-      // ...
-```
-
-```text
-a / KeyA / false / 
-```
-
-</details>
+- 頁面一開始顯示「按任意鍵」，按下鍵之後換成 key、code、repeat 與修飾鍵四行。
+- 單按 a：key 是 a，code 是 KeyA，repeat 是 false，修飾鍵顯示「無」。
+- 按住 Shift 再按 a：key 變成 A，code 仍是 KeyA，修飾鍵顯示 Shift。
+- 按住 a 不放：第一次 repeat 是 false，之後連續觸發的都是 true。
+- 輸入法正在組字時，key 可能是 Process（依系統與瀏覽器而異），code 仍是實體位置。
+- Mac 的 ⌘ 對應 metaKey，Ctrl 對應 ctrlKey，兩者是不同的屬性。
 
 ### preventDefault
 
-有些元素自帶動作。連結會前往 href，表單會送出並重新載入。取消這件事不會拆掉監聽，只是這一次不去做預設動作。
+有些元素自帶動作：連結會前往網址，表單送出會重新載入頁面，瀏覽器還有存檔等快捷鍵。這一節看如何在監聽裡取消這些動作。
 
 **觀念**
 
-在監聽裡呼叫 preventDefault，瀏覽器就不會跟著預設動作走。事件仍然會繼續冒泡，傳播要留到後面再停。
+在監聽裡呼叫 preventDefault，瀏覽器就不會做這件事的預設動作。取消的只是這一次，監聽仍在，事件也會繼續傳播。
 
 ```html 04-js/pages/136-js-prevent.html
 <!DOCTYPE html>
@@ -4423,17 +3262,17 @@ a / KeyA / false /
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>preventDefault</title>
+    <title>preventDefault 取消連結跳轉</title>
   </head>
   <body>
     <p><a id="jump" href="https://example.com">前往範例</a></p>
-    <p id="status">還在這頁</p>
+    <p id="output">還在這頁</p>
     <script>
-      const status = document.querySelector('#status');
+      const output = document.querySelector('#output');
 
       document.querySelector('#jump').addEventListener('click', (event) => {
         event.preventDefault();
-        status.textContent = '已攔下預設跳轉';
+        output.textContent = '已攔下預設跳轉';
       });
     </script>
   </body>
@@ -4442,61 +3281,66 @@ a / KeyA / false /
 
 **解析**
 
-- 連結的 href 仍是範例網站，預設動作是離開這頁。
-- preventDefault 讓這次點擊留在原頁，段落改成攔下的說明。
-- 沒有呼叫它的話，瀏覽器會開啟那個網址。
+- 頁面一開始顯示「還在這頁」。點擊連結後，段落改成「已攔下預設跳轉」，瀏覽器沒有前往 example.com。
+- 把 preventDefault 那一行拿掉，點擊就會離開這頁。
 
-{% note success %}
-**換你試試：**
-再加一條 id 為 more 的連結，指向 https://example.org，用另一份監聽同樣攔下。
-{% endnote %}
+同樣的做法也能攔下鍵盤的預設動作。下面攔下瀏覽器的存檔快捷鍵，改成顯示一行文字。
 
-<details>
-<summary>參考答案</summary>
+```html 04-js/pages/136b-js-shortcut.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>preventDefault 攔下快捷鍵</title>
+  </head>
+  <body>
+    <p>按 Ctrl + S（Mac 按 ⌘ + S）</p>
+    <p id="output">尚未儲存</p>
+    <script>
+      const output = document.querySelector('#output');
 
-兩條連結各自有監聽，都會取消預設跳轉。狀態文字共用同一個段落。
-
-```diff 04-js/pages/136-js-prevent.html
-  // ...
-    <body>
-      <p><a id="jump" href="https://example.com">前往範例</a></p>
-+     <p><a id="more" href="https://example.org">另一條</a></p>
-      <p id="status">還在這頁</p>
-      <script>
-        // ...
-          status.textContent = '已攔下預設跳轉';
-        });
-+ 
-+       document.querySelector('#more').addEventListener('click', (event) => {
-+         event.preventDefault();
-+         status.textContent = '已攔下預設跳轉';
-+       });
-      </script>
-    </body>
-  // ...
+      document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.code === 'KeyS') {
+          event.preventDefault();
+          output.textContent = '已儲存';
+        }
+      });
+    </script>
+  </body>
+</html>
 ```
 
-</details>
+**解析**
+
+- 按 Ctrl + S（Mac 按 ⌘ + S）時，瀏覽器不會跳出存檔視窗，段落改成「已儲存」。
+- 判斷用 code 而不是 key，是因為它不受大小寫與輸入法影響；代價是鍵盤配置不同時，這顆鍵上的字母可能不是 S。
+- 單按 S 不會觸發，因為條件要求 Ctrl 或 ⌘ 同時按住。
 
 ## 常用事件
 
-click 之外，表單控制項最常遇到輸入與選定，文字框還會遇到鍵盤。這一節先分清字每次變化，以及值確定下來，是兩個事件。
+click 只能知道使用者按了哪裡，表單與鍵盤還需要更細的通知：文字框每多打一個字、選單換了選項、某顆鍵被按下。這一節先分清楚 input 與 change 兩個容易混淆的事件，再用鍵盤事件做三個小互動。
 
-- `input` 在內容每次改變時發生，文字框打一個字就會觸發。
-- `change` 在文字框離開焦點後，或選單換了選項時發生。
-- `keydown` 在鍵按下時發生，按住會重複。
-- `keyup` 在鍵放開時發生，不會因為按住而重複。
+**一覽**
+
+- 表單控制項的變化
+  - `input`：內容每次改變就發生，文字框打一個字就觸發一次。
+  - `change`：值「確定」才發生，文字框是離開焦點之後（或按 Enter），選單與核取方塊是選項換了的當下。
+- 鍵盤
+  - `keydown`：鍵按下時發生，按住不放會連續重複。
+  - `keyup`：鍵放開時發生，每按一次只有一次。
 
 ### input 與 change
 
-文字框正在打字時，和選單選定某一項時，通知程式的時機不同。預覽要跟著每一個字，選定的結果則等值確定。
-
-- `input` 在內容每次改變時發生，預覽可以跟著每一個字。
-- `change` 等值確定才發生，文字框要離開焦點，選單則是選項真的換了。
+文字框打字時，程式想跟著每一個字更新畫面，用 input；選單換了選項才需要處理的事，用 change。兩者讀取目前內容的方式相同：控制項的 value 屬性，內容永遠是字串。
 
 **觀念**
 
-input 在內容每次改變時發生。change 在文字框離開焦點後，或選單選了不同選項時發生。兩者都用 value 讀目前的值。
+- 即時預覽（跟著輸入）聽 input，要等值確定才處理就聽 change。
+
+- 選單的 value 取自被選中那個 option 的 value 屬性。
+
+- 選單、核取方塊與單選鈕換了選項時，input 與 change 兩個事件都會發生；文字框才有「每打一字」與「離開才確定」的差別。
 
 ```html 04-js/pages/137-js-input.html
 <!DOCTYPE html>
@@ -4515,17 +3359,17 @@ input 在內容每次改變時發生。change 在文字框離開焦點後，或�
     </select>
     <p id="picked"></p>
     <script>
-      const name = document.querySelector('#name');
+      const nameInput = document.querySelector('#name');
       const preview = document.querySelector('#preview');
-      const color = document.querySelector('#color');
+      const colorSelect = document.querySelector('#color');
       const picked = document.querySelector('#picked');
 
-      name.addEventListener('input', () => {
-        preview.textContent = name.value;
+      nameInput.addEventListener('input', () => {
+        preview.textContent = nameInput.value;
       });
 
-      color.addEventListener('change', () => {
-        picked.textContent = color.value;
+      colorSelect.addEventListener('change', () => {
+        picked.textContent = colorSelect.value;
       });
     </script>
   </body>
@@ -4534,42 +3378,28 @@ input 在內容每次改變時發生。change 在文字框離開焦點後，或�
 
 **解析**
 
-- 每打一個字，input 就更新預覽，不必等離開文字框。
-- 選單要等選項真的換了，change 才把值寫進第二段。
-- value 是控制項目前的字串，選單的 value 來自 option。
+- 在文字框每打一個字，第一個段落立刻跟著變，不必離開文字框。
+- 選單換成另一個選項的當下，第二個段落才出現「紅」或「藍」。載入時兩段都是空的，因為還沒有事件發生。
+- 如果把文字框的 input 改成 change，段落要等到點到別處、文字框失去焦點才更新。
 
-{% note success %}
-**換你試試：**
-選單發生 change 時，除了寫進選定段落，也把「輸入值 / 顏色」寫進預覽。
+{% note info %}
+**為什麼變數不叫 name**
+name 與 status 本來就是 window 的屬性，在頁面最上層拿來當變數名稱，容易和瀏覽器內建的值混淆。這份講義的 demo 一律取別的名字，例如 `nameInput`。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+### 鍵盤事件
 
-change 的當下可以同時讀文字框與選單。預覽會改成兩段資訊，之後再打字仍由 input 覆蓋成只有名字。
+鍵盤事件看的是「這一次按了哪一顆鍵」，不是文字框裡的整段內容。監聽放在 document 上，整個頁面都收得到；放在文字框上，則只有它取得焦點時才收得到。
 
-```diff 04-js/pages/137-js-input.html
-  // ...
-        color.addEventListener('change', () => {
-          picked.textContent = color.value;
-+         preview.textContent = `${name.value} / ${color.value}`;
-        });
-      </script>
-    // ...
-```
+#### 讀取按下的鍵
 
-</details>
-
-### keydown
-
-鍵盤事件看的是這一次按下的鍵，而不是文字框裡的整段內容。Enter 常用來表示確定，Escape 常用來表示取消。
-
-- `keydown` 在鍵按下時發生，按住會重複，鍵名看 key。
-- `keyup` 在鍵放開時發生。方向鍵、打字與蓄力都從這兩個事件長出來。
+event.key 是這顆鍵產生的名字，例如 Enter、Escape、ArrowLeft，空白鍵是一個空白字元。常見用法是先判斷是哪顆鍵，再決定要不要處理。
 
 **觀念**
 
-keydown 在鍵按下時發生。event.key 是鍵的名字，例如 Enter。若這個文字框以後放進表單，Enter 可能會觸發送出，所以這裡先取消預設動作。
+- 只有 key 是 Enter 時才讀文字框的 value，其他鍵什麼都不做。
+
+- keydown 在文字還沒進到文字框之前就發生。想讀「按完之後的整段內容」，改聽 input。
 
 ```html 04-js/pages/138-js-keydown.html
 <!DOCTYPE html>
@@ -4581,15 +3411,14 @@ keydown 在鍵按下時發生。event.key 是鍵的名字，例如 Enter。若�
   </head>
   <body>
     <input id="name" type="text" />
-    <p id="status"></p>
+    <p id="output"></p>
     <script>
-      const name = document.querySelector('#name');
-      const status = document.querySelector('#status');
+      const nameInput = document.querySelector('#name');
+      const output = document.querySelector('#output');
 
-      name.addEventListener('keydown', (event) => {
+      nameInput.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-          event.preventDefault();
-          status.textContent = name.value;
+          output.textContent = nameInput.value;
         }
       });
     </script>
@@ -4599,41 +3428,23 @@ keydown 在鍵按下時發生。event.key 是鍵的名字，例如 Enter。若�
 
 **解析**
 
-- 只有 key 是 Enter 時才讀 value，其他鍵不會改段落。
-- preventDefault 避免 Enter 去觸發包住它的表單。這一頁還沒有表單，呼叫它仍然安全。
-- 段落顯示的是按下 Enter 當下的整段文字。
+- 在文字框打字時段落不變，直到按下 Enter，段落才出現當下整段文字。
+- 同一個 keydown 對每顆鍵都會跑一次，是 if 擋掉了 Enter 以外的鍵。
 
-{% note success %}
-**換你試試：**
-key 是 Escape 時，把文字框的 value 設成空字串。Enter 的行為保留。
+{% note warning %}
+**輸入中文時的 Enter**
+用注音等輸入法選字時，按 Enter 是「確認選字」，也會觸發 keydown，而且在 Chrome 上 key 常常仍是 Enter，文字框卻只是選好字，還沒打完。要避開這種情況，判斷時再加上 `!event.isComposing`，只處理不在組字中的按鍵。Safari 的順序不同，確認選字的那次 keydown 其 isComposing 已是 false，需要在 Safari 支援時另外測試。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-同一個 keydown 可以依 key 分兩條路。Escape 只清輸入框，不改狀態段落。
-
-```diff 04-js/pages/138-js-keydown.html
-  // ...
-            status.textContent = name.value;
-          }
-+         if (event.key === 'Escape') {
-+           name.value = '';
-+         }
-        });
-      </script>
-    // ...
-```
-
-</details>
 
 #### 方向鍵移動方塊
 
-方向鍵可以改一個方塊的位置。第一步先讓它移動，先不處理邊界，方塊可以跑出欄位。完成寫法在 139-js-arrow.html.final。
+方向鍵可以改變一個方塊的位置：按一下，方塊就移動一格。這個 demo 只做移動，不處理邊界，所以方塊可以離開底色區塊。
 
 **觀念**
 
-監聽放在 document 上，方塊不需要先被點選。四個方向各改 x 或 y。方向鍵的預設動作會捲動頁面，所以先 preventDefault。座標同時寫進狀態段落與 Console。
+- 監聽放在 document，方塊不需要先被點選。
+
+- 四個方向各自加減座標，再寫回 style。方向鍵的預設動作是捲動頁面，所以先呼叫 preventDefault 擋掉。
 
 ```html 04-js/pages/139-js-arrow.html
 <!DOCTYPE html>
@@ -4649,31 +3460,31 @@ key 是 Escape 時，把文字框的 value 設成空字串。Enter 的行為保�
   </head>
   <body>
     <div id="field"><div id="box"></div></div>
-    <p id="status">0, 0</p>
+    <p id="output">0, 0</p>
     <script>
       const box = document.querySelector('#box');
-      const status = document.querySelector('#status');
+      const output = document.querySelector('#output');
       let x = 0;
       let y = 0;
 
       document.addEventListener('keydown', (event) => {
+        if (!event.key.startsWith('Arrow')) return;
+        event.preventDefault();
         if (event.key === 'ArrowRight') x += 16;
         if (event.key === 'ArrowLeft') x -= 16;
         if (event.key === 'ArrowDown') y += 16;
         if (event.key === 'ArrowUp') y -= 16;
-        if (!event.key.startsWith('Arrow')) return;
-        event.preventDefault();
         box.style.left = `${x}px`;
         box.style.top = `${y}px`;
-        status.textContent = `${x}, ${y}`;
-        console.log(status.textContent);
+        output.textContent = `${x}, ${y}`;
+        console.log(output.textContent);
       });
     </script>
   </body>
 </html>
 ```
 
-Console：
+Console（簡化後只列文字）：
 
 ```text
 16, 0
@@ -4681,52 +3492,23 @@ Console：
 
 **解析**
 
-- 按一次右鍵，x 增加 16，狀態與 Console 都是 16, 0。
-- 左鍵與上鍵會把數字減下去，這一步允許出現負數。
-- 不是方向鍵時直接結束，其他鍵不會改位置。
-
-{% note success %}
-**換你試試：**
-碰到欄位邊緣就停住。往右的最大值是欄位寬減掉方塊寬，這一頁是 208。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-加上邊界之後，數字不會小於 0，也不會大於欄位減掉方塊的尺寸。完成檔是 139-js-arrow.html.final。
-
-```diff 04-js/pages/139-js-arrow.html.final
-  // ...
-      <script>
-        const box = document.querySelector('#box');
-+       const field = document.querySelector('#field');
-        const status = document.querySelector('#status');
-        let x = 0;
-        // ...
-          if (!event.key.startsWith('Arrow')) return;
-          event.preventDefault();
-+         const maxX = field.clientWidth - box.offsetWidth;
-+         const maxY = field.clientHeight - box.offsetHeight;
-+         x = Math.min(maxX, Math.max(0, x));
-+         y = Math.min(maxY, Math.max(0, y));
-          box.style.left = `${x}px`;
-          box.style.top = `${y}px`;
-          // ...
-```
-
-```text
-208, 0
-```
-
-</details>
+- 按一次右鍵，方塊往右移 16px，畫面上的座標與 Console 都是 16, 0。
+- 按左鍵或上鍵會把座標減下去，這個版本允許出現負數，方塊會跑出底色區塊。
+- 其他鍵在第一行就結束，不會動到座標，也不會擋掉它們的預設動作。
 
 #### 打字小遊戲
 
-畫面上隨機出現一個英文字母。按對就加分並換下一個，這一步按錯先不提示。完成寫法在 140-js-type.html.final。字母每次重新整理都不一樣。
+頁面隨機出現一個英文字母，按對就加一分並換下一個。判斷對錯就是把 event.key 和畫面上的字母比較。
+
+{% note info %}
+這個 demo 用 `Math.random` 抽字母，它屬於選讀的內建物件，用法見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：內建物件」。這裡只要知道它會回傳 0 到 1 之間的亂數，乘上字母數再無條件捨去，就得到可用的位置。
+{% endnote %}
 
 **觀念**
 
-只處理長度為 1 的 key，方向鍵與 Enter 就不會被當成答案。比對前先轉成大寫，所以小寫按鍵也算對。分數寫進段落，並印出新的分數。
+- 只處理長度為 1 的 key，Enter、方向鍵這類名字較長的鍵就不會被當成答案。
+
+- key 轉成大寫再比對，所以大小寫都算對。
 
 ```html 04-js/pages/140-js-type.html
 <!DOCTYPE html>
@@ -4737,11 +3519,10 @@ Console：
     <title>打字小遊戲</title>
   </head>
   <body>
-    <p id="letter">A</p>
+    <p id="letter"></p>
     <p id="score">0</p>
-    <p id="hint"></p>
     <script>
-      const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const letter = document.querySelector('#letter');
       const score = document.querySelector('#score');
       let points = 0;
@@ -4756,7 +3537,7 @@ Console：
         if (event.key.length !== 1) return;
         if (event.key.toUpperCase() === letter.textContent) {
           points += 1;
-          score.textContent = String(points);
+          score.textContent = points;
           console.log(points);
           nextLetter();
         }
@@ -4774,56 +3555,23 @@ Console：
 
 **解析**
 
-- 載入時先抽一個字母，分數是 0。
-- 按對一次，分數變成 1，Console 印出 1，字母立刻換成下一個。
-- 按錯時這一步沒有提示，分數也不會減少。
-
-{% note success %}
-**換你試試：**
-按錯時把 #hint 設成「再試一次」。按對就清空提示，再換下一個字母。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-按錯只改提示，不加分。按對時提示被清掉，分數才加 1。完成檔是 140-js-type.html.final。
-
-```diff 04-js/pages/140-js-type.html.final
-  // ...
-        const letter = document.querySelector('#letter');
-        const score = document.querySelector('#score');
-+       const hint = document.querySelector('#hint');
-        let points = 0;
-  
-        const nextLetter = () => {
-          letter.textContent = letters[Math.floor(Math.random() * letters.length)];
-+         hint.textContent = '';
-        };
-  
-        nextLetter();
-        // ...
-            console.log(points);
-            nextLetter();
-+         } else {
-+           hint.textContent = '再試一次';
-          }
-        });
-      // ...
-```
-
-```text
-1
-```
-
-</details>
+- 載入時先呼叫一次 nextLetter，畫面出現一個隨機字母，分數是 0。字母每次重新整理都不一樣。
+- 按對時分數加一，Console 印出新的分數，字母立刻換下一個。上面的 1 是第一次按對的結果。
+- 按錯時什麼都不發生，分數也不會減少。
 
 #### 空白鍵蓄力
 
-按住空白鍵開始蓄力，放開時再用兩次時間戳的差當作力道。這一步只做到按下時顯示蓄力中。完成寫法在 141-js-charge.html.final。
+按住空白鍵開始蓄力，放開時用兩次的時間差當作力道。這裡是 keydown 與 keyup 成對使用的例子：一個記下起點，一個算出結果。
+
+{% note info %}
+這個 demo 用 `Math.round` 把毫秒數四捨五入成整數，屬於選讀的內建物件，見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：內建物件」。
+{% endnote %}
 
 **觀念**
 
-keydown 遇到空白鍵且不是重複觸發時，記下 timeStamp，並擋掉捲動頁面的預設動作。按住不放時 repeat 是 true，起點不會被後面的重複事件改掉。
+- event.timeStamp 是事件發生的時間，單位毫秒。keydown 記下起點，keyup 用新的時間減去起點，就是按住了多久。
+
+- 按住不放時 keydown 會一直重複觸發，這時 event.repeat 是 true。只在第一次記錄起點，起點才不會被後面的重複事件覆蓋。
 
 ```html 04-js/pages/141-js-charge.html
 <!DOCTYPE html>
@@ -4834,16 +3582,26 @@ keydown 遇到空白鍵且不是重複觸發時，記下 timeStamp，並擋掉�
     <title>空白鍵蓄力</title>
   </head>
   <body>
-    <p id="power">力道 0</p>
+    <p id="power">按住空白鍵再放開</p>
     <script>
+      const power = document.querySelector('#power');
       let start = 0;
 
       document.addEventListener('keydown', (event) => {
-        if (event.key !== ' ' || event.repeat) return;
+        if (event.key !== ' ') return;
         event.preventDefault();
+        if (event.repeat) return;
         start = event.timeStamp;
-        document.querySelector('#power').textContent = '蓄力中';
+        power.textContent = '蓄力中';
         console.log('蓄力中');
+      });
+
+      document.addEventListener('keyup', (event) => {
+        if (event.key !== ' ' || !start) return;
+        const force = Math.round(event.timeStamp - start);
+        start = 0;
+        power.textContent = `力道 ${force}`;
+        console.log(power.textContent);
       });
     </script>
   </body>
@@ -4854,70 +3612,27 @@ Console：
 
 ```text
 蓄力中
+力道 180
 ```
 
 **解析**
 
-- 按下空白鍵，畫面與 Console 都是蓄力中。
-- 按住不放不會重新起算，因為重複的 keydown 被略過。
-- 這一步還沒有聽 keyup，放開時力道還不會出現。
-
-{% note success %}
-**換你試試：**
-放開空白鍵時，用這次 timeStamp 減去起點，四捨五入後顯示「力道 數字」。實際數字等於你按住的毫秒。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-keyup 只在有起點時計算。放開後畫面變成力道加上毫秒，下面的 180 只是按住約 0.18 秒的例子。完成檔是 141-js-charge.html.final。
-
-```diff 04-js/pages/141-js-charge.html.final
-  // ...
-      <script>
-        let start = 0;
-+       const power = document.querySelector('#power');
-  
-        document.addEventListener('keydown', (event) => {
-          if (event.key !== ' ' || event.repeat) return;
-          event.preventDefault();
-          start = event.timeStamp;
--         document.querySelector('#power').textContent = '蓄力中';
-+         power.textContent = '蓄力中';
-          console.log('蓄力中');
-        });
-+ 
-+       document.addEventListener('keyup', (event) => {
-+         if (event.key !== ' ' || !start) return;
-+         const force = Math.max(0, Math.round(event.timeStamp - start));
-+         start = 0;
-+         power.textContent = `力道 ${force}`;
-+         console.log(power.textContent);
-+       });
-      </script>
-    </body>
-  // ...
-```
-
-```text
-蓄力中
-力道 180
-```
-
-</details>
+- 按下空白鍵，畫面與 Console 都變成蓄力中；按住不放，畫面維持蓄力中，起點也不會重算。
+- 放開時畫面變成力道加毫秒數，Console 印出同一行。180 只是按住約 0.18 秒的例子，實際數字取決於你按了多久。
+- keyup 先檢查 start 不是 0，沒有先按過空白鍵就不會算出奇怪的數字；算完把 start 歸零，下一次才能重新開始。
+- 空白鍵預設會捲動頁面，所以 keydown 裡用 preventDefault 擋掉。
 
 ## 事件委派
 
-點到內層元素時，click 會一路往外層傳。這種往外送叫做事件冒泡，所以父層的監聽也收得到。`event.target` 是真正被點到的元素。完整的三個階段留在後面選讀，這裡先不談捕獲。
-
-清單會動態新增、刪除、重繪。監聽只放在不會被換掉的父層，新出現的按鈕也收得到，不用每次重綁。後面的待辦清單就用這招。
-
-- `closest` 從被點到的節點往上找按鈕，含自己，找不到回傳 null。
-- 按鈕的 `dataset` 存放要做的動作，父層讀到才決定怎麼改。
+清單會動態新增、刪除與重繪，若每顆按鈕各綁一份監聽，新出現的按鈕就沒有監聽。事件委派的做法是把監聽放在不會被換掉的父層，由它統一處理底下所有按鈕。這能成立，是因為 click 會從被點到的元素一路往外層傳，稱為事件冒泡，所以父層也收得到。後面的待辦清單就用這個做法。
 
 **觀念**
 
-父層收到 click 之後，用 `closest` 從被點到的節點往上找按鈕。找不到，或按鈕在父層外面，就直接結束。找得到就讀那顆按鈕的 `dataset`。
+- 父層收到 click，先用 closest 從被點到的元素往外找按鈕。找不到就結束。
+
+- 用 dataset 讀按鈕上的 data-id，就知道這顆按鈕代表哪一筆資料。
+
+- 按鈕是之後才新增的，只要放進這份清單，同一份監聽就收得到。
 
 ```html 04-js/pages/142-js-delegate.html
 <!DOCTYPE html>
@@ -4929,61 +3644,56 @@ keyup 只在有起點時計算。放開後畫面變成力道加上毫秒，下�
   </head>
   <body>
     <ul id="list">
-      <li><button type="button" data-id="1">一</button></li>
-      <li><button type="button" data-id="2">二</button></li>
+      <li><button type="button" data-id="1"><span>項目 1</span></button></li>
+      <li><button type="button" data-id="2"><span>項目 2</span></button></li>
     </ul>
-    <p id="status"></p>
+    <button type="button" id="add">新增項目</button>
+    <p id="output"></p>
     <script>
       const list = document.querySelector('#list');
-      const status = document.querySelector('#status');
+      const add = document.querySelector('#add');
+      const output = document.querySelector('#output');
+      let count = 2;
 
       list.addEventListener('click', (event) => {
         const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
-        status.textContent = button.dataset.id;
-        console.log(event.target.tagName);
+        if (!button) return;
+        output.textContent = `按了項目 ${button.dataset.id}`;
+        console.log(event.target.tagName, button.dataset.id);
+      });
+
+      add.addEventListener('click', () => {
+        count += 1;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.id = count;
+        button.textContent = `項目 ${count}`;
+        const item = document.createElement('li');
+        item.append(button);
+        list.append(item);
       });
     </script>
   </body>
 </html>
 ```
 
+Console（簡化後只列文字）：
+
 ```text
-BUTTON
+SPAN 1
 ```
 
 **解析**
 
-- 點第一顆時，Console 印出 BUTTON。那就是 `event.target`，監聽掛在清單上仍收得到，是因為 click 往外冒泡。
-- `closest` 從被點到的節點往上找，點在按鈕文字上也找得到那顆按鈕。
-- `contains` 確認這顆按鈕是清單的後代。`dataset.id` 就是標籤上的 data-id，點第一顆時段落是 1。
-- 之後用程式或 HTML 加進來的按鈕，只要還在這份清單裡，同一份監聽就收得到。
-
-{% note success %}
-**換你試試：**
-在清單裡加第三顆按鈕，data-id 設成 3，文字是「三」。不要新增監聽。點它時段落應是 3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新按鈕還是這份清單的後代，冒泡仍會進到同一份監聽。讀到的 id 是 3。
-
-```diff 04-js/pages/142-js-delegate.html
-  // ...
-        <li><button type="button" data-id="1">一</button></li>
-        <li><button type="button" data-id="2">二</button></li>
-+       <li><button type="button" data-id="3">三</button></li>
-      </ul>
-      <p id="status"></p>
-      // ...
-```
-
-</details>
+- 點「項目 1」的文字，Console 印出 SPAN 1，段落顯示按了項目 1。target 是文字外面的 span，不是按鈕，closest 才從它往外找到那顆按鈕。
+- 點按鈕邊緣的空白處，target 就是 BUTTON 本身，closest 找到的是自己，結果相同。
+- 點「新增項目」後清單多一顆項目 3，直接點它，段落顯示按了項目 3。清單上只有一份監聽，新按鈕不必另外綁。
+- 點清單外的「新增項目」按鈕，click 不會進到清單的監聽，所以不會被當成項目。
+- closest 會一路往外找到整份文件。若清單外層還包著別的同類元素，可能找到清單外的那一個；這種結構需要再用 list.contains 確認它在清單內。
 
 ## 選讀：捕獲與冒泡
 
-前面只用到冒泡。這裡看完整的三個階段：由外往內的捕獲、抵達目標、再由內往外的冒泡。
+前面的委派只用到冒泡。事件實際上有三個階段：先由外往內的捕獲，抵達目標，再由內往外的冒泡。預設的監聽在冒泡階段才被呼叫。
 
 {% mermaid graph LR %}
 docDown["document"] -- 捕獲 --> outerCap["#outer 捕獲監聽"]
@@ -4992,15 +3702,17 @@ innerTarget -- 冒泡 --> outerBubble["#outer 冒泡監聽"]
 outerBubble -- 冒泡 --> docUp["document"]
 {% endmermaid %}
 
-預設的監聽發生在冒泡階段，也就是事件已經到了目標、正往外走的時候。若要在往內走時就先看到，要把捕獲打開。
+**一覽**
 
-- 捕獲由外往內。第三個引數 true，或選項 `capture`，會在這階段呼叫。
-- 冒泡由內往外。沒寫選項時，監聽走這一段。
-- `stopPropagation` 從呼叫的那一層打斷後面的路，已經走過的捕獲不會取消。
+- 捕獲：事件由外往內走，加上選項 `{ capture: true }` 的監聽在這一段被呼叫。
+- 冒泡：事件由內往外走，沒有寫選項的監聽走這一段。
+- `stopPropagation`：從呼叫它的那一層起，不讓事件繼續往後傳；已經跑過的監聽不會被取消。
 
 **觀念**
 
-選項 `capture` 代表這份監聽走捕獲階段，第三個引數寫 true 也是同一件事。`stopPropagation` 從呼叫的那一層打斷後續的路，已經走過的捕獲不會被取消。
+- 同一個元素可以在捕獲與冒泡各登記一份監聽，兩份分開計算。
+
+- 在外層用 stopPropagation 擋事件，會連委派在更外層的監聽一起擋掉，所以平常不要輕易使用。
 
 ```html 04-js/pages/143-js-bubble.html
 <!DOCTYPE html>
@@ -5019,37 +3731,39 @@ outerBubble -- 冒泡 --> docUp["document"]
       <button type="button" id="inner">內層</button>
       <button type="button" id="stop">停止冒泡</button>
     </div>
-    <p id="status"></p>
+    <p id="output"></p>
     <script>
       const outer = document.querySelector('#outer');
       const inner = document.querySelector('#inner');
-      const stop = document.querySelector('#stop');
-      const status = document.querySelector('#status');
+      const stopButton = document.querySelector('#stop');
+      const output = document.querySelector('#output');
 
       outer.addEventListener('click', () => {
-        status.textContent = '外捕獲';
+        output.textContent = '外捕獲';
         console.log('外捕獲');
-      }, true);
+      }, { capture: true });
 
       inner.addEventListener('click', () => {
-        status.textContent = `${status.textContent} 內層`;
+        output.textContent = `${output.textContent} 內層`;
         console.log('內層');
       });
 
       outer.addEventListener('click', () => {
-        status.textContent = `${status.textContent} 外冒泡`;
+        output.textContent = `${output.textContent} 外冒泡`;
         console.log('外冒泡');
       });
 
-      stop.addEventListener('click', (event) => {
+      stopButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        status.textContent = `${status.textContent} 停止`;
+        output.textContent = `${output.textContent} 停止`;
         console.log('停止');
       });
     </script>
   </body>
 </html>
 ```
+
+Console（簡化後只列文字）：
 
 ```text
 外捕獲
@@ -5059,49 +3773,28 @@ outerBubble -- 冒泡 --> docUp["document"]
 
 **解析**
 
-- 點「內層」時，Console 依序是外捕獲、內層、外冒泡。捕獲監聽先把文字設成第一段。
-- 點「停止冒泡」時，捕獲仍會先發生，接著 `stopPropagation` 讓外層的冒泡監聽不跑。
-- 外層有兩份 click，一份在捕獲、一份在冒泡，它們是分開登記的。
-
-{% note success %}
-**換你試試：**
-在內層的監聽裡也呼叫 stopPropagation。點「內層」時，畫面上應停在「外捕獲 內層」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-內層已經是目標。在目標呼叫 stopPropagation 會取消後面的冒泡，外層那份冒泡監聽就不會再改文字。捕獲階段在這之前已經跑過。
-
-```diff 04-js/pages/143-js-bubble.html
-  // ...
-          console.log('外捕獲');
-        }, true);
-  
--       inner.addEventListener('click', () => {
-+       inner.addEventListener('click', (event) => {
-+         event.stopPropagation();
-          status.textContent = `${status.textContent} 內層`;
-          console.log('內層');
-        // ...
-```
-
-</details>
+- 點「內層」時，Console 依序是外捕獲、內層、外冒泡，畫面上的段落也依同樣順序累積成「外捕獲 內層 外冒泡」。
+- 外層的捕獲監聽最先跑並重設文字，所以每次點擊都從「外捕獲」開始。
+- 點「停止冒泡」時，外捕獲仍會先發生，接著按鈕自己的監聽呼叫 stopPropagation，外冒泡就不會跑，畫面是「外捕獲 停止」。
 
 ## 表單處理
 
-表單控制項的目前內容在 value，核取方塊的是否勾選在 checked。整張表單要一次讀取時，改用 FormData。送出前先取消重新載入，再依規則檢查。
+表單是使用者把資料交給網頁的主要方式，這一節整理程式怎麼和它互動：讀取控制項目前的值、在送出時一次取走整張表單，以及在送出前檢查資料對不對。這些寫法也是後面 React 處理表單的基礎，React 只是把「值」交給狀態保管。
 
-### value 與 checked
+### 讀取欄位的值
 
-文字框的 value 是目前打進去的字串。核取方塊不用 value 表示有沒有勾，那個答案在 checked，是布林值。
+不同控制項用不同屬性表示「目前的答案」，讀取時要分清楚型別。
 
-- `value` 回傳文字框目前的字串。
-- `checked` 回傳核取方塊是否勾選，型別是布林。
+**一覽**
+
+- `value`：文字框、選單、日期等控制項目前的內容，一律是字串，連 number 類型的框也一樣。
+- `checked`：核取方塊與單選鈕有沒有被選取，型別是布林。
 
 **觀念**
 
-文字變化聽 input，勾選變化聽 change。畫面上的句子由一支小函式負責組，載入時先呼叫一次，才不會等使用者動作才出現。
+- 文字變化聽 input，勾選變化聽 change。
+
+- 兩種事件共用同一支 render 函式負責組出畫面上的句子，載入時也呼叫一次，畫面才不會等使用者動作才出現內容。
 
 ```html 04-js/pages/144-js-form-value.html
 <!DOCTYPE html>
@@ -5116,17 +3809,17 @@ outerBubble -- 冒泡 --> docUp["document"]
     <p><label><input id="done" type="checkbox" /> 完成</label></p>
     <p id="result"></p>
     <script>
-      const title = document.querySelector('#title');
-      const done = document.querySelector('#done');
+      const titleInput = document.querySelector('#title');
+      const doneInput = document.querySelector('#done');
       const result = document.querySelector('#result');
 
       const render = () => {
-        const mark = done.checked ? '已勾選' : '未勾選';
-        result.textContent = `${title.value} / ${mark}`;
+        const mark = doneInput.checked ? '已勾選' : '未勾選';
+        result.textContent = `${titleInput.value} / ${mark}`;
       };
 
-      title.addEventListener('input', render);
-      done.addEventListener('change', render);
+      titleInput.addEventListener('input', render);
+      doneInput.addEventListener('change', render);
       render();
     </script>
   </body>
@@ -5135,46 +3828,30 @@ outerBubble -- 冒泡 --> docUp["document"]
 
 **解析**
 
-- 載入時 value 已是「草稿」，checked 是 false，所以先看到未勾選。
-- 打字觸發 input，勾選觸發 change，兩條路都呼叫同一支 render。
-- 三元運算子只負責把布林改成要顯示的那兩個詞。
+- 載入時文字框已有「草稿」，核取方塊未勾選，所以畫面一開始就是「草稿 / 未勾選」。
+- 打字觸發 input，勾選觸發 change，兩條路都呼叫同一支 render，畫面永遠跟控制項目前的狀態一致。
+- 三元運算子只負責把布林換成要顯示的詞。
 
-{% note success %}
-**換你試試：**
-在核取方塊的標籤上加上 checked。重新整理後，第一眼應是「草稿 / 已勾選」。
-{% endnote %}
+### 送出表單與 FormData
 
-<details>
-<summary>參考答案</summary>
+表單的預設動作是依 action 送出並重新載入整個頁面。用 JavaScript 處理資料時，要聽表單的 submit 事件，先用 preventDefault 取消預設，再自己讀資料。聽 submit 而不是按鈕的 click，因為使用者在文字框按 Enter 也會送出表單，submit 兩種情況都收得到。
 
-checked 屬性讓這顆方塊一開始就是勾選的，render 在載入時讀到 true。之後仍可改勾選狀態。
+**一覽**
 
-```diff 04-js/pages/144-js-form-value.html
-  // ...
-    <body>
-      <p><input id="title" type="text" value="草稿" /></p>
--     <p><label><input id="done" type="checkbox" /> 完成</label></p>
-+     <p><label><input id="done" type="checkbox" checked /> 完成</label></p>
-      <p id="result"></p>
-      <script>
-        // ...
-```
-
-</details>
-
-### 送出與檢查
-
-表單的預設動作是依 action 送出並重新載入。這一頁還沒有要送給伺服器，所以送出時先留在原頁，再讀欄位。
-
-- `preventDefault` 取消這次送出的重新載入。
-- `checkValidity` 回傳是否通過 required 等規則。
-- `reportValidity` 請瀏覽器顯示沒通過的提示。
-- `FormData` 依 name 把欄位打包成一包資料。
-- `get` 從這包資料取出單一字串，沒有該 name 時是 null。
+- `submit`：使用者按下送出按鈕或在欄位按 Enter 時，發生在表單上。
+- `FormData`：依控制項的 name 把整張表單打包起來，建立方式是 `new FormData(form)`。
+- `get`：用 name 取出單一欄位的字串，找不到時是 null。
+- `has`：用 name 問有沒有這個欄位，回傳布林。
+- `getAll`：同一個 name 有多筆時（例如多個核取方塊），取出全部成陣列。
+- `Object.fromEntries`：把整包 FormData 轉成一般物件，之後要傳給伺服器或存起來時使用。
 
 **觀念**
 
-novalidate 關掉瀏覽器自動擋下送出，submit 才一定進得了監聽。監聽裡用 checkValidity 看 required 等規則，失敗就 reportValidity，請瀏覽器顯示提示。通過之後用 FormData 依 name 取值。
+- FormData 只收有 name、而且沒有停用（disabled）的控制項。沒有勾選的核取方塊不會出現，勾選的預設值是字串 on。
+
+- Object.fromEntries 遇到同名的多筆，只留最後一筆；要保留全部請用 getAll。
+
+- 控制項要放在 form 裡，submit 才知道有哪些欄位。
 
 ```html 04-js/pages/145-js-submit.html
 <!DOCTYPE html>
@@ -5182,11 +3859,20 @@ novalidate 關掉瀏覽器自動擋下送出，submit 才一定進得了監聽�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>送出與檢查</title>
+    <title>送出與 FormData</title>
   </head>
   <body>
-    <form id="editor" novalidate>
-      <input name="title" required />
+    <form id="editor">
+      <p><label>標題 <input name="title" type="text" /></label></p>
+      <p>
+        <label>分類
+          <select name="category">
+            <option value="工作">工作</option>
+            <option value="生活">生活</option>
+          </select>
+        </label>
+      </p>
+      <p><label><input name="done" type="checkbox" /> 完成</label></p>
       <button type="submit">送出</button>
     </form>
     <p id="result"></p>
@@ -5196,13 +3882,75 @@ novalidate 關掉瀏覽器自動擋下送出，submit 才一定進得了監聽�
 
       form.addEventListener('submit', (event) => {
         event.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          result.textContent = '還沒通過檢查';
-          return;
-        }
         const data = new FormData(form);
-        result.textContent = data.get('title');
+        console.log(Object.fromEntries(data));
+        const mark = data.has('done') ? '已完成' : '未完成';
+        result.textContent = `${data.get('title')} / ${data.get('category')} / ${mark}`;
+      });
+    </script>
+  </body>
+</html>
+```
+
+Console（簡化後只列文字）：
+
+```text
+{title: '買牛奶', category: '工作', done: 'on'}
+```
+
+**解析**
+
+- 在標題輸入「買牛奶」、勾選完成後送出，頁面不會重新載入，段落顯示「買牛奶 / 工作 / 已完成」。
+- 上面的 Console 是勾選時的結果。沒有勾選時，物件裡就沒有 done 這個欄位，所以程式用 has 判斷有沒有這個 name。
+- 三個控制項各有 name，讀取時 get 就是用這個 name 找欄位，不用再一個個 querySelector。
+
+### 表單驗證
+
+送出前檢查資料是否合理，有兩層做法：先在 HTML 屬性上宣告規則，由瀏覽器負責擋；規則不夠用時再用 JavaScript 補上自己的判斷與訊息。這一節依序看內建屬性、自訂訊息，以及把錯誤顯示在頁面上。
+
+#### 內建驗證屬性
+
+在控制項上寫屬性，瀏覽器就會在送出時自動檢查，不合格就擋下送出並在欄位旁顯示提示，submit 事件根本不會發生。
+
+**一覽**
+
+- `required`：欄位不能空白。
+- `minlength` 與 `maxlength`：文字長度的下限與上限。
+- `pattern`：值要符合的規則（正規表示式），整段內容都要符合；搭配 title 屬性寫出提示文字。
+- `type="email"`：值要像 email。url、number 等類型也各有自己的檢查。
+
+**觀念**
+
+- 瀏覽器擋下的送出不會進到 submit 監聽，所以監聽裡的程式能放心假設資料已經通過檢查。
+
+- 提示文字由瀏覽器依使用者的語言產生。
+
+```html 04-js/pages/145b-js-validate.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>內建驗證屬性</title>
+  </head>
+  <body>
+    <form id="signup">
+      <p>
+        <label>帳號
+          <input name="account" required minlength="4" pattern="[A-Za-z0-9]+" title="只能用英文字母與數字" />
+        </label>
+      </p>
+      <p><label>Email <input name="email" type="email" required /></label></p>
+      <button type="submit">送出</button>
+    </form>
+    <p id="result">尚未送出</p>
+    <script>
+      const form = document.querySelector('#signup');
+      const result = document.querySelector('#result');
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        result.textContent = '通過檢查，進入 submit';
       });
     </script>
   </body>
@@ -5211,44 +3959,145 @@ novalidate 關掉瀏覽器自動擋下送出，submit 才一定進得了監聽�
 
 **解析**
 
-- preventDefault 取消重新載入，無論檢查過不過都要先呼叫。
-- 空白時 checkValidity 是 false，因為輸入框有 required。
-- FormData 用 name 找欄位。沒有 name 的控制項不會進這包資料。
-- 通過檢查後，段落就是標題欄的字串。
+- 帳號留空就送出，瀏覽器在欄位旁顯示「請填寫這個欄位」之類的提示，段落仍是「尚未送出」，submit 沒有被觸發。
+- 帳號只打 abc，會因為少於 4 個字被擋；打 ab-12 含有連字號，則因為不符合 pattern 被擋，提示會帶出 title 的文字。
+- Email 打的內容不像 email 時也會被擋。三個欄位全部合格，段落才變成「通過檢查，進入 submit」。
+- submit 裡只需要 preventDefault 與後續處理，不必自己再檢查一遍這些規則。
 
-{% note success %}
-**換你試試：**
-輸入框加上 minlength="2"。只打一個字就送出時，段落應是「還沒通過檢查」，並出現瀏覽器的提示。
-{% endnote %}
+#### 自訂驗證訊息
 
-<details>
-<summary>參考答案</summary>
+內建屬性只能檢查單一欄位本身。像「兩次密碼要一樣」這種跨欄位的規則，要自己用程式判斷，再用 setCustomValidity 告訴瀏覽器這個欄位目前有沒有問題。
 
-minlength 也是約束驗證的規則。一個字不算通過，checkValidity 仍是 false，FormData 那一行不會執行。
+**觀念**
 
-```diff 04-js/pages/145-js-submit.html
-  // ...
-    <body>
-      <form id="editor" novalidate>
--       <input name="title" required />
-+       <input name="title" required minlength="2" />
-        <button type="submit">送出</button>
-      </form>
-      // ...
+- 傳入非空字串，欄位就被標成不合格，這串文字就是提示。傳入空字串，才會解除。
+
+- 條件改變時必須重新呼叫。忘了傳空字串，欄位會一直被視為不合格，連正確的輸入也送不出。
+
+```html 04-js/pages/145c-js-custom-validity.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>自訂驗證訊息</title>
+  </head>
+  <body>
+    <form id="signup">
+      <p><label>密碼 <input id="password" type="password" required minlength="6" /></label></p>
+      <p><label>再輸入一次 <input id="confirm" type="password" required /></label></p>
+      <button type="submit">送出</button>
+    </form>
+    <p id="result">尚未送出</p>
+    <script>
+      const form = document.querySelector('#signup');
+      const passwordInput = document.querySelector('#password');
+      const confirmInput = document.querySelector('#confirm');
+      const result = document.querySelector('#result');
+
+      const checkMatch = () => {
+        const same = confirmInput.value === passwordInput.value;
+        confirmInput.setCustomValidity(same ? '' : '兩次輸入的密碼不一樣');
+      };
+
+      passwordInput.addEventListener('input', checkMatch);
+      confirmInput.addEventListener('input', checkMatch);
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        result.textContent = '密碼設定完成';
+      });
+    </script>
+  </body>
+</html>
 ```
 
-</details>
+**解析**
+
+- 密碼已填滿 6 個字以上、兩個欄位內容不同時按送出，確認欄位旁出現「兩次輸入的密碼不一樣」，段落仍是「尚未送出」。
+- 把確認欄位改成與密碼相同，checkMatch 傳入空字串解除標記，再送出，段落變成「密碼設定完成」。
+- 兩個欄位都要聽 input：改了密碼欄位，原本一致的確認欄位也可能變成不一致。
+- required 與 minlength 仍照常運作，自訂訊息是在內建規則之外多加一條。
+
+#### 把錯誤顯示在頁面上
+
+瀏覽器的提示泡泡樣式固定，也不好配合設計。實務上常在表單加上 novalidate 關掉自動擋下，改由程式檢查，再把訊息放進頁面自己的位置。React 的表單也是這個做法。
+
+**一覽**
+
+- `novalidate`：加在 form 上，瀏覽器不再自動擋下送出，submit 一定會發生。
+- `checkValidity`：回傳整張表單（或單一欄位）是否通過所有規則，布林。
+- `validationMessage`：欄位目前的錯誤文字，通過時是空字串。
+- `reportValidity`：和 checkValidity 一樣會檢查，但不通過時還會叫出瀏覽器的提示泡泡。
+
+**觀念**
+
+- 輸入時用 validationMessage 即時更新錯誤文字，送出時再用 checkValidity 擋下不合格的資料。
+
+- 想更細地知道錯在哪，欄位的 validity 物件有 valueMissing、typeMismatch 等布林，各自對應一種規則。
+
+```html 04-js/pages/145d-js-error-message.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>顯示錯誤訊息</title>
+    <style>
+      .error { color: #b91c1c; }
+    </style>
+  </head>
+  <body>
+    <form id="login" novalidate>
+      <p>
+        <label>Email <input id="email" name="email" type="email" required /></label>
+        <span id="emailError" class="error"></span>
+      </p>
+      <button type="submit">送出</button>
+    </form>
+    <p id="result">尚未送出</p>
+    <script>
+      const form = document.querySelector('#login');
+      const emailInput = document.querySelector('#email');
+      const emailError = document.querySelector('#emailError');
+      const result = document.querySelector('#result');
+
+      emailInput.addEventListener('input', () => {
+        emailError.textContent = emailInput.validationMessage;
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        emailError.textContent = emailInput.validationMessage;
+        if (!form.checkValidity()) {
+          result.textContent = '還沒通過檢查';
+          return;
+        }
+        result.textContent = `已送出 ${emailInput.value}`;
+      });
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 沒有任何輸入就按送出，submit 仍然發生，紅色的錯誤文字出現在欄位旁，段落是「還沒通過檢查」，沒有瀏覽器的提示泡泡。
+- 開始輸入時，每打一個字就更新錯誤文字：內容還不像 email，訊息就留著；輸入完整的 email，訊息變成空字串，紅字消失。
+- 通過檢查再送出，段落變成「已送出」加上輸入的 email。
+- 錯誤文字是瀏覽器依語言產生的字串，想要自己的文案，可以讀 validity 的各個布林，自己決定要顯示什麼。
 
 # 資料驅動畫面
 
-前面每一個監聽都直接改某個元素。清單一長，容易改到畫面卻忘了改資料，或相反。這一章把資料放在一個物件，畫面只由一支 render 依資料重畫。
+前面每個監聽都是直接改某個元素。清單一長，就容易改了畫面卻忘了改資料，或是相反。這一章把資料集中放在一個物件，畫面永遠由資料重畫出來，再用待辦清單把整套做法完整走一遍。
 
 ## 狀態與重繪
 
-狀態是現在這份清單有哪些項目。render 不負責決定要新增什麼，它只看狀態，先清空再把每一項做成元素。點擊只改狀態，然後再呼叫 render。
+狀態（state）是此刻畫面該呈現的全部資料，例如清單目前有哪些項目。做法是讓狀態成為唯一的資料來源，畫面只是依它重畫出來的結果。重畫由一支自己取名叫 render 的函式負責：先清空畫面，再依狀態把每一項重新做成元素。整個流程是一個循環，如下圖與三點規則。
 
-- 狀態物件記下現在要顯示的資料，畫面不另外記一份。
-- `render` 只依狀態重畫。新增與刪除先改狀態，再呼叫它。
+- 事件只改狀態，不直接動畫面。
+- 改完狀態，呼叫 render 重畫。
+- render 只讀狀態，不自己決定要新增或刪除什麼。
 
 {% mermaid graph LR %}
 stateNode["狀態"] --> renderNode["render"]
@@ -5259,7 +4108,7 @@ eventNode --> stateNode
 
 **觀念**
 
-項目放在 state.items。render 用 replaceChildren 清掉舊列，再用 createElement 與 textContent 依陣列重做。這樣畫面上不會留下上一輪的節點。
+清單項目放在陣列 `state.items`。render 先清掉舊的列，再依陣列逐筆做出 li。每次都整份重畫，所以畫面上不會殘留上一輪的節點，也不會和資料不一致。
 
 ```html 04-js/pages/146-js-render.html
 <!DOCTYPE html>
@@ -5290,7 +4139,7 @@ eventNode --> stateNode
       };
 
       document.querySelector('#add').addEventListener('click', () => {
-        state.items.push('新項目');
+        state.items.push(`項目 ${state.items.length + 1}`);
         render();
       });
 
@@ -5302,46 +4151,28 @@ eventNode --> stateNode
 
 **解析**
 
-- 載入時就呼叫 render，所以不用等點擊也看得到兩列。
-- 按鈕只對陣列 push，不自己建立 li。新列是下一次 render 畫出來的。
-- 每次都整份重畫，狀態與畫面就不會各記各的。
-- 文字來自陣列裡的字串，用 textContent 放進 li。
+- 載入時先呼叫一次 render，頁面一開始就有「筆」與「紙」兩列。
+- 每按一次按鈕，陣列多一筆「項目 3」「項目 4」……，清單就長出對應的一列。
+- 按鈕的監聽只對陣列 push，不自己建立 li。新的一列是 render 依陣列畫出來的。
+- 在 DevTools 的 Elements 面板展開 ul，每次按下去，底下所有 li 都是 render 重新產生的新節點。
+- 文字用 textContent 放進 li，內容會被當成純文字，不會被當成 HTML 解析。
 
-{% note success %}
-**換你試試：**
-按鈕 push 的文字改成「橡皮擦」。連點兩次，清單應出現兩次橡皮擦。
+{% note info %}
+**這就是 React 的核心做法**
+React 沿用同一個想法：畫面由狀態決定，狀態改了就重畫。差別是我們不再自己寫 render 與清空節點，只要描述「這份狀態長什麼樣子」，React 會重新執行描述，並只把真正有變的部分更新到畫面上。狀態怎麼宣告與修改，到 React 章節再學。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-兩次點擊是兩次 push，陣列裡會有兩筆相同文字。render 照陣列長度畫，不會把相同文字合併。
-
-```diff 04-js/pages/146-js-render.html
-  // ...
-        };
-  
-        document.querySelector('#add').addEventListener('click', () => {
--         state.items.push('新項目');
-+         state.items.push('橡皮擦');
-          render();
-        });
-        // ...
-```
-
-</details>
 
 ## 綜合練習：待辦清單
 
-待辦的每一筆是物件，含有 id、標題與是否完成。畫面仍然只由 render 產生。新增走表單送出，完成與刪除走清單上的一份 click，用按鈕的 data-action 分辨。
+這一節把前面學的元素建立、事件委派與表單合在一起，做一份可以新增、完成與刪除的待辦清單。每一筆待辦是一個物件，記錄 id、標題與是否完成；畫面仍然只由 render 產生。
 
 ### 從狀態畫出清單
 
-第一步先不要接事件。狀態裡放兩筆待辦，render 為每一筆做出標題與兩顆按鈕，完成的那筆加上 class。
+第一步先不接事件，只確認狀態能畫成清單。狀態放兩筆待辦，render 為每一筆做出標題與兩顆按鈕，已完成的那筆加上 class 讓樣式畫上刪除線。
 
 **觀念**
 
-done 為 true 時，li 加上 done，樣式表負責刪除線。按鈕先放上 data-action 與 data-id，下一步才用它們分辨點擊。id 轉成字串後放進 dataset。
+done 為 true 時，li 加上 done class，樣式表負責刪除線。按鈕用 `data-action` 記下要做什麼、`data-id` 記下是哪一筆，下一步的監聽就靠它們分辨。自訂屬性讀出來一定是字串，所以監聽之後要用 Number 轉回數字，才能和待辦的 id 比對。
 
 ```html 04-js/pages/147-js-todo.html
 <!DOCTYPE html>
@@ -5352,18 +4183,13 @@ done 為 true 時，li 加上 done，樣式表負責刪除線。按鈕先放上 
     <title>待辦清單</title>
     <style>
       body { font-family: system-ui, sans-serif; margin: 1.5rem; }
-      form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-      input, button { font: inherit; }
+      button { font: inherit; }
       li { margin: 0.4rem 0; }
       li.done span { text-decoration: line-through; }
       li button { margin-left: 0.35rem; }
     </style>
   </head>
   <body>
-    <form id="editor" novalidate>
-      <input id="title" name="title" required />
-      <button type="submit">新增</button>
-    </form>
     <ul id="list"></ul>
     <script>
       const state = {
@@ -5406,40 +4232,20 @@ done 為 true 時，li 加上 done，樣式表負責刪除線。按鈕先放上 
 
 **解析**
 
-- 第一筆 done 是 false，沒有刪除線。第二筆是 true，標題有刪除線。
-- 每一列有兩顆按鈕，文字會依 done 在「標成完成」與「改回未完成」之間切換。
-- 這一支還沒有聽表單，也還沒有聽清單，點按鈕不會改狀態。
-
-{% note success %}
-**換你試試：**
-把第二筆的 done 改成 false。重新整理後，兩列都不該有刪除線，兩顆切換鈕都顯示「標成完成」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-class 只在 done 為 true 時加上。兩筆都是 false 時，render 不會給任何 li 加上 done。
-
-```diff 04-js/pages/147-js-todo.html
-  // ...
-          items: [
-            { id: 1, title: '讀講義', done: false },
--           { id: 2, title: '改練習檔', done: true },
-+           { id: 2, title: '改練習檔', done: false },
-          ],
-        };
-        // ...
-```
-
-</details>
+- 頁面上有兩列：第一筆沒有刪除線，第二筆因為 done 是 true 而有刪除線。
+- 每一列有兩顆按鈕，切換鈕的文字依 done 在「標成完成」與「改回未完成」之間變化。
+- 這一步還沒有任何監聽，所以點按鈕不會有反應。
 
 ### 新增、切換與刪除
 
-第二步補上兩份監聽。表單負責推進陣列，清單負責改某一筆的 done 或把它濾掉。兩邊最後都只呼叫 render。
+第二步補上兩份監聽：表單負責把新待辦推進陣列，清單負責改某一筆的 done，或把它從陣列濾掉。兩邊最後都只做一件事，呼叫 render。
 
 **觀念**
 
-submit 先 preventDefault，再用 checkValidity 看 required。通過後用 FormData 讀 title，推進 state.items，並把輸入框清掉。click 用 closest 找按鈕，依 data-action 決定要切換還是刪除。
+- 送出表單時先擋掉瀏覽器預設的重新載入，再檢查必填；沒通過就顯示瀏覽器提示並結束。
+- 通過後讀出標題、去掉前後空白，推進 `state.items`，並清空輸入框。
+- 清單的 click 用 `closest` 找到被按的按鈕，再依 `data-action` 決定切換或刪除。
+- 三種操作最後都只做同一件事：呼叫 render。
 
 ```html 04-js/pages/147-js-todo.html.final
 <!DOCTYPE html>
@@ -5504,7 +4310,8 @@ submit 先 preventDefault，再用 checkValidity 看 required。通過後用 For
           return;
         }
         const data = new FormData(form);
-        const title = String(data.get('title'));
+        const title = String(data.get('title')).trim();
+        if (!title) return;
         state.items.push({ id: state.nextId, title, done: false });
         state.nextId += 1;
         form.querySelector('#title').value = '';
@@ -5513,7 +4320,7 @@ submit 先 preventDefault，再用 checkValidity 看 required。通過後用 For
 
       list.addEventListener('click', (event) => {
         const button = event.target.closest('button');
-        if (!button || !list.contains(button)) return;
+        if (!button) return;
         const id = Number(button.dataset.id);
         const item = state.items.find((row) => row.id === id);
         if (!item) return;
@@ -5532,48 +4339,24 @@ submit 先 preventDefault，再用 checkValidity 看 required。通過後用 For
 
 **解析**
 
-- 空白標題過不了 required，監聽會先停住，陣列不會多一筆。
-- 新增時用 nextId 當新的 id，然後加 1，避免和舊列重複。
-- 切換只改那一筆的 done。刪除用 filter 留下 id 不同的項目。
-- 按鈕是 render 每次重做的，所以監聽必須放在 ul，不能放在按鈕上。
-
-{% note success %}
-**換你試試：**
-標題去掉前後空白後若是空字串，不要推進陣列，也不要把輸入框清掉。只打空白再送出時，清單筆數不變。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-required 只把完全沒字視為沒填，幾個空白仍算有值。trim 之後若是空字串就 return，輸入框還留著那些空白。
-
-```diff 04-js/pages/147-js-todo.html.final
-  // ...
-          }
-          const data = new FormData(form);
--         const title = String(data.get('title'));
-+         const title = String(data.get('title')).trim();
-+         if (!title) return;
-          state.items.push({ id: state.nextId, title, done: false });
-          state.nextId += 1;
-          // ...
-```
-
-</details>
+- 完全沒填會被 required 擋下，並出現瀏覽器的提示。只打空白能通過 required，但 trim 之後是空字串，所以監聽直接結束，清單不會多一筆。
+- 新增時用 nextId 當新待辦的 id，再加 1。不用「陣列長度加一」，是因為刪除之後長度會變小，可能和既有的 id 重複。
+- 切換只改那一筆的 done；刪除用 filter 留下 id 不同的項目。兩種操作都沒有碰 DOM，畫面變化全來自最後的 render。
+- 按鈕是每次 render 重新做的，舊按鈕上的監聽會跟著消失，所以監聽要放在不會被重畫的 ul 上，這就是事件委派。
 
 # 選讀：打地鼠
 
-這一節把計時器、狀態、class 與事件委派放進同一個小遊戲。九個洞用按鈕排出來，顏色代表狀態：黃是閒置，紅是地鼠出現，綠是剛被打中。
+這一節把計時器、狀態、class 與事件委派放進同一個小遊戲。九個洞用按鈕排成三乘三，顏色代表狀態：黃是閒置，紅是地鼠出現，綠是剛被打中。
 
-開始後倒數 20 秒。大約每 700 毫秒挑一個閒置洞變紅，800 毫秒沒被打到就回黃。只有紅色可以得分，得分後短暫變綠再回黃。時間到就清掉所有計時器，開始鈕可以再按。
+開始後倒數 20 秒。大約每 700 毫秒挑一個閒置的洞變紅，800 毫秒沒被打到就回黃。只有紅色的洞按了才得分，得分後短暫變綠再回黃。時間到就清掉所有計時器，開始鈕恢復可以再按。
 
 ## 畫面與狀態
 
-第一步只建立狀態與 render。九個洞的狀態都放在同一個陣列，畫面的 class 完全由這份陣列決定。開始鈕先留著，還沒有接計時器。
+第一步只建立狀態與 render，不接計時器。九個洞的狀態放在同一個陣列，畫面上的顏色完全由這份陣列決定。
 
 **觀念**
 
-state 集中分數、剩餘秒數、是否進行中，以及每個洞要清除的計時器識別碼。render 先拿掉 up 與 hit，再依陣列把不是閒置的狀態加回去。進行中時開始鈕設為不能按。
+state 集中記下分數、剩餘秒數、是否進行中，以及之後要清除的計時器識別碼：兩個間隔計時器各一個，每個洞的 setTimeout 識別碼則以洞的編號為鍵放進 hideIds。render 先拿掉每個洞的 `up` 與 `hit` class，再依陣列把不是閒置的狀態加回去。進行中時，開始鈕設為不能按。
 
 ```html 04-js/pages/148-js-mole.html
 <!DOCTYPE html>
@@ -5606,8 +4389,15 @@ state 集中分數、剩餘秒數、是否進行中，以及每個洞要清除�
       <button type="button" class="hole" data-index="8"></button>
     </div>
     <script>
+      // 九個洞，每個洞一個狀態：idle、up 或 hit
+      const createHoles = () => [
+        'idle', 'idle', 'idle',
+        'idle', 'idle', 'idle',
+        'idle', 'idle', 'idle',
+      ];
+
       const state = {
-        holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
+        holes: createHoles(),
         score: 0,
         timeLeft: 20,
         playing: false,
@@ -5636,57 +4426,31 @@ state 集中分數、剩餘秒數、是否進行中，以及每個洞要清除�
 **解析**
 
 - 九個按鈕都有 data-index，render 用這個數字對上 holes 陣列。
-- 初始都是 idle，所以沒有紅也沒有綠，秒數是 20，分數是 0。
-- playing 是 false，開始鈕可以按，但還沒有監聽。
-- 分數與秒數寫進 span 的 textContent，不重組整段 HTML。
-
-{% note info %}
-**三種顏色對應三種素材**
-黃色、紅色、綠色分別是閒置、出現與打中。若改用圖片，仍然用 class 切換。
-不要把任何輸入接進圖片位址。這一課用色塊就夠把狀態看清楚。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-把 state 的 timeLeft 改成 15。重新整理後，畫面上的秒數應是 15。洞的顏色仍全部是黃。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-畫面上的 20 只是 HTML 的初值。render 一執行就改成 state 裡的數字，所以改狀態才會留在畫面上。
-
-```diff 04-js/pages/148-js-mole.html
-  // ...
-          holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
-          score: 0,
--         timeLeft: 20,
-+         timeLeft: 15,
-          playing: false,
-          clockId: 0,
-          // ...
-```
-
-</details>
+- 初始全部是 idle，所以沒有紅也沒有綠；畫面上秒數是 20、分數是 0。
+- playing 是 false，開始鈕可以按，但這一步還沒有監聽，按了沒有反應。
+- 分數與秒數寫進 span 的 textContent，不需要重組整段 HTML。
 
 ## 開局、命中與結束
 
-第二步把工作拆開。start 重置這一局並啟動計時器，spawn 讓地鼠出現，hit 處理打中，tick 每秒減時間，end 結束並清掉計時器。點擊只綁在棋盤上。
+第二步把工作拆成幾支函式：start 重置這一局並啟動計時器，spawn 讓地鼠出現，hit 處理打中，tick 每秒減一秒，end 結束並清掉計時器。點擊只綁在棋盤上，用事件委派判斷點到哪一洞。
 
 {% mermaid graph TD %}
-startNode["start"] --> tickNode["tick 每秒"]
-startNode --> spawnNode["spawn 挑閒置洞"]
+startNode["start"] --> tickNode["tick 每 1 秒"]
+startNode --> spawnNode["spawn 每 0.7 秒挑閒置洞"]
 spawnNode --> upNode["狀態改成 up"]
-upNode --> hideNode["時間到改回 idle"]
+upNode --> hideNode["0.8 秒沒打到改回 idle"]
 upNode --> hitNode["hit"]
-hitNode --> scoreNode["分數加一"]
+hitNode --> scoreNode["分數加一，0.3 秒後回 idle"]
 tickNode --> endNode["時間到就 end"]
 endNode --> clearNode["清除計時器"]
 {% endmermaid %}
 
 **觀念**
 
-進行中若再呼叫 start 就直接結束，避免兩組 setInterval 疊在一起。每個紅洞的 setTimeout 識別碼放在 hideIds，打中或結束時都要 clearTimeout。地鼠回黃之前若已經不是 up，就不要覆蓋成閒置。
+- 打中時要 clearTimeout 取消那個洞的回黃計時器。不取消的話，洞回黃後若又冒出新地鼠，舊計時器到點會把新地鼠提早收掉。
+- 回黃的計時器到點時，先確認該洞還是 up 才改回 idle，這是多一層保險。
+- 結束時要清掉兩個間隔計時器與 hideIds 裡所有計時器，否則遊戲結束後洞還會繼續變色。
+- spawn 隨機挑洞用 `Math.random`，用法見 {% post_link lokiTech-15day-06-js-basics %} 的「選讀：內建物件」。
 
 ```html 04-js/pages/148-js-mole.html.final
 <!DOCTYPE html>
@@ -5722,8 +4486,15 @@ endNode --> clearNode["清除計時器"]
       const STAY_MS = 800;
       const SPAWN_MS = 700;
 
+      // 九個洞，每個洞一個狀態：idle、up 或 hit
+      const createHoles = () => [
+        'idle', 'idle', 'idle',
+        'idle', 'idle', 'idle',
+        'idle', 'idle', 'idle',
+      ];
+
       const state = {
-        holes: ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'],
+        holes: createHoles(),
         score: 0,
         timeLeft: 20,
         playing: false,
@@ -5782,7 +4553,7 @@ endNode --> clearNode["清除計時器"]
       const end = () => {
         state.playing = false;
         clearTimers();
-        state.holes = ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'];
+        state.holes = createHoles();
         render();
       };
 
@@ -5802,7 +4573,7 @@ endNode --> clearNode["清除計時器"]
         state.score = 0;
         state.timeLeft = 20;
         state.playing = true;
-        state.holes = ['idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle', 'idle'];
+        state.holes = createHoles();
         state.clockId = setInterval(tick, 1000);
         state.spawnId = setInterval(spawn, SPAWN_MS);
         spawn();
@@ -5810,7 +4581,7 @@ endNode --> clearNode["清除計時器"]
 
       document.querySelector('#board').addEventListener('click', (event) => {
         const hole = event.target.closest('.hole');
-        if (!hole || !event.currentTarget.contains(hole)) return;
+        if (!hole) return;
         hit(Number(hole.dataset.index));
       });
 
@@ -5823,48 +4594,122 @@ endNode --> clearNode["清除計時器"]
 
 **解析**
 
-- start 先清掉上一局可能留下的計時器，分數歸零，秒數回到 20，九個洞回到 idle。
-- spawn 只從 idle 的洞裡隨機挑，所以不會把已經是紅或綠的洞再排一次。
-- hit 先確認正在遊戲而且該洞是 up，才加分並改成 hit。
-- tick 把秒數減到 0 時呼叫 end。end 會清間隔、清每個洞的 timeout，並讓開始鈕恢復。
-- 棋盤的 click 用 closest 找到洞，再把 data-index 交給 hit。點在洞以外不會計分。
+- start 先清掉上一局可能留下的計時器，再把分數歸零、秒數回到 20、九個洞回到 idle。
+- spawn 只從 idle 的洞裡隨機挑，已經是紅或綠的洞不會被重複挑中。
+- hit 先確認正在遊戲且該洞是 up，才加分並改成 hit，300 毫秒後回 idle。點到黃洞或綠洞都不計分。
+- tick 把秒數減到 0 時呼叫 end。end 會清掉兩個間隔計時器與每個洞的 timeout，洞全部回黃，開始鈕恢復。
+- 棋盤的 click 用 closest 找到被點的洞，再把 data-index 交給 hit。點在洞以外的空白處不會計分。
 
-{% note success %}
-**換你試試：**
-把地鼠停留的 STAY_MS 改成 1200。其他秒數不要改。紅洞應比原來更晚才自己回黃。
-{% endnote %}
+# 回家作業
 
-<details>
-<summary>參考答案</summary>
+這份作業只用必教內容，資料取自專案的行程清單，題目依序累加：前一題的列表就是後一題的基礎。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果，自己對照即可。
 
-停留時間只影響出現後自動回黃的那個 timeout。打中時仍會先清掉它，再改走 300 毫秒的變綠流程。
+## 起始檔
 
-```diff 04-js/pages/148-js-mole.html.final
-  // ...
-      </div>
-      <script>
--       const STAY_MS = 800;
-+       const STAY_MS = 1200;
-        const SPAWN_MS = 700;
-  
-        const state = {
-          // ...
+起始檔在練習專案的 `04-js/homework/07-homework.html`，頁面骨架與八筆行程資料都已經備好，只需要把程式寫在標示的位置。
+
+```html 04-js/homework/07-homework.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>07 回家作業</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 720px; }
+      #theme-filter button { margin: 0 4px 8px 0; }
+      #tour-list { padding-left: 20px; }
+      form label { display: block; margin-bottom: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>行程列表</h1>
+    <div id="theme-filter">
+      <button type="button" data-theme="all">全部</button>
+      <button type="button" data-theme="城市">城市</button>
+      <button type="button" data-theme="山海">山海</button>
+      <button type="button" data-theme="海岸">海岸</button>
+      <button type="button" data-theme="古都">古都</button>
+      <button type="button" data-theme="離島">離島</button>
+      <button type="button" data-theme="日本">日本</button>
+    </div>
+    <p><input id="search" type="search" placeholder="搜尋標題" /></p>
+    <p>收藏 <span id="fav-count">0</span> 筆</p>
+    <ul id="tour-list"></ul>
+    <p id="empty" hidden>找不到符合的行程</p>
+
+    <h2>報名</h2>
+    <form id="booking-form" novalidate>
+      <label>姓名 <input name="name" required /></label>
+      <label>Email <input name="email" type="email" required /></label>
+      <label>人數 <input name="people" type="number" min="1" max="8" required /></label>
+      <button type="submit">送出</button>
+    </form>
+    <ul id="booking-errors"></ul>
+    <p id="booking-result"></p>
+
+    <script>
+      const tours = [
+        { id: 'taipei-beitou', title: '台北大稻埕與北投溫泉三日', region: '台北', theme: '城市', days: 3, price: 18600 },
+        { id: 'keelung-jiufen', title: '基隆北海岸與九份兩日', region: '基隆', theme: '海岸', days: 2, price: 9200 },
+        { id: 'hualien-taroko', title: '花蓮太魯閣與七星潭四日', region: '花蓮', theme: '山海', days: 4, price: 26800 },
+        { id: 'taitung-chishang', title: '台東池上與成功海岸三日', region: '台東', theme: '山海', days: 3, price: 21400 },
+        { id: 'tainan-anping', title: '台南府城與安平兩日', region: '台南', theme: '古都', days: 2, price: 8800 },
+        { id: 'kaohsiung-qijin', title: '高雄港都與旗津三日', region: '高雄', theme: '城市', days: 3, price: 14200 },
+        { id: 'kinmen-villages', title: '金門聚落與戰地三日', region: '金門', theme: '離島', days: 3, price: 16800 },
+        { id: 'kyoto-nara', title: '京都嵐山、伏見與奈良五日', region: '京都', theme: '日本', days: 5, price: 52800 },
+      ];
+
+      // 在這裡開始寫
+    </script>
+  </body>
+</html>
 ```
 
-</details>
+## 題目
+
+### 題目一：把資料畫成列表
+
+用 `tours` 陣列在 `#tour-list` 裡產生八個列表項目。每一項顯示標題、天數與價格，並附一個「收藏」按鈕，按鈕要帶著行程編號。用 `textContent` 放文字，不要用 `innerHTML` 拼字串。
+
+完成後頁面有八列，第一列是「台北大稻埕與北投溫泉三日　3 天　NT$18600」。
+
+### 題目二：依主題篩選
+
+點上方的主題按鈕，只顯示該主題的行程；點「全部」恢復八筆。篩選要用事件委派，只在 `#theme-filter` 上綁一個監聽。沒有符合的行程時，顯示 `#empty`。
+
+完成後點「城市」只剩台北與高雄兩筆，點「山海」剩花蓮與台東。
+
+### 題目三：關鍵字搜尋
+
+在搜尋欄輸入時就即時篩選，標題含有輸入的字就保留。搜尋要和主題篩選同時作用：先選「山海」再輸入「花蓮」，只剩花蓮一筆。把目前的主題與關鍵字放進同一個 `state` 物件，畫面由一個 `render` 函式依 state 重畫。
+
+完成後輸入「三日」，會留下標題含有「三日」的四筆。
+
+### 題目四：收藏
+
+點「收藏」按鈕可以切換收藏狀態，已收藏的按鈕文字改為「已收藏」，`#fav-count` 顯示目前收藏幾筆。收藏的編號放在 `state` 裡，切換主題或搜尋後，收藏狀態仍要正確。
+
+完成後收藏兩筆再切換主題，回到「全部」時那兩筆仍顯示「已收藏」，數字是 2。
+
+### 題目五：報名表單驗證
+
+表單送出時不要換頁。依序檢查三個欄位是否通過瀏覽器的驗證，沒通過的把各欄位的 `validationMessage` 列在 `#booking-errors`。全部通過就用 `FormData` 讀出欄位，把「某某報名 N 人」寫到 `#booking-result`，並清空錯誤清單。
+
+完成後不填任何欄位按送出會看到三則錯誤；填入姓名、Email 與 3 人後送出，會看到「某某報名 3 人」。
 
 # 本篇重點回顧
 
-下面八句是這一篇要帶走的習慣。選讀的 template 與打地鼠可以晚一點再做，前面的選取、重繪與事件要先熟。
+選讀章節有：模組腳本、返回與前進、pushState 與 replaceState、視窗與畫面、瀏覽器資訊、列印與對話框、requestAnimationFrame、getElementById 與 getElementsBy 系列、讀取畫面結果、template 元素、捕獲與冒泡、打地鼠，以下只整理主線。
 
-- `window` 是分頁的全域物件，`document` 掛在它身上，用 const 宣告的名字不會變成它的屬性。
-- 課堂 demo 把 script 放在 body 尾端。外部檔要延後就加 `defer`，模組腳本另開檔。寫在 head 且會立刻執行的程式，改等 `DOMContentLoaded`。
-- 換頁用 `location.assign` 或 replace，往返用 `history.back`，尺寸比較 `innerWidth` 與 `screen.width`，捲動用 scrollTo。
-- 單筆選取用 `querySelector`，多筆用 `querySelectorAll`，前者找不到是 null，後者則是長度為 0 的清單。
-- 給人讀的文字放進 `textContent`，使用者打的字不要放進 `innerHTML`。有對應欄位就改 property，外觀用 class，最終樣式與尺寸另讀。
-- 新節點用 `createElement` 建立後再插入，已經在樹上的節點再插入是搬移，要留下原件就先 `cloneNode`。
-- 監聽用 addEventListener 登記並用同一個函式解除，被點到的是 `target`，父層代收時用 `closest` 找按鈕。
-- 表單送出時先 `preventDefault`，檢查通過後用 FormData 讀值，資料改了就 `render`，結束時把計時器識別碼交給對應的 clear。
+- 瀏覽器物件模型管分頁、文件物件模型管這一份 HTML，兩者都從全域物件 `window` 出發。
+- script 要等元素出現才能操作，所以放在 body 尾端，或用 defer、DOMContentLoaded 延後執行。
+- 網址與查詢字串用 location 和 URLSearchParams 處理，計時器要把識別碼存起來，才取消得了。
+- 單筆選取找不到是 null，多筆選取沒有符合時是長度 0 的清單，所以單筆要先確認再使用。
+- 使用者的字串用 `textContent` 放進畫面，不交給 innerHTML，日常設定改 property，外觀交給 classList。
+- 新節點先建立再插入，已經在頁面上的節點再插入是搬移，要留下原件就先 cloneNode。
+- 事件用 addEventListener 登記，會重畫的清單把監聽放在父層做事件委派，再用 closest 找到被按的按鈕。
+- 表單送出時先 preventDefault 再用 FormData 讀值，資料集中成狀態，改了就重新 render 畫出畫面。
 
 # 專有名詞中英對照
 
@@ -5872,135 +4717,94 @@ endNode --> clearNode["清除計時器"]
 
 ## 認識瀏覽器環境
 
-這一組是分頁、文件樹，以及 script 何時執行。先分清全域物件與文件，再決定程式要不要延後。
-
-- 瀏覽器物件模型（Browser Object Model）
-- 文件物件模型（Document Object Model）
+- 瀏覽器物件模型（Browser Object Model，BOM）
+- 文件物件模型（Document Object Model，DOM）
 - 全域物件（global object）
-- 節點（node）
 - DOM 樹（DOM tree）
-- 延遲腳本（defer）
-- 文件解析完成（DOMContentLoaded）
+- 跨來源限制（cross-origin restriction）
 - 模組腳本（module script）
 
 ## BOM
 
-這一組依網址、視窗、瀏覽器資訊、列印與計時的順序排列。它們都掛在 window 上，也可以直接寫名字。
-
-- 位置（Location）
-- 歷史紀錄（History）
-- 瀏覽器資訊（Navigator）
-- 剪貼簿（Clipboard）
-- 螢幕（Screen）
-- 指派（assign）
-- 取代（replace）
-- 重新載入（reload）
-- 返回（back）
-- 前進（forward）
-- 相對步數（go）
-- 歷史狀態（history.state）
-- 推入狀態（pushState）
-- 取代狀態（replaceState）
-- 內部寬度（innerWidth）
-- 內部高度（innerHeight）
-- 外部寬度（outerWidth）
-- 可用寬度（availWidth）
-- 裝置像素比（devicePixelRatio）
-- 水平捲動（scrollX）
-- 垂直捲動（scrollY）
-- 捲動到（scrollTo）
-- 相對捲動（scrollBy）
-- 媒體查詢（matchMedia）
-- 偏好語言（language）
-- 連線狀態（onLine）
-- 使用者代理（userAgent）
+- 協定（protocol）
+- 主機（host）
+- 路徑（path）
+- 查詢字串（query string）
+- 片段（fragment）
+- 來源（origin）
+- 編碼（encoding）
+- 導向（redirect）
+- 瀏覽紀錄（history）
+- 非同步（asynchronous）
+- 像素比（device pixel ratio）
+- 媒體查詢（media query）
+- 深色模式（dark mode）
+- 偏好語言（preferred language）
+- 使用者代理字串（user agent string）
+- 排版引擎（layout engine）
 - 功能偵測（feature detection）
-- 寫入剪貼簿（writeText）
-- 列印（print）
-- 警示對話框（alert）
-- 確認對話框（confirm）
-- 輸入對話框（prompt）
+- 安全連線（secure context）
+- 剪貼簿（clipboard）
+- 對話框（dialog）
+- 回呼函式（callback）
 - 計時器（timer）
-- 延遲執行（setTimeout）
-- 間隔執行（setInterval）
-- 動畫幀（requestAnimationFrame）
-- 取消動畫幀（cancelAnimationFrame）
+- 識別碼（timer ID）
 
 ## DOM
 
-這一組是選取、走訪、改寫與建立節點。事件的名字放在下一組。
-
+- 節點（node）
+- 元素（element）
 - 選擇器（selector）
-- 後代（descendant）
 - 節點清單（NodeList）
+- 展開語法（spread syntax）
+- 靜態（static）
+- 後代（descendant）
 - 父元素（parent element）
 - 子元素（child element）
 - 兄弟元素（sibling element）
-- 最近祖先（closest）
-- 符合選擇器（matches）
-- 即時集合（HTMLCollection）
-- 文字內容（textContent）
-- 內部文字（innerText）
-- 內部 HTML（innerHTML）
-- 跨站腳本攻擊（XSS）
-- 外部 HTML（outerHTML）
+- 祖先（ancestor）
+- 即時集合（live collection）
+- 文字節點（text node）
+- 標記（markup）
+- 純文字（plain text）
+- 跨站腳本攻擊（cross-site scripting，XSS）
+- 消毒（sanitize）
 - HTML 屬性（attribute）
 - DOM 屬性（property）
-- 類別名稱（className）
-- 取得屬性（getAttribute）
-- 是否有屬性（hasAttribute）
-- 設定屬性（setAttribute）
-- 移除屬性（removeAttribute）
-- 切換屬性（toggleAttribute）
-- 布林屬性（boolean attribute）
-- 布林 property（boolean property）
-- 自訂資料（dataset）
-- 自訂資料屬性（data-*）
-- 類別清單（classList）
 - 行內樣式（inline style）
-- 計算後樣式（computed style）
-- 邊界矩形（DOMRect）
-- 捲入視窗（scrollIntoView）
-- 建立元素（createElement）
-- 文字節點（text node）
-- 範本元素（template element）
+- 布林屬性（boolean attribute）
+- 小駝峰（camelCase）
+- 最終樣式（computed style）
+- 深複製（deep clone）
 - 文件片段（DocumentFragment）
 
 ## DOM 事件
 
-這一組是監聽、委派與表單送出。名字依照點擊、輸入、冒泡、委派、捕獲、送出的順序。
-
-- 事件監聽（event listener）
-- 行內事件處理器（inline event handler）
-- 內容安全政策（Content Security Policy）
+- 事件（event）
+- 監聽（event listener）
+- 內容安全政策（Content Security Policy，CSP）
 - 事件物件（event object）
-- 事件目標（event target）
-- 目前目標（currentTarget）
-- 視窗座標（clientX）
-- 頁面座標（pageX）
-- 偏移座標（offsetX）
-- 鍵值（key）
-- 實體鍵碼（code）
-- 重複按鍵（repeat）
+- 指標（pointer）
 - 修飾鍵（modifier key）
-- 預設行為（default action）
-- 事件冒泡（event bubbling）
+- 預設動作（default action）
+- 傳播（propagation）
 - 事件委派（event delegation）
+- 控制項（form control）
+- 焦點（focus）
+- 組字（IME composition）
+- 事件冒泡（event bubbling）
 - 事件捕獲（event capture）
-- 表單資料（FormData）
-- 約束驗證（constraint validation）
+- 表單驗證（form validation）
+- 正規表示式（regular expression）
 
 ## 資料驅動畫面
 
-這一組是清單怎麼跟著資料重畫。待辦清單是這個做法的練習。
-
 - 狀態（state）
 - 重繪（re-render）
+- 唯一資料來源（single source of truth）
 
 ## 選讀：打地鼠
 
-這一組是遊戲裡兩個會重複發生的動作。停留時間與分數都寫在狀態裡。
-
-- 生成（spawn）
+- 閒置（idle）
+- 地鼠出現（spawn）
 - 命中（hit）
-

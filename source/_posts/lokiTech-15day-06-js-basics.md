@@ -13,57 +13,60 @@ date: 2026-08-30 10:05:00
 
 ![](assets/images/banner/js.png)
 
-JavaScript 是瀏覽器內建、負責行為的程式語言：資料變了，接下來要算什麼。這一篇先不改畫面，只在 Console 把值算對：變數、型別、字串、判斷、迴圈、函式，再到陣列、物件、內建物件與錯誤處理。模組放在選讀。選取元素、重繪列表與 `fetch` 分在後面兩篇。
+JavaScript 是瀏覽器內建、負責行為的程式語言：資料變了，接下來要算什麼。這一篇先不改畫面，只在 Console 把值算對：變數、型別、字串、判斷、迴圈、函式，再到陣列、物件與解構展開。Math、Date、錯誤處理與模組放在選讀。選取元素、重繪列表與非同步請求分在後面兩篇。
 
 <!-- more -->
 
 # 認識 JavaScript
 
-JavaScript 是瀏覽器用來描述行為的程式語言。這一章先說明它是什麼：和 HTML、CSS 怎麼分工、ECMAScript 與現代寫法、以及在瀏覽器與 Node.js 的執行環境。接著先看內嵌 script，再看外部檔與 src。外部檔是實務做法；為了閱讀方便，課堂 demo 把程式寫在同一份 HTML。然後用 Console 與 `console.log` 看結果，並認識註解。選讀看 alert、confirm 與 prompt。
+JavaScript 是瀏覽器用來描述行為的程式語言。這一章先說明它是什麼：和 HTML、CSS 怎麼分工、ECMAScript 是什麼，以及它能在哪些環境執行。接著學最基本的寫法：把程式寫進 HTML、用 Console 看結果、加上註解，再把程式拆成外部檔。選讀看瀏覽器內建的彈窗。
 
 ## JavaScript 是什麼
 
-網頁分成結構、外觀、行為。前兩層你已經寫過，行為這層才開始用程式描述資料變了之後要算什麼。這一節分三部分：HTML、CSS、JavaScript 的分工，ECMAScript 與現代寫法，以及瀏覽器與 Node.js 的執行環境。
+網頁分成結構、外觀、行為三層。前兩層你已經寫過，行為這層才開始用程式描述事情發生之後要做什麼。這一節依序看三層的分工、語言的標準版本，以及程式可以執行的環境。
 
 ### HTML、CSS、JavaScript 的分工
 
-HTML 負責結構，CSS 負責外觀，JavaScript 負責行為。第 02 天寫的標記、第 03 天寫的樣式，都還只決定頁面上有什麼、長什麼樣子。點了之後要算什麼、送出前要檢查什麼，這些互動要寫成 JavaScript 才會發生。
+HTML 負責結構，CSS 負責外觀，JavaScript 負責行為。標記與樣式只決定頁面上有什麼、長什麼樣子；點了之後要算什麼、送出前要檢查什麼，這些互動要寫成 JavaScript 才會發生。
 
 ![同一塊內容的三層：HTML 是結構骨架，CSS 加上外觀，JavaScript 處理點擊後的行為](assets/images/js-html-css-js-roles.jpg)
 
 ### ECMAScript 與現代寫法
 
-JavaScript 是瀏覽器內建的程式語言，瀏覽器讀到 script 就由上往下執行。語言的標準叫做 ECMAScript，2015 年的第 6 版（ES6）定下 `let`、`const`、箭頭函式與模組，本課用 ES6 以後的現代寫法。
+瀏覽器內建了 JavaScript 的執行能力，讀到 script 就由上往下執行。語言的標準叫做 ECMAScript，2015 年的第 6 版（ES6）加入 `let`、`const`、箭頭函式與模組，本課使用 ES6 以後的現代寫法。
 
-名稱裡有 Java，它和 Java 是兩種語言，語法與執行環境都不一樣。
+名稱裡有 Java，但它和 Java 是兩種不同的語言，語法與執行環境都不一樣。
 
 ![JavaScript 版本時間軸：1995 誕生、2009 ES5、2015 ES6 帶來 let／const、箭頭函式、class、module，之後每年一版；本課使用 ES6 以後的現代寫法](assets/images/js-ecmascript-timeline.jpg)
 
 ### 執行環境：瀏覽器與 Node.js
 
-這裡先分執行的地方，再說明這一篇停在語言本身，下一篇才碰文件物件模型（DOM）。
+同一套 JavaScript 可以在兩個地方執行：瀏覽器用它操作網頁與表單，Node.js（讓 JavaScript 離開瀏覽器、在電腦上執行的環境）可以讀寫檔案，pnpm 與 Vite 這類工具也是靠 Node.js 執行。前面安裝的 Node.js 負責工具鏈，寫出來的網頁程式最後仍然送到瀏覽器執行。
 
-![同一份 JavaScript 可以在瀏覽器操作網頁與表單，也可以在 Node.js 讀寫檔案、執行 pnpm 與 Vite 等工具](assets/images/js-runtime-browser-node.jpg)
+{% mermaid graph LR %}
+js["JavaScript"] --> browser["瀏覽器"]
+js --> node["Node.js"]
+browser --> b1["操作頁面、處理點擊與表單"]
+browser --> b2["DevTools 的 Console 查看結果"]
+node --> n1["讀寫檔案"]
+node --> n2["執行 pnpm、Vite 等用 JavaScript 寫成的工具"]
+{% endmermaid %}
 
-同一套 JavaScript 可以在瀏覽器執行，也可以在 Node.js 執行。第 04 天裝的 Node 用來安裝套件、啟動 Vite；第 06 天到第 08 天先在瀏覽器裡學語言與畫面。React 階段才會大量用到 Node 的工具鏈，開發伺服器與打包都靠它，寫出來的程式最後仍送到瀏覽器執行。
-
-本篇學的是語言本身：值、變數、函式，以及陣列和物件這些資料怎麼放。下一篇才用 JavaScript 操作畫面，也就是文件物件模型（DOM）。這裡的練習只把結果印到 Console；選取元素與改寫頁面文字留到下一篇。
+本篇先在瀏覽器裡學語言本身：值、變數、函式，以及陣列和物件。結果都印到 Console，下一篇才開始用 JavaScript 操作畫面，也就是文件物件模型（DOM）。
 
 ## 撰寫與執行 JavaScript
 
-這一節先看內嵌 script，再看外部檔，並核對 src 的相對路徑。外部檔是實務做法。為了閱讀方便，後面的課堂 demo 把程式寫在同一份 HTML。接著是 Console 與 `console.log`、註解。選讀看 alert、confirm 與 prompt。結果都看 DevTools 的 Console。
+程式要放進 HTML 才會被瀏覽器執行，結果則要打開 DevTools 的 Console 才看得到。這一節先把程式直接寫在 HTML 裡，認識 Console 與註解，最後再看實務上的做法：把程式拆成外部檔。選讀的最後是瀏覽器內建的彈窗。
 
 ### 內嵌 script
 
-程式可以直接寫在 HTML 的 script 標籤中間，不必另開檔案。這一節看它怎麼跟著頁面由上往下執行。外部檔留給多頁要共用的時候；課堂 demo 為了好讀，仍寫在同一份 HTML。
+程式可以直接寫在 HTML 的 script 標籤中間，不必另開檔案。瀏覽器讀頁面時由上往下處理，碰到 script 就執行裡面的程式。
 
 **觀念**
 
-- script 標籤中間可以直接寫 JavaScript。程式和 HTML 放在同一個檔案，只給這一頁用。
+- 多個 script 依照它們在頁面裡的位置，由上往下各跑一次。
 
-- 執行順序就是這些 script 在頁面裡的位置，由上往下各跑一次。
-
-- 多個頁面沒辦法共用這段程式，HTML 也會被程式碼弄得很長。下一節介紹外部檔，那是多頁共用時的實務做法。為了閱讀方便，課堂 demo 把程式寫在同一份 HTML 裡。
+- 內嵌只適合單頁的小程式。程式變長或多頁要共用時，改用後面介紹的外部檔。
 
 ```html 04-js/pages/01-js-inline.html
 <!DOCTYPE html>
@@ -87,168 +90,43 @@ JavaScript 是瀏覽器內建的程式語言，瀏覽器讀到 script 就由上�
 
 **解析**
 
-- 頁面上有兩段 script，都只呼叫 `console.log`。
-- 瀏覽器先碰到第一段，印出「第一段」，再碰到第二段，印出「第二段」。順序跟標籤在檔案裡的先後相同。
-- 這兩段都寫在 HTML 裡，沒有另開檔案，也不會去載別的檔。
-- 頁面那句說明仍在，因為程式只寫進 Console。
+- 頁面上只看得到那句說明，兩段 script 的結果都在 Console，因為程式沒有改動 HTML。
+- 瀏覽器先執行第一段，再執行第二段，所以 Console 的順序和標籤在檔案裡的先後相同。
 
 ```text
 第一段
 第二段
 ```
 
-{% note success %}
-**換你試試：**
-在 head 裡、其他內容之前，再加一段 script，用 `console.log` 印出「更早的一段」。重新整理後，這句要出現在 Console 的第一行。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新的 script 寫在 head，位置比 body 裡的兩段更上面。Console 第一行先出現「更早的一段」，後面兩行的順序不變。
-
-```diff 04-js/pages/01-js-inline.html
-  // ...
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>內嵌 script</title>
-+     <script>
-+       console.log('更早的一段');
-+     </script>
-    </head>
-    <body>
-      // ...
-```
-
-```text
-更早的一段
-第一段
-第二段
-```
-
-</details>
-
-### 外部 script 檔
-
-內嵌只服務一頁，所以實務上改用外部檔。程式放在獨立的 `.js`，HTML 用 script 的 src 指到它。同一份邏輯可以掛到多頁，HTML 也不會被程式碼撐得很長。
-
-這一節的練習仍分成 HTML 與 js 兩個檔，才能改 src、看載入失敗。Console 那一節沿用同一頁。從註解開始，課堂 demo 把程式寫在同一份 HTML 的 script，對照時不用切檔。多頁要共用時，仍用這裡的外部檔。選讀的模組因為要 import 別的檔，也維持分開。
-
-#### 載入與執行順序
-
-瀏覽器讀到帶有 src 的 script，會先把檔案載入再執行。寫在這個標籤後面的 HTML 會等它跑完。多支外部檔也是依照它們在頁面裡的位置，由上往下各跑一次。
-
-{% mermaid graph LR %}
-html["HTML 載入 script"] --> run["瀏覽器由上往下執行"]
-run --> log["console.log 印出值"]
-log --> panel["DevTools 的 Console"]
-{% endmermaid %}
-
-這一篇把 script 放在 body 最後，頁面上的說明先被讀到，程式再跑。還沒拆成模組之前，同一頁 script 裡的變數在同一層，同名會互相影響。作用域怎麼切開，留在選讀的模組。
-
-#### src 的相對路徑
-
-`src` 是這份 HTML 去找外部檔的位置。下面用 `04-js` 練習資料夾的真實結構對一次。路徑寫錯時，這支程式完全不會執行。
-
-**觀念**
-
-- `src` 寫的是相對這份 HTML 所在位置的路徑。和 HTML 放在同一資料夾時，直接寫檔名，例如 `main.js`。
-
-- 檔案放在子資料夾，路徑要帶資料夾名稱，例如 `js/main.js`。檔案在上一層，就先寫 `../main.js`。
-
-- 路徑開頭加斜線，是從網站根目錄算起。Live Server 的根目錄和部署之後的根目錄可能不同，所以課堂一律用相對路徑。
-
-- 路徑寫錯時，Console 會出現 404 或 `ERR_FILE_NOT_FOUND`。這支檔完全不會執行。
-
-```text
-04-js/
-├── index.html
-├── css/
-│   └── site.css
-└── pages/
-    ├── 01-js-inline.html
-    ├── 02-js-console.html
-    └── 02-js-console.js
-```
-
-```html 04-js/pages/02-js-console.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>console.log、console.warn 與 console.error</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script src="02-js-console.js"></script>
-  </body>
-</html>
-```
-
-**解析**
-
-- `02-js-console.html` 與 `02-js-console.js` 都在 pages。src 只寫檔名，瀏覽器就從這份 HTML 的資料夾把 js 載進來。
-- `01-js-inline.html` 的程式寫在標籤中間，所以沒有 src。
-- `index.html` 在 04-js 這一層。它若要載入 pages 裡的 js，得寫成 `pages/02-js-console.js`，因為檔案在子資料夾。
-- 從 pages 裡的 HTML 要回到上一層找樣式，路徑寫成 `../css/site.css`。index.html 自己載入同一份檔時，因為已經在 04-js，所以寫的是 `css/site.css`。
-- 開頭寫成 `/02-js-console.js` 時，瀏覽器從網站根目錄找，不會從 pages 找。
-- Live Server 把開啟的資料夾當根，部署後根目錄又是網站的另一層，所以同一個斜線路徑兩邊結果可能不同。課堂一律用相對路徑。
-- 把 src 改成 `js/02-js-console.js` 時，pages 底下沒有 js 這個資料夾。用 Live Server 開啟，Console 是 404；用檔案協定直接開啟，多半是 `ERR_FILE_NOT_FOUND`。
-- 兩種訊息都代表檔案沒載到，程式完全沒執行。
-
-{% note success %}
-**換你試試：**
-打開 `pages/02-js-console.html`，把 src 改成 `missing.js`，重新整理，看 Console 的錯誤。確認沒有印出任何結果後，再改回同資料夾的檔名。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`missing.js` 在 pages 裡不存在，所以程式沒有執行。Live Server 會顯示 404，直接開檔則常是 ERR_FILE_NOT_FOUND。改回 `02-js-console.js` 之後，瀏覽器再次從同一資料夾載入。
-
-```html 04-js/pages/02-js-console.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>console.log、console.warn 與 console.error</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script src="02-js-console.js"></script>
-  </body>
-</html>
-```
-
-</details>
+本章的輸出區塊只列出文字內容，和 Console 實際畫面（行號、引號、顏色）略有不同。後面的 demo 為了閱讀方便，除了外部檔那一節，程式都寫在同一份 HTML 的 script 裡。
 
 ### Console 與 console.log
 
-還沒把程式寫進頁面時，可以先在 Console 直接算一行。打開第 02 天的任一頁，按 <kbd>F12</kbd> 切到 Console，輸入下面這一行再按 Enter，下一行是 `15900`。這一行沒有存進檔案，重新整理就消失；後面的練習改寫進同一份 HTML 的 script，結果仍看同一塊 Console。
+Console 是 DevTools 裡顯示程式輸出的面板，也是學習階段最常用的除錯工具。程式呼叫 console 提供的指令（稱為方法）把訊息送進去，頁面本身不會被改動。
+
+打開任一個網頁，按 <kbd>F12</kbd>（Mac 可按 <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>J</kbd>）打開 DevTools 並切到 Console，也可以直接在裡面輸入一行程式再按 Enter，馬上看到結果。這種寫法不會存進檔案，重新整理就消失，適合臨時試算。
 
 ```js
-12800 + 3100
+100 + 50
 ```
 
-`console` 是瀏覽器提供的除錯物件。三個方法都只寫進 Console，不會改這一頁的文字。
+Console 會在下一行顯示 `150`。要讓程式自己把結果印出來，就用下面這些方法。
 
-- `log` 印一般結果。
+**一覽**
 
-- `warn` 印提醒。
-
-- `error` 印失敗。
+- `console.log` 印一般訊息。
+- `console.warn` 印黃色提醒。
+- `console.error` 印紅色錯誤。
 
 **觀念**
 
+- 每一句程式結尾寫分號。
 
-- 這一頁仍用 src 載入同資料夾的 js，路徑相對這份 HTML。檔名打錯時，Console 會出現載入失敗，後面的程式不會跑。
+- 文字要用單引號包起來，引號只是標示範圍，不會印出來。
 
-- 每一句執行完要有分號。字串用引號包起來，引號本身不是印出的內容。
+- 重新整理會把整份程式再跑一遍。上一輪留在 Console 的內容，可以按清除圖示清掉，避免和這一次混在一起。
 
-- 重新整理會把這份檔再跑一遍。上一輪留在 Console 的字可以按清除圖示清掉，避免和這一次混在一起。
-
-```html 04-js/pages/02-js-console.html
+```html 04-js/pages/02-js-console-log.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
@@ -258,80 +136,42 @@ log --> panel["DevTools 的 Console"]
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
-    <script src="02-js-console.js"></script>
+    <script>
+      console.log('Hello JavaScript');
+      console.log('一般訊息');
+      console.warn('這是提醒');
+      console.error('這是錯誤');
+    </script>
   </body>
 </html>
-```
-
-```js 04-js/pages/02-js-console.js
-console.log('洛奇旅行');
-console.log('這一梯有三條行程');
-console.warn('京都那一梯尚未開放報名');
-console.error('找不到編號 9 的行程');
 ```
 
 **解析**
 
-- 按 <kbd>F12</kbd> 打開 Console，重新整理。由上到下四行：一般訊息「洛奇旅行」、一般訊息「這一梯有三條行程」、黃色提醒、紅色錯誤。
-- 頁面中間仍是那一句說明，因為這四行沒有改到 HTML。
-- 把 src 改成不存在的檔名再整理，前四行會消失，改成一筆載入失敗。改回正確檔名就恢復。
+- 打開 Console 重新整理，由上到下出現四行：兩行一般訊息、一行黃色提醒、一行紅色錯誤。
+- 三種方法只差在顯示的樣式與層級，訊息內容都是括號裡的文字。
+- 頁面中間仍是那句說明，因為這四行都只寫進 Console。
 
 ```text
-洛奇旅行
-這一梯有三條行程
-京都那一梯尚未開放報名
-找不到編號 9 的行程
+Hello JavaScript
+一般訊息
+這是提醒
+這是錯誤
 ```
 
-{% note info %}**Console 面板**`log`、`warn`、error 可以在篩選器裡分開看。正式上線前把只為了觀察而留的輸出刪掉，避免 Console 堆滿課堂訊息。{% endnote %}
-
-{% note success %}
-**換你試試：**
-在最後再加一行 `console.log`，印出「開賣日 4/12」。把 `console.warn` 那句改成「花蓮那一梯只剩兩位」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多出來的那一行接在最後，所以 Console 第五行才是開賣日。`warn` 仍是提醒等級，只是句子換成花蓮的名額。
-
-```html 04-js/pages/02-js-console.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>console.log、console.warn 與 console.error</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script src="02-js-console.js"></script>
-  </body>
-</html>
-```
-
-```js 04-js/pages/02-js-console.js
-console.log('洛奇旅行');
-console.log('這一梯有三條行程');
-console.warn('花蓮那一梯只剩兩位');
-console.error('找不到編號 9 的行程');
-console.log('開賣日 4/12');
-```
-
-</details>
+{% note info %}**Console 的篩選器**可以分開顯示一般訊息、提醒與錯誤。為了觀察而留下的輸出，正式上線前要刪掉，避免 Console 堆滿雜訊。{% endnote %}
 
 ### 註解
 
-註解是寫給人看的說明。單行、多行、行尾三種，瀏覽器都會整段跳過。用它解釋為什麼這樣算，不要複述下一行已經看懂的事。暫時不跑的程式也可以先註解起來，而不是刪掉還沒想好的那幾行。
+註解是寫給人看的說明，瀏覽器會整段跳過。它也能暫時停用一段程式，不必刪掉。
 
 **觀念**
 
+- 兩條斜線之後到行尾，都是單行註解。
 
-- 兩條斜線後面到行尾都是註解。
+- 斜線加星號可以包住很多行，結尾必須成對，否則後面的程式會被一起吃掉。
 
-- 斜線加星號可以包很多行，必須有成對的結尾，否則後面的程式會被一起吃掉。
-
-- 註解可以寫在一行程式的後面。字串裡的兩條斜線是文字，不是註解。
+- 註解可以接在一行程式的後面。字串裡的兩條斜線只是文字，不是註解。
 
 ```html 04-js/pages/03-js-comment.html
 <!DOCTYPE html>
@@ -344,16 +184,16 @@ console.log('開賣日 4/12');
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      // 這一梯先賣三條國內與日本行程
-      console.log('洛奇旅行');
+      // 單行註解：兩條斜線到行尾都不會執行
+      console.log('第一行');
 
       /*
-      下一行先不跑。
-      確認欄位後再打開。
+      多行註解：
+      中間每一行都不會執行
       */
-      // console.log('草稿：名額尚未決定');
+      // console.log('被註解掉的程式');
 
-      console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
+      console.log('第二行'); // 行尾註解
     </script>
   </body>
 </html>
@@ -361,58 +201,97 @@ console.log('開賣日 4/12');
 
 **解析**
 
-- Console 只有兩行一般訊息。草稿那一行因為整行被註解，不會出現。
-- 多行註解裡的中文也不會出現。行尾註解只給讀程式的人看，不影響前面那句 `log`。
-- 若多行註解少寫結尾，後面的 `log` 也會被包進去，Console 就只剩第一行。
+- Console 只有兩行，因為被註解掉的 `console.log` 和多行註解裡的文字都不會執行。
+- 行尾註解不影響前面那句程式，它仍然照常印出。
+- 若多行註解少了結尾，後面的 `console.log` 也會被包進去，Console 就只剩第一行。
 
 ```text
-洛奇旅行
-行程以天數計價
+第一行
+第二行
 ```
 
 {% note info %}
-**註解寫為什麼**
-「印出標題」這種話和程式重複。比較有用的是「這筆先不印，因為值還沒決定」這類原因。
+**註解寫原因**
+「印出第一行」這種註解只是重複程式。比較有用的是說明為什麼這樣寫，例如「這筆先不印，因為值還沒決定」。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-把草稿那一行的註解拿掉，讓它真的印出來。再在最後加一行註解，寫「價格單位是新台幣」，不要讓這句出現在 Console。
-{% endnote %}
+### 外部 script 檔
 
-<details>
-<summary>參考答案</summary>
+內嵌的程式只能給單頁使用。實務上把程式放進獨立的 `.js` 檔，HTML 用 script 的 src 屬性指到它，同一份程式就能掛到多個頁面，HTML 也不會被程式碼撐得很長。
 
-拿掉行首的兩條斜線後，草稿變成會執行的程式，所以 Console 中間多一行。最後那句放在兩條斜線後面，瀏覽器跳過，不會多印一行。
+#### 載入與執行順序
 
-```diff 04-js/pages/03-js-comment.html
-  // ...
-        確認欄位後再打開。
-        */
-+       console.log('草稿：名額尚未決定');
-  
-        console.log('行程以天數計價'); // 畫面還沒畫，只先核對資料
-      </script>
-    // ...
-```
+瀏覽器讀到帶有 src 的 script，會先載入檔案再執行，寫在它後面的 HTML 要等它跑完才繼續處理。多支外部檔也依照它們在頁面裡的位置，由上往下各跑一次。
 
-</details>
+{% mermaid graph LR %}
+html["HTML 載入 script"] --> run["瀏覽器由上往下執行"]
+run --> log["console.log 印出值"]
+log --> panel["DevTools 的 Console"]
+{% endmermaid %}
 
-### 選讀：alert、confirm 與 prompt
+本篇的 demo 都把 script 放在 body 最後，頁面內容先被讀到，程式再執行，載入檔案時才不會擋住頁面顯示。
 
-這三個都是瀏覽器內建的函式，會跳出必須先處理的視窗。程式一行一行跑，碰到彈窗就整個停住，頁面的點擊和畫面更新也一起停。按掉之後，下一行才繼續。
+#### src 的相對路徑
+
+src 寫的是外部檔的位置，路徑寫錯，這支程式就完全不會執行。
 
 **觀念**
 
-- `alert` 只顯示訊息。按掉之後沒有帶回可用的結果。
+- 路徑相對於這份 HTML 所在的資料夾。檔案在同一個資料夾，直接寫檔名即可。
 
-- confirm 讓人選確定或取消，回傳 `true` 或 `false`。
+- 檔案在子資料夾，路徑要帶資料夾名稱；檔案在上一層，路徑以 `../` 開頭。
 
-- `prompt` 回傳輸入的字串。按取消會得到 `null`。
+- 路徑以斜線開頭，是從網站根目錄算起。開發時的根目錄和部署後的根目錄可能不同，所以本課一律用相對路徑。
 
-- 這種停住叫做同步、阻斷。程式本來就一行一行跑；碰到彈窗時，要等瀏覽器處理完這個視窗，下一行才會執行。後面的程式、頁面上的操作、還沒畫上去的畫面都在等。
+```text
+src="03b-js-console.js"      同一個資料夾
+src="js/03b-js-console.js"   子資料夾 js 裡
+src="../03b-js-console.js"   上一層資料夾
+src="/03b-js-console.js"     網站根目錄
+```
 
-- 實務上很少用。彈窗會卡住整個分頁，樣式也不能改成網站自己的樣子。除錯要看 Console，才不會被視窗打斷。
+```html 04-js/pages/03b-js-console.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>外部 script 檔</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script src="03b-js-console.js"></script>
+  </body>
+</html>
+```
+
+```js 04-js/pages/03b-js-console.js
+console.log('外部檔已載入');
+```
+
+**解析**
+
+- HTML 和 js 放在同一個資料夾，src 只寫檔名，瀏覽器就能載入。Console 顯示「外部檔已載入」，表示外部檔跑成功。
+- 把 src 改成 `js/03b-js-console.js`，這個資料夾底下沒有 js 子資料夾，檔案找不到。用 Live Server 開啟時 Console 會出現 404，直接開檔案時多半是 `ERR_FILE_NOT_FOUND`。
+- 兩種訊息都代表檔案沒載到，外部檔裡的程式完全沒執行。
+
+```text
+外部檔已載入
+```
+
+### 選讀：alert、confirm 與 prompt
+
+這三個是瀏覽器內建的函式，會跳出必須先處理的視窗。程式本來就一行一行往下跑，碰到彈窗就停住，等視窗關掉才繼續，這種等待叫做同步阻斷。
+
+**觀念**
+
+- `alert` 只顯示訊息，沒有可用的回傳值（函式執行完交回來的結果）。
+
+- `confirm` 讓人選確定或取消，回傳 `true` 或 `false`。
+
+- `prompt` 讓人輸入文字，回傳輸入的字串；按取消得到 `null`。
+
+- 實務上很少用：彈窗會卡住整個分頁，樣式也不能改成網站自己的風格。除錯請改看 Console。
 
 ```html 04-js/pages/04-js-dialog.html
 <!DOCTYPE html>
@@ -441,17 +320,12 @@ console.log('開賣日 4/12');
 
 **解析**
 
-- 重新整理後，頁面先出現說明文字，接著跳出 alert。這時 Console 只有「alert 之前」。
-- 視窗開著的時候頁面不能點，後面的 log 也不會出現。
-- 按掉 alert 之後，Console 接著印出 `undefined`、alert 之後、confirm 之前，然後才跳出 confirm。
-- `undefined` 是 alert 的回傳值，它沒有帶回訊息內容。
-- confirm 按確定，下一行是 `true`；按取消是 `false`。
-- 視窗關掉後才印出 confirm 之後和 prompt 之前，然後跳出 prompt。
-- prompt 輸入文字再按確定，Console 印出那個字串。按取消則印 `null`。
-- 沒輸入就按確定，印出的是空字串，它和按取消不同。
-- 最後一行「prompt 之後」一定等這個視窗關掉才出現。
-- 三個視窗都結束後，頁面中間仍是原來那句說明，因為這些程式沒有改 HTML。
-- 下面假設 confirm 按確定、prompt 輸入「小明」再按確定：
+- 重新整理後跳出 alert，這時 Console 只有「alert 之前」。視窗開著時頁面不能點，後面的 log 也不會出現。
+- 按掉 alert 後，Console 印出 `undefined`，那是 alert 的回傳值；接著才印「alert 之後」與「confirm 之前」，然後跳出 confirm。
+- confirm 按確定印出 `true`，按取消印出 `false`。
+- prompt 輸入文字再按確定，印出那個字串；按取消印出 `null`；沒輸入就按確定，印出空字串，和取消不同。
+
+以下輸出是 confirm 按確定、prompt 輸入「小明」再按確定的結果。
 
 ```text
 alert 之前
@@ -464,73 +338,42 @@ prompt 之前
 小明
 prompt 之後
 ```
-
-{% note success %}
-**換你試試：**
-在最後再呼叫一次 `confirm`，訊息寫「再問一次」。前後各用 `console.log` 印「第二次之前」和「第二次之後」。分別按確定和取消，看中間那行差在哪。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多出來的 confirm 接在三個視窗後面。按確定時，第二次之前和第二次之後中間是 `true`；按取消則是 `false`。
-
-```diff 04-js/pages/04-js-dialog.html
-  // ...
-        console.log(prompt('請輸入名字'));
-        console.log('prompt 之後');
-+       console.log('第二次之前');
-+       console.log(confirm('再問一次'));
-+       console.log('第二次之後');
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 # 變數與資料型別
 
-變數是一個名字，對到目前記住的值。先把值放進名字，後面的計算才不用把數字散落在每一行。名字區分大小寫，`price` 和 `Price` 是兩個不同的名字。這一章先給值取名字，再分辨種類與轉型。字串的寫法與方法在下一章。
+變數是替值取的名字，程式可以先把值記在名字上，之後要印出或計算，只要寫名字就好。這一章先學怎麼宣告變數、分辨 `const` 與 `let`、了解名字有效的範圍，再認識值的種類（資料型別）、不同種類之間的轉換，以及三種容易混淆的特殊值。字串的寫法與方法留到下一章。
 
 ## 變數與常數
 
-變數是幫一個值取名字，方便之後使用。值先放進名字，後面要印出來或拿去計算時，寫名字就好。
+宣告變數就是替一個值取名字。這一節依序說明宣告與命名的規則、`const` 與 `let` 該怎麼選，以及名字有效的範圍。
 
 ### 宣告變數與命名
 
-用 `let` 把一個值取成名字，等號右邊放第一個值。名字用英文 camelCase，讓人看得出這個值是什麼。不能數字開頭，也不能把保留字拿來當名字。
+宣告時先寫關鍵字（`const` 或 `let`），接著是名字、等號與值。名字決定別人讀程式時能不能看懂這個值是什麼，所以要遵守硬性規則，也要照慣例命名。
 
 **觀念**
 
+- 宣告的寫法是 `const price = 12800;`，字串要加引號，數字不加。`const` 的用法下一小節說明。
+- 名字不能以數字開頭，也不能使用保留字（語法自己要用的詞，例如 `return`、`if`）。
+- 名字會區分大小寫，`userName` 與 `UserName` 是兩個互不相干的名字。
+- 違反硬性規則時，瀏覽器在開始執行前就報 SyntaxError（語法錯誤，看不懂這行寫法），整份 script 都不會執行，連前面的 `console.log` 也不會出現。
+- 名字要看得出用途：`price` 一看就知道是價格，`x`、`temp`、`data1` 看不出來，要換成有意義的名字。
 
-- 宣告寫成 `let tourTitle = '台北城市漫遊';`。字串加引號，數字不加。
-
-- 名字由好幾個英文單字組成時，中間不能有空白，業界依用途有固定的大小寫慣例。這些只是開發習慣，不是語法規定，但照著寫，別人一看就知道這個名字是什麼東西：
+名字由多個英文單字組成時不能有空白，業界依用途有固定的大小寫慣例。這些不是語法規定，但照著寫，別人一看就知道名字是哪一類東西：
 
 ```js
-// 小駝峰 camelCase：第一個單字全小寫，後面每個單字首字母大寫
-// 一般變數、函式都用這種，本篇的變數都照這個寫
-let tourTitle = '台北城市漫遊';
-let pricePerPerson = 12800;
+// 小駝峰 camelCase：第一個單字小寫，其餘單字首字母大寫
+// 一般變數與函式都用這種，本課程照這個寫
+const userName = 'Amy';
+const pricePerPerson = 12800;
 
 // 大駝峰 PascalCase：每個單字首字母都大寫
-// 語法上也能宣告變數，但習慣保留給 class 與元件（React 階段會大量用到）
-let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
+// 習慣保留給 class 與 React 元件（之後的章節才會學到）
+const UserCard = '習慣上不拿來當一般變數';
 
-// 全大寫 UPPER_SNAKE_CASE：全部大寫、單字用底線連接
-// 習慣用在整個程式都固定不變的設定值，通常搭配 const（下一節會介紹）
+// 全大寫 UPPER_SNAKE_CASE：單字之間用底線連接
+// 習慣用在整個程式都固定不變的設定值
 const MAX_PEOPLE = 12;
-const TAX_RATE = 0.05;
 ```
-
-- `3days` 不合法，因為數字不能當開頭；`tourDays` 可以。
-
-- 保留字是語法自己要用的詞，不能再拿來當名字，例如 `let` 與 `const`。
-
-- `return` 與 `if` 也是保留字，同樣不能當名字。
-
-- 名字要看得出用途。`tourTitle` 看得出是標題，`data` 看不出來存的是什麼。
 
 ```html 04-js/pages/05-js-name.html
 <!DOCTYPE html>
@@ -543,18 +386,19 @@ const TAX_RATE = 0.05;
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      let tourTitle = '台北城市漫遊';
-      let TourTitle = '台北城市漫遊'; // 能跑，但 PascalCase 習慣上留給 class 和元件用
-      let tourDays = 3;
-      let pricePerPerson = 12800;
+      const userName = 'Amy';
+      const UserName = 'Bob';
+      const pricePerPerson = 12800;
+      const days3 = 3;
+      const returnDate = '2026-12-24';
 
-      console.log(tourTitle);
-      console.log(tourDays);
+      console.log(userName, UserName);
       console.log(pricePerPerson);
-      console.log(tourTitle, TourTitle);
+      console.log(days3, returnDate);
 
-      // let 3days = 3;
-      // let return = '不能用保留字';
+      // 下面兩行都會 SyntaxError，所以維持註解
+      // const 3days = 3;
+      // const return = 'x';
     </script>
   </body>
 </html>
@@ -562,87 +406,27 @@ const TAX_RATE = 0.05;
 
 **解析**
 
-- 前三行依序是 `tourTitle`、天數、單價：一個字串、數字 3、數字 12800。這三個名字都是 camelCase，看得出各自存什麼。
-- JavaScript 會區分大小寫，所以 `TourTitle` 和 `tourTitle` 是兩個不同的變數。
-- 兩個同時存在也不會互相覆蓋，也不會報錯。
-- 多出來的那一行 `console.log` 把兩個名字的值印在同一行，Console 才看得到它們各自都在。
-- 最後兩行是故意寫錯的命名，所以維持註解。
-- 宣告變數時，名字有兩條硬性規則：不能用數字開頭，也不能用 JavaScript 已經保留給語法使用的單字（保留字）。
-- 數字可以出現在名字中間或結尾，保留字也只是不能「單獨」拿來當名字，包含在較長的名字裡沒關係。
-- 違反規則時，瀏覽器在讀程式的階段就會報 SyntaxError，整個檔案都不會執行，連前面的 console.log 也不會出現。
-
-```js
-// 不能用數字開頭
-let 3days = 3;      // ✗ SyntaxError
-let days3 = 3;      // ✓ 數字放在後面可以
-let tourDays = 3;   // ✓ 建議寫法
-
-// 不能用保留字當名字
-let return = 'x';   // ✗ return 是保留字
-let if = 'x';       // ✗ if、for、let、const、function 等都是保留字
-let returnDate = '2026-12-24'; // ✓ 包含保留字的長名字可以
-```
+- 第一行同時印出兩個名字的值。`userName` 與 `UserName` 只差一個字母的大小寫，卻各自保存自己的值，不會互相覆蓋，也不會報錯。
+- 名字中間或結尾可以有數字，所以 `days3` 合法；保留字也只是不能單獨當名字，包含在較長的名字裡（例如 `returnDate`）沒有問題。
+- 最後兩行是故意寫錯的命名：第一行以數字開頭，第二行用了保留字。若拿掉註解，整份 script 會因 SyntaxError 一行都不執行，上面的三行 `console.log` 也看不到。
 
 ```text
-台北城市漫遊
-3
+Amy Bob
 12800
-台北城市漫遊 台北城市漫遊
+3 2026-12-24
 ```
-
-{% note info %}
-**名字給人讀**
-同一篇練習用同一套寫法：英文 camelCase、單引號字串。看到 x、temp、data1，就換成看得出用途的名字。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-再宣告 `placeName` 為「花蓮」，以及 `onSale` 為 true。兩個都印出來。不要用數字開頭，也不要用保留字當名字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`placeName` 與 `onSale` 都是合法的 camelCase。地點帶引號，開賣與否是布林 true，不加引號。錯誤寫法仍留在註解裡，所以程式跑得完。
-
-```diff 04-js/pages/05-js-name.html
-  // ...
-        let tourDays = 3;
-        let pricePerPerson = 12800;
-+       let placeName = '花蓮';
-+       let onSale = true;
-  
-        console.log(tourTitle);
-        console.log(tourDays);
-        console.log(pricePerPerson);
-        console.log(tourTitle, TourTitle);
-+       console.log(placeName);
-+       console.log(onSale);
-  
-        // let 3days = 3;
-        // let return = '不能用保留字';
-      </script>
-    // ...
-```
-
-</details>
 
 ### let 與 const 的差別
 
-預設用 `const`：這個名字固定對到同一個值，再寫一次等號會在 Console 報錯，原本的值留著。只有整個要換成另一個值時才用 `let`，例如把一個數字改成另一個數字。
-
-同一個名字在同一層不能宣告兩次。沒有宣告就直接賦值，會變成誰都能改到的全域名字，所以每一個值都先宣告。
+兩個關鍵字都能宣告變數，差別在於宣告之後，名字能不能再指到別的值。現代寫法預設用 `const`，只有確定這個名字之後要換成新值時才改用 `let`，讀程式的人看到 `const` 就知道它不會變。
 
 **觀念**
 
-
-- 宣告用 `let` 或 `const`，名字在等號左邊，值在右邊。
-
-- `let` 之後可以用等號換成新值。`const` 再賦值會是 TypeError。
-
-- 同一個名字在同一層不能宣告兩次。沒有宣告就直接賦值，會變成誰都能改到的全域名字。
-
-- 先寫 `const`。寫到後來這個名字真的要改，再換成 `let`。讀程式的人就知道哪些名字會變。
+- `const` 宣告之後不能再賦值（用等號放進新值），再寫一次等號會得到 TypeError（型別錯誤），原本的值留著。
+- `let` 宣告之後可以用等號換成新值。
+- 先寫 `const`，寫到後來真的需要換值，再改成 `let`。
+- 同一個名字在同一層不能宣告兩次，否則是 SyntaxError。
+- 每個名字都要先宣告再用。沒有宣告就直接賦值不會報錯，卻會產生整個程式都能改到的名字，容易出錯。
 
 ```html 04-js/pages/06-js-let.html
 <!DOCTYPE html>
@@ -655,16 +439,18 @@ let returnDate = '2026-12-24'; // ✓ 包含保留字的長名字可以
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
+      const productName = '無線滑鼠';
+      const taxRate = 0.05;
       let price = 12800;
-      const days = 3;
-      const title = '台北城市漫遊';
 
       price = 13900;
 
-      console.log(title);
-      console.log(days);
+      console.log(productName);
+      console.log(taxRate);
       console.log(price);
-      // days = 4;
+
+      // 下面這行會 TypeError，所以維持註解
+      // taxRate = 0.1;
     </script>
   </body>
 </html>
@@ -672,93 +458,30 @@ let returnDate = '2026-12-24'; // ✓ 包含保留字的長名字可以
 
 **解析**
 
-- 三行依序是字串、數字 3、換成 13900 之後的數字。
-- `price` 用 `let` 宣告，所以等號可以把它從 12800 換成 13900。
-- `days` 是 `const`，最後那一行若拿掉註解，Console 會出現 TypeError。
-- 前面的三行已經印完，錯誤停在這一行。
+- 三行依序印出字串、固定的稅率 0.05，以及換值之後的價格 13900。
+- `price` 用 `let` 宣告，所以能從 12800 換成 13900；`productName` 與 `taxRate` 整段程式都不會變，所以用 `const`。
+- 最後一行若拿掉註解，Console 會出現 TypeError，錯誤發生的那一刻才停下來，前面三行已經印完。
 
 ```text
-台北城市漫遊
-3
+無線滑鼠
+0.05
 13900
 ```
 
 {% note info %}
-**先 const，需要再改成 let**
-一開始先綁死。寫到一半發現這個名字真的要換成新值，再改成 `let`。整段都不會換成新值的，就留在 `const`。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-把 price 再改成 14200，並新增一個 `let`，名字叫 seats，從 8 改成 6，最後把 seats 印出來。days 維持不能換。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`price` 與 `seats` 都是 let，所以各自可以換成新數字。
-
-`days` 仍是 `const`，Console 不會因為名額改變而把天數換成別的數。
-
-```diff 04-js/pages/06-js-let.html
-  // ...
-        const days = 3;
-        const title = '台北城市漫遊';
-+       let seats = 8;
-  
--       price = 13900;
-+       price = 14200;
-+       seats = 6;
-  
-        console.log(title);
-        console.log(days);
-        console.log(price);
-+       console.log(seats);
-        // days = 4;
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-{% note info %}
-**var 已淘汰**
-
-`var` 是早期宣告變數的方式，缺乏區塊作用域保護：只認函式範圍，`{}` 擋不住，同一個名字也能再宣告一次。
-
-ES6（2015）推出 `let` 與 `const` 之後，現代 JavaScript 已淘汰這種寫法。
-
-```js
-{
-  var place = '台北';
-  let spot = '花蓮';
-}
-console.log(place); // 台北。大括號擋不住 var
-// console.log(spot); // let 出了大括號就找不到
-
-var days = 3;
-var days = 5; // 可重複宣告，5 蓋掉 3
-```
-{% endnote %}
-
-{% note info %}
-**const 鎖住的是綁定**
-數字、字串、布林放進 const 之後不能再賦值。陣列和物件是容器，變數裡存的是指向容器的參考。格子裡的內容能不能改，陣列那一章會和重新賦值放在一起看。
+**const 鎖住的是名字與值的對應**
+數字、字串、布林放進 const 之後就不能換成別的值。陣列與物件是容器，變數裡存的是指向容器的參考，容器裡面的內容能不能改，陣列那一章會一併說明。
 {% endnote %}
 
 ### 區塊作用域
 
-一對大括號是一個區塊作用域。裡面宣告的名字只活在那一對括號裡，外面同名的名字不會被蓋掉。內層的值讀完，外層那個名字還是原來的值。
+一對大括號形成一個區塊，區塊裡用 `let` 或 `const` 宣告的名字，只在這一對大括號裡有效，這個有效範圍叫作用域。範圍分得清楚，同樣的名字才能在不同區塊各自使用而不互相干擾。
 
 **觀念**
 
-
-- 內層可以再用一次外面已經用過的名字，兩個名字各看各的值。
-
-- 內層的名字在右括號之後就找不到，拿去 `log` 會是 ReferenceError。
-
-- 內層沒有自己的宣告時，會往外層找到同名的那個值。
+- 內層可以再宣告一個和外層同名的名字，兩者各自保存自己的值。
+- 內層沒有自己宣告時，會往外層找同名的名字。
+- 內層的名字在右大括號之後就不存在，要讀它會得到 ReferenceError（找不到這個名字）。
 
 ```html 04-js/pages/07-js-scope.html
 <!DOCTYPE html>
@@ -772,15 +495,19 @@ var days = 5; // 可重複宣告，5 蓋掉 3
     <p>結果在 DevTools 的 Console。</p>
     <script>
       const place = '台北';
+      const country = '台灣';
 
       {
         const place = '花蓮';
         const days = 3;
         console.log(place);
         console.log(days);
+        console.log(country);
       }
 
       console.log(place);
+
+      // 下面這行會 ReferenceError，所以維持註解
       // console.log(days);
     </script>
   </body>
@@ -789,76 +516,53 @@ var days = 5; // 可重複宣告，5 蓋掉 3
 
 **解析**
 
-- 第一行是內層的字串「花蓮」，第二行是內層的數字。
-- 大括號結束後再印 `place`，回到外層的「台北」。
-- 最後一行若拿掉註解，Console 會說 days 沒有宣告，因為它只存在那一對括號裡。
+- 前兩行是大括號裡面的值：內層的「花蓮」與數字 3。第三行的 `country` 內層沒有宣告，所以往外層找到「台灣」。
+- 離開大括號後再印 `place`，回到外層的「台北」，可見內層同名的宣告沒有蓋掉外層。
+- 最後一行若拿掉註解，Console 會說 days 沒有定義，因為它只存在於那一對大括號裡。
 
 ```text
 花蓮
 3
+台灣
 台北
 ```
 
 {% note warning %}
 **不要省略宣告**
-若內層寫成 `place = '花蓮'` 而沒有 `const`，改到的是外層那個名字。區塊作用域就失去隔開的作用。
+若內層寫成 `place = '花蓮'` 而沒有關鍵字，那不是新名字，而是在改外層的 place。外層是 const 時會 TypeError，外層是 let 時則悄悄把外層的值換掉。要一個獨立的內層名字，一定要寫宣告。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-在內層加上 `const title = '花蓮山海三日'` 並印出來。外層再宣告另一個 `title` 為「台北城市漫遊」，放在大括號後面印出，確認兩個標題沒有互相蓋掉。
-{% endnote %}
+{% note info %}
+**var 已淘汰**
+`var` 是 ES6（2015）之前宣告變數的唯一寫法，現代程式碼已不再使用。它不認區塊，只認函式範圍（之後學函式時會看到），所以大括號擋不住；同一個名字也能重複宣告而不報錯，容易不小心蓋掉原本的值。讀到舊程式碼遇到 `var` 時，把它當成較鬆散的 `let` 來看即可。
 
-<details>
-<summary>參考答案</summary>
+```js
+{
+  var place = '台北';
+  let spot = '花蓮';
+}
+console.log(place); // 台北，大括號擋不住 var
+// console.log(spot); // let 出了大括號就找不到
 
-內層印出的是花蓮的標題。右括號之後那個 `title` 是外層新宣告的名字，所以最後一行是台北，花蓮那筆不會漏出來。
-
-```diff 04-js/pages/07-js-scope.html
-  // ...
-          const place = '花蓮';
-          const days = 3;
-+         const title = '花蓮山海三日';
-          console.log(place);
-          console.log(days);
-+         console.log(title);
-        }
-  
-+       const title = '台北城市漫遊';
-        console.log(place);
-+       console.log(title);
-        // console.log(days);
-      </script>
-    </body>
-  // ...
+var days = 3;
+var days = 5; // 可重複宣告，5 蓋掉 3
 ```
-
-</details>
+{% endnote %}
 
 ## 資料型別與轉型
 
-每個值都有種類：文字是字串，用來計算的是數字，成立與否是布林。種類不同時，看起來一樣的「3」比較起來不會相等。要換成另一種，就寫明轉換，不要指望程式自己猜。這一節先看資料型別，再看型別轉換，最後看 null、undefined 與 NaN。
+每個值都有自己的種類，文字是字串、計算用的是數字、成立與否是布林。種類不同，運算規則就不同，連看起來一樣的 3 與 '3' 行為都不同。這一節先認識資料型別，接著學習在種類之間明確轉換，最後分清三種「沒有值」或「無效值」。
 
 ### 資料型別
 
-JavaScript 宣告時不必先寫種類，值放進去的那一刻種類就定了。同一個 `let` 之後可以改放別種值，但那樣讀起來容易誤判，課堂讓一個名字維持一種用途。
-
-常見的種類可以先分成下面幾種。要確認種類時，`typeof` 會回報種類的名稱。
-
-- 數字不加引號，可以是整數或小數。
-
-- 字串用引號包住，引號裡的數字仍是文字。
-
-- 布林只有兩個值，寫來代表成立或不成立。
+宣告變數時不必先寫種類，值放進去的那一刻種類就決定了。一個名字固定放同一種用途的值，讀程式的人才不會誤判。這一小節先認識最常用的三種：數字、字串與布林，並用 `typeof` 查詢種類。
 
 **觀念**
 
-
-- 字串可以用單引號或雙引號，一篇裡選定一種。本課程統一使用單引號。
-
-- `typeof` 後面空一格再放值，結果是種類的字串，不是值本身。
-
-- 布林不是「有」和「沒有」兩個中文字，只有 true 與 false。
+- 數字不加引號，整數與小數都是數字。
+- 字串用引號包住，引號裡的數字仍然是文字。本課程統一使用單引號。
+- 布林只有 `true` 與 `false` 兩個值，代表成立或不成立。
+- `typeof` 後面空一格接上值，結果是種類名稱的字串，不是值本身。
 
 ```html 04-js/pages/08-js-types.html
 <!DOCTYPE html>
@@ -880,7 +584,9 @@ JavaScript 宣告時不必先寫種類，值放進去的那一刻種類就定了
       console.log(typeof days);
       console.log(typeof price);
       console.log(typeof onSale);
-      console.log(title);
+
+      // 引號決定種類：同樣是 3，有沒有引號種類就不同
+      console.log(typeof '3');
     </script>
   </body>
 </html>
@@ -888,79 +594,33 @@ JavaScript 宣告時不必先寫種類，值放進去的那一刻種類就定了
 
 **解析**
 
-- 前四行是種類名稱：字串、數字、數字、布林。最後一行才是字串本身。
-- 數字很大，種類仍是數字，不會因為位數變多就變成字串。
+- 前四行是種類名稱，依序為字串、數字、數字、布林。整數與小數都是 number。
+- 最後一行的 `'3'` 有引號，所以種類是 string。畫面上長得和數字 3 一樣，但相加與比較的規則不同，下一小節會看到後果。
 
 ```text
 string
 number
 number
 boolean
-台北城市漫遊
+string
 ```
-
-{% note info %}
-**引號決定種類**
-`3` 是數字，`'3'` 是只有一個字元的字串。畫面上長得一樣，比較與加減的規則不同。
-{% endnote %}
 
 {% note warning %}
-**typeof 有兩個舊結果**
-`typeof null` 得到的字串是 object。這是早期留下的結果，判斷空位要改用嚴格相等對上 null。
-
-陣列拿去 typeof，得到的也是 object。要確認一個值是不是陣列，用 `Array.isArray`。用法在陣列那一章。
+**typeof 對陣列與 null 的結果**
+陣列拿去 typeof 得到的是 object，要確認一個值是不是陣列，改用 `Array.isArray`，陣列那一章會說明。`typeof null` 也是 object，這是早期留下來的結果，null 的判斷方式見後面的小節。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-再加上字串「花蓮」，以及一個布林 false。把這兩個值的種類與值都印出來。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-地點帶引號，種類是 string。`full` 沒有引號，而且是布林的 false，種類才是 boolean。若寫成 `'false'`，種類會變成 string。
-
-```diff 04-js/pages/08-js-types.html
-  // ...
-        const price = 12800;
-        const onSale = true;
-+       const place = '花蓮';
-+       const full = false;
-  
-        console.log(typeof title);
-        console.log(typeof days);
-        // ...
-        console.log(typeof onSale);
-        console.log(title);
-+       console.log(typeof place);
-+       console.log(place);
-+       console.log(typeof full);
-+       console.log(full);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 型別轉換
 
-JavaScript 內建了一批可以直接呼叫的函式，例如 Number、String 與 Boolean。自己寫函式留到函式那一章再教。字串要變成數字時，下面兩種讀法停的地方不一樣。
-
-- parseInt 從左邊開始讀數字，遇到第一個不是數字的字元就停下，所以 `'12px'` 會得到 12。第二個參數固定寫 10。
-
-- Number 要求整段都是合法的數字，否則會得到 NaN。
+不同種類的值碰在一起時，JavaScript 有時會自己轉換，結果常常出乎意料，所以需要轉換時要自己明確地寫。這一小節看三個內建的轉換函式、字串接數字時的陷阱，以及從字串取出數字的兩種做法。
 
 **觀念**
 
-- `Number` 把值轉成數字。
-
+- `Number` 把值轉成數字，整段都是合法數字才成功，否則得到 NaN（不是有效數字的結果，下一小節說明）。
 - `String` 把值轉成字串。
-
-- `Boolean` 判斷這個值算真還是算假。
-
-- 字串碰到加號，會把旁邊的數字接成文字。`'5' + 1` 得到 51，不是 6。
+- `Boolean` 判斷值算真還是算假，空字串、0 與 NaN 是假，其餘的字串與數字是真。
+- 字串碰到加號會把旁邊的值接成文字，所以 `'5' + 1` 是 `'51'`，不是 6。
+- `parseInt` 從左邊開始讀，遇到第一個不是數字的字元就停，因此 `'12px'` 得到 12；第二個參數寫 10 表示用十進位讀。
 
 ```html 04-js/pages/09-js-convert.html
 <!DOCTYPE html>
@@ -973,30 +633,23 @@ JavaScript 內建了一批可以直接呼叫的函式，例如 Number、String �
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const daysText = '3';
-      const priceText = '12800';
+      // Number 與 String：互相轉換，並用 typeof 確認種類
+      console.log(Number('3'), typeof Number('3'));
+      console.log(String(12800), typeof String(12800));
 
-      // 原字串與種類；Number 後才是數字。售價轉數字，12800 再轉回字串
-      console.log(daysText, typeof daysText);
-      console.log(Number(daysText), typeof Number(daysText));
-      console.log(Number(priceText), String(12800), typeof String(12800));
-      // 「3天」是 NaN，空字串是 0。0 是 false，文字 '0' 是 true
+      // Number 要求整段都是數字：「3天」是 NaN，空字串是 0
       console.log(Number('3天'), Number(''));
-      console.log(Boolean(0), Boolean('0'));
-      // 加號接成字串 51；先轉成數字再加才是 6
-      const joined = '5' + 1;
-      console.log(joined, typeof joined);
+
+      // Boolean：0 與空字串是 false，文字 '0' 是 true
+      console.log(Boolean(0), Boolean(''), Boolean('0'));
+
+      // 加號會把數字接成文字；先轉成數字再加才是 6
+      console.log('5' + 1);
       console.log(Number('5') + 1);
-      // parseInt 從左邊讀，遇到小數點或單位就停。Number 則整段都要合法
-      console.log(Number('3.8'), parseInt('3.8', 10));
+
+      // parseInt 從左邊讀到不是數字就停；Number 則整段都要合法
       console.log(Number('12px'), parseInt('12px', 10));
-      // 空字串：Number 得到 0，parseInt 沒有數字可讀，得到 NaN
-      console.log(Number(''), parseInt('', 10));
-      // 第二個參數固定寫 10。16 把 ff 讀成 255；寫 10 時 f 不是數字，得到 NaN
-      // 省略這個參數時，早期環境看到 0 開頭可能當成八進位
-      console.log(parseInt('ff', 16), parseInt('ff', 10));
-      // Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
-      console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
+      console.log(Number('3.8'), parseInt('3.8', 10));
     </script>
   </body>
 </html>
@@ -1004,85 +657,39 @@ JavaScript 內建了一批可以直接呼叫的函式，例如 Number、String �
 
 **解析**
 
-- `Number(daysText)` 那行是數字 3，種類是 number。daysText 仍是字串。
-- `String(12800)` 看起來像數字，種類是 string。
-- 「3天」是 NaN，空字串是 0。
-- `Boolean(0)` 是 false，文字 '0' 是 true。
-- `'5' + 1` 是字串 51，先轉成數字再加才是 6。
-- '12px' 對 Number 是 NaN，對 parseInt 是 12。
-- 空字串對 Number 是 0，對 parseInt 是 NaN。
+- 前兩行是明確轉換的結果：字串 '3' 變成種類為 number 的 3，數字 12800 變成種類為 string 的 '12800'。
+- 第三行的「3天」含有非數字，所以 Number 得到 NaN；空字串什麼都沒有，得到 0。
+- 第四行說明三種真假：0 與空字串是 false，文字 '0' 因為不是空的，所以是 true。
+- `'5' + 1` 得到字串 51；先用 Number 轉成數字，才會得到 6。
+- 最後兩行比較讀法：'12px' 對 Number 是 NaN，對 parseInt 是 12；'3.8' 對 Number 是 3.8，對 parseInt 只取整數部分得到 3。
 
 ```text
-3 string
 3 number
-12800 12800 string
+12800 string
 NaN 0
-false true
-51 string
+false false true
+51
 6
-3.8 3
 NaN 12
-0 NaN
-255 NaN
-true false true
+3.8 3
 ```
 
-{% note success %}
-**換你試試：**
-把 '5' 轉成數字後乘上 8600，印出結果。再轉回字串，印出它的種類。
-
-再印出 `parseInt('20人', 10)` 與 `Number('20人')`。
-
-最後印出 `parseInt('08', 10)`，確認得到 8。
+{% note info %}
+**判斷 NaN 要用 Number.isNaN**
+`Number.isNaN` 只有在值本身就是 NaN 時才是 true。全域的 isNaN 會先把值轉成數字，字串 '三' 也會被判成 true，容易誤判，所以不使用。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-乘完是 43000。轉回字串之後，種類是 string。
-
-「20人」對 parseInt 停在 20，對 Number 是 NaN。指定進位 10 後，「08」得到 8。
-
-```diff 04-js/pages/09-js-convert.html
-  // ...
-        console.log(parseInt('ff', 16), parseInt('ff', 10));
-        // Number.isNaN 只認已經是 NaN 的值。全域 isNaN 會先轉型，字串「三」也得到 true
-        console.log(Number.isNaN(Number('12px')), Number.isNaN('三'), isNaN('三'));
-+ 
-+       const total = Number('5') * 8600;
-+       const label = String(total);
-+       console.log(total, typeof label);
-+       console.log(parseInt('20人', 10));
-+       console.log(Number('20人'));
-+       console.log(parseInt('08', 10));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### null、undefined 與 NaN
 
-算出來的結果不一定能接著用。有的名字只宣告、還沒放值，有的是你刻意留的空位，有的是數字沒算成功。這三種「沒有值」或「無效值」要先分開，才不會把還沒給、故意空著，和算失敗當成同一件事。
-
-- `undefined` 是有宣告但還沒給值。
-
-- `null` 是刻意設成「沒有值」。
-
-- `NaN` 是數學運算或轉成數字失敗時得到的結果，型別仍然是 number。
+這三個值都代表「沒有一個可用的值」，但原因不同：有的是還沒給值，有的是刻意留空，有的是運算失敗。分清楚原因，才知道看到它們時該怎麼處理。
 
 **觀念**
 
-- 只宣告、不賦值，讀到的是 undefined。
-
-- 沒有值就賦值 null，不要用空字串冒充。
-
-- 判斷是不是 null，用 `=== null`。
-
-- 判斷是不是 NaN，用 `Number.isNaN()`。
-
-- NaN 和自己嚴格相等，結果是 false。
+- `undefined`：名字已宣告但還沒給值，系統自己放上的預設結果。
+- `null`：程式刻意設定的「沒有值」，要表示空位時自己賦值，不要拿空字串代替。
+- `NaN`：數學運算或轉成數字失敗的結果，種類仍是 number。
+- 判斷 null 用嚴格相等 `=== null`，不要用 `typeof`。嚴格相等是比較兩邊是否完全相同，運算子那一章會詳細說明。
+- NaN 與包括自己在內的任何值都不嚴格相等，要判斷它必須用 `Number.isNaN()`。
 
 ```html 04-js/pages/10-js-special.html
 <!DOCTYPE html>
@@ -1099,19 +706,22 @@ true false true
       const backup = null;
       const broken = Number('abc');
 
-      // 有宣告但還沒給值，讀到 undefined
+      // 宣告了但還沒給值，讀到 undefined
       console.log(guide);
-      // null 是刻意設的空位。用 === null 判斷，不要用 typeof
+
+      // null 是刻意設的空位，用 === null 判斷
       console.log(backup);
       console.log(backup === null);
-      // typeof null 是 object，這是早期留下的結果
+      // typeof null 是 object，這是早期留下的結果，不能拿來判斷
       console.log(typeof backup);
+
       // 轉成數字失敗得到 NaN，種類仍是 number
       console.log(broken);
       console.log(typeof broken);
-      // Number.isNaN 才認得出 NaN。NaN === NaN 是 false
-      console.log(Number.isNaN(broken));
+
+      // NaN 不等於自己，要用 Number.isNaN 判斷
       console.log(broken === broken);
+      console.log(Number.isNaN(broken));
     </script>
   </body>
 </html>
@@ -1119,10 +729,10 @@ true false true
 
 **解析**
 
-- guide 沒有放值，印出來是 `undefined`。
-- backup 用嚴格相等對上 null 是 true，`typeof` 卻印出 object。
-- broken 是 NaN，種類仍是 number。
-- `Number.isNaN` 是 true，自己和自己嚴格相等是 false。
+- `guide` 沒有放值，印出 undefined。
+- `backup` 是刻意設定的 null，用嚴格相等判斷得到 true；`typeof backup` 卻回報 object，所以不能靠 typeof 判斷 null。
+- `broken` 是轉換失敗的 NaN，種類仍是 number，這代表它是「無效的數字」，不是別的種類。
+- NaN 與自己比較得到 false，所以要用 `Number.isNaN` 才能得到 true。
 
 ```text
 undefined
@@ -1131,72 +741,34 @@ true
 object
 NaN
 number
-true
 false
+true
 ```
 
 {% note info %}
 **空字串不是 null**
-沒有值就用 null。空字串是長度為 0 的字串，和空位不是同一件事。
+空字串是長度為 0 的字串，仍是一個有值的字串。要表示「沒有值」就用 null，兩者不要混用。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-多宣告一個沒有賦值的 `note`，以及 `const seats = Number('滿')`。
-
-印出 note 是否為 `undefined`、seats 是否為 NaN。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`note` 沒有值，和 undefined 嚴格相等是 true。
-
-`'滿'` 無法轉成數字，`Number.isNaN` 是 true。
-
-```diff 04-js/pages/10-js-special.html
-  // ...
-        const backup = null;
-        const broken = Number('abc');
-+       let note;
-+       const seats = Number('滿');
-  
-        // 有宣告但還沒給值，讀到 undefined
-        console.log(guide);
-        // null 是刻意設的空位。用 === null 判斷，不要用 typeof
-        // ...
-        console.log(Number.isNaN(broken));
-        console.log(broken === broken);
-+       console.log(note === undefined);
-+       console.log(Number.isNaN(seats));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 # 字串
 
-字串是一排有順序的字元。先把它寫出來，用索引讀其中一個字，再用模板字串把算好的值嵌進句子。方法放在共用的原型上，呼叫之後得到的是新字串。這一章先看怎麼建立，再看原型與兩類常用方法。
+字串是一排有順序的字元，用來表示名稱、句子這類文字。這一章先學怎麼寫出字串、讀取其中一個字元，以及用模板字串把變數嵌進句子，再認識字串方法共用的原型，最後依用途學會查詢、裁切、轉換這幾類最常用的方法。
 
 ## 字串基礎
 
-這一節處理字串怎麼寫、怎麼讀一個字元。模板字串仍是字串，差別是句子中間可以放入別的值。
+這一節處理字串的寫法與基本讀取，並學會模板字串。每一個字串方法都建立在這些基礎上。
 
 ### 建立與存取
 
-字串可以用單引號、雙引號或反引號包起來，三種都是字串。`length` 是字元數，中括號用從 0 開始的索引讀一個字元。字串不可變，方法交回另一份新字串，原來那一份還在。
+字串可以用單引號、雙引號或反引號包起來，三種寫法得到的都是字串。包起來之後，可以用 `length` 知道有幾個字元，也可以用從 0 開始的索引（字元的位置編號）讀出其中一個字元。
 
 **觀念**
 
-- 這門課的字串預設用單引號。內容裡已經有單引號時，整段改用雙引號包住。
-
-- 反引號在這一節只是第三種包法。把變數嵌進句子，留到下一節。
-
-- `length` 讀到數字，後面不加括號。索引 0 是第一個字元。
-
-- 方法會交回新字串。原來的值沒有被改掉，這種特性叫做不可變（immutable）。
+- 本課程的字串預設用單引號；內容本身含有單引號時，整段改用雙引號包住。
+- 反引號是第三種包法，主要用途是下一小節的模板字串。
+- `length` 是屬性，讀到的是字元數，後面不加括號。
+- 索引從 0 開始，第一個字元是索引 0，最後一個字元是 `length - 1`。
+- 字串不可變（immutable）：方法只會交回一個新字串，原來的字串維持不變。
 
 ```html 04-js/pages/11-js-string-basic.html
 <!DOCTYPE html>
@@ -1214,13 +786,17 @@ false
       const plain = `城市`;
       const title = '台北城市漫遊';
 
+      // 三種包法都是字串，雙引號裡的單引號照樣印出
       console.log(single);
       console.log(double);
       console.log(plain);
+
+      // length 是字元數 6；索引 0 是「台」，索引 2 是「城」
       console.log(title.length);
       console.log(title[0]);
       console.log(title[2]);
 
+      // toUpperCase 把英文轉成大寫，交回新字串；原字串維持小寫
       const upper = 'taipei'.toUpperCase();
       console.log(upper);
       console.log('taipei');
@@ -1231,9 +807,9 @@ false
 
 **解析**
 
-- 三種包法印出的都是字串本身。雙引號那一行留得住內容裡的單引號。
-- 長度是 6。索引 0 是「台」，索引 2 是「城」。
-- 大寫結果是新字串 TAIPEI。最後一行仍是小寫，方法沒有改掉原來的字面值。
+- 三種包法印出的都是字串本身，雙引號那一行保留了內容裡的單引號。
+- 長度是 6，索引 0 是「台」，索引 2 是「城」。
+- 大寫結果是新字串 TAIPEI；最後一行仍是小寫，證明方法沒有改動原來的字串。
 
 ```text
 台北
@@ -1246,54 +822,21 @@ TAIPEI
 taipei
 ```
 
-{% note info %}
-**課程裡的引號**
-一般字串用單引號。反引號留給要插值的句子。內容本身含有單引號時才用雙引號。
-{% endnote %}
-
 {% note warning %}
-**不要改索引上的字**
-字串沒有改掉某個字元的作法。要留下不同的文字，把方法的回傳值放進新的 `const`。
+**不能改掉索引上的字元**
+字串沒有「改掉某個字元」的寫法，`title[0] = '高'` 不會報錯，也不會生效（嚴格模式下才會是 TypeError）。想得到不同的文字，就用方法產生新字串，並用 `const` 接住。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-印出「花蓮山海」的長度，以及索引 1 的字元。再印出小寫結果，並再印一次字面值 `'JS'`，確認仍是大寫。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-長度是 4，索引 1 是「蓮」。小寫結果是 js，字面值仍是 JS，因為方法交回的是新字串。
-
-```diff 04-js/pages/11-js-string-basic.html
-  // ...
-        console.log(upper);
-        console.log('taipei');
-+ 
-+       console.log('花蓮山海'.length);
-+       console.log('花蓮山海'[1]);
-+       console.log('JS'.toLowerCase());
-+       console.log('JS');
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 模板字串
 
-反引號裡的 `${}` 會先算出結果，再嵌進句子。數字嵌進去時會變成文字的一部分。引號字串做不到這種插值。型別轉換那一節看過，字串加數字會接成文字。句子中間要放入變數時，改用模板字串。
+模板字串用反引號包住整個句子，句子裡用 `${}` 嵌入變數或運算結果。前面學過字串加數字會接成文字，但要接很多段時寫法冗長；模板字串讓句子保持原樣，只在需要的位置放入值，之後組合畫面文字時會大量使用。
 
 **觀念**
 
-
-- 包住整句的是反引號，不是單引號。插值的括號是 `$` 接一對大括號。
-
-- 大括號裡放變數或運算。學會函式之後，也可以放函式呼叫。
-
-- 想印出字面的 `${` 時才需要跳脫。一般句子直接寫。
+- 嵌入的語法是 `$` 接一對大括號，大括號裡可以放變數，也可以放運算。
+- 反引號內可以直接換行，換行會保留在字串裡。
+- `$` 單獨出現時只是普通字元，後面緊接大括號才是嵌入。
+- 要印出字面的 `${`，在 `$` 前面加反斜線跳脫，變成 `\${`。
 
 ```html 04-js/pages/12-js-template.html
 <!DOCTYPE html>
@@ -1306,14 +849,24 @@ taipei
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const id = 1;
       const title = '台北城市漫遊';
       const place = '台北';
       const days = 3;
       const price = 12800;
 
-      const line = `${place}・${title}・${days} 天・NT${price}`;
+      const line = `${place}・${title}・${days} 天・NT$${price}`;
       console.log(line);
+
+      // 大括號裡可以放運算
+      console.log(`總價 NT$${price * days}`);
+
+      // 反引號可以直接換行
+      const note = `第一行
+第二行`;
+      console.log(note);
+
+      // 要印出字面的 ${}，在 $ 前面加反斜線
+      console.log(`\${price} 會被當成文字`);
     </script>
   </body>
 </html>
@@ -1321,66 +874,32 @@ taipei
 
 **解析**
 
-- 四個插值依序嵌進句子。`NT$` 後面緊接插值，所以不會多出空格，印出來是 NT$12800。
-- 這一整句是一個字串，不是四次 `log`。
+- 第一個結果是由四個變數組成的一整句字串，不是四次輸出。`NT$` 的 `$` 是普通字元，緊接著的 `${price}` 才是嵌入。
+- 第二個結果在大括號裡先算出 12800 乘以 3，再嵌入句子。
+- 第三個結果分成兩行印出，因為反引號內的換行也是字串的一部分。
+- 第四個結果印出字面的 `${price}`，因為前面的反斜線讓它不再是嵌入。
 
 ```text
 台北・台北城市漫遊・3 天・NT$12800
+總價 NT$38400
+第一行
+第二行
+${price} 會被當成文字
 ```
-
-{% note info %}
-**句子是結果，不是畫面**
-這一頁只把句子印在 Console。下一篇才把同樣的句子放進列表。現在不要用它去改頁面上的文字。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-用這幾個變數再組一句「編號 1・台北」。編號與 place 都放進插值。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第二句的兩個插值對到 id 與 place。第一句維持不變，兩句都是字串。
-
-```diff 04-js/pages/12-js-template.html
-  // ...
-        const price = 12800;
-  
-        const line = `${place}・${title}・${days} 天・NT${price}`;
-+       const code = `編號 ${id}・${place}`;
-        console.log(line);
-+       console.log(code);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ## 字串原型與方法
 
-方法不是複製在每一個字串上，而是放在共用的原型，用點號取出再呼叫。這一節把原型講完，是全篇唯一一次完整說明。後面的陣列與物件直接用方法，對照的就是這裡。
+字串的方法不是複製在每個字串上，而是放在所有字串共用的原型。這一節先說明這個機制，之後陣列、物件看到的方法，運作方式都和這裡一樣；接著依用途學習最常用的字串方法。
 
 ### 原型
 
-每種型別都有內建原型，用點號找到方法。字串與數字各有自己的那一份，呼叫時用的是那一份上的函式。
-
-- 字串的原型是 `String.prototype`。
-
-- 數字的原型是 `Number.prototype`。
+每一種型別都有一份共用的內建原型，可以想成該型別專用的工具書，裡面放著它能用的方法。對字串寫上點號呼叫方法時，JavaScript 會到字串原型這本工具書裡找出那支函式來執行；數字有自己的另一本，兩邊互不相通。
 
 **觀念**
 
-- 呼叫時用的是原型上的同一支函式。
-
-- `length` 是屬性，讀到數字，不用加括號。
-
-- 字串方法回傳新值，原來的字串不變。這種特性叫做不可變（immutable）。
-
-- null 與 undefined 沒有原型。對它們寫上點號會丟出 TypeError。
-
-- `?.` 在左邊是這兩個值時停住，整段得到 undefined。
+- 字串的原型是 `String.prototype`，數字的原型是 `Number.prototype`。
+- 同型別的所有值共用原型上的同一支函式。方法名稱後面要加括號才會執行，`length` 這種屬性則直接讀值。
+- null 與 undefined 沒有原型，對它們寫點號呼叫方法會丟出 TypeError。
 
 ```html 04-js/pages/13-js-prototype.html
 <!DOCTYPE html>
@@ -1395,7 +914,7 @@ taipei
     <script>
       const word = 'abc';
 
-      // 得到 ABC。word 仍是 abc。這支函式就是字串原型上的那一支
+      // 得到 ABC，word 仍是 abc；這支函式就是字串原型上的那一支
       console.log(word.toUpperCase());
       console.log(word);
       console.log(word.toUpperCase === String.prototype.toUpperCase);
@@ -1407,13 +926,11 @@ taipei
       console.log(amount.toFixed(0));
       console.log(amount.toFixed === Number.prototype.toFixed);
 
+      // null 沒有原型，拿掉下一行註解會丟出 TypeError
       const missing = null;
-      // 可選串連在 null 停住，得到 undefined。拿掉下一行註解會丟出 TypeError
-      console.log(missing?.toUpperCase());
       // console.log(missing.toUpperCase());
 
-      // 在 Console 展開 [[Prototype]]，對照字串原型上的方法名稱
-      console.dir(word);
+      // 在 Console 展開這一行，對照字串原型上的方法名稱
       console.log(String.prototype);
     </script>
   </body>
@@ -1422,10 +939,11 @@ taipei
 
 **解析**
 
-- 第一個結果是 ABC，word 仍是 abc，和字串原型上的函式比較得到 true。
-- 長度是 3。這一行讀的是屬性，所以沒有括號。
-- 數字 42 呼叫 toFixed 之後印出 42，那個結果是字串，用的是數字原型上的函式。
-- 可選串連在 null 停住，得到 undefined。直接點呼叫會丟出 TypeError，後面的程式不會再跑。
+- 第一組結果是 ABC、abc、true：轉大寫得到新字串，word 沒變，而且 word 用的函式就是字串原型上的那一支。
+- 長度是 3，因為 `length` 是屬性，所以沒有括號。
+- 數字 42 呼叫方法後印出文字 42，且用的是數字原型上的函式，證明兩種型別各有自己的原型。
+- 對 null 呼叫方法的那一行維持註解；拿掉註解會丟出 TypeError，並中斷後面的程式。
+- 最後一行不在下方的輸出清單裡：在 Console 展開它，可以看到字串所有可用的方法名稱。
 
 ```text
 ABC
@@ -1434,53 +952,28 @@ true
 3
 42
 true
-undefined
 ```
 
 {% note info %}
-**字串是不可變的**
-呼叫方法時會暫時把字串包成物件，到原型找出方法，用完就丟。要留下結果，就用 `const` 接住。
-
-參數與回傳值查 MDN 的 [String](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/String)。展開 Console 裡的原型，對得上方法名稱。講義不把清單抄出來。
+**不確定有沒有值時**
+null 與 undefined 沒有原型，直接呼叫方法會丟出 TypeError。值可能不存在時，可以改寫成 `?.`（可選串連）：左邊是這兩個值就停住，整段得到 undefined。物件那一章會正式教。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-印出 `'JS'.toLowerCase()`，再印一次字面值 `'JS'`。到 Console 展開字串原型，確認看得到這個方法。
+{% note info %}
+**不必背完整方法清單**
+字串方法很多，講義只挑常用的。需要查參數與回傳值時，看 MDN 的 [String](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/String) 即可。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-小寫結果是 js。字面值仍是 JS，因為方法交回的是新字串。這個方法放在同一份字串原型上。
-
-```diff 04-js/pages/13-js-prototype.html
-  // ...
-        console.dir(word);
-        console.log(String.prototype);
-+ 
-+       console.log('JS'.toLowerCase());
-+       console.log('JS');
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 查詢與判斷
 
-`String.prototype` 上的方法可以依用途分成幾類。這一類回傳布林或索引，用來查一段文字在不在、從哪裡開始、出現在哪個位置，而且比對區分大小寫，原來的字串不會被改掉。
+這一類方法用來問「某段文字在不在字串裡」，回傳布林值或索引，不會改動原字串。比對時區分大小寫，所以 `'A'` 與 `'a'` 視為不同。
 
 **觀念**
 
-- `includes` 問一段文字有沒有出現，回傳布林。
-
-- `startsWith` 問是不是以某段開頭，回傳布林。
-
-- `endsWith` 問是不是以某段結尾，回傳布林。
-
-- `indexOf` 問第一次出現的索引，沒有就回傳 -1。
+- `includes`：有出現這段文字就回傳 true，否則 false。最常用，用來判斷關鍵字是否存在。
+- `startsWith`：是否以這段文字開頭，回傳布林。
+- `endsWith`：是否以這段文字結尾，回傳布林。
+- `indexOf`：回傳第一次出現的索引，找不到時回傳 -1。
 
 ```html 04-js/pages/14-js-string.html
 <!DOCTYPE html>
@@ -1504,7 +997,7 @@ undefined
       // 結尾是「漫遊」所以 true，不是「台北」所以 false
       console.log(title.endsWith('漫遊'));
       console.log(title.endsWith('台北'));
-      // 「城市」在索引 2；沒有「花蓮」得到 -1
+      // 「城市」從索引 2 開始；沒有「花蓮」得到 -1
       console.log(title.indexOf('城市'));
       console.log(title.indexOf('花蓮'));
       // 原字串沒有被改
@@ -1516,9 +1009,9 @@ undefined
 
 **解析**
 
-- 有出現、對得上開頭或結尾時是 true，對不上是 false。
-- 「城市」的索引是 2。找不到時 indexOf 回傳 -1，那個值不是第一個字。
-- 最後一行仍是原來的標題，這些方法都沒有改寫它。
+- 前六行是三個判斷方法各問一次，對得上是 true，對不上是 false。
+- 「城市」的索引是 2，而找不到「花蓮」時得到 -1，這個值不是有效索引。
+- 最後一行仍是原來的標題，查詢類方法都不會改寫字串。
 
 ```text
 true
@@ -1533,56 +1026,22 @@ false
 ```
 
 {% note info %}
-**沒找到時看回傳值**
-判斷方法對不上時得到 false。`indexOf` 對不上時得到 -1。索引 0 才是第一個字。
+**判斷是否存在，用 includes**
+`indexOf` 找不到時是 -1，而索引 0 是第一個字元，兩者都會讓「直接拿回傳值當條件」的寫法判斷錯誤。只想知道有沒有，用回傳布林的 `includes` 最不容易出錯。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-問「花蓮山海」是否包含「山海」、是否以「花蓮」開頭、是否以「山海」結尾，以及「山」第一次出現的索引。四行都印出來。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-四行依序是 true、true、true、2。「山」是第三個字，索引從 0 數，所以是 2。
-
-```diff 04-js/pages/14-js-string.html
-  // ...
-        console.log(title.indexOf('花蓮'));
-        // 原字串沒有被改
-        console.log(title);
-+ 
-+       console.log('花蓮山海'.includes('山海'));
-+       console.log('花蓮山海'.startsWith('花蓮'));
-+       console.log('花蓮山海'.endsWith('山海'));
-+       console.log('花蓮山海'.indexOf('山'));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 擷取與轉換
 
-另一類也在 `String.prototype` 上。它們從字串取出一段、轉換內容、補齊或拆開，得到的都是新值。其中 `at` 超出範圍時得到 undefined，程式不會中斷，原來的字串都還在。
+這一類方法從字串取出一段、清理內容、替換文字、補齊長度或拆成陣列。它們都交回新值，原來的字串不會被改掉，最後要用變數接住結果才能繼續使用。
 
 **觀念**
 
-- `slice` 依索引裁出一段新字串，結束索引不包含。
-
-- `at` 用索引取一個字元，超出範圍時得到 undefined。
-
-- `trim` 去掉兩端空白，中間的空白留著。
-
-- `toUpperCase` 把英文字母轉成大寫，中文字元保持原樣。
-
-- `padStart` 在左邊補字，直到長度達到指定值。
-
-- `replaceAll` 把所有對上的那段都換成新文字。
-
-- `split` 依分隔文字拆成一陣列。
+- `trim`：去掉前後的空白，中間的空白保留，交回新字串。處理使用者輸入時先做這一步。
+- `slice`：依索引裁出一段，格式是起點與終點，終點的字元不包含，只給起點時裁到結尾，交回新字串。
+- `replace`：把第一處對上的文字換成新文字，交回新字串。
+- `replaceAll`：把所有對上的文字都換掉，交回新字串。
+- `split`：依分隔文字拆開，交回陣列。
+- `padStart`：在左邊補字，直到長度達到指定值，交回新字串，常用來補零。
 
 ```html 04-js/pages/15-js-pad.html
 <!DOCTYPE html>
@@ -1598,27 +1057,26 @@ false
       const rawTitle = '  台北城市漫遊  ';
       const title = rawTitle.trim();
       const code = '7';
-      const city = 'taipei';
 
-      // 去掉兩端空白。帶空白的長度仍是 10，去掉之後是 6
+      // 去掉兩端空白：帶空白的長度是 10，去掉之後是 6
       console.log(title);
       console.log(rawTitle.length);
       console.log(title.length);
-      // 結束索引不包含，前兩個字是「花蓮」
+
+      // 結束索引不包含，前兩個字是「花蓮」；只給起點則裁到結尾
       console.log('花蓮山海三日'.slice(0, 2));
-      // 0 是「花」，-1 是「蓮」，索引 5 超出範圍，得到 undefined
-      console.log('花蓮'.at(0));
-      console.log('花蓮'.at(-1));
-      console.log('花蓮'.at(5));
-      // 得到 TAIPEI。city 仍是小寫
-      console.log(city.toUpperCase());
-      console.log(city);
-      // 補到長度 3，得到 007。code 仍是 7
+      console.log('花蓮山海三日'.slice(2));
+
+      // replace 只換第一處，replaceAll 全部都換
+      console.log('京都散步與散步'.replace('散步', '五日'));
+      console.log('京都散步與散步'.replaceAll('散步', '五日'));
+
+      // 依「・」拆成三個元素的陣列
+      console.log('台北・花蓮・京都'.split('・'));
+
+      // 補到長度 3，得到 007；code 仍是 7
       console.log(code.padStart(3, '0'));
       console.log(code);
-      // 兩處「散步」都換成「五日」。依「・」拆成三個元素
-      console.log('京都散步與散步'.replaceAll('散步', '五日'));
-      console.log('台北・花蓮・京都'.split('・'));
     </script>
   </body>
 </html>
@@ -1626,94 +1084,112 @@ false
 
 **解析**
 
-- trim 交回沒有前後空白的新字串，長度從 10 變成 6，原來帶空白的變數還在。
-- 依索引取字元時，超出範圍得到 undefined，程式沒有中斷。
-- 轉換與補零都交回新字串，city 與 code 都沒有被改掉。
-- split 交回的是陣列，不是字串。
+- `trim` 之後長度從 10 變成 6，但 rawTitle 仍是原來帶空白的字串，證明交回的是新字串。
+- `slice(0, 2)` 取到索引 1 為止，所以是「花蓮」；`slice(2)` 從索引 2 一路裁到結尾。
+- 兩種替換的差別看輸出就清楚：前者只換了第一個「散步」，後者兩個都換了。
+- `split` 交回的是陣列，不是字串，所以 Console 印出的是中括號包起來的清單，前面的 (3) 是元素個數。
+- 補零後得到 007，但 code 仍是 7；補出來的結果依然是字串，不是數字。
 
 ```text
 台北城市漫遊
 10
 6
 花蓮
-花
-蓮
-undefined
-TAIPEI
-taipei
+山海三日
+京都五日與散步
+京都五日與五日
+(3) ['台北', '花蓮', '京都']
 007
 7
-京都五日與五日
-['台北', '花蓮', '京都']
 ```
 
 {% note info %}
 **先 trim 再比較**
-表單稍後可能送來前後有空白的字串。先 `trim`，再用 `===` 比，才不會因為一個空格就對不上。
+使用者輸入的文字常常夾帶前後空白。先 `trim` 再用 `===` 比較，才不會因為多一個空格就對不上。
 {% endnote %}
 
 {% note info %}
-**編號要對齊時再用 padStart**
-編號、時間這種固定寬度的文字，用 `padStart` 補 0。拿去和數字比之前，仍要先轉成數字。
+**padStart 補零的結果是字串**
+編號、時間這類固定寬度的文字用 `padStart` 補零；補完仍是字串，要拿去做數學運算前必須先轉成數字。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-取「台北城市漫遊」的前兩個字。把 `'42'` 補成長度 4。印出「京都紅葉」的最後一個字。把「京都紅葉散步」裡的「散步」全部換成「五日」，再把「三日・三日」以「・」拆開。
-{% endnote %}
+### 選讀：at 與大小寫轉換
 
-<details>
-<summary>參考答案</summary>
-
-前兩個字是「台北」。`'42'` 補到長度 4 是 0042。最後一個字是「葉」。取代得到「京都紅葉五日」，拆開得到兩個「三日」。
-
-```diff 04-js/pages/15-js-pad.html
-  // ...
-        console.log('京都散步與散步'.replaceAll('散步', '五日'));
-        console.log('台北・花蓮・京都'.split('・'));
-+ 
-+       console.log('台北城市漫遊'.slice(0, 2));
-+       console.log('42'.padStart(4, '0'));
-+       console.log('京都紅葉'.at(-1));
-+       console.log('京都紅葉散步'.replaceAll('散步', '五日'));
-+       console.log('三日・三日'.split('・'));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-# 運算子與流程控制
-
-先算出一個新值，再依結果決定要不要做某件事，或把同一件事做很多次。運算子把現有的值做成新值；條件再看那個結果，決定哪一段程式要跑；迴圈則重複同一段程式。這一章包含運算子、條件判斷與迴圈。
-
-## 運算子
-
-這一節依運算子交出來的結果來分。
-
-- 算術做出新數字。
-
-- 比較得到布林。
-
-- 邏輯運算子依值是否有內容而短路，交出其中一邊的值。
-
-- 條件運算子在兩個結果裡挑一個。
-
-- 空值合併在沒有值時補上預設。
-
-### 算術運算子與賦值運算子
-
-加、減、乘、除、餘數、次方都做出新數字。`+=` 這類寫法是「用現在的值運算後再放回去」，左邊必須是可以重新指派的 `let`。
+專案較少用到這兩類方法，但日常讀程式碼會遇到：`at` 可以用負數索引從結尾往回取字元，大小寫轉換則常用在不分大小寫的比對。
 
 **觀念**
 
+- `at`：依索引取一個字元，負數從結尾倒數，超出範圍得到 undefined，程式不會中斷。
+- `toUpperCase` 與 `toLowerCase`：把英文字母轉成大寫或小寫，中文字元保持原樣，交回新字串。
 
-- 除法得到的可能是小數。若結果要整數，先想好要不要在這一步處理。
+```html 04-js/pages/15b-js-string-at.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>at 與大小寫轉換</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const city = 'taipei';
 
-- 餘數 `%` 看的是除不盡剩下多少，用來判斷奇偶或分組。
+      // 0 是第一個字元，-1 是最後一個，索引 10 超出範圍
+      console.log(city.at(0));
+      console.log(city.at(-1));
+      console.log(city.at(10));
 
-- `+=` 會改掉左邊的名字。只是想看計算結果、又不想改原本的值時，把結果放到一個新的 `const`。
+      // 轉大小寫，city 本身不變
+      console.log(city.toUpperCase());
+      console.log('JS'.toLowerCase());
+      console.log(city);
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 索引 -1 取到最後一個字元，這是用中括號索引做不到的；超出範圍時得到 undefined 而不是錯誤。
+- 大小寫轉換都交回新字串，最後一行的 city 仍是原本的小寫。
+
+```text
+t
+i
+undefined
+TAIPEI
+js
+taipei
+```
+
+# 運算子與流程控制
+
+程式要先算出新的值，再依結果決定接下來做什麼，有時還要把同一件事重複很多次。運算子負責把現有的值運算成新值，條件判斷依結果決定哪一段程式要執行，迴圈則讓同一段程式重複執行。這一章依序學這三件事。
+
+## 運算子
+
+運算子是連接值的符號，運算後會得到一個新的值。後面的條件判斷與迴圈，都建立在這些運算結果上。
+
+**一覽**
+
+- 算術與賦值：做出新的數字，或把運算結果放回變數。
+- 比較：比大小、比相等，結果是 true 或 false。
+- 邏輯：組合多個條件，也能在兩個值之間挑一個交出來。
+- 空值合併：只在值「不存在」時才補上預設值。
+- 條件運算子：依一個條件，在兩個值之間挑一個。
+
+### 算術運算子與賦值運算子
+
+算術運算子把數字做成新數字，賦值運算子則把運算後的結果放回變數裡。
+
+**觀念**
+
+- 加、減、乘、除與數學相同，先乘除後加減，要先算的部分用括號包起來。
+- 除法的結果可能是小數，不會自動變成整數。
+- 餘數 `%` 取的是除不盡剩下的數，常用來判斷奇偶。
+- 次方 `**` 的左邊是底數，右邊是次方。
+- 複合賦值 `+=` 的意思是「取出變數現在的值，運算後再放回同一個變數」，所以左邊必須是用 `let` 宣告的變數；`-=` 同理，是減掉後放回。
 
 ```html 04-js/pages/16-js-arith.html
 <!DOCTYPE html>
@@ -1726,16 +1202,21 @@ taipei
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      let price = 15900;
-      const days = 3;
-      const perDay = price / days;
+      let total = 90;
+      const people = 4;
+      const each = total / people;
 
-      console.log(perDay);
-      console.log(days % 2);
+      console.log(each);
+      console.log(7 % 3);
       console.log(2 ** 3);
 
-      price += 1100;
-      console.log(price);
+      total += 10;
+      console.log(total);
+
+      total -= 20;
+      console.log(total);
+
+      console.log(each);
     </script>
   </body>
 </html>
@@ -1743,73 +1224,35 @@ taipei
 
 **解析**
 
-- 15900 除以 3 得到 5300。
-- 3 除以 2 餘 1。
-- 2 的 3 次方是 8，這一行只示範次方。
-- 最後 `+=` 把左邊加上 1100，price 變成 17000。
-- `perDay` 是在 `+=` 之前算的，仍是 5300，不會跟著改。
+- 90 除以 4 得到 22.5，除法保留了小數。
+- 7 除以 3 商 2 餘 1，所以餘數印出 1；2 的 3 次方是 8。
+- `total` 先加 10 變成 100，再減 20 變成 80；每一次都是改掉變數本身。
+- `each` 是在改動 `total` 之前算好的值，已經存進自己的變數，所以最後仍是 22.5。
 
 ```text
-5300
+22.5
 1
 8
-17000
+100
+80
+22.5
 ```
-
-{% note info %}
-**先乘除後加減**
-和數學一樣。要先算完某一段再做下一個運算時，用括號把先算的那一段包起來。
-{% endnote %}
 
 {% note warning %}
 **小數不是精確的十進位**
-JavaScript 的數字是二進位浮點數。`0.1 + 0.2` 加出來不是剛好的 0.3，用嚴格相等去比會得到 false。
-
-金額用整數相加，例如以元為單位的整數。不要把兩個小數用 `===` 硬比相等。
+JavaScript 的數字是二進位浮點數，`0.1 + 0.2` 的結果是 0.30000000000000004，不是剛好的 0.3，拿它與 0.3 比相等（下一節學）會得到 false。金額這類要精確的數字，改用最小單位的整數計算，不要拿兩個小數直接比相等。
 {% endnote %}
-
-{% note success %}**換你試試：**用 `let seats = 8`，再 `-= 2`，印出減完的數字。
-
-另外用一個新的 const 計算 price 的兩倍，不要改掉 price 本身。{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`seats` 從 8 減掉 2，剩下 6。
-
-兩人總價放在新的 `const`，所以 `price` 仍是加價後的 17000，總價是它的兩倍 34000。
-
-```diff 04-js/pages/16-js-arith.html
-  // ...
-        price += 1100;
-        console.log(price);
-+ 
-+       let seats = 8;
-+       seats -= 2;
-+       const twoPeople = price * 2;
-+       console.log(seats);
-+       console.log(twoPeople);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 比較運算子與嚴格相等
 
-比較的結果是布林。課堂用三個等號，種類不同就視為不相等。兩個等號會先偷偷轉型，`'3'` 和 `3` 會被當成一樣，篩選時容易一筆都對不上或全部對上。
+比較運算子拿兩個值互相比較，結果一定是布林值 true 或 false，後面的條件判斷就是靠這個結果來決定要走哪一條路。
 
 **觀念**
 
-
-- `===` 與 `!==` 不轉型。
-
-- `==` 與 `!=` 會轉型，新程式不要用。
-
-- 大於、小於也可以比字串，比的是字元編碼的順序，不是數字大小。
-
-- 字串 `'10'` 比 `'9'` 時，先比第一個字元，所以不會得到數字意義上的大小。
+- 大於、小於、大於等於、小於等於的寫法與數學相同，用來比數字的大小。
+- `===` 與 `!==` 是嚴格比較，連型別都要相同；型別不同就直接視為不相等。
+- `==` 與 `!=` 會先自動轉型再比，`'20'` 與 20 會被當成一樣，容易誤判，新程式不要使用。
+- 字串也能比大小，但比的是字元編碼的順序，不是數字的大小。
 
 ```html 04-js/pages/17-js-compare.html
 <!DOCTYPE html>
@@ -1822,13 +1265,15 @@ JavaScript 的數字是二進位浮點數。`0.1 + 0.2` 加出來不是剛好的
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const days = 3;
-      const daysText = '3';
+      const age = 20;
+      const ageText = '20';
 
-      console.log(days === 3);
-      console.log(days === daysText);
-      console.log(days == daysText);
-      console.log(days !== daysText);
+      console.log(age === 20);
+      console.log(age === ageText);
+      console.log(age !== ageText);
+      console.log(age == ageText); // 會轉型，不要用
+      console.log(age >= 18);
+
       console.log('10' > '9');
       console.log(Number('10') > Number('9'));
     </script>
@@ -1838,16 +1283,15 @@ JavaScript 的數字是二進位浮點數。`0.1 + 0.2` 加出來不是剛好的
 
 **解析**
 
-- 第一行數字 3 對上數字 3，是 true。
-- 第二行種類不同，嚴格相等是 false。
-- 第三行兩個等號會把字串轉成數字，變成 true，這就是它容易誤判的地方。
-- `!==` 在種類不同時是 true。
-- 字串 `'10'` 與 `'9'` 比大小是 false，因為字元 '1' 的編碼比 '9' 小。
-- 兩邊都先 `Number` 再比，才是數字的 true。
+- 前三行是嚴格比較：數字 20 對數字 20 是 true；數字 20 對字串 `'20'` 型別不同，是 false；所以 `!==` 是 true。
+- 第四行的兩個等號先把字串轉成數字，結果變成 true，這就是它容易誤判的地方。
+- 20 大於等於 18，所以第五行是 true。
+- 字串 `'10'` 與 `'9'` 比較時，先比第一個字元，`'1'` 的編碼比 `'9'` 小，所以是 false；先用 `Number` 轉成數字再比，才是數字意義上的 true。
 
 ```text
 true
 false
+true
 true
 true
 false
@@ -1855,52 +1299,24 @@ true
 ```
 
 {% note danger %}
-**比較數字要用數字對數字**
-下拉選單稍後傳來的常常是字串。在比較前轉成數字，或兩邊都轉成字串再比。不要寫兩個等號交差。
+**比較前先讓兩邊型別一致**
+表單與輸入框取得的值常是字串，要和數字比較時，先用 `Number` 轉成數字，再用 `===` 比。
 {% endnote %}
 
 {% note info %}
 **選讀：Object.is**
-`Object.is` 和嚴格相等幾乎一樣。它多認兩件事：NaN 與 NaN 相同，而 +0 與 -0 分成兩個值。日常比較仍寫 `===`。
+`Object.is` 與嚴格相等幾乎相同，只多認得兩件事：NaN 與 NaN 視為相同，+0 與 -0 視為不同。日常比較仍然寫 `===`。
 {% endnote %}
 
-{% note success %}**換你試試：**讓 `price` 為 15900、`limit` 為 20000，印出是否小於上限、是否嚴格等於字串 '15900'。{% endnote %}
+### 邏輯運算子
 
-<details>
-<summary>參考答案</summary>
-
-15900 小於 20000，所以是 true。價格是 number、右邊是 string，嚴格相等是 false。若改成兩個等號，第二行會變成 true，課堂不這樣寫。
-
-```diff 04-js/pages/17-js-compare.html
-  // ...
-        console.log('10' > '9');
-        console.log(Number('10') > Number('9'));
-+ 
-+       const price = 15900;
-+       const limit = 20000;
-+       console.log(price < limit);
-+       console.log(price === '15900');
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 邏輯運算子與短路求值
-
-邏輯運算子用來組合條件，也用來在兩個值裡留下其中一個。JavaScript 先看左邊是 truthy 還是 falsy，再決定要不要執行右邊。最後交出來的是其中一邊的值；兩邊都是布林時，那個值才剛好是 true 或 false。
+邏輯運算子用來把多個條件組合成一個條件，這一節先看兩邊都是布林值的情況。
 
 **觀念**
 
-
-- falsy 有六個：false、數字 0、空字串、null、undefined、NaN。有字的字串、非 0 的數字，以及 true，是 truthy。demo 裡用註解逐個標出。
-
-- `&&` 左邊是 falsy 就交出左邊，右邊不執行。左邊是 truthy 才交出右邊。
-
-- `||` 左邊是 truthy 就交出左邊，右邊不執行。左邊是 falsy 才改看右邊，空字串因此可以補上一句預設文字。
-
-- 0 也是 falsy。用 `||` 補預設值時，0 會被換成右邊的數字。空值合併留到下一節，專門把 0 留住。
+- `&&`（而且）：兩邊都成立，結果才成立。
+- `||`（或者）：任何一邊成立，結果就成立。
+- `!`（不是）：把成立與不成立反過來。
 
 ```html 04-js/pages/18-js-logic.html
 <!DOCTYPE html>
@@ -1908,50 +1324,20 @@ true
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>邏輯運算子與短路求值</title>
+    <title>邏輯運算子</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const days = 3;
-      const price = 12800;
-      const shortTrip = days <= 3;
-      const underBudget = price < 20000;
+      const age = 20;
+      const hasTicket = true;
+      const isAdult = age >= 18;
 
-      console.log(shortTrip && underBudget);
-      console.log(days === 5 || underBudget);
-      console.log(!shortTrip);
-
-      const soldOut = false;
-      const seatsLeft = 0;
-      let tourNote = '';
-      const backupGuide = null;
-      let guideName;
-      const badDays = Number('三天');
-      const place = '花蓮';
-
-      console.log(soldOut); // falsy：false
-      console.log(seatsLeft); // falsy：0
-      console.log(tourNote.length); // falsy：空字串，長度是 0
-      console.log(backupGuide); // falsy：null
-      console.log(guideName); // falsy：undefined，只宣告還沒賦值
-      console.log(badDays); // falsy：NaN
-      console.log(place); // truthy：有內容的字串
-      console.log(days); // truthy：非 0 的數字
-
-      console.log(place && price); // 左邊有內容，交出右邊的價格
-      console.log((tourNote && price) === ''); // 左邊是空字串，交出左邊
-      console.log(soldOut || place); // 左邊不成立，交出右邊
-      console.log(place || '未定地點'); // 左邊已有內容，不再看右邊
-
-      const isLoggedIn = true;
-      isLoggedIn && console.log('顯示會員價');
-
-      const guest = false;
-      guest && console.log('這行不會出現');
-
-      const note = tourNote || '尚無備註';
-      console.log(note);
+      console.log(isAdult && hasTicket);
+      console.log(isAdult && age > 60);
+      console.log(age < 10 || hasTicket);
+      console.log(age < 10 || age > 60);
+      console.log(!isAdult);
     </script>
   </body>
 </html>
@@ -1959,98 +1345,117 @@ true
 
 **解析**
 
-- 前三行兩邊都是布林，印出來仍是 true 或 false。
-- 兩個條件都成立，第一行成立。
-- 第一個比較不成立，但第二個成立，第二行仍成立。
-- 取反之後是第三行，不成立。
-- 接下來先印 falsy，再印 truthy。
-- false 之後那個 0 是數字 0。再下一個 0 是空字串的長度，因為空字串本身印不出字。
-- 接著是 null、undefined 與 NaN。有內容的字串「花蓮」與數字 3 是 truthy。
-- 左邊是有內容的字串，`&&` 交出右邊的數字，所以是 12800。
-- 左邊是空字串，`&&` 交出左邊，和空字串嚴格相等，所以下一行是 true。
-- 左邊是 false，`||` 改看右邊，得到「花蓮」。
-- 左邊的字串已有內容，`||` 不再看後面的預設字串，仍是「花蓮」。
-- 登入狀態為 true 時，`&&` 才會執行右邊，Console 多出「顯示會員價」。
-- 另一行把登入改成 false，右邊不會跑，所以沒有印出「這行不會出現」。
-- 備註是空字串，`||` 交出右邊的預設句「尚無備註」。
+- 成年且有票，兩邊都成立，第一行是 true；成年但不到 60 歲，第二行是 false。
+- 不到 10 歲不成立，但有票成立，只要一邊成立就行，第三行是 true；兩邊都不成立，第四行是 false。
+- 最後一行把成年的 true 反過來，得到 false。
 
 ```text
 true
+false
 true
 false
 false
-0
-0
-null
-undefined
-NaN
-花蓮
-3
-12800
-true
-花蓮
-花蓮
-顯示會員價
-尚無備註
 ```
 
 {% note info %}
-**括號標出先後**
-`&&` 比 `||` 更先結合。條件一多，用括號寫出先看哪一組，就不必背優先順序。
+**用括號標出先後**
+`!` 最先處理，`&&` 比 `||` 先處理。條件一多，用括號寫出先看哪一組，就不必背優先順序。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-在檔案最後另宣告一個 false 的登入狀態，確認會員價那一行不會再出現。
+### 真值、假值與短路求值
 
-再宣告一段「含早餐」，用 `||` 接上預設句，確認印出的是含早餐。
-
-最後讓 rainy 為 true，印出它和「請帶雨具」用 `&&` 接起來的結果。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-false 的登入狀態讓 `&&` 略過右邊，所以不會多印會員價。
-
-「含早餐」有內容，`||` 交出左邊，不會換成預設句。
-
-rainy 成立，`&&` 交出右邊的字串「請帶雨具」。
-
-```diff 04-js/pages/18-js-logic.html
-  // ...
-        const note = tourNote || '尚無備註';
-        console.log(note);
-+ 
-+       const member = false;
-+       member && console.log('顯示會員價');
-+ 
-+       const breakfast = '含早餐';
-+       console.log(breakfast || '尚無備註');
-+ 
-+       const rainy = true;
-+       console.log(rainy && '請帶雨具');
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 條件運算子與預設值
-
-數字 0 仍是有效數字，不能被預設值蓋掉。空值合併只在 `null` 與 `undefined` 時才改用右邊。條件運算子則依一個布林，在兩個結果裡挑一個，適合只差一句結果的時候。
+`&&` 與 `||` 不只回傳 true 或 false，而是交出左右其中一邊的值；左邊的值足以決定結果時，右邊就不會被執行，這叫短路求值。要看懂它，得先知道哪些值在判斷時會被當成成立，哪些不會。
 
 **觀念**
 
+- 假值（falsy）是在條件判斷時視為不成立的值：false、數字 0、空字串、null、undefined、NaN，另有很少用到的 -0 與 BigInt 的 0n。
+- 其餘的值都是真值（truthy），包括 true、非 0 的數字與有內容的字串（連 `'0'` 也是）。
+- `&&` 的左邊是假值就交出左邊，右邊不執行；左邊是真值才交出右邊。
+- `||` 的左邊是真值就交出左邊，右邊不執行；左邊是假值才交出右邊，常用來補預設值。
+- `Boolean()` 能把任何值轉成 true 或 false，用來確認一個值算真值還是假值。
 
-- `??` 只在左邊是 null 或 undefined 時交出右邊。0 與空字串會留下。
+```html 04-js/pages/18b-js-short.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>真值、假值與短路求值</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      // 假值：全部都是 false
+      console.log(Boolean(false));
+      console.log(Boolean(0));
+      console.log(Boolean(''));
+      console.log(Boolean(null));
+      console.log(Boolean(undefined));
+      console.log(Boolean(NaN));
 
-- `||` 把 0 也當成沒有值。左邊是 0 時會被換成 10。
+      // 真值：全部都是 true
+      console.log(Boolean('0'));
+      console.log(Boolean('hello'));
+      console.log(Boolean(-1));
 
-- 三元運算子整段是一個值，可以放進 `const`。不要在一行裡再套另一層問號。
+      // 短路求值：交出的是其中一邊的值
+      const name = 'Amy';
+      const empty = '';
+      const count = 0;
 
-- 分支超過兩個時，改用下一節的 `if`。
+      console.log(name && 100);
+      console.log(count && 'has');
+      console.log(name || '訪客');
+      console.log(empty || '訪客');
+
+      // 左邊成立才會執行右邊
+      const isMember = true;
+      const isGuest = false;
+      isMember && console.log('顯示會員價');
+      isGuest && console.log('不會印出');
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 前六行的值全是假值，印出 false；接著三行有內容或非 0，印出 true，注意字串 `'0'` 是真值。
+- 左邊 `name` 有內容，`&&` 交出右邊，所以是 100；左邊 `count` 是 0，`&&` 交出左邊，所以是 0。
+- 左邊 `name` 有內容，`||` 直接交出它，仍是 Amy；左邊是空字串，`||` 改交出右邊，得到訪客。
+- `isMember` 為 true，右邊才會執行，Console 多出一行；`isGuest` 為 false，右邊整個被跳過，所以沒有輸出。
+
+```text
+false
+false
+false
+false
+false
+false
+true
+true
+true
+100
+0
+Amy
+訪客
+顯示會員價
+```
+
+{% note info %}
+**用 && 當作簡寫只是示範**
+範例把 `&&` 當成「成立才執行」，只是為了看清短路。實際要決定做不做某件事，用後面條件判斷一章的 if 更清楚。
+{% endnote %}
+
+### 空值合併運算子
+
+用 `||` 補預設值有個副作用：0 與空字串也是假值，一樣會被換掉，但它們往往是有效的值。空值合併運算子 `??` 只在左邊是 null 或 undefined（也就是真正「沒有值」）時才改用右邊。
+
+**觀念**
+
+- `??` 只在左邊是 null 或 undefined 時交出右邊，0 與空字串會原樣保留。
+- `||` 會把所有假值都換成右邊。
+- 0 與空字串是有效的值時用 `??`；連 0 與空字串都要視為「沒有」時才用 `||`。
 
 ```html 04-js/pages/19-js-nullish.html
 <!DOCTYPE html>
@@ -2058,31 +1463,21 @@ rainy 成立，`&&` 交出右邊的字串「請帶雨具」。
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>條件運算子與預設值</title>
+    <title>空值合併運算子</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      let tourSeats = 0;
-      let missingSeats;
-      let tourNote = '';
+      const count = 0;
+      const missing = null;
+      const text = '';
 
-      const seatsByOr = tourSeats || 10;
-      const seats = tourSeats ?? 10;
-      const fallbackSeats = missingSeats ?? 10;
+      console.log(count || 10); // 0 是假值，被換掉
+      console.log(count ?? 10); // 0 保留
+      console.log(missing ?? 10); // null 才改用右邊
 
-      console.log(seatsByOr); // 0 是 falsy，|| 改用 10
-      console.log(seats); // ?? 留下 0
-      console.log(fallbackSeats); // undefined 才改用 10
-
-      const noteByOr = tourNote || '尚無備註';
-      const noteByNullish = tourNote ?? '尚無備註';
-      console.log(noteByOr); // 空字串是 falsy，|| 改用預設句
-      console.log(noteByNullish.length); // ?? 留下空字串，長度是 0
-
-      const price = 12800;
-      const label = price < 20000 ? '三萬內' : '三萬以上';
-      console.log(label);
+      console.log(text || '尚無備註'); // 空字串被換掉
+      console.log((text ?? '尚無備註').length); // 空字串保留，長度是 0
     </script>
   </body>
 </html>
@@ -2090,12 +1485,9 @@ rainy 成立，`&&` 交出右邊的字串「請帶雨具」。
 
 **解析**
 
-- 左邊的數字是 0。`||` 把 0 當成沒有值，第一行變成 10。
-- 空值合併只在 null 或 undefined 時才改用右邊，所以第二行留下 0。
-- 還沒賦值的那個是 undefined，空值合併改用 10，第三行是 10。
-- 空字串對 `||` 會換成「尚無備註」。
-- 空值合併不把空字串當空值，留下的字串長度是 0，所以下一行是 0。
-- 數字小於 20000，三元運算子挑冒號左邊的「三萬內」。
+- 同樣是 0，`||` 把它換成 10，`??` 則保留 0。
+- 左邊是 null，`??` 沒有值可用，改用右邊的 10。
+- 空字串用 `||` 會換成「尚無備註」；用 `??` 則保留空字串，印出它的長度 0。
 
 ```text
 10
@@ -2103,62 +1495,70 @@ rainy 成立，`&&` 交出右邊的字串「請帶雨具」。
 10
 尚無備註
 0
-三萬內
 ```
 
-{% note info %}
-**可選串連**
-`?.` 讀的是可能還沒有的物件屬性。屬性不在時得到 undefined，程式不會因此中斷。物件字面值會在物件那一章詳細介紹，那一章有完整 demo。這一節先用獨立變數練習預設值。
+{% note warning %}
+**?? 不能與 || 或 && 直接混用**
+在同一個式子裡，`??` 與 `||`、`&&` 要用括號隔開，寫成 `a || b ?? c` 會直接產生語法錯誤。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-另設一個值為 null 的變數，分別用 `||` 與 `??` 補 10。
+### 條件運算子
 
-再用三元運算子：小於 15000 時標籤為「輕裝」，否則為「標準」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-null 對兩種運算子都算空值，所以兩行都是 10。這和上面的 0 不同：0 只會被 `||` 換掉。
-
-12800 小於 15000，三元運算子挑「輕裝」。原先的「三萬內」仍留著，兩個標籤回答的是不同門檻。
-
-```diff 04-js/pages/19-js-nullish.html
-  // ...
-        const label = price < 20000 ? '三萬內' : '三萬以上';
-        console.log(label);
-+ 
-+       let cancelledSeats = null;
-+       console.log(cancelledSeats || 10);
-+       console.log(cancelledSeats ?? 10);
-+ 
-+       const band = price < 15000 ? '輕裝' : '標準';
-+       console.log(band);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-## 條件判斷
-
-結果要分成三種以上時，就把每一段條件寫開。讀的人由上往下看到第一個成立的，就只跑那一段。範圍或複合條件用 `if` 這組寫法；同一個值對照多個固定選項時用 `switch`。
-
-### if、else if、else
-
-括號裡放布林。成立就跑緊接的大括號，然後整段 if 結束。都不成立才跑 `else`。`else if` 可以接很多段，順序就是你要的優先順序。
+條件運算子依一個條件，在兩個值之間挑一個，整段式子本身就是一個值，適合「只差一個值」的簡單選擇。
 
 **觀念**
 
+- 寫法是 `條件 ? 成立的值 : 不成立的值`，條件成立取問號後面、冒號前面的值。
+- 整段是一個值，可以直接放進 `const` 或當成引數。
+- 一行裡不要再套另一層問號；分支超過兩個時，改用後面條件判斷一章的 if。
 
-- 條件後面不要加分號，否則大括號會被當成另一段永遠會跑的程式。
+```html 04-js/pages/19b-js-ternary.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>條件運算子</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const score = 75;
+      const result = score >= 60 ? '及格' : '不及格';
+      console.log(result);
 
-- 只做一件事時也可以加大括號。課堂一律加大括號，避免後面加行時綁錯。
+      const isMember = false;
+      const price = isMember ? 80 : 100;
+      console.log(price);
+    </script>
+  </body>
+</html>
+```
 
-- `else` 不是必須的。有些情況只是成立才印，不成立就什麼都不做。
+**解析**
+
+- 75 大於等於 60，條件成立，取冒號左邊的「及格」。
+- `isMember` 是 false，條件不成立，取冒號右邊的 100。
+
+```text
+及格
+100
+```
+
+## 條件判斷
+
+條件判斷讓程式依條件決定要執行哪一段。結果有兩種以上、或每種結果要做的事不只一行時，條件運算子就不夠用，改用 if 這組寫法；同一個值要對照多個固定選項時，用 switch 會更好讀。
+
+### if、else if、else
+
+if 的括號裡放條件，成立就執行緊接的大括號，然後整段結束；都不成立才執行 else。else if 可以接很多段，由上往下找第一個成立的，順序就是優先順序。
+
+**觀念**
+
+- 括號裡的條件不是布林時，會依真值、假值判斷。
+- 條件後面不要加分號，否則大括號會被當成另一段永遠會執行的程式。
+- 只做一件事時大括號可以省略，但課堂一律加上，避免之後多加一行時綁錯。
+- else 不是必須的，沒有它時，不成立就什麼都不做。
 
 ```html 04-js/pages/20-js-if.html
 <!DOCTYPE html>
@@ -2171,18 +1571,24 @@ null 對兩種運算子都算空值，所以兩行都是 10。這和上面的 0 
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const price = 15900;
-      let band;
+      const score = 75;
+      let grade;
 
-      if (price < 15000) {
-        band = '輕裝';
-      } else if (price < 30000) {
-        band = '標準';
+      if (score >= 90) {
+        grade = 'A';
+      } else if (score >= 80) {
+        grade = 'B';
+      } else if (score >= 60) {
+        grade = 'C';
       } else {
-        band = '深度';
+        grade = 'F';
       }
 
-      console.log(band);
+      console.log(grade);
+
+      if (score >= 60) {
+        console.log('通過');
+      }
     </script>
   </body>
 </html>
@@ -2190,79 +1596,43 @@ null 對兩種運算子都算空值，所以兩行都是 10。這和上面的 0 
 
 **解析**
 
-- 15900 沒有小於 15000，第一段跳過。它小於 30000，所以走「標準」，不再看 `else`。
-- 若改成 42800，前兩段都不成立，才會是「深度」。
-- `band` 用 `let` 是因為三條路會把不同的字放進去。
+- 75 沒有達到 90，也沒有達到 80，前兩段都跳過；它達到 60，所以是 C，後面的 else 不會再執行。
+- 若把分數改成 95，第一段就成立，直接得到 A，後面的條件都不看。
+- 因為每條路會放進不同的字，`grade` 要用 `let`。
+- 最後一個 if 沒有 else，75 達到 60 所以印出「通過」；分數不到 60 時，這段什麼都不會發生。
 
 ```text
-標準
+C
+通過
 ```
 
 {% note info %}
-**先寫最窄的條件**
-若先寫 `price < 30000`，15900 與 12800 都會進同一段，後面的「輕裝」永遠走不到。門檻要由嚴到寬，或由小到大，選一種順序寫完。
+**門檻要由嚴到寬排**
+若先寫 `score >= 60`，90 分也會在這裡成立，後面的 A 與 B 永遠走不到。條件有包含關係時，先寫最嚴格的，再依序放寬。
 {% endnote %}
 
 {% note info %}
 **條件先取成名字**
-括號裡的比較一長，先把結果放進看得出來意思的布林，if 只看那個名字。提早離開函式的寫法在函式那一章。
+括號裡的比較一長，先把結果放進看得出意思的布林變數，if 只看那個名字。
 
 ```js
-const isStandard = price >= 15000 && price < 30000;
+const isMiddle = score >= 60 && score < 80;
 
-if (isStandard) {
-  band = '標準';
+if (isMiddle) {
+  grade = 'C';
 }
 ```
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-用另一組 if：等於 1 印「一日遊」，等於 3 印「短途」，其他印「多日」。以 days 為 5 試跑，再在註解裡寫若改成 3 會印什麼。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-5 天兩段都不中，所以是「多日」。註解不是輸出。若把 `days` 改成 3，會在第二段停住，印出「短途」，不會掉進「多日」。
-
-```diff 04-js/pages/20-js-if.html
-  // ...
-        }
-  
-        console.log(band);
-+ 
-+       const days = 5;
-+       let lengthLabel;
-+       if (days === 1) {
-+         lengthLabel = '一日遊';
-+       } else if (days === 3) {
-+         lengthLabel = '短途';
-+       } else {
-+         lengthLabel = '多日';
-+       }
-+       console.log(lengthLabel);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### switch 與 case
 
-同一個名字只和幾個固定字串對照時，`switch` 把對照寫在一起。每一段要用 `break` 離開，否則會繼續跑下一段。
-
-區間（例如一個數字小於另一個）仍用 `if`，不要硬寫進 `switch`。
+switch 拿一個值，依序和每個 case 比對，對上就執行該段。適合同一個值對照多個固定選項，不適合範圍判斷。
 
 **觀念**
 
-
-- 括號裡放要對的那個值，`case` 後面放對照的值，用嚴格相等。
-
-- 忘了 `break` 會掉進下一個 case，兩段都會跑。這個特性也能刻意利用，本節後半會示範。
-
-- `default` 接住沒對上的值，放在最後面。
+- switch 括號裡放要比對的值，case 後面放比對的值，比對用嚴格相等。
+- 每一段結尾要寫 break 離開 switch；沒寫會繼續往下執行下一段。
+- default 接住所有沒對上的值，放在最後。
 
 ```html 04-js/pages/21-js-switch.html
 <!DOCTYPE html>
@@ -2270,29 +1640,29 @@ if (isStandard) {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>switch</title>
+    <title>switch 與 case</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const place = '花蓮';
-      let region;
+      const light = 'green';
+      let action;
 
-      switch (place) {
-        case '台北':
-          region = '北部';
+      switch (light) {
+        case 'red':
+          action = '停';
           break;
-        case '花蓮':
-          region = '東部';
+        case 'yellow':
+          action = '注意';
           break;
-        case '台南':
-          region = '南部';
+        case 'green':
+          action = '行';
           break;
         default:
-          region = '其他';
+          action = '號誌異常';
       }
 
-      console.log(region);
+      console.log(action);
     </script>
   </body>
 </html>
@@ -2300,53 +1670,26 @@ if (isStandard) {
 
 **解析**
 
-- `place` 對上「花蓮」，`region` 設成「東部」，break 讓它不要再往下掉進台南或 default。
-- 若拿掉花蓮那段的 `break`，會繼續執行下一段，把 `region` 改成「南部」，最後印出的就不是東部。
+- `light` 是 green，對上第三個 case，`action` 設成「行」，break 讓程式離開 switch，不會再碰到 default。
+- 若把 green 那一段的 break 拿掉，會繼續往下執行 default，`action` 被蓋成「號誌異常」。
 
 ```text
-東部
+行
 ```
 
 {% note warning %}
-**case 不要寫範圍**
-`case price < 15000` 不會照你想的方式工作。範圍交給 `if`。固定字串或編號才用 switch。
+**case 後面不能寫範圍**
+`case score >= 60` 比對的是「switch 的值是否嚴格等於 true 或 false」，不是在判斷範圍，所以結果不是想要的。範圍交給 if，固定的字串或編號才用 switch。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-把 place 改成「京都」，確認印出「其他」。再加一個 case「京都」，對應字串為「日本」，並加上 `break`。
-{% endnote %}
+### switch 合併 case
 
-<details>
-<summary>參考答案</summary>
+break 的用途是「這段做完就離開」。反過來利用，把幾個 case 疊在一起、中間不寫程式也不寫 break，對上其中任何一個，都會往下掉到同一段程式，這個現象叫 fall-through。它的效果等於「這幾個值任何一個成立」。
 
-加上京都的 case 之後，對到的是「日本」而不是 default。`break` 讓它停住。default 仍留著，給還沒列進清單的地點。
+**觀念**
 
-```diff 04-js/pages/21-js-switch.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const place = '花蓮';
-+       const place = '京都';
-        let region;
-  
-        switch (place) {
-          // ...
-            region = '南部';
-            break;
-+         case '京都':
-+           region = '日本';
-+           break;
-          default:
-            region = '其他';
-        // ...
-```
-
-</details>
-
-**觀念：故意省略 break 合併 case**
-
-`break` 的用途是「這段做完就離開」。反過來利用這個特性，把幾個 `case` 疊在一起、中間不寫任何程式也不寫 `break`，對上其中任何一個都會往下掉到同一段程式。效果等於「這幾個值任一個成立」，像是用 `||` 串起多個 `===`。
+- 疊在一起的 case 共用最後一個 case 底下的程式，只有那一段需要 break。
+- 中間空著的 case 是常見寫法，大家看得懂；但若某段 case 有寫程式卻故意不寫 break，要加一行註解說明是刻意的，否則別人會以為是漏寫。
 
 ```html 04-js/pages/22-js-switch-group.html
 <!DOCTYPE html>
@@ -2386,68 +1729,28 @@ if (isStandard) {
 
 **解析**
 
-- `day` 是「週六」，對上第一個 case。那一行沒有程式也沒有 `break`。
-- 於是往下掉到「週日」，再往下執行 `ticket = '假日票'`，遇到 `break` 才離開。
-- 換成「週日」也會跑到同一段。週一到週五同理，五個值共用「平日票」那一段。
+- `day` 是「週六」，對上第一個 case，但那一行沒有程式也沒有 break，於是往下掉到「週日」，再往下執行 `ticket = '假日票'`，遇到 break 才離開。
+- 換成「週日」也會跑到同一段；週一到週五同理，五個值共用「平日票」那一段。
+- 同樣的判斷用 if 要寫成 `day === '週六' || day === '週日'`，選項一多，疊 case 的寫法比較好讀。
 
 ```text
 假日票
 ```
 
-- 同樣的判斷用 if 要寫成 `day === '週六' || day === '週日'`。選項一多，疊 case 的寫法比較好讀。
-
-{% note info %}
-**刻意省略要讓人看得出來**
-疊在一起、中間沒有程式的 case 是常見寫法，大家看得懂。若某段 case 有寫程式卻故意不寫 `break`，要在那裡加一行註解說明是刻意的，不然別人會以為是漏寫。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-把 `day` 改成「國定假日」，讓它和週六、週日一樣拿到「假日票」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-在「週日」下面再疊一個 `case '國定假日':`，同樣不寫程式也不寫 `break`，就會掉進假日票那段。
-
-```diff 04-js/pages/22-js-switch-group.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const day = '週六';
-+       const day = '國定假日';
-        let ticket;
-  
-        switch (day) {
-          case '週六':
-          case '週日':
-+         case '國定假日':
-            ticket = '假日票';
-            break;
-          // ...
-```
-
-</details>
-
 ## 迴圈
 
-同一段程式要依序做很多次時，不必把多行 `log` 抄很多遍。迴圈用一個計數器重複同一段程式，次數由條件決定。次數寫錯時，Console 會印出一大串，或是完全沒有。
-
-`for` 適合已知要數幾次，`while` 適合做到某個條件為止，例如一個數字減到 0。兩者都要讓條件有一天會變成 false，否則分頁會卡在這一頁。這一節先看 for 迴圈，再看 while、break 與 continue。選讀看 do...while 與巢狀迴圈。
+迴圈讓同一段程式重複執行，不必把相同的程式碼抄很多遍。迴圈每執行一圈就檢查條件，成立就再跑一圈，直到條件不成立為止；所以一定要讓條件有一天會變成 false，否則分頁會卡死，這種情況叫無限迴圈。這一節主線學 for 迴圈；選讀的有 while、break 與 continue，以及 do...while 與巢狀迴圈。
 
 ### for 迴圈
 
-括號裡分成三段：計數器從多少開始、什麼時候繼續、每圈結束如何改變計數器。大括號裡是每一圈要做的事。計數器用 `let`，因為每一圈都要換成下一個數字。
+for 適合已經知道要重複幾次的情況。括號裡分成三段，由分號隔開：計數器（記錄目前第幾圈的變數）從多少開始、什麼條件下繼續、每圈結束後計數器怎麼改。大括號裡是每一圈要做的事。
 
 **觀念**
 
-
-- 三段用分號隔開。繼續的條件是「還可以進下一圈」，不是「最後一圈的號碼」。
-
-- `day += 1` 若忘了寫，`day` 永遠停在 1，條件一直成立，迴圈不會停。
-
-- 計數器宣告在括號裡時，迴圈結束後外面就沒有這個名字。
+- 計數器用 `let` 宣告，因為每一圈都要換成下一個數字。
+- 中間的條件是「還可以進下一圈」，不是「最後一圈的號碼」。
+- 第三段的 `n += 1` 若忘了寫，條件永遠成立，迴圈就停不下來。
+- 計數器宣告在括號裡，迴圈結束後，外面就不能再使用這個名字。
 
 ```html 04-js/pages/23-js-for.html
 <!DOCTYPE html>
@@ -2460,10 +1763,11 @@ if (isStandard) {
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const days = 3;
+      let total = 0;
 
-      for (let day = 1; day <= days; day += 1) {
-        console.log(day);
+      for (let n = 1; n <= 5; n += 1) {
+        total += n;
+        console.log(n, total);
       }
     </script>
   </body>
@@ -2472,71 +1776,38 @@ if (isStandard) {
 
 **解析**
 
-- 從 1 開始，只要 `day` 還小於或等於 3 就印出目前的數字，然後加 1。所以是 1、2、3 三行。
-- 若條件寫成小於 `days`，只會印到 2，最後一圈被排除。
-- 從 0 開始則會多出一個 0，這組資料沒有 0 這一筆。
+- `n` 從 1 開始，只要還小於等於 5 就執行大括號，結束後加 1，所以一共執行 5 圈。
+- 每一圈把 `n` 加進 `total`，印出目前的 `n` 與累計的合計：1、3、6、10、15。
+- 若條件改成小於 5，最後一圈會被排除，只會印到 4。
 
 ```text
-1
-2
-3
+1 1
+2 3
+3 6
+4 10
+5 15
 ```
 
-{% note warning %}
-**先確認會停**
-寫完迴圈先看計數器有沒有往結束的方向走。這一篇的練習資料很小，真的寫成無限迴圈時，改程式後重新整理即可。
+{% note info %}
+**常見簡寫 n++**
+`n++` 等於 `n += 1`，很多程式碼會這樣寫。本課程為了讓寫法一致，統一寫 `+= 1`。
 {% endnote %}
 
 {% note info %}
 **走訪陣列改用 for...of**
-這一節的 for 用來數已知的次數。陣列裡的每一格，到陣列那一章改用 for...of 讀值。
-
-for...in 走的是鍵。陣列的鍵是 `'0'`、`'1'` 這種字串，不要拿它來列陣列的值。物件的鍵留到物件那一章。
+for 用來數已知的次數。要讀陣列裡的每一個值，到陣列那一章會學 for...of。for...in 走的是鍵（屬性名稱），陣列的鍵是 `'0'`、`'1'` 這樣的字串，不要用它來取陣列的值；物件的鍵留到物件那一章。
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-把 days 改成 5，並在每一行前面印出「第」，後面印出「天」。字串用加號接起來。
-{% endnote %}
+### 選讀：while、break 與 continue
 
-<details>
-<summary>參考答案</summary>
-
-條件改成小於等於 5，所以有五行。加號把字串和數字接在一起時，數字會被轉成文字再接上，這裡是故意要做出一句話。
-
-```diff 04-js/pages/23-js-for.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const days = 3;
-+       const days = 5;
-  
-        for (let day = 1; day <= days; day += 1) {
--         console.log(day);
-+         console.log('第' + day + '天');
-        }
-      </script>
-    // ...
-```
-
-</details>
-
-### while、break 與 continue
-
-`while` 只寫繼續的條件，計數器要自己在迴圈裡改。另外兩個寫法決定這一圈要不要做完、整段要不要停。
-
-- `continue` 跳過這一圈剩下的程式，直接進下一圈。
-
-- `break` 則整段迴圈立刻結束。
+while 只寫繼續的條件，計數器要自己在大括號裡改。不知道會重複幾圈、只知道做到某個狀況為止，就用 while。另外兩個關鍵字可以在迴圈裡控制流程。
 
 **觀念**
 
-
-- 條件用到的那個 `let` 要在迴圈外面先準備好，迴圈裡要改它，否則不會停。
-
-- `continue` 與 `break` 只影響包住它們的那一層迴圈。
-
-- 還不知道正好幾圈的事用 `while`。已經知道次數就用 `for`。
+- 條件用到的變數要在迴圈外先準備好，並在迴圈裡往結束的方向改，否則不會停。
+- `continue` 跳過這一圈剩下的程式，直接進下一圈。
+- `break` 立刻結束整個迴圈。
+- 兩者都只影響包住它們的那一層迴圈。
 
 ```html 04-js/pages/24-js-while.html
 <!DOCTYPE html>
@@ -2549,23 +1820,23 @@ for...in 走的是鍵。陣列的鍵是 `'0'`、`'1'` 這種字串，不要拿�
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      let seats = 3;
+      let count = 3;
 
-      while (seats > 0) {
-        console.log(seats);
-        seats -= 1;
+      while (count > 0) {
+        console.log(count);
+        count -= 1;
       }
 
-      console.log('額滿');
+      console.log('結束');
 
-      for (let day = 1; day <= 5; day += 1) {
-        if (day === 2) {
+      for (let n = 1; n <= 5; n += 1) {
+        if (n === 2) {
           continue;
         }
-        if (day === 4) {
+        if (n === 4) {
           break;
         }
-        console.log(day);
+        console.log(n);
       }
     </script>
   </body>
@@ -2574,71 +1845,33 @@ for...in 走的是鍵。陣列的鍵是 `'0'`、`'1'` 這種字串，不要拿�
 
 **解析**
 
-- 3、2、1 各印一次，減到 0 後條件不成立，接著印「額滿」。
-- 下面的 `for` 在數字 2 遇到 `continue`，所以沒有印 2。
-- 數字 4 遇到 break，4 和 5 都不會印。留下的是 1 和 3。
+- while 印出 3、2、1，減到 0 時條件不成立，離開迴圈後印出「結束」。
+- 下面的 for 在 `n` 是 2 時遇到 continue，這一圈剩下的程式被跳過，所以沒有印 2。
+- `n` 是 4 時遇到 break，整個迴圈結束，4 與 5 都不會印，留下的是 1 與 3。
 
 ```text
 3
 2
 1
-額滿
+結束
 1
 3
 ```
 
 {% note info %}
 **break 不是錯誤**
-它是你規定的提早結束。例如找到第一筆符合的就可以停，不必把後面的圈數也走完。
+它是你規定的提早結束。例如找到第一筆符合的就可以停，不必把後面的圈數也跑完。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-把 seats 改成從 2 開始倒數。`for` 改成跳過 1、在 3 停止，確認印出的數字只剩 2。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-名額只印 2 和 1。日子從 1 走到 5，第 1 天被跳過，第 2 天印出，第 3 天 `break`，所以日子只剩一行 2。
-
-```diff 04-js/pages/24-js-while.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       let seats = 3;
-+       let seats = 2;
-  
-        while (seats > 0) {
-          console.log(seats);
-          // ...
-        console.log('額滿');
-  
-        for (let day = 1; day <= 5; day += 1) {
--         if (day === 2) {
-+         if (day === 1) {
-            continue;
-          }
--         if (day === 4) {
-+         if (day === 3) {
-            break;
-          }
-          // ...
-```
-
-</details>
 
 ### 選讀：do...while
 
-`do...while` 把條件放在迴圈後面，大括號先跑完一圈才檢查。條件成立就再跑，不成立就離開。同一個一開始就不成立的條件，`while` 一次都不進，這種寫法仍會進一次。
+do...while 把條件放在大括號後面，先執行一圈才檢查。條件成立就再跑一圈，不成立就離開。
 
 **觀念**
 
-- 條件寫在後面的括號裡，整段以分號結束。進入之前不檢查。
-
-- 條件一開始就是 false 時，`while` 一次都不跑，`do...while` 仍會跑一次。
-
-- 計數器要在迴圈裡往結束的方向改。條件一直成立，這一段就不會停。
+- 條件寫在大括號後面的括號裡，整段以分號結束。
+- 進入前不檢查，所以至少執行一次。
+- 計數器同樣要在迴圈裡往結束的方向改。
 
 ```html 04-js/pages/25-js-do.html
 <!DOCTYPE html>
@@ -2673,9 +1906,9 @@ for...in 走的是鍵。陣列的鍵是 `'0'`、`'1'` 這種字串，不要拿�
 
 **解析**
 
-- 「while 先檢查」印出之後，`count` 是 0，大於 0 不成立，大括號一次都沒進，所以沒有數字。
-- 「do 先執行」印出之後，先把 `tries` 加成 1 並印出，然後才檢查。1 已經不小於 1，於是離開。
-- 兩段都遇到不成立的條件：while 是零次，do...while 是一次，差別只在檢查的時機。
+- 「while 先檢查」印出後，`count` 是 0，大於 0 不成立，大括號一次都沒進去，所以沒有數字。
+- 「do 先執行」印出後，先把 `tries` 加成 1 並印出，然後才檢查；1 不小於 1，於是離開。
+- 兩段在第一次檢查時條件都不成立，差別只在檢查的時機：while 先檢查，執行 0 次；do...while 後檢查，執行 1 次。
 
 ```text
 while 先檢查
@@ -2683,40 +1916,15 @@ do 先執行
 1
 ```
 
-{% note success %}
-**換你試試：**
-把後面的條件改成 `tries < 3`，讓 do 那段印出 1、2、3。上面的 while 不要改，數字仍然不該出現。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-條件改成小於 3 後，印出 1 和 2 時檢查仍成立，會再進一圈，印出 3 才停。while 的條件還是大於 0，`count` 停在 0，大括號仍然沒進去。
-
-```diff 04-js/pages/25-js-do.html
-  // ...
-          tries += 1;
-          console.log(tries);
--       } while (tries < 1);
-+       } while (tries < 3);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 選讀：巢狀迴圈
 
-一個迴圈的大括號裡可以再放另一個迴圈。外圈每走一步，內圈就從自己的起點跑完一整輪，總次數是兩層次數相乘。內層計數器要另取名字，才不會改到外層的數字。
+一個迴圈的大括號裡可以再放另一個迴圈。外圈每走一步，內圈就從自己的起點跑完一整輪，總次數是兩層次數相乘。
 
 **觀念**
 
-- 外圈的計數器要等內圈這一輪全部結束，才會加 1。
-
+- 外圈的計數器要等內圈整輪結束，才會加 1。
 - 內圈每一輪都從頭開始，不會接著上一輪最後的數字。
-
-- 兩層要用不同的名字，例如外層 `row`、內層 `col`。
+- 兩層要用不同的名字，例如外層 `row`、內層 `col`，內層才不會改到外層的數字。
 
 ```html 04-js/pages/26-js-nested.html
 <!DOCTYPE html>
@@ -2731,7 +1939,7 @@ do 先執行
     <script>
       for (let row = 1; row <= 2; row += 1) {
         for (let col = 1; col <= 3; col += 1) {
-          console.log(row + '×' + col + '=' + (row * col));
+          console.log(row + '×' + col + '=' + row * col);
         }
       }
     </script>
@@ -2741,10 +1949,8 @@ do 先執行
 
 **解析**
 
-- `row` 先停在 1，內圈的 `col` 從 1 走到 3，印出這一列的三格。
-- 內圈結束後，外圈才變成 2，內圈再從 1 重新走到 3。
-- 外圈 2 次、內圈每次 3 次，相乘是 6，所以一共六行。
-- 內圈若沿用外圈的名字，加一改的是同一個變數，外圈的進度會被內圈帶走。
+- `row` 先停在 1，內圈的 `col` 從 1 走到 3，印出三行；內圈結束後，外圈才變成 2，內圈再從 1 重新走到 3。
+- 外圈 2 次、每次內圈 3 次，相乘是 6，所以一共六行。
 
 ```text
 1×1=1
@@ -2757,53 +1963,26 @@ do 先執行
 
 {% note info %}
 **巢狀不要超過兩層**
-外圈再加內圈，兩層就夠看清誰先跑完。再多一層時，先把最裡面的迴圈收成函式，用名字呼叫它，而不是在迴圈裡再套一層。
+兩層已經足夠看清誰先跑完。再多一層時，先把最裡面的迴圈收成函式，用名字呼叫它，而不是在迴圈裡再套一層。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-把外圈改成走到 3、內圈改成走到 2。總行數仍是兩層相乘，最後一行是 `3×2=6`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-外圈多一輪、內圈少一輪，3 乘 2 還是六行。每一列只剩兩格，最後一格是 3 乘 2。
-
-```diff 04-js/pages/26-js-nested.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       for (let row = 1; row <= 2; row += 1) {
--         for (let col = 1; col <= 3; col += 1) {
-+       for (let row = 1; row <= 3; row += 1) {
-+         for (let col = 1; col <= 2; col += 1) {
-            console.log(row + '×' + col + '=' + (row * col));
-          }
-        // ...
-```
-
-</details>
 
 # 函式
 
-函式是把一段程式包起來，取一個名字。需要的時候呼叫這個名字，裡面的程式才會執行，而且可以重複使用，不必每次重寫。這一章先學怎麼宣告、怎麼呼叫，再學把值交給函式、從函式拿回結果，不該繼續時先離開，以及值沒交到時怎麼補；接著把函式本身當成一個值來寫。選讀再看一次交進多個值，以及函式怎麼記住外面的變數。
+函式是把一段程式包起來並取一個名字，需要時呼叫這個名字，裡面的程式才會執行，也就能重複使用而不必重寫。這一章先學怎麼宣告與呼叫，再學把值交給函式、從函式拿回結果、不合理的輸入先擋下來，以及參數沒傳時怎麼補預設值，最後學不定數量的引數。接著把函式本身當成一個值：放進變數、寫成箭頭函式，或交給另一支函式使用。選讀的部分是函式怎麼記住外面的變數。
 
 ## 函式宣告與呼叫
 
-這一節先把函式寫下來並呼叫它，確認每呼叫一次就執行一次。接著學習把值交給函式、從函式拿回結果，不該繼續時先離開，以及值沒交到時怎麼補。選讀再看一次交進多個值。
+這一節從最基本的寫法開始：先宣告函式並呼叫它，再學參數與引數如何把值交進去、return 如何把結果交出來。之後處理輸入不合理時的提早離開、參數沒傳時的預設值，以及一次收下不定數量的引數。
 
 ### 宣告與呼叫
 
-函式用 `function` 這個關鍵字宣告。關鍵字後面寫函式名稱，大括號裡放這支函式要做的事。宣告只把程式記下來，不會執行；寫出名稱再加上小括號才是呼叫，每呼叫一次就執行一次。這一節的小括號先留空。
+函式用 `function` 關鍵字宣告，後面接函式名稱，大括號裡放這支函式要做的事。這一小節的小括號先留空。
 
 **觀念**
 
-- `function` 是宣告函式的關鍵字，後面緊接函式名稱。
-- 大括號裡的程式，就是這支函式要做的事。
-- 宣告不會執行。檔案讀到函式時，只是把大括號裡的程式記在這個名稱上。
-- 呼叫才會執行。寫出函式名稱，再加上一對小括號，裡面的程式才會跑。
-- 同一支函式可以重複呼叫。每呼叫一次，就再執行一次。
+- 宣告不會執行。檔案讀到函式宣告時，只是把大括號裡的程式記起來。
+- 呼叫才會執行：寫出函式名稱，再加一對小括號。
+- 同一支函式可以重複呼叫，每呼叫一次就再執行一次。
 
 ```html 04-js/pages/27-js-function.html
 <!DOCTYPE html>
@@ -2830,9 +2009,8 @@ do 先執行
 
 **解析**
 
-- 檔案先讀到 `sayHello` 的宣告。這時候大括號裡的程式還沒跑，所以不會印出 Hello。
-- 後面三行才是呼叫。每一行執行一次，Console 因此出現三行 Hello。
-- 三行呼叫的是同一支函式。重複呼叫就會重複執行。
+- 檔案先讀到 sayHello 的宣告，這時大括號裡的程式還沒跑，所以不會印出 Hello。
+- 後面三行才是呼叫，每一行執行一次，Console 因此出現三行 Hello。
 
 ```text
 Hello
@@ -2840,42 +2018,11 @@ Hello
 Hello
 ```
 
-{% note success %}
-**換你試試：**
-再寫一支 `sayThanks`，大括號裡印出 Thanks，並呼叫兩次。三行 Hello 後面應再多兩行 Thanks。這支新函式同樣要等呼叫才會印。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-sayThanks 寫在 sayHello 後面，兩次呼叫放在最後。Hello 仍是三行，Thanks 出現在後面。
-
-```diff 04-js/pages/27-js-function.html
-  // ...
-          console.log('Hello');
-        }
-  
-+       function sayThanks() {
-+         console.log('Thanks');
-+       }
-+ 
-        sayHello();
-        sayHello();
-        sayHello();
-+       sayThanks();
-+       sayThanks();
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 參數與引數
 
-參數是宣告時括號裡用來接值的名稱，引數是呼叫時實際傳進去的值。兩者依照位置對上，而且參數只活在函式裡面。傳入基本型別時，函式拿到的是複本。
+函式常常需要外面交給它資料才能工作。參數是宣告時小括號裡用來接值的名稱，引數是呼叫時實際交進去的值，兩者依照位置一一對上。
 
-下圖以 `add(3, 5)` 為例，呼叫時的引數會依照位置，依序交給宣告裡的參數。
+下圖以 `add(3, 5)` 為例，引數依序交給宣告裡的參數。
 
 {% mermaid graph LR %}
   subgraph call["呼叫：add(3, 5)"]
@@ -2892,20 +2039,11 @@ sayThanks 寫在 sayHello 後面，兩次呼叫放在最後。Hello 仍是三行
 
 **觀念**
 
-- 第一個引數給第一個參數，第二個引數給第二個參數。你在外面就算有同名變數，傳進去的仍是那個位置上的值。
-
-- 少傳的參數會是 `undefined`。還沒學會判斷之前，不要拿它直接去加減，否則結果不會是你預期的數字。
-
-- 多傳的引數沒有參數可接，函式裡看不到，等於被忽略。參數個數就是這支函式準備要收的數量。
-
-- 參數只在函式內有效，這是函式作用域。規則和前面的區塊作用域一樣：大括號外面沒有這個名字。函式裡若沒有自己的參數或宣告，才會向外層找同名變數。
-
-- 傳入數字、字串、布林這些基本型別時，函式拿到的是值的複本。在函式裡把參數改成別的值，外面的變數仍是呼叫前的那個。
-
-{% note info %}
-**物件改的是同一份**
-基本型別在函式裡改參數，外面的變數不變。物件下一章才建立。物件傳進函式後，若改的是它的欄位，外面看得到，因為兩邊指的是同一份資料。
-{% endnote %}
+- 引數與參數只看位置，不看名字：第一個引數給第一個參數，第二個給第二個。
+- 少傳的參數是 `undefined`，不要拿它去做運算，結果不會是預期的數字。
+- 多傳的引數沒有參數可接，函式裡看不到，等於被忽略。
+- 參數只活在函式裡面，這是函式作用域，和前面學的區塊作用域相似：函式外面找不到這個名字。
+- 傳入數字、字串、布林這類基本型別時，函式拿到的是複本，在函式裡改參數，不會改到外面的變數。
 
 ```html 04-js/pages/28-js-params.html
 <!DOCTYPE html>
@@ -2946,9 +2084,13 @@ sayThanks 寫在 sayHello 後面，兩次呼叫放在最後。Hello 仍是三行
 
 - 第一次呼叫兩個引數都有，依序印出 10 與 20。
 - 第二次只傳 10，right 沒有對上引數，所以是 undefined。第三次多傳的 30 沒有參數可接，畫面仍只有 10 與 20。
-- `bump` 的參數和外面的 `value` 同名，但是兩個名字。
-- 函式裡把參數改成 6 並印出來，函式結束後再印外面的 value，仍是 5。數字傳進去的是複本，改參數不會改到外面。
-- 最後一行若拿掉註解，會是 ReferenceError。left 只活在 printPair 的函式作用域裡，和區塊作用域一樣，括號外面找不到。
+- bump 的參數與外面的 value 同名，但是兩個不同的變數。函式裡把參數改成 6 並印出，函式結束後外面的 value 仍是 5，因為傳進去的是複本。
+- 最後一行若拿掉註解會出現 ReferenceError：left 只活在 printPair 裡，外面找不到。
+
+{% note info %}
+**物件改的是同一份**
+基本型別傳進函式後，改參數不影響外面。物件在後面的章節才介紹，先記住一件事：物件傳進函式後，若改的是它的欄位，外面看得到，因為兩邊指的是同一份資料。
+{% endnote %}
 
 ```text
 10
@@ -2961,48 +2103,16 @@ undefined
 5
 ```
 
-{% note success %}
-**換你試試：**
-把外面的 value 改成 9，再呼叫 bump。函式裡應印出 10，函式結束後外面仍是 9。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-外面的起點改成 9，bump 仍只改自己的參數，所以先印 10，再印 9。前面 printPair 的六行不變。
-
-```diff 04-js/pages/28-js-params.html
-  // ...
-          console.log(value);
-        }
-  
--       let value = 5;
-+       let value = 9;
-        bump(value);
-        console.log(value);
-      // ...
-```
-
-</details>
-
 ### return 與回傳值
 
-`return` 做兩件事：把值交回呼叫的地方，並且立刻結束函式。沒有交回值時，呼叫結果是 undefined。`console.log` 只把值印出來，不能代替 return。
+函式不只能做事，還能把結果交回呼叫的地方，這就是 return 的工作。return 同時會立刻結束函式。
 
 **觀念**
 
-- 沒有寫 return 的呼叫，結果是 `undefined`。寫了 return、右邊卻沒有值，結果同樣是 undefined。
-
-- log 和 return 常被看成同一件事。log 是副作用，把訊息留在 Console；return 是把值交回呼叫端。只為了讓人眼看到，可以 log；下一步還要用這個結果，就要 return。
-
-- 回傳值可以直接拿去用。放進 `const`、嵌進模板字串，或當作另一個函式的引數，用的都是交回來的那個值。
-
-- return 會立刻離開函式。寫在它後面的同一層程式不會執行，這個規則下一節的提早 return 會再用到。
-
-{% note warning %}
-**印出來不等於交回來**
-函式裡有 console.log，只表示 Console 多了一行。你把這次呼叫放進變數或模板字串，拿到的仍是 undefined，除非函式有 return。
-{% endnote %}
+- 回傳值就是這次呼叫的結果，可以放進變數、嵌進模板字串，或當作另一個函式的引數。
+- 沒有寫 return，或寫了 `return;` 但右邊沒有值，呼叫的結果都是 `undefined`。
+- `console.log` 只是把值印給人看；後面的程式還要用這個結果，就要 return。
+- return 會立刻離開函式，函式裡寫在它後面的程式不會執行，下一小節的提早 return 就靠這一點。
 
 ```html 04-js/pages/29-js-return.html
 <!DOCTYPE html>
@@ -3045,13 +2155,14 @@ undefined
 
 **解析**
 
-- `getTotal(80, 3)` 把 240 交回來，放進 total，所以第一行是 240。
-- 模板字串裡又呼叫了一次，80 乘 2 的回傳值嵌進句子，第二行是「合計 160」。
-- 第三行把回傳值當成引數。裡面的呼叫先得到 20，外面再用 20 與 4 相乘，得到 80。
-- 這三行都沒有在 getTotal 裡 log，畫面上的字是呼叫端印出來的。
-- `printTotal(80, 3)` 自己先印出 240，函式沒有 return，外層的 console.log 再把這次呼叫的結果印出來，所以緊接著是 undefined。
-- `blank` 寫了 return 但沒有值，最後一行同樣是 undefined。
-- 兩種「沒有交回值」的寫法，結果一樣。
+- getTotal 把 240 交回來放進 total，所以第一行是 240。第二行把 160 嵌進模板字串，第三行把回傳值當成引數：裡面先得到 20，外面再算 20 乘 4，得到 80。getTotal 裡沒有任何 log，這三行都是呼叫端印出來的。
+- printTotal 自己先印出 240，但它沒有 return，外層的 console.log 印出這次呼叫的結果，所以緊接著是 undefined。
+- blank 寫了 return 但沒有值，結果同樣是 undefined。
+
+{% note warning %}
+**印出來不等於交回來**
+函式裡有 console.log，只表示 Console 多了一行。把這次呼叫放進變數或模板字串，拿到的仍是 undefined，除非函式有 return。
+{% endnote %}
 
 ```text
 240
@@ -3062,55 +2173,16 @@ undefined
 undefined
 ```
 
-{% note success %}
-**換你試試：**
-寫 `getDouble`，回傳 n 的兩倍。用模板字串印出「兩倍是 12」。再寫一支只 log、沒有 return 的函式，把呼叫放進 console.log，確認多一行 undefined。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-getDouble(6) 交回 12，模板字串接成「兩倍是 12」。printOnly 先印出 6，外層再印出它的回傳值 undefined。
-
-```diff 04-js/pages/29-js-return.html
-  // ...
-        }
-  
-        console.log(blank());
-+ 
-+       function getDouble(n) {
-+         return n * 2;
-+       }
-+ 
-+       console.log(`兩倍是 ${getDouble(6)}`);
-+ 
-+       function printOnly(n) {
-+         console.log(n);
-+       }
-+ 
-+       console.log(printOnly(6));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 提早 return
 
-函式收到的參數不一定都合理，例如人數傳入 0，除法就會算出 `Infinity` 或 `NaN`，錯誤的結果還會一路往後傳。提早 return（也叫 guard clause）的做法是在函式一開頭先檢查這些無效輸入，不合法就立刻 return 結束函式，後面的主要計算只需要處理正常情況。
+函式收到的參數不一定合理，例如人數傳入 0，除法會算出 `Infinity` 或 `NaN`，錯誤的結果還會一路往後傳。提早 return（guard clause）的做法，是在函式一開頭先檢查無效輸入，不合法就立刻 return，後面的主要計算只需要處理正常情況。
 
 **觀念**
 
-- 會讓計算出錯的輸入要先擋下來，檢查放在函式最上方，一條規則寫一個 if。
-- 有回傳值的函式，不合法時印出原因並 return `null`，讓呼叫的人知道這次沒有結果，而不是拿到一個看似正常的錯誤數字。
-- 只負責做事、不需要回傳值的函式（例如只用 console.log 印出結果），直接寫 `return;` 就能終止，後面的動作都不會執行。
-- 每個 if 都在 return 後結束，不需要 else。通過所有檢查之後，剩下的程式就是正常情況的計算。
-
-{% note warning %}
-**return 後面的程式不會跑**
-同一層寫在 `return` 之後的程式不會執行，包含 `console.log`。檢查用的訊息要放在 return 之前。
-{% endnote %}
+- 檢查放在函式最上方，一條規則寫一個 if。
+- 有回傳值的函式，不合法時回傳 `null`，讓呼叫的人知道這次沒有結果，而不是拿到一個看似正常的錯誤數字。
+- 只負責做事的函式，不合法時直接寫 `return;`，後面的動作就不會執行。
+- 每個 if 都在 return 後結束，不需要 else，通過所有檢查後剩下的就是正常計算。
 
 ```html 04-js/pages/30-js-guard.html
 <!DOCTYPE html>
@@ -3152,10 +2224,10 @@ getDouble(6) 交回 12，模板字串接成「兩倍是 12」。printOnly 先印
       // 不需要回傳值：用 return; 單純終止動作
       function printScore(name, score) {
         if (score < 0 || score > 100) {
-          console.log(name + ' 的分數無效');
+          console.log(`${name} 的分數無效`);
           return;
         }
-        console.log(name + ' 考了 ' + score + ' 分');
+        console.log(`${name} 考了 ${score} 分`);
       }
 
       printScore('Amy', 88);
@@ -3167,11 +2239,10 @@ getDouble(6) 交回 12，模板字串接成「兩倍是 12」。printOnly 先印
 
 **解析**
 
-- averageRaw 沒有任何檢查，人數是 0 時，240 除以 0 得到 `Infinity`，0 除以 0 得到 `NaN`，這些值傳到後面的計算只會讓錯誤擴大。
-- average 的第一個 if 檢查人數，`average(240, 0)` 在這裡印出原因後就 return `null`，下面的除法完全沒有執行。
-- 第二個 if 檢查總和，`average(-10, 2)` 通過了人數檢查，卻在這一關被擋下。
-- `average(240, 3)` 通過兩個檢查，才走到最後一行的除法，得到正常的 80。
-- printScore 只負責印出訊息，沒有值要交回去，所以檢查不通過時只寫 `return;`，`printScore('Ben', 120)` 印出無效後就結束，不會再印出分數。
+- averageRaw 沒有檢查，人數是 0 時得到 Infinity 或 NaN，這些值傳到後面只會讓錯誤擴大。
+- average 的第一個 if 擋下人數 0，印出原因並回傳 null，下面的除法完全沒執行。`average(-10, 2)` 的人數正常，通過第一個 if，卻在第二個 if 因總和是負數被擋下，同樣印出原因並回傳 null。
+- 兩關都通過的 `average(240, 3)` 才走到最後的除法，得到 80。
+- printScore 沒有值要交回，檢查不通過時只寫 `return;`，Ben 印出無效後就結束，不會再印分數。
 
 ```text
 80
@@ -3186,59 +2257,16 @@ Amy 考了 88 分
 Ben 的分數無效
 ```
 
-{% note success %}
-**換你試試：**
-每個人的分數最高 100 分，所以總和不能超過 `count * 100`。在 average 裡加上第三個檢查，超過時印出「總和超過上限」並 return `null`，再呼叫 `average(500, 3)` 確認被擋下。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新的檢查一樣放在除法之前，printScore 不受影響。500 大於 3 乘以 100 的 300，所以印出原因並回傳 `null`，除法不會執行。原本的三次呼叫結果不變。
-
-```diff 04-js/pages/30-js-guard.html
-  // ...
-            return null;
-          }
-+         if (total > count * 100) {
-+           console.log('總和超過上限');
-+           return null;
-+         }
-          return total / count;
-        }
-  
-        console.log(average(240, 3)); // 80
--       console.log(average(240, 0)); // 先印原因，再印 null
--       console.log(average(-10, 2)); // 先印原因，再印 null
-+       console.log(average(240, 0)); // null
-+       console.log(average(-10, 2)); // null
-+       console.log(average(500, 3)); // null
-  
-        function printScore(name, score) {
-          if (score < 0 || score > 100) {
-            // ...
-```
-
-</details>
-
 ### 預設參數
 
-參數用 `=` 給預設值，只有引數是 undefined 時才套用，傳 null 不會套用。舊寫法用或運算補值時，傳入的 0 也會被換掉。預設參數會留下 0，這和前面學過的空值合併同一類。
+呼叫時若沒有傳引數，參數就是 undefined。在參數後面用 `=` 寫預設值，可以在沒傳時自動補上一個合理的值。
 
 **觀念**
 
-- 預設值寫在參數後面。有預設值的參數放在參數列表的尾端，前面的參數仍要照位置傳。
-
-- 只有引數是 undefined 時才套用預設值。沒有傳，和明確傳入 undefined，結果相同。
-
-- 傳入 null 不會套用預設值，參數就是 null。0 與空字串也是明確傳入的值，會留下來。
-
-- 舊寫法常把缺值寫成 `x = x || 0`。0 在邏輯運算裡會被換成右邊，於是傳 0 也被換掉。改用預設參數，或改用前面學過的空值合併，0 才留得住。
-
-{% note warning %}
-**0 是有效的引數**
-用 `||` 補預設值時，傳入 0 會被換成右邊。人數、次數、分數都可能是 0，這種寫法會把真的 0 吃掉。
-{% endnote %}
+- 有預設值的參數習慣放在參數列表的尾端，前面的參數仍要照位置傳。
+- 只有引數是 undefined 時才套用預設值，沒傳和明確傳入 undefined 結果相同。
+- 0、空字串、null 都是明確傳入的值，不會被取代。
+- 舊寫法 `count = count || 1` 會把 0 一起換掉。人數、次數、分數都可能是 0，所以改用預設參數，或前面學過的空值合併。
 
 ```html 04-js/pages/31-js-default-param.html
 <!DOCTYPE html>
@@ -3281,13 +2309,10 @@ Ben 的分數無效
 
 **解析**
 
-- showCount 的預設值是 1。沒有傳引數時印出 1，傳 3 印出 3。
-- 傳 0 時 0 被留下來，因為 0 不是 undefined。
-- 明確傳入 undefined，和沒傳一樣，套用 1。
-- 傳入 null 不會套用預設值，第五行是 null。
-- `countByOr(0)` 用 `||` 補 1，0 被換掉，第六行是 1。
-- 空值合併只在 null 或 undefined 時才改用右邊，所以 0 留下，最後的 null 才變成 1。
-- 預設參數的觸發條件和空值合併同一類：undefined 才補，0 不補。
+- showCount 沒傳引數時印出預設的 1，傳 3 印出 3；傳 0 時 0 被留下，因為 0 不是 undefined。
+- 明確傳入 undefined 和沒傳一樣，套用 1；傳入 null 則不套用，第五行是 null。
+- countByOr 用 `||` 補值，0 被當成缺值換成 1，這就是舊寫法的問題。
+- countByNullish 用空值合併，只有 null 或 undefined 才改用右邊，所以 0 留下，null 才變成 1。
 
 ```text
 1
@@ -3300,46 +2325,14 @@ null
 1
 ```
 
-{% note success %}
-**換你試試：**
-寫 `showCurrency`，參數 currency 的預設值是「TWD」。分別不傳、傳入「USD」、傳入 null，三行應是 TWD、USD、null。
-{% endnote %}
+### 其餘參數
 
-<details>
-<summary>參考答案</summary>
-
-不傳時用預設的 TWD。USD 蓋過預設值。null 不是 undefined，預設值不會套上，所以第三行是 null。
-
-```diff 04-js/pages/31-js-default-param.html
-  // ...
-        countByNullish(0);
-        countByNullish(null);
-+ 
-+       function showCurrency(currency = 'TWD') {
-+         console.log(currency);
-+       }
-+ 
-+       showCurrency();
-+       showCurrency('USD');
-+       showCurrency(null);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 選讀：其餘參數
-
-其餘參數（rest parameters）用 `...numbers` 收集不定數量的引數，得到的是真正的陣列。這裡用一般 for 迴圈配合長度，把收集到的數字加總。
+有時候無法事先知道會傳幾個引數，例如加總任意多個數字。其餘參數（rest parameters）在最後一個參數前面加上 `...`，把該位置之後的引數全部收集成一個陣列。
 
 **觀念**
 
-- `...numbers` 把該位置之後的引數全部收集起來，得到的是真正的陣列。沒有傳任何引數時，這個陣列是空的，長度是 0。
-
-- 其餘參數只能放在參數列表的最後一個。它前面可以有普通參數，那些參數仍照位置先對上。
-
-- 讀每一筆時用索引。第一筆的索引是 0，下一筆加 1，索引小於長度就繼續。這是已經學過的 for，只是計數器改去對陣列的位置。
+- 其餘參數只能放在參數列表的最後一個，前面的普通參數仍照位置先對上。
+- 收集到的是真正的陣列，沒有傳任何引數時是空陣列。陣列下一章才詳細介紹，這裡只用兩件事：`numbers.length` 是個數，`numbers[0]` 用索引讀第一筆。
 
 ```html 04-js/pages/32-js-rest.html
 <!DOCTYPE html>
@@ -3347,7 +2340,7 @@ null
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>選讀：其餘參數</title>
+    <title>其餘參數</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -3370,10 +2363,9 @@ null
 
 **解析**
 
-- 第一次呼叫收集到三個數字。索引 0、1、2 依序是 10、20、30，加完是 60。
+- 第一次呼叫收集到三個數字，for 迴圈依索引 0、1、2 讀出 10、20、30，加總得到 60。
 - 第二次只有一筆，迴圈跑一次，結果是 5。
-- 第三次沒有引數，長度是 0，迴圈一次都不進，total 維持 0。
-- 三個呼叫的引數數量不同，同一支函式都收得下來。
+- 第三次沒有引數，長度是 0，迴圈一次都不進，total 維持 0。同一支函式收得下不同數量的引數。
 
 ```text
 60
@@ -3381,56 +2373,19 @@ null
 0
 ```
 
-{% note success %}
-**換你試試：**
-寫 `countAll`，用其餘參數收集引數，回傳陣列的長度。`countAll(8, 8, 8)` 應為 3，不傳引數應為 0。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-長度就是這一次收到的引數數量。三個 8 的長度是 3，空的呼叫長度是 0。這裡還不需要把每一筆加總。
-
-```diff 04-js/pages/32-js-rest.html
-  // ...
-        console.log(sumAll(5));
-        console.log(sumAll());
-+ 
-+       function countAll(...numbers) {
-+         return numbers.length;
-+       }
-+ 
-+       console.log(countAll(8, 8, 8));
-+       console.log(countAll());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ## 函式表達式
 
-函式也可以先做成一個值，放進變數再呼叫，這種寫法叫函式表達式。箭頭函式是匿名函式表達式的簡寫。函式既然是值，就能當作參數交給另一個函式。
+函式本身也是一個值，可以放進變數、當成引數交給別的函式。這一節先學把函式存進變數的函式表達式，再學它的簡寫箭頭函式，最後學把函式交給另一支函式使用。後面的陣列方法與 React 都大量依賴這幾種寫法。
 
 ### 匿名函式
 
-函式表達式寫成 `const add = function (a, b) { ... }`。function 後面沒有名字，所以叫匿名函式，透過變數呼叫。它和宣告式的差別在於何時可以呼叫：宣告式會提升，表達式要等賦值之後才能用。
+函式表達式把沒有寫名字的函式賦值給變數，再透過變數呼叫，這種沒有名字的函式叫匿名函式。它與宣告式的差別在於何時可以呼叫，下面用提升（hoisting）來說明。
 
 **觀念**
 
-- 匿名函式沒有自己的名字，呼叫時寫的是變數。變數用 `const` 保存，避免這個名字後來被改成別的值。
-
-- 函式宣告會被提到所在作用域的頂端，所以同一個作用域裡，呼叫可以寫在宣告上面。這叫做宣告提升，英文是 hoisting。
-
-- 函式表達式是一則賦值。賦值那一行還沒執行，變數還沒有指向函式，提早呼叫會出錯。
-
-{% note info %}
-**宣告式與表達式的差別**
-函式宣告在同一個作用域裡會被提升，寫在呼叫的前面或後面都能呼叫。
-
-函式表達式要等賦值那一行執行完，變數才指向函式。在那一行之前呼叫，會出現 `ReferenceError`，後面的程式也會停住。
-{% endnote %}
+- 匿名函式用變數呼叫，變數用 `const` 保存，避免後來被改成別的值。
+- 函式宣告會被提升（hoisting）到所在作用域的頂端，所以呼叫可以寫在宣告的上面。
+- 函式表達式是一則賦值，賦值那一行還沒執行，變數還沒有指向函式，提早呼叫會出錯。
 
 ```html 04-js/pages/33-js-anonymous.html
 <!DOCTYPE html>
@@ -3463,60 +2418,31 @@ null
 
 **解析**
 
-- 第一行呼叫 sumDeclared 時，函式宣告還寫在下面，仍然印出 5。函式宣告被提升到這個作用域的頂端，呼叫找得到它。
-- add 是函式表達式，函式沒有自己的名字，要等 const 那一行跑完才指向這個匿名函式。
-- 註解那一行若拿掉，會在賦值前呼叫 add，Console 出現 ReferenceError，最後一行也不會執行。
-- 賦值之後的呼叫印出 5。兩次都是 2 加 3，差別只在名字何時可用。
+- 第一行在宣告之前呼叫 sumDeclared 仍印出 5，因為函式宣告已被提升。
+- add 是函式表達式，要等 const 那一行跑完才指向函式。註解那一行若拿掉，會在賦值前呼叫 add，出現 ReferenceError，後面的程式也不會執行。
+- 賦值之後呼叫 add 印出 5。兩次都是 2 加 3，差別只在名字何時可用。
 
 ```text
 5
 5
 ```
 
-{% note success %}
-**換你試試：**
-再寫 `multiply`，用函式表達式回傳兩數相乘。呼叫 `multiply(4, 5)`，應印出 20。不要把呼叫寫在 const 那一行之前。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-multiply 和 add 一樣，是賦值之後才能呼叫的匿名函式。4 乘 5 得到 20，寫在檔案底部，所以出現在兩個 5 之後。
-
-```diff 04-js/pages/33-js-anonymous.html
-  // ...
-        };
-  
-        console.log(add(2, 3));
-+ 
-+       const multiply = function (a, b) {
-+         return a * b;
-+       };
-+ 
-+       console.log(multiply(4, 5));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 箭頭函式
 
-箭頭函式是函式表達式的簡寫，用 `=>` 取代 function 關鍵字。它最大的特色是可以依情況省略括號、大括號和 return，讓只做一件小事的函式寫成一行。這些省略都有固定的規則，寫錯了程式不一定會報錯，卻會得到意料之外的結果，所以下面先把每一種省略的條件說清楚。
+箭頭函式是函式表達式的精簡寫法，用 `=>` 取代 function 關鍵字，只做一件小事的函式可以寫成一行。簡寫有固定規則，寫錯時程式不一定報錯，卻會得到意料之外的結果，所以下面逐一說明。
 
 **觀念**
 
-- 把匿名函式表達式改成箭頭函式時，拿掉 function，在參數的小括號和大括號之間加上 `=>`，其餘不變。
-- 大括號裡只有一行 return 時，可以把大括號和 return 一起省略，箭頭右邊運算式的結果就是回傳值，這叫隱式回傳。
-- 只有一個參數時，語法上可以省略參數的小括號，寫成 `n => n * 2`。不過 Prettier 預設會自動把括號補回來，課堂上一律保留括號，寫成 `(n) => n * 2`。
-- 沒有參數時，小括號不能省略，要寫成 `() =>`。兩個以上的參數也一定要用小括號包起來。
-- 一旦寫了大括號，它就是一般的函式區塊，要交回值就得自己寫 return，沒寫時呼叫結果是 undefined。
-- 隱式回傳一個物件時，物件的大括號會被誤認成函式區塊，外面要再包一層小括號，寫成 `() => ({ ... })`。物件下一章才會正式介紹，這裡先記住括號的位置。
+- 從匿名函式改成箭頭函式：拿掉 function，在參數的小括號與大括號之間加上 `=>`。
+- 大括號裡只有一行 return 時，可以連大括號與 return 一起省略，箭頭右邊運算式的結果就是回傳值，稱為隱式回傳。
+- 只有一個參數時語法上可省略小括號，但 Prettier 預設會補回來，課堂一律保留，寫成 `(n) => n * 2`。
+- 沒有參數時小括號不能省略，要寫成 `() =>`；兩個以上的參數也一定要有小括號。
+- 一旦寫了大括號，它就是一般的函式區塊，要交回值必須自己寫 return，否則結果是 undefined。
+- 隱式回傳物件時，物件的大括號會被誤認成函式區塊，外面要再包一層小括號：`() => ({ ... })`。物件在後面的章節才介紹，這裡先記住括號的位置。
 
-{% note warning %}
-**大括號裡要自己 return**
-省略大括號時，箭頭右邊的運算式就是回傳值。一旦加上大括號，就要自己寫 `return`，沒寫的話呼叫結果是 `undefined`。
+{% note info %}
+**箭頭函式不只是寫法不同**
+箭頭函式沒有自己的 this 與 arguments，也不能用 new 呼叫。this 要到物件那一章才學，屆時再回頭對照。
 {% endnote %}
 
 ```html 04-js/pages/34-js-arrow.html
@@ -3542,7 +2468,6 @@ multiply 和 add 一樣，是賦值之後才能呼叫的匿名函式。4 乘 5 �
 
       // 3. 只有一行 return：省略大括號與 return（隱式回傳）
       const double3 = (n) => n * 2;
-      // 只有一個參數時語法上可以寫成 n => n * 2，Prettier 會自動補回括號
 
       // 沒有參數：小括號不能省略
       const sayHi = () => 'Hi';
@@ -3573,11 +2498,9 @@ multiply 和 add 一樣，是賦值之後才能呼叫的匿名函式。4 乘 5 �
 **解析**
 
 - double1、double2、double3 是同一支函式的三種寫法，從完整的函式表達式一步步省略，三行都印出 8。
-- double3 省略了大括號與 return，箭頭右邊的 `n * 2` 算出的結果就是回傳值。
-- sayHi 沒有參數，所以保留空的小括號，呼叫後得到字串 Hi。
-- add 有兩個參數，用小括號包起來，右邊的加法直接回傳 5。
-- forgotten 寫了大括號卻沒有 return，乘法雖然有執行，結果沒有交出來，所以印出 undefined。
-- pair 把物件包在小括號裡，才會當成回傳值。少了那層小括號時，大括號會被當成函式區塊，拿不到物件。
+- sayHi 與 add 示範小括號：沒有參數時保留空括號，得到 Hi；兩個參數用括號包起來，右邊的加法直接回傳 5。
+- forgotten 寫了大括號卻沒有 return，乘法雖然執行了，結果沒有交出來，所以印出 undefined。
+- pair 把物件包在小括號裡才會當成回傳值，少了那層括號，大括號會被當成函式區塊，拿不到物件。
 
 ```text
 8
@@ -3586,57 +2509,18 @@ multiply 和 add 一樣，是賦值之後才能呼叫的匿名函式。4 乘 5 �
 Hi
 5
 undefined
-{ left: 2, right: 3 }
+{left: 2, right: 3}
 ```
-
-{% note success %}
-**換你試試：**
-下面這支 square 是用匿名函式表達式寫的。把它改寫成最精簡的箭頭函式，呼叫 `square(5)` 應印出 25。
-{% endnote %}
-
-```js
-const square = function (n) {
-  return n * n;
-};
-```
-
-<details>
-<summary>參考答案</summary>
-
-拿掉 function 並加上 `=>`，再因為大括號裡只有一行 return，把大括號和 return 一起省略。參數只有一個，依課堂慣例保留小括號。
-
-```diff 04-js/pages/34-js-arrow.html
-  // ...
-        console.log(forgotten(4));
-        console.log(pair(2, 3));
-+ 
-+       const square = (n) => n * n;
-+       console.log(square(5));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 函式當作參數
 
-函式也是值，可以存進變數、當作參數傳給另一個函式，由接收的一方決定何時呼叫。這種傳進去的函式叫做 callback。下面的 `calc` 會分別接收具名函式、匿名函式與箭頭函式。
+函式是值，所以可以像數字或字串一樣當成引數交給另一支函式，由接收的那一方在適當的時機呼叫它。被交進去的函式稱為回呼函式（callback）。這個模式讓同一支函式的流程固定，而變動的部分由外面決定，陣列方法與事件處理都是這樣用的。
 
 **觀念**
 
-- 參數的名字就是這一次要用的函式。接收方在自己的程式裡加上括號，才真正呼叫，並且可以把自己的數字傳給它。
-
-- 傳入時不要加呼叫括號。括號會先把函式跑完，傳進去的變成回傳值，接收方再把它當函式呼叫就會出錯。
-
-- 具名函式、匿名函式、箭頭函式都可以當這個引數。接收方只負責呼叫參數，不在乎它是哪一種寫法。
-
-- 後面的陣列方法，以及第 07 天的事件處理，都會把函式交出去，由對方決定何時呼叫。
-
-{% note warning %}
-**傳進去的是函式本身**
-第三個引數寫 `add`，是把函式交出去。寫成 `add()` 會先做完加法，交出去的是數字。
-{% endnote %}
+- 把函式當引數時，只寫函式名稱，不加小括號。加了小括號就變成「現在就呼叫」，交出去的是它的回傳值。
+- 接收的函式用參數名稱加小括號來呼叫它，例如 `operation(a, b)`。
+- 交進去的函式可以是已宣告的函式名稱、匿名函式或箭頭函式，三種寫法效果相同。
 
 ```html 04-js/pages/35-js-callback.html
 <!DOCTYPE html>
@@ -3649,6 +2533,7 @@ const square = function (n) {
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
+      // operation 是接收進來的函式，由 calc 決定何時呼叫它
       function calc(a, b, operation) {
         const result = operation(a, b);
         console.log(result);
@@ -3658,13 +2543,14 @@ const square = function (n) {
         return a + b;
       }
 
-      calc(10, 4, add);
-
+      calc(10, 4, add); // 傳函式名稱，不加小括號
       calc(10, 4, function (a, b) {
         return a * b;
       });
-
       calc(10, 4, (a, b) => a - b);
+      calc(10, 4, (a, b) => a / b);
+
+      // calc(10, 4, add()); // 錯誤：傳進去的是 add() 的回傳值 NaN，不是函式
     </script>
   </body>
 </html>
@@ -3672,61 +2558,26 @@ const square = function (n) {
 
 **解析**
 
-- calc 自己不決定加減乘。它把 a、b 交給第三個參數，再把交回來的結果印出。
-- 三次呼叫的前兩個引數都是 10 與 4，結果不同，是因為 operation 不同。
-- 第一次傳入具名函式 add，10 加 4 得到 14。
-- 第二次傳入匿名函式，10 乘 4 得到 40。
-- 第三次傳入箭頭函式，10 減 4 得到 6。
-- 三支函式都是在 calc 裡面才被呼叫。
+- calc 本身只負責呼叫 operation 並印出結果，要做哪種運算由第三個引數決定，同一支 calc 因此得到不同結果。
+- 第一次交進宣告好的 add，印出 14；第二次交匿名函式做乘法，印出 40；第三次、第四次交箭頭函式做減法與除法，印出 6 與 2.5。
+- 最後一行若拿掉註解，`add()` 先被呼叫，沒有引數所以得到 NaN，calc 拿到的不是函式，`operation(a, b)` 會出現 TypeError。
 
 ```text
 14
 40
 6
+2.5
 ```
-
-{% note info %}
-**後面會一直這樣寫**
-陣列方法會對每一筆呼叫你傳進去的函式。第 07 天的事件處理也是：點擊發生時，瀏覽器才呼叫你交出去的函式。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-再呼叫一次 calc，第三個引數用箭頭函式做除法。傳入 10 與 4，應印出 2.5。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-除法和前面的減法一樣，是一支箭頭函式，在 calc 裡才執行。10 除以 4 是 2.5。
-
-```diff 04-js/pages/35-js-callback.html
-  // ...
-        });
-  
-        calc(10, 4, (a, b) => a - b);
-+ 
-+       calc(10, 4, (a, b) => a / b);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ## 選讀：閉包
 
-閉包屬於函式與詞法作用域（lexical scope）。函式建立時會記住當時外層的變數，外層函式執行完，內層函式仍然讀得到。前提是把內層函式 return 出去，或當作參數交出去。
+閉包是函式「記住」自己建立當下外層變數的現象。外層函式執行完後，內層函式仍讀得到、也改得到那些變數，前提是內層函式被 return 或當作參數交到外層之外。這種由程式碼寫在哪裡，決定能讀到哪些變數的規則，稱為詞法作用域（lexical scope）。
 
 **觀念**
 
-- 內層函式使用了外層的變數，又被傳到外層之外，這組綁定就叫閉包。變數活在被記住的那個作用域裡，不是複製一份數字貼到內層。沒有被留下的內層函式，外層執行完就沒有人再讀那些變數。
-
-- 這不是物件導向的機制。回傳的物件只負責把兩支函式一起交出去，記得變數的是函式本身。
-
-- 外層函式每呼叫一次，就做出一份新的變數。兩次呼叫得到的兩支內層函式，各記各的那一份，互不影響。
-
-- 外面若不能直接碰到那個變數，就只能透過交出來的函式讀寫。這就是把狀態封在函式裡，外面改不到內部的 count。
+- 內層函式使用了外層的變數，又被交到外層之外，這組綁定就叫閉包。記住的是變數本身，不是當時數字的複本。
+- 外層函式每呼叫一次，就做出一份新的變數；兩次呼叫得到的內層函式，各記各的，互不影響。
+- 外面碰不到那個變數，只能透過交出來的函式讀寫，這叫封裝，用來把狀態藏在函式裡。
 
 下圖對照下方 `36-js-closure.html` 裡的 script。`const first = createCounter()` 執行一次函式，裡面的 let count = 0 與兩支函式一起被做出來，再由 return 的物件交給 first。second 是另一次呼叫，拿到的是另一份 count。
 
@@ -3811,62 +2662,25 @@ undefined
 - 前兩次 increment 把同一份 count 從 0 改成 1、再改成 2。getCount 只讀不改，第三行仍是 2。
 - `first.count` 是 undefined，因為 count 不是物件上的欄位，外面碰不到，只能透過交出來的函式操作，這就是封裝。
 - second 是另一次 createCounter，有自己的 count，所以 getCount 是 0。最後再讀 first，仍是 2，兩份狀態沒有混在一起。
-- 物件的寫法下一章會展開，這裡用它把兩支函式一起交回。
-
-{% note success %}
-**換你試試：**
-再呼叫一次 first 的 increment，應得到 3。另外再做一個 createCounter，只 increment 一次，應得到 1，而且 first 的 getCount 仍是 3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-first 的 count 已是 2，再加一次是 3。新的那一份從 0 開始，increment 一次是 1，不會把 first 改掉。
-
-```diff 04-js/pages/36-js-closure.html
-  // ...
-        console.log(second.getCount());
-        console.log(first.getCount());
-+ 
-+       console.log(first.increment());
-+ 
-+       const third = createCounter();
-+       console.log(third.increment());
-+       console.log(first.getCount());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
+- 物件的寫法在後面的章節才展開，這裡用它把兩支函式一起交回。
 
 # 陣列
 
-陣列是一組有順序的值，用從 0 開始的索引取出每一格，`length` 是目前的格數。
-
-這一章先會建立、改格子、看 const 為什麼擋不住內容，再使用陣列共用的方法。選讀用 Set 去掉重複的值。
+陣列是一組有順序的值，用從 0 開始的索引取出每一格，`length` 是目前的格數。這一章先學怎麼建立陣列、增減格子，並看清楚 const 為什麼擋不住格子內容的改變；接著依用途學會搜尋、轉換、篩選、排序等陣列方法，並分清楚哪些會改到原陣列、哪些交回新陣列。最後的選讀用 Set 去掉重複的值。
 
 ## 陣列基礎
 
-字面值用中括號寫出陣列，再用索引取出某一格。增加或刪掉格子的那組方法，改的是原來那一份。`const` 鎖住的是變數指向哪一個陣列，不是格子裡的內容。
+這一節處理陣列的寫法、增減格子的方法，以及變數與陣列之間的關係，重點是「哪些動作會直接改到原來那一份」，後面的陣列方法都要先分清楚這一點。
 
 ### 建立與存取
 
-中括號裡的值依序排好。取出某一格要靠索引，種類名稱也分不出這是陣列。
-
-- 第一格的索引是 0，最後一格是長度減 1。
-
-- `at` 可以用負數從結尾倒數。
-
-- typeof 分不出陣列，要改用 `Array.isArray`。
+陣列用中括號把值依序寫出來，再用索引取出某一格。索引從 0 開始，所以長度是 3 的陣列，合法索引是 0、1、2；讀到不存在的索引會得到 undefined。
 
 **觀念**
 
-- 索引從 0 開始。長度是 3 時，合法索引是 0、1、2。讀到不存在的索引會得到 undefined。
-
-- `at(-1)` 是最後一格，`at(-2)` 是倒數第二格。正數索引和中括號相同。
-
-- `for...of` 依序取出每一格的值。需要索引時才用 for 配計數器，條件要寫成小於 length。
+- 最後一格的索引是長度減 1，也可以用 `at` 傳入負數從結尾倒數：`at(-1)` 是最後一格，`at(-2)` 是倒數第二格。
+- 陣列在 typeof 裡也是 object，分不出和物件的差別，要判斷是不是陣列，改用 `Array.isArray`。
+- `for...of` 依序取出每一格的值；只有需要索引時，才用 for 搭配計數器，條件寫成小於 length。
 
 ```html 04-js/pages/37-js-array.html
 <!DOCTYPE html>
@@ -3879,16 +2693,17 @@ first 的 count 已是 2，再加一次是 3。新的那一份從 0 開始，inc
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const titles = ['台北城市漫遊', '花蓮山海三日', '京都紅葉散步'];
+      const places = ['台北', '花蓮', '京都'];
 
-      console.log(titles.length);
-      console.log(titles[0]);
-      console.log(titles.at(-1));
-      console.log(Array.isArray(titles));
-      console.log(typeof titles);
+      console.log(places.length);
+      console.log(places[0]);
+      console.log(places[5]);
+      console.log(places.at(-1));
+      console.log(Array.isArray(places));
+      console.log(typeof places);
 
-      for (const title of titles) {
-        console.log(title);
+      for (const place of places) {
+        console.log(place);
       }
     </script>
   </body>
@@ -3897,66 +2712,40 @@ first 的 count 已是 2，再加一次是 3。新的那一份從 0 開始，inc
 
 **解析**
 
-- 長度是 3。索引 0 是第一個字串，`at(-1)` 是最後一個字串。
-- `Array.isArray` 是 true，但 typeof 仍印出 object。陣列在型別系統裡被歸在物件這一邊，所以不能靠 typeof 判斷。
-- `for...of` 依序印出三個字串，變數 `title` 每一圈都是格子裡的值，不是索引。
+- 長度是 3；索引 0 是第一個字串，索引 5 沒有這一格，所以是 undefined；`at(-1)` 是最後一個字串。
+- `Array.isArray` 是 true，但 typeof 仍印出 object，所以不能靠 typeof 判斷陣列。
+- `for...of` 依序印出三個字串，變數 `place` 每一圈拿到的是格子裡的值，不是索引。
 
 ```text
 3
-台北城市漫遊
-京都紅葉散步
+台北
+undefined
+京都
 true
 object
-台北城市漫遊
-花蓮山海三日
-京都紅葉散步
+台北
+花蓮
+京都
 ```
+
+本篇的輸出區塊是簡化版：Chrome Console 會在陣列前多印長度，例如 `(3) ['台北', '花蓮', '京都']`，物件則印成 `{id: 1, days: 3}` 的樣子。
 
 {% note warning %}
 **不要用 for...in 走陣列**
-`for...in` 走的是鍵。陣列的鍵是 '0'、'1' 這種字串，還可能遇到原型上額外的鍵。
-
-讀每一格的值用 `for...of`。走物件的鍵留到下一章。
+`for...in` 走的是鍵。陣列的鍵是 '0'、'1' 這種字串，還可能遇到原型上額外的鍵。要讀每一格的值，用 `for...of`；走物件的鍵留到下一章。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-印出 `at(-2)`。再用 for 配索引，每一行印出「索引: 值」，索引 0 那一行應為「0: 台北城市漫遊」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`at(-2)` 是倒數第二格。`for` 的條件是小於長度，所以索引只走到 2，不會多印一格 undefined。
-
-```diff 04-js/pages/37-js-array.html
-  // ...
-          console.log(title);
-        }
-+ 
-+       console.log(titles.at(-2));
-+ 
-+       for (let index = 0; index < titles.length; index += 1) {
-+         console.log(index + ': ' + titles[index]);
-+       }
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 新增與刪除元素
 
-push、pop、unshift、shift、`splice` 都改原來那個陣列。它們的回傳值不是改完的陣列本身，呼叫之後若沒把回傳值認清楚，下一個方法會接錯對象。
+這一組方法用來在陣列的頭尾增減格子，或在中間插入、刪除。它們都直接改動原來那個陣列，沒有另外交回一份新的。要特別留意回傳值：它們回傳的不是改完的陣列。
 
-**觀念**
+**一覽**
 
-- `push` 加在最後，回傳新的長度。`pop` 拿掉最後一格，回傳被拿掉的值。
-
-- `unshift` 加在最前面，回傳新的長度。`shift` 拿掉第一格，回傳被拿掉的值。
-
-- `splice` 從指定索引刪掉若干格，還可以在同一個位置插入新值。回傳的是被刪掉的那些值，包成一個新陣列。
+- `push`：加在最後，回傳新的長度。
+- `pop`：拿掉最後一格，回傳被拿掉的值。
+- `unshift`：加在最前面，回傳新的長度。
+- `shift`：拿掉第一格，回傳被拿掉的值。
+- `splice`：從指定索引刪掉若干格，也可以在同一位置插入新值，回傳被刪掉的那些值（包成新陣列）。
 
 ```html 04-js/pages/38-js-mutate.html
 <!DOCTYPE html>
@@ -3969,14 +2758,14 @@ push、pop、unshift、shift、`splice` 都改原來那個陣列。它們的回�
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const titles = ['台北', '花蓮', '京都'];
+      const places = ['台北', '花蓮', '京都'];
 
-      console.log(titles.push('台南'));
-      console.log(titles.pop());
-      console.log(titles.unshift('高雄'));
-      console.log(titles.shift());
-      console.log(titles.splice(1, 1, '台東'));
-      console.log(titles);
+      console.log(places.push('台南'));
+      console.log(places.pop());
+      console.log(places.unshift('高雄'));
+      console.log(places.shift());
+      console.log(places.splice(1, 1, '台東'));
+      console.log(places);
     </script>
   </body>
 </html>
@@ -3984,10 +2773,9 @@ push、pop、unshift、shift、`splice` 都改原來那個陣列。它們的回�
 
 **解析**
 
-- `push` 回傳 4，表示加上台南之後有四格，接著 pop 把台南拿回來。
-- unshift 又把長度變回 4，shift 把高雄拿掉，陣列回到三個地名。
-- `splice(1, 1, '台東')` 從索引 1 刪掉 1 格，那個被刪掉的值是花蓮，所以回傳只有花蓮的陣列。
-- 原陣列的索引 1 改成台東，變成台北、台東、京都。
+- `push` 回傳 4，表示加上台南之後有四格；接著 `pop` 把台南拿回來，陣列回到三格。
+- `unshift` 又把長度變回 4，`shift` 把高雄拿掉，陣列再次回到三個地名。
+- `splice(1, 1, '台東')` 從索引 1 刪掉 1 格，被刪掉的是花蓮，所以回傳只有花蓮的陣列；原陣列的索引 1 則換成台東。
 
 ```text
 4
@@ -4000,48 +2788,21 @@ push、pop、unshift、shift、`splice` 都改原來那個陣列。它們的回�
 
 {% note warning %}
 **回傳值不是陣列本身**
-push 回傳的是長度，是數字。若寫成 `titles.push('台南').map(...)`，數字上面沒有 map，程式會中斷。
-
-要接著轉換，先讓 push 改完，再對 `titles` 呼叫方法。
+push 回傳的是長度，是數字。若寫成 `places.push('台南').map(...)`，數字上面沒有 map，程式會中斷。要接著轉換，先讓 push 改完，再對 places 呼叫方法。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-沿用做完上面步驟的陣列，`splice(0, 2)` 拿掉前兩格。印出回傳值，以及剩下的陣列。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-做到上一節結束時，陣列是台北、台東、京都。再從索引 0 刪掉兩格，回傳的是這兩格，剩下京都。
-
-```diff 04-js/pages/38-js-mutate.html
-  // ...
-        console.log(titles.splice(1, 1, '台東'));
-        console.log(titles);
-+ 
-+       console.log(titles.splice(0, 2));
-+       console.log(titles);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### const 與參考
 
-陣列是放很多個值的容器，用索引取出每一格。變數裡存的不是容器的內容，而是指向這一個容器的參考。變數那一章的 `const` 鎖住的是「這個名字指向哪一個容器」，所以不能把名字改指到另一個陣列；透過索引或 `push` 改格子，容器還是同一個，因此合法。
+變數裡存的不是陣列的內容，而是指向這個陣列的參考，像一張寫著陣列放在哪裡的字條。
 
 ![const 變數 fruits 指向記憶體裡的同一份陣列。改索引是改格子裡的值，所以可以；寫 fruits 等於一個新陣列是要換成另一個容器，會發生 TypeError](assets/images/js-const-reference-memory.jpg)
 
 **觀念**
 
-- 改 `fruits[0]`，或呼叫會動到格子的方法，動的是同一個陣列。`const` 不會阻止這件事。
-
-- 寫 `fruits = []` 是要讓名字改指到另一個陣列，Console 會出現 TypeError。後面的程式停在這一行。
-
-- 函式的參數若收到陣列，函式裡改格子，外面看得到。傳進去的是同一個參考。物件也是容器，下一章用同一套規則。
+- const 鎖住的是「名字指向哪一個陣列」，不是陣列裡的內容。
+- 改 `fruits[0]`，或呼叫會動到格子的方法，動的是同一個陣列，因此合法。
+- 寫 `fruits = []` 是要讓名字改指到另一個陣列，會丟出 TypeError，後面的程式停在這一行。
+- 函式收到陣列參數時，拿到的是同一個參考，函式裡改格子，外面看得到。物件也是同樣的規則，下一章會再看到。
 
 ```html 04-js/pages/39-js-const-ref.html
 <!DOCTYPE html>
@@ -4068,6 +2829,7 @@ push 回傳的是長度，是數字。若寫成 `titles.push('台南').map(...)`
       console.log(fruits[0]);
       console.log(fruits);
 
+      // 拿掉註解會丟出 TypeError：const 不能改指到另一個陣列
       // fruits = [];
     </script>
   </body>
@@ -4076,10 +2838,9 @@ push 回傳的是長度，是數字。若寫成 `titles.push('台南').map(...)`
 
 **解析**
 
-- 索引 0 改成 kiwi，再 `push` 一格 mango，印出的仍是原來那個陣列，只是格子變了。
+- 索引 0 改成 kiwi、再 push 一格 mango，印出的仍是原來那個陣列，只是格子變了，const 沒有報錯。
 - `replaceFirst` 收到同一個參考，把第 0 格改成 pear，函式外面再讀，已經是 pear。
-- 最後一行若拿掉註解，會丟出 TypeError，因為 const 不允許把 `fruits` 改指到一個新的空陣列。
-- 前面的 log 已經印完，錯誤停在重新賦值那一行。
+- 最後一行若拿掉註解，會在重新賦值那一行丟出 TypeError，因為 const 不允許把 `fruits` 改指到新的空陣列。
 
 ```text
 ['kiwi', 'banana', 'cherry', 'mango']
@@ -4089,65 +2850,46 @@ pear
 
 {% note info %}
 **真的不准改，以及函式裡的修改**
-`Object.freeze` 可以凍結第一層，索引不能再改，也不能再加格子。包在裡面的陣列或物件沒有一起凍結。這一篇的 script 不是模組，沒有自動的嚴格模式；凍結之後再改格子會安靜失敗，嚴格模式才會丟出 TypeError。
+`Object.freeze` 可以凍結第一層，索引不能再改，也不能再加格子；包在裡面的陣列或物件不會一起凍結。非模組的 script 沒有自動的嚴格模式，凍結後再改格子會安靜失敗，嚴格模式才會丟出 TypeError。
 
-這個參考也解釋了函式的參數。傳進去的是陣列或物件時，函式裡改的是同一份容器，呼叫端看得到。若要交給函式一份互不影響的資料，要另外複製。寫法在[展開運算子](#展開運算子)。
+若要交給函式一份互不影響的資料，要先複製，寫法在[展開運算子](#展開運算子)。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-沿用函式跑完之後的陣列，把索引 2 改成 `'lime'`，再 `pop`。印出長度和剩下的陣列。重新賦值那一行維持註解。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-函式結束時是 pear、banana、cherry、mango。索引 2 從 cherry 改成 lime，`pop` 拿掉 mango，長度變成 3。`const` 仍然指著同一個陣列。
-
-```diff 04-js/pages/39-js-const-ref.html
-  // ...
-        console.log(fruits[0]);
-        console.log(fruits);
-  
-        // fruits = [];
-+ 
-+       fruits[2] = 'lime';
-+       fruits.pop();
-+       console.log(fruits.length);
-+       console.log(fruits);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ## 陣列原型與方法
 
-陣列的方法放在 `Array.prototype`，每個陣列共用這一份。字串章的[原型](#原型)已經說明：自己身上沒有的函式，就到原型上找。這一節依搜尋、轉換、篩選、排序與串接來用，並分清哪些方法會改到原陣列。
+陣列的方法放在 `Array.prototype`，每個陣列共用這一份；字串章的[原型](#原型)已經說明，自己身上沒有的函式，就到原型上找。這一節依搜尋、轉換、篩選、排序與串接的用途來學，使用前先分清楚每個方法會不會改到原陣列：改原陣列的，要小心別的地方也在用這一份；交回新結果的，要記得用變數接住。
+
+**一覽**
+
+- 會改原陣列：前一節的 `push`、`pop`、`unshift`、`shift`、`splice`，加上 `sort` 與 `reverse`，後兩者回傳的就是原陣列自己。
+- 不改原陣列、交回新結果：其餘的方法，各小節的一覽會逐一說明交回布林、索引、值、新陣列、字串或累計值。唯一的例外是 `forEach`，它不交回東西，回傳值固定是 undefined。
+- `toSorted`、`toReversed`、`toSpliced`、`with` 是 `sort`、`reverse`、`splice` 與「用索引改一格」的不改原陣列版本，交回新陣列。
 
 {% note warning %}
 **不要往原型加方法**
-不要往 `Array.prototype` 上加自己的方法。加上去之後，每一個陣列都會看到它。參數與回傳值查 MDN 的 [Array](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array)。
+自己往 `Array.prototype` 加方法，每一個陣列都會看到它，容易和之後內建的新方法撞名，也會影響別人的程式，所以不要這麼做。
 {% endnote %}
+
+各方法的參數與回傳值，查 MDN 的 [Array](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/Array) 最準。
 
 ### 搜尋與判斷
 
-`Array.prototype` 上的方法可以依用途分成幾類。這一類用來問值在不在，或有沒有格子符合條件。回傳的是布林、索引或那一格的值，而且原陣列不會被改掉。
+這一類用來問值在不在，或有沒有格子符合條件，原陣列不會被改。
+
+**一覽**
+
+- `includes`：問值在不在，回傳布林。
+- `indexOf`：回傳第一次出現的索引，沒有就是 -1。
+- `find`：回傳第一個符合條件的值，沒有就是 undefined。
+- `findIndex`：回傳第一個符合條件的索引，沒有就是 -1。
+- `some`：問有沒有任何一格符合條件，回傳布林。
+- `every`：問是不是每一格都符合條件，回傳布林。
 
 **觀念**
 
-- `includes` 問值在不在，回傳布林。
-
-- `indexOf` 回傳第一次出現的索引，沒有就是 -1。
-
-- `find` 回傳第一個符合的值，沒有就是 undefined。
-
-- `findIndex` 回傳那個索引，沒有就是 -1。
-
-- `some` 問有沒有任何一格符合，答案確定就停。
-
-- `every` 問是不是每一格都符合，回傳布林。
+- 傳給方法的函式稱為回呼（callback）：方法替每一格呼叫它一次，把格子的值當參數交進去，由回傳的 true 或 false 決定符不符合。
+- 找單一個值用 `includes`；找「符合某條件」的格子，用需要回呼的 `find` 系列、`some` 與 `every`。
+- `includes` 能找到 NaN（不是數字的特殊值），`indexOf` 找不到，所以只想知道「有沒有」時優先用 `includes`。
 
 ```html 04-js/pages/40-js-search.html
 <!DOCTYPE html>
@@ -4185,9 +2927,9 @@ pear
 
 **解析**
 
-- 92 第一次出現在索引 1，後面另一個 92 不會被回傳。
-- 原陣列的順序和內容都沒變。
-- NaN 用 includes 找得到，用 indexOf 得到 -1。
+- 92 第一次出現在索引 1，後面另一個 92 不會被回傳；`find` 與 `findIndex` 同樣只取第一個符合的格子。
+- `some` 與 `every` 都回答是或否，原陣列的順序和內容都沒有變。
+- 最後兩行顯示 `includes` 能找到 NaN，`indexOf` 卻得到 -1。
 
 ```text
 true
@@ -4203,46 +2945,23 @@ true
 
 {% note info %}
 **空陣列的 every**
-沒有任何一格可以違反條件時，`every` 的定義是 true。空陣列呼叫 every 也會得到 true。
-
-要表示「至少有一格」，用 `some`，或先看 length。
+沒有任何一格可以違反條件時，`every` 的定義是 true，所以空陣列呼叫 every 也會得到 true。要表示「至少有一格」，用 `some`，或先看 length。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-印出 92 的 `findIndex`、是不是每一格都大於等於 90，以及 `includes(76)`。原陣列仍應是四格。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-92 第一次出現的索引是 1。88 沒有大於等於 90，所以 `every` 是 false。76 在陣列裡，`includes` 是 true。
-
-```diff 04-js/pages/40-js-search.html
-  // ...
-        console.log(mixed.includes(NaN));
-        console.log(mixed.indexOf(NaN));
-+ 
-+       console.log(scores.findIndex((score) => score === 92));
-+       console.log(scores.every((score) => score >= 90));
-+       console.log(scores.includes(76));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 逐一處理與轉換
 
-這一類用來走訪每一格。`forEach` 負責做事，`map` 負責換成新值。兩個方法都不刪格子，也不改原陣列裡的數字。
+這一類用來走訪每一格：`forEach` 負責「做事」，`map` 負責「換成新值」。兩者都不會刪格子，也不會改原陣列。
+
+**一覽**
+
+- `forEach`：每一格各執行一次回呼，回傳值固定是 undefined。
+- `map`：每一格交給回呼，用回傳值組成一個一樣長的新陣列。
 
 **觀念**
 
-- `forEach` 的回傳值永遠是 undefined，不能放在串接中間。
-
-- `map` 交回一樣長的新陣列。
-  回呼若寫了大括號卻忘了 return，新陣列會滿是 undefined。
+- 回呼函式依序收到三個參數：值、索引、整個陣列。
+- `forEach` 沒有回傳值，不能放在串接中間，也不能用來產生新陣列；要新陣列，用 `map`。
+- `map` 的回呼若寫了大括號卻忘了 return，新陣列會滿是 undefined。
 
 ```html 04-js/pages/41-js-map.html
 <!DOCTYPE html>
@@ -4274,9 +2993,9 @@ true
 
 **解析**
 
-- forEach 印出三行，索引從 0 到 2，長度都是 3。
-- map 交回兩倍的新陣列，prices 三個數字都還在。
-- 最後一行是 undefined，那是 forEach 的回傳值。
+- `forEach` 印出三行，索引從 0 到 2，長度都是 3，每一圈收到的價格都是原來的數字。
+- `map` 交回兩倍的新陣列，`prices` 三個數字都還在。
+- 最後一行是 undefined，那是 `forEach` 的回傳值。
 
 ```text
 0 12800 3
@@ -4289,49 +3008,21 @@ undefined
 
 {% note info %}
 **回傳值要接住**
-`prices.map(...)` 若沒有放進 `const`，新陣列會被丟掉，原陣列也不會變成兩倍。要印的是接住的那個名字。
+`prices.map(...)` 若沒有放進 `const`，新陣列會被丟掉，原陣列也不會變成兩倍。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-用 `map` 做出每一格都加 1000 的新陣列並印出。再印 `prices[0]`，確認仍是 12800。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-新陣列是 13800、16900、43800。原陣列第 0 格沒有被賦值，所以仍是 12800。
-
-```diff 04-js/pages/41-js-map.html
-  // ...
-        console.log(prices);
-        console.log(prices.forEach((price) => price));
-+ 
-+       const raised = prices.map((price) => price + 1000);
-+       console.log(raised);
-+       console.log(prices[0]);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 篩選與累計
 
-這一類把陣列收成另一份結果，而且不改原陣列。`filter` 留下符合的格子，`reduce` 收成一個值。
+這一類把陣列收成另一份結果，且不改原陣列：`filter` 留下符合的格子，`reduce` 把整個陣列收成一個值。
 
-練習檔先用 for 與 push 把條件寫對，完成的寫法在同名的 `.html.final`。
+**一覽**
+
+- `filter`：留下回呼回傳真值的格子，交回較短或一樣長的新陣列。
+- `reduce`：每一格依序交給回呼，把回呼回傳的累計值帶到下一格，最後交回一個值。
 
 **觀念**
 
-- `filter` 的回呼要回傳布林。回傳非 0 的數字也會被當成真。
-
-- `reduce` 的回呼要回傳下一次的累計，括號裡的 0 是起點。
-
-- 加總的起點用 0。起點若是空字串，數字會被接成文字。
-
-- 空陣列又沒有起點時，reduce 會丟出 TypeError。
+- `filter` 的回呼要回傳布林，找不到任何符合的格子時，交回空陣列。
 
 ```html 04-js/pages/42-js-filter.html
 <!DOCTYPE html>
@@ -4359,8 +3050,8 @@ undefined
 
 **解析**
 
-- 大於等於 80 的是 88、92、95。
-- 原陣列仍是五格。filter 交回的是另一份陣列。
+- 大於等於 80 的是 88、92、95，組成新陣列。
+- 原陣列仍是五格，`filter` 交回的是另一份陣列。
 
 ```text
 [88, 92, 95]
@@ -4368,31 +3059,11 @@ undefined
 5
 ```
 
-{% note success %}
-**換你試試：**
-再篩出小於 80 的分數並印出。原陣列的長度仍應是 5。
-{% endnote %}
+**觀念：reduce**
 
-<details>
-<summary>參考答案</summary>
-
-小於 80 的是 76 與 61。`filter` 沒有把這兩格從原陣列刪掉。
-
-```diff 04-js/pages/42-js-filter.html
-  // ...
-        console.log(scores);
-        console.log(scores.length);
-+ 
-+       const failed = scores.filter((score) => score < 80);
-+       console.log(failed);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-`reduce` 適合把數字收成一個總和。回呼每次回傳目前的累計加上這一格。
+- 像滾雪球：回呼的第一個參數是目前的累計，第二個參數是這一格，必須 return 下一次的累計。
+- 第二個參數是累計的起點；省略時會拿第一格當起點、從第二格開始，為了結果的型別明確，建議一律寫出起點。
+- 最常見的用法是加總：回呼每次回傳「目前的累計加上這一格」。
 
 ```html 04-js/pages/43-js-reduce.html
 <!DOCTYPE html>
@@ -4407,13 +3078,17 @@ undefined
     <script>
       const prices = [12800, 15900, 42800];
 
-      // 從 0 依序相加，得到 71500。原陣列長度仍是 3
+      // 從 0 依序相加，得到 71500
       const total = prices.reduce((sum, price) => {
         return sum + price;
       }, 0);
-
       console.log(total);
-      console.log(prices.length);
+
+      // 有起點時，空陣列得到起點 0
+      console.log([].reduce((sum, price) => sum + price, 0));
+
+      // 起點寫成空字串，數字會被接成文字
+      console.log(prices.reduce((sum, price) => sum + price, ''));
     </script>
   </body>
 </html>
@@ -4421,64 +3096,75 @@ undefined
 
 **解析**
 
-- 累計從 0 加上三個價格，得到 71500。
-- 有起點時，空陣列也會得到 0，而不是 TypeError。
+- 累計從 0 開始，依序加上三個價格，得到 71500。
+- 有起點時，空陣列得到起點 0；若沒給起點，空陣列呼叫 `reduce` 會丟出 TypeError。
+- 起點是空字串時，每一次相加都是字串相加，三個數字被接成一長串文字，所以起點的種類就是結果的種類。
 
 ```text
 71500
-3
+0
+128001590042800
 ```
-
-{% note info %}
-**起點的種類就是結果的種類**
-起點是數字，一路相加就維持數字。起點若寫成空字串，數字會被接成一長串文字。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-在陣列最後加上 6800，四個數字從 0 加總。結果應為 78300。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-四個數字相加是 78300。`reduce` 沒有刪掉任何一格。
-
-```diff 04-js/pages/43-js-reduce.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const prices = [12800, 15900, 42800];
-+       const prices = [12800, 15900, 42800, 6800];
-  
-        const total = prices.reduce((sum, price) => {
-          return sum + price;
-        // ...
-```
-
-</details>
 
 ### 排序與組合
 
-排序和組合要先看這一步會不會改到原來那一份。
+這一類處理陣列的順序與拼接，其中 sort 與 reverse 會改到原陣列，要特別留意。
 
-- `sort` 會改原陣列，而且預設把格子轉成字串再比。數字要自己給比較函式。
+**一覽**
 
-- slice、concat 與 join 不改原陣列，`toSorted` 與 `toReversed` 則交回另一份。
+- `slice`：依索引裁出一段（終點不含），不給參數就複製整份，交回新陣列。
+- `concat`：把更多值或陣列接在後面，交回新陣列。
+- `join`：用分隔字串把每一格接成一個字串。
+- `sort`：排序並改動原陣列，預設把格子轉成字串再比。
+- `reverse`：倒序並改動原陣列。
+- `toSorted`、`toReversed`：和 `sort`、`reverse` 結果相同，但原陣列不變，交回新陣列。
 
-**觀念**
+先看三個不改原陣列、都交回新結果的方法：slice、concat 與 join。
 
-- `sort` 不給比較函式時，20 會排在 3 後面，因為比的是字串。
+```html 04-js/pages/44b-js-combine.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>slice、concat 與 join</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const places = ['台北', '花蓮', '京都'];
 
-- 比較函式回傳負數表示第一個參數排前面，正數表示排後面。
+      // 從索引 1 裁到結尾；從 0 裁到索引 2 之前
+      console.log(places.slice(1));
+      console.log(places.slice(0, 2));
+      // 接上更多值，交回四格的新陣列
+      console.log(places.concat(['台南']));
+      // 接成一個字串
+      console.log(places.join('、'));
+      // 原陣列沒有被改
+      console.log(places);
+    </script>
+  </body>
+</html>
+```
 
-- `slice` 不給參數時複製整份，不改原陣列。
+**解析**
 
-- `concat` 接上更多值，交回新陣列。
+- `slice(1)` 從索引 1 裁到結尾；`slice(0, 2)` 的終點索引 2 不包含，所以只有前兩格。
+- `concat` 交回有四個地名的新陣列，`join` 交回一個字串，不是陣列。
+- 最後一行仍是原本的三個地名，這三個方法都沒有改到它。
 
-- `join` 用分隔字串收成一個字串。
+```text
+['花蓮', '京都']
+['台北', '花蓮']
+['台北', '花蓮', '京都', '台南']
+台北、花蓮、京都
+['台北', '花蓮', '京都']
+```
 
-- `reverse` 會改原陣列，回傳的就是原陣列自己。
+接著看排序。`sort` 不給比較函式時，會先把每一格轉成字串再比，所以數字要自己提供比較函式（傳給 sort 的回呼，每次比兩格 a 與 b）：回傳負數表示 a 排前面，正數表示 a 排後面，0 表示不動。
+
+下面先用規則相同、但不改原陣列的 `toSorted` 看比較規則，再看 `sort` 本身會直接改動原陣列。
 
 ```html 04-js/pages/44-js-sort.html
 <!DOCTYPE html>
@@ -4486,31 +3172,30 @@ undefined
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>排序與組合</title>
+    <title>排序</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
       const scores = [20, 3, 100];
-      const places = ['花蓮', '台北', '京都'];
 
-      // 先複製再排序。不給比較函式時依字串變成 100、20、3
-      const asText = scores.slice().sort();
-      // 數字比較才是 3、20、100。原陣列仍是 20、3、100
-      const ranked = scores.slice().sort((a, b) => a - b);
-      // 地名依 zh-Hant 比較，順序是台北、京都、花蓮
-      const byLocale = places.slice().sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+      // 不給比較函式時依字串比較，變成 100、20、3
+      console.log(scores.toSorted());
+      // 數字比較才是 3、20、100
+      console.log(scores.toSorted((a, b) => a - b));
+      // toSorted 不改原陣列
+      console.log(scores);
 
-      console.log(asText);
-      console.log(ranked);
-      console.log(scores);
-      console.log(byLocale);
-      // concat 是四個地名的新陣列，join 是一個字串
-      console.log(places.concat(['台南']));
-      console.log(places.join('、'));
-      // toReversed 倒過來，原陣列仍是 20、3、100
-      console.log(scores.toReversed());
-      console.log(scores);
+      const fruits = ['cherry', 'apple', 'banana'];
+      const sorted = fruits.sort();
+
+      // sort 直接改了 fruits，回傳的就是 fruits 自己
+      console.log(fruits);
+      console.log(sorted === fruits);
+
+      // toReversed 交回倒序的新陣列，fruits 維持原順序
+      console.log(fruits.toReversed());
+      console.log(fruits);
     </script>
   </body>
 </html>
@@ -4518,68 +3203,34 @@ undefined
 
 **解析**
 
-- 不給比較函式時，20 會排在 3 後面。
-- 排序改的是複本，原陣列仍是 20、3、100。
-- toReversed 交回倒序的新陣列，原順序還在。
+- 不給比較函式時，20 排在 3 前面，因為比的是字串 '20' 與 '3'；給了 `(a, b) => a - b` 才是數字由小到大。
+- `toSorted` 兩次都沒有改到 `scores`，最後它仍是 20、3、100。
+- `sort` 直接把 `fruits` 排好，而且回傳值與 `fruits` 是同一個陣列，所以比較結果是 true；之後的 `toReversed` 只交回倒序的新陣列，`fruits` 維持排好的順序。
 
 ```text
 [100, 20, 3]
 [3, 20, 100]
 [20, 3, 100]
-['台北', '京都', '花蓮']
-['花蓮', '台北', '京都', '台南']
-花蓮、台北、京都
-[100, 3, 20]
-[20, 3, 100]
+['apple', 'banana', 'cherry']
+true
+['cherry', 'banana', 'apple']
+['apple', 'banana', 'cherry']
 ```
 
 {% note info %}
-**哪些方法會改原陣列**
-會改原陣列的有前面的 push、pop、unshift、shift、splice，以及這裡的 `sort` 與 reverse。
-
-不改原陣列、交回新結果的有 slice、concat、join、map、filter、reduce，以及 `toSorted` 與 toReversed。
-
-後兩個是較新的寫法，要留著原順序時優先用它們。
+**toSorted 與 sort，以及中文排序**
+`toSorted`、`toReversed` 與 toSpliced、with 都是 ES2023 加入的寫法，現行瀏覽器都支援；要留著原順序時優先用它們，舊程式碼裡則常見先 slice 複製再 sort。字串預設依編碼排序，中文要依語言規則排序時，比較函式寫成 `a.localeCompare(b, 'zh-Hant')`。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-用 `toSorted` 配比較函式 `(a, b) => a - b` 排出 scores。印出新陣列，以及原陣列的第一格仍是 20。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`toSorted` 交回 3、20、100，不改 `scores`。第一格仍是 20。
-
-```diff 04-js/pages/44-js-sort.html
-  // ...
-        console.log(scores.toReversed());
-        console.log(scores);
-+ 
-+       const byNumber = scores.toSorted((a, b) => a - b);
-+       console.log(byNumber);
-+       console.log(scores[0]);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 方法串接
 
-`filter` 與 `map` 都回傳新陣列，所以下一個方法可以接在點號後面。
-
-`reduce` 回傳的是累計，所以通常放在整條的最後，而且原陣列不會被改掉。
+方法串接是把前一個方法交回的新陣列，直接接上下一個方法，例如 `.filter(...).map(...)`。filter 與 map 交回新陣列，所以能繼續接；`reduce` 交回的是單一累計值，通常放在最後。整條串接都不會改到原陣列。
 
 **觀念**
 
-- 每一段都看上一段的回傳值。`filter` 交給 map 的是較短的新陣列。
-
-- 串接之後，map 看到的索引屬於篩完的那一份，不是原陣列。
-
-- `forEach` 回傳 undefined，不能放在中間。
+- 每一段處理的都是上一段的回傳值：`filter` 交給 `map` 的是較短的新陣列。
+- 串接之後，`map` 看到的索引屬於篩完的那一份，不是原陣列。
+- `forEach` 回傳 undefined，放在中間會讓下一段接到 undefined 而中斷。
 
 ```html 04-js/pages/45-js-chain.html
 <!DOCTYPE html>
@@ -4612,52 +3263,24 @@ undefined
 
 **解析**
 
-- 三個價格各自乘 2 之後加總，得到 71000。
-- prices 仍是原來的四個數字。
-- 最後一行若拿掉註解，接著呼叫 map 會中斷。
+- `filter` 留下 12800、15900、6800，`map` 各乘 2，`reduce` 從 0 加總，得到 71000。
+- `prices` 仍是原來的四個數字，整條串接都沒有改到它。
+- 最後一行若拿掉註解，`forEach` 回傳 undefined，接著呼叫 `map` 會丟出 TypeError。
 
 ```text
 71000
 [12800, 15900, 42800, 6800]
 ```
 
-{% note success %}
-**換你試試：**
-只留下大於等於 20000 的價格，不要乘 2，用 `reduce` 加總。這份資料裡只有 42800。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`filter` 只留下 42800，reduce 從 0 加上它，結果是 42800。中間沒有 `map` 也可以，因為上一段已經是陣列。
-
-```diff 04-js/pages/45-js-chain.html
-  // ...
-        console.log(total);
-        console.log(prices);
-  
-+       const high = prices
-+         .filter((price) => price >= 20000)
-+         .reduce((sum, price) => sum + price, 0);
-+       console.log(high);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ## 選讀：Set
 
-`Set` 是一組不會重複的值。同一個值再放一次，數量不會增加。它不負責排序後的清單頁，適合問「這個值出現過沒有」。要交回陣列時用 `Array.from`。
+`Set` 是一組不會重複的值，同一個值再放一次，數量不會增加，適合問「這個值出現過沒有」或替陣列去重。
 
 **觀念**
 
-- `new Set` 會依第一次出現的順序留下值。size 是去重之後的數量，`has` 問值在不在，add 再放一個值。
-
-- `Set` 不是陣列，沒有索引，也不能直接呼叫 map。`Array.from` 依插入順序交出新陣列。
-
-- 值用的是和 includes 類似的比較，`NaN` 在 Set 裡只會留一份。
+- `new Set` 會依第一次出現的順序留下值；`size` 是去重後的數量，`has` 問值在不在，`add` 再放一個值。
+- `Set` 沒有索引，也不能直接呼叫 map；需要陣列方法時，先用 `Array.from` 依插入順序交出新陣列。
+- 比較值的方式和 includes 類似，所以 NaN 在 `Set` 裡只會留一份。
 
 ```html 04-js/pages/46-js-set.html
 <!DOCTYPE html>
@@ -4688,9 +3311,9 @@ undefined
 
 **解析**
 
-- 四個字串放進去之後，重複的台北只留一份，`size` 是 3。花蓮還在，`has` 是 true。
-- 加上台南變成 4。再加一次台北，數量仍是 4。
-- `Array.from` 依插入順序交出台北、花蓮、京都、台南。原陣列 places 沒有被這個 `Set` 改掉。
+- 四個字串放進去之後，重複的台北只留一份，`size` 是 3；花蓮還在，`has` 是 true。
+- 加上台南變成 4；再加一次台北，數量仍是 4。
+- `Array.from` 依插入順序交出台北、花蓮、京都、台南。
 
 ```text
 3
@@ -4701,58 +3324,27 @@ true
 ```
 
 {% note info %}
-**要保持順序、要交給陣列方法時仍用陣列**
-Set 只用在「這個值出現過沒有」。需要 map 或 filter 時，先用 `Array.from` 轉回陣列。
-
-學了[展開運算子](#展開運算子)之後，也可以把 `Set` 攤進一對中括號。
+**Set 轉陣列的另一種寫法**
+學了[展開運算子](#展開運算子)之後，也可以把 Set 攤進一對中括號轉成陣列。需要索引、排序，或要用 map 與 filter 處理的清單，仍然用陣列。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-印出 has 是否看得到「京都」。再 add 一次「京都」，印出 `size`，數量應仍是 4。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-京都已經在 Set 裡，`has` 是 true。再加一次不會讓 `size` 變成 5。
-
-```diff 04-js/pages/46-js-set.html
-  // ...
-        console.log(unique.size);
-        console.log(Array.from(unique));
-+ 
-+       console.log(unique.has('京都'));
-+       unique.add('京都');
-+       console.log(unique.size);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 # 物件
 
-物件用 `key` 對到 `value`，把一筆資料的欄位放在一起。陣列負責順序，物件負責名字。
-
-這一章先建立物件、改欄位、寫方法，並用可選串連讀可能不存在的欄位。接著看物件的原型與靜態方法。選讀再補 Map，以及呼叫方法時的 this。最後把陣列方法與函式放在同一支檔。
+物件用名字（key）對應到值（value），把一筆資料的各個欄位放在一起；陣列靠順序找資料，物件靠名字找資料。這一章先學怎麼建立物件、讀寫與刪除欄位、在物件裡寫函式，以及用可選串連安全地讀可能不存在的欄位，再認識物件的原型與 Object 上的靜態方法，最後在選讀補充 Map、方法被拆下來時的 this，以及一支把陣列方法與物件合用的完整範例。
 
 ## 物件基礎
 
-這一節從物件字面值開始：大括號寫出欄位，用點記法或中括號讀寫，再改欄位或刪欄位。放在物件裡的函式就是方法。欄位可能不存在時，用可選串連停下，避免再往下讀。
+這一節學物件最基本的操作：建立、讀寫欄位、放進函式，以及安全地讀取可能不存在的欄位。
 
 ### 建立與存取屬性
 
-點記法用在合法的識別字。key 放在變數裡、或名字裡有減號這類不能當識別字的字元時，改用中括號。這一節先把物件寫出來，並把已經寫上的欄位讀出來。
+物件字面值用大括號包住一組「名字: 值」，欄位之間以逗號分隔。讀取時最常用點記法；名字放在變數裡、或名字含有減號、空白這類不能當識別字的字元時，改用中括號。讀不存在的欄位不會出錯，只會得到 undefined。
 
 **觀念**
 
-- 屬性簡寫是變數名字和欄位名字相同時，只寫一次。
-
-- 計算屬性用中括號，名字到執行時才決定。
-
-- 沒有那個欄位時，讀到的是 undefined。
+- 屬性簡寫：變數名稱與欄位名稱相同時，只寫一次，例如在大括號裡直接寫 `title`。
+- 計算屬性：建立物件時用中括號包住運算式，欄位名稱到執行時才決定。
+- 點記法與中括號讀到的是同一個欄位；中括號內可以放任何運算式，所以能用變數當欄位名稱。
 
 ```html 04-js/pages/47-js-object.html
 <!DOCTYPE html>
@@ -4770,15 +3362,16 @@ Set 只用在「這個值出現過沒有」。需要 map 或 filter 時，先用
 
       const tour = {
         id: 1,
-        title,
+        title, // 屬性簡寫，等同 title: title
         place: '台北',
         days: 3,
         price: 12800,
-        [field + 'Code']: 'TPE',
+        [field + 'Code']: 'TPE', // 計算屬性，欄位名稱是 placeCode
       };
 
       console.log(tour.title);
       console.log(tour['place']);
+      console.log(tour[field]);
       console.log(tour.placeCode);
       console.log(tour.guide);
     </script>
@@ -4788,67 +3381,28 @@ Set 只用在「這個值出現過沒有」。需要 map 或 filter 時，先用
 
 **解析**
 
-- `title` 用簡寫，欄位的值和外面的變數相同。
-- placeCode 是計算屬性，名字由 `field + 'Code'` 接出來。
-- 點記法與中括號都讀得到已經寫上的欄位。
-- 沒有 guide 這個欄位，讀到的是 undefined。
+- 簡寫的 title 欄位拿到外面變數的值，所以第一行印出標題。
+- 點記法與中括號讀的是同一個欄位；`tour[field]` 先把變數 field 換成字串 'place'，再去讀 place 欄位。
+- 計算屬性由 field 接上 'Code' 組成名稱，所以讀得到 placeCode。
+- 物件裡沒有 guide，讀到的是 undefined，不會中斷程式。
 
 ```text
 台北城市漫遊
+台北
 台北
 TPE
 undefined
 ```
 
-{% note info %}
-**中括號什麼時候必要**
-key 在變數裡，或字串裡有減號、空白，點記法寫不出來，用中括號。建立物件時，要把運算結果當欄位名，也是用中括號包住。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-用變數 `place` 的簡寫再做一筆：id 為 2、標題「花蓮山海三日」、地點「花蓮」、3 天、15900。印出標題，以及中括號取出的價格。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`place` 和欄位同名，所以只寫一次。中括號裡的 `'price'` 對到 15900。第一個物件維持原樣。
-
-```diff 04-js/pages/47-js-object.html
-  // ...
-        console.log(tour.placeCode);
-        console.log(tour.guide);
-+ 
-+       const place = '花蓮';
-+       const hualien = {
-+         id: 2,
-+         title: '花蓮山海三日',
-+         place,
-+         days: 3,
-+         price: 15900,
-+       };
-+ 
-+       console.log(hualien.title);
-+       console.log(hualien['price']);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 新增修改與刪除屬性
 
-已經建立的物件可以改已有的欄位，也可以加上新欄位。`delete` 拿掉物件自己的欄位。`const` 鎖住的是變數指向哪一個物件，改欄位仍然合法，把變數改指到另一個物件會丟出 TypeError。
+物件建立後仍可以變動：賦值給已有的名字是修改，賦值給還沒有的名字是新增，delete 則拿掉欄位。要檢查欄位在不在，用 `in` 或 `Object.hasOwn`。
 
 **觀念**
 
-- 賦值給已有的名字是修改。賦值給還沒有的名字是新增。
-
-- `delete` 刪掉物件自己的欄位。沒有那個欄位時，讀到的是 undefined。
-
-- `in` 會看到原型上的名字。`Object.hasOwn` 只看物件自己的欄位。
+- 修改與新增都用賦值，差別只在名字原本有沒有。
+- delete 刪掉物件自己的欄位，刪完後再讀會得到 undefined。
+- in 會往原型（物件繼承來的共用方法所在）上找，Object.hasOwn 只看物件自己身上的欄位。
 
 ```html 04-js/pages/48-js-object-update.html
 <!DOCTYPE html>
@@ -4868,19 +3422,21 @@ key 在變數裡，或字串裡有減號、空白，點記法寫不出來，用�
         price: 12800,
       };
 
-      tour.price = 13900;
-      tour.seats = 8;
+      tour.price = 13900; // 修改
+      tour.seats = 8; // 新增
       console.log(tour.price);
       console.log('seats' in tour);
       console.log(Object.hasOwn(tour, 'seats'));
-      console.log(Object.hasOwn(tour, 'toString'));
+
+      // toString 在原型上，不是 tour 自己的欄位
       console.log('toString' in tour);
+      console.log(Object.hasOwn(tour, 'toString'));
 
       delete tour.seats;
-      console.log(Object.hasOwn(tour, 'seats'));
+      console.log(tour.seats);
       console.log(tour.days);
 
-      // tour = { id: 2 };
+      // tour = { id: 2 }; // 拿掉註解會是 TypeError
     </script>
   </body>
 </html>
@@ -4888,68 +3444,34 @@ key 在變數裡，或字串裡有減號、空白，點記法寫不出來，用�
 
 **解析**
 
-- price 從 12800 改成 13900，又新增 `seats`。in 與 hasOwn 都看得到 seats。
-- `toString` 不在這個物件自己身上，hasOwn 是 false。它在原型上，所以 in 是 true。
-- delete 之後，seats 不再是自己的欄位。`days` 沒有被刪，仍是 3。
-- 最後一行若拿掉註解，會是 TypeError。`const` 不允許改指到另一個物件。
+- price 被改成 13900，seats 是新加的，兩個檢查都顯示 seats 在 tour 身上。
+- toString 是每個物件從原型繼承來的方法，所以 in 回傳 true，hasOwn 回傳 false，這就是兩者的差別。
+- delete 之後 seats 讀到 undefined，沒有被刪的 days 仍是 3。
 
 ```text
 13900
 true
 true
-false
 true
 false
+undefined
 3
 ```
 
 {% note warning %}
-**const 擋的是換一顆物件**
-改欄位、加欄位、刪欄位，動的都是同一顆物件。寫成 `tour = { id: 2 }` 是要換成另一顆，這一行會中斷。
+**const 擋的是換一個物件**
+改欄位、加欄位、刪欄位動的都是同一個物件，不受 const 限制；寫成 `tour = { id: 2 }` 是要換成另一個物件，才會被擋下。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-把 `days` 改成 4，新增 `place` 為「台北」。印出 days，再刪掉 place，印出 hasOwn 的結果。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-days 改成 4。place 新增後又被刪掉，hasOwn 是 false。前面的 seats 已經刪過，這一題只多看 days 與 place。
-
-```diff 04-js/pages/48-js-object-update.html
-  // ...
-        console.log(Object.hasOwn(tour, 'seats'));
-        console.log(tour.days);
-  
-        // tour = { id: 2 };
-+ 
-+       tour.days = 4;
-+       tour.place = '台北';
-+       console.log(tour.days);
-+       delete tour.place;
-+       console.log(Object.hasOwn(tour, 'place'));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 方法
 
-物件裡的函式叫做方法，簡寫 `label() {}` 和寫成 label: function () {} 是同一件事。用物件.方法() 呼叫時，方法裡的 `this` 就是點號左邊那個物件。
-
-箭頭函式沒有自己的 this，所以不拿來寫這種方法。把方法拆出來之後 this 對不到物件的情況，留在選讀。
+放在物件裡的函式稱為方法。用「物件.方法()」呼叫時，方法裡的 `this` 就是點號左邊的那個物件，因此方法可以用 this 讀同一個物件上的其他欄位。
 
 **觀念**
 
-- 方法寫在物件裡，呼叫時寫成 `tour.label()`。只寫 `label()` 找不到這個名字。
-
-- 方法可以收參數、用 `return` 交回值。`this.title` 讀的是同一個物件上的欄位。
-
-- 方法簡寫裡不要改成箭頭函式。陣列的 `map` 回呼才用箭頭。
+- 方法簡寫 `label() {}` 與 `label: function () {}` 寫法不同、用法相同，新寫的程式用簡寫。
+- 方法必須透過物件呼叫，單獨寫 label() 會找不到這個名字。
+- 方法不要寫成箭頭函式，因為箭頭函式沒有自己的 this；陣列方法的回呼才適合用箭頭。
 
 ```html 04-js/pages/49-js-method.html
 <!DOCTYPE html>
@@ -4978,52 +3500,25 @@ days 改成 4。place 新增後又被刪掉，hasOwn 是 false。前面的 seats
 
 **解析**
 
-- `tour.label()` 的點號左邊是 tour，所以 this.title 與 this.days 讀得到這兩個欄位，接成一行字。
-- 方法沒有改到欄位，只是把值交回來。
+- 呼叫 `tour.label()` 時，點號左邊是 tour，所以 this.title 與 this.days 讀到 tour 的兩個欄位，接成一行字交回。
 
 ```text
 花蓮山海三日・3 天
 ```
 
-{% note success %}
-**換你試試：**
-在同一個物件加上方法 `nights`，回傳天數減 1。用 `tour.nights()` 印出 2。
+{% note info %}
+**方法被拆下來會怎樣**
+把方法複製到別的變數再呼叫，this 就不再指向原物件。這個情況見選讀的「方法呼叫時的 this」。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`nights` 一樣由 tour.nights() 呼叫，this.days 是 3，減 1 得到 2。`label` 仍印出原來那一行。
-
-```diff 04-js/pages/49-js-method.html
-  // ...
-            return this.title + '・' + this.days + ' 天';
-          },
-+         nights() {
-+           return this.days - 1;
-+         },
-        };
-  
-        console.log(tour.label());
-+       console.log(tour.nights());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 可選串連
 
-`?.` 在點記法的中間停下：左邊是 null 或 undefined 時，整段得到 undefined，不再往下讀，也不會中斷。運算子那一章用過這個符號的卡片，這裡用物件把深層欄位讀完。左邊有值時，它就和平常的點記法一樣。
+讀深層欄位時，中間某一層若是 null 或 undefined，再往下用點號讀會丟出 TypeError。可選串連 `?.` 放在點號前面：左邊有值就照常往下讀，左邊是 null 或 undefined 就停下來，整段得到 undefined，不會中斷。
 
 **觀念**
 
-- `tour.guide?.name` 在 guide 不在時得到 undefined。直接寫 tour.guide.name 會丟出 TypeError。
-
-- `?.` 只處理 null 與 undefined。0 和空字串仍會繼續往下讀。
-
-- 得到 undefined 之後，若要補一句預設文字，接上一章的 `??`。
+- `?.` 只擋 null 與 undefined；0、空字串、false 都算有值，會繼續往下讀。
+- 停下來得到 undefined 之後，若要補預設值，接上前面學過的 `??`。
 
 ```html 04-js/pages/50-js-optional.html
 <!DOCTYPE html>
@@ -5043,7 +3538,7 @@ days 改成 4。place 新增後又被刪掉，hasOwn 是 false。前面的 seats
       console.log(other.guide?.name);
       console.log(other.guide?.name ?? '未定');
 
-      // console.log(other.guide.name);
+      // console.log(other.guide.name); // 拿掉註解會是 TypeError
     </script>
   </body>
 </html>
@@ -5051,9 +3546,9 @@ days 改成 4。place 新增後又被刪掉，hasOwn 是 false。前面的 seats
 
 **解析**
 
-- 第一筆的 `guide` 是物件，所以讀得到名字「林」。第二筆沒有 guide，可選串連停住，得到 undefined。
-- 再接 `??`，undefined 被換成「未定」。
-- 最後一行若拿掉註解，會在讀 `name` 時中斷，因為 `other.guide` 是 undefined，不能再點下去。
+- 第一個物件有 guide，所以讀得到「林」；第二個物件沒有 guide，可選串連在這裡停下，得到 undefined。
+- 再接 `??`，undefined 被換成預設的「未定」。
+- 最後一行沒有 `?.`，other.guide 是 undefined，再讀 name 就會丟出 TypeError。
 
 ```text
 林
@@ -5061,45 +3556,25 @@ undefined
 未定
 ```
 
-{% note success %}
-**換你試試：**
-讓 other 也有 guide，名字是「陳」，印出 `other.guide?.name`。應為「陳」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-補上 `guide` 之後，`?.` 左邊有物件，就讀得到 name。原先沒有 guide 的那一行已經印過 undefined，新的物件是另一個值。
-
-```diff 04-js/pages/50-js-optional.html
-  // ...
-        console.log(other.guide?.name);
-        console.log(other.guide?.name ?? '未定');
-  
-+       const withGuide = { title: '花蓮山海三日', guide: { name: '陳' } };
-+       console.log(withGuide.guide?.name);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ## 物件原型與方法
 
-物件也有原型 `Object.prototype`，toString 這類方法放在那裡，用點號呼叫。常用的 keys、values、entries 不在原型上，而是放在 Object 本身，這種寫法叫靜態方法。呼叫時把物件傳進去，寫成 `Object.keys(tour)`。
+物件和字串一樣有共用的原型 Object.prototype，toString 這類方法放在那裡，用點號呼叫。另一類方法直接放在 Object 本身，稱為靜態方法，呼叫時把物件當參數傳進去，例如 Object.keys(tour)。這一節學習用靜態方法取得物件的欄位，並用迴圈逐一走訪。
 
 ### 靜態方法
 
-這三個靜態方法把物件自己的欄位收成陣列，而且不改原物件。順序依欄位建立的順序。
+keys、values、entries 把物件自己的欄位整理成陣列，fromEntries 則反過來把陣列組回物件，四個都不會改動原物件。順序依欄位建立的順序；名稱是整數形式（如 '1'）的欄位例外，會先由小到大排在最前面。
+
+**一覽**
+
+- `Object.keys(obj)`：交回欄位名稱的陣列。
+- `Object.values(obj)`：交回欄位值的陣列。
+- `Object.entries(obj)`：交回「[名稱, 值]」兩格陣列所組成的陣列，名稱與值都保留。
+- `Object.fromEntries(entries)`：反過來把「[名稱, 值]」的陣列組回新物件。
 
 **觀念**
 
-- `Object.keys` 交出自己的欄位名。
-
-- `Object.values` 交出那些欄位的值。
-
-- `Object.entries` 把每一組鍵與值收成一個兩格的陣列。
+- 這三個方法要寫成 Object.keys(tour) 的形式；物件自己身上沒有 keys 這個欄位。
+- 因為交回的是陣列，所以可以接著使用上一章的陣列方法。
 
 ```html 04-js/pages/51-js-keys.html
 <!DOCTYPE html>
@@ -5117,7 +3592,11 @@ undefined
       console.log(Object.keys(tour));
       console.log(Object.values(tour));
       console.log(Object.entries(tour));
+      console.log(Object.fromEntries(Object.entries(tour)));
+
+      // 物件自己身上沒有 keys，得到 undefined
       console.log(tour.keys);
+      // toString 來自原型，所以取得到，型別是 function
       console.log(typeof tour.toString);
     </script>
   </body>
@@ -5126,59 +3605,28 @@ undefined
 
 **解析**
 
-- 欄位名是 id、title、days。值是數字 1、字串，以及數字 3。
-- entries 的每一格又是一個兩格陣列，左邊是欄位名，右邊是值。
-- `tour.keys` 是 undefined，因為 keys 不在這顆物件身上，要寫成 Object.keys。
-- toString 從原型取得，typeof 是 function。原物件的三個欄位都還在。
+- keys 得到三個欄位名稱，values 得到對應的值，兩者的順序一致。
+- entries 的每一格又是一個兩格陣列，左邊是名稱，右邊是值；`Object.fromEntries` 把它組回一個和原本內容相同的新物件。
+- `tour.keys` 是 undefined，因為 keys 不在這個物件上，要透過 Object 呼叫。
+- toString 從原型取得，所以 typeof 是 function。
 
 ```text
 ['id', 'title', 'days']
 [1, '台北城市漫遊', 3]
 [['id', 1], ['title', '台北城市漫遊'], ['days', 3]]
+{id: 1, title: '台北城市漫遊', days: 3}
 undefined
 function
 ```
 
-{% note info %}
-**靜態方法寫在 Object 上**
-點號呼叫的是原型上的方法。keys、values、entries 要寫 `Object.keys(tour)` 這種形式，物件自己沒有 keys 這個欄位。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-加上 `price: 12800`，印出 `Object.keys(tour).length`。應為 4。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多一個自己的欄位，keys 的長度從 3 變成 4。前面三行是加上 price 之前就印出的，長度那一行才是 4。
-
-```diff 04-js/pages/51-js-keys.html
-  // ...
-        console.log(tour.keys);
-        console.log(typeof tour.toString);
-+ 
-+       tour.price = 12800;
-+       console.log(Object.keys(tour).length);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 走訪欄位
 
-`Object.entries` 交回的陣列可以用 `for...of` 逐組讀。每一組是兩格，索引 0 是欄位名，索引 1 是值。
-
-`for...in` 會走到原型上的鍵，這一節不拿它當預設寫法。欄位名放在索引 0，值放在索引 1。
+想逐一處理物件的每個欄位，把 Object.entries 的結果交給 for...of 迴圈。每一圈拿到的是一組兩格陣列，索引 0 是欄位名稱，索引 1 是值。
 
 **觀念**
 
-- 迴圈變數是一小陣列，不是欄位名本身。
-
-- 索引 0 讀欄位名，索引 1 讀值。原物件不會被這個迴圈改掉。
+- 迴圈變數是兩格陣列，不是欄位名稱本身。
+- 迴圈只是讀取，不會改掉原物件。
 
 ```html 04-js/pages/52-js-entries.html
 <!DOCTYPE html>
@@ -5203,8 +3651,8 @@ function
 
 **解析**
 
-- 三組依建立順序印出。左邊是欄位名，右邊是值。
-- pair 每一圈都是新的兩格陣列。原物件的三個欄位都還在。
+- 三組資料依建立順序印出，左邊是欄位名稱，右邊是值。
+- 每一圈的 pair 都是新的兩格陣列，原物件的欄位完全不變。
 
 ```text
 id 1
@@ -5214,52 +3662,18 @@ days 3
 
 {% note warning %}
 **for...in 會走到繼承來的鍵**
-`for...in` 走的是可列舉的鍵，範圍包含原型。`Object.keys` 只給物件自己的欄位。
-
-讀欄位用 keys、values 或 entries，再配 for...of。
-
-```js
-for (const key in tour) {
-  console.log(key);
-}
-```
+`for...in` 走的是可列舉的鍵，範圍包含原型上的；Object.keys 只給物件自己的欄位。走訪物件請用 keys、values 或 entries 配 for...of。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-加上 `price: 12800`。迴圈會多印一行，左邊是 price，右邊是 12800。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多一個自己的欄位，迴圈從三行變成四行。price 是最後建立的，所以印在最後。
-
-```diff 04-js/pages/52-js-entries.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const tour = { id: 1, title: '台北城市漫遊', days: 3 };
-+       const tour = { id: 1, title: '台北城市漫遊', days: 3, price: 12800 };
-  
-        for (const pair of Object.entries(tour)) {
-          console.log(pair[0], pair[1]);
-        // ...
-```
-
-</details>
 
 ## 選讀：Map
 
-`Map` 用 set 放入、get 取出，鍵可以維持數字。物件的鍵則會被轉成字串，所以數字 1 和字串 '1' 會撞成同一個欄位；固定的一筆資料仍用物件，不要為了幾個固定欄位改用 Map。
+物件的鍵一律是字串（或 Symbol），數字 1 與字串 '1' 會變成同一個欄位。Map 是另一種「鍵對值」的集合，鍵可以是任何型別，數字 1 與字串 '1' 是不同的鍵。固定欄位的一筆資料仍然用物件，只有鍵不固定、型別不限時才考慮 Map。
 
 **觀念**
 
-- `set` 的第一個參數是鍵，第二個是值。`size` 是目前的筆數。
-
-- 鍵不存在時 get 得到 undefined。`get(1)` 和 get('1') 不是同一格。
-
-- 鍵的比較和 `Set` 類似。需要順序、需要 map 與 filter 的清單仍用陣列。
+- 用 set 放入「鍵、值」，用 get 以鍵取出，size 是目前的筆數。
+- 鍵不存在時 get 得到 undefined；get(1) 與 get('1') 是不同的兩格。
+- Map 與 Set 一樣是內建的集合；需要順序、要用 map 與 filter 處理的清單仍用陣列。
 
 ```html 04-js/pages/53-js-map.html
 <!DOCTYPE html>
@@ -5286,9 +3700,8 @@ for (const key in tour) {
 
 **解析**
 
-- 數字鍵 1 取出 12800。字串 '1' 沒有這把鍵，得到 undefined。
-- 目前兩筆，`size` 是 2。
-- 若改把資料放進物件再用中括號，鍵會變成字串，和這裡的數字鍵不是同一套規則。
+- 數字鍵 1 取出 12800；字串 '1' 不是同一把鍵，所以得到 undefined。
+- 放入兩筆，size 是 2。
 
 ```text
 12800
@@ -5296,43 +3709,15 @@ undefined
 2
 ```
 
-{% note success %}
-**換你試試：**
-再 `set` 一筆鍵 3、值 42800。印出 `prices.size`，應為 3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第三筆放進去之後，`size` 是 3。字串鍵 `'1'` 仍然取不到 12800。
-
-```diff 04-js/pages/53-js-map.html
-  // ...
-        prices.set(1, 12800);
-        prices.set(2, 15900);
-+       prices.set(3, 42800);
-  
-        console.log(prices.get(1));
-        console.log(prices.get('1'));
-        // ...
-```
-
-</details>
-
 ## 選讀：方法呼叫時的 this
 
-方法寫在物件裡，用 `物件.方法()` 呼叫時，`this` 就是那個物件。
-
-若只把方法抄到另一個名字再呼叫，`this` 不再指向那個物件，欄位會變成 `undefined`。另外，箭頭函式沒有自己的 this，不適合拿來當這種方法。
+this 的值取決於「怎麼呼叫」，而不是函式寫在哪裡。用「物件.方法()」呼叫時，this 是點號左邊的物件；把方法複製到另一個變數再呼叫，左邊沒有物件，this 就不再是原物件。
 
 **觀念**
 
-
-- 方法的簡寫是 `label() { ... }`，和 `label: function () { ... }` 同一件事。
-
-- 呼叫時點號左邊是誰，`this` 就是誰。
-
-- 把方法拆下來傳給別處之前，這一節先觀察拆下來會發生什麼事。下一篇的事件函式會再遇到。
+- 同一個函式，透過物件呼叫與單獨呼叫，this 不同。
+- 單獨呼叫時 this 不是原物件：在一般的 script 裡是 window，讀不到這些欄位；嚴格模式下是 undefined，讀欄位會丟出 TypeError。
+- 事件處理函式會再遇到這個問題，到時再回頭看這一節。
 
 ```html 04-js/pages/54-js-this.html
 <!DOCTYPE html>
@@ -5364,68 +3749,23 @@ undefined
 
 **解析**
 
-- 第一行透過 `tour.label()` 呼叫，`this` 就是那個物件，所以接得出兩個欄位。
-- 第二行把函式本身放到 copied，呼叫時左邊沒有物件，this 不是那筆物件，兩個欄位都是 undefined，接出來仍是一行字，只是中間沒有標題。
+- 第一行透過 tour 呼叫，this 是 tour，兩個欄位都讀得到。
+- 第二行把函式本身放進 copied 再呼叫，左邊沒有物件，this 不是 tour，兩個欄位都是 undefined，所以字串變成「undefined・undefined 天」。
 
 ```text
 花蓮山海三日・3 天
 undefined・undefined 天
 ```
 
-{% note warning %}
-**不要在方法裡改用箭頭**
-箭頭函式會去用外層的 `this`，在這一頁的最外層通常不是這個物件。物件方法維持簡寫，陣列的 `map` 回呼才用箭頭。
-{% endnote %}
+## 選讀：綜合練習
 
-{% note success %}**換你試試：**在同一筆物件加上 `price: 15900` 與方法 `quote`，回傳 this.price * people。
-
-用 `tour.quote(2)` 印出 31800。{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`quote` 由 `tour.quote(2)` 呼叫，this.price 是 15900，乘上參數 2 得到 31800。
-
-拆開來的 `label` 仍會失去 `this`，兩件事互不影響。
-
-```diff 04-js/pages/54-js-this.html
-  // ...
-          title: '花蓮山海三日',
-          days: 3,
-+         price: 15900,
-          label() {
-            return this.title + '・' + this.days + ' 天';
-          },
-+         quote(people) {
-+           return this.price * people;
-+         },
-        };
-  
-        console.log(tour.label());
-+       console.log(tour.quote(2));
-  
-        const copied = tour.label;
-        console.log(copied());
-      // ...
-```
-
-</details>
-
-## 綜合練習
-
-這一節把陣列方法、物件與函式放在同一支檔。函式接收陣列，用 filter、map、find、reduce 交回新的結果，不改原來那一份。這裡不用 `import` 與 `export`，因為模組留在選讀。
+這一節把陣列方法、物件與函式放在同一支檔：陣列的每一格是物件，函式接收陣列，用 filter、map、find 交回新的結果，原陣列不被改動。
 
 **觀念**
 
-- 陣列的每一格是物件。函式的第一個參數是這份陣列，篩選條件用 `===`，數字不要和字串比。
-
-- `filter` 留下天數相同的格子，map 只取出標題。
-
-- find 對上 id，沒有就是 undefined。
-
-- `reduce` 從 0 把價格加總。
-
-- 函式裡不要寫死那一份陣列的名字。換一份陣列時，仍呼叫同一個函式。
+- 函式的第一個參數是整份陣列，不寫死某個陣列的名字，換一份資料仍可重複使用。
+- 篩選用嚴格相等 `===`，數字不要和字串比。
+- filter 留下符合條件的格子，map 取出需要的欄位，find 找出第一筆符合的，沒有就是 undefined。
 
 ```html 04-js/pages/55-js-tours.html
 <!DOCTYPE html>
@@ -5458,6 +3798,7 @@ undefined・undefined 天
 
       console.log(titlesOf(filterByDays(tours, 3)));
       console.log(findById(tours, 1));
+      console.log(findById(tours, 9)?.title);
       console.log(tours.length);
     </script>
   </body>
@@ -5466,78 +3807,42 @@ undefined・undefined 天
 
 **解析**
 
-- `filterByDays` 留下 days 嚴格等於 3 的兩筆，titlesOf 把它們收成標題陣列。
-- `findById` 對上 id 1，交回整筆物件。原陣列長度仍是 3，京都那筆還在。
-- `find` 可能是 undefined。這裡的 id 1 一定在，所以接著讀欄位也不會中斷。
-- id 不存在時要先確認，再讀欄位。
+- filterByDays 留下 days 嚴格等於 3 的兩筆，titlesOf 再把它們收成標題陣列。
+- findById 對上 id 1，交回整筆物件。
+- id 9 不存在，find 得到 undefined，所以後面用 `?.` 讀 title，結果是 undefined 而不會中斷。
+- 原陣列長度仍是 3，京都那筆還在，證明這些方法都沒有改動原陣列。
 
 ```text
 ['台北城市漫遊', '花蓮山海三日']
-{ id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 }
+{id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800}
+undefined
 3
 ```
 
-{% note success %}
-**換你試試：**
-加上第四筆：id 為 4、標題「台南古蹟一日」、地點「台南」、1 天、6800。再寫 `totalPrice`，用 `reduce` 從 0 把傳入陣列的價格加總。印出四筆的總和，應為 78300。
-{% endnote %}
+# 選讀：內建物件
 
-<details>
-<summary>參考答案</summary>
-
-第四筆的天數是 1，所以天數等於 3 的標題仍是兩筆。`totalPrice` 不篩選，四個價格相加是 78300。id 1 仍是第一筆。
-
-```diff 04-js/pages/55-js-tours.html
-  // ...
-          { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-          { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-+         { id: 4, title: '台南古蹟一日', place: '台南', days: 1, price: 6800 },
-        ];
-  
-        const filterByDays = (list, days) => {
-          // ...
-          return list.find((tour) => tour.id === id);
-        };
-  
-+       const totalPrice = (list) => {
-+         return list.reduce((sum, tour) => sum + tour.price, 0);
-+       };
-+ 
-        console.log(titlesOf(filterByDays(tours, 3)));
-        console.log(findById(tours, 1));
-        console.log(tours.length);
-+       console.log(totalPrice(tours));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-# 內建物件
-
-JavaScript 自己就帶著一批內建物件，例如 `Math` 與 `Date`，名字已經存在，不用先建立。它們是語言提供的工具，和你用大括號寫出來的物件字面值不同：後者是一筆自己的資料，前者是現成的功能。
+內建物件是 JavaScript 隨語言附帶、不用自己建立就能使用的現成工具。這一章介紹兩個：Math 提供數學常數與運算，Date 處理日期與時間。它們和用大括號自己寫出來的物件不同，後者是一筆自己的資料，前者是語言提供的功能。整章是選讀，專案用到時回來查即可。
 
 ## Math
 
-Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math.abs` 這種點號。它不是建構函式，`new Math()` 會中斷，也不會做出另一個 Math。
+Math 把數學常數與函式收在同一個名字上，用點號直接呼叫，不必也不能建立。這一節從常數與基本運算開始，接著是取整數、最大最小值與亂數，最後用這些組成一個大樂透號碼產生器。
 
 {% note danger %}
 **Math 不能 new**
 `new Math()` 會丟出 TypeError。常數與方法全語言共用，不需要另外做出一個 Math。
 {% endnote %}
 
-### 數學常數與基本運算
+**一覽**
 
-圓周率、自然常數、絕對值、次方和平方根都放在 Math 上，呼叫時一樣用點號。次方也可以用前面學過的 `**`，算出來和 `Math.pow` 相同。
+- 常數：`Math.PI` 是圓周率，`Math.E` 是自然常數。
+- 運算：`abs` 取絕對值，`pow` 算次方，`sqrt` 算平方根。
+- 取整數：`round`、`floor`、`ceil`、`trunc` 都回傳整數，差在往哪個方向收。
+- 比大小：`max` 與 `min` 在傳入的數字裡挑最大與最小。
+- 亂數：`random` 回傳 0 以上、小於 1 的小數。
 
-**觀念**
+### 常數與基本運算
 
-- `Math.PI` 是圓周率，`Math.E` 是自然常數。
-
-- `Math.abs` 去掉正負號，只留大小。
-
-- `Math.pow` 算次方，`Math.sqrt` 算平方根。
+圓周率、絕對值、次方與平方根都放在 Math 上。次方也可以用前面學過的 `**`，結果與 `Math.pow` 相同。
 
 ```html 04-js/pages/56-js-math.html
 <!DOCTYPE html>
@@ -5545,7 +3850,7 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>數學常數與基本運算</title>
+    <title>常數與基本運算</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
@@ -5577,43 +3882,9 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 4
 ```
 
-{% note success %}
-**換你試試：**
-再印 `Math.abs(-3.5)` 與 `Math.sqrt(9)`，應為 3.5 與 3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
--3.5 的絕對值是 3.5，9 的平方根是 3。前面的常數與 2 的 3 次方仍先印出來。
-
-```diff 04-js/pages/56-js-math.html
-  // ...
-        console.log(2 ** 3);
-        console.log(Math.sqrt(16));
-+ 
-+       console.log(Math.abs(-3.5));
-+       console.log(Math.sqrt(9));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 取整數與四捨五入
 
-這四個方法都把小數收成整數，差在往哪一邊收。負數時 `Math.floor` 會往更小的整數走，`Math.trunc` 只把小數砍掉、朝向 0。
-
-**觀念**
-
-- `Math.round` 四捨五入到最接近的整數。
-
-- `Math.floor` 往較小的整數收。
-
-- `Math.ceil` 往較大的整數收。
-
-- `Math.trunc` 直接去掉小數。
+四個取整數的方法都把小數收成整數，差別在方向：就近、往小、往大，或直接砍掉小數。正數時 `floor` 與 `trunc` 結果相同，到了負數才分得出來。
 
 ```html 04-js/pages/57-js-round.html
 <!DOCTYPE html>
@@ -5632,6 +3903,8 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
       console.log(Math.trunc(2.9));
       console.log(Math.floor(-2.3));
       console.log(Math.trunc(-2.3));
+      console.log(Math.round(2.5));
+      console.log(Math.round(-2.5));
     </script>
   </body>
 </html>
@@ -5639,9 +3912,9 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 
 **解析**
 
-- 2.7 四捨五入是 3，往較小的整數收則是 2。
-- 2.1 往較大的整數收是 3。2.9 去掉小數是 2。
-- -2.3 用 floor 得到 -3，用 trunc 得到 -2。
+- 2.7 四捨五入是 3，往小收是 2。2.1 往大收是 3，2.9 去掉小數是 2。
+- -2.3 用 `floor` 往小收成 -3，用 `trunc` 朝 0 砍成 -2。
+- 剛好 .5 時 `round` 往正無限大的方向收，所以 2.5 是 3，-2.5 是 -2；它不是「離 0 較遠的那一邊」。
 
 ```text
 3
@@ -5650,46 +3923,15 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 2
 -3
 -2
+3
+-2
 ```
-
-{% note success %}
-**換你試試：**
-印出 `Math.ceil(-2.3)`。往較大的整數收，應為 -2。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
--2 比 -3 大，所以 ceil 停在 -2。前面六行維持不變。
-
-```diff 04-js/pages/57-js-round.html
-  // ...
-        console.log(Math.floor(-2.3));
-        console.log(Math.trunc(-2.3));
-+ 
-+       console.log(Math.ceil(-2.3));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 最大值、最小值與亂數
 
-`Math.max` 與 `Math.min` 在你傳進去的那些數字裡挑一個，個數不限兩個。
+`Math.max` 與 `Math.min` 在傳進去的數字裡挑一個，個數不限；資料在陣列裡時，用展開語法把元素攤成參數（展開在下一章正式介紹）。
 
-`Math.random` 回傳 0 以上、小於 1 的小數，每次執行都不一樣。
-
-要指定範圍的整數，先把這個小數放大成區間的寬度，用 floor 砍掉小數，再平移到起點，並包成 getRandomInt。
-
-**觀念**
-
-- `Math.max` 取最大，`Math.min` 取最小。
-
-- `Math.random` 沒有參數，結果小於 1，不會等於 1。
-
-- 範圍整數寫成 `Math.floor(Math.random() * (max - min + 1)) + min`。min 與 max 都包含在內。
+`Math.random` 沒有參數，每次呼叫回傳 0 以上、小於 1 的小數，不會等於 1。要得到指定範圍的整數，先把小數放大成區間的寬度，用 floor 砍掉小數，再平移到起點，包成 getRandomInt。公式是 `Math.floor(Math.random() * (max - min + 1)) + min`，min 與 max 都可能抽到。
 
 ```html 04-js/pages/58-js-random.html
 <!DOCTYPE html>
@@ -5704,6 +3946,10 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
     <script>
       console.log(Math.max(1, 5, 3));
       console.log(Math.min(1, 5, 3));
+
+      const scores = [72, 95, 88];
+      console.log(Math.max(...scores));
+
       console.log(Math.random());
 
       function getRandomInt(min, max) {
@@ -5718,51 +3964,20 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 
 **解析**
 
-- 1、5、3 的最大是 5，最小是 1。
-- 第三行是 0 到小於 1 的小數，實際值依執行時間而定。
-- getRandomInt(1, 10) 是 1 到 10 的整數，實際值依執行時間而定。
+- 1、5、3 的最大是 5，最小是 1。陣列展開後同樣用 `Math.max`，得到 95。
+- 亂數那一行是 0 到小於 1 的小數，getRandomInt(1, 10) 是 1 到 10 的整數，這兩行每次執行都不同。
 
 ```text
 5
 1
+95
 0.482
 7
 ```
 
-第三行與第四行的實際值依執行時間而定。小數落在 0 到小於 1，整數落在 1 到 10。上面兩個數字只是一次執行的例子。
+### 大樂透產生器
 
-{% note success %}
-**換你試試：**
-再呼叫 `getRandomInt(20, 25)`。結果是 20 到 25 的整數，實際值依執行時間而定。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-多印的那一行仍是整數，最小 20、最大 25。前面的最大、最小與 1 到 10 的亂數照原樣先出現。
-
-```diff 04-js/pages/58-js-random.html
-  // ...
-        }
-  
-        console.log(getRandomInt(1, 10));
-+       console.log(getRandomInt(20, 25));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 綜合練習：大樂透產生器
-
-從 1 到 46 抽出 6 個不重複的整數，再由小到大排好。這裡用 `Set` 記住已經抽過的號碼，`while` 在湊滿 6 個之前繼續抽。
-
-**觀念**
-
-- 重複的號碼再放進 `Set` 不會讓 `size` 增加，所以可以一直抽到滿 6 個。
-
-- `Array.from` 把 Set 轉回陣列，再用 sort 由小到大排。比較函式寫成 `(a, b) => a - b`。
+台灣大樂透是從 1 到 49 抽出 6 個不重複的號碼。這個完整示範用 `Set` 記住已抽過的號碼，`while` 在湊滿 6 個之前繼續抽，最後轉回陣列由小到大排好；這兩者在前面章節的選讀已介紹過。
 
 ```html 04-js/pages/59-js-lotto.html
 <!DOCTYPE html>
@@ -5778,7 +3993,7 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
       function getLottoNumbers() {
         const numbers = new Set();
         while (numbers.size < 6) {
-          const n = Math.floor(Math.random() * 46) + 1;
+          const n = Math.floor(Math.random() * 49) + 1;
           numbers.add(n);
         }
         return Array.from(numbers).sort((a, b) => a - b);
@@ -5795,9 +4010,9 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 
 **解析**
 
-- 每個號碼都是 1 到 46 的整數。抽到重複的會被 Set 擋下，所以迴圈會繼續。
-- `sort` 會改這個陣列本身，印出來時已經由小到大。
-- 長度是 6，再放進 Set 之後數量仍是 6，表示沒有重複。實際號碼依執行時間而定。
+- 每個號碼是 1 到 49 的整數。抽到重複的號碼放進 Set 不會讓 `size` 增加，所以迴圈會繼續，直到湊滿 6 個。
+- `Array.from` 把 Set 轉成陣列，`sort` 的比較函式 `(a, b) => a - b` 讓數字由小到大排，並且改的是這個陣列本身。
+- 長度是 6，再放進 Set 數量仍是 6，表示沒有重複。第一行的號碼每次執行都不同。
 
 ```text
 [8, 15, 22, 27, 34, 45]
@@ -5805,115 +4020,54 @@ Math 把常數和數學函式收在同一個名字上，使用時直接寫 `Math
 6
 ```
 
-第一行的號碼實際值依執行時間而定，上面只是一次執行的例子。後兩行一定是 6。
-
-{% note success %}
-**換你試試：**
-再用抽球寫法做一次：先準備 1 到 46，抽出的號碼用 `splice` 從球池拿掉，所以不會放回去。一樣印出 6 個由小到大的號碼，實際號碼依執行時間而定。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第一個函式是有放回再靠 Set 去掉重複。第二個函式先把 1 到 46 放進球池，每次抽到的索引用 splice 拿掉，球池變短，所以不會再抽到同一個號碼。兩次印出的號碼都依執行時間而定，長度和去重後的數量都是 6。
-
-```html 04-js/pages/59-js-lotto.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>綜合練習：大樂透產生器</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      function getLottoNumbers() {
-        const numbers = new Set();
-        while (numbers.size < 6) {
-          const n = Math.floor(Math.random() * 46) + 1;
-          numbers.add(n);
-        }
-        return Array.from(numbers).sort((a, b) => a - b);
-      }
-
-      function getLottoByDraw() {
-        const pool = [];
-        for (let n = 1; n <= 46; n += 1) {
-          pool.push(n);
-        }
-        const selected = [];
-        for (let i = 0; i < 6; i += 1) {
-          const idx = Math.floor(Math.random() * pool.length);
-          selected.push(pool[idx]);
-          pool.splice(idx, 1);
-        }
-        return selected.sort((a, b) => a - b);
-      }
-
-      const picked = getLottoNumbers();
-      console.log(picked);
-      console.log(picked.length);
-      console.log(new Set(picked).size);
-
-      const drawn = getLottoByDraw();
-      console.log(drawn);
-      console.log(drawn.length);
-      console.log(new Set(drawn).size);
-    </script>
-  </body>
-</html>
-```
-
-</details>
+Chrome Console 會把陣列寫成 `(6) [8, 15, ...]`，內容以數字為準。
 
 ## Date
 
-Date 表示一個時間點：物件裡存的是與時區無關的瞬間，顯示時才依電腦時區換算，比較與計算則用毫秒時間戳記。有 `new` 才會得到物件，不加 new 只會得到時間字串；讀和改都走這個物件上的方法，月份從 0 起算。
+Date 表示一個時間點，內部存的是與時區無關的毫秒數，顯示時才依電腦時區換算。這一節先學建立、讀取與修改，再學時間戳記與 UTC 時區這兩個容易搞混的觀念，最後是格式化、日期計算與跨年倒數。
 
-### UTC 與時區
+**一覽**
 
-UTC 是協調世界時，全世界共用的基準時間。各地的鐘面是在這個基準上加減時差，台灣是 UTC+8，所以 UTC 的 00:00 是台灣的 08:00。Date 物件內部存的是一個與時區無關的時間點，顯示時才依電腦時區轉換；用字串建立時，有沒有寫時區也會決定這個點落在哪裡。
+- 建立：`new Date()` 是現在，`new Date(年, 月, ...)` 指定本地時間，`new Date('ISO 字串')` 由字串建立。
+- 讀取：`getFullYear`、`getMonth`、`getDate`、`getDay`、`getHours`、`getMinutes`、`getSeconds` 讀出本地時間的各個欄位。
+- 修改：對應的 `set` 開頭方法，直接改掉這個物件。
+- 毫秒：`getTime` 與 `Date.now()` 取得時間戳記。
+- 輸出：`toISOString` 輸出 UTC 字串，`toLocaleString` 系列與 `Intl.DateTimeFormat` 輸出給人看的文字。
 
-**觀念**
+{% note warning %}
+**月份從 0 開始**
+`getMonth` 與建立時的月份參數都是 0 到 11，0 是 1 月，11 是 12 月。印給人看時要加 1。星期的 `getDay` 也是從 0 開始，0 是星期日。
+{% endnote %}
 
-- UTC 是協調世界時，各地在這個基準上加減時差。台灣是 UTC+8，所以 UTC 的 00:00 是台灣的 08:00。
+### 建立指定日期
 
-- Date 存的是與時區無關的時間點。`toString` 與 `toLocaleString` 顯示本地時間。
+`new Date()` 沒有參數時是現在。要指定時間，依序傳入年、月、日、時、分、秒，沒傳的欄位是日從 1、其餘從 0。這種寫法一律解讀成本地時間，月份要傳 0 到 11，所以 5 月傳 4。也可以傳 ISO 格式的字串；字串怎麼被解讀，見後面的 UTC 與時區。
 
-- `toISOString` 顯示 UTC，字串結尾的 Z 代表 UTC。
-
-- `getHours` 讀本地小時，`getUTCHours` 讀同一個時間點的 UTC 小時。
-
-- 只有日期的 `'2026-08-01'` 被當成 UTC 午夜。沒有 Z 的 `'2026-08-01T12:00:00'` 被當成本地時間。
-
-- 結尾加上 `Z` 或 `+08:00`，才是明確指定時區。
-
-```html 04-js/pages/60-js-utc.html
+```html 04-js/pages/63-js-date.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UTC 與時區</title>
+    <title>建立指定日期</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const point = new Date('2026-08-01T12:00:00+08:00');
-      console.log(point.toString());
-      console.log(point.toLocaleString());
-      console.log(point.toISOString());
-      console.log(point.getHours(), point.getUTCHours());
+      const now = new Date();
+      const birthday = new Date(1990, 4, 15, 8, 30, 0);
+      const dayOnly = new Date(2026, 7, 1);
+      const isoLocal = new Date('2026-08-01T12:00:00');
 
-      const dateOnly = new Date('2026-08-01');
-      console.log(dateOnly.toISOString(), dateOnly.getHours());
-
-      const localNoon = new Date('2026-08-01T12:00:00');
-      console.log(localNoon.getHours(), localNoon.toISOString());
-
-      const utcNoon = new Date('2026-08-01T12:00:00Z');
-      console.log(utcNoon.getHours(), utcNoon.toISOString());
+      console.log(now.getFullYear());
+      console.log(
+        birthday.getMonth() + 1,
+        birthday.getDate(),
+        birthday.getHours(),
+        birthday.getMinutes()
+      );
+      console.log(dayOnly.getHours(), dayOnly.getMinutes());
+      console.log(isoLocal.getMonth() + 1, isoLocal.getDate(), isoLocal.getHours());
     </script>
   </body>
 </html>
@@ -5921,60 +4075,184 @@ UTC 是協調世界時，全世界共用的基準時間。各地的鐘面是在�
 
 **解析**
 
-- 前兩行是本地的 12:00，第三行是同一個時間點的 UTC，所以是 04:00，結尾 Z。
-- `getHours` 是 12，`getUTCHours` 是 4，台灣相差 8 小時。
-- 只有日期的字串對到 UTC 午夜，本地小時在台灣是 8。
-- 沒有 Z 的中午在台灣是 12 時，ISO 落到 UTC 04:00。帶 Z 的中午是 UTC 12 時，台灣本地是 20 時。
+- 第一行是執行當下的年份，每次執行都不同。
+- 月份索引 4 加 1 是 5 月，日期 15，時間 8 時 30 分。
+- 只傳年月日時，時與分都是 0。
+- 帶 T 與時間、沒有時區的字串，被讀成本地的 8 月 1 日 12 時。
 
 ```text
-Sat Aug 01 2026 12:00:00 GMT+0800 (台北標準時間)
-2026/8/1 下午12:00:00
-2026-08-01T04:00:00.000Z
-12 4
-2026-08-01T00:00:00.000Z 8
-12 2026-08-01T04:00:00.000Z
-20 2026-08-01T12:00:00.000Z
+2026
+5 15 8 30
+0 0
+8 1 12
 ```
 
-以台灣 UTC+8 為例。寫明 Z 或 +08:00 的 ISO 字串固定；沒有 Z 的日期時間所對到的 ISO、本地文字與小時，實際值依執行環境而定。
+### new Date 與 Date 的差異
 
-{% note success %}
-**換你試試：**
-再建立 `new Date('2026-08-01T00:00:00Z')`，印出 `getHours`。以台灣 UTC+8 為例應為 8，實際值依執行環境而定。
+同樣是 Date 這個名字，有沒有 new 差很多。`new Date()` 做出日期物件，物件上才有 getFullYear 這類方法。不加 new 的 `Date()` 只回傳當下時間的字串，字串上沒有日期方法。這是歷史遺留的寫法，實務上永遠加 new。
+
+`Date.now()` 不建立物件，直接回傳毫秒數的時間戳記。
+
+```html 04-js/pages/62-js-date-call.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>new Date 與 Date 的差異</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      console.log(typeof new Date());
+      console.log(typeof Date());
+      console.log(typeof Date().getFullYear);
+      console.log(typeof new Date().getFullYear);
+      console.log(typeof Date.now());
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- `new Date()` 是 object，`Date()` 是 string，`Date.now()` 是 number。
+- `getFullYear` 後面沒有括號，只是讀取屬性；字串沒有這個屬性，所以得到 undefined，程式不會中斷。
+- 物件上的 getFullYear 是 function。
+
+```text
+object
+string
+undefined
+function
+number
+```
+
+### 讀取日期與時間
+
+讀取用 get 開頭的方法，只看值，不改原本的時間。`getDate` 是幾號，`getDay` 是星期，名字只差一個字，要印出幾號用前者。時、分、秒各自有對應的方法。
+
+```html 04-js/pages/64-js-date-get.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>讀取日期與時間</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const point = new Date(2026, 7, 1, 14, 30, 45);
+
+      console.log(point.getFullYear());
+      console.log(point.getMonth() + 1);
+      console.log(point.getDate());
+      console.log(point.getDay());
+      console.log(point.getHours(), point.getMinutes(), point.getSeconds());
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 年份 2026，月份索引 7 加 1 是 8 月，日期是 1。
+- 2026 年 8 月 1 日是星期六，`getDay` 得到 6。
+- 14 時 30 分 45 秒是建立時傳入的時間。
+
+```text
+2026
+8
+1
+6
+14 30 45
+```
+
+### 設定日期與時間
+
+set 開頭的方法會直接改掉原來那一個日期物件。要留著改之前的時間，就先用 `new Date(date)` 複製一份，再對複本呼叫 set。數字超出該欄的範圍時會自動進位，例如 1 月 `setDate(32)` 會進到 2 月 1 日。
+
+```html 04-js/pages/65-js-date-set.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>設定日期與時間</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const date = new Date(2026, 0, 15, 10, 20, 30);
+      console.log(date.getDate(), date.getHours(), date.getMinutes());
+
+      date.setFullYear(2027);
+      date.setMonth(5);
+      date.setDate(20);
+      console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
+
+      date.setHours(14, 30, 45);
+      date.setMinutes(5);
+      date.setSeconds(8);
+      date.setMilliseconds(250);
+      console.log(
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+        date.getMilliseconds()
+      );
+
+      const base = new Date(2026, 6, 15, 10, 0, 0);
+      const tomorrow = new Date(base);
+      tomorrow.setDate(base.getDate() + 1);
+      const nextMonth = new Date(base);
+      nextMonth.setMonth(base.getMonth() + 1);
+      const nextHour = new Date(base);
+      nextHour.setHours(base.getHours() + 1);
+      console.log(base.getDate(), tomorrow.getDate());
+      console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
+      console.log(base.getHours(), nextHour.getHours());
+
+      const overflow = new Date(2026, 0, 1);
+      overflow.setDate(32);
+      console.log(overflow.getMonth() + 1, overflow.getDate());
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 第一行是改之前的 15 日 10 時 20 分。接下來的 set 都改在同一個物件上，月份索引 5 讀回來是 6 月。
+- `setHours` 可以一次寫入時、分、秒，接著分、秒、毫秒各自再改。
+- base 保持 15 日、7 月、10 時不變；三個複本分別是明天 16 日、下個月 8 月、下一小時 11 時。
+- 1 月 1 日設成 32 號，進位成 2 月 1 日。
+
+```text
+15 10 20
+2027 6 20
+14 5 8 250
+15 16
+7 8
+10 11
+2 1
+```
+
+{% note warning %}
+**月底改月份**
+把 1 月 31 日用 `setMonth` 改成 2 月，2 月沒有 31 日，會進位成 3 月 3 日（2026 年）。月底的日期加減月份時要留意。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-UTC 午夜在台灣是早上 8 點，所以 `getHours` 是 8。前面同一個時間點的本地與 UTC、以及三種字串寫法都還在。
-
-```diff 04-js/pages/60-js-utc.html
-  // ...
-        const utcNoon = new Date('2026-08-01T12:00:00Z');
-        console.log(utcNoon.getHours(), utcNoon.toISOString());
-+ 
-+       const utcMidnight = new Date('2026-08-01T00:00:00Z');
-+       console.log(utcMidnight.getHours());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 時間戳記
 
-時間戳記 timestamp 是從 1970-01-01 00:00:00 UTC 起算經過的毫秒數，這個起點稱為 Unix epoch。它是一個數字，跟時區無關，所以適合拿來比較、儲存，以及計算兩個時間相差多久。Unix 常見的時間戳以秒為單位，JavaScript 用毫秒，單位要先換算再放進 Date。
+時間戳記（timestamp）是從 1970-01-01 00:00:00 UTC 起算經過的毫秒數，這個起點稱為 Unix epoch。它是一個 number，與時區無關，所以適合比較、儲存，以及計算兩個時間相差多久。
 
 **觀念**
 
-- 時間戳記的型別是 `number`，從 1970-01-01 00:00:00 UTC 起算毫秒，與時區無關。
-
-- `Date.now()` 取得當下的毫秒，`getTime` 讀出某個 Date 的毫秒。
-
-- `new Date(時間戳)` 把毫秒轉回 Date。Unix 的秒要乘 1000，才是 JavaScript 的毫秒。
-
-- 毫秒除以 1000 得到 Unix 的秒。兩個 Date 相減，就是兩邊的時間戳記相減。
+- `Date.now()` 取得當下的毫秒，`getTime` 讀出某個 Date 的毫秒，`new Date(毫秒)` 把毫秒轉回 Date。
+- Unix 系統與許多後端 API 的時間戳記以秒為單位，JavaScript 用毫秒：秒要乘 1000 才能放進 Date，毫秒除以 1000 再取整才是秒。
+- 兩個 Date 相減，JavaScript 會先轉成毫秒再相減，結果是 number。
 
 ```html 04-js/pages/61-js-timestamp.html
 <!DOCTYPE html>
@@ -6010,9 +4288,9 @@ UTC 午夜在台灣是早上 8 點，所以 `getHours` 是 8。前面同一個�
 
 **解析**
 
-- `new Date(0)` 是 epoch。ISO 字串是 UTC 午夜，本地在台灣是 08:00。
-- `getTime` 讀出 2026-08-01 午夜 UTC 的毫秒。下一行是執行當下，每次都不同。
-- 秒乘 1000 轉回同一個 UTC 午夜，毫秒除以 1000 得到 Unix 的秒。
+- `new Date(0)` 是 epoch。ISO 字串是 UTC 午夜，本地時間在台灣是 08:00，所以第二行是 1970 年 1 月 1 日 08:00。
+- `getTime` 讀出 2026-08-01 午夜 UTC 的毫秒，下一行是執行當下，每次都不同。
+- 秒乘 1000 轉回同一個 UTC 午夜，毫秒除以 1000 取整得到 Unix 的秒。
 - 兩個 Date 相減與 `getTime` 相減都是 86400000，也就是一天的毫秒。
 
 ```text
@@ -6026,63 +4304,46 @@ Thu Jan 01 1970 08:00:00 GMT+0800 (台北標準時間)
 86400000
 ```
 
-第二行以台灣 UTC+8 為例，括號內的時區名稱依執行環境而定。第四行是執行當下的毫秒，實際值依執行時間而定。
+第二行以台灣 UTC+8 為例，括號內的時區名稱依執行環境而定。
 
-{% note success %}
-**換你試試：**
-再印 `new Date(86400000)` 的 `toISOString`。一天是 86400000 毫秒，應為 1970-01-02 的 UTC 午夜。
-{% endnote %}
+### UTC 與時區
 
-<details>
-<summary>參考答案</summary>
+UTC 是協調世界時，全世界共用的基準；各地的鐘面是在這個基準上加減時差，台灣是 UTC+8，所以 UTC 的 00:00 是台灣的 08:00。Date 物件存的只是一個時間點，顯示時才依電腦時區換算，同一個時間點在不同時區的電腦上會顯示成不同的鐘面時間。
 
-86400000 毫秒是 epoch 的隔天，ISO 字串是 1970-01-02 的 UTC 午夜。前面的 epoch、當下毫秒與一天的差都還在。
-
-```diff 04-js/pages/61-js-timestamp.html
-  // ...
-        console.log(end - start);
-        console.log(end.getTime() - start.getTime());
-+ 
-+       console.log(new Date(86400000).toISOString());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### new Date 與 Date 的差異
-
-同樣是 Date 這個名字，有沒有 `new` 差很多。`new Date()` 做出日期物件，上面才有 getFullYear 這類方法。
-
-不加 new 的 `Date()` 只回傳當下時間的字串，型別是 string。字串上沒有日期方法，`typeof Date().getFullYear` 得到 undefined。這裡沒有加上呼叫括號，所以程式不會中斷。
-
-`Date.now()` 不建立物件，直接交回的毫秒數就是時間戳記，型別是 number。
+用字串建立 Date 時，有沒有寫時區，會決定這個時間點落在哪裡，這是最常見的陷阱。
 
 **觀念**
 
-- `new Date()` 的 typeof 是 object，`Date()` 的 typeof 是 string。
+- 字串結尾有 `Z`（代表 UTC）或 `+08:00` 這類時差，時間點就是明確的，在任何電腦上都相同。
+- 只有日期的 `'2026-08-01'` 被當成 UTC 午夜，台灣的本地時間是同日 08:00。
+- 有時間但沒有時差的 `'2026-08-01T12:00:00'` 被當成本地時間，在不同時區的電腦上是不同的時間點。
+- `toISOString` 一律顯示 UTC；`getHours` 讀本地小時，`getUTCHours` 讀同一時間點的 UTC 小時。
 
-- 物件上的 getFullYear 是 function。字串上沒有這個名字，所以是 undefined。
-
-- `Date.now()` 的 typeof 是 number。
-
-```html 04-js/pages/62-js-date-call.html
+```html 04-js/pages/60-js-utc.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>new Date 與 Date 的差異</title>
+    <title>UTC 與時區</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      console.log(typeof new Date());
-      console.log(typeof Date());
-      console.log(typeof Date().getFullYear);
-      console.log(typeof new Date().getFullYear);
-      console.log(typeof Date.now());
+      const point = new Date('2026-08-01T12:00:00+08:00');
+      console.log(point.toString());
+      console.log(point.toLocaleString('zh-TW'));
+      console.log(point.toISOString());
+      console.log(point.getHours(), point.getUTCHours());
+
+      const dateOnly = new Date('2026-08-01');
+      console.log(dateOnly.toISOString(), dateOnly.getHours());
+
+      const localNoon = new Date('2026-08-01T12:00:00');
+      console.log(localNoon.getHours(), localNoon.toISOString());
+
+      const utcNoon = new Date('2026-08-01T12:00:00Z');
+      console.log(utcNoon.getHours(), utcNoon.toISOString());
     </script>
   </body>
 </html>
@@ -6090,326 +4351,31 @@ Thu Jan 01 1970 08:00:00 GMT+0800 (台北標準時間)
 
 **解析**
 
-- 第一行是物件，第二行是字串。兩行都沒有把時間文字印出來。
-- 第三行停在「字串上沒有這個名字」，得到 undefined，程式繼續往下。
-- 第四行看的是物件上的方法，typeof 是 function。第五行是呼叫 Date.now 之後的數字。
+- 前兩行是本地的 12:00，第三行是同一個時間點的 UTC，所以是 04:00，結尾 Z。
+- `getHours` 是 12，`getUTCHours` 是 4，台灣相差 8 小時。
+- 只有日期的字串是 UTC 午夜，本地小時在台灣是 8。
+- 沒有時差的中午是本地 12 時，轉成 UTC 是 04:00；帶 Z 的中午是 UTC 12 時，台灣本地是 20 時。
 
 ```text
-object
-string
-undefined
-function
-number
+Sat Aug 01 2026 12:00:00 GMT+0800 (台北標準時間)
+2026/8/1 下午12:00:00
+2026-08-01T04:00:00.000Z
+12 4
+2026-08-01T00:00:00.000Z 8
+12 2026-08-01T04:00:00.000Z
+20 2026-08-01T12:00:00.000Z
 ```
 
-{% note success %}
-**換你試試：**
-印出 `typeof Date.now`，括號不要加。應為 function。
-{% endnote %}
+以台灣 UTC+8 為例。帶 Z 或 +08:00 的字串，ISO 輸出在任何地方都相同；沒有時差的字串，輸出會隨電腦時區改變。需要精確時，就在字串上寫明時區。
 
-<details>
-<summary>參考答案</summary>
+### 日期格式化
 
-不加括號時，Date.now 本身是函式。加上括號才會執行，得到 number。前面五行照原樣先出現。
+Date 本身沒有格式，要把它印給人看，用 `toLocaleString` 系列依地區與選項產生文字：本尊含日期與時間，名字中間加 Date 只有日期，加 Time 只有時間。第一個參數是語言標籤，如 zh-TW；沒傳時會跟著使用者的瀏覽器設定，不同電腦印出的文字會不同。
 
-```diff 04-js/pages/62-js-date-call.html
-  // ...
-        console.log(typeof new Date().getFullYear);
-        console.log(typeof Date.now());
-+ 
-+       console.log(typeof Date.now);
-      </script>
-    </body>
-  // ...
-```
+第二個參數是選項物件，可以指定年月日的樣貌、是否 12 小時制，以及要換算成哪個時區。同樣的選項也能交給 `Intl.DateTimeFormat`：先建立一個格式器，再套用到任意日期，需要格式化很多筆時只建立一次比較有效率。
 
-</details>
-
-### 建立指定日期
-
-現在時間用沒有參數的 `new Date()`。指定年月日時分秒時，月份從 0 開始，所以 5 月要傳 4。
-
-字串寫成 `2026-08-01T12:00:00` 這種 ISO 格式時，瀏覽器把它當成本地時間。只有日期、以及 Z 與時差的寫法，見 UTC 與時區。
-
-**觀念**
-
-- 六個數字依序是年、月、日、時、分、秒。月的 0 代表 1 月。
-
-- 沒有傳進去的時分秒會是 0。下面的生日有帶到時與分。
-
-- ISO 字串要含有 T 與時間。只有日期的字串見 UTC 與時區。
-
-```html 04-js/pages/63-js-date.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>建立指定日期</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const now = new Date();
-      const birthday = new Date(1990, 4, 15, 8, 30, 0);
-      const isoDate = new Date('2026-08-01T12:00:00');
-
-      console.log(now.getFullYear());
-      console.log(
-        birthday.getMonth() + 1,
-        birthday.getDate(),
-        birthday.getHours(),
-        birthday.getMinutes()
-      );
-      console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
-    </script>
-  </body>
-</html>
-```
-
-**解析**
-
-- 第一行是執行當下的年份，實際值依執行時間而定。
-- 月份索引 4 加 1 是 5 月，日期 15，時間 8 時 30 分。
-- ISO 字串的 8 月 1 日 12 時被讀成日曆上的 8 月、1 日、12 時。
-
-```text
-2026
-5 15 8 30
-8 1 12
-```
-
-第一行的實際值依執行時間而定。
-
-{% note success %}
-**換你試試：**
-建立 2026 年 12 月 31 日 23 時 59 分 59 秒，印出日曆月份、日期與小時，應為 12、31、23。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-12 月的索引是 11。讀回時月份加 1 才是 12，日期是 31，小時是 23。第一行仍是當下年份。
-
-```diff 04-js/pages/63-js-date.html
-  // ...
-        );
-        console.log(isoDate.getMonth() + 1, isoDate.getDate(), isoDate.getHours());
-+ 
-+       const yearEnd = new Date(2026, 11, 31, 23, 59, 59);
-+       console.log(yearEnd.getMonth() + 1, yearEnd.getDate(), yearEnd.getHours());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 讀取日期與時間
-
-讀取用 get 開頭的方法，只看值，不改原本的時間。`getMonth` 從 0 起算，印給人看時要加 1。
-
-`getDate` 是幾號，`getDay` 是星期，0 代表星期日。兩個名字只差一個字，要印出幾號就用前者。
-
-時、分、秒各自讀出。`getTime` 讀出的毫秒就是時間戳記。
-
-**觀念**
-
-- 星期的 0 是星期日，6 是星期六。
-
-- `getTime` 就是時間戳記，單位與換算見時間戳記。
-
-```html 04-js/pages/64-js-date-get.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>讀取日期與時間</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const point = new Date(2026, 7, 1, 14, 30, 45);
-
-      console.log(point.getFullYear());
-      console.log(point.getMonth() + 1);
-      console.log(point.getDate());
-      console.log(point.getDay());
-      console.log(point.getHours(), point.getMinutes(), point.getSeconds());
-      console.log(point.getTime());
-    </script>
-  </body>
-</html>
-```
-
-**解析**
-
-- 年份 2026，月份索引 7 加 1 是 8 月，日期是 1。
-- 2026 年 8 月 1 日是星期六，`getDay` 得到 6。
-- 14 時 30 分 45 秒是建立時傳入的時間。
-- 最後一行是時間戳記。以台灣 UTC+8 為例，實際值依執行環境而定。
-
-```text
-2026
-8
-1
-6
-14 30 45
-1785565845000
-```
-
-最後一行以台灣 UTC+8 為例，實際值依執行環境而定。
-
-{% note success %}
-**換你試試：**
-另建 2026 年 8 月 2 日，印出 `getDay`。這一天是星期日，應為 0。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-8 月 2 日接在星期六的隔天，`getDay` 回到 0。前面那一個時間點的六行不變。
-
-```diff 04-js/pages/64-js-date-get.html
-  // ...
-        console.log(point.getHours(), point.getMinutes(), point.getSeconds());
-        console.log(point.getTime());
-+ 
-+       const nextDay = new Date(2026, 7, 2);
-+       console.log(nextDay.getDay());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 設定日期與時間
-
-set 開頭的方法會直接改掉原來那一個日期物件。還要留著改之前的時間，就先用 `new Date(date)` 複製一份，再對複本呼叫 set。
-
-數字超出該欄的範圍時會自動進位。例如 `setDate(32)` 會從 1 月進到 2 月。
-
-**觀念**
-
-- 年份、月份、日期、時分秒與毫秒都有對應的 set 方法。`setHours` 可以一次傳入時、分、秒。
-
-- `setTime` 用毫秒時間戳記把整筆時間改掉。
-
-- 複製用 `new Date(date)`。之後改複本，原本那一份還在。
-
-```html 04-js/pages/65-js-date-set.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>設定日期與時間</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      const date = new Date(2026, 0, 15, 10, 20, 30);
-      console.log(date.getDate(), date.getHours(), date.getMinutes());
-
-      date.setFullYear(2027);
-      date.setMonth(5);
-      date.setDate(20);
-      console.log(date.getFullYear(), date.getMonth() + 1, date.getDate());
-
-      date.setHours(14, 30, 45);
-      date.setMinutes(5);
-      date.setSeconds(8);
-      date.setMilliseconds(250);
-      console.log(
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-        date.getMilliseconds()
-      );
-
-      const mark = new Date(2026, 0, 1, 0, 0, 0);
-      date.setTime(mark.getTime());
-      console.log(date.getMonth() + 1, date.getDate(), date.getHours());
-
-      const base = new Date(2026, 6, 15, 10, 0, 0);
-      const tomorrow = new Date(base);
-      tomorrow.setDate(base.getDate() + 1);
-      const nextMonth = new Date(base);
-      nextMonth.setMonth(base.getMonth() + 1);
-      const nextHour = new Date(base);
-      nextHour.setHours(base.getHours() + 1);
-      console.log(base.getDate(), tomorrow.getDate());
-      console.log(base.getMonth() + 1, nextMonth.getMonth() + 1);
-      console.log(base.getHours(), nextHour.getHours());
-
-      const overflow = new Date(2026, 0, 1);
-      overflow.setDate(32);
-      console.log(overflow.getMonth() + 1, overflow.getDate());
-    </script>
-  </body>
-</html>
-```
-
-**解析**
-
-- 第一行是改之前的 15 日 10 時 20 分。接下來的 set 都改在同一個物件上。
-- 年份 2027、月份索引 5、日期 20，讀回來是 2027 年 6 月 20 日。
-- `setHours` 一次寫入 14 時 30 分 45 秒，接著分鐘改成 5、秒改成 8、毫秒改成 250。
-- `setTime` 把時間設成 2026 年 1 月 1 日零時，所以讀回 1 月 1 日 0 時。
-- base 仍是 15 日、7 月、10 時。三個複本分別是明天 16 日、下個月 8 月、下一小時 11 時。
-- 1 月 1 日設成 32 號，進位成 2 月 1 日。
-
-```text
-15 10 20
-2027 6 20
-14 5 8 250
-1 1 0
-15 16
-7 8
-10 11
-2 1
-```
-
-{% note success %}
-**換你試試：**
-另建 2026 年 1 月 15 日 10 時，對它 `setHours(24)`。小時超過 23 會進到隔天，印出的日期與小時應為 16 與 0。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-24 時沒有留在當天，日期從 15 進到 16，小時回到 0。前面的 set 示範都還在。
-
-```diff 04-js/pages/65-js-date-set.html
-  // ...
-        overflow.setDate(32);
-        console.log(overflow.getMonth() + 1, overflow.getDate());
-+ 
-+       const roll = new Date(2026, 0, 15, 10, 0, 0);
-+       roll.setHours(24);
-+       console.log(roll.getDate(), roll.getHours());
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 日期格式化與計算
-
-`toLocaleString` 把日期和時間組成當地的一句話。只要日期用 `toLocaleDateString`，並傳入 zh-TW 指定繁體中文。
-
-只要時間則用 `toLocaleTimeString`。這一行沒有指定地區，文字會跟著瀏覽器的地區設定改變。
-
-兩個日期相減就是時間戳記相減，見時間戳記。再除以一天的毫秒數 `1000 * 60 * 60 * 24`，就換成天數。
-
-**觀念**
-
-- 相減的結果先是毫秒，再除以一天的毫秒數才是天。
-
-- 沒有指定地區的那兩行，實際文字依瀏覽器地區設定而定。指定 `'zh-TW'` 的日期比較固定。
+- 年月日的樣貌可以逐項指定，也可以用現成的組合，分成 full、long、medium、short 四種長度。
+- 時區用 timeZone 指定，不寫就是執行環境的本地時區。
 
 ```html 04-js/pages/66-js-date-format.html
 <!DOCTYPE html>
@@ -6417,21 +4383,39 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>日期格式化與計算</title>
+    <title>日期格式化</title>
   </head>
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
       const point = new Date(2026, 7, 1, 14, 30, 45);
-      console.log(point.toLocaleString());
-      console.log(point.toLocaleDateString('zh-TW'));
-      console.log(point.toLocaleTimeString());
 
-      const start = new Date(2026, 7, 1);
-      const end = new Date(2026, 7, 10);
-      const ms = end - start;
-      console.log(ms);
-      console.log(ms / (1000 * 60 * 60 * 24));
+      console.log(point.toLocaleString('zh-TW'));
+      console.log(point.toLocaleDateString('zh-TW'));
+      console.log(point.toLocaleTimeString('zh-TW'));
+
+      console.log(
+        point.toLocaleDateString('zh-TW', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long',
+        })
+      );
+      console.log(point.toLocaleTimeString('zh-TW', { hour12: false }));
+
+      const full = new Intl.DateTimeFormat('zh-TW', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+      });
+      console.log(full.format(point));
+
+      const tokyo = new Intl.DateTimeFormat('zh-TW', {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+        timeZone: 'Asia/Tokyo',
+      });
+      console.log(tokyo.format(point));
     </script>
   </body>
 </html>
@@ -6439,53 +4423,82 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- 第一行同時有日期和時間，第三行只有時間。這兩行的實際文字依瀏覽器地區設定而定。
-- 第二行指定 zh-TW，常見結果是 2026/8/1。
-- 8 月 1 日到 8 月 10 日相差 777600000 毫秒，換成 9 天。
+- 前三行指定 zh-TW，分別是日期加時間、只有日期、只有時間。
+- 第四行用選項取得「2026年8月1日星期六」這種完整寫法，第五行改成 24 小時制。
+- `Intl.DateTimeFormat` 的 full 加 short 產生「2026年8月1日 星期六 下午2:30」，樣式與 `toLocaleString` 的選項是同一套。
+- 最後指定 Asia/Tokyo 時區，台灣 14:30 換算成東京是 15:30。
 
 ```text
 2026/8/1 下午2:30:45
 2026/8/1
 下午2:30:45
+2026年8月1日星期六
+14:30:45
+2026年8月1日 星期六 下午2:30
+2026年8月1日 下午3:30:45
+```
+
+實際文字可能因瀏覽器版本與語言資料而有細微差別，例如空白或「下午」的寫法。
+
+### 日期計算
+
+兩個 Date 相減得到毫秒，除以一天的毫秒數 `1000 * 60 * 60 * 24` 就換成天數。往前或往後推幾天，用 get 讀出再 set 寫回，進位會自動處理；兩個 Date 也可以直接用大於、小於符號比較先後，因為比的是毫秒。
+
+```html 04-js/pages/66b-js-date-diff.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>日期計算</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const start = new Date(2026, 7, 1);
+      const end = new Date(2026, 7, 10);
+      const ms = end - start;
+      console.log(ms);
+      console.log(ms / (1000 * 60 * 60 * 24));
+
+      function daysBetween(from, to) {
+        return Math.round((to - from) / (1000 * 60 * 60 * 24));
+      }
+
+      console.log(daysBetween(new Date(2026, 0, 1), new Date(2026, 11, 31)));
+
+      const deadline = new Date(2026, 7, 1);
+      deadline.setDate(deadline.getDate() + 30);
+      console.log(deadline.getMonth() + 1, deadline.getDate());
+      console.log(new Date(2026, 7, 1) < new Date(2026, 7, 2));
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- 8 月 1 日到 8 月 10 日相差 777600000 毫秒，換成 9 天。
+- 自訂的 daysBetween 多包一層 `Math.round`，避免因為日光節約時間造成一天只有 23 或 25 小時而出現小數；台灣沒有日光節約，不會遇到。
+- 8 月 1 日加 30 天，讀回是 8 月 31 日。
+- 最後一行比較兩個日期，8 月 1 日早於 8 月 2 日，所以是 true。
+
+```text
 777600000
 9
+364
+8 31
+true
 ```
 
-前三行的實際文字依瀏覽器地區設定而定。上面是繁體中文環境的常見結果，日期和「下午」之間的空白可能略有不同。
-
-{% note success %}
-**換你試試：**
-再算 2026 年 8 月 1 日到 8 月 16 日的天數，應為 15。
+{% note info %}
+**Temporal 是 Date 的接班人**
+Date 的月份從 0 開始、物件可變、時區處理容易出錯，所以語言新增了 Temporal 來取代它。Temporal 已進入 TC39 Stage 4，Firefox 139、Chrome／Edge 144 與 Node 26 起可直接使用，但 Safari 截至目前仍只有 Technology Preview，尚未成為 Baseline；目前的專案仍以 Date 為主，本課不教 Temporal。
 {% endnote %}
 
-<details>
-<summary>參考答案</summary>
+### 跨年倒數
 
-8 月 16 日減 8 月 1 日是 15 天。毫秒差那一行仍是 9 天的 777600000。
-
-```diff 04-js/pages/66-js-date-format.html
-  // ...
-        console.log(ms);
-        console.log(ms / (1000 * 60 * 60 * 24));
-+ 
-+       const later = new Date(2026, 7, 16);
-+       console.log((later - start) / (1000 * 60 * 60 * 24));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-### 綜合練習：跨年倒數
-
-目標放在今年的 12 月 31 日 23:59:59，用現在時間去減，得到剩下的毫秒。再用 `Math.floor` 與 `%` 拆成天、時、分、秒。月份傳 11 才是 12 月。
-
-**觀念**
-
-- 差是負的代表那個時間已經過了。先用 `Math.max` 收成 0，避免印出負數。
-
-- 換算時先變成秒，再用餘數取出不滿 60 的秒與分、不滿 24 的時。天數不再取餘數。
+目標放在今年的 12 月 31 日 23:59:59，用現在時間去減，得到剩下的毫秒，再用 `Math.floor` 與 `%` 拆成天、時、分、秒。月份傳 11 才是 12 月。
 
 ```html 04-js/pages/67-js-countdown.html
 <!DOCTYPE html>
@@ -6517,70 +4530,32 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- 目標用今年的年份配上 12 月 31 日 23:59:59。12 月的索引是 11。
-- 毫秒先換成秒，再依 60、60、24 拆開。天數是剩下的整天。
-- 這一行的實際值依執行時間而定。已經過了那個時間，四個數字都會是 0。
+- 目標用今年的年份配上 12 月 31 日 23:59:59，12 月的索引是 11。
+- 差若是負的，代表時間已過，`Math.max` 把它收成 0，避免印出負數。
+- 毫秒先換成秒，再用餘數依 60、60、24 取出不滿一分、一小時、一天的部分，天數是剩下的整天，不再取餘數。
+- 實際數字依執行時間而定；已經過了那個時間，四個數字都會是 0。
 
 ```text
 距離今年跨年還有 69 天 11 小時 38 分 49 秒
 ```
 
-實際值依執行時間而定。上面只是一次執行的例子。
+# 解構與展開
 
-{% note success %}
-**換你試試：**
-用同樣的算法，改算距離今年 6 月 1 日 0 時還有多久。6 月之後執行，應印出 0 天 0 小時 0 分 0 秒。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-6 月的索引是 5。6 月 1 日已經過去時，`Math.max` 把負的毫秒差收成 0，所以四個單位都是 0。跨年那一行仍依執行時間而定。
-
-```diff 04-js/pages/67-js-countdown.html
-  // ...
-          console.log(`距離今年跨年還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
-        }
-  
-+       function getCountdownToJune() {
-+         const now = new Date();
-+         const target = new Date(now.getFullYear(), 5, 1, 0, 0, 0);
-+         const diff = Math.max(0, target - now);
-+         const sec = Math.floor(diff / 1000) % 60;
-+         const min = Math.floor(diff / (1000 * 60)) % 60;
-+         const hr = Math.floor(diff / (1000 * 60 * 60)) % 24;
-+         const day = Math.floor(diff / (1000 * 60 * 60 * 24));
-+         console.log(`距離今年 6 月 1 日還有 ${day} 天 ${hr} 小時 ${min} 分 ${sec} 秒`);
-+       }
-+ 
-        getCountdownToNewYear();
-+       getCountdownToJune();
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-# 選讀：解構與展開
-
-解構把陣列的某一格，或物件的某個欄位，取成一個變數。展開把已有的格子或欄位攤進新的容器，也可以攤進函式的引數。兩者都用在已經學過的陣列、物件與函式上。這一章可以整章跳過，前面的綜合練習沒有用到它們。
+解構把陣列的某一格或物件的某個欄位取成變數，展開把已有的格子或欄位攤進新的陣列、新的物件或函式的引數。這一章先學解構的三種寫法，再學展開的三種用法，最後把兩者合起來，學會「不改動原資料、改交回一份新資料」的不可變更新。React 的狀態與元件參數大量依賴這幾個寫法。
 
 ## 解構賦值
 
-解構依位置或欄位名，把要用的值取成變數。陣列看的是順序，物件看的是名字，函式的參數也可以直接拆開物件。原來的陣列和物件都還在。
+解構是把「取值並命名」寫成一行：陣列看位置，物件看欄位名，函式的參數也能直接拆開傳進來的物件。解構只是多了幾個變數，原來的陣列和物件完全不受影響。
 
 ### 陣列解構
 
-左邊用中括號依位置取名字，右邊是陣列。第一個名字對到索引 0，想跳過的位置留空。這只是多了幾個變數，原陣列的格子還在。
+陣列解構在左邊用中括號依位置取名字，右邊放陣列。第一個名字對到索引 0，想跳過的位置留空。它常用在函式一次回傳多個值的場合，呼叫的一方用中括號把值分別接住。
 
 **觀念**
 
-- 左邊的順序就是索引的順序。
-
-- 跳過時留空位，逗號不能省。
-
-- 原陣列的 `length` 不變。
+- 左邊名字的順序就是索引的順序。
+- 想跳過的位置留空，兩旁的逗號不能省。
+- 函式只能回傳一個值，回傳陣列再解構，就能一次拿到兩個以上的值。
 
 ```html 04-js/pages/68-js-array-destructure.html
 <!DOCTYPE html>
@@ -6602,6 +4577,13 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
       const [, , third] = titles;
       console.log(third);
       console.log(titles.length);
+
+      // 函式回傳陣列，呼叫端用解構接住
+      function getRange() {
+        return [1, 10];
+      }
+      const [min, max] = getRange();
+      console.log(min, max);
     </script>
   </body>
 </html>
@@ -6609,54 +4591,33 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- first 是索引 0，second 是索引 1。
-- 兩個空位讓 third 對到索引 2，標題是京都紅葉散步。
-- 長度仍是 3。解構沒有拿掉任何一格。
+- first 對到索引 0，second 對到索引 1。
+- 兩個空位讓 third 對到索引 2，所以是京都紅葉散步。
+- 長度仍是 3，解構沒有拿掉任何一格。
+- getRange 回傳的陣列依序解構成 min 與 max，印出 1 和 10。
 
 ```text
 台北城市漫遊
 花蓮山海三日
 京都紅葉散步
 3
+1 10
 ```
 
-{% note success %}
-**換你試試：**
-再宣告 `places` 為台北、花蓮、京都。跳過第一格，印出第二格與第三格。
+{% note info %}
+**React 的 useState 就是陣列解構**
+之後會看到 `const [count, setCount] = useState(0)`。useState 回傳一個兩格的陣列，第 0 格是目前的值，第 1 格是更新用的函式，名字由你在左邊自己取。
 {% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-空位把第一格留在陣列裡，city 是花蓮，last 是京都。titles 那四行維持不變。
-
-```diff 04-js/pages/68-js-array-destructure.html
-  // ...
-        console.log(third);
-        console.log(titles.length);
-+ 
-+       const places = ['台北', '花蓮', '京都'];
-+       const [, city, last] = places;
-+       console.log(city);
-+       console.log(last);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 物件解構
 
-左邊用大括號寫欄位名，對到的是名字，和書寫順序無關。欄位不在時可以寫預設值，想用另一個變數名時用冒號重新命名。原物件的欄位不會被刪掉。
+物件解構在左邊用大括號寫欄位名，右邊放物件。對到的是名字，和寫的順序無關。欄位不存在時可以給預設值，想換一個變數名則用冒號重新命名。
 
 **觀念**
 
-- 大括號裡寫的是欄位名。順序和物件裡的書寫順序無關。
-
-- 冒號右邊是新的變數名。預設值只在那個欄位是 undefined 時才用上。
-
-- 0 和空字串會留著，不會被預設值換掉。
+- 大括號裡寫的是物件的欄位名。
+- 冒號右邊是新的變數名，原欄位名不再是變數。
+- 預設值只在取到的值是 undefined（包含沒有這個欄位）時才用上，0、空字串與 null 都會原樣留著。
 
 ```html 04-js/pages/69-js-destructure.html
 <!DOCTYPE html>
@@ -6669,20 +4630,16 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
   <body>
     <p>結果在 DevTools 的 Console。</p>
     <script>
-      const tours = [
-        { id: 1, title: '台北城市漫遊', place: '台北', days: 3, price: 12800 },
-        { id: 2, title: '花蓮山海三日', place: '花蓮', days: 3, price: 15900 },
-        { id: 3, title: '京都紅葉散步', place: '京都', days: 5, price: 42800 },
-      ];
+      const tour = { title: '京都紅葉散步', place: '京都', days: 5, price: 0 };
 
-      const { title, place, days } = tours[0];
-      const { price, days: kyotoDays, guide = '未定' } = tours[2];
+      const { title, place } = tour;
+      const { days: duration } = tour;
+      const { guide = '未定', price = 999 } = tour;
 
-      console.log(title);
-      console.log(place + ' ' + days + ' 天');
-      console.log(kyotoDays);
-      console.log(price);
+      console.log(title, place);
+      console.log(duration);
       console.log(guide);
+      console.log(price);
     </script>
   </body>
 </html>
@@ -6690,58 +4647,27 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- 第 0 筆取出三個名字。標題是台北城市漫遊，下一行把地點和天數接起來。
-- 第 2 筆的 days 改名成 `kyotoDays`，所以是 5。價格是 42800。
-- 這一筆沒有 guide，預設值「未定」才用上。第 2 筆還在原陣列裡。
+- title 與 place 直接取得欄位的值，不必寫 tour.title 與 tour.place。
+- days 被改名為 duration，所以印出的是 5。
+- tour 沒有 guide 欄位，預設值「未定」才用上。
+- price 的值是 0，不是 undefined，所以保留 0，預設值 999 沒有出場。
 
 ```text
-台北城市漫遊
-台北 3 天
+京都紅葉散步 京都
 5
-42800
 未定
+0
 ```
-
-{% note info %}
-**預設值看的是 undefined**
-欄位的值若是 0 或空字串，預設值不會補上。只有沒有那個欄位，或值是 undefined，才改用預設值。
-{% endnote %}
-
-{% note success %}
-**換你試試：**
-從第 1 筆把 `place` 改名成 `city` 並印出。應為「花蓮」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第 1 筆的地點是花蓮，改名之後的變數是 `city`。原來的 place 變數仍是第 0 筆的台北。
-
-```diff 04-js/pages/69-js-destructure.html
-  // ...
-        console.log(price);
-        console.log(guide);
-+ 
-+       const { place: city } = tours[1];
-+       console.log(city);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 函式參數解構
 
-參數的位置可以直接寫大括號，呼叫時仍傳入整個物件。大括號裡的名字會變成函式裡的變數，沒寫到的欄位留在物件上。預設值只在那個欄位是 undefined 時才用上。
+函式的參數位置也能直接寫大括號。呼叫時仍然傳入整個物件，函式裡只取需要的欄位當變數。React 的元件正是用這種寫法接收 props。
 
 **觀念**
 
-- 呼叫時傳的是一整顆物件，不是把欄位一個一個分開傳。
-
-- 函式裡用到的名字來自物件上的欄位。物件上多出來的欄位不會消失。
-
-- 預設值的寫法與物件解構相同。
+- 呼叫端傳的是一整顆物件，不是把欄位分開傳。
+- 大括號裡沒寫到的欄位不會消失，仍留在原物件上。
+- 預設值與重新命名的寫法，和物件解構相同。
 
 ```html 04-js/pages/70-js-param-destructure.html
 <!DOCTYPE html>
@@ -6756,8 +4682,8 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
     <script>
       const tour = { title: '台北城市漫遊', price: 12800, days: 3 };
 
-      function label({ title, price }) {
-        return `${title}・NT${price}`;
+      function label({ title, price, unit = 'NT$' }) {
+        return `${title}・${unit}${price}`;
       }
 
       console.log(label(tour));
@@ -6769,54 +4695,73 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- label 收到整顆 tour，參數大括號取出 title 與 price，接成一行字。
-- days 沒有寫進參數，物件上的 days 仍是 3。解構沒有刪欄位。
+- label 收到整顆 tour，參數的大括號取出 title 與 price，unit 沒有傳，用預設的 NT$，接成一行字。
+- days 沒有寫進參數，物件上的 days 仍是 3。
 
 ```text
 台北城市漫遊・NT$12800
 3
 ```
 
-{% note success %}
-**換你試試：**
-寫 `brief`，參數拆開 title、days，guide 預設「未定」。印出這筆的結果，中間應有「3 天」與「未定」。
-{% endnote %}
+### 解構搭配其餘
 
-<details>
-<summary>參考答案</summary>
-
-這筆沒有 guide，預設值才用上。title 與 days 從同一顆物件讀出，label 那一行仍在。
-
-```diff 04-js/pages/70-js-param-destructure.html
-  // ...
-        console.log(label(tour));
-        console.log(tour.days);
-+ 
-+       function brief({ title, days, guide = '未定' }) {
-+         return `${title}・${days} 天・${guide}`;
-+       }
-+ 
-+       console.log(brief(tour));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-## 展開運算子
-
-三個點 `...` 把已有的格子或欄位攤開。寫在中括號裡得到新陣列，寫在大括號裡得到新物件，寫在呼叫的引數位置則是逐個傳進參數。它和其餘參數的差別，放在最後一節。
-
-### 陣列展開
-
-三個點寫在中括號裡，把另一個陣列的格子依序攤進來。得到的是新陣列。對新陣列加格子，原來那一份的長度不變。
+解構時在最後面加上 `...名字`，可以把「沒被取走的剩下部分」收成一個新的陣列或物件。這和函式章教過的其餘參數是同一個寫法，只是這次用在解構的左邊，細節請回頭看 {% post_link lokiTech-15day-06-js-basics %} 的「其餘參數」。
 
 **觀念**
 
-- 展開可以放在中括號的前面、中間或後面，和其他值接在一起。
+- 陣列解構的其餘收成陣列，物件解構的其餘收成物件。
+- 其餘一定放在最後，後面不能再有名字。
+- 用物件解構的其餘，可以得到「少了某幾個欄位」的新物件。
 
-- 新陣列和原來那個不是同一個參考。`push` 只影響你呼叫它的那一份。
+```html 04-js/pages/70b-js-rest-destructure.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>解構搭配其餘</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const places = ['台北', '花蓮', '京都', '台南'];
+      const [head, ...others] = places;
+      console.log(head);
+      console.log(others);
+
+      const tour = { id: 7, title: '花蓮山海三日', days: 3, price: 15900 };
+      const { id, ...info } = tour;
+      console.log(id);
+      console.log(info);
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- head 取走第 0 格，others 是剩下三格組成的新陣列。
+- id 被取走，info 是不含 id 的新物件，原來的 tour 沒有變。
+
+```text
+台北
+['花蓮', '京都', '台南']
+7
+{ title: '花蓮山海三日', days: 3, price: 15900 }
+```
+
+## 展開運算子
+
+展開運算子是三個點 `...`，把已有的格子或欄位攤開。寫在中括號裡得到新陣列，寫在大括號裡得到新物件，寫在函式呼叫的引數位置則是逐個傳進參數。前兩種得到的是新的陣列或物件，不會動到原來那一份。
+
+### 陣列展開
+
+三個點寫在中括號裡，把另一個陣列的格子依序攤進來，結果是一個新陣列。可以在前面、中間或後面再接其他值，也可以只展開自己來複製一份。
+
+**觀念**
+
+- 新陣列和原陣列是兩個獨立的陣列，改其中一個不會影響另一個。
+- 展開可以和其他值寫在同一對中括號裡，順序就是寫的順序。
 
 ```html 04-js/pages/71-js-array-spread.html
 <!DOCTYPE html>
@@ -6832,9 +4777,8 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
       const places = ['台北', '花蓮', '京都'];
 
       const more = [...places, '台南'];
-      console.log(places.length);
+      console.log(places);
       console.log(more);
-      console.log(more.length);
 
       const copy = [...places];
       copy.push('高雄');
@@ -6847,53 +4791,25 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- more 在後面多一格台南，長度是 4。places 的長度仍是 3。
-- copy 是另一份。push 高雄之後，places 仍是原來的三個地名。
+- more 在後面多了台南，places 仍是三個地名。
+- copy 是另一份，push 高雄之後只有 copy 變長，places 沒變。
 
 ```text
-3
+['台北', '花蓮', '京都']
 ['台北', '花蓮', '京都', '台南']
-4
 ['台北', '花蓮', '京都']
 ['台北', '花蓮', '京都', '高雄']
 ```
 
-{% note success %}
-**換你試試：**
-把「高雄」寫在展開的前面。印出新陣列的長度，以及 `places[0]` 仍是台北。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-高雄在新陣列的索引 0，長度是 4。places 的第一格沒有被賦值，仍是台北。
-
-```diff 04-js/pages/71-js-array-spread.html
-  // ...
-        console.log(places);
-        console.log(copy);
-+ 
-+       const withKaohsiung = ['高雄', ...places];
-+       console.log(withKaohsiung.length);
-+       console.log(places[0]);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
 ### 物件展開
 
-三個點寫在大括號裡，把欄位攤進一個新物件。同名欄位以後面寫的為準。這是淺拷貝：第一層的數字和字串是新的值，巢狀的陣列仍是同一個參考。
+三個點寫在大括號裡，把另一個物件的欄位攤進新物件。同名欄位以寫在後面的為準，所以「先展開，再寫要改的欄位」就是複製並覆蓋。這是淺拷貝：第一層的數字與字串是獨立的新值，但巢狀的陣列或物件仍是同一個參考。
 
 **觀念**
 
-- 後寫的同名欄位蓋過先攤開的那一個。沒寫到的欄位會被複製過去。
-
-- 改新物件第一層的數字，不會改到原來那一筆。
-
-- 巢狀陣列被 `push` 時，兩邊看得到同一份。
+- 後寫的同名欄位蓋過先攤開的，沒寫到的欄位照樣複製過去。
+- 改新物件第一層的值，不會影響原物件。
+- 巢狀的陣列或物件只複製了參考，兩邊看到的是同一份。
 
 ```html 04-js/pages/72-js-spread.html
 <!DOCTYPE html>
@@ -6929,9 +4845,9 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 **解析**
 
-- 新物件把 price 寫成 11800，後寫的蓋過同名欄位。原物件的價格仍是 12800。
-- 標題沒有被改寫，所以新物件的標題還是台北城市漫遊。
-- tags 是巢狀陣列，展開時複製的是參考。push 進新物件的那一格，原物件的 tags 也變成兩個字串。
+- discounted 的 price 被後寫的 11800 蓋過，原物件仍是 12800。
+- title 沒有被改寫，所以新物件的標題還是台北城市漫遊。
+- tags 是巢狀陣列，展開時複製的是參考。從新物件 push 之後，原物件的 tags 也變成兩個字串。這是淺拷貝的陷阱，後面的不可變更新會教怎麼避開。
 
 ```text
 12800
@@ -6943,38 +4859,8 @@ set 開頭的方法會直接改掉原來那一個日期物件。還要留著改�
 
 {% note info %}
 **整份深層複製用 structuredClone**
-展開只複製第一層。連巢狀的陣列和物件都要拆開時，用 `structuredClone`。它交回一個新的值，之後改巢狀內容不會回到原來那一份。函式、以及部分特殊物件，不在它能複製的範圍裡。
-
-```js
-const deep = structuredClone(tour);
-deep.tags.push('夜');
-```
+展開只複製第一層。連巢狀的陣列和物件都要完整複製時，用 `structuredClone(tour)`，它交回一份完全獨立的新資料。它無法複製函式，遇到時會丟出錯誤。
 {% endnote %}
-
-{% note success %}
-**換你試試：**
-展開同一筆，把 `days` 改成 4、`price` 改成 18900。印出新物件的 days，以及原物件的 days 仍是 3。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-後寫的 days 與 price 只出現在新物件上。原物件的 days 沒有被賦值，所以仍是 3。
-
-```diff 04-js/pages/72-js-spread.html
-  // ...
-        console.log(tour.tags);
-        console.log(discounted.tags);
-+ 
-+       const longer = { ...tour, days: 4, price: 18900 };
-+       console.log(longer.days);
-+       console.log(tour.days);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 函式呼叫時展開
 
@@ -6983,8 +4869,7 @@ deep.tags.push('夜');
 **觀念**
 
 - 陣列的第 0 格給第一個參數，後面依序對上。
-
-- 參數個數少於格子數時，多出來的格子不會被這個函式用到。
+- 展開是「把已有的陣列拆開」，其餘參數是「把多出來的引數收成陣列」，兩者方向相反。
 
 ```html 04-js/pages/73-js-spread-call.html
 <!DOCTYPE html>
@@ -7005,6 +4890,7 @@ deep.tags.push('夜');
 
       console.log(total(...prices));
       console.log(total(prices[0], prices[1], prices[2]));
+      console.log(Math.max(...prices));
     </script>
   </body>
 </html>
@@ -7013,66 +4899,154 @@ deep.tags.push('夜');
 **解析**
 
 - 展開把三個價格依序送進 a、b、c，和是 71500。
-- 下一行逐個傳入，得到同一個和。兩種寫法用的是同一組數字。
+- 第二行逐個傳入，結果相同，可見展開就是省掉逐個取值的寫法。
+- Math.max 本來要一個一個傳數字，展開讓它直接找出陣列裡的最大值 42800。
 
 ```text
 71500
 71500
+42800
 ```
 
-{% note info %}
-**三個點有兩種方向**
-函式章的[選讀：其餘參數](#選讀：其餘參數)也使用 `...`。其餘參數把多出來的引數收集成陣列。展開是把已經有的陣列拆開，逐個傳進參數。
-{% endnote %}
+## 不可變更新
 
-{% note success %}
-**換你試試：**
-寫 `joinPlaces`，收兩個地名，用頓號接起來。對 `['花蓮', '京都']` 展開後印出。
-{% endnote %}
+不可變更新的意思是：不修改原來的物件或陣列，而是用展開做出一份改好的新資料，再用新資料取代舊的。React 靠「新舊參考是否不同」判斷狀態有沒有改變，直接修改原資料畫面就不會更新，所以這是之後寫 React 時每天用到的寫法。
 
-<details>
-<summary>參考答案</summary>
+### 更新物件欄位
 
-展開把花蓮給第一個參數、京都給第二個參數，接成「花蓮、京都」。total 的兩行仍是 71500。
-
-```diff 04-js/pages/73-js-spread-call.html
-  // ...
-        console.log(total(...prices));
-        console.log(total(prices[0], prices[1], prices[2]));
-+ 
-+       function joinPlaces(a, b) {
-+         return a + '、' + b;
-+       }
-+ 
-+       console.log(joinPlaces(...['花蓮', '京都']));
-      </script>
-    </body>
-  // ...
-```
-
-</details>
-
-# 選讀：錯誤處理與除錯
-
-程式跑起來之後仍可能中斷，例如名字打錯、對這個值呼叫它沒有的方法，或數值超出範圍。中斷時 Console 會留下類型、說明與行號；用 `try` 與 `catch` 可以把錯誤接住，讓後面的程式繼續。除錯則是把中間值印出來，或在 DevTools 暫停，再對照那則訊息找到出錯的那一行。
-
-## 常見錯誤類型
-
-下面四種最常出現在 Console。第一種多半在腳本開始跑之前就被找出來，後面三種則是執行到那一行才發生。發生後若沒有接住，該行之後的程式不會再跑，所以示範裡能接住的都放進 try，語法錯誤只留在註解。
-
-### 錯誤類型
-
-四種錯誤看 `name` 就能分開，`message` 則寫出這次為什麼觸發。能執行的三種放進 try；語法那一行若真的寫進檔案，後面的輸出就不會出現。
+要改物件的一個欄位時，先展開原物件，再寫上要改的欄位，得到一個新物件。巢狀的物件也要用同樣的方式，從裡到外每一層都展開一次，不然那一層仍會共用同一個參考。
 
 **觀念**
 
-- `SyntaxError` 表示程式不符合語法。括號或引號沒有成對時，整份腳本在執行前就停住。
+- 不直接寫 `obj.欄位 = 新值`，而是 `{ ...obj, 欄位: 新值 }`。
+- 巢狀物件要逐層展開：外層展開之後，裡面要改的那一層也再展開一次。
+- 新舊兩個物件是不同的參考，用 `===` 比較會是 false，這正是 React 看到的「有變化」。
 
-- `ReferenceError` 表示用到還沒宣告的名字。
+```html 04-js/pages/73b-js-immutable-object.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>更新物件欄位</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const user = { name: 'Amy', age: 28, address: { city: '台北', zip: '100' } };
 
-- `TypeError` 表示這個值不支援該操作，例如對數字呼叫字串方法，或對空值讀屬性。
+      // 改第一層欄位：展開後覆蓋 age
+      const older = { ...user, age: 29 };
+      console.log(user.age, older.age);
+      console.log(user === older);
 
-- `RangeError` 表示數值超出允許範圍，例如陣列長度設成負數。
+      // 改巢狀欄位：address 也要再展開一次
+      const moved = { ...user, address: { ...user.address, city: '高雄' } };
+      console.log(user.address.city);
+      console.log(moved.address.city);
+      console.log(moved.address.zip);
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- older 的 age 是 29，原來的 user 仍是 28。兩個物件不是同一個，比較結果是 false。
+- moved 把 address 換成新物件：先展開舊的 address，再覆蓋 city。所以新物件的城市是高雄，原物件仍是台北。
+- zip 沒有寫到，由展開自動帶過來，仍是 100。
+
+```text
+28 29
+false
+台北
+高雄
+100
+```
+
+### 新增與刪除陣列項目
+
+陣列的不可變更新有三個固定寫法：新增用展開加上新項目，刪除用 filter 留下不要刪的，修改某一項用 map 逐項處理、遇到目標才換成新物件。三種寫法都交回新陣列，原陣列不動。filter 與 map 的用法在陣列方法一章已經學過。
+
+**觀念**
+
+- 新增：`[...list, 新項目]`，要加在前面就把新項目寫在展開前面。
+- 刪除：`list.filter(...)` 留下條件成立的項目，不要的自然消失。
+- 修改：`list.map(...)` 對每一項決定「原樣交回」或「交回改過的新物件」。
+
+```html 04-js/pages/73c-js-immutable-array.html
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新增與刪除陣列項目</title>
+  </head>
+  <body>
+    <p>結果在 DevTools 的 Console。</p>
+    <script>
+      const todos = [
+        { id: 1, text: '買牛奶', done: false },
+        { id: 2, text: '寫講義', done: false },
+      ];
+
+      // 新增
+      const added = [...todos, { id: 3, text: '運動', done: false }];
+      console.log(added.length);
+
+      // 刪除 id 為 1 的項目
+      const removed = todos.filter((todo) => todo.id !== 1);
+      console.log(removed);
+
+      // 把 id 為 2 的項目改成完成
+      const toggled = todos.map((todo) =>
+        todo.id === 2 ? { ...todo, done: true } : todo,
+      );
+      console.log(toggled);
+
+      console.log(todos);
+    </script>
+  </body>
+</html>
+```
+
+**解析**
+
+- added 有 3 筆，新項目在最後。
+- removed 只剩 id 為 2 的那一筆。
+- toggled 的第二筆是用展開做出的新物件，done 變成 true，第一筆原樣交回。
+- 最後印出的 todos 仍是兩筆、done 都是 false，證明三次操作都沒有動到原陣列。
+
+```text
+3
+[ { id: 2, text: '寫講義', done: false } ]
+[ { id: 1, text: '買牛奶', done: false }, { id: 2, text: '寫講義', done: true } ]
+[ { id: 1, text: '買牛奶', done: false }, { id: 2, text: '寫講義', done: false } ]
+```
+
+{% note warning %}
+**push、splice、直接賦值會改到原資料**
+`todos.push(...)`、`todos[0].done = true` 這類寫法直接修改原陣列或原物件。在 React 的狀態上這樣寫，畫面不會更新，要改用上面的新資料寫法。陣列的 sort 與 reverse 也會直接改原陣列，可改用回傳新陣列的 toSorted 與 toReversed。
+{% endnote %}
+
+# 選讀：錯誤處理
+
+程式跑起來之後仍可能中斷，例如名字打錯、對這個值呼叫它沒有的方法，或數值超出範圍。中斷時 Console 會留下錯誤類型、說明與行號，讀懂它就能找到出錯的那一行。這一章先認識常見的錯誤類型與讀懂錯誤訊息，再整理除錯技巧，最後補上 finally、自訂錯誤與輸入驗證。try、catch 與 throw 的基本寫法放在 {% post_link lokiTech-15day-08-js-async %} 的錯誤處理基礎，專案會用到，所以那裡是必教，這一章直接沿用。
+
+## 錯誤類型與訊息
+
+錯誤發生後若沒有接住，同一支腳本在該行之後的程式不會再跑。這一節先分清楚四種常見類型，再學怎麼從 Console 的紅字讀出原因與位置。
+
+### 常見錯誤類型
+
+四種錯誤看名稱就能分開：每個錯誤物件都有 name（類型）與 message（這次為什麼觸發）。第一種語法錯誤在腳本開始跑之前就會被找出來，其餘三種要執行到那一行才發生。示範把能接住的三種放進 try，語法錯誤那一行只留在註解，否則整份腳本不會執行。
+
+**觀念**
+
+- SyntaxError：程式不符合語法，例如括號或引號沒有成對。整份腳本在執行前就停住。
+- ReferenceError：用到還沒宣告的名字。
+- TypeError：這個值不支援該操作，例如對數字呼叫字串方法，或對 null 讀屬性。
+- RangeError：數值超出允許範圍，例如陣列長度設成負數。
 
 ```html 04-js/pages/74-js-error-type.html
 <!DOCTYPE html>
@@ -7129,52 +5103,20 @@ Invalid array length
 
 **解析**
 
-- 註解那一行若真的執行，訊息是 `missing ) after argument list`，下面的 try 都不會跑。
-- 三個 catch 各自印出 name 與 message，最後一行表示腳本沒有中斷。
-- ReferenceError 的說明裡帶有那個不存在的名字；TypeError 指出 score 沒有字串方法。
+- 註解那一行若真的寫進去，Console 只會出現一則 missing ) after argument list，下面的 try 都不會跑。
+- 三個 catch 各自印出 name 與 message，最後一行出現，表示腳本沒有中斷。
+- ReferenceError 的說明帶有那個不存在的名字；TypeError 指出數字 score 沒有字串方法。
 - RangeError 來自長度為負的陣列。長度 0 仍是合法的空陣列，不會進這個 catch。
-
-{% note success %}
-**換你試試：**
-在最後再包一個 try，對 null 呼叫 `toFixed(0)`，印出 name 與 message。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-前面三種先印完。null 沒有 toFixed，name 是 TypeError，message 裡看得到這個方法。
-
-```diff 04-js/pages/74-js-error-type.html
-  // ...
-        }
-  
-        console.log('三種錯誤都接住了');
-+ 
-+       try {
-+         const empty = null;
-+         console.log(empty.toFixed(0));
-+       } catch (error) {
-+         console.log(error.name);
-+         console.log(error.message);
-+       }
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 讀懂錯誤訊息
 
-沒被接住的錯誤會以紅字停在 Console。同一則先看類型與說明，再看行號對回腳本；函式怎麼呼叫過來，記在 stack。用 try 接住之後紅字不會自動出現，要自己印出類型與說明，後面的程式才會繼續。
+沒被接住的錯誤會以紅字停在 Console。先看類型與說明知道出了什麼事，再看行號回到腳本裡的那一行；函式一層層怎麼呼叫過來，則記錄在呼叫堆疊裡。用 try 接住之後紅字不會自動出現，要自己把類型與說明印出來，後面的程式才會繼續。
 
 **觀念**
 
-- 紅字要同時看類型、說明與行號，行號才對得回腳本裡的那一行。
-
-- `error.name` 是類型，`error.message` 是說明。
-
-- `stack` 記下函式怎麼呼叫過來。示範用 `try` 接住，避免紅字中斷後面的程式。
+- 紅字要同時看類型、說明與行號：類型與說明告訴你原因，行號告訴你位置。
+- error.name 是類型，error.message 是說明。
+- 沒接住的紅字下方會列出呼叫堆疊（stack），由出錯點往回列出是哪些函式呼叫過來的。
 
 ```html 04-js/pages/75-js-error-message.html
 <!DOCTYPE html>
@@ -7216,47 +5158,20 @@ Cannot read properties of null (reading 'toFixed')
 
 **解析**
 
-- name 是 TypeError，message 指出 null 沒有 `toFixed`。
-- `label` 把 null 傳進 `formatScore`，出錯點在後者，呼叫它的是前者。
-- 若拿掉 try，紅字會多出行號，最後一行不會印。接住之後「程式繼續」仍會出現。
+- name 是 TypeError，message 指出無法對 null 讀取 toFixed。
+- label 把 null 傳進 formatScore，出錯點在 formatScore，呼叫它的是 label，堆疊會依這個順序列出。
+- 若拿掉 try，Console 會出現帶行號的紅字，「程式繼續」不會印。接住之後它仍會出現。
 
-{% note success %}
-**換你試試：**
-改呼叫 `label(80)`。應印 80，然後仍印「程式繼續」。
-{% endnote %}
+## 除錯技巧
 
-<details>
-<summary>參考答案</summary>
-
-80 可以 toFixed，所以不會進 catch。80 先印出來，接著仍印程式繼續。
-
-```diff 04-js/pages/75-js-error-message.html
-  // ...
-        }
-  
-        try {
--         console.log(label(null));
-+         console.log(label(80));
-        } catch (error) {
-          console.log(error.name);
-          // ...
-```
-
-</details>
-
-### 除錯技巧
-
-紅字只告訴你結果，中間值要自己印。逐步追蹤、表格與計時都走 console；要暫停時在那一行寫 debugger。示範把暫停註解掉，頁面打開後才會一次跑完。
+紅字只告訴你結果，中間的值要自己印出來看。逐步追蹤、表格與計時都能用 console 完成；想在某一行暫停檢查變數，就在那一行寫 debugger。示範把暫停那一行放在註解裡，頁面才會一次跑完。
 
 **觀念**
 
-- `console.log` 在關鍵步驟印出目前的值，用來確認程式有走到這裡。
-
-- `console.table` 把陣列或物件畫成表，`console.time` 與 timeEnd 用同一個標籤量耗時。
-
-- `debugger` 在 DevTools 打開時會暫停，可以查看當下的變數。這行保持註解，程式才會一次跑完。
-
-- DEBUG 為 true 才印除錯訊息，改成 false 就不會出現。
+- console.log 在關鍵步驟印出目前的值，用來確認程式有走到這裡。
+- console.table 把陣列或物件畫成表格；console.time 與 console.timeEnd 用同一個標籤量出耗時。
+- debugger 在 DevTools 打開時會暫停，可以逐行檢查當下的變數；在 Sources 面板點行號設中斷點，效果相同而且不必改程式。
+- 用常數 DEBUG 控制除錯訊息：改成 false 就全部不印，不必逐行刪除。
 
 ```html 04-js/pages/76-js-debug.html
 <!DOCTYPE html>
@@ -7321,123 +5236,23 @@ Cannot read properties of null (reading 'toFixed')
 
 **解析**
 
-- Chrome 會把前三筆畫成表，欄位是 name 與 score。上面的文字表格是同一份輸出的另一種呈現。
-- DEBUG 那一行表示函式已開始。迴圈每一圈印出索引、這一筆與累計。
-- `console.timeEnd` 的毫秒數每次不同，上面是某一次的結果。最後的 60 是回傳值。
+- 前三筆資料在 Console 會畫成表，欄位是 name 與 score；上面的文字表格是同一份輸出的另一種呈現。
+- 帶 [DEBUG] 的那行表示函式已開始。迴圈每一圈印出索引、這一筆與累計。
+- 耗時的毫秒數每次不同，上面只是某一次的結果。最後的 60 是回傳值。
 - debugger 被註解，所以不會暫停。取消註解且 DevTools 開著時，會停在那一行。
 
-{% note success %}
-**換你試試：**
-把 DEBUG 改成 false。除錯那行應該消失，表格、每一圈與總和仍在。
-{% endnote %}
+## 進階錯誤處理
 
-<details>
-<summary>參考答案</summary>
-
-DEBUG 為 false 時，`[DEBUG] 開始加總` 不會出現。表格、每一圈、耗時與 60 都還在。
-
-```diff 04-js/pages/76-js-debug.html
-  // ...
-      <p>結果在 DevTools 的 Console。</p>
-      <script>
--       const DEBUG = true;
-+       const DEBUG = false;
-  
-        function debugLog(message) {
-          if (DEBUG) {
-            // ...
-```
-
-</details>
-
-## try 與 catch
-
-可能出錯的程式放進 `try`，出錯就改走 `catch`，由你決定要印什麼、回傳什麼。不論這次有沒有錯，收尾都會再跑一次；要主動中斷時就丟出錯誤物件。第 08 天講非同步時，會再使用同樣的寫法接住失敗。
-
-### try 與 catch 的基本結構
-
-可能出錯的幾行放進 try，出錯就交給 catch。try 裡剩下的行不會再跑，外面的程式在 catch 結束後照常繼續。執行期錯誤接得住；同一份腳本的語法錯誤在解析階段就失敗，這組結構包不到。
-
-**觀念**
-
-- 出錯時立刻離開 `try`，`catch` 的參數就是錯誤物件。
-
-- 這組結束後，外面的程式仍會執行。
-
-- 同一份腳本的語法錯誤發生在解析時，要直接改掉那一行。
-
-```html 04-js/pages/77-js-try.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>try 與 catch 的基本結構</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      function readName(record) {
-        try {
-          return record.name.toUpperCase();
-        } catch (error) {
-          console.error(error.message);
-          return '無法讀取';
-        }
-      }
-
-      console.log(readName({ name: 'amy' }));
-      console.log(readName(null));
-      console.log('程式繼續');
-    </script>
-  </body>
-</html>
-```
-
-```text
-AMY
-Cannot read properties of null (reading 'name')
-無法讀取
-程式繼續
-```
-
-**解析**
-
-- 有 name 的物件會把字母改成大寫，印出 AMY。
-- null 沒有 name。catch 用 `console.error` 印 message，Console 以錯誤層級顯示，函式改回傳「無法讀取」。
-- 最後一行仍會印出，表示錯誤已被接住，外面的程式沒有停。
-
-{% note success %}
-**換你試試：**
-再呼叫 `readName({ name: 3 })`。數字沒有 toUpperCase，同樣進 catch。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-前面兩次呼叫先印完。數字 3 沒有 toUpperCase，message 是 `record.name.toUpperCase is not a function`，函式仍回傳無法讀取，最後一行也還在。
-
-```diff 04-js/pages/77-js-try.html
-  // ...
-        console.log(readName({ name: 'amy' }));
-        console.log(readName(null));
-+       console.log(readName({ name: 3 }));
-        console.log('程式繼續');
-      </script>
-    // ...
-```
-
-</details>
+這一節處理 try 與 catch 之外的三件事：收尾用的 finally、自己定義的錯誤類型，以及把錯誤用在輸入驗證。它們都建立在 08 教過的 try、catch 與 throw 之上。
 
 ### finally
 
-`finally` 接在 catch 後面，這次有沒有出錯都會執行，適合把收尾放在一處。若 `try` 或 catch 裡寫了 return，收尾仍會先跑完，值才交回呼叫端。因此 Console 上會先看到收尾行，再看到回傳值。
+finally 接在 catch 後面，這次有沒有出錯都會執行，適合把收尾工作集中放在一處。就算 try 或 catch 裡已經寫了 return，收尾仍會先跑完，值才交回呼叫端，所以 Console 會先看到收尾行，再看到回傳值。
 
 **觀念**
 
-- 有錯誤、沒錯誤，`finally` 都會跑。
-
-- `return` 不會跳過它，收尾印完才把值交出去。
+- 有出錯或沒出錯，finally 都會執行。
+- return 不會跳過它：先執行 finally，才把值交出去。
 
 ```html 04-js/pages/78-js-finally.html
 <!DOCTYPE html>
@@ -7479,147 +5294,17 @@ null
 **解析**
 
 - 第一筆有分數，try 準備回傳 90，但會先印「讀取結束」，外面才印 90。
-- 第二筆是 null，catch 印出 TypeError 並準備回傳 null，finally 仍先印收尾。
+- 第二筆是 null，讀屬性時出錯，catch 印出 TypeError 並準備回傳 null，finally 仍先印收尾。
 - 兩次呼叫都有收尾行，表示它不看這次有沒有出錯。
-
-{% note success %}
-**換你試試：**
-在 finally 再印「已收尾」。兩次呼叫都應看得到這三個字。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-每次呼叫都會印讀取結束與已收尾。成功那次接著印 90；失敗那次先印 TypeError，再印這兩行，最後印 null。
-
-```diff 04-js/pages/78-js-finally.html
-  // ...
-          } finally {
-            console.log('讀取結束');
-+           console.log('已收尾');
-          }
-        }
-        // ...
-```
-
-</details>
-
-### 主動拋出錯誤
-
-有些結果語言不會當成錯誤，例如除以 0 會得到 Infinity，下一行仍會執行。這種時候要自己把錯誤丟出去，最近的 catch 才接得到。丟出的若是標準錯誤物件，就能讀到 name 與 message；丟出字串就沒有這些資訊，也沒有 stack。
-
-**觀念**
-
-- `throw` 會立刻離開目前的函式，最近的 catch 接到你丟出的值。
-
-- `throw new Error('訊息')` 建立並丟出標準錯誤物件。
-
-- `error.name` 預設是 Error，`error.message` 是你傳入的字串。
-
-- 丟出字串或數字也會進 catch，但沒有 name、message 與 stack。
-
-```html 04-js/pages/79-js-throw.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>主動拋出錯誤</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script>
-      function divide(a, b) {
-        if (b === 0) {
-          throw new Error('除數不能為 0');
-        }
-        return a / b;
-      }
-
-      try {
-        console.log(divide(10, 2));
-        console.log(divide(10, 0));
-        console.log('這行不會印');
-      } catch (error) {
-        console.log(error.name);
-        console.log(error.message);
-      }
-
-      console.log('程式繼續');
-
-      try {
-        throw '不是 Error 物件';
-      } catch (error) {
-        console.log(typeof error);
-        console.log(error.name);
-        console.log(error.message);
-      }
-    </script>
-  </body>
-</html>
-```
-
-```text
-5
-Error
-除數不能為 0
-程式繼續
-string
-undefined
-undefined
-```
-
-**解析**
-
-- 10 除以 2 得到 5。除以 0 時主動丟錯，try 裡的下一行不會跑。
-- catch 印出 name 與 message。外面的「程式繼續」仍會執行，因為錯誤已經被接住。
-- 第二個 try 丟出的是字串，typeof 是 string，name 與 message 都是 undefined，也沒有 stack。
-
-{% note success %}
-**換你試試：**
-除數小於 0 時也丟出 Error，訊息是「除數不能為負」。另寫一個 try 呼叫 `divide(10, -1)`。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-第一個 try 仍在除以 0 時停住。第二個 try 呼叫負數，name 是 Error，message 是除數不能為負。
-
-```diff 04-js/pages/79-js-throw.html
-  // ...
-            throw new Error('除數不能為 0');
-          }
-+         if (b < 0) {
-+           throw new Error('除數不能為負');
-+         }
-          return a / b;
-        }
-        // ...
-          console.log(error.message);
-        }
-+ 
-+       try {
-+         console.log(divide(10, -1));
-+       } catch (error) {
-+         console.log(error.name);
-+         console.log(error.message);
-+       }
-      </script>
-    </body>
-  // ...
-```
-
-</details>
 
 ### 自訂錯誤
 
-內建的 Error 可以再分出一種自己的錯誤。做法是宣告新類別去繼承它，建立時把 name 改成新名字。catch 裡就能分開印，不會把驗證失敗和其他問題混在一起。
+內建的 Error 可以再分出一種自己的錯誤類型，讓 catch 能分辨「驗證失敗」與「其他問題」。做法是宣告一個繼承 Error 的類別，並把 name 改成新名字。class 與 extends 是物件導向的語法，這裡只要照著示範的樣子寫即可。
 
 **觀念**
 
-- 新的錯誤類別繼承 `Error`，建構式用 super 傳入訊息，並設定 `this.name`。
-
-- `instanceof` 可以判斷接到的是不是這個類別。其他錯誤仍是一般的 Error。
+- 新的錯誤類別繼承 Error，建構式先用 super 傳入訊息，再設定 this.name。
+- 用 instanceof 判斷接到的是不是這個類別；其他錯誤仍是一般的 Error。
 
 ```html 04-js/pages/80-js-custom-error.html
 <!DOCTYPE html>
@@ -7683,40 +5368,17 @@ Amy 通過
 **解析**
 
 - 資料齊全時印出名稱與「通過」，沒有進入 catch。
-- null 與缺少名稱都是 ValidationError，前面標「驗證」，並印出 name 與 message。
-- 年齡為負是一般 Error，前面標「其他」。instanceof 讓這兩種不會印成同一句。
-
-{% note success %}
-**換你試試：**
-再呼叫 `run({ age: 20 })`。缺少名稱，應印驗證與「名稱不能為空」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-前面四次先印完。只有 age、沒有 name 的物件走驗證分支，name 是 ValidationError，message 是名稱不能為空。
-
-```diff 04-js/pages/80-js-custom-error.html
-  // ...
-        run({ age: 25 });
-        run({ name: 'Amy', age: -1 });
-+       run({ age: 20 });
-      </script>
-    </body>
-  // ...
-```
-
-</details>
+- null 與缺少名稱都丟出 ValidationError，前面標「驗證」，並印出 name 與 message。
+- 年齡為負丟的是一般 Error，前面標「其他」，instanceof 讓這兩種走進不同的分支。
 
 ### 輸入驗證
 
-檢查可以單獨寫成函式：通過就回傳 true，不通過就主動丟錯。呼叫端只負責接住，成功與失敗的印法都放在同一個流程裡。型別不對、空字串、格式不對會帶著不同的 name 或 message。
+輸入驗證是在使用資料之前先檢查它。把檢查獨立寫成一個函式：通過就回傳 true，不通過就主動丟錯；呼叫端只負責接住，成功與失敗都在同一個流程裡處理。不同的問題帶不同的 name 或 message，就能分辨是哪一關沒過。
 
 **觀念**
 
-- 檢查函式通過時回傳 true，不通過就 `throw`，自己不印錯誤。
-
-- 型別不對丟 `TypeError`，空字串或格式不對丟 `Error`。
+- 檢查函式通過時回傳 true，不通過就 throw，自己不負責印錯誤。
+- 型別不對丟 TypeError；空字串或格式不對丟一般的 Error，用 message 區分。
 
 ```html 04-js/pages/81-js-validate.html
 <!DOCTYPE html>
@@ -7773,81 +5435,67 @@ TypeError
 
 **解析**
 
-- 含有 @ 的字串印出驗證成功與原信箱。
-- 空字串與缺少 @ 都是 Error，兩句 message 不同。空字串在長度檢查就停住。
-- 數字不是字串，name 是 TypeError。型別檢查先失敗，後面的格式檢查不會跑。
-
-{% note success %}
-**換你試試：**
-再測 `'a@b'` 與 `null`。前者依目前規則成功，後者不是字串。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`'a@b'` 含有 @，印出驗證成功。null 的型別不是字串，name 是 TypeError，message 是電子郵件必須是字串。前面四次呼叫先印完。
-
-```diff 04-js/pages/81-js-validate.html
-  // ...
-        processEmail('invalid-email');
-        processEmail(123);
-+       processEmail('a@b');
-+       processEmail(null);
-      </script>
-    </body>
-  // ...
-```
-
-</details>
+- 含有 @ 的字串通過所有檢查，印出驗證成功與原信箱。
+- 空字串與缺少 @ 都是 Error，兩句 message 不同；空字串在長度檢查就停住。
+- 數字不是字串，name 是 TypeError。型別檢查先失敗，後面的檢查不會再跑，所以檢查的順序要由寬到細。
 
 # 選讀：ES Module
 
-一支檔案若把全部程式碼放在一起，名字會和別的檔案擠在同一層。ES Module 是 ES2015 定下的模組標準，瀏覽器可以直接載入，Vite 與 React 專案也用這一套。這一章看它怎麼把檔案切開，以及名字怎麼送出去、怎麼接進來。
+程式變長之後，全部寫在同一支檔案會很難維護，名字也容易互相衝突。ES Module 是 ES2015 定下的模組標準：每支檔案有自己的作用域，需要分享的名字用 export 送出，另一支檔案再用 import 接進來。課程專案的 React 程式到處都是 import 與 export，但不理解這一章也能照著寫出 React，所以這裡只講必要的觀念：為什麼要拆檔、怎麼載入模組，以及具名與預設兩種匯出。
 
 ## 什麼是 ES Module
 
-早期的頁面把好幾支 script 掛在一起，變數放在同一層，後載入的同名變數會蓋掉先載入的。模組讓每一支檔案有自己的作用域，沒有送出去的名字，別的檔案碰不到。
+早期的頁面把好幾支 script 一路掛下去，它們共用頁面上的同一層名字。這一節說明這會帶來什麼問題、模組怎麼解決，以及瀏覽器載入模組時和一般 script 有哪些不同。
 
 ### 為什麼要拆檔
 
-一個檔案塞滿資料、計算與觀察用的 `console.log`，改一個名字就要在很長的檔案裡找。拆開之後，每一支檔只負責一件事。
+一支檔案塞滿資料與運算，改一個名字就要在很長的程式裡找；拆成多支檔案之後，每一支只負責一件事，容易閱讀也容易重複使用。
 
-一般的 script 共用頁面上的同一層變數。兩支檔案都去宣告或賦值同一個名字時，可能互相蓋掉，也可能在讀到程式時就因為重複宣告而失敗。
+問題在於一般的 script 共用同一層名字。兩支檔案宣告了同名的 var 或函式，後載入的會蓋掉先載入的；宣告了同名的 const，則在載入時就會直接報錯。
 
-寫成模組之後，沒有 `export` 的 const 留在該檔案裡，不會變成大家都能改到的名字。這個名字要先送出，另一支檔再 `import`，才進得來。
+模組解決了這個問題：每支模組檔都有自己的作用域，沒有 export 的名字留在檔案裡，別的檔案碰不到。要讓別人用，就明確送出；要使用別人的，就明確接進來，彼此的依賴一目了然。
 
-### type="module" 的行為
+### 載入模組
 
-要載入模組，script 標籤加上 `type="module"`。它和一般的 script 有三個差別。
+要把 JS 檔當成模組載入，script 標籤要加上 type="module"，它和一般的 script 有三個差別。
 
-- 它預設等同 `defer`：下載不會擋住 HTML 的解析，等文件解析完再依出現的順序執行。就算寫在 head，執行時也已經看得到 body 裡的元素。這一篇還不操作畫面，只要知道它不會把頁面卡住。
-
-- 它自動使用嚴格模式。沒有宣告就賦值會直接報錯，不能靠省略宣告造出一個誰都能改的名字。這也是這一篇一直先寫 `const` 與 `let` 的原因。
-
-- 模組檔必須用伺服器打開。用 VS Code 的 Live Server 開 `04-js/index.html`，網址是 http 開頭。若用檔案總管直接打開，網址是 `file://`，瀏覽器會擋下模組載入，Console 出現 CORS 錯誤。
+- 預設延後執行（等同 defer）：下載時不會擋住 HTML 的解析，等文件解析完才依出現的順序執行。
+- 自動使用嚴格模式：例如沒有宣告就賦值會直接報錯。
+- 必須透過伺服器載入：網址是 http 或 https 開頭才行。直接用檔案總管打開，網址是 file:// 開頭，在 Chrome 等瀏覽器裡模組會被 CORS 規則擋下，Console 出現類似 blocked by CORS policy 的錯誤；各家瀏覽器對 file:// 的限制不完全相同，但可靠的做法一律是用本機伺服器，例如 VS Code 的 Live Server 外掛，或之後專案用的 Vite 開發伺服器。
 
 {% note info %}
-**路徑從這支檔自己算起**
-下一節的 `import` 要寫 ./ 開頭的相對路徑，並且帶上副檔名 `.js`。漏了其中一個，模組就載不進來，後面的 log 不會跑。
+**import 的路徑從這支檔自己算起**
+同一個資料夾裡的檔案要寫 ./ 開頭的相對路徑，並且帶上副檔名 .js。漏了其中一個，模組就載不進來，後面的程式也不會跑。（Vite 等打包工具允許省略副檔名，但瀏覽器直接載入時不行。）
 {% endnote %}
 
 ## 匯出與匯入
 
-`export` 把名字送出去，`import` 再接進來。一支檔案可以送出很多個具名匯出；主要只送出一個東西時，用預設匯出。React 元件檔常常一個檔案預設匯出一個元件，匯入的人自己取名。
+export 把名字送出去，import 再把它接進來。匯出有兩種形式：具名匯出可以有很多個，匯入時名字要對得上；預設匯出每個檔案只有一個，匯入時可以自己取名。React 元件檔常常預設匯出一個元件，所以兩種都會看到。
+
+先用一段註解把兩種形式對照在一起，下面兩小節再各自用完整的頁面示範：
+
+```js
+// 具名匯出（可有多個）
+export const a = 1;
+export const b = 2;
+// 具名匯入：名字要對上
+import { a, b } from './x.js';
+
+// 預設匯出（每檔至多一個）
+export default function f() {}
+// 預設匯入：名字自己取，不加大括號
+import f from './x.js';
+```
 
 ### 具名匯出與匯入
 
-具名匯出可以很多個。匯入時用大括號，名字要對上；對不上就會在 Console 報錯。
-
-這一節分兩步：第一步先在同一支檔寫好陣列與函式，用 log 看天數等於 3 的標題。第二步把陣列與函式搬到資料檔，入口檔只負責匯入再印。完成的頁面是 `82-js-module.html.final`，程式是同名的 js.final。
+具名匯出就是在宣告前面加上 export，一支檔案可以有很多個。匯入的一方用大括號列出要用的名字，名字必須和匯出的一模一樣，對不上時 Console 會報錯。示範把陣列與函式放在資料檔，入口檔只負責匯入再印出結果。
 
 **觀念**
 
-- 路徑以這支檔自己為準，寫 `./` 開頭，副檔名 `.js` 要寫上。
-
-- 匯入時可以用 `as` 在這一支檔裡改名。`import * as` 則把該檔的具名匯出收成一個物件，再用點記法取出。
-
-- 沒有匯出的 `const`，另一支檔看不到。模組不會把變數變成大家都能改的名字。
+- 資料檔用 export 送出名字；沒有 export 的 const 留在檔案內，其他檔案看不到。
+- 入口檔的 import 路徑以它自己的位置為準，要寫 ./ 開頭與 .js 副檔名。
+- 頁面只掛入口那一支 script，資料檔由 import 帶進來。
 
 ```html 04-js/pages/82-js-module.html
 <!DOCTYPE html>
@@ -7884,20 +5532,20 @@ console.log(titles);
 console.log(tours.length);
 ```
 
-**解析**
-
-- 入口檔沒有自己再寫一份陣列。它從資料檔接進 `tours` 與 filterByDays，留下 days 嚴格等於 3 的兩筆，再取出標題。
-- 資料檔匯出了三筆，所以長度是 3。
-- 頁面只掛入口那一支 script，資料檔由 `import` 帶進來。直接用 `file://` 打開時，這兩支檔都不會執行。
-
 ```text
 ['台北城市漫遊', '花蓮山海三日']
 3
 ```
 
+**解析**
+
+- 入口檔自己沒有寫陣列，資料與函式都是從資料檔接進來的。它留下天數等於 3 的兩筆，再取出標題。
+- 資料檔匯出了三筆資料，所以長度是 3。
+- 若改用 file:// 直接打開頁面，這兩支檔都不會執行，Console 只會看到載入被擋下的錯誤。
+
 {% note info %}
 **改名與整包匯入**
-大括號裡的 `as` 只影響這一支檔的名字，資料檔的匯出名字不變。星號則把具名匯出收成一個物件。
+大括號裡的 as 只改變這一支檔裡的名字，資料檔的匯出名字不變。星號寫法則把所有具名匯出收成一個物件，再用點記法取用。
 
 ```js
 import { filterByDays as byDays } from './82-js-module-data.js';
@@ -7907,63 +5555,14 @@ console.log(byDays(data.tours, 3));
 ```
 {% endnote %}
 
-{% note success %}
-**換你試試：**
-在資料檔再匯出 `findById`，用 id 找一筆。入口檔印出 id 為 2 的標題，應為「花蓮山海三日」。
-{% endnote %}
-
-<details>
-<summary>參考答案</summary>
-
-`findById` 和 `filterByDays` 一樣留在資料檔，入口檔只呼叫。id 2 的標題是花蓮山海三日。匯入的大括號要把新名字也寫上，否則入口檔不認識它。
-
-```html 04-js/pages/82-js-module.html
-<!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>具名匯出與匯入</title>
-  </head>
-  <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script type="module" src="82-js-module.js"></script>
-  </body>
-</html>
-```
-
-```diff 04-js/pages/82-js-module-data.js
-  // ...
-    return list.filter((tour) => tour.days === days);
-  };
-+ 
-+ export const findById = (list, id) => {
-+   return list.find((tour) => tour.id === id);
-+ };
-```
-
-```js 04-js/pages/82-js-module.js
-import { tours, filterByDays, findById } from './82-js-module-data.js';
-
-const titles = filterByDays(tours, 3).map((tour) => tour.title);
-console.log(titles);
-console.log(tours.length);
-console.log(findById(tours, 2).title);
-```
-
-</details>
-
 ### 預設匯出
 
-一個檔案只能有一個預設匯出。匯入時不要加大括號，名字由匯入的那一邊自己取。這個檔案主要只提供一個函式或一個元件時，用預設匯出。要同時交出好幾個平起平坐的名字時，用具名匯出，呼叫端從大括號就看得到名字。兩者可以同時存在。
+預設匯出用 export default，一支檔案最多只能有一個，寫第二個會在載入時報錯。匯入時不加大括號，名字由匯入的一方自己決定。檔案主要只提供一個函式或元件時適合用預設匯出；要同時交出好幾個平起平坐的名字時，用具名匯出，呼叫的人一看大括號就知道有哪些名字。兩種可以同時存在於同一支檔案。
 
 **觀念**
 
-- 預設匯出每個檔最多一個。再寫第二個 `export default` 會在讀到程式時失敗。
-
-- 匯入的名字可以自取，不一定要和原本的函式同名。課堂仍取同一個名字，避免對不上。
-
-- 預設與具名同時存在時，預設寫在前面，具名放在大括號。
+- 預設匯入沒有大括號，名字可以自取，不必和原本的函式同名。
+- 預設與具名同時匯入時，預設寫在前面，具名放進大括號。
 
 ```html 04-js/pages/83-js-default.html
 <!DOCTYPE html>
@@ -7995,82 +5594,125 @@ console.log(formatPrice(12800));
 console.log(currency);
 ```
 
-**解析**
-
-- `formatPrice` 是預設匯出，匯入時沒有大括號，名字是這一支檔自己取的。
-- `currency` 是具名匯出，放在大括號裡。
-- 第一行把 12800 嵌進模板字串，得到 `NT$12800`。第二行是貨幣代碼 TWD。
-- React 元件之後也常這樣：一個檔案預設匯出元件，另外的常數再用具名匯出。
-
 ```text
 NT$12800
 TWD
 ```
 
-{% note info %}
-**很多個工具函式用具名匯出**
-上一節的陣列和函式要一起送出好幾個名字，全部具名，呼叫的人一眼看得到。預設匯出留給這個檔主要只有一個東西的時候。
-{% endnote %}
+**解析**
 
-{% note success %}
-**換你試試：**
-在同一支檔加上具名函式 `formatDays`，參數是一個數字，回傳這個數字再接上「天」。入口檔匯入它，印出 3 天的那句。
-{% endnote %}
+- formatPrice 是預設匯出，匯入時沒有大括號，名字是入口檔自己取的。
+- currency 是具名匯出，所以放在大括號裡，名字必須對得上。
+- 第一行把 12800 嵌進模板字串，得到 NT$12800；第二行印出貨幣代碼 TWD。
+- React 元件檔常是這個形狀：預設匯出元件本身，其餘的常數或輔助函式用具名匯出。
 
-<details>
-<summary>參考答案</summary>
+# 回家作業
 
-`formatDays` 是第二個具名匯出，和 currency 一起放進大括號。預設的 formatPrice 仍寫在大括號外面。3 傳進去得到「3 天」。
+這份作業只用必教內容，資料取自專案的行程清單。起始檔已經放好八筆資料，不需要上網或安裝任何東西。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果，自己對照即可。
 
-```html 04-js/pages/83-js-default.html
+## 起始檔與資料
+
+作業的起始檔在練習專案的 `04-js/homework/06-homework.html`，裡面已經宣告好陣列 `tours`，每一筆行程是一個物件，欄位有編號、標題、地區、主題、天數、價格、是否精選。只有部分行程多了 `guide` 欄位，記錄領隊姓名。把程式寫在標示的位置，結果都印到 Console。
+
+```html 04-js/homework/06-homework.html
 <!DOCTYPE html>
 <html lang="zh-Hant">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>預設匯出</title>
+    <title>06 回家作業</title>
   </head>
   <body>
-    <p>結果在 DevTools 的 Console。</p>
-    <script type="module" src="83-js-default.js"></script>
+    <p>結果在 DevTools 的 Console。把你的程式寫在資料下面。</p>
+    <script>
+      const tours = [
+        { id: 'taipei-beitou', title: '台北大稻埕與北投溫泉三日', region: '台北', theme: '城市', days: 3, price: 18600, featured: true, guide: { name: '阿凱' } },
+        { id: 'keelung-jiufen', title: '基隆北海岸與九份兩日', region: '基隆', theme: '海岸', days: 2, price: 9200, featured: false },
+        { id: 'hualien-taroko', title: '花蓮太魯閣與七星潭四日', region: '花蓮', theme: '山海', days: 4, price: 26800, featured: true, guide: { name: '小薇' } },
+        { id: 'taitung-chishang', title: '台東池上與成功海岸三日', region: '台東', theme: '山海', days: 3, price: 21400, featured: true },
+        { id: 'tainan-anping', title: '台南府城與安平兩日', region: '台南', theme: '古都', days: 2, price: 8800, featured: false },
+        { id: 'kaohsiung-qijin', title: '高雄港都與旗津三日', region: '高雄', theme: '城市', days: 3, price: 14200, featured: false },
+        { id: 'kinmen-villages', title: '金門聚落與戰地三日', region: '金門', theme: '離島', days: 3, price: 16800, featured: false },
+        { id: 'kyoto-nara', title: '京都嵐山、伏見與奈良五日', region: '京都', theme: '日本', days: 5, price: 52800, featured: true },
+      ];
+
+      // 在這裡開始寫
+    </script>
   </body>
 </html>
 ```
 
-```js 04-js/pages/83-js-price.js
-export default function formatPrice(price) {
-  return `NT$${price}`;
-}
+## 題目
 
-export const currency = 'TWD';
+### 題目一：整理成一行文字
 
-export const formatDays = (days) => {
-  return `${days} 天`;
-};
+把每一筆行程整理成「標題｜天數 天｜NT$價格」的字串，放進新陣列，再逐行印出。原本的 `tours` 不能被改動。
+
+完成後第一行應該是：
+
+```text
+台北大稻埕與北投溫泉三日｜3 天｜NT$18600
 ```
 
-```js 04-js/pages/83-js-default.js
-import formatPrice, { currency, formatDays } from './83-js-price.js';
+### 題目二：精選行程由便宜到貴
 
-console.log(formatPrice(12800));
-console.log(currency);
-console.log(formatDays(3));
+找出精選的行程，依價格由低到高排序，只印出標題。排序時不能改動原本的 `tours`，也就是說印完這一題之後，`tours` 的順序仍然和起始檔相同。
+
+完成後應該依序看到：
+
+```text
+台北大稻埕與北投溫泉三日
+台東池上與成功海岸三日
+花蓮太魯閣與七星潭四日
+京都嵐山、伏見與奈良五日
 ```
 
-</details>
+### 題目三：平均每天最便宜的三個地區
+
+計算每一筆行程「價格除以天數」的四捨五入整數，找出最便宜的三筆，印出地區與每天的價格。
+
+完成後應該看到：
+
+```text
+台南 4400
+基隆 4600
+高雄 4733
+```
+
+### 題目四：每種主題有幾筆行程
+
+用陣列的累計方法，把行程依主題統計成一個物件，鍵是主題、值是筆數，最後印出這個物件。
+
+完成後應該看到：
+
+```text
+{ 城市: 2, 海岸: 1, 山海: 2, 古都: 1, 離島: 1, 日本: 1 }
+```
+
+### 題目五：領隊姓名與預設值
+
+為每一筆行程印出領隊姓名。沒有安排領隊的行程要顯示「尚未安排」。使用可選串連與空值合併，不要用 if 判斷。
+
+完成後八行依序是：阿凱、尚未安排、小薇，之後五行都是尚未安排。
+
+### 題目六：調整價格，原資料不動
+
+寫一個函式，接收行程陣列、行程編號與新的價格，回傳一份新的陣列：只有該編號的行程價格被換掉，其他行程原封不動。用展開與陣列方法完成，不要直接修改傳進來的陣列或物件。
+
+用 `taitung-chishang` 與 `19800` 呼叫之後，請確認兩件事：新陣列裡那一筆的價格是 19800，而原本的 `tours` 裡仍然是 21400。
 
 # 本篇重點回顧
 
-下面整理這篇的重點。標題帶「選讀」的章節（閉包、Set、Map、this、解構與展開，以及 ES Module）可以整節跳過，等需要時再回來查。
+標題帶「選讀」的章節（閉包、Set、Map、this、Math 與 Date、錯誤處理、ES Module）可以先跳過，之後需要時再回來查。
 
-- JavaScript 負責網頁的行為，標準叫 ECMAScript，本課採用 ES6 之後的現代寫法並在 Console 看結果。課堂 demo 把程式寫在同一份 HTML 的 script；要多頁共用才放到外部檔，src 用相對這份 HTML 的路徑。模組要 import 別的檔，所以仍拆開。
-- 會重新賦值的變數用 `let`，其餘一律用 `const`；const 鎖住的是變數指向哪個值，所以陣列和物件的內容仍然可以改。
-- 型別轉換用內建函式 Number、String、Boolean，要從帶單位的字串取出開頭整數時用 parseInt 並指定進位 10。
-- 每種型別都有內建原型，用 `.` 就能呼叫原型上的方法；字串方法一律回傳新字串，不會改動原值。
-- 比較一律用 `===`，多個固定選項的對照用 switch。
-- `&&` 與 `||` 可以拿來短路執行與設定預設值，空值合併也一樣。
-- 函式用參數接收資料、用 return 交回結果，提早 return 能讓邏輯扁平，箭頭函式常拿來當作傳給其他函式的參數。
-- 陣列方法來自 `Array.prototype`，要分清楚哪些會改動原陣列、哪些會回傳新陣列。物件用欄位名字對到值，可能不在的欄位用 `?.` 讀；Math 與 Date 是語言附帶的工具，Math 直接點出來用，Date 要 new 才是物件，時間點與時區分開，比較用毫秒時間戳記。執行期錯誤用 try 與 catch 接住，要自己中斷就丟出 Error，Console 會標出類型、訊息與行號。
+- JavaScript 負責網頁的行為，標準名稱是 ECMAScript，本課使用 ES6 之後的現代寫法，並在 Console 觀察結果。
+- 變數預設用 const，需要重新賦值才用 let；const 鎖住的是綁定，物件與陣列的內容仍可修改。
+- 字串方法一律回傳新字串，不會改動原值；要把變數嵌進句子，用模板字串。
+- 比較用嚴格相等，空值給預設值用 ??，多個固定選項的對照用 switch，重複的工作用 for。
+- 函式用參數接收資料、用 return 交回結果；箭頭函式常拿來當作傳給其他函式的回呼。
+- 陣列方法要先分清楚「會改動原陣列」和「回傳新結果」，map、filter、find、reduce 是之後處理列表資料的主力。
+- 物件用欄位名稱對應到值，可能不存在的欄位用可選串連 ?. 讀取。
+- 解構把陣列或物件的值拆成變數，展開用來複製與合併；更新資料時不改原物件，而是複製後改一個欄位。
 
 上網查這篇的說法時，用括號裡的英文當關鍵字。
 
@@ -8122,7 +5764,8 @@ console.log(formatDays(3));
 
 - 迴圈（loop）
 - 嚴格相等（strict equality）
-- 可選串連（optional chaining）
+- 真值（truthy）
+- 假值（falsy）
 - 運算子（operator）
 - 條件判斷（conditional statement）
 - 邏輯運算子（logical operator）
@@ -8171,11 +5814,12 @@ console.log(formatDays(3));
 - 物件（object）
 - 物件字面值（object literal）
 - 靜態方法（static method）
+- 可選串連（optional chaining）
 - 點記法（dot notation）
 - 識別字（identifier）
 - 屬性簡寫（shorthand property）
 
-## 內建物件
+## 選讀：內建物件
 
 - 內建物件（built-in object）
 - 四捨五入（rounding）
@@ -8186,21 +5830,22 @@ console.log(formatDays(3));
 - 時差（time zone offset）
 - 本地時間（local time）
 
-## 選讀：解構與展開
+## 解構與展開
 
 - 展開運算子（spread syntax）
 - 解構賦值（destructuring assignment）
+- 不可變更新（immutable update）
 - 淺拷貝（shallow copy）
 - 深層複製（deep clone）
 
-## 選讀：錯誤處理與除錯
+## 選讀：錯誤處理
 
-- 錯誤處理（error handling）
 - 除錯（debugging）
+- 堆疊追蹤（stack trace）
+- 自訂錯誤（custom error）
 - 語法錯誤（syntax error）
 - 錯誤物件（error object）
 - 執行期錯誤（runtime error）
-- 拋出（throw）
 
 ## 選讀：ES Module
 
@@ -8209,3 +5854,4 @@ console.log(formatDays(3));
 - 匯入（import）
 - 具名匯出（named export）
 - 預設匯出（default export）
+
