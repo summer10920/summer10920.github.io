@@ -1,0 +1,14 @@
+/* ==========================================================================
+   行內程式碼（`code`）：品牌色文字、灰底小圓角
+   首頁的文章摘要與文章內頁用同一組樣式；表格裡的行內程式碼另有樣式（post-table.css）。
+   依賴：.main-inner.index / .main-inner.post 與 .post-body。
+   ========================================================================== */
+.main-inner.index.posts-expand .post-body code,
+.main-inner.post.posts-expand .post-body code {
+  border-radius: 0.25rem;
+  color: var(--main-color);
+  background: #ddd;
+  margin: 0 0.25rem;
+  font-size: 1em;
+  padding: 4px 8px;
+}

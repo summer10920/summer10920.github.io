@@ -1,0 +1,101 @@
+/* 頁尾：深色底、品牌色上緣。第一行是版權，下面是站台統計 */
+/* 主題的進場動畫會把頁尾排在最後才淡入，首頁有 10 篇時要等將近 5 秒才看得到，所以不讓頁尾參與動畫 */
+.use-motion .footer {
+  opacity: 1;
+}
+
+footer.footer {
+  --footer-text: #c4c4cc;
+  --footer-label: #9a9aa5;
+  --footer-value: #f2f2f4;
+
+  background: #1f1f23;
+  border-top: 3px solid var(--main-color);
+  color: var(--footer-text);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  padding: 24px 16px 22px;
+
+  .footer-inner {
+    align-items: center;
+    flex-flow: row wrap;
+    gap: 6px 28px;
+    justify-content: center;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  /* 版權列獨占第一行 */
+  .loki-copyright {
+    flex: 0 0 100%;
+    margin-bottom: 4px;
+    order: -1;
+    text-align: center;
+
+    .with-love {
+      color: var(--main-color);
+      margin: 0 6px 0 0;
+    }
+
+    .author {
+      border: 0;
+      color: var(--footer-value);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .loki-copyright-note::before {
+      color: var(--footer-label);
+      content: '·';
+      margin: 0 0.6em;
+    }
+  }
+
+  /* 統計：文字標籤加數值；圖示用不到，標籤取自各項目的 title */
+  .wordcount,
+  .busuanzi-count {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 28px;
+    justify-content: center;
+  }
+
+  /* vercount 不會把計數容器顯示出來，而主題預設會把它們隱藏，所以要設回來 */
+  #busuanzi_container_site_uv,
+  #busuanzi_container_site_pv {
+    display: inline;
+  }
+
+  .post-meta-item {
+    color: var(--footer-value);
+    font-variant-numeric: tabular-nums;
+
+    &::before {
+      content: none;
+    }
+
+    .post-meta-item-icon {
+      display: none;
+    }
+
+    [title]::before {
+      color: var(--footer-label);
+      content: attr(title);
+      font-variant-numeric: normal;
+      margin-right: 0.5em;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  footer.footer {
+    font-size: 0.8125rem;
+    padding: 20px 12px 18px;
+
+    .footer-inner,
+    .wordcount,
+    .busuanzi-count {
+      gap: 4px 20px;
+    }
+  }
+}

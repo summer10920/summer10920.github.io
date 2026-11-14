@@ -1,9 +1,32 @@
-@import "reboot.css";
-@import "loki-theme.css";
-@import "header-banner.css";
-@import "sidebar.css";
-@import "all-posts-expand.css";
-@import "home-list.css";
-@import "category.css";
-@import "all-posts-collapse.css";
-@import "post-page.css";
+/* ==========================================================================
+   站台樣式入口（由 source/_data/head.njk 載入，排在 NexT 的 main.css 之後）
+
+   base/        與 NexT 結構無關：顏色變數、全域元素
+   loki-theme/  依賴 NexT 的 class 與標記，依畫面區塊分檔。升級 NexT 後逐檔檢查這裡，
+                詳見專案根目錄的 loki-theme.md。
+
+   匯入順序就是層疊順序，後面的規則會蓋掉前面的，請不要隨意調換。
+   ========================================================================== */
+
+/* ---- 基礎 ---- */
+@import 'base/variables.css';
+@import 'base/reboot.css';
+
+/* ---- 頁面骨架與固定區塊 ---- */
+@import 'loki-theme/layout.css';
+@import 'loki-theme/header.css';
+@import 'loki-theme/sidebar.css';
+@import 'loki-theme/footer.css';
+
+/* ---- 文章共用：標題列、行內程式碼 ---- */
+@import 'loki-theme/post-header.css';
+@import 'loki-theme/inline-code.css';
+
+/* ---- 各頁面 ---- */
+@import 'loki-theme/page-home.css';
+@import 'loki-theme/page-archive.css';
+@import 'loki-theme/page-post.css';
+
+/* ---- 文章內頁的內容元件 ---- */
+@import 'loki-theme/post-table.css';
+@import 'loki-theme/code-window.css';

@@ -1,6 +1,12 @@
+/* ==========================================================================
+   頁首橫幅與主選單
+   依賴：.main > .column、header.header、.site-brand-container、.site-nav .main-menu；
+         #lokiBanner 由 loki-theme.js 在載入時建立（文字雲畫在它上面）。
+   ========================================================================== */
 .main > .column {
   position: relative;
 
+  /* 橫幅畫布：鋪滿整個頁首，文字與選單疊在上面 */
   canvas {
     width: 100%;
     height: 100%;
@@ -13,12 +19,14 @@
     z-index: 1;
     position: relative;
 
+    /* 網站名稱的白底 */
     .site-brand-container {
       span {
         background-color: white;
       }
     }
 
+    /* 主選單：置中，每項寬 10%，目前所在項目用頁面底色 */
     .site-nav .main-menu {
       display: flex;
       justify-content: center;
@@ -61,6 +69,7 @@
   }
 }
 
+/* 手機：選單改成直式排列 */
 @media (max-width: 767px) {
   .main > .column {
     & header.header {

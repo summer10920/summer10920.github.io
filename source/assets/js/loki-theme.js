@@ -1,4 +1,8 @@
-/************橫幅畫布：官方版型沒有它，載入時自己插在頁首 header 前面 */
+/* 站台的所有 JS。依賴 NexT 結構的部分（橫幅畫布、回頂端、程式碼視窗）在最前面與最後面，
+   升級主題時請先檢查這些段落。 */
+
+/************ 一、橫幅：畫布（依賴 .main > .column）、文字雲、計數千分位 ************/
+// 橫幅畫布：官方版型沒有它，載入時自己插在頁首 header 前面（下面的文字雲要畫在上面）
 (() => {
   const column = document.querySelector('.main > .column');
   if (!column || document.getElementById('lokiBanner')) return;
@@ -12,63 +16,78 @@
 /************animate Header Background */
 const
   list = [
-    ['HTML', 12],
+    ['Angular', 15],
+    ['TypeScript', 14],
+    ['RxJS', 13],
+    ['NgRx', 11],
+    ['Signals', 11],
+    ['Angular Material', 7],
+    ['PrimeNG', 10],
+    ['Dependency Injection', 5],
+    ['Standalone', 6],
+    ['Angular CLI', 9],
+    ['Nx', 8],
+    ['SCSS', 10],
+    ['Zone.js', 6],
+    ['Jasmine', 7],
+    ['Karma', 6],
+    ['Jest', 8],
+    ['Vitest', 8],
+    ['Playwright', 7],
+    ['Cypress', 7],
+    ['HTML', 13],
     ['CSS', 13],
-    ['JavaScript', 15],
-    ['TypeScript', 12],
-    ['React', 14],
-    ['Vue', 13],
-    ['Angular', 10],
-    ['Node.js', 13],
-    ['Webpack', 11],
-    ['Vite', 10],
-    ['Babel', 9],
-    ['ES6', 12],
-    ['DOM', 11],
-    ['AJAX', 8],
+    ['JavaScript', 14],
+    ['Tailwind CSS', 10],
+    ['Bootstrap', 10],
+    ['jQuery', 10],
+    ['PHP', 10],
+    ['MySQL', 10],
+    ['Flexbox', 10],
+    ['Grid', 10],
+    ['RWD', 10],
+    ['React', 13],
+    ['React Router', 8],
+    ['Hooks', 9],
+    ['JSX', 8],
+    ['ES6', 11],
+    ['DOM', 10],
+    ['Promise', 9],
+    ['async/await', 7],
     ['Fetch', 9],
-    ['REST API', 11],
-    ['GraphQL', 7],
-    ['JSON', 10],
-    ['LocalStorage', 7],
-    ['SessionStorage', 6],
-    ['Cookies', 6],
-    ['PWA', 8],
-    ['Service Worker', 7],
-    ['WebSocket', 7],
-    ['WebRTC', 5],
-    ['Canvas', 8],
-    ['SVG', 9],
-    ['WebGL', 6],
-    ['Three.js', 5],
-    ['Bootstrap', 11],
-    ['Tailwind CSS', 12],
-    ['Sass', 10],
-    ['Less', 7],
-    ['PostCSS', 8],
-    ['Git', 13],
-    ['GitHub', 12],
-    ['npm', 12],
-    ['yarn', 8],
-    ['ESLint', 10],
-    ['Prettier', 9],
-    ['Jest', 10],
-    ['Cypress', 8],
-    ['Rollup', 6],
-    ['Parcel', 5],
-    ['Redux', 10],
-    ['Vuex', 8],
-    ['Pinia', 6],
-    ['RxJS', 7],
-    ['Lodash', 8],
-    ['Moment.js', 6],
-    ['Chart.js', 7],
-    ['D3.js', 5],
-    ['Express', 11],
-    ['Koa', 7],
-    ['Nest.js', 6],
-    ['Next.js', 9],
-    ['Nuxt.js', 7]
+    ['Leaflet', 8],
+    ['ECharts', 9],
+    ['Chart.js', 8],
+    ['Day.js', 8],
+    ['JSON', 9],
+    ['REST API', 10],
+    ['Firebase', 9],
+    ['Vite', 10],
+    ['Node.js', 11],
+    ['pnpm', 8],
+    ['npm', 9],
+    ['nvs', 5],
+    ['Git', 12],
+    ['GitHub', 11],
+    ['VS Code', 10],
+    ['ESLint', 9],
+    ['Prettier', 8],
+    ['Mermaid', 6],
+    ['Hexo', 7],
+    ['Markdown', 7],
+    ['Accessibility', 5],
+    ['Semantic HTML', 5],
+    ['LocalStorage', 5],
+    ['Web API', 8],
+    ['Debugging', 7],
+    ['Clean Code', 7],
+    ['Design Pattern', 5],
+    ['SOLID', 6],
+    ['Refactoring', 5],
+    ['Code Review', 5],
+    ['CI/CD', 6],
+    ['Webpack', 7],
+    ['Module', 7]
   ],
   lokiKeyword = WordCloud(document.getElementById('lokiBanner'), {
     list: list,
@@ -136,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
+/************ 二、程式碼視窗檔名斷行（依賴 figure.highlight figcaption） ************/
 // 程式碼視窗的檔名：在「/」後面允許斷行，窄螢幕上長路徑就會在資料夾邊界換行
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('figure.highlight figcaption span').forEach((span) => {
@@ -143,11 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// 頁尾的圖示（字數、計數）跟版權列的愛心用同一組樣式（顏色、動畫由主題設定 footer.icon 決定）
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.footer .post-meta-item-icon').forEach((icon) => icon.classList.add('with-love'));
-});
-
+/************ 三、回到頂端進度（依賴 .back-to-top） ************/
 // 回到頂端按鈕：捲動時更新 --progress，sidebar.css 用它畫進度條
 (() => {
   const update = () => {
@@ -161,3 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', update);
   document.addEventListener('DOMContentLoaded', update);
 })();
+
+/************ 四、文章資訊列的冒號換成「×」（依賴 .post-meta-container .post-meta-item-text） ************/
+// 「閱讀次數：」「文章字數：」的冒號是模板把說明文字與全形冒號拼在一起，
+// 同一個冒號字串也用在滑鼠提示，不能改語言檔，所以在這裡把結尾的冒號包成 span，
+// 讓 post-header.css 的 .loki-meta-sep 上色。
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.post-meta-container .post-meta-item-text').forEach((el) => {
+    el.innerHTML = el.innerHTML.replace(/[：:]\s*$/, '<span class="loki-meta-sep">×</span>');
+  });
+});

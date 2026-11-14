@@ -1,0 +1,42 @@
+/* ==========================================================================
+   分類總覽頁、歸檔頁與分類文章頁
+   依賴：.main-inner.page / .archive / .category 與 .posts-collapse、.category-all、
+         .collection-title、.collection-year、.post-header::before（時間軸圓點與線）。
+   ========================================================================== */
+
+/* 分類總覽：分類名稱橫向排列，用品牌色粗體 */
+.main-inner.page.posts-expand {
+  .category-all > .category-list {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .category-list-item {
+      margin: 10px;
+      flex: 1 0 auto;
+
+      > a {
+        color: var(--main-color);
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+/* 歸檔與分類文章頁：時間軸的線與圓點改成品牌色 */
+.main-inner.archive.posts-collapse,
+.main-inner.category.posts-collapse {
+  .post-content {
+    &::before {
+      background-color: var(--main-color);
+      margin-left: -1px;
+      width: 2px;
+      opacity: 0.5;
+    }
+
+    .collection-title::before,
+    .posts-collapse .post-content .collection-year::before,
+    .post-header::before {
+      background-color: var(--main-color);
+    }
+  }
+}

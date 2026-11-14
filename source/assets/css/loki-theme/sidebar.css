@@ -1,0 +1,79 @@
+/* ==========================================================================
+   側欄、頂端細條、GitHub 角落、回頂端按鈕與文章目錄
+   依賴：.sidebar-toggle、.github-corner、.headband、.sidebar .sidebar-panel-container、
+         .back-to-top（--progress 由 loki-theme.js 設定）、.post-toc .nav（--height 由主題設定）。
+   ========================================================================== */
+
+/* 側欄開關按鈕（左下角）：放大、品牌色、半透明 */
+.sidebar-toggle {
+  transform: scale(1.5);
+  background: var(--main-color);
+  opacity: 0.5;
+  transition: 1s opacity;
+
+  &:hover .toggle-line {
+    background-color: #fff;
+  }
+}
+
+/* 右上角的 GitHub 角落圖示 */
+.github-corner svg {
+  fill: var(--main-color);
+}
+
+/* 頁面最上方的品牌色細條；主題在某些情況會隱藏它，所以強制顯示 */
+.headband {
+  background: var(--main-color);
+  display: block !important;
+}
+
+.sidebar {
+  /* 目錄與概覽的捲動區：限制高度並換成細的品牌色捲軸 */
+  .sidebar-panel-container {
+    max-height: calc(100vh - 200px);
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--main-color);
+      border-radius: 2px;
+    }
+
+    /* 目前閱讀到的目錄項目加粗 */
+    .nav-item.active {
+      padding-bottom: 10px;
+
+      a {
+        font-weight: bold;
+      }
+    }
+  }
+
+  /* 回頂端按鈕：同時當閱讀進度條，用 --progress 控制漸層填滿的寬度 */
+  .back-to-top {
+    border: var(--main-color) 1px solid;
+    margin: 20px 0;
+    border-radius: 5px;
+    color: white;
+    position: relative;
+    line-height: 1.5;
+
+    &::before {
+      content: '';
+      background: linear-gradient(var(--main-color) 0%, #bb1352 25%, var(--main-color) 70%);
+      position: absolute;
+      left: 0;
+      right: calc(100% - var(--progress));
+      top: 0;
+      bottom: 0;
+      z-index: -1;
+    }
+  }
+}
+
+/* 文章目錄：主題用 --height 決定展開高度，這裡在它之上多留 10px，避免最後一項被切到 */
+.post-toc .nav .active > .nav-child {
+  height: calc(var(--height, 0px) + 10px);
+}

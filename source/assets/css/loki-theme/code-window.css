@@ -1,0 +1,64 @@
+/* ==========================================================================
+   程式碼區塊（mac 視窗樣式）
+   外框圓角與陰影、語言標籤、細捲軸，以及檔名標題列：改成正常排版，
+   長路徑可在「/」後換行（斷點由 loki-theme.js 加上），左右留出圓點與語言標籤的位置。
+   依賴：.post-body figure.highlight、figcaption、.code-lang、.table-container。
+   ========================================================================== */
+.main-inner.post.posts-expand .post-body {
+  figure.highlight {
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+    margin-bottom: 20px;
+
+    /* 有檔名時，標題列自己占高度，上方不再預留圓點的空間 */
+    &:has(figcaption) {
+      padding-top: 0;
+    }
+
+    /* 檔名標題列 */
+    figcaption {
+      background: unset;
+      min-height: 30px;
+      overflow-wrap: anywhere;
+      padding: 7px 4.5rem;
+      position: relative;
+      text-align: center;
+      word-break: normal; /* 蓋掉全域的 break-all，才會只在 / 處換行 */
+
+      span {
+        overflow-wrap: anywhere;
+        word-break: normal;
+      }
+    }
+
+    /* 右上角的語言標籤 */
+    .code-lang {
+      font-family: monospace, sans-serif;
+      opacity: 0.5;
+      right: 2rem;
+      top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    /* 程式碼本體：底色與細的品牌色橫向捲軸 */
+    .table-container {
+      background: var(--highlight-background);
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: var(--main-color);
+    }
+  }
+
+  /* 程式碼區塊下方多留空間 */
+  figure.highlight,
+  pre,
+  .post-body .note figure.highlight {
+    padding-bottom: 1rem;
+  }
+}

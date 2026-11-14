@@ -1,0 +1,171 @@
+/* ==========================================================================
+   文章內頁的內文
+   標題階層、清單、引用、連結、分頁籤與提示框。表格見 post-table.css，
+   程式碼區塊見 code-window.css，行內程式碼見 inline-code.css。
+   依賴：.main-inner.post.posts-expand .post-body 底下的標準 Markdown 輸出，
+         以及主題的 .tabs、.note、.headerlink、.mermaid、p.image-caption。
+   ========================================================================== */
+.main-inner.post.posts-expand {
+  .post-body {
+    /* 文章裡的圖片：淡淡的陰影與上下間距（圖片群組除外） */
+    &:not(.group-picture) img {
+      box-shadow: 0 0 4px 0px #a6a6a670;
+      margin: 20px auto;
+    }
+
+    /* ---- 標題：每一級用不同的底線與左側粗線區分 ---- */
+    h1 {
+      border-bottom: 1px solid;
+      text-align: right;
+    }
+    h2 {
+      background: #ddd;
+    }
+    h3 {
+      border-bottom: 1px solid;
+    }
+    h4 {
+      border-bottom: 1px dashed;
+    }
+    h5 {
+      border-bottom: 1px dashed;
+      width: fit-content;
+    }
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      border-left: 5px solid;
+      padding-left: 10px;
+    }
+    h1,
+    h2,
+    h3 {
+      margin-top: 2rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    /* ---- 清單 ---- */
+    ol,
+    ul:not(.nav-tabs) {
+      margin-bottom: 3rem;
+    }
+
+    li > p {
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+    }
+
+    .mermaid {
+      background: transparent;
+    }
+
+    /* 標題旁的錨點連結 */
+    .headerlink {
+      margin: 0 10px;
+    }
+
+    /* ---- 引用區塊：品牌色左線與淡粉底 ---- */
+    blockquote {
+      border-left-color: var(--main-color);
+      background: #e91e6312;
+      font-size: 1rem;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      line-height: 1.5rem;
+
+      p {
+        margin-bottom: 10px;
+      }
+    }
+
+    /* ---- 內文、引用、清單、表格裡的連結 ----
+       平常：前面一個鎖鏈圖示，品牌色文字加底線，一看就知道是連結。
+       滑過：底線往上長成實心品牌色塊，文字與圖示轉白，直角；不改字重，所以不會讓整行跳動。
+       色塊用背景畫（跨行時用 box-decoration-break 讓每一行都完整）。 */
+    p,
+    blockquote,
+    li,
+    td {
+      a:not(.fancybox) {
+        padding: 0 4px;
+        border-bottom: 0;
+        color: var(--main-color);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+        background: linear-gradient(var(--main-color), var(--main-color)) no-repeat
+          left bottom / 100% 0;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+        transition:
+          background-size 0.25s ease,
+          color 0.25s ease;
+
+        /* 鎖鏈圖示（Font Awesome link），比文字小一點 */
+        &::before {
+          content: '\f0c1';
+          display: inline-block;
+          margin-right: 4px;
+          font-family: 'Font Awesome 6 Free';
+          font-weight: 900;
+          font-size: 0.8em;
+          text-decoration: none;
+        }
+
+        &:hover {
+          color: #fff;
+          text-decoration-color: transparent;
+          background-size: 100% 100%;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          transition: none;
+        }
+      }
+    }
+
+    /* ---- 分頁籤（tabs 標籤） ---- */
+    .tabs {
+      .nav-tabs .tab {
+        background: #f6eaef;
+        transition: 0.5s;
+      }
+
+      .tab-content,
+      .nav-tabs .tab.active {
+        background: #fff;
+      }
+
+      ul.nav-tabs li.tab.active {
+        border-top-color: var(--main-color);
+      }
+    }
+
+    p.image-caption {
+      margin-top: -10px;
+    }
+
+    /* ---- 提示框（note 標籤） ---- */
+    .note {
+      background: #fcfcfc;
+
+      &:not(.no-icon)::before {
+        top: 0.5rem;
+      }
+
+      > ul {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        li > *:last-child {
+          margin-bottom: 1rem;
+        }
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

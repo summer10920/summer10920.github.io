@@ -1,3 +1,10 @@
+/* ==========================================================================
+   首頁文章列表
+   每篇是一張白色卡片：標題、資訊、兩行摘要，背景是文章封面圖（a.fancybox），
+   奇數篇圖在右、偶數篇圖在左，並用漸層遮罩讓文字清楚。
+   依賴：.main-inner.index.posts-expand .post-block、article.post-content、.post-body、
+         a.fancybox、.pagination。
+   ========================================================================== */
 .main-inner.index.posts-expand {
   .post-block {
     article.post-content {
@@ -8,6 +15,7 @@
       z-index: 0;
 
       .post-body {
+        /* 封面圖：鋪在卡片半邊，不擋住文字與點擊 */
         a.fancybox {
           position: absolute;
           bottom: 0;
@@ -26,16 +34,7 @@
           }
         }
 
-        /* 摘要裡的行內程式碼，樣式與文章頁相同（post-page.css） */
-        code {
-          border-radius: 0.25rem;
-          color: var(--main-color);
-          background: #ddd;
-          margin: 0 0.25rem;
-          font-size: 1em;
-          padding: 4px 8px;
-        }
-
+        /* 摘要只顯示兩行，超出用刪節號 */
         p {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -44,11 +43,14 @@
           text-overflow: ellipsis;
         }
       }
+
+      /* 列表上不顯示文章底部的資訊列 */
       .post-footer {
         display: none;
       }
     }
 
+    /* 奇數篇：封面圖在右，左邊漸層淡出 */
     &:nth-child(odd) > .post-content a.fancybox {
       right: 0;
       img {
@@ -56,6 +58,7 @@
       }
     }
 
+    /* 偶數篇：封面圖在左，右邊漸層淡出 */
     &:nth-child(even) > .post-content a.fancybox {
       left: 0;
       img {
@@ -64,6 +67,7 @@
     }
   }
 
+  /* 分頁：目前頁用品牌色 */
   .pagination {
     .current {
       background-color: var(--main-color);

@@ -1,0 +1,76 @@
+/* ==========================================================================
+   文章裡的表格
+   外框圓角加陰影、深色表頭、斑馬紋，內容太寬時在容器內橫向捲動。
+   依賴：.post-body 裡的 div.table-container > table（程式碼區塊的 .table-container 不在此列）。
+   ========================================================================== */
+.main-inner.post.posts-expand {
+  .post-body {
+    div.table-container:not(figure .table-container) {
+      --border-radius: 0.5rem;
+
+      margin-bottom: 3rem;
+      box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+      border-radius: var(--border-radius);
+      overflow: auto;
+      scrollbar-color: var(--main-color) transparent;
+      scrollbar-width: thin;
+
+      table {
+        font-size: 1rem;
+        margin: 0;
+
+        /* 表頭：深色底，頭尾兩格做圓角 */
+        thead tr {
+          background: var(--text-color);
+          color: var(--body-bg-color);
+
+          th {
+            border: none;
+
+            &:first-child {
+              border-top-left-radius: var(--border-radius);
+            }
+            &:last-child {
+              border-top-right-radius: var(--border-radius);
+            }
+          }
+        }
+
+        /* 表身：偶數列淡灰、滑過變亮，最後一列做圓角 */
+        tbody tr {
+          &:nth-of-type(even) {
+            background: var(--body-bg-color);
+          }
+          &:hover {
+            background: #eee;
+          }
+
+          &:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius);
+          }
+          &:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius);
+          }
+        }
+
+        th,
+        td {
+          padding: 4px 8px;
+          line-height: 1.5rem;
+          min-width: 200px;
+        }
+
+        /* 表格裡的行內程式碼：較淺的品牌色底、白色粗斜體，不換行 */
+        code {
+          margin: 0;
+          padding: 2px 4px;
+          font-weight: bold;
+          color: white;
+          background: var(--main-light-color);
+          text-wrap-mode: nowrap;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

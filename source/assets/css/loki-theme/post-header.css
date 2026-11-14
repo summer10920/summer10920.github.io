@@ -1,0 +1,151 @@
+/* ==========================================================================
+   文章標題列（首頁列表與文章內頁共用）
+   依賴：.posts-expand header.post-header 底下的 .post-title、.post-meta-container、
+         .post-meta-item-icon、a.post-edit-link。
+   ========================================================================== */
+.posts-expand header.post-header {
+  margin-bottom: 10px;
+
+  .post-title a {
+    &:hover {
+      color: var(--link-color-hover);
+    }
+  }
+
+  /* 發表日期、分類、字數等資訊：連結用品牌色 */
+  .post-meta-container {
+    font-size: 1rem;
+    a {
+      color: var(--link-color-hover);
+      &:hover {
+        border-color: var(--link-color-hover);
+      }
+    }
+  }
+
+  /* 資訊列：分成兩行
+     第一行是標籤（發表、更新日期、分類），第二行是淡色統計（閱讀次數、字數、閱讀時間）。
+     統計項目的 span 才有 title 屬性，用它來分組；主題的 .post-meta-break 負責換行，用 order 排在中間。 */
+  .post-meta {
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .post-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    /* 主題用 ::before 畫「|」分隔線，不需要 */
+    &::before {
+      content: none;
+    }
+  }
+
+  .post-meta-item-icon {
+    margin: 0;
+  }
+
+  /* 第一行的標籤：直角、灰階，只有分類帶一點品牌色。
+     日期是淺灰底、深灰字，最不搶眼；分類是深灰底，與頁首橫幅的黑底標題呼應 */
+  .post-meta-item:not([title]) {
+    padding: 3px 12px;
+    font-size: 0.875rem;
+    color: #666;
+    background: #e3e3e3;
+    border-bottom: 2px solid #b5b5b5;
+
+    .post-meta-item-icon {
+      color: #999;
+    }
+
+    time {
+      border-bottom: 0;
+    }
+
+    /* 排列：圖示、日期、說明文字（「2026-08-30 發表」），文字放後面並調淡 */
+    .post-meta-item-text {
+      order: 3;
+      font-size: 0.8125rem;
+      opacity: 0.75;
+    }
+
+    /* 分類：深灰底淺色字，只有圖示與底邊細線用品牌色。
+       多個分類或名稱很長時允許自己換行 */
+    &:has([itemprop='about']) {
+      display: inline-block;
+      white-space: normal;
+      text-align: center;
+      /* 項目本身的文字色用品牌色：分類之間的「×」（languages.yml 設定）是裸文字，
+         只能靠這裡上色；分類名稱是連結，下面另外設淺色 */
+      color: var(--main-color);
+      background: #3a3a3a;
+      border-bottom: 2px solid var(--main-color);
+
+      a {
+        color: #eee;
+        border-bottom: 0;
+        transition: color 0.2s;
+
+        &:hover {
+          color: var(--main-color);
+          text-decoration: underline;
+        }
+      }
+
+      /* 資料夾圖示已經說明了這是分類，不再顯示「分類於」 */
+      .post-meta-item-text {
+        display: none;
+      }
+
+      .post-meta-item-icon {
+        margin-right: 6px;
+        color: var(--main-color);
+      }
+    }
+  }
+
+  .post-meta-break {
+    order: 1;
+  }
+
+  /* 第二行的統計：沒有外框，小字淡色 */
+  .post-meta-item[title] {
+    order: 2;
+    font-size: 0.8125rem;
+    color: #8a8a8a;
+    gap: 4px;
+    margin: 0 7px;
+  }
+
+  /* 說明文字後的「×」（由 loki-theme.js 把冒號換成這個 span）：品牌色，和分類之間的「×」一致 */
+  .loki-meta-sep {
+    margin-left: 2px;
+    color: var(--main-color);
+  }
+
+  @media (max-width: 767px) {
+    .post-meta-container {
+      margin-top: 10px;
+    }
+
+    .post-meta-item:not([title]) {
+      font-size: 0.8125rem;
+      padding: 2px 10px;
+    }
+  }
+
+  /* 「編輯此頁」的小鉛筆：平常淡淡的，滑過才清楚 */
+  a.post-edit-link {
+    font-size: calc((1.5em / 2));
+    opacity: 0.25;
+    margin-top: calc((1.5em / 4));
+
+    &:hover {
+      color: var(--main-color);
+      opacity: 1;
+    }
+  }
+}
