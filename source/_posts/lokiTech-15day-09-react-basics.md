@@ -100,7 +100,14 @@ React 把畫面切成元件（component）：標題、清單、表單各是一�
 
 ## 用 Vite 建立 React 專案
 
-Node、nvs 與 pnpm 在 04 已經裝好，這裡不重裝。這一節先認識 Vite 的 React 範本，在 `sandbox` 走完建立、安裝、看檔與啟動，再換到 `03-react`。
+這一節先認識 Vite 的 React 範本，在 `sandbox` 走完建立、安裝、接上檢查／排版／編輯器與 `jsconfig.json`、看檔與啟動，再換到 `03-react`。若 Node、nvs 與 pnpm 已在 04 裝好，這裡不重裝。
+
+沒學過 Tailwind、第一次接觸這些工具時，請先到 {% post_link lokiTech-15day-04-tailwind %} 看完下列章節再回來（Tailwind 的 class 與樣式可以先略過，只要把工具鏈跑通）：
+
+- [建立 Node 開發環境](/2026/08-30/lokiTech-15day-04-tailwind/#建立-Node-開發環境)：乾淨電腦上裝工具的總覽
+- [為什麼需要 Node](/2026/08-30/lokiTech-15day-04-tailwind/#為什麼需要-Node)、[用 nvs 安裝 Node 26](/2026/08-30/lokiTech-15day-04-tailwind/#用-nvs-安裝-Node-26)、[安裝 pnpm](/2026/08-30/lokiTech-15day-04-tailwind/#安裝-pnpm)：Node 26 與 pnpm 怎麼裝、怎麼確認版本
+- [認識 Vite](/2026/08-30/lokiTech-15day-04-tailwind/#認識-Vite)：開發伺服器與打包器在做什麼
+- [手動建立專案](/2026/08-30/lokiTech-15day-04-tailwind/#手動建立專案)：用 Vite 範本建專案、`pnpm install` 與 `pnpm dev` 的流程（04 用的是 vanilla 範本；這裡改用 React）
 
 ### 認識 React 範本
 
@@ -116,7 +123,7 @@ Vite 同時是開發伺服器與打包器。開發時瀏覽器向它要模組，
 
 ### 手動建立專案
 
-在 `studiesAdvanced` 倉庫根目錄建立 `sandbox` 資料夾，它和 `03-react` 分開，做壞了整個刪掉重建即可。
+在 `studiesAdvanced` 倉庫根目錄建立 `sandbox` 資料夾，它和 `03-react` 分開，做壞了整個刪掉重建即可。步驟依序是：用 React 範本建立、安裝依賴、把 ESLint／Prettier／VS Code／`jsconfig.json` 設成與 `03-react` 相同、認識檔案、啟動開發伺服器。後面若一直留在 sandbox 練習，檢查、排版與編輯器跨檔能力會和課堂專案一致；Tailwind 與 React Compiler 仍只在 `03-react`（改用那一節再接）。
 
 {% note info %}
 **已做過可跳過**
@@ -156,17 +163,160 @@ pnpm install   # 依 package.json 下載套件到 node_modules/
 
 清單裡有 `react`、`react-dom`、`vite` 與轉換 JSX 的 `@vitejs/plugin-react`，加上選 ESLint 後多出的檢查套件。版本號不用自己改。
 
-#### 步驟 3：認識檔案結構
+#### 步驟 3：設定 ESLint、Prettier、VS Code 與 jsconfig
+
+產生器選 ESLint 之後，專案已有 `eslint.config.js` 與 `lint` 指令，但規則與課堂專案不完全相同，也還沒有 Prettier、編輯器設定與 `jsconfig.json`。這一節把這些改成與 `03-react` 同一套，之後若你繼續用 sandbox 而不換 `03-react`，存檔排版、`pnpm lint`、Hooks 檢查與跨檔跳轉會和課堂一致。ESLint 負責檢查規則；Prettier 只管排版；`eslint-config-prettier` 關掉會跟排版打架的 ESLint 規則；`jsconfig.json` 讓編輯器把 `src` 當成同一個 JavaScript 專案。ESLint／Prettier／VS Code 各行設定在選讀「工具鏈」再拆開說明。
+
+先補上 Prettier 相關套件（產生器已裝過的 ESLint 套件不必重裝）：
+
+```bash
+pnpm add -D prettier eslint-config-prettier
+```
+
+用下面這份蓋掉產生器的 `eslint.config.js`（與 `03-react` 相同）：
+
+```js sandbox/eslint.config.js
+import js from '@eslint/js';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import reactHooks from 'eslint-plugin-react-hooks';
+import { reactRefresh } from 'eslint-plugin-react-refresh';
+import { defineConfig } from 'eslint/config';
+import globals from 'globals';
+
+export default defineConfig([
+  { ignores: ['dist'] },
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [js.configs.recommended, reactHooks.configs.flat.recommended],
+    languageOptions: {
+      ecmaVersion: 2024,
+      globals: globals.browser,
+      parserOptions: { ecmaFeatures: { jsx: true } },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+  reactRefresh.configs.vite(),
+  eslintConfigPrettier,
+]);
+```
+
+在專案根目錄新增 `.prettierrc`：
+
+```json sandbox/.prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2
+}
+```
+
+再新增 `.vscode` 資料夾，放入與 `03-react` 相同的兩份檔。VS Code 只讀「目前開啟的那個資料夾」裡的 `.vscode`，所以請用「開啟資料夾」打開 `sandbox`（不要只開倉庫根目錄），編輯器才會套用這些設定並提示安裝建議擴充。
+
+```json sandbox/.vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.linkedEditing": true,
+  "editor.guides.bracketPairs": true,
+  "files.autoSave": "afterDelay",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}
+```
+
+```json sandbox/.vscode/extensions.json
+{
+  "recommendations": [
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "mhutchie.git-graph",
+    "MS-CEINTL.vscode-language-pack-zh-hant",
+    "dbaeumer.vscode-eslint",
+    "christian-kohler.path-intellisense",
+    "kisstkondoros.vscode-gutter-preview",
+    "GitHub.copilot"
+  ]
+}
+```
+
+存檔後在 `sandbox` 執行 `pnpm lint`：沒問題時指令安靜結束。建議擴充裝好後，存檔會交給 Prettier 排版，並修 ESLint 能自動修的問題。終端機也可以跑 `pnpm exec prettier --write .`。
+
+Vite 的 React 範本不會附 `jsconfig.json`，請在專案根目錄自己新增。它不是給 Vite 打包用的，少了它網站一樣能建置；用途是告訴 Cursor 或 VS Code：`src` 底下的 `.js`／`.jsx` 屬於同一個專案。沒有它時，編輯器可能把每個檔當成獨立檔，跨檔跳轉、「找出所有引用」、以及 JSX 語法提示會不完整或報錯。
+
+```json sandbox/jsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "checkJs": false
+  },
+  "include": ["src"]
+}
+```
+
+- `include` 寫 `src`：編輯器把 `src` 底下的檔當成同一個專案。
+- `moduleResolution` 設成 `bundler`：解析 `import` 的方式和 Vite 一致。
+- `jsx` 設成 `react-jsx`：編輯器才會把 JSX 當成合法語法（不必再手動 `import React`）。
+- `checkJs` 設成 `false`：不要用 TypeScript 的型別規則去檢查這些 JavaScript 檔。
+- 不必寫 `baseUrl`：本課示範都用相對路徑；TypeScript 6 已把 `baseUrl` 標為棄用。
+
+{% note info %}
+**和 03-react 還差什麼**
+檢查、排版、編輯器與 `jsconfig.json` 已對齊。sandbox 還沒接 Tailwind 與 React Compiler；那兩項在「改用 03-react」才掛上。若你堅持留在 sandbox，可先略過 utility class 與 Compiler，等後面章節再用課堂專案。
+{% endnote %}
+
+#### 步驟 4：認識檔案結構
 
 啟動前先看檔案。HTML 幾乎是空的，真正的畫面在 `src/App.jsx`，`src/main.jsx` 負責把它掛進頁面。
 
 ```bash
-# sandbox/index.html        空頁面，只留 #root，腳本指向 /src/main.jsx
-# sandbox/vite.config.js    plugins 裡有 react()，負責轉換 JSX
-# sandbox/src/main.jsx      入口：createRoot 把 App 畫進 #root
-# sandbox/src/App.jsx       畫面上那一塊元件；範本預設是標誌與計數按鈕
-# sandbox/eslint.config.js  選 ESLint 後產生器寫入的檢查設定
-# sandbox/package.json      依賴與 dev、build、lint 指令
+# sandbox/index.html             空頁面，只留 #root，腳本指向 /src/main.jsx
+# sandbox/vite.config.js         plugins 裡有 react()，負責轉換 JSX
+# sandbox/src/main.jsx           入口：createRoot 把 App 畫進 #root
+# sandbox/src/App.jsx            畫面上那一塊元件；範本預設是標誌與計數按鈕
+# sandbox/eslint.config.js       步驟 3：與 03-react 相同的檢查設定
+# sandbox/.prettierrc            步驟 3：與 03-react 相同的排版規則
+# sandbox/.vscode/settings.json  步驟 3：存檔排版與 ESLint 自動修
+# sandbox/.vscode/extensions.json 步驟 3：建議安裝的擴充
+# sandbox/jsconfig.json          步驟 3：編輯器專案範圍與 JSX
+# sandbox/package.json           依賴與 dev、build、lint 指令
 ```
 
 頁面本體只有一個起點。腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔；路徑以斜線開頭，表示從專案根目錄算起。
@@ -197,7 +347,7 @@ export default function App() {
 }
 ```
 
-#### 步驟 4：啟動開發伺服器
+#### 步驟 5：啟動開發伺服器
 
 在 `sandbox` 目錄啟動開發伺服器，終端機會印出 Local 網址，通常是 `http://localhost:5173/`，用 Chrome 打開應看到「React 有跑起來」。
 
@@ -229,7 +379,7 @@ pnpm dev
 - `vite`：8；`@vitejs/plugin-react`：6，負責轉換 JSX。
 - `babel-plugin-react-compiler`、`@rolldown/plugin-babel`：React Compiler 與它需要的 Babel 外掛載入器。
 - `tailwindcss` 與 `@tailwindcss/vite`：4。
-- `eslint`、`eslint-plugin-react-hooks`、`prettier`：檢查與排版，在選讀的工具鏈說明。
+- `eslint`、`eslint-plugin-react-hooks`、`prettier`：檢查與排版；與 sandbox 步驟 3 同一套，細節見選讀「工具鏈」。
 
 這份 Vite 設定在 React 插件之後掛上 React Compiler 與 Tailwind。
 
@@ -462,7 +612,7 @@ createRoot(document.getElementById('root')).render(
 
 ## 選讀：工具鏈
 
-`03-react` 除了 Vite 與 Tailwind，還接了 ESLint 與 Prettier。ESLint 檢查程式有沒有違反規則，Prettier 只管排版，兩者分工，才不會同一行被兩套工具各改一次。這一節看這兩份設定。
+手動建立專案的步驟 3 已把 `eslint.config.js`、`.prettierrc`、`.vscode` 與 `jsconfig.json` 設成與 `03-react` 相同；這一節用課堂專案路徑再拆 ESLint 與 Prettier，說明每一段在做什麼。ESLint 檢查規則，Prettier 只管排版，兩者分工，才不會同一行被兩套工具各改一次。`jsconfig.json` 的用途見步驟 3，此處不重複。
 
 ### ESLint
 
@@ -3058,6 +3208,7 @@ export default function Homework09() {
 - 專案產生器（project generator）
 - 依賴（dependency）
 - 熱更新（Hot Module Replacement、HMR）
+- JavaScript 專案設定（jsconfig.json）
 - 記憶（memoization）
 - hash（URL hash）
 - 瀏覽器歷史（history）

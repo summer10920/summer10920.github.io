@@ -29,7 +29,7 @@ Tailwind CSS 把常用的 CSS 宣告做成一粒一粒的 class，稱為 utility
 
 # 建立 Node 開發環境
 
-Tailwind 的 class 要先編成一般 CSS，瀏覽器才看得懂；編譯、安裝套件、開發伺服器，都跑在 **Node.js**（讓 JavaScript 離開瀏覽器、在電腦上執行的環境）上。這一章假設這台電腦剛還原、還沒裝過任何工具：先用 nvs 安裝 Node 26，再安裝 pnpm，接著認識 Vite 並手動做一個小專案，最後改用課堂準備好的練習專案。環境只在這裡建立一次，後面的章節都從準備好的資料夾開始。
+Tailwind 的 class 要先編成一般 CSS，瀏覽器才看得懂；編譯、安裝套件、開發伺服器，都跑在 **Node.js**（讓 JavaScript 離開瀏覽器、在電腦上執行的環境）上。這一章假設這台電腦剛還原、還沒裝過任何工具：先用 nvs 安裝 Node 26，再安裝 pnpm，接著認識 Vite，並在 `sandbox` 手動做出可跑的 Tailwind 專案（含 Prettier 與編輯器設定）。環境只在這裡建立一次；後面各章的現成範例頁在 `02-tailwind`，要用講義附的完整頁再進課堂專案，也可以繼續留在 `sandbox` 自己改。
 
 {% note info %}
 **本課使用的版本**
@@ -140,7 +140,7 @@ npm 與 pnpm 的指令幾乎一一對應，課堂後面都用 pnpm：
 
 ## 用 Vite 建立 Tailwind 專案
 
-工具裝好後，這一節先認識 Vite 的角色，再從空白範本自己做出一個 Tailwind 專案，確認整條流程走得通；最後換到課堂準備好的 `02-tailwind`，讓大家的練習環境一致。
+工具裝好後，這一節先認識 Vite 的角色，再從空白範本自己做出一個 Tailwind 專案：接上插件、Prettier 與編輯器設定，並用 `pnpm dev` 確認畫面。課堂準備的 `02-tailwind` 放各章現成範例頁；你也可以一直留在 `sandbox` 跟著改。
 
 ### 認識 Vite
 
@@ -150,9 +150,14 @@ npm 與 pnpm 的指令幾乎一一對應，課堂後面都用 pnpm：
 
 ### 手動建立專案
 
-先在練習倉庫裡把流程走通：用 Vite 的空白範本建專案、加上 Tailwind、改一個 class 看畫面、再產出成品。專案叫 `sandbox`，建在倉庫根目錄，和後面準備好的課堂專案分開，做壞了刪掉重建即可。倉庫根目錄的 `.gitignore` 已經忽略 `node_modules` 與 `dist`，但沒有忽略 `sandbox` 本身，所以它會出現在 Git 的變更清單裡。這只是試做用的資料夾，不要加入版本控制，確認完流程就整個刪掉。
+在 `studiesAdvanced` 倉庫根目錄建立 `sandbox`，和後面的 `02-tailwind` 分開，做壞了整個刪掉重建即可。步驟依序是：用 vanilla 範本建立、安裝依賴、接上 Tailwind、把 Prettier／VS Code 設成與 `02-tailwind` 相同、啟動開發伺服器。倉庫根目錄的 `.gitignore` 已忽略 `node_modules` 與 `dist`，但沒有忽略 `sandbox` 本身，它會出現在 Git 變更清單裡；這是試做用的資料夾，不要加入版本控制。
 
-#### 建立專案
+{% note info %}
+**已做過可跳過**
+已經用 Vite 接過 Tailwind、`02-tailwind` 也能啟動的人，可以略過 sandbox，直接看「改用 02-tailwind」。
+{% endnote %}
+
+#### 步驟 1：建立專案
 
 在 VS Code 開新的終端機，它會停在倉庫根目錄（Windows 多半是 PowerShell，macOS 是 zsh，下面的指令兩邊相同）。這是第一行建立專案的指令，先看完整版，再看逐項說明：
 
@@ -168,18 +173,20 @@ pnpm create          # 執行專案產生器：暫時下載 create-xxx 套件來
   --no-immediate     # 建好後不要自動安裝與啟動，由我們自己一步步做
 ```
 
-產生器只負責放檔案，還沒有下載任何套件，所以接著進入資料夾，依範本的 `package.json` 安裝：
+#### 步驟 2：安裝依賴
+
+產生器只負責放檔案，還沒有下載任何套件。進入資料夾後安裝：
 
 ```bash
 cd sandbox     # 進入剛建立的專案資料夾
 pnpm install   # 依 package.json 下載套件到 node_modules/
 ```
 
-#### 加入 Tailwind
+#### 步驟 3：加入 Tailwind
 
 範本此時還不認得 Tailwind 的 class。下面三步接上 Tailwind v4 的 Vite 插件，並讓入口 CSS 載入它。官方說明見 [Install Tailwind CSS with Vite](https://tailwindcss.com/docs/installation/using-vite)。
 
-##### 步驟 1：安裝套件
+##### 安裝套件
 
 這兩個套件只在開發與建置時使用，所以用 `-D` 加進開發依賴：
 
@@ -187,11 +194,11 @@ pnpm install   # 依 package.json 下載套件到 node_modules/
 pnpm add -D tailwindcss @tailwindcss/vite
 ```
 
-##### 步驟 2：建立 vite.config.js
+##### 建立 vite.config.js
 
 範本沒有這份設定檔，請在專案根目錄新增，把 Tailwind 註冊成 Vite 插件：
 
-```js
+```js sandbox/vite.config.js
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -207,17 +214,17 @@ Tailwind v3 以前是 PostCSS（用 JavaScript 處理 CSS 的工具）的插件�
 v4 改成自己的編譯引擎，在 Vite 專案裡直接當插件執行，前綴處理也已內建。主題設定改寫在 CSS 裡，下一章會看到。看到這些舊寫法的教學，多半是 v3，課堂上不用照做。
 {% endnote %}
 
-##### 步驟 3：匯入 tailwindcss
+##### 匯入 tailwindcss
 
 把 `src/style.css` 的內容整份換成下面這一行。範本原本的 CSS 會干擾你要試的 utility，所以不要留著：
 
-```css
+```css sandbox/src/style.css
 @import 'tailwindcss';
 ```
 
 範本的 `src/main.js` 已經會載入這份 CSS，不用再改。接著打開 `index.html`，在 `body` 裡原本的容器前面加一行標題。class 要寫成完整的名稱，Tailwind 才掃描得到：
 
-```html
+```html sandbox/index.html
 <body>
   <!-- 新增這行：text-3xl 字級、font-bold 粗體、text-teal-700 深青綠字 -->
   <h1 class="text-3xl font-bold text-teal-700">Tailwind 有編譯到</h1>
@@ -226,7 +233,78 @@ v4 改成自己的編譯引擎，在 Vite 專案裡直接當插件執行，前�
 </body>
 ```
 
-#### 啟動與建置
+#### 步驟 4：設定 Prettier 與 VS Code
+
+Tailwind 能編譯之後，把排版與編輯器設成與 `02-tailwind` 相同，之後若一直留在 sandbox 練習，存檔行為與 class 提示會和課堂專案一致。這一階段還沒有 ESLint（React 篇的 sandbox 才會接）；這裡只接 Prettier。
+
+先安裝 Prettier，並在專案根目錄新增 `.prettierrc`（要分號、單引號、2 空格縮排）：
+
+```bash
+pnpm add -D prettier
+```
+
+```json sandbox/.prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2
+}
+```
+
+再新增 `.vscode` 資料夾，放入下面兩份檔。VS Code 只讀「目前開啟的那個資料夾」裡的 `.vscode`，所以請用「開啟資料夾」打開 `sandbox`（不要只開倉庫根目錄），編輯器才會套用設定並提示安裝建議擴充。`css.lint.unknownAtRules` 設成忽略，是為了不要把 `@import "tailwindcss"`、`@theme` 這類指令誤判成錯誤。
+
+```json sandbox/.vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.linkedEditing": true,
+  "editor.guides.bracketPairs": true,
+  "files.autoSave": "afterDelay",
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "css.lint.unknownAtRules": "ignore",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}
+```
+
+```json sandbox/.vscode/extensions.json
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ritwickdey.LiveServer",
+    "mhutchie.git-graph",
+    "MS-CEINTL.vscode-language-pack-zh-hant",
+    "christian-kohler.path-intellisense",
+    "kisstkondoros.vscode-gutter-preview",
+    "GitHub.copilot"
+  ]
+}
+```
+
+建議擴充裝好後，存檔會交給 Prettier 排版；輸入 class 時 Tailwind CSS IntelliSense 會列出候選。終端機也可以跑 `pnpm exec prettier --write .`。
+
+#### 步驟 5：啟動與建置
 
 在 `sandbox` 目錄啟動開發伺服器。終端機會印出 Local 網址，多半是 `http://localhost:5173/`，用 Chrome 打開，應看到那行青綠色大字；看完按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停止。
 
@@ -235,19 +313,19 @@ pnpm dev     # 日常開發
 pnpm build   # 輸出到 dist/：打包後的成品，不是正在編輯的 src/
 ```
 
-日常開發只用開發伺服器，要交付靜態檔時才執行建置。
+日常開發只用開發伺服器，要交付靜態檔時才執行建置。sandbox 此時已具備：Vite、Tailwind、Prettier 與編輯器設定。後面各章若要在同一專案練習，可繼續改 `index.html` 或自行新增頁面；若要直接開講義附的完整範例檔，再進下一節的 `02-tailwind`。
 
 ### 改用 02-tailwind 練習環境
 
-試做專案確認工具鏈沒問題即可，之後想試新寫法也能回來用。後面的範例都在課堂專案 `02-tailwind`，Tailwind 插件、入口 CSS 與 Prettier 已經接好。請在 VS Code 新開一個終端機（它會開在倉庫根目錄，若還停在 `sandbox`，先回到根目錄），再進入專案、安裝、啟動：
+`02-tailwind` 與 sandbox 使用同一套 Tailwind／Prettier／VS Code 設定，另外準備了 `pages/` 裡依講義順序排好的完整範例頁（含多頁建置）。要用這些現成頁時，請在 VS Code 新開終端機（若還停在 `sandbox`，先回到倉庫根目錄），再進入專案、安裝、啟動：
 
 ```bash
-cd 02-tailwind   # 後面的範例都在這裡
+cd 02-tailwind   # 後面講義指定的範例頁都在這裡
 pnpm install
 pnpm dev
 ```
 
-同樣用終端機印出的 Local 網址開 Chrome，再依各章指定的檔名開啟 `pages/` 裡的範例。建置結果會輸出到 `02-tailwind/dist/`。專案的 `package.json` 要求 Node 26 以上；安裝時若抱怨版本，先用 `node -v` 確認，並確認終端機已經進到這個資料夾，版本檔才會讓 nvs 切換。
+同樣用終端機印出的 Local 網址開 Chrome，再依各章指定的檔名開啟 `pages/` 裡的範例。建置結果會輸出到 `02-tailwind/dist/`。專案的 `package.json` 要求 Node 26 以上；安裝時若抱怨版本，先用 `node -v` 確認，並確認終端機已經進到這個資料夾，版本檔才會讓 nvs 切換。請用「開啟資料夾」打開 `02-tailwind`，專案內的 `.vscode` 才會生效。
 
 {% note info %}
 **為什麼這裡不用 iframe**
@@ -269,19 +347,11 @@ import './style.css';
 
 入口 CSS `src/style.css` 的第一行就是匯入 Tailwind，後面的主題設定會寫在同一份檔案裡：
 
-```css
+```css 02-tailwind/src/style.css
 @import 'tailwindcss';
 ```
 
-排版交給專案裡的 Prettier：要分號、單引號、2 空格縮排。VS Code 的 Tailwind CSS IntelliSense 擴充會在你輸入 class 時列出候選，可以直接選用。
-
-```json 02-tailwind/.prettierrc
-{
-  "semi": true,
-  "singleQuote": true,
-  "tabWidth": 2
-}
-```
+排版規則與 sandbox 步驟 4 相同，檔案在 `02-tailwind/.prettierrc`；編輯器設定在 `02-tailwind/.vscode/`。
 
 # 認識 Tailwind
 
@@ -2045,7 +2115,7 @@ import './layer.css';
 
 選讀小節有：Preflight 重置了什麼、Play CDN、group 與 peer、手動切換、導覽列，以及 @layer 與 @utility，這些可以整節跳過。
 
-- Node 26 用 nvs 安裝、pnpm 用 npm 全域安裝，Vite 開發時當本機伺服器，建置時才把成品打包到 `dist/`。
+- Node 26 用 nvs 安裝、pnpm 用 npm 全域安裝；sandbox 接上 Vite、Tailwind、Prettier 與 VS Code 後即可練習，現成範例頁再進 `02-tailwind`。
 - utility 是「屬性－值」的 class，編譯器只收原始碼裡寫完整的名字，例如 `bg-teal-700`。
 - 條件寫成前綴：`hover:` 是滑過，鍵盤聚焦、按下、停用各有自己的前綴，預設的 dark 前綴則跟著作業系統外觀。
 - 寬度前綴是最小寬度，夠寬才加上、更寬仍成立，要限定小於某個寬度就用 `max-md:`。
