@@ -19,17 +19,18 @@ minify: false
 # Define custom file paths.
 # Create your custom files in site directory `source/_data` and uncomment needed files below.
 custom_file_path:
-  head: source/_data/head.njk
+  #head: source/_data/head.njk
   #header: source/_data/header.njk
   #sidebar: source/_data/sidebar.njk
   #postMeta: source/_data/post-meta.njk
   #postBodyStart: source/_data/post-body-start.njk
   #postBodyEnd: source/_data/post-body-end.njk
   #footer: source/_data/footer.njk
-  bodyEnd: source/_data/body-end.njk
+  #bodyEnd: source/_data/body-end.njk
   #variable: source/_data/variables.styl
   #mixin: source/_data/mixins.styl
-  # style: source/_data/styles.styl
+  #style: source/_data/styles.styl
+
 
 # ---------------------------------------------------------------
 # Scheme Settings
@@ -44,15 +45,16 @@ scheme: Muse
 # Dark Mode
 darkmode: false
 
+
 # ---------------------------------------------------------------
 # Site Information Settings
 # ---------------------------------------------------------------
 
 favicon:
-  small: /assets/config/favicon-16x16.png
-  medium: /assets/config/favicon-32x32.png
+  small: /images/favicon-16x16-next.png
+  medium: /images/favicon-32x32-next.png
   apple_touch_icon: /images/apple-touch-icon-next.png
-  safari_pinned_tab: /assets/config/logo-loki.svg
+  safari_pinned_tab: /images/logo.svg
   #android_manifest: /manifest.json
 
 # Custom Logo (Warning: Do not support scheme Mist)
@@ -84,6 +86,7 @@ open_graph:
     #fb_admins: <fb:admin_id>
     #fb_app_id: <fb:app_id>
 
+
 # ---------------------------------------------------------------
 # Menu Settings
 # ---------------------------------------------------------------
@@ -93,11 +96,11 @@ open_graph:
 # Value before `||` delimiter is the target link, value after `||` delimiter is the name of Font Awesome icon.
 # External url should start with http:// or https://
 menu:
-  home: / || fa fa-home
+  #home: / || fa fa-home
   #about: /about/ || fa fa-user
-  tags: /tags/ || fa fa-tags
-  categories: /categories/ || fa fa-th
-  archives: /archives/ || fa fa-archive
+  #tags: /tags/ || fa fa-tags
+  #categories: /categories/ || fa fa-th
+  #archives: /archives/ || fa fa-archive
   #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
@@ -105,7 +108,8 @@ menu:
 # Enable / Disable menu icons / item badges.
 menu_settings:
   icons: true
-  badges: true
+  badges: false
+
 
 # ---------------------------------------------------------------
 # Sidebar Settings
@@ -118,7 +122,7 @@ sidebar:
 
   # Sidebar width.
   # Applicable to Muse | Mist and mobile of Pisces | Gemini.
-  width_expanded: 360
+  width_expanded: 320
   # Applicable to desktop of Pisces | Gemini.
   width_dual_column: 240
 
@@ -132,16 +136,16 @@ sidebar:
   display: post
 
   # Sidebar padding in pixels.
-  padding: 20
+  padding: 18
   # Sidebar offset from top menubar in pixels (only for Pisces | Gemini).
-  offset: 20
+  offset: 12
 
 # Sidebar Avatar
 avatar:
   # Replace the default image and set the url here.
-  url: /assets/config/author_loki.jpg
+  url: #/images/avatar.gif
   # If true, the avatar will be displayed in circle.
-  rounded: true
+  rounded: false
   # If true, the avatar will be rotated with the cursor.
   rotated: false
 
@@ -153,10 +157,8 @@ site_state: true
 # Key is the link label showing to end users.
 # Value before `||` delimiter is the target permalink, value after `||` delimiter is the name of Font Awesome icon.
 social:
-  GitHub: https://github.com/summer10920 || fab fa-github
-  E-Mail: mailto:summer10920@gmail.com || fa fa-envelope
-  CodePen: https://codepen.io/summer10920/pens/public?grid_type=list || fab fa-codepen
-  YouTube: https://www.youtube.com/c/LokiJiang/playlists || fab fa-youtube
+  #GitHub: https://github.com/yourname || fab fa-github
+  #E-Mail: mailto:yourname@gmail.com || fa fa-envelope
   #Weibo: https://weibo.com/yourname || fab fa-weibo
   #Twitter: https://twitter.com/yourname || fab fa-twitter
   #FB Page: https://www.facebook.com/yourname || fab fa-facebook
@@ -168,17 +170,15 @@ social:
 social_icons:
   enable: true
   icons_only: false
-  transition: true
+  transition: false
 
 # Blog rolls
 links_settings:
-  icon: fa fa-link
+  icon: fa fa-globe
   # Available values: block | inline
-  layout: inline
+  layout: block
 
 links:
-  # DemoSite - 網頁設計乙術科: http://demob17300.lokiwebs.com/
-  # 舊址(停更) - 札記 Blog: http://blog.lokiwebs.com/
   #Title: https://example.com
 
 # Table of Contents in the Sidebar
@@ -194,6 +194,7 @@ toc:
   # Maximum heading depth of generated toc.
   max_depth: 6
 
+
 # ---------------------------------------------------------------
 # Footer Settings
 # See: https://theme-next.js.org/docs/theme-settings/footer
@@ -204,23 +205,23 @@ language_switcher: false
 
 footer:
   # Specify the year when the site was setup. If not defined, current year will be used.
-  since: 2020
+  #since: 2021
 
   # Icon between year and copyright info.
   icon:
     # Icon name in Font Awesome. See: https://fontawesome.com/icons
-    name: fa fa-star
+    name: fa fa-heart
     # If you want to animate the icon, set it to true.
-    animated: true
+    animated: false
     # Change the color of icon, using Hex Code.
-    color: "#808080"
+    color: "#ff0000"
 
   # If not defined, `author` from Hexo `_config.yml` will be used.
   # Set to `false` to disable the copyright statement.
   copyright:
 
   # Powered by Hexo & NexT
-  powered: false
+  powered: true
 
   # Beian ICP and gongan information for Chinese users. See: https://beian.miit.gov.cn, https://beian.mps.gov.cn
   beian:
@@ -232,6 +233,7 @@ footer:
     gongan_num:
     # The icon for gongan beian. Login and See: https://beian.mps.gov.cn/web/business/businessHome/website
     gongan_icon_url:
+
 
 # ---------------------------------------------------------------
 # Post Settings
@@ -293,13 +295,14 @@ related_posts:
 # Post edit
 # Easily browse and edit blog source code online.
 post_edit:
-  enable: true
-  # url: https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/ # Link for view source
-  url: https://github.com/summer10920/summer10920.github.io/edit/master/source/ # Link for fork & edit
+  enable: false
+  url: https://github.com/user-name/repo-name/tree/branch-name/subdirectory-name/ # Link for view source
+  #url: https://github.com/user-name/repo-name/edit/branch-name/subdirectory-name/ # Link for fork & edit
 
 # Show previous post and next post in post footer if exists
 # Available values: left | right | false
 post_navigation: left
+
 
 # ---------------------------------------------------------------
 # Custom Page Settings
@@ -326,6 +329,7 @@ calendar:
   showDeleted: false
   singleEvents: true
   maxResults: 250
+
 
 # ---------------------------------------------------------------
 # Misc Theme Settings
@@ -361,41 +365,39 @@ codeblock:
   # Code Highlight theme
   # All available themes: https://theme-next.js.org/highlight/
   theme:
-    light: atom-one-dark-reasonable
-    dark: atom-one-dark-reasonable
-    # light: monokai-sublime
-    # dark: monokai-sublime
+    light: default
+    dark: stackoverflow-dark
   prism:
     light: prism
     dark: prism-dark
   # Add copy button on codeblock
   copy_button:
-    enable: true
+    enable: false
     # Available values: default | flat | mac
-    style: mac
+    style:
   # Fold code block
   fold:
-    enable: true
+    enable: false
     height: 500
   # Display language name
-  language: true
+  language: false
 
 back2top:
   enable: true
   # Back to top in sidebar.
-  sidebar: true
+  sidebar: false
   # Scroll percent label in b2t button.
-  scrollpercent: true
+  scrollpercent: false
 
 # Reading progress bar
 reading_progress:
-  enable: true
+  enable: false
   # Available values: left | right
   start_at: left
   # Available values: top | bottom
   position: top
   reversed: false
-  color: "#e91061"
+  color: "#37c6c0"
   height: 3px
 
 # Bookmark Support
@@ -409,8 +411,9 @@ bookmark:
 
 # `Follow me on GitHub` banner in the top-right corner.
 github_banner:
-  enable: true
-  permalink: https://github.com/summer10920
+  enable: false
+  permalink: https://github.com/yourname
+
 
 # ---------------------------------------------------------------
 # Font Settings
@@ -425,7 +428,7 @@ github_banner:
 # ---------------------------------------------------------------
 
 font:
-  enable: true
+  enable: false
 
   # Uri of fonts host, e.g. https://fonts.googleapis.com (Default).
   host:
@@ -438,7 +441,7 @@ font:
   # Global font settings used for all elements inside <body>.
   global:
     external: true
-    family: Roboto, Noto Sans TC
+    family: Lato
     size:
 
   # Font settings for site title (.site-title).
@@ -462,6 +465,7 @@ font:
   codes:
     external: true
     family:
+
 
 # ---------------------------------------------------------------
 # SEO Settings
@@ -493,6 +497,7 @@ yandex_site_verification:
 # See: https://ziyuan.baidu.com/site
 baidu_site_verification:
 
+
 # ---------------------------------------------------------------
 # Tags Settings
 # See: https://theme-next.js.org/docs/tag-plugins/
@@ -506,7 +511,7 @@ note:
   #  - flat      flat callout style with background, like on Mozilla or StackOverflow.
   #  - disabled  disable all CSS styles import of note tag.
   style: simple
-  icons: true
+  icons: false
   # Offset lighter of background in % for modern and flat styles (modern: -12 | 12; flat: -18 | 6).
   # Offset also applied to label tag variables. This option can work with disabled note tag.
   light_bg_offset: 0
@@ -530,7 +535,7 @@ pdf:
 
 # Mermaid tag
 mermaid:
-  enable: true
+  enable: false
   # Available themes: default | dark | forest | neutral
   theme:
     light: default
@@ -557,7 +562,7 @@ math:
   # Default (false) will load mathjax / katex script on demand.
   # That is it only render those page which has `mathjax: true` in front-matter.
   # If you set it to true, it will load mathjax / katex script EVERY PAGE.
-  every_page: true
+  every_page: false
 
   mathjax:
     enable: false
@@ -568,6 +573,7 @@ math:
     enable: false
     # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex
     copy_tex: false
+
 
 # ---------------------------------------------------------------
 # External Libraries
@@ -580,7 +586,7 @@ pjax: false
 
 # FancyBox is a tool that offers a nice and elegant way to add zooming functionality for images.
 # For more information: https://fancyapps.com/fancybox/
-fancybox: true
+fancybox: false
 
 # Medium Zoom is a JavaScript library for zooming images like Medium.
 # Warning: Do not enable both `fancybox` and `mediumzoom`.
@@ -614,6 +620,7 @@ quicklink:
   # Default (true) will attempt to use the fetch() API if supported (rather than link[rel=prefetch]).
   priority: true
 
+
 # ---------------------------------------------------------------
 # Animation Settings
 # ---------------------------------------------------------------
@@ -629,7 +636,7 @@ motion:
     menu_item: fadeInDown
     post_block: fadeIn
     post_header: fadeInDown
-    post_body: fadeIn
+    post_body: fadeInDown
     coll_header: fadeInLeft
     # Only for Pisces | Gemini.
     sidebar: fadeInUp
@@ -653,6 +660,7 @@ canvas_ribbon:
   size: 300 # The width of the ribbon
   alpha: 0.6 # The transparency of the ribbon
   zIndex: -1 # The display level of the ribbon
+
 
 # ---------------------------------------------------------------
 # Comments Settings
@@ -741,6 +749,7 @@ utterances:
 # For more information: https://isso-comments.de
 isso: # <data_isso>
 
+
 # ---------------------------------------------------------------
 # Post Widgets & Content Sharing Services
 # See: https://theme-next.js.org/docs/third-party-services/post-widgets
@@ -753,6 +762,7 @@ addtoany:
     - facebook
     - twitter
 
+
 # ---------------------------------------------------------------
 # Statistics and Analytics
 # See: https://theme-next.js.org/docs/third-party-services/statistics-and-analytics
@@ -761,7 +771,7 @@ addtoany:
 # Google Analytics
 # See: https://analytics.google.com
 google_analytics:
-  tracking_id: UA-146423952-3
+  tracking_id: # <app_id>
   # By default, NexT will load an external gtag.js script on your site.
   # If you only need the pageview feature, set the following option to true to get a better performance.
   only_pageview: false
@@ -831,13 +841,14 @@ firestore:
 # Show Views / Visitors of the website / page with busuanzi.
 # For more information: http://ibruce.info/2015/04/04/busuanzi/
 busuanzi_count:
-  enable: true
+  enable: false
   total_visitors: true
   total_visitors_icon: fa fa-user
   total_views: true
   total_views_icon: fa fa-eye
   post_views: true
   post_views_icon: far fa-eye
+
 
 # ---------------------------------------------------------------
 # Search Services
@@ -854,13 +865,14 @@ algolia_search:
 # Local Search
 # Dependencies: https://github.com/next-theme/hexo-generator-searchdb
 local_search:
-  enable: true
+  enable: false
   # Show top n results per article, show all results by setting to -1
   top_n_per_article: 1
   # Unescape html strings to the readable one.
   unescape: false
   # Preload the search data when the page loads.
   preload: false
+
 
 # ---------------------------------------------------------------
 # Chat Services
@@ -888,6 +900,7 @@ chatra:
 tidio:
   enable: false
   key: # Public Key, get it from dashboard. See: https://www.tidio.com/panel/settings/developer
+
 
 # ---------------------------------------------------------------
 # CDN Settings

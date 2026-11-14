@@ -1,0 +1,117 @@
+# NexT 主題的站台設定：只放與官方預設不同的項目，會自動覆蓋 themes/next/_config.yml。
+# 升級主題時主題資料夾可直接換成官方版本，這份檔案不用動，只需確認設定名稱沒有改名。
+# 對應的說明在 loki-theme.md。
+
+# 站台自訂檔：樣式變數、頁頭與頁尾的補充內容。
+custom_file_path:
+  head: source/_data/head.njk
+  footer: inject/loki-theme.njk
+  bodyEnd: source/_data/body-end.njk
+  variable: source/_data/loki-theme.styl
+
+favicon:
+  small: /assets/config/favicon-16x16.png
+  medium: /assets/config/favicon-32x32.png
+  safari_pinned_tab: /assets/config/logo-loki.svg
+
+menu:
+  home: / || fa fa-home
+  tags: /tags/ || fa fa-tags
+  categories: /categories/ || fa fa-th
+  archives: /archives/ || fa fa-archive
+
+menu_settings:
+  badges: true
+
+sidebar:
+  width_expanded: 360
+  padding: 20
+  offset: 20
+
+avatar:
+  url: /assets/config/author_loki.jpg
+  rounded: true
+
+social:
+  GitHub: https://github.com/summer10920 || fab fa-github
+  E-Mail: mailto:summer10920@gmail.com || fa fa-envelope
+  CodePen: https://codepen.io/summer10920/pens/public?grid_type=list || fab fa-codepen
+  YouTube: https://www.youtube.com/c/LokiJiang/playlists || fab fa-youtube
+
+social_icons:
+  transition: true
+
+links_settings:
+  icon: fa fa-link
+  layout: inline
+
+# 版權列改由 inject/loki-theme.njk 自己輸出，所以關掉主題預設的那一行。
+footer:
+  since: 2020
+  copyright: false
+  icon:
+    name: fa fa-star
+    animated: true
+    color: "#808080"
+  powered: false
+
+post_edit:
+  enable: true
+  url: https://github.com/summer10920/summer10920.github.io/edit/master/source/
+
+codeblock:
+  theme:
+    light: atom-one-dark-reasonable
+    dark: atom-one-dark-reasonable
+  copy_button:
+    enable: true
+    style: mac
+  fold:
+    enable: true
+  language: true
+
+back2top:
+  sidebar: true
+  scrollpercent: true
+
+reading_progress:
+  enable: true
+  color: "#e91061"
+
+github_banner:
+  enable: true
+  permalink: https://github.com/summer10920
+
+font:
+  enable: true
+  global:
+    family: Roboto, Noto Sans TC
+
+note:
+  icons: true
+
+mermaid:
+  enable: true
+
+math:
+  every_page: true
+
+fancybox: true
+
+motion:
+  transition:
+    post_body: fadeIn
+
+# 舊的 Universal Analytics 代碼，UA 已停用，之後請改 GA4。
+google_analytics:
+  tracking_id: UA-146423952-3
+
+local_search:
+  enable: true
+
+# 計數服務：官方預設是 busuanzi，改成 vercount（相容 busuanzi 的欄位 id）。
+busuanzi_count:
+  enable: true
+
+vendors:
+  busuanzi: https://vercount.one/js

@@ -1,0 +1,28 @@
+// NexT 樣式變數覆蓋：載入時機在官方變數之後，所以直接重新指定即可。
+// 對應官方的 themes/next/source/css/_variables/base.styl。
+
+// 品牌色，並讓側欄高亮跟著它
+$main-bright = #e91061;
+$sidebar-highlight = $main-bright;
+
+// 字級改用 rem，與頁面其他自訂樣式一致
+$font-size-smallest = .75rem;
+$font-size-smaller = .8125rem;
+$font-size-small = .875rem;
+$font-size-medium = 1rem;
+$font-size-large = 1.25rem;
+$font-size-larger = 1.25rem;
+$font-size-largest = 1.5rem;
+
+// 官方用舊字級先算好的衍生變數，要跟著重新指定
+$table-font-size = $font-size-small;
+$font-size-subtitle = $font-size-smaller;
+$site-description-font-size = $font-size-medium;
+$site-state-item-count-font-size = $font-size-larger;
+$site-state-item-name-font-size = $font-size-small;
+
+// 行高與內容寬度
+$line-height-base = 2.25;
+$content-desktop = 800px;
+$content-desktop-large = 900px;
+$content-desktop-largest = 1200px;

@@ -1,0 +1,17 @@
+/* 對 NexT 官方樣式的小調整，原本是直接改主題檔，現在集中在這裡 */
+
+/* 頁尾：自訂版權列排在最前面（.footer-inner 本來就是 flex 欄） */
+.footer-inner .loki-copyright {
+  order: -1;
+}
+
+/* 頁尾：vercount 不會把計數容器顯示出來，所以不要預設隱藏 */
+.busuanzi-count #busuanzi_container_site_uv,
+.busuanzi-count #busuanzi_container_site_pv {
+  display: inline;
+}
+
+/* 側欄目錄：展開的子清單多留 10px，避免最後一項被切到 */
+.post-toc .nav .active > .nav-child {
+  height: calc(var(--height, 0px) + 10px);
+}

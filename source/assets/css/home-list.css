@@ -26,6 +26,16 @@
           }
         }
 
+        /* 摘要裡的行內程式碼，樣式與文章頁相同（post-page.css） */
+        code {
+          border-radius: 0.25rem;
+          color: var(--main-color);
+          background: #ddd;
+          margin: 0 0.25rem;
+          font-size: 1em;
+          padding: 4px 8px;
+        }
+
         p {
           display: -webkit-box;
           -webkit-line-clamp: 2;

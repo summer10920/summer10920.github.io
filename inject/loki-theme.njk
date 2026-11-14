@@ -1,0 +1,13 @@
+{#- 自訂版權列：愛心圖示、作者、版權圖示、年份。官方那一行已在 _config.next.yml 用 footer.copyright: false 關掉。排序用 CSS 的 order 放到最前面。 -#}
+<div class="copyright loki-copyright">
+  <span class="with-love">
+    <i class="{{ theme.footer.icon.name }}"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder" title="找我？！側單左上連結">{{ config.author }}</span>
+  <span class="post-meta-item-icon with-love">
+    <i class="fas fa-copyright"></i>
+  </span>
+  {%- set copyright_year = date(null, 'YYYY') %}
+  {% if theme.footer.since and theme.footer.since != copyright_year %}{{ theme.footer.since }} – {% endif %}
+  <span itemprop="copyrightYear">{{ copyright_year }}</span> All rights reserved.
+</div>

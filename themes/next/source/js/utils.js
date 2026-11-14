@@ -1,12 +1,12 @@
 /* global NexT, CONFIG */
 
-HTMLElement.prototype.wrap = function (wrapper) {
+HTMLElement.prototype.wrap = function(wrapper) {
   this.parentNode.insertBefore(wrapper, this);
   this.parentNode.removeChild(this);
   wrapper.appendChild(this);
 };
 
-(function () {
+(function() {
   const onPageLoaded = () => document.dispatchEvent(
     new Event('page:loaded', {
       bubbles: true
@@ -197,8 +197,6 @@ NexT.utils = {
         if (backToTop) {
           backToTop.classList.toggle('back-to-top-on', Math.round(scrollPercent) >= 5);
           backToTop.querySelector('span').innerText = Math.round(scrollPercent) + '%';
-          backToTop.style.setProperty('--progress', scrollPercent.toFixed(2) + '%');
-
         }
         if (readingProgressBar) {
           readingProgressBar.style.setProperty('--progress', scrollPercent.toFixed(2) + '%');
@@ -209,9 +207,9 @@ NexT.utils = {
 
     backToTop?.addEventListener('click', () => {
       window.anime({
-        targets: document.scrollingElement,
-        duration: 500,
-        easing: 'linear',
+        targets  : document.scrollingElement,
+        duration : 500,
+        easing   : 'linear',
         scrollTop: 0
       });
     });
@@ -274,9 +272,9 @@ NexT.utils = {
         if (!CONFIG.stickytabs) return;
         const offset = nav.parentNode.getBoundingClientRect().top + window.scrollY + 10;
         window.anime({
-          targets: document.scrollingElement,
-          duration: 500,
-          easing: 'linear',
+          targets  : document.scrollingElement,
+          duration : 500,
+          easing   : 'linear',
           scrollTop: offset
         });
       });
@@ -327,11 +325,11 @@ NexT.utils = {
         event.preventDefault();
         const offset = target.getBoundingClientRect().top + window.scrollY;
         window.anime({
-          targets: document.scrollingElement,
-          duration: 500,
-          easing: 'linear',
+          targets  : document.scrollingElement,
+          duration : 500,
+          easing   : 'linear',
           scrollTop: offset,
-          complete: () => {
+          complete : () => {
             history.pushState(null, document.title, element.href);
           }
         });
@@ -374,7 +372,7 @@ NexT.utils = {
         // scrollHeight isn't reliable for transitioning child items.
         // The last nav-item in a list has a margin-bottom of 5px.
         navChildHeight += (singleHeight * activateEle.childElementCount) + 5;
-        activateEle.style.setProperty('--height', `${navChildHeight + 10}px`);
+        activateEle.style.setProperty('--height', `${navChildHeight}px`);
       }
       activateEle = activateEle.parentElement;
     }
@@ -383,9 +381,9 @@ NexT.utils = {
     const tocElement = document.querySelector(CONFIG.scheme === 'Pisces' || CONFIG.scheme === 'Gemini' ? '.sidebar-panel-container' : '.sidebar');
     if (!document.querySelector('.sidebar-toc-active')) return;
     window.anime({
-      targets: tocElement,
-      duration: 200,
-      easing: 'linear',
+      targets  : tocElement,
+      duration : 200,
+      easing   : 'linear',
       scrollTop: tocElement.scrollTop - (tocElement.offsetHeight / 2) + target.getBoundingClientRect().top - tocElement.getBoundingClientRect().top
     });
   },
@@ -418,7 +416,7 @@ NexT.utils = {
     if (index === 0) {
       const nav = tocPanel.querySelector('.nav');
       if (nav) {
-        postTOCHeight = parseInt(nav.style.getPropertyValue('--height'), 10 + 10);
+        postTOCHeight = parseInt(nav.style.getPropertyValue('--height'), 10);
       }
     }
     const panelHeights = [
@@ -530,7 +528,7 @@ NexT.utils = {
 
   debounce(func, wait) {
     let timeout;
-    return function (...args) {
+    return function(...args) {
       const context = this;
       clearTimeout(timeout);
       timeout = setTimeout(() => func.apply(context, args), wait);

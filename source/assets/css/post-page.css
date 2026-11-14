@@ -166,13 +166,24 @@
       box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
       margin-bottom: 20px;
 
+      /* 有檔名的程式碼視窗：標題列改成正常排版，長路徑自動換行，左右留出圓點與語言標籤的位置 */
+      &:has(figcaption) {
+        padding-top: 0;
+      }
+
       figcaption {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
+        position: relative;
+        min-height: 30px;
+        padding: 7px 4.5rem;
         text-align: center;
         background: unset;
+        word-break: normal;
+        overflow-wrap: anywhere;
+
+        span {
+          word-break: normal;
+          overflow-wrap: anywhere;
+        }
       }
 
       .code-lang {

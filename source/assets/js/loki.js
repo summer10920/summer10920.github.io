@@ -1,3 +1,14 @@
+/************橫幅畫布：官方版型沒有它，載入時自己插在頁首 header 前面 */
+(() => {
+  const column = document.querySelector('.main > .column');
+  if (!column || document.getElementById('lokiBanner')) return;
+  const canvas = document.createElement('canvas');
+  canvas.id = 'lokiBanner';
+  canvas.width = 1920;
+  canvas.height = 200;
+  column.prepend(canvas);
+})();
+
 /************animate Header Background */
 const
   list = [
@@ -124,3 +135,29 @@ document.addEventListener('DOMContentLoaded', function () {
     observer.observe(pvContainer, { childList: true, subtree: true });
   }
 });
+
+// 程式碼視窗的檔名：在「/」後面允許斷行，窄螢幕上長路徑就會在資料夾邊界換行
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('figure.highlight figcaption span').forEach((span) => {
+    span.innerHTML = span.innerHTML.replace(/\//g, '/<wbr>');
+  });
+});
+
+// 頁尾的圖示（字數、計數）跟版權列的愛心用同一組樣式（顏色、動畫由主題設定 footer.icon 決定）
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.footer .post-meta-item-icon').forEach((icon) => icon.classList.add('with-love'));
+});
+
+// 回到頂端按鈕：捲動時更新 --progress，sidebar.css 用它畫進度條
+(() => {
+  const update = () => {
+    const backToTop = document.querySelector('.back-to-top');
+    if (!backToTop) return;
+    const max = document.body.scrollHeight - window.innerHeight;
+    const percent = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+    backToTop.style.setProperty('--progress', percent.toFixed(2) + '%');
+  };
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  document.addEventListener('DOMContentLoaded', update);
+})();
