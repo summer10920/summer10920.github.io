@@ -3007,7 +3007,7 @@ Bearer demo-token
 
 # 回家作業
 
-這份作業只用必教內容，資料取自專案的行程清單。請用 Live Server 或 Vite 開啟頁面，直接雙擊檔案時 `fetch` 讀不到本機的 JSON。課堂上不會批改，也沒有標準答案；每一題都附上完成後該看到的結果。
+這份作業只用必教內容，資料取自專案的行程清單。請用 Live Server 或 Vite 開啟頁面，直接雙擊檔案時 `fetch` 讀不到本機的 JSON。課堂上不會批改，也不講解；每一題都附上完成後該看到的結果，可以自己對照。做完或卡住時，再看練習 repo 根目錄 `homework/08-js-async/` 裡的標準答案。
 
 ## 起始檔與資料
 
@@ -3063,7 +3063,7 @@ Bearer demo-token
 
 ### 題目二：區分 HTTP 錯誤
 
-按「讀取不存在的檔案」，要讀的是一個不存在的路徑。這時 `fetch` 不會 reject，請檢查回應是否成功，並在 `#status` 顯示「HTTP 404」。網路中斷與 HTTP 錯誤要顯示不同的訊息。
+按「讀取不存在的檔案」，要讀的是一個不存在的路徑。這時 `fetch` 不會 reject，請檢查回應是否成功，並在 `#status` 顯示「HTTP 404」。網路中斷與 HTTP 錯誤要顯示不同的訊息：網路中斷顯示「讀取失敗」。
 
 完成後按鈕按下去會看到「HTTP 404」，列表維持原樣。
 
@@ -3081,7 +3081,7 @@ Bearer demo-token
 
 ### 題目五：送出報名
 
-表單送出時不要換頁。用 `fetch` 以 POST 把姓名與人數轉成 JSON 送到 `https://jsonplaceholder.typicode.com/posts`，成功後把回應裡的 `id` 顯示在 `#booking-result`。送出期間按鈕停用。
+表單送出時不要換頁。用 `fetch` 以 POST 把姓名與人數轉成 JSON 送到 `https://jsonplaceholder.typicode.com/posts`，成功後把回應裡的 `id` 顯示在 `#booking-result`，失敗顯示「送出失敗」。送出期間按鈕停用。
 
 完成後頁面顯示「已收到，編號 101」。
 
