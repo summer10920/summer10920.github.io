@@ -1,215 +1,46 @@
 ---
-description: 
-globs: 
+description: Hexo 部落格文章撰寫規則（front matter、標籤、程式碼、風格）
 alwaysApply: true
 ---
-# Hexo Blog 教學文章撰寫規則
 
-## 專案概述
-這是一個使用 Hexo 框架的技術教學部落格，專門撰寫 HTML/CSS、程式設計等基礎課程教材。文章以繁體中文撰寫，針對初學者設計，包含豐富的程式碼範例和實用技巧。如果可以，允許你進行補充或刪除符合現代觀念的教材內容。
+# Hexo Blog 文章撰寫規則
 
-## 文章結構規範
+繁體中文的技術教學部落格，針對初學者。15 天前端講義的教學模型、章節與寫作細節見 `.cursor/skills/lokitech-15day-lecture-rules/SKILL.md` 與 `.cursor/rules/lecture-outline.mdc`。
 
-### Front Matter 格式
-新課用 `前端課程`，舊文用 `基礎網頁教材`。每篇文章必須包含以下 front matter：
-```yaml
----
-title: "初始觀念與環境設定：網頁、三層分工、開發工具"
-categories:
-  - 職訓課程
-  - 技術分類 (如 HTML/CSS, JavaScript, ReactJS)
-tag:
-  - JS 網頁 AI 開發（假日班）
-date: YYYY-MM-DD HH:mm:ss
----
-```
+## 新文章
+用 `scaffolds/post.md`（`hexo new post "標題"`）建立，已含正確的 front matter、封面圖、導言與 `<!-- more -->`。分類慣例：
 
-舊文第一分類使用 `基礎網頁教材`（不要寫 `職訓教材`）。
+- 現行課程：`職訓課程` ＋ `本年度課程`。
+- 舊文：第一分類 `Archived Courses`；其他筆記用 `Misc Notes`。
+- 標籤欄位寫 `tag:`（不是 `tags:`）。
+- 隱藏文章：front matter 加 `hidden: true`（hexo-hide-posts）。
 
-### 文章開頭結構
-1. 插入封面圖片：`![](assets/images/圖片名稱.png)`
-2. 簡短介紹段落（2-3 句話）
-3. 插入閱讀全文分隔符：`<!-- more -->`
+文章開頭依序：封面圖 `![](assets/images/…)`、2～3 句導言、`<!-- more -->`。不要在 `<!-- more -->` 之前放 Hexo 標籤。
 
-## Hexo 特殊標籤語法
+## 標籤語法
+note、mermaid、tabs、post_link、blockquote、CodePen、JSFiddle、iframe、影片、label、button 等，完整寫法與注意事項見 `scaffolds/tagslang.md`，不要憑記憶寫。重點：
 
-### 卡片式提示框標籤
-- `{% note default %}內容{% endnote %}` - 預設提示
-- `{% note primary %}內容{% endnote %}` - 主要提示  
-- `{% note success %}內容{% endnote %}` - 成功提示
-- `{% note info %}內容{% endnote %}` - 資訊提示
-- `{% note warning %}內容{% endnote %}` - 警告提示
-- `{% note danger %}內容{% endnote %}` - 危險提示
+- 提示卡片只用 `note`，並一定要寫 `{% endnote %}`。
+- 圖表用 `{% mermaid graph LR %}` … `{% endmermaid %}`，不用 <code>```mermaid</code> 圍欄。節點文字用雙引號，換行用 `<br/>`。
+- CodePen 一定要寫 `theme` 參數。
+- 站內連結用 `{% post_link 檔名 顯示文字 %}`。
 
-### 多媒體標籤
-- `{% youtube video_id %}` - 嵌入 YouTube 影片
-- `{% vimeo video_id %}` - 嵌入 Vimeo 影片
-- `{% jsfiddle username/code_id js,html,css,result dark 100% 500 %}` - 嵌入 JSFiddle
-- `{% codepen username code_id theme defaultTab height %}` - 嵌入 CodePen
-  - 參數順序：`username`、`code_id`、`theme`（如 `dark` 或 `light`）、`defaultTab`（如 `html,css,result`）、`height`（數字，如 `900`）
-  - 範例：`{% codepen summer10920 abRMXwm dark html,css,result 900 %}`
-  - **注意**：必須明確指定 `theme` 參數，否則後續參數位置會錯位導致高度設定無效
+## 程式碼
+- 程式碼區塊在語言後接檔名：<code>```html index.html</code>。
+- 範例完整、可直接執行；註解用繁體中文。
+- 行內程式碼只用在真正的程式碼片段（變數、檔名、路徑、屬性、指令），不用在一般詞彙。
+- 鍵盤按鍵用 `<kbd>F12</kbd>`。
 
-### 互動元素
-- `{% tabs 標籤名,1 %}<!-- tab -->內容<!-- endtab -->{% endtabs %}` - 分頁標籤
-- `{% button url, 按鈕文字, 圖示, 標題 %}` - 按鈕元素
-- `{% label default@文字 %}` - 標籤元素
+## 風格
+- 全文繁體中文；技術術語保留英文，首次出現時給中文解釋。
+- 讀者是來上課的學生，用「你」寫課堂上會講到的觀念，不寫成講師備課備忘。
+- 文章不使用表格（內文寬度窄），改用清單；只有 Tailwind 公式表例外。
+- 一段真正的說明寫成連貫的一段；並列的短句改成清單，不要把零碎短句塞成一段。
+- 圖片放在 `source/assets/images/`，加 alt；連結用完整網址，站內資源用相對路徑。
 
-### 引用與區塊
-- `{% blockquote 作者 來源網址 %}內容{% endblockquote %}` - 引用區塊
-- `{% cq %}引用文字{% endcq %}` - 簡短引用
-
-### 圖片展示
-- `{% gp 5-3 %}圖片列表{% endgp %}` - 圖庫模式
-
-### 心智圖與流程圖
-使用 Mermaid 標籤繪製流程圖、關係圖、概念圖：
-
-```
-{% mermaid graph TD %}
-    A["節點 A"]
-    B["節點 B"]
-    A --> B
-{% endmermaid %}
-```
-
-#### 圖表類型
-- **流程圖**：`graph TD` 展示程式執行流程
-- **關係圖**：`graph LR` 展示概念關聯
-- **心智圖**：使用 `subgraph` 分組概念
-
-#### 設計原則
-- 節點文字用雙引號：`A["節點文字"]`
-- 中文換行用 `<br/>`：`A["第一行<br/>第二行"]`
-- 使用 `style` 添加顏色樣式
-- 複雜圖表拆分成多個小圖
-
-
-## 程式碼範例規範
-
-### 檔案命名格式
-```語言 檔案名稱.副檔名
-程式碼內容
-```
-
-### 常用程式碼區塊
-- HTML 範例使用 `index.html` 作為預設檔名
-- CSS 範例使用 `style.css` 作為預設檔名
-- JavaScript 範例使用 `script.js` 作為預設檔名
-
-## 撰寫風格指南
-
-### 語言使用
-- 全文使用繁體中文
-- 技術術語保持英文原文，並在首次出現時提供中文解釋
-- 避免使用過於複雜的術語，保持初學者友好
-- 使用章節標題 (atx) 不需要前綴數字序號。同時 atx 標題都需簡短介紹段落（2-3 句話）
-- 內文第一層用 `#` 當大章（依**上課流程**分階段，例如取得素材、認識區塊盒、認識常用元素、選讀、本篇重點回顧），第二層用 `##` 依**類型**分子節；同一節裡需要再拆時可用 `###`。不要整篇都是同一層 `#`（不要標題、清單、表格、表單各當一個大章）。不要寫「本章目標」。細節見 `.cursor/rules/lecture-outline.mdc`。
-- **15 天前端**：一次給可複製的完整範本，再用 F12／對照表把觀念講完。不要寫成一行行 key in 的逐步打字課。講義不指定特定語言模型或助手。
-
-### 內容結構
-1. **觀念解釋**：先解釋概念和原理
-2. **語法說明**：提供完整的語法格式
-3. **範例展示**：給出具體的程式碼範例
-4. **實際應用**：展示在真實場景中的使用方式
-5. **注意事項**：使用適當的提示框標籤
-
-### 範例命名慣例
-- 使用語義化的變數名稱
-- 範例內容貼近實際應用場景
-- 註解使用繁體中文，解釋清楚每個步驟
-
-## 特殊元素使用指南
-
-### 小技巧提示
-使用 `{% note info %}` 包裝：
-```
-{% note info %}
-  **小技巧：標題**
-  具體內容說明
-{% endnote %}
-```
-
-### 重要警告
-使用 `{% note warning %}` 或 `{% note danger %}` 包裝：
-```
-{% note warning %}
-  **注意事項**
-  警告內容
-{% endnote %}
-```
-
-### 跟著做練習
-使用 `{% note success %}` 包裝：
-```
-{% note success %}
-  **跟著做：**
-  練習步驟
-{% endnote %}
-```
-
-### 素材準備
-使用 `{% note primary %}` 包裝：
-```
-{% note primary %}
-  **素材準備：**
-  所需檔案或工具
-{% endnote %}
-```
-
-## 程式碼註解規範
-
-### HTML 註解
-```html
-<!-- 這是 HTML 註解，用來說明程式碼的用途 -->
-```
-
-### CSS 註解
-```css
-/* 這是 CSS 註解，解釋樣式的目的 */
-```
-
-### JavaScript 註解
-```js
-// 這是 JavaScript 單行註解
-/* 這是 JavaScript 多行註解 */
-```
-
-## 鍵盤快捷鍵標記
-使用 `<kbd>` 標籤標記鍵盤按鍵：
-- `<kbd>F12</kbd>` - 單一按鍵
-- `<kbd>Ctrl</kbd>+<kbd>C</kbd>` - 組合鍵
-
-## 文章內連結
-- `{% post_link 文章檔名 %}` - 內文需要連到其他篇時才用（例如總覽提到某日）
-- **不要**在文末手寫「上一篇／下一篇」；主題會自動產生
-- 外部連結使用完整的 URL
-- 內部資源使用相對路徑
-
-讀者是來上課的學生。用「你」寫課堂上會講到的觀念與練習，不要寫成講師備課備忘（不要「請學員」「你要介紹」）。
-
-## 圖片處理
-- 圖片統一放在 `assets/images/` 目錄
-- 使用語義化的檔案名稱
-- 為圖片添加適當的 alt 屬性
-
-## 撰寫檢查清單
-1. ✅ Front matter 格式正確
-2. ✅ 文章結構清晰（標題層級正確）
-3. ✅ 程式碼範例完整可執行
-4. ✅ 使用適當的提示框標籤
-5. ✅ 註解清楚易懂
-6. ✅ 中英文混用格式正確
-7. ✅ 圖片和連結正常運作
-8. ✅ 適當使用 hexo 特殊標籤
-
-## 常見錯誤避免
-- 不要在 `<!-- more -->` 前放置 hexo 標籤
-- 提示框標籤需要正確的結尾標籤
-- 程式碼區塊的語言標示要正確
-- 避免過度使用 `!important` 或其他強制性語法
-
-這份規將確保您的技術教學文章具有一致性、可讀性和教育價值。 
-
-
-
+## 檢查清單
+1. front matter 格式正確、標籤欄位是 `tag:`。
+2. 標題層級不跳層。
+3. 程式碼範例完整可執行。
+4. 所有提示卡片都有結尾標籤。
+5. 圖片與連結可用。
