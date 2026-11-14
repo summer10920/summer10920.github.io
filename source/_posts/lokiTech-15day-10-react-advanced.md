@@ -1519,7 +1519,7 @@ export default function LiftDemo() {
 
 先看沒有提升的結果。下面的選擇區與摘要區各自有一份 `picked` 狀態，點選擇區的按鈕，只有選擇區自己的那份變了，摘要區讀不到，永遠停在「尚未選」。
 
-```jsx 03-react/src/demos/68b-siblings-split.jsx
+```jsx 03-react/src/demos/68-siblings-split.jsx
 import { useState } from 'react';
 
 function Picker() {
@@ -1573,7 +1573,7 @@ picker -->|"onPick(名稱)"| parent
 parent -->|"picked"| summary["Summary：顯示"]
 {% endmermaid %}
 
-```jsx 03-react/src/demos/68-siblings.jsx
+```jsx 03-react/src/demos/68b-siblings.jsx
 import { useState } from 'react';
 
 function Picker({ onPick }) {

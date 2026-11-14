@@ -221,7 +221,7 @@ pnpm install
 pnpm dev
 ```
 
-開啟後，頁面最上方會列出所有示範的按鈕（選單由講師的工具依講義順序產生），點按鈕就切換到對應的示範。
+開啟後，左側會出現示範目錄（清單在 `src/demoRegistry.js`，依講義順序產生；側欄 UI 在 `src/Menu.jsx`），點一筆就切換到對應的示範。目前示範記在網址的 `#` 後面，做法見下方選讀。
 
 `package.json` 的 `engines.node` 要求 Node 26 以上，安裝時若抱怨版本，用 `node -v` 確認是 v26 開頭。主要套件如下：
 
@@ -260,6 +260,109 @@ body {
   font-family: system-ui, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
 }
 ```
+
+### 選讀：用 hash 做示範選單
+
+這一節是選讀。練習站要在同一個 Vite 專案裡快速切換幾十個示範，這階段還沒學 React Router，所以不用路徑路由，改用網址列的 hash（`#` 後面那一段）記住目前打開哪一筆。正式多頁網站請等到 {% post_link lokiTech-15day-11-react-router %}；這裡只說明練習站怎麼導覽。下面程式用到的 `useState` 在後面「狀態」章會學，第一次讀可以先抓 hash 與檔案怎麼拆，狀態細節之後再回看。
+
+**觀念**
+
+hash 是網址裡 `#` 之後的文字，改它通常不會向伺服器重新要頁面，適合在單一 HTML 裡切換畫面。`03-react` 把每個示範編成一個 `id`（例如 `01`），點目錄時用 `history.replaceState` 把網址改成 `#01`，狀態也設成同一個 id，再依 id 找出登錄表裡的元件畫出來。重新整理時讀一次 `location.hash`，就能停在同一個示範。
+
+職責拆成三份：`demoRegistry.js` 放示範清單與分組，`Menu.jsx` 只負責側欄與搜尋，`App.jsx` 讀寫 hash 並掛上目前的示範元件。清單很長，所以不要全部塞進 `App.jsx`。
+
+```jsx 03-react/src/App.jsx
+import { useState } from 'react';
+import { demos, groups } from './demoRegistry.js';
+import Menu from './Menu.jsx';
+
+/** 目前的範例記在網址的 # 後面，重新整理仍停在同一個。 */
+function readHash() {
+  const id = window.location.hash.slice(1);
+  return demos.some((item) => item.id === id) ? id : demos[0].id;
+}
+
+export default function App() {
+  const [current, setCurrent] = useState(readHash);
+  const [query, setQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const index = demos.findIndex((item) => item.id === current);
+  const demo = demos[index];
+  const View = demo.Component;
+
+  const select = (id) => {
+    window.history.replaceState(null, '', '#' + id);
+    setCurrent(id);
+    setMenuOpen(false);
+    window.scrollTo(0, 0);
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-900 md:flex">
+      <Menu
+        demoCount={demos.length}
+        groups={groups}
+        current={current}
+        query={query}
+        menuOpen={menuOpen}
+        onQueryChange={setQuery}
+        onToggleMenu={() => setMenuOpen(!menuOpen)}
+        onSelect={select}
+      />
+      <main className="min-w-0 flex-1 px-4 py-6 md:px-10">
+        <div className="mx-auto max-w-3xl">
+          <div className="flex items-center justify-between gap-2 border-b border-stone-200 pb-3">
+            <div>
+              <p className="text-xs text-stone-500">{demo.group}</p>
+              <h1 className="text-lg font-bold">
+                {demo.id} {demo.title}
+                {demo.optional ? (
+                  <span className="ml-2 text-xs font-normal text-stone-400">
+                    選讀
+                  </span>
+                ) : null}
+              </h1>
+            </div>
+            <div className="flex shrink-0 gap-2">
+              <button
+                type="button"
+                className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
+                disabled={index === 0}
+                onClick={() => select(demos[index - 1].id)}
+              >
+                上一個
+              </button>
+              <button
+                type="button"
+                className="rounded bg-stone-200 px-3 py-1 text-sm disabled:opacity-40"
+                disabled={index === demos.length - 1}
+                onClick={() => select(demos[index + 1].id)}
+              >
+                下一個
+              </button>
+            </div>
+          </div>
+          <div className="pt-6">
+            <View />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+```
+
+**解析**
+
+- `readHash` 去掉 `#`，若對不到任何示範就退回第一筆，避免網址打錯時畫面空白。
+- `select` 先改 hash、再更新 `current`，目錄與主區讀同一份 id；用 `replaceState` 而不是一直 `pushState`，避免每點一筆就堆一層瀏覽器歷史。
+- `View` 是登錄表裡的元件本身，寫成 `<View />` 就會渲染該示範；上一個／下一個只是換 id，不必另開路由。
+- `Menu` 透過 props 拿到清單與目前 id，點擊時呼叫 `onSelect`；搜尋與手機展開目錄是選單自己的 UI，不影響示範內容。
+
+{% note info %}
+之後 {% post_link lokiTech-15day-11-react-router %} 會用路徑、layout 與 loader 做真正的多頁。練習站的 hash 選單只為了上課切示範，不要把它當成產品網站的路由做法。
+{% endnote %}
 
 ## 元件與掛載
 
@@ -438,9 +541,6 @@ export default defineConfig([
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "files.exclude": {
-    "**/node_modules": true
-  },
   "emmet.includeLanguages": {
     "javascript": "javascriptreact"
   },
@@ -518,7 +618,7 @@ JSX 會被轉成一般的 JavaScript 物件，函式不能同時回傳兩個物�
 
 列表裡每一項若要回傳多個元素又要給 key，簡寫沒有地方放 key，才改寫成 `<Fragment key={...}>`。列表在後面的章節才教，這一則先用簡寫。
 
-```jsx 03-react/src/demos/06-fragment.jsx
+```jsx 03-react/src/demos/02-fragment.jsx
 export default function FragmentDemo() {
   return (
     <>
@@ -545,7 +645,7 @@ export default function FragmentDemo() {
 
 元件函式裡先準備名稱、單價與人數。人數要換成畫面上的說法時，在回傳之前用 `if` 先決定好 `peopleLabel`，回傳時花括號裡只放這個字串。總價則直接在花括號裡做乘法，算出數字後再變成畫面上的文字。
 
-```jsx 03-react/src/demos/02-expr.jsx
+```jsx 03-react/src/demos/03-expr.jsx
 export default function ExprDemo() {
   const name = '台北城市漫遊';
   const price = 12800;
@@ -598,7 +698,7 @@ JSX 的屬性名稱對應的是 DOM 的屬性，而不是 HTML 的寫法。行�
 
 行內樣式的值是物件，CSS 的 background-color 寫成 `backgroundColor`。這個物件可以先放在常數，再交給 `style`。一般的外觀仍以 Tailwind 的類別為主，這一則為了看物件，才把背景與內距寫進行內樣式。
 
-```jsx 03-react/src/demos/07-style.jsx
+```jsx 03-react/src/demos/04-style.jsx
 export default function StyleDemo() {
   const panel = {
     backgroundColor: '#ffffff',
@@ -638,7 +738,7 @@ export default function StyleDemo() {
 
 兩種按鈕若只有外觀不同，就用同一個元素換類別，不要寫成兩個元件。
 
-```jsx 03-react/src/demos/08-class.jsx
+```jsx 03-react/src/demos/05-class.jsx
 export default function ClassDemo() {
   const active = true;
   const buttonClass = active
@@ -694,7 +794,7 @@ export default function ClassDemo() {
 
 這種寫法適合「整個元件都不一樣」。元件也可以回傳 `null`，代表什麼都不畫。只是少一個小標記、或補一句預設字時，用後面的三元與邏輯運算子就夠了。
 
-```jsx 03-react/src/demos/09-early.jsx
+```jsx 03-react/src/demos/06-early.jsx
 export default function EarlyDemo() {
   const product = null;
 
@@ -729,7 +829,7 @@ export default function EarlyDemo() {
 
 三元的兩個分支都要是可以畫出來的值。只在成立時多畫一塊、或左邊缺內容要補預設字，用下一節的短路寫法會更簡潔。
 
-```jsx 03-react/src/demos/10-ternary.jsx
+```jsx 03-react/src/demos/07-ternary.jsx
 export default function TernaryDemo() {
   const stock = 3;
 
@@ -767,7 +867,7 @@ React 會把 `true`、`false`、`null`、`undefined` 當成空位，什麼都不
 
 不要用 `&&` 在兩大塊畫面之間二選一，那是三元或提早 return 的工作。左邊也不要直接放件數或金額，原因在下一節。
 
-```jsx 03-react/src/demos/11-and.jsx
+```jsx 03-react/src/demos/08-and.jsx
 export default function AndDemo() {
   const discount = 10;
   const hasTag = true;
@@ -802,7 +902,7 @@ export default function AndDemo() {
 
 要表達「大於 0 才顯示」，就把左邊寫成比較，或改用三元並讓假的那一邊給 `null`。件數、長度、金額這幾種值常常是 0，用 `&&` 之前都先改成比較。
 
-```jsx 03-react/src/demos/12-zero.jsx
+```jsx 03-react/src/demos/09-zero.jsx
 export default function ZeroDemo() {
   const count = 0;
 
@@ -839,7 +939,7 @@ export default function ZeroDemo() {
 
 這和 `&&` 的方向相反：`&&` 是左邊成立才採用右邊，`||` 是左邊缺了才改看右邊。
 
-```jsx 03-react/src/demos/13-or.jsx
+```jsx 03-react/src/demos/10-or.jsx
 export default function OrDemo() {
   const place = '';
   const note = '含早餐';
@@ -879,7 +979,7 @@ export default function OrDemo() {
 
 補「未定」這類預設字時，若來源可能是 0（金額、件數），用 `??`。
 
-```jsx 03-react/src/demos/14-nullish.jsx
+```jsx 03-react/src/demos/11-nullish.jsx
 export default function NullishDemo() {
   const price = 0;
 
@@ -928,7 +1028,7 @@ React 的資料只往一個方向走：由上層的元件交給下層。這一�
 
 `Card` 只負責把收到的標題畫出來。`DownDemo` 擁有那個標題，用屬性交下去。卡片裡沒有任何能修改父層資料的函式，所以它改不了父層的常數。
 
-```jsx 03-react/src/demos/03-down.jsx
+```jsx 03-react/src/demos/12-down.jsx
 function Card({ title }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -968,7 +1068,7 @@ Chrome、Firefox 與 Edge 都可以從各自的擴充功能商店安裝；Safari
 
 在 Components 點選元件，右側會列出它收到的 props；之後學到的狀態也會列在同一處，這一則還沒有，所以先看 props。啟用 React Compiler 的專案裡，被編譯的元件名稱旁會出現「Memo ✨」徽章。
 
-```jsx 03-react/src/demos/03-down.jsx
+```jsx 03-react/src/demos/12-down.jsx
 function Card({ title }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -1017,7 +1117,7 @@ Thinking in React 把「從畫面到元件」分成幾個步驟：先照畫面�
 
 整頁寫在同一個函式：
 
-```jsx 03-react/src/demos/04-tree.jsx
+```jsx 03-react/src/demos/13-tree.jsx
 export default function TreeDemo() {
   return (
     <section>
@@ -1042,7 +1142,7 @@ export default function TreeDemo() {
 
 拆成元件之後，畫面與上面完全相同：
 
-```jsx 03-react/src/demos/04b-tree-split.jsx
+```jsx 03-react/src/demos/13b-tree-split.jsx
 function PageTitle() {
   return <h1 className="text-2xl font-bold">洛奇旅行</h1>;
 }
@@ -1091,7 +1191,7 @@ export default function TreeSplitDemo() {
 
 名稱已經在，就不要再另存一個「大寫名稱」。算得出來的值，每次渲染時直接算即可。
 
-```jsx 03-react/src/demos/05-place.jsx
+```jsx 03-react/src/demos/14-place.jsx
 function Card({ title, price, showPrice }) {
   return (
     <article className="rounded border border-stone-200 bg-white p-4">
@@ -2920,7 +3020,7 @@ export default function Homework09() {
 
 # 本篇重點回顧
 
-選讀的部分是「選讀：工具鏈」、「選讀：模組」與「選讀：useId」，其餘為主線。
+選讀的部分是「選讀：用 hash 做示範選單」、「選讀：工具鏈」、「選讀：模組」與「選讀：useId」，其餘為主線。
 
 - React 是用函式描述畫面的函式庫，專案用 Vite 建立，範本再加上 React Compiler 自動處理記憶。
 - JSX 的花括號放表達式，屬性名稱用駝峰如 `className`，多個兄弟元素又不想多包一層時用 Fragment。
@@ -2959,6 +3059,8 @@ export default function Homework09() {
 - 依賴（dependency）
 - 熱更新（Hot Module Replacement、HMR）
 - 記憶（memoization）
+- hash（URL hash）
+- 瀏覽器歷史（history）
 - 掛載（mount）
 - 函式元件（function component）
 - 保留字（reserved word）
