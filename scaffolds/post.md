@@ -1,17 +1,20 @@
 ---
-# title: {{ title }}
-title: '[前端框架] React - 基礎學習'
-date: {{ date }}
+title: {{ title }}
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 職訓課程
+  - 本年度課程
 tag:
-  - Untagged
-hidden: true
-
+  - JS 網頁 AI 開發（假日班）
+date: {{ date }}
+# hidden: true # 取消註解就會隱藏這篇（hexo-hide-posts），發佈前記得拿掉
 ---
 
-![](https://i.imgur.com/banner/scss.png)
-本篇介紹 Sass 這套預處理器，他能將大型專案上編寫 CSS 不易維護的問題進行改善。使用 Sass 的 Script 語言來進行 CSS 開發，再透過編譯 complier 後轉為瀏覽器可閱讀的 CSS。
+![](assets/images/banner/xxx.png)
+
+導言：用一段話說明這篇涵蓋什麼、讀完能做到什麼。這段會顯示在首頁列表。
 
 <!-- more -->
+
+# 第一章
+
+章節前言。

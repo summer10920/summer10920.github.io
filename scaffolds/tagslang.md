@@ -1,140 +1,220 @@
-# 插入閱讀全文
+# 文章標籤速查
+
+寫文章時會用到的 Hexo 與 NexT 標籤語法，複製整段貼進文章即可。
+這個檔案只是備忘，不是 `hexo new` 的模板（模板是 `post.md`、`draft.md`、`page.md`）。
+
+標籤分成三類：
+
+- **常用**：現有文章大量使用，優先用這些。
+- **嵌入外部內容**：CodePen、JSFiddle、StackBlitz 等。
+- **其他**：NexT 有但文章很少用，需要時再用。
+
+## 常用
+
+### 摘要分隔
+
+放在導言之後。首頁列表只顯示這條線之前的內容，並出現「閱讀全文」。
+
+```md
+導言段落。
+
 <!-- more -->
+```
 
-# NOTE 標記
+### 提示卡片（note）
 
-{% note default %}
-**跳頁建議：從這裡開始出現未學過的內容，建議先前往補充知識再回到這裡**
-{% endnote %}
+六種顏色，內容可以放粗體標題、段落、程式碼區塊、清單。文章裡用得最多的是 `info`（補充）與 `warning`（注意）。
 
-{% note primary %}
-  **素材準備：準備好以下代碼** 
-  ```html cssTry.html
-  <pre><code></code></pre>
-  ```
-{% endnote %}
+- `{% note info %}`：補充、小技巧。
+- `{% note warning %}`：注意事項、容易誤會的地方。
+- `{% note success %}`：跟著做、步驟成功。
+- `{% note primary %}`：素材、前置準備。
+- `{% note default %}`：一般說明、跳頁建議。
+- `{% note danger %}`：新手陷阱、會出錯的寫法。
 
-{% note success %}
-**跟著做：**
-{% endnote %}
-
+```md
 {% note info %}
-  **小技巧：關於 emmet**
-  在 vscode 內建立 `index.html` 完成後，試著輸入 <kbd>!</kbd> 得到畫面提示時，按下 <kbd>TAB</kbd> 可以快速生成基本的 HTML 結構，這是 VSCODE 內建了 [emmet](https://docs.emmet.io/) 快速編寫指令。
-{% endnote%}
-
-{% note warning %}
-  **科普知識：關於 Unicode 與實體化符號**
-  舉例玩一下&copy; 這個符號，中文輸入<kbd>\`u00a9</kbd>可以得到，這就是 unicode 的 16 進位代號：A9，接著轉 10 進位代號：169。試著打出`&#xa9;`跟`&#60;`都可以得到該符號。
-{% endnote%}
-
-{% note danger %}
-  **新手陷阱：@import 放置於開頭處**
-  使用@import 時必需放正式撰寫 css 之前的第一行，否則會載入失敗。
+**小技巧：關於 Emmet**
+在 VS Code 的 `index.html` 輸入 <kbd>!</kbd> 後按 <kbd>TAB</kbd>，可以快速生成基本的 HTML 結構。
 {% endnote %}
+```
 
-# Youtube
-{% youtube video_id %}
+結尾一定要寫 `{% endnote %}`。
 
-# Vimeo
-{% vimeo video_id %}
+### 流程圖（mermaid）
 
-# blockqute
-{% blockquote CSS's keyword index https://xxx.xxx.xx %}
-完整的屬性所有項目請參考 MDN 官方手冊：
-{% endblockquote %}
+不要用 <code>```mermaid</code> 圍欄，要用標籤，第一行寫圖的類型。
 
-{% blockquote w3schools https://www.w3schools.com/css/css_pseudo_classes.asp %}
-不少元素都持有各自的偽類別，總類繁多請參考官方
-{% endblockquote %}
+```md
+{% mermaid graph LR %}
+A[使用者] --> B[瀏覽器] --> C[伺服器]
+{% endmermaid %}
+```
 
-## lite version
-{% blockquote Emmet https://docs.emmet.io/ %}{% endblockquote %}
+### 分頁籤（tabs）
 
-# jsfiddle
-Learn_CSS_CLS3_totalTest
+`{% tabs 名稱, 預設開啟第幾個 %}`，預設填 `-1` 代表全部收起。每個頁籤用 `<!-- tab 標題 -->` 開頭、`<!-- endtab -->` 結尾；沒寫標題時用 `名稱 + 序號`。
 
-for Learning book demo use
-
-{% jsfiddle summer10920/0s5ro82L js,html,css,result dark 100% 500 %}
-
-# codepen
-
-{% codepen userId|anonymous|anon slugHash theme defaultTab height [width] %}
-
-替换参数后的语法：(*设置宽高时不要用%，会导致编译错误*)
-- 參數順序：`userId`、`slugHash`、`theme`（必須指定，如 `dark` 或 `light`）、`defaultTab`（如 `html,css,result`）、`height`（數字，如 `900`）、`width`（可選，如 `100%`）
-- **重要**：必須明確指定 `theme` 參數，否則後續參數位置會錯位導致高度設定無效~~
-
-範例：
-{% codepen summer10920 abRMXwm dark html,css,result 900 %}
-{% codepen summer10920 ExXOLxa dark html,css,result 250 %}
-
-[hexo 官方 tag 說明](https://hexo.io/zh-tw/docs/tag-plugins.html)
-[theme.next 官方 tag 說明](https://theme-next.iissnan.com/tag-plugins.html)
-
-# 引用
-{% cq %}世间所有的相遇，都是久别重逢{% endcq %}
-
-# 標籤
-{% label default@輸入文字 %}
-{% label primary@輸入文字 %}
-{% label success@輸入文字 %}
-{% label info@輸入文字 %}
-{% label warning@輸入文字 %}
-{% label danger@輸入文字 } 
-{% label success@輸入文字 %}
-
-# tabs
-{% tabs classtry,1 %} 名字为 tab，默认在第 1 个选项卡，如果是-1 则隐藏
-<!-- tab -->
-**选项卡 1** 
+```md
+{% tabs demo, 1 %}
+<!-- tab HTML -->
+內容一
 <!-- endtab -->
-<!-- tab -->
-**选项卡 2**
-<!-- endtab -->
-<!-- tab A -->
-**选项卡 3** 名字为 A
+<!-- tab CSS -->
+內容二
 <!-- endtab -->
 {% endtabs %}
+```
 
-# 按鈕
-{% button url, text, icon [class], [title] %}
+### 連到站內其他文章
 
-url : 绝对或相对 URL
-text : 按钮文字，如果未指定图标则为必须
-icon : FontAwesome 图标名称（开头没有’fa-‘）。如果未指定文本，则为必需
-[class] : FontAwesome 类：fa-fw | fa-lg | fa-2x | fa-3x | fa-4x | fa-5X ，可选参数。
-[title] : 鼠标悬停时的工具提示，可选参数。
-注意：最好添加 <div> 标签，测试时没加 div，下面显示不完全，加上非常美观。
+用檔名（不含 `.md`），後面接顯示文字；沒寫文字時會顯示對方的標題。
 
-ex:
-<div>{% button https://tding.top/ , 首页，home fa-fw, 这是小丁的个人博客首页%}</div>
+```md
+{% post_link lokiTech-15day-05-tailwind-cheatsheet Tailwind CSS v4 公式表 %}
+```
 
-<div class="text-center">
-  <div>
-    {% button https://tding.top/ , 首页，home fa-fw, 这是小丁的个人博客首页%}
-    {% button https://tding.top/movies/ , 观影，film fa-fw, 豆瓣电影%}
-    {% button https://tding.top/books/ , 阅读，book fa-fw, 豆瓣读书%}
-  </div>
-</div>
+### 程式碼區塊
 
-# 更新上傳
-hexo g -d
+語言後面接檔名，會在程式碼視窗上方顯示檔名標籤。路徑很長也沒關係，窄螢幕會自動在 `/` 後換行。
 
-# link to post
-{% post_link exam-173002B10-0 %}
+````md
+```html index.html
+<h1>Hello</h1>
+```
 
-# 圖庫模式
-设置图片展示效果，参考 theme/next/scripts/tags/group-pictures.js 注释示意图。
+```js src/main.js
+console.log('Hello');
+```
+````
 
-{% gp 5-3 %}
-![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cice6j218g0p0zpv.jpg)
-![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7ch9rvj218g0p0jvi.jpg)
-![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cj8xej218g0p0gqw.jpg)
-![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cg745j218g0p0juj.jpg)
-![](https://cdn.jsdelivr.net/gh/0vo/oss/images/687148dbly1flxx7cgf88j218g0p0ju3.jpg)
+### 引用外部文件（blockquote）
+
+格式：`{% blockquote 來源名稱 網址 %}`，內文是引用的文字。
+
+```md
+{% blockquote MDN https://developer.mozilla.org/zh-TW/docs/Web/HTML/Element %}
+完整的元素清單請參考 MDN 官方文件：
+{% endblockquote %}
+```
+
+只放來源、不放內文的簡短寫法：
+
+```md
+{% blockquote Emmet https://docs.emmet.io/ %}{% endblockquote %}
+```
+
+### 鍵盤按鍵
+
+不是標籤，是 HTML：`<kbd>F12</kbd>`。站台樣式會把它畫成深色按鍵。
+
+## 嵌入外部內容
+
+### CodePen
+
+格式：`{% codepen 使用者 slug 主題 預設分頁 高度 [寬度] %}`。
+
+- **主題一定要寫**（`dark` 或 `light`），少了它後面的參數會錯位，高度就失效。
+- 高度與寬度只寫數字，不要用 `%`，否則編譯會出錯。
+
+```md
+{% codepen summer10920 abRMXwm dark html,css,result 900 %}
+```
+
+### JSFiddle
+
+格式：`{% jsfiddle 短碼 分頁 主題 寬度 高度 %}`。
+
+```md
+{% jsfiddle summer10920/dj67rhsm result dark 100% 1024 %}
+```
+
+### 其他 iframe（StackBlitz、示範網頁）
+
+格式：`{% iframe 網址 寬度 高度 %}`。
+
+```md
+{% iframe https://stackblitz.com/edit/angular-ivy-muvwvn 100% 500 %}
+```
+
+### 影片
+
+```md
+{% youtube video_id %}
+{% vimeo video_id %}
+```
+
+## 其他
+
+文章裡很少用，需要時再用。
+
+### 小標籤（label）
+
+`{% label 顏色@文字 %}`，顏色有 `default`、`primary`、`success`、`info`、`warning`、`danger`。
+
+```md
+{% label primary@選讀 %}
+```
+
+### 按鈕（button）
+
+`{% button 網址, 文字, 圖示名稱 [樣式], [提示文字] %}`，圖示用 Font Awesome 的名稱（不含 `fa-`），欄位之間用半形逗號。
+
+```md
+{% button https://github.com/summer10920, GitHub, fab fa-github %}
+```
+
+### 置中引言（cq）
+
+```md
+{% cq %}一句想放大的話{% endcq %}
+```
+
+### 圖片排版（gp）
+
+`{% gp 總張數-每列張數 %}`，裡面放圖片。排列方式見主題的 `scripts/tags/group-pictures.js` 註解。
+
+```md
+{% gp 4-2 %}
+![](assets/images/example-1.png)
+![](assets/images/example-2.png)
+![](assets/images/example-3.png)
+![](assets/images/example-4.png)
 {% endgp %}
+```
 
-# 使用 HTML 編譯
-透過`<escape></escape>`標籤包覆能直接寫 HTML
+### 瀏覽器支援度（caniuse）
+
+```md
+{% caniuse css-grid %}
+```
+
+## 站台慣例
+
+- 文章不使用表格（內文寬度窄，表格擠），改用清單；只有 Tailwind 公式表例外。
+- 行內程式碼（`` `code` ``）只用在真正的程式碼片段：變數、檔名、路徑、屬性、指令。
+- 前言文字不要寫成一串零碎短句，用連貫的一段話。
+- 圖片放在 `source/assets/images/`，文章裡用相對路徑 `assets/images/...`；封面圖放在 `banner/` 子資料夾。
+- 隱藏文章：在 front matter 加 `hidden: true`，隱藏後不會出現在清單、標籤、分類，只有知道網址的人看得到。
+
+## 常用指令
+
+```bash
+pnpm start       # 啟動開發伺服器，網址 http://localhost:4000
+pnpm build       # 產生靜態網站到 public/
+pnpm restart     # 清除快取後重新產生，網站樣子怪怪的時候用
+pnpm run deploy  # 部署（依 _config.yml 的 deploy 設定）；不能省略 run，pnpm deploy 是 pnpm 內建的另一個指令
+```
+
+建立新文章：
+
+```bash
+pnpm exec hexo new post "文章標題"    # 用 scaffolds/post.md
+pnpm exec hexo new draft "文章標題"   # 用 scaffolds/draft.md，不會被發佈
+pnpm exec hexo publish "文章標題"     # 把草稿移到 source/_posts
+```
+
+## 官方文件
+
+- [Hexo 標籤外掛](https://hexo.io/zh-tw/docs/tag-plugins.html)
+- [NexT 標籤外掛](https://theme-next.js.org/docs/tag-plugins/)
