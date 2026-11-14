@@ -19,12 +19,12 @@ hidden: false
 
 <!-- more -->
 
-練習檔：`studiesAdvanced/02-tailwind/`。樣式入口是 `src/style.css`（`@import "tailwindcss"`，Vite 外掛 `@tailwindcss/vite`）。查表可對照 `pages/08-theme.html`、`pages/15-scale.html`、`pages/17-states.html`、`pages/21-container.html`、`pages/23-container-query.html`。
+Vite 專案的用法：安裝 `tailwindcss` 與 `@tailwindcss/vite`，在 `vite.config.js` 加上外掛，再於入口 CSS 寫一行 `@import "tailwindcss"`。
 # Core concepts
 核心概念（Core concepts）收錄 Tailwind 的基本用法：容器查詢、變體、任意值與主題指令。後面各章的工具類別，都可以搭配這些寫法使用。
 
 ## 容器查詢
-容器查詢依父層寬度換樣式，斷點跟視窗無關。文件：[container queries](https://tailwindcss.com/docs/responsive-design#container-queries)、[MDN](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。練習檔：`studiesAdvanced/02-tailwind/pages/23-container-query.html`。
+容器查詢依父層寬度換樣式，斷點跟視窗無關。文件：[container queries](https://tailwindcss.com/docs/responsive-design#container-queries)、[MDN](https://developer.mozilla.org/zh-TW/docs/Web/CSS/CSS_containment/Container_queries)。
 
 ### @container
 在要當查詢對象的父層加上 `@container`。子層用 `@sm:`、`@md:` 這類變體。具名容器寫 `@container/main`，子層寫 `@lg/main:`，巢狀時才不會打到外層。
@@ -54,10 +54,10 @@ hidden: false
 </div>
 ```
 
-`@container` 和版心用的 `container` 不是同一個東西。v4 沒有內建會自己置中的 `container` 工具，版心要自己用 `@utility` 定義，見下方主題指令。練習檔：`studiesAdvanced/02-tailwind/pages/21-container.html`。
+`@container` 和版心用的 `container` 不是同一個東西。v4 沒有內建會自己置中的 `container` 工具，版心要自己用 `@utility` 定義，見下方主題指令。
 
 ## 變體
-變體寫在工具類別前面，用冒號分開，由左到右套用（v3 是由右到左）。`hover:` 只在主指標裝置支援 hover 時生效（`@media (hover: hover)`）。完整表：[Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。練習檔：`studiesAdvanced/02-tailwind/pages/17-states.html`。
+變體寫在工具類別前面，用冒號分開，由左到右套用（v3 是由右到左）。`hover:` 只在主指標裝置支援 hover 時生效（`@media (hover: hover)`）。完整表：[Hover, focus, and other states](https://tailwindcss.com/docs/hover-focus-and-other-states)。
 
 ### 常用變體
 | 變體 | 對應 | 說明 |
@@ -194,7 +194,7 @@ hidden: false
 透明度修飾符接在顏色後面：`bg-black/50`、`text-white/80`、`border-sky-500/30`、`ring-blue-500/50`、`shadow-lg/30`。`bg-opacity-*`、`text-opacity-*`、`border-opacity-*`、`divide-opacity-*`、`ring-opacity-*`、`placeholder-opacity-*` 都已移除。
 
 ## 主題指令
-v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒有 `darkMode`、`theme()` 點號路徑、`corePlugins`。入口是 `@import "tailwindcss"`，不是 `@tailwind base/components/utilities`。文件：[theme variables](https://tailwindcss.com/docs/theme)。練習檔：`studiesAdvanced/02-tailwind/src/style.css`、`pages/08-theme.html`、`pages/10-dark-toggle.html`。
+v4 用 CSS 當設定，不再讀專案根目錄的 `tailwind.config.js`，也沒有 `darkMode`、`theme()` 點號路徑、`corePlugins`。入口是 `@import "tailwindcss"`，不是 `@tailwind base/components/utilities`。文件：[theme variables](https://tailwindcss.com/docs/theme)。
 
 ### @import 與 @theme
 `@theme` 裡的 `--*` 會變成工具類別，也會輸出成 `:root` 上的變數。

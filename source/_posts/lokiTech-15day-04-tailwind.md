@@ -475,7 +475,7 @@ Tailwind 讓每個 class 只做一件事，樣式的組合直接發生在標籤�
 
 這個範例的排版 class（定位、間距）後面章節才教，先照抄即可，只看顏色相關的名字。每個色族從很淺排到很深，數字越小越淺：最淺的幾階常用來當底，偏深的幾階用來當字或實心按鈕。顏色後面接斜線加數字，是把這一個顏色的不透明度降到那個百分比，其他部分不受影響。色階見 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)，讓整個元素一起變淡見 [opacity](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#opacity)。
 
-```html 02-tailwind/pages/05-palette.html
+```html 02-tailwind/pages/03-palette.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -542,7 +542,7 @@ Tailwind 讓每個 class 只做一件事，樣式的組合直接發生在標籤�
 相鄰元素的距離，父層用縫或用外距，擇一即可。同一顆元素又寫縫又寫上下外距，空隙會疊加，之後很難調。
 {% endnote %}
 
-```html 02-tailwind/pages/15-scale.html
+```html 02-tailwind/pages/04-scale.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -606,7 +606,7 @@ Preflight 是 Tailwind 隨入口那一行帶進來的基礎樣式，把各瀏覽
 
 下面兩張卡的內容完全相同。左邊沒有寫任何外距，右邊只在父層加了直向間距。
 
-```html 02-tailwind/pages/29-preflight.html
+```html 02-tailwind/pages/05-preflight.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -684,7 +684,7 @@ bg-${color}-500        掃不到：完整名字從沒出現過
 bg-teal-500、bg-rose-500   掃得到：兩個完整名字都寫了
 ```
 
-```html 02-tailwind/pages/04-scan.html
+```html 02-tailwind/pages/06-scan.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -732,7 +732,7 @@ script 放進頁面的 head，瀏覽器載入頁面時才讀 class 並現場編�
 - 自訂主題變數：寫在 `<style type="text/tailwindcss">` 裡的 `@theme`。
 - 舊寫法：網路上舊教學的 `cdn.tailwindcss.com` 和 `tailwind.config` 是 v3 的做法，不要沿用。
 
-```html 02-tailwind/pages/30-play-cdn.html
+```html 02-tailwind/pages/07-play-cdn.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -779,7 +779,7 @@ script 放進頁面的 head，瀏覽器載入頁面時才讀 class 並現場編�
 Preflight 讓按鈕維持預設的箭頭游標，連結本來就是手指。想讓按鈕也是手指，要在按鈕上加 `cursor-pointer`；停用的那一顆則維持禁止符號。
 {% endnote %}
 
-```html 02-tailwind/pages/11-button.html
+```html 02-tailwind/pages/08-button.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -855,7 +855,7 @@ Preflight 讓按鈕維持預設的箭頭游標，連結本來就是手指。想�
 - 原價用刪除線退到旁邊，售價用較深、較大的字留在視線末端。
 - 陰影讓卡片和頁面底分開；`shadow-md` 是中等深度，更深的還有 `shadow-lg`、`shadow-xl`。
 
-```html 02-tailwind/pages/12-card.html
+```html 02-tailwind/pages/09-card.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -941,7 +941,7 @@ md:hover:bg-teal-800   視窗寬度到達 md 這個斷點，而且指標移上�
 
 按鈕和連結用 `focus-visible:` 畫外框，滑鼠使用者不會被多餘的框打擾，鍵盤使用者仍看得到焦點在哪。輸入框則用 `focus:`，因為點進去也需要提示。想拿掉瀏覽器預設外框時，v4 的 `outline-hidden` 是對應的寫法，同時要用邊框或 ring 補上聚焦提示，否則鍵盤使用者看不到焦點。
 
-```html 02-tailwind/pages/17-states.html
+```html 02-tailwind/pages/10-states.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1006,7 +1006,7 @@ md:hover:bg-teal-800   視窗寬度到達 md 這個斷點，而且指標移上�
 
 group 解決「滑過父層，改子層」，peer 解決「勾選前面的方塊，改後面的標籤與段落」。核取方塊本身用 `sr-only` 在畫面上隱藏但仍可用鍵盤操作，所以標籤要自己補上聚焦外框。
 
-```html 02-tailwind/pages/17b-group-peer.html
+```html 02-tailwind/pages/11-group-peer.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1063,7 +1063,7 @@ group 解決「滑過父層，改子層」，peer 解決「勾選前面的方塊
 
 測試時不必改系統設定：按 <kbd>F12</kbd> 開 DevTools，再按 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>（macOS 為 <kbd>Command</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>），執行 **Show Rendering**，把 **Emulate CSS media feature prefers-color-scheme** 切到 dark。
 
-```html 02-tailwind/pages/09-dark-system.html
+```html 02-tailwind/pages/12-dark-system.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1127,7 +1127,7 @@ button.addEventListener('click', () => {
 });
 ```
 
-```html 02-tailwind/pages/10-dark-toggle.html
+```html 02-tailwind/pages/13-dark-toggle.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1186,7 +1186,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 下面這頁故意不加任何寬度前綴，當作基準。
 
-```html 02-tailwind/pages/19-mobile.html
+```html 02-tailwind/pages/14-mobile.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1234,7 +1234,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 下面這頁把視窗從窄拉到寬時，頂端色帶與清單欄數會同時改變。
 
-```html 02-tailwind/pages/20-breakpoints.html
+```html 02-tailwind/pages/15-breakpoints.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1290,7 +1290,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 下面三句預設都隱藏，各自只在自己的寬度範圍顯示。
 
-```html 02-tailwind/pages/27-max.html
+```html 02-tailwind/pages/16-max.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1329,7 +1329,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 }
 ```
 
-```html 02-tailwind/pages/22-custom-breakpoint.html
+```html 02-tailwind/pages/17-custom-breakpoint.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1373,7 +1373,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 Flex 管一列內的對齊，Grid 管欄數會隨寬度改變的卡片。單格怎麼寫見 [常見組合](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#常見組合) 與 [grid-template-columns](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#grid-template-columns)。
 
-```html 02-tailwind/pages/16-layout.html
+```html 02-tailwind/pages/18-layout.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1444,7 +1444,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 }
 ```
 
-```html 02-tailwind/pages/21-container.html
+```html 02-tailwind/pages/19-container.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1485,7 +1485,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 - 方塊用 `sr-only` 移出畫面，使用者點的是標籤；標籤的 `for` 指向方塊，點標籤就等於勾選。
 - 標籤與導覽各加 `md:` 的寫法：標籤在 48rem 以上隱藏，導覽改成一直顯示的橫排。
 
-```html 02-tailwind/pages/13-nav.html
+```html 02-tailwind/pages/20-nav.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1555,7 +1555,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 
 第一個 demo 把外框標成容器，並用 resize-x 讓它能橫向拖曳，所以不必改視窗，拖外框右下角就能看到變化。沒有寫名字時，容器前綴對到最近的那層容器。
 
-```html 02-tailwind/pages/23-container-query.html
+```html 02-tailwind/pages/21-container-query.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1591,7 +1591,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 
 容器有兩層時，沒有名字的前綴只會對到最近的那層。要查詢更外層，就給容器取名：`@container/page` 的斜線後面是名字，查詢時寫 `@2xl/page:`，斜線後面同樣是名字，不是視窗斷點。
 
-```html 02-tailwind/pages/23b-container-named.html
+```html 02-tailwind/pages/22-container-named.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1624,7 +1624,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 
 卡片不用視窗前綴的原因是：並排之後側欄佔掉一欄，視窗雖然寬，主文卻比視窗窄很多。所以主文標成具名容器，卡片查詢它的寬度。
 
-```html 02-tailwind/pages/28-sidebar.html
+```html 02-tailwind/pages/23-sidebar.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1712,7 +1712,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 入口 CSS 在下一小節還會加入間距與字型兩項，練習資料夾的 `src/style.css` 是加完之後的版本。斷點與版心另放在 RWD 那章各自的樣式檔，不在這份入口 CSS 裡。
 {% endnote %}
 
-```html 02-tailwind/pages/08-theme.html
+```html 02-tailwind/pages/24-theme.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1760,7 +1760,7 @@ Tailwind v4 的間距是一個基準值 `--spacing`（0.25rem）乘上數字，�
 }
 ```
 
-```html 02-tailwind/pages/08b-theme-spacing-font.html
+```html 02-tailwind/pages/25-theme-spacing-font.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1810,7 +1810,7 @@ import './style.css';
 import './apply.css';
 ```
 
-```html 02-tailwind/pages/24-apply.html
+```html 02-tailwind/pages/26-apply.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1839,7 +1839,7 @@ import './apply.css';
 
 刻度沒有的值寫在方括號裡，稱為任意值（arbitrary value）。底線會被當成空白。能用既有刻度就用刻度，每一頁才不會各長各的。寫法見 [任意值與任意屬性](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意值與任意屬性)。
 
-```html 02-tailwind/pages/26-arbitrary.html
+```html 02-tailwind/pages/27-arbitrary.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1866,7 +1866,7 @@ import './apply.css';
 
 兩個 utility 改同一個屬性時，誰贏取決於 Tailwind 產生 CSS 的順序，不是 class 屬性裡的前後。在 class 最後加驚嘆號，會把那一條宣告標成 important（優先權最高）。v4 的驚嘆號寫在結尾；舊版寫在前面，也還看得到。用在壓過你控制不了的樣式；自己能拿掉多餘的 class 時，不要用。寫法見 [任意變體、important、前綴](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意變體、important、前綴)。
 
-```html 02-tailwind/pages/26b-important.html
+```html 02-tailwind/pages/28-important.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
@@ -1917,7 +1917,7 @@ import './apply.css';
 import './layer.css';
 ```
 
-```html 02-tailwind/pages/25-layer.html
+```html 02-tailwind/pages/29-layer.html
 <!doctype html>
 <html lang="zh-Hant">
   <head>
