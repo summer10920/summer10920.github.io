@@ -14,6 +14,15 @@
     /* 有檔名時，標題列自己占高度，上方不再預留圓點的空間 */
     &:has(figcaption) {
       padding-top: 0;
+
+      /* 主題的紅黃綠圓點沒有設 top，位置是靠 padding-top: 30px 再往上提 20px 算出來的；
+         這裡 padding-top 改成 0，圓點會跑到區塊外被裁掉，所以明確指定：
+         對齊標題列第一行，標題換成多行時圓點仍留在最上面一行 */
+      &::before {
+        top: 9px;
+        margin-top: 0;
+        z-index: 1;
+      }
     }
 
     /* 檔名標題列 */
