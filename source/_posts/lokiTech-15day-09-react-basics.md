@@ -10,15 +10,15 @@ date: 2026-08-30 10:08:00
 
 ![](assets/images/banner/react.png)
 
-React 是用函式描述畫面的 JavaScript 函式庫：資料一變，同一個函式再跑一次，畫面跟著更新。這一篇先說明為何使用框架、為何選 React，再用 Vite 在 sandbox 建立並接上 ESLint／Prettier、Tailwind 與 React Compiler 的專案（工具鏈與 `03-react` 相同），接著依序學 JSX、單向資料流、元件與 props、用 `useState` 保存的狀態與不可變更新、事件、列表與 key，以及受控表單；選讀補充 ES Module 的匯出與匯入，以及 `useId`。
+React 是用函式描述畫面的 JavaScript 函式庫：資料一變，同一個函式再跑一次，畫面跟著更新。這一篇先說明為何使用框架、為何選 React，再用 Vite 建立接好 ESLint／Prettier、Tailwind 與 React Compiler 的專案，接著依序學 JSX、單向資料流、元件與 props、狀態與不可變更新、事件、列表與 key，以及受控表單；選讀補充 ES Module 的匯出與匯入，以及 `useId`。
 
 <!-- more -->
 
 # 認識 React
 
-本講義的 React 是 19.3，React Router 是 8，Vite 是 8。元件與 Hooks 對照 [react.dev](https://react.dev)，路由對照 [reactrouter.com](https://reactrouter.com)。網路上的舊教學常出現 class 元件，或從 `react-router-dom` 引入路由，那是舊寫法，這門課不跟。
-
 這一章先看框架為何存在、這門課為什麼選 React，再說明 React 是什麼、站在哪一層。
+
+本講義的 React 是 19.3，React Router 是 8，Vite 是 8。元件與 Hooks 對照 [react.dev](https://react.dev)，路由對照 [reactrouter.com](https://reactrouter.com)。網路上的舊教學常出現 class 元件，或從 `react-router-dom` 引入路由，那是舊寫法，這門課不跟。
 
 ## 為何使用框架
 
@@ -96,18 +96,18 @@ React 把畫面切成元件（component）：標題、清單、表單各是一�
 
 # 建立專案
 
-這一章先在 sandbox 用 Vite 建立 React 專案，並接上與 `03-react` 相同的工具鏈；設定貼齊後，可繼續留在 sandbox 練習，或改開 `03-react` 看講義附的示範目錄。示範檔路徑以 `03-react` 為準。
+這一章先用 Vite 在 `sandbox` 建立 React 專案並接好工具鏈，再看最小的元件與入口檔怎麼把畫面掛進頁面。後面的示範檔都放在 `03-react`，它與 sandbox 使用同一套工具鏈。
 
 ## 用 Vite 建立 React 專案
 
-這一節先認識 Vite 的 React 範本，在 `sandbox` 走完建立、安裝，並把檢查／排版／編輯器、`jsconfig.json`、Tailwind 與 React Compiler 設成與 `03-react` 相同，再啟動確認。之後可繼續留在 sandbox 跟著改，或換到課堂準備好的 `03-react` 看現成示範目錄。若 Node、nvs 與 pnpm 已在 04 裝好，這裡不重裝。
+這一節先認識 Vite 的 React 範本，再在 `sandbox` 走完建立、安裝、ESLint、Prettier 與 VS Code、`jsconfig.json`、Tailwind 與 React Compiler，最後啟動確認。做完後，sandbox 的設定與 `03-react` 一致，你可以留在 sandbox 練習，也可以換到 `03-react` 開現成的示範。
 
-沒學過 Tailwind、第一次接觸這些工具時，請先到 {% post_link lokiTech-15day-04-tailwind %} 看完下列章節再回來（Tailwind 的 class 與樣式可以先略過，只要把工具鏈跑通）：
+Node、nvs 與 pnpm 在 04 裝過的話，這裡不必重裝。沒學過 Tailwind、第一次接觸這些工具的話，請先到 {% post_link lokiTech-15day-04-tailwind %} 看完下列章節再回來（Tailwind 的 class 與樣式可以先略過，只要把工具鏈跑通）：
 
-- [建立 Node 開發環境](/2026/08-30/lokiTech-15day-04-tailwind/#建立-Node-開發環境)：乾淨電腦上裝工具的總覽
-- [為什麼需要 Node](/2026/08-30/lokiTech-15day-04-tailwind/#為什麼需要-Node)、[用 nvs 安裝 Node 26](/2026/08-30/lokiTech-15day-04-tailwind/#用-nvs-安裝-Node-26)、[安裝 pnpm](/2026/08-30/lokiTech-15day-04-tailwind/#安裝-pnpm)：Node 26 與 pnpm 怎麼裝、怎麼確認版本
-- [認識 Vite](/2026/08-30/lokiTech-15day-04-tailwind/#認識-Vite)：開發伺服器與打包器在做什麼
-- [手動建立專案](/2026/08-30/lokiTech-15day-04-tailwind/#手動建立專案)：用 Vite 範本建專案、`pnpm install` 與 `pnpm dev` 的流程（04 用的是 vanilla 範本；這裡改用 React）
+- <a href="{% post_path lokiTech-15day-04-tailwind %}#建立-Node-開發環境">建立 Node 開發環境</a>：乾淨電腦上裝工具的總覽
+- <a href="{% post_path lokiTech-15day-04-tailwind %}#為什麼需要-Node">為什麼需要 Node</a>、<a href="{% post_path lokiTech-15day-04-tailwind %}#用-nvs-安裝-Node-26">用 nvs 安裝 Node 26</a>、<a href="{% post_path lokiTech-15day-04-tailwind %}#安裝-pnpm">安裝 pnpm</a>：Node 26 與 pnpm 怎麼裝、怎麼確認版本
+- <a href="{% post_path lokiTech-15day-04-tailwind %}#認識-Vite">認識 Vite</a>：開發伺服器與打包器在做什麼
+- <a href="{% post_path lokiTech-15day-04-tailwind %}#手動建立專案">手動建立專案</a>：用 Vite 範本建專案、`pnpm install` 與 `pnpm dev` 的流程（04 用的是 vanilla 範本；這裡改用 React）
 
 ### 認識 React 範本
 
@@ -119,11 +119,11 @@ Vite 同時是開發伺服器與打包器。開發時瀏覽器向它要模組，
 - Variant 選 TypeScript：對應 `react-ts`，檔案是 `.tsx`。
 - Variant 選 JavaScript + React Compiler：對應 `react-compiler`，在 `react` 之外額外加上 React Compiler 的設定。
 
-這門課用 JavaScript，不用 TypeScript。React Compiler 是在建置時自動替元件做效能最佳化的工具，本課在 sandbox 與 `03-react` 都手動掛上（不依賴產生器的 `react-compiler` 範本），設定寫在 `vite.config.js`，步驟 6 會接到。
+這門課用 JavaScript，不用 TypeScript。React Compiler 是在建置時自動替元件做效能最佳化的工具，本課不用產生器的 `react-compiler` 範本，而是自己在 `vite.config.js` 掛上，步驟 6 會接到。
 
 ### 手動建立專案
 
-在 `studiesAdvanced` 倉庫根目錄建立 `sandbox` 資料夾，它和 `03-react` 分開，做壞了整個刪掉重建即可。步驟依序是：用 React 範本建立、安裝依賴、設定 ESLint、設定 Prettier 與 VS Code、新增 `jsconfig.json`、接上 Tailwind 與 React Compiler、認識檔案、啟動開發伺服器。做完後 sandbox 的工具鏈與 `03-react` 對齊，可一路跟著後面章節在 sandbox 練習；課堂示範目錄與 hash 選單則在 `03-react`。
+在 `studiesAdvanced` 倉庫根目錄建立 `sandbox` 資料夾。它和 `03-react` 分開，做壞了整個刪掉重建即可。八個步驟依序是：建立專案、安裝依賴、設定 ESLint、設定 Prettier 與 VS Code、新增 `jsconfig.json`、接上 Tailwind 與 React Compiler、認識檔案結構、啟動開發伺服器。
 
 {% note info %}
 **已做過可跳過**
@@ -165,9 +165,7 @@ pnpm install   # 依 package.json 下載套件到 node_modules/
 
 #### 步驟 3：設定 ESLint
 
-產生器選 ESLint 之後，專案已有 `eslint.config.js` 與 `lint` 指令，但規則與課堂專案不完全相同。這一節改成與 `03-react` 同一套檢查設定。ESLint 負責檢查規則；下一步的 Prettier 只管排版，所以這裡會一併裝上 `eslint-config-prettier`，把會跟排版打架的 ESLint 規則關掉。
-
-先補上 Prettier 相關套件（產生器已裝過的 ESLint 套件不必重裝；`prettier` 本體在步驟 4 才用到，但與 `eslint-config-prettier` 一次裝齊）：
+ESLint 在你存檔或執行指令時檢查程式碼，抓出沒用到的變數、違反 Hooks 規則等問題。產生器選了 ESLint 之後，專案已有 `eslint.config.js` 與 `lint` 指令，這一節把它換成與 `03-react` 相同的設定。排版交給下一步的 Prettier，所以這裡要多裝 `eslint-config-prettier`，把會跟排版打架的 ESLint 規則關掉。`prettier` 本體在步驟 4 才用到，這裡一次裝齊：
 
 ```bash
 pnpm add -D prettier eslint-config-prettier
@@ -175,9 +173,7 @@ pnpm add -D prettier eslint-config-prettier
 
 **觀念**
 
-在 sandbox 執行 `pnpm lint`，跑的就是下面這份設定（與 `03-react` 相同）。它用 ESLint 的 flat config（以陣列列出一組組設定的新格式），檢查所有 `.js` 與 `.jsx`，忽略 `dist`。`defineConfig` 在這裡從 `eslint/config` 匯入，和 Vite 的同名但不是同一個函式。
-
-`eslint-config-prettier` 放在陣列最後，用來關掉與排版衝突的規則。同一個專案不要同時留兩套檢查器去改同一支程式。
+`pnpm lint` 跑的就是下面這份設定。它用 ESLint 的 flat config（以陣列列出一組組設定的新格式），檢查所有 `.js` 與 `.jsx`，忽略 `dist`。`defineConfig` 從 `eslint/config` 匯入，和 Vite 的同名但不是同一個函式。`eslint-config-prettier` 放在陣列最後，空格與引號就只由 Prettier 決定。
 
 用下面這份蓋掉產生器的 `eslint.config.js`：
 
@@ -208,24 +204,23 @@ export default defineConfig([
 ]);
 ```
 
-沒有問題時，`pnpm lint` 結束、不印任何內容；警告會印出但不讓指令失敗，錯誤則會讓指令失敗。
+沒有問題時，`pnpm lint` 不印任何內容就結束；警告會印出但指令仍算成功。
 
 **解析**
 
 - `reactHooks.configs.flat.recommended` 包含 Hooks 的使用規則，以及 React Compiler 用的檢查。
-- 規則錯誤（error）有：在 effect 裡同步設定狀態、渲染過程讀寫 ref、渲染不純、在渲染中設定狀態。這幾項在後面用到時再細說。
+- 在 effect 裡同步設定狀態、渲染過程讀寫 ref、渲染不純，這幾種寫法是錯誤（error），會讓 `pnpm lint` 失敗，後面用到時再細說。
 - effect 的依賴陣列少寫，只會是警告（warning）。
 - `eslint-plugin-react-refresh` 檢查檔案的匯出方式，避免熱更新失效。
 - `globals.browser` 讓 `document`、`fetch` 這些瀏覽器全域名稱不會被判成未宣告。
-- `eslint-config-prettier` 放最後，空格與引號就只由 Prettier 決定。
 
 #### 步驟 4：設定 Prettier 與 VS Code
 
-全班用同一套排版與編輯器行為，規則放在專案裡，別人 clone 才會套到一樣的設定。這一節依序新增 `.prettierrc`、`.vscode/settings.json` 與 `.vscode/extensions.json`（與 `03-react` 相同）。VS Code 只讀「目前開啟的那個資料夾」裡的 `.vscode`，所以請用「開啟資料夾」打開 `sandbox`（不要只開倉庫根目錄）；之後開 `03-react` 時也一樣。
+Prettier 是自動排版工具。把排版與編輯器行為寫在專案裡，別人 clone 下來才會套到同一套設定。這一步依序新增 `.prettierrc`、`.vscode/settings.json` 與 `.vscode/extensions.json`，內容與 `03-react` 相同。VS Code 只讀「目前開啟的那個資料夾」裡的 `.vscode`，所以請用「開啟資料夾」打開 `sandbox`，不要只開倉庫根目錄；之後開 `03-react` 時也一樣。
 
 **觀念**
 
-排版規則寫在專案根目錄的 `.prettierrc`：縮排兩個空格、要分號、JavaScript 字串用單引號，JSX 屬性仍用雙引號（Prettier 的預設）。不要寫進個人的使用者設定。
+排版規則寫在專案根目錄的 `.prettierrc`，不寫進個人的使用者設定：縮排兩個空格、要分號、JavaScript 字串用單引號，JSX 屬性維持 Prettier 預設的雙引號。
 
 ```json sandbox/.prettierrc
 {
@@ -239,11 +234,10 @@ export default defineConfig([
 
 - `singleQuote` 只管 JavaScript 字串；標籤屬性維持雙引號，與 HTML 一致。
 - `tabWidth` 是縮排的空格數，這門課用 2。
-- 空格與引號只交給 Prettier，不要再寫成 ESLint 規則。
 
 **觀念**
 
-編輯器存檔時要不要自動排版、用哪一套擴充，寫在專案的 `.vscode/settings.json`。
+存檔時要不要自動排版、用哪一套擴充，寫在專案的 `.vscode/settings.json`。
 
 ```json sandbox/.vscode/settings.json
 {
@@ -318,11 +312,15 @@ export default defineConfig([
 **解析**
 
 - `extensions.json` 只列建議，不會強制安裝；缺的擴充要自己點安裝。
-- 建議擴充裝好後，存檔會交給 Prettier 排版，並修 ESLint 能自動修的問題。終端機也可以跑 `pnpm exec prettier --write .`。
+- 擴充裝好後，存檔就會交給 Prettier 排版，並修掉 ESLint 能自動修的問題；也可以在終端機跑 `pnpm exec prettier --write .` 一次排整個專案。
 
 #### 步驟 5：新增 jsconfig.json
 
-Vite 的 React 範本不會附 `jsconfig.json`，請在專案根目錄自己新增。它不是給 Vite 打包用的，少了它網站一樣能建置；用途是告訴 Cursor 或 VS Code：`src` 底下的 `.js`／`.jsx` 屬於同一個專案。沒有它時，編輯器可能把每個檔當成獨立檔，跨檔跳轉、「找出所有引用」、以及 JSX 語法提示會不完整或報錯。
+Vite 的 React 範本不會附 `jsconfig.json`，要自己在專案根目錄新增。它不是給 Vite 打包用的，少了它網站一樣能建置，但編輯器會把每個檔當成獨立檔，跨檔跳轉、「找出所有引用」與 JSX 語法提示都會不完整或報錯。
+
+**觀念**
+
+`jsconfig.json` 告訴 Cursor 或 VS Code：`src` 底下的 `.js`、`.jsx` 屬於同一個專案，以及 `import` 要怎麼解析、JSX 要怎麼看待。
 
 ```json sandbox/jsconfig.json
 {
@@ -337,21 +335,23 @@ Vite 的 React 範本不會附 `jsconfig.json`，請在專案根目錄自己新�
 }
 ```
 
+**解析**
+
 - `include` 寫 `src`：編輯器把 `src` 底下的檔當成同一個專案。
 - `moduleResolution` 設成 `bundler`：解析 `import` 的方式和 Vite 一致。
-- `jsx` 設成 `react-jsx`：編輯器才會把 JSX 當成合法語法（不必再手動 `import React`）。
-- `checkJs` 設成 `false`：不要用 TypeScript 的型別規則去檢查這些 JavaScript 檔。
-- 不必寫 `baseUrl`：本課示範都用相對路徑；TypeScript 6 已把 `baseUrl` 標為棄用。
+- `jsx` 設成 `react-jsx`：編輯器才會把 JSX 當成合法語法，也不必再手動 `import React`。
+- `checkJs` 設成 `false`：不用 TypeScript 的型別規則去檢查這些 JavaScript 檔。
+- 不必寫 `baseUrl`：本課都用相對路徑，TypeScript 6 也已把 `baseUrl` 標為棄用。
 
 #### 步驟 6：接上 Tailwind 與 React Compiler
 
-接著把外觀與建置時的效能最佳化接到與 `03-react` 相同。先安裝套件：
+這一步把外觀（Tailwind）與建置時的效能最佳化（React Compiler）接進專案。先安裝套件：
 
 ```bash
 pnpm add -D tailwindcss @tailwindcss/vite babel-plugin-react-compiler @rolldown/plugin-babel @babel/core
 ```
 
-用下面這份蓋掉產生器的 `vite.config.js`：在 React 插件之後掛上 React Compiler（經由 Babel 外掛載入）與 Tailwind。
+用下面這份蓋掉產生器的 `vite.config.js`：在 React 插件之後，掛上經由 Babel 外掛載入的 React Compiler，再掛上 Tailwind。`defineConfig` 是 Vite 提供的設定包裝函式，不包也能跑，包起來是讓編輯器能給提示。
 
 ```js sandbox/vite.config.js
 import tailwindcss from '@tailwindcss/vite';
@@ -368,7 +368,7 @@ export default defineConfig({
 });
 ```
 
-React Compiler 在建置時分析元件，自動替重複計算的值與函式做記憶（memoization，同樣輸入就沿用上次的結果）。有了它，多數情況不必手寫記憶用的函式，這些手動寫法在後面的選讀才會出現。編譯器只處理遵守 React 規則的元件；寫法不合規則時，它會略過那個元件，ESLint 的 Hooks 規則就是用來提早抓出這類問題。
+React Compiler 在建置時分析元件，自動替重複計算的值與函式做記憶（memoization，同樣輸入就沿用上次的結果），所以多數情況不必手寫記憶用的函式，那些手動寫法留到後面的選讀。它只處理遵守 React 規則的元件，寫法不合規則時會略過該元件，ESLint 的 Hooks 規則就是用來提早抓出這類問題。
 
 Tailwind 的樣式從入口 CSS 引入。把 `src/index.css` 整份換成下面這樣（範本附的計數器樣式不要留）：
 
@@ -385,20 +385,21 @@ body {
 
 #### 步驟 7：認識檔案結構
 
-啟動前先看檔案。HTML 幾乎是空的，真正的畫面在 `src/App.jsx`，`src/main.jsx` 負責把它掛進頁面。
+啟動前先認識專案裡的檔案。HTML 幾乎是空的，真正的畫面在 `src/App.jsx`，`src/main.jsx` 負責把它掛進頁面，其餘是前幾步加進來的設定檔。
 
-```bash
-# sandbox/index.html             空頁面，只留 #root，腳本指向 /src/main.jsx
-# sandbox/vite.config.js         步驟 6：React、Compiler、Tailwind
-# sandbox/src/main.jsx           入口：createRoot 把 App 畫進 #root
-# sandbox/src/App.jsx            畫面上那一塊元件
-# sandbox/src/index.css          步驟 6：匯入 Tailwind
-# sandbox/eslint.config.js       步驟 3：檢查設定
-# sandbox/.prettierrc            步驟 4：排版規則
-# sandbox/.vscode/settings.json  步驟 4：存檔排版與 ESLint 自動修
-# sandbox/.vscode/extensions.json 步驟 4：建議安裝的擴充
-# sandbox/jsconfig.json          步驟 5：編輯器專案範圍與 JSX
-# sandbox/package.json           依賴與 dev、build、lint 指令
+```text
+sandbox/
+├─ index.html              空頁面，只留 #root，腳本指向 /src/main.jsx
+├─ package.json            依賴與 dev、build、lint 指令
+├─ vite.config.js          步驟 6：React、Compiler、Tailwind
+├─ eslint.config.js        步驟 3：檢查設定
+├─ .prettierrc             步驟 4：排版規則
+├─ .vscode/                步驟 4：settings.json、extensions.json
+├─ jsconfig.json           步驟 5：編輯器專案範圍與 JSX
+└─ src/
+   ├─ main.jsx             入口：createRoot 把 App 畫進 #root
+   ├─ App.jsx              畫面上那一塊元件
+   └─ index.css            步驟 6：匯入 Tailwind
 ```
 
 頁面本體只有一個起點。腳本的 `type="module"` 讓這個檔可以用 `import` 讀別的檔；路徑以斜線開頭，表示從專案根目錄算起。
@@ -410,7 +411,7 @@ body {
 </body>
 ```
 
-`defineConfig` 是 Vite 提供的設定包裝函式，包不包都能跑，包起來是讓編輯器能給提示。`main.jsx` 在 `03-react` 裡有一樣的檔案，下一節再看。這裡先把範本的 `App.jsx` 整份換成下面這樣，用一個 Tailwind class 確認樣式有編譯到：
+`main.jsx` 的內容留到後面「元件與掛載」再看。這裡先把範本的 `App.jsx` 整份換成下面這樣，用一個 Tailwind class 確認樣式有編譯到：
 
 ```jsx sandbox/src/App.jsx
 export default function App() {
@@ -429,11 +430,11 @@ pnpm build   # 打包成上線用的靜態檔，輸出到 dist/
 
 改 `App.jsx` 再存檔，畫面會立刻跟著換，這叫熱更新（Hot Module Replacement，HMR）：開發伺服器只換上你改過的那一塊，不必整頁重載。確認完在終端機按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉。`pnpm build` 產出的是打包後的檔案，不是正在編輯的 `src/`，要交付靜態檔時才需要跑。
 
-sandbox 此時已與 `03-react` 對齊：ESLint、Prettier、VS Code、`jsconfig.json`、Tailwind、React Compiler。後面章節的觀念與元件寫法可以繼續在 sandbox 練習；若要直接開講義附的示範目錄（左側選單、hash 切換），再進下一節的 `03-react`。
+到這裡 sandbox 與 `03-react` 的工具鏈已經一致，後面章節的元件寫法可以繼續在 sandbox 練習。
 
 ### 改用 03-react
 
-`03-react` 與 sandbox 使用同一套工具鏈，另外準備了依講義順序排列的示範元件、`demoRegistry.js` 與側欄 `Menu.jsx`。要用這些現成示範時，若 sandbox 的開發伺服器還開著，先按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉，再從倉庫根目錄進入專案：
+`03-react` 與 sandbox 使用同一套工具鏈，另外附上依講義順序排列的示範元件。要開這些現成示範時，若 sandbox 的開發伺服器還開著，先按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 停掉，再從倉庫根目錄進入專案：
 
 ```bash
 cd ..            # 若還停在 sandbox，先回到倉庫根目錄
@@ -442,21 +443,13 @@ pnpm install
 pnpm dev
 ```
 
-開啟後，左側會出現示範目錄（清單在 `src/demoRegistry.js`，依講義順序產生；側欄 UI 在 `src/Menu.jsx`），點一筆就切換到對應的示範。目前示範記在網址的 `#` 後面，做法見下方選讀。請用「開啟資料夾」打開 `03-react`，專案內的 `.vscode` 才會生效。
+開啟後，左側是示範目錄，點一筆就切換到對應的示範；清單登錄在 `src/demoRegistry.js`，每個示範檔放在 `src/demos/`。目前開啟哪一筆記在網址的 `#` 後面，做法見下方選讀。同樣請用「開啟資料夾」打開 `03-react`，專案內的 `.vscode` 才會生效。
 
-`package.json` 的 `engines.node` 要求 Node 26 以上，安裝時若抱怨版本，用 `node -v` 確認是 v26 開頭。主要套件與 sandbox 步驟對應如下：
-
-- `react`、`react-dom`：19.3。
-- `vite`：8；`@vitejs/plugin-react`：6，負責轉換 JSX。
-- `babel-plugin-react-compiler`、`@rolldown/plugin-babel`、`@babel/core`：步驟 6 的 React Compiler。
-- `tailwindcss` 與 `@tailwindcss/vite`：步驟 6 的 Tailwind。
-- `eslint`、`eslint-plugin-react-hooks`：步驟 3；`prettier`：步驟 4；`jsconfig.json`：步驟 5。
-
-Vite 與入口 CSS 的完整檔與 sandbox 步驟 6 相同，路徑分別是 `03-react/vite.config.js`、`03-react/src/index.css`。
+`package.json` 的 `engines.node` 要求 Node 26 以上，安裝時若抱怨版本，用 `node -v` 確認是 v26 開頭。`03-react` 的 `vite.config.js` 與 `src/index.css` 和 sandbox 步驟 6 的內容相同，套件也是同一批：`react` 與 `react-dom` 19.3、`vite` 8、`@vitejs/plugin-react` 6，加上步驟 3 至 6 裝的 ESLint、Prettier、Tailwind 與 React Compiler 相關套件。
 
 ### 選讀：用 hash 做示範選單
 
-這一節是選讀。練習站要在同一個 Vite 專案裡快速切換幾十個示範，這階段還沒學 React Router，所以不用路徑路由，改用網址列的 hash（`#` 後面那一段）記住目前打開哪一筆。正式多頁網站請等到 {% post_link lokiTech-15day-11-react-router %}；這裡只說明練習站怎麼導覽。下面程式用到的 `useState` 在後面「狀態」章會學，第一次讀可以先抓 hash 與檔案怎麼拆，狀態細節之後再回看。
+練習站要在同一個 Vite 專案裡快速切換幾十個示範，但這階段還沒學 React Router，所以不用路徑路由，改用網址列的 hash（`#` 後面那一段）記住目前打開哪一筆。正式多頁網站請等到 {% post_link lokiTech-15day-11-react-router %}。下面程式用到的 `useState` 在後面「狀態」章才會學，第一次讀可以先看 hash 與檔案怎麼拆，狀態的細節之後再回頭看。
 
 **觀念**
 
@@ -559,7 +552,7 @@ export default function App() {
 
 ## 元件與掛載
 
-上一章說過，React 用函式描述畫面。不論留在 sandbox 跟著改，或打開 `03-react` 看示範，你交給它的都是這樣的函式：回傳這一塊現在該長什麼樣子。這一節先看一個最小的元件長什麼樣，再看入口檔怎麼把它放進頁面；示範檔路徑以 `03-react` 為準，sandbox 可把相同寫法貼進自己的 `App.jsx`。
+React 用函式描述畫面：函式回傳這一塊現在該長什麼樣子，React 負責放進頁面。這一節先看最小的元件長什麼樣，再看入口檔怎麼把它掛進頁面。示範檔以 `03-react` 為準，在 sandbox 練習的話，把相同寫法貼進自己的 `App.jsx` 即可。
 
 本節的 `export`、`import` 是 ES Module 的語法，作用是讓一個檔案把函式交給另一個檔案使用，這裡先照寫，細節見 {% post_link lokiTech-15day-06-js-basics %} 的選讀「ES Module」。
 
@@ -614,7 +607,7 @@ export default function Hello() {
 - 元件函式會多呼叫一次，兩次都應算出一樣的畫面。函式裡的 console.log 因此會印兩次，這不代表使用者點了兩下。
 - 元件第一次掛上時，每個 effect 會多跑一輪「設定、清除、再設定」，檢查清除函式有沒有寫對。effect 在下一篇才登場。
 
-這些檢查只在開發時執行，`pnpm build` 之後的成品不會有，也不會多出一層畫面。要關掉的話，把 StrictMode 那層拿掉，直接 render App 即可；但關掉只是讓問題看不見，課堂維持開啟。
+這些檢查只在開發時執行，`pnpm build` 之後的成品不會有，也不會多出一層畫面。要關掉的話，把 StrictMode 那層拿掉，直接 render App 即可；但關掉只是讓問題看不見，建議維持開啟。
 
 ```html 03-react/index.html
 <!doctype html>
@@ -1126,28 +1119,7 @@ Chrome、Firefox 與 Edge 都可以從各自的擴充功能商店安裝；Safari
 
 在 Components 點選元件，右側會列出它收到的 props；之後學到的狀態也會列在同一處，這一則還沒有，所以先看 props。啟用 React Compiler 的專案裡，被編譯的元件名稱旁會出現「Memo ✨」徽章。
 
-```jsx 03-react/src/demos/12-down.jsx
-function Card({ title }) {
-  return (
-    <article className="rounded border border-stone-200 bg-white p-4">
-      <h2 className="text-lg font-semibold">{title}</h2>
-    </article>
-  );
-}
-
-export default function DownDemo() {
-  const title = '台北城市漫遊';
-
-  return (
-    <section className="grid gap-3">
-      <Card title={title} />
-      <Card title={title} />
-    </section>
-  );
-}
-```
-
-打開上面的示範，Components 的元件樹裡可以找到 `DownDemo`，底下兩顆 `Card`；上層還有練習專案自己的 `App` 等元件。點任一顆 `Card`，props 的 `title` 是「台北城市漫遊」。
+開啟上一節的 `12-down` 示範，Components 的元件樹裡可以找到 `DownDemo`，底下兩顆 `Card`；上層還有練習專案自己的 `App` 等元件。點任一顆 `Card`，props 的 `title` 是「台北城市漫遊」。
 
 **解析**
 
@@ -1287,7 +1259,7 @@ export default function PlaceDemo() {
 
 元件拆成多個檔案後，每個檔要先「匯出」自己的元件，別的檔才能「匯入」使用。這套機制是 ES Module，語法細節見 {% post_link lokiTech-15day-06-js-basics %} 的選讀 ES Module 章節；本課的專案不必先懂它也能照著寫，這一節只看元件最常見的兩種匯出。
 
-一覽：
+**一覽**
 
 - 預設匯出（default export）：一個檔只能有一個，匯入時不加花括號，名稱可以自己取。
 - 具名匯出（named export）：一個檔可以有多個，匯入時要加花括號，名稱必須和匯出時相同。
@@ -1539,7 +1511,7 @@ export default function ChildrenDemo() {
 const [value, setValue] = useState(initialValue);
 ```
 
-回傳值是有兩個元素的陣列：現在的值，以及設定函式，我們用解構把它們拆成兩個名字。命名時成對，例如 `count` 與 `setCount`，讀的人一看就知道第二個用來改第一個。
+回傳值是有兩個元素的陣列：現在的值，以及設定函式，用解構拆成兩個名字。命名時成對，例如 `count` 與 `setCount`，讀的人一看就知道第二個用來改第一個。
 
 起始值只在元件第一次掛上時使用，之後的渲染不會再用它蓋掉現在的值。
 
@@ -3115,6 +3087,8 @@ export default function Homework09() {
 - 打包器（bundler）
 - 專案產生器（project generator）
 - 依賴（dependency）
+- 程式碼檢查（lint）
+- 自動排版（formatting）
 - JavaScript 專案設定（jsconfig.json）
 - 記憶（memoization）
 - 熱更新（Hot Module Replacement、HMR）

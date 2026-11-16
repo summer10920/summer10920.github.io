@@ -29,7 +29,7 @@ Tailwind CSS 把常用的 CSS 宣告做成一粒一粒的 class，稱為 utility
 
 # 建立 Node 開發環境
 
-Tailwind 的 class 要先編成一般 CSS，瀏覽器才看得懂；編譯、安裝套件、開發伺服器，都跑在 **Node.js**（讓 JavaScript 離開瀏覽器、在電腦上執行的環境）上。這一章假設這台電腦剛還原、還沒裝過任何工具：先用 nvs 安裝 Node 26，再安裝 pnpm，接著認識 Vite，並在 `sandbox` 手動做出可跑的 Tailwind 專案（含 Prettier 與編輯器設定）。環境只在這裡建立一次；後面各章的現成範例頁在 `02-tailwind`，要用講義附的完整頁再進課堂專案，也可以繼續留在 `sandbox` 自己改。
+Tailwind 的 class 要先編成一般 CSS，瀏覽器才看得懂；編譯、安裝套件、開發伺服器，都跑在 **Node.js**（讓 JavaScript 離開瀏覽器、在電腦上執行的環境）上。這一章假設這台電腦剛還原、還沒裝過任何工具：先用 nvs 安裝 Node 26，再安裝 pnpm，接著認識 Vite，並在 `sandbox` 手動做出可跑的 Tailwind 專案（含 Prettier 與編輯器設定）。環境只在這裡建立一次。後面各章講義附的完整範例頁放在 `02-tailwind`，你也可以一直留在 `sandbox` 自己改。
 
 {% note info %}
 **本課使用的版本**
@@ -140,7 +140,7 @@ npm 與 pnpm 的指令幾乎一一對應，課堂後面都用 pnpm：
 
 ## 用 Vite 建立 Tailwind 專案
 
-工具裝好後，這一節先認識 Vite 的角色，再從空白範本自己做出一個 Tailwind 專案：接上插件、Prettier 與編輯器設定，並用 `pnpm dev` 確認畫面。課堂準備的 `02-tailwind` 放各章現成範例頁；你也可以一直留在 `sandbox` 跟著改。
+工具裝好後，這一節先認識 Vite 的角色，再從空白範本自己做出一個 Tailwind 專案：接上插件、Prettier 與編輯器設定，並用 `pnpm dev` 確認畫面。課堂專案 `02-tailwind` 放各章的完整範例頁，你也可以一直留在 `sandbox` 跟著改。
 
 ### 認識 Vite
 
@@ -313,7 +313,7 @@ pnpm dev     # 日常開發
 pnpm build   # 輸出到 dist/：打包後的成品，不是正在編輯的 src/
 ```
 
-日常開發只用開發伺服器，要交付靜態檔時才執行建置。sandbox 此時已具備：Vite、Tailwind、Prettier 與編輯器設定。後面各章若要在同一專案練習，可繼續改 `index.html` 或自行新增頁面；若要直接開講義附的完整範例檔，再進下一節的 `02-tailwind`。
+日常開發只用開發伺服器，要交付靜態檔時才執行建置。到這裡 `sandbox` 已具備 Vite、Tailwind、Prettier 與編輯器設定，後面各章可以繼續在這裡改 `index.html` 練習；要直接開講義附的完整範例頁，再進下一節的 `02-tailwind`。
 
 ### 改用 02-tailwind 練習環境
 
@@ -492,7 +492,7 @@ Tailwind 讓每個 class 只做一件事，樣式的組合直接發生在標籤�
 
 **觀念**
 
-名字大多是「屬性－值」，中間用連字號分開：字首代表要改哪個 CSS 屬性，最後一段是顏色、字級或色階。字首後面若是色族加數字，就是顏色；若是 sm、xl 這類尺寸詞，就是大小。字級見 [font-size](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#font-size)，色名見 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)。
+名字大多是「屬性－值」，中間用連字號分開：字首代表要改哪個 CSS 屬性，最後一段是顏色、字級或色階。字首後面若是色族加數字，就是顏色；若是 sm、xl 這類尺寸詞，就是大小。字級見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#font-size">font-size</a>，色名見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#color">color</a>。
 
 **一覽**
 
@@ -543,7 +543,7 @@ Tailwind 讓每個 class 只做一件事，樣式的組合直接發生在標籤�
 
 **觀念**
 
-這個範例的排版 class（定位、間距）後面章節才教，先照抄即可，只看顏色相關的名字。每個色族從很淺排到很深，數字越小越淺：最淺的幾階常用來當底，偏深的幾階用來當字或實心按鈕。顏色後面接斜線加數字，是把這一個顏色的不透明度降到那個百分比，其他部分不受影響。色階見 [color](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#color)，讓整個元素一起變淡見 [opacity](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#opacity)。
+這個範例的排版 class（定位、間距）後面章節才教，先照抄即可，只看顏色相關的名字。每個色族從很淺排到很深，數字越小越淺：最淺的幾階常用來當底，偏深的幾階用來當字或實心按鈕。顏色後面接斜線加數字，是把這一個顏色的不透明度降到那個百分比，其他部分不受影響。色階見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#color">color</a>，讓整個元素一起變淡見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#opacity">opacity</a>。
 
 ```html 02-tailwind/pages/03-palette.html
 <!doctype html>
@@ -605,7 +605,7 @@ Tailwind 讓每個 class 只做一件事，樣式的組合直接發生在標籤�
 
 **觀念**
 
-後面的數字是刻度。Tailwind 以 `0.25rem` 為一格，數字 4 就是四格，也就是 1rem，字級 16px 時是 16px。刻度是 rem，所以使用者調大瀏覽器字級時間距跟著放大。只換字首，同一個數字就落在不同方向或不同位置。刻度對照見 [padding](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#padding)。
+後面的數字是刻度。Tailwind 以 `0.25rem` 為一格，數字 4 就是四格，也就是 1rem，字級 16px 時是 16px。刻度是 rem，所以使用者調大瀏覽器字級時間距跟著放大。只換字首，同一個數字就落在不同方向或不同位置。刻度對照見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#padding">padding</a>。
 
 {% note info %}
 **同一軸留一種縫**
@@ -1292,7 +1292,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 ### 預設斷點
 
-預設斷點都是最小寬度（min-width）條件：視窗到達那個寬度就成立，再拉更寬仍然成立。同一個屬性寫了好幾個前綴時，較寬的那個蓋過較窄的。門檻見下列，完整對照見 [視窗斷點](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#視窗斷點)。
+預設斷點都是最小寬度（min-width）條件：視窗到達那個寬度就成立，再拉更寬仍然成立。同一個屬性寫了好幾個前綴時，較寬的那個蓋過較窄的。門檻見下列，完整對照見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#視窗斷點">視窗斷點</a>。
 
 - `sm:`：40rem，約 640px。
 - `md:`：48rem，約 768px。
@@ -1441,7 +1441,7 @@ RWD（響應式網頁設計）讓同一份 HTML 在手機到寬螢幕都排得�
 
 ### 卡片牆
 
-Flex 管一列內的對齊，Grid 管欄數會隨寬度改變的卡片。單格怎麼寫見 [常見組合](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#常見組合) 與 [grid-template-columns](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#grid-template-columns)。
+Flex 管一列內的對齊，Grid 管欄數會隨寬度改變的卡片。單格怎麼寫見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#常見組合">常見組合</a> 與 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#grid-template-columns">grid-template-columns</a>。
 
 ```html 02-tailwind/pages/18-layout.html
 <!doctype html>
@@ -1543,7 +1543,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 - 上半的白底寬度由 `container` 決定：窄視窗時佔滿並留 1rem 內距，過了 640px 內距變 1.5rem，最大寬度則停在當時的斷點寬度，兩側露出灰底。
 - 下半用 `mx-auto max-w-6xl px-4` 做同一件事，最寬 72rem；`sm:px-6` 讓內距在 640px 起加大。
 - 最後一段加 `max-w-3xl`，只縮那一段說明，青綠底仍是整條版心的寬度。
-- 最大寬度的刻度見 [max-width](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#max-width)。
+- 最大寬度的刻度見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#max-width">max-width</a>。
 
 ### 選讀：導覽列
 
@@ -1600,7 +1600,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 
 ## 容器查詢
 
-斷點看的是整個視窗，但元件常被放進寬度各異的欄位：視窗很寬，裝它的那一欄卻很窄。容器查詢（container query，讓元素依「父層容器」的寬度改樣式，而不是依視窗寬度）就是為這種情況設計的。Tailwind v4 內建，不必另外安裝；見 [容器查詢](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#容器查詢)。
+斷點看的是整個視窗，但元件常被放進寬度各異的欄位：視窗很寬，裝它的那一欄卻很窄。容器查詢（container query，讓元素依「父層容器」的寬度改樣式，而不是依視窗寬度）就是為這種情況設計的。Tailwind v4 內建，不必另外安裝；見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#容器查詢">容器查詢</a>。
 
 **一覽**
 
@@ -1750,7 +1750,7 @@ Tailwind 也內建一個 `container` class：寬度 100%，並在每個斷點把
 
 ## @theme 自訂設計變數
 
-主題變數（theme variable）是寫在 `@theme` 裡的特殊 CSS 變數：它既是一般的 CSS 變數，也會讓 Tailwind 產生對應的 utility。寫在 `:root` 的普通變數只有前者。變數名字開頭決定它產生哪一類 class，你新增的名字會和內建的合併，不會覆蓋。變數一覽見 [主題指令](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#主題指令) 與 [@theme inline 與 static](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#theme-inline-與-static)。
+主題變數（theme variable）是寫在 `@theme` 裡的特殊 CSS 變數：它既是一般的 CSS 變數，也會讓 Tailwind 產生對應的 utility。寫在 `:root` 的普通變數只有前者。變數名字開頭決定它產生哪一類 class，你新增的名字會和內建的合併，不會覆蓋。變數一覽見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#主題指令">主題指令</a> 與 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#theme-inline-與-static">@theme inline 與 static</a>。
 
 - `--color-*` 產生背景、文字、邊框等顏色 class。
 - `--spacing-*` 產生內距、外距、寬度、縫隙等 class。
@@ -1907,7 +1907,7 @@ import './apply.css';
 
 ### 任意值與 ! 覆寫
 
-刻度沒有的值寫在方括號裡，稱為任意值（arbitrary value）。底線會被當成空白。能用既有刻度就用刻度，每一頁才不會各長各的。寫法見 [任意值與任意屬性](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意值與任意屬性)。
+刻度沒有的值寫在方括號裡，稱為任意值（arbitrary value）。底線會被當成空白。能用既有刻度就用刻度，每一頁才不會各長各的。寫法見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#任意值與任意屬性">任意值與任意屬性</a>。
 
 ```html 02-tailwind/pages/27-arbitrary.html
 <!doctype html>
@@ -1934,7 +1934,7 @@ import './apply.css';
 - 圓角 1.25rem 介於 `rounded-2xl`（1rem）與 `rounded-3xl`（1.5rem）之間，刻度沒有這一格，所以寫成方括號。
 - 背景色 `#fff7e6` 是不在色票裡的顏色，方括號同樣適用。
 
-兩個 utility 改同一個屬性時，誰贏取決於 Tailwind 產生 CSS 的順序，不是 class 屬性裡的前後。在 class 最後加驚嘆號，會把那一條宣告標成 important（優先權最高）。v4 的驚嘆號寫在結尾；舊版寫在前面，也還看得到。用在壓過你控制不了的樣式；自己能拿掉多餘的 class 時，不要用。寫法見 [任意變體、important、前綴](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#任意變體、important、前綴)。
+兩個 utility 改同一個屬性時，誰贏取決於 Tailwind 產生 CSS 的順序，不是 class 屬性裡的前後。在 class 最後加驚嘆號，會把那一條宣告標成 important（優先權最高）。v4 的驚嘆號寫在結尾；舊版寫在前面，也還看得到。用在壓過你控制不了的樣式；自己能拿掉多餘的 class 時，不要用。寫法見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#任意變體、important、前綴">任意變體、important、前綴</a>。
 
 ```html 02-tailwind/pages/28-important.html
 <!doctype html>
@@ -1959,7 +1959,7 @@ import './apply.css';
 
 ### 選讀：@layer 與 @utility
 
-自訂 class 可以放在兩個地方。放進 `@layer components` 的是普通 CSS，可以被標籤上的 utility 覆蓋，但前面加不上滑過或斷點等前綴。用 `@utility` 註冊的名字則和內建 utility 一樣，能接這些前綴。對照見 [@layer](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#layer) 與 [@utility](/2026/08-30/lokiTech-15day-05-tailwind-cheatsheet/#utility)；RWD 那章的版心 `container` 也是用 `@utility` 寫的。
+自訂 class 可以放在兩個地方。放進 `@layer components` 的是普通 CSS，可以被標籤上的 utility 覆蓋，但前面加不上滑過或斷點等前綴。用 `@utility` 註冊的名字則和內建 utility 一樣，能接這些前綴。對照見 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#layer">@layer</a> 與 <a href="{% post_path lokiTech-15day-05-tailwind-cheatsheet %}#utility">@utility</a>；RWD 那章的版心 `container` 也是用 `@utility` 寫的。
 
 ```css 02-tailwind/src/layer.css
 @import "./style.css";
@@ -2115,7 +2115,7 @@ import './layer.css';
 
 選讀小節有：Preflight 重置了什麼、Play CDN、group 與 peer、手動切換、導覽列，以及 @layer 與 @utility，這些可以整節跳過。
 
-- Node 26 用 nvs 安裝、pnpm 用 npm 全域安裝；sandbox 接上 Vite、Tailwind、Prettier 與 VS Code 後即可練習，現成範例頁再進 `02-tailwind`。
+- Node 26 用 nvs 安裝、pnpm 用 npm 全域安裝；`sandbox` 接好 Vite、Tailwind、Prettier 與 VS Code 後就能練習，完整範例頁在 `02-tailwind`。
 - utility 是「屬性－值」的 class，編譯器只收原始碼裡寫完整的名字，例如 `bg-teal-700`。
 - 條件寫成前綴：`hover:` 是滑過，鍵盤聚焦、按下、停用各有自己的前綴，預設的 dark 前綴則跟著作業系統外觀。
 - 寬度前綴是最小寬度，夠寬才加上、更寬仍成立，要限定小於某個寬度就用 `max-md:`。

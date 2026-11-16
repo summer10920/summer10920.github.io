@@ -1357,7 +1357,7 @@ export default function SiteFooter() {
   style other fill:#ffebee
 {% endmermaid %}
 
-頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著；若把 `errorElement` 掛在外框上，整份版型會被換掉。`RouteErrorPage` 遇到 404 就渲染找不到頁面的畫面，其他錯誤顯示「發生錯誤」。一般規則見[第十一篇〈errorElement：拿不到資料時〉](/2026/08-30/lokiTech-15day-11-react-router/#errorElement：拿不到資料時)。
+頁面的 `loader` 丟出 404 時，錯誤停在沒有 `path` 的那一層，只替換 `Outlet` 裡的畫面，頁首與頁尾留著；若把 `errorElement` 掛在外框上，整份版型會被換掉。`RouteErrorPage` 遇到 404 就渲染找不到頁面的畫面，其他錯誤顯示「發生錯誤」。一般規則見<a href="{% post_path lokiTech-15day-11-react-router %}#errorElement：拿不到資料時">第十一篇〈errorElement：拿不到資料時〉</a>。
 
 這一節寫 `NotFoundPage` 與 `RouteErrorPage`，再接到路由。
 
@@ -6576,7 +6576,7 @@ export default function NoticeSnackbar({ notice, onClose }) {
 - 打開 Dialog 時呼叫 `save.reset()`，清掉共用 fetcher 上一次留下的資料，重開時才不會還顯示舊的錯誤。
 - 在畫面上試一次：標題留空按儲存，表單上方出現紅色的「標題要填」；填好標題再儲存，Dialog 關閉，畫面下方出現「已儲存這筆行程」。
 
-同一個 `key` 的寫法見[第十一篇〈用 key 共用 fetcher〉](/2026/08-30/lokiTech-15day-11-react-router/#用-key-共用-fetcher)。
+同一個 `key` 的寫法見<a href="{% post_path lokiTech-15day-11-react-router %}#用-key-共用-fetcher">第十一篇〈用 key 共用 fetcher〉</a>。
 
 把 `action` 接到 `/admin`。
 

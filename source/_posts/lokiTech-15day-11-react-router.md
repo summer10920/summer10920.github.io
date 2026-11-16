@@ -10,17 +10,17 @@ date: 2026-08-30 10:10:00
 
 ![](assets/images/banner/react.png)
 
-網址決定現在畫哪一頁。你在 {% post_link lokiTech-15day-09-react-basics %} 的練習站已用 hash 切換示範；這一篇先說明那樣為什麼不夠，再介紹 React Router 的三種模式（專案用資料模式）。接著把 `03-react` 複製成 `04-react-router`：先接上路由器與最小版型，再依序教 `Link`／`NavLink`、路徑參數、選單與查詢參數，最後才處理找不到的頁面，並用 `loader`、`action`、`Form`、`redirect` 與 `errorElement` 讀取並送出資料，以及 `useFetcher` 與 `useNavigation` 處理不換頁的送出與讀取中狀態。選讀有宣告式與框架模式、`useLocation`，以及部署到 GitHub Pages。
+網址決定現在畫哪一頁。上一篇的練習站用 hash 切換示範，這一篇先說明那樣為什麼不夠，再介紹 React Router 的三種模式（專案用資料模式）。接著把 `03-react` 複製成 `04-react-router`：先接上路由器與最小版型，再依序教 `Link`／`NavLink`、路徑參數、選單與查詢參數、找不到的頁面，最後用 `loader`、`action`、`Form`、`redirect`、`errorElement`、`useFetcher` 與 `useNavigation` 讀取並送出資料。選讀有宣告式與框架模式、`useLocation`，以及部署到 GitHub Pages。
 
 <!-- more -->
 
 # 認識路由
 
-這一章先回顧 `03-react` 用 hash 做示範選單的做法，看它少了什麼，再說明為什麼要另外找路由套件，以及 React Router 的三種使用模式怎麼選。課堂用資料模式，宣告式與框架模式留作選讀對照。可跑的路由器要等複製出 `04-react-router` 之後才開始寫。
+這一章先回顧 `03-react` 的 hash 示範選單，看它少了什麼，再說明為什麼要用路由套件，以及 React Router 的三種使用模式怎麼選。課堂用資料模式，宣告式與框架模式留作選讀對照；可跑的路由器要等複製出 `04-react-router` 之後才開始寫。
 
 ## hash 選單的限制
 
-`03-react` 的練習站用左側目錄切換示範：目前示範記在網址的 `#` 後面，`App.jsx` 讀 hash、對上 `demoRegistry` 裡的元件再畫出來。細節見 {% post_link lokiTech-15day-09-react-basics %} 的「選讀：用 hash 做示範選單」。hash 能讓重新整理停在同一則，但還不是真正的路徑路由。
+`03-react` 的練習站用左側目錄切換示範：目前示範記在網址 `#` 後面，`App.jsx` 讀 hash、對上 `demoRegistry` 裡的元件再畫出來，細節見 {% post_link lokiTech-15day-09-react-basics %} 的「選讀：用 hash 做示範選單」。這能讓重新整理停在同一則，但還不是真正的路徑路由。
 
 **觀念**
 
@@ -28,11 +28,11 @@ date: 2026-08-30 10:10:00
 - 自己用 `replaceState` 寫 hash，沒有巢狀版面、路徑參數、進頁前讀資料、表單送出後轉址這些能力；結業專案都要靠路由套件的資料模式。
 - 若只在元件裡用 `useState` 切頁、完全不改網址，重新整理會回到起始頁，也無法分享某一頁。
 
-所以這一章的目標不是另做一個網站，而是把你已熟悉的練習站，從 hash 選單演進成 data mode 的路徑路由。
+因此這一章不另做網站，而是把你熟悉的練習站，從 hash 選單演進成資料模式的路徑路由。
 
 ## React Router
 
-網址要對上元件、換頁要進瀏覽器歷史、重新整理要停在同一條路徑，這些事 React 本身不處理。上一節的 hash 選單已能切示範，但路徑、巢狀版面、進頁前讀資料與表單轉址仍要自己拼；若再去聽瀏覽器歷史事件並手寫拆路徑，成本很高。這一節說明專門處理這件事的套件 React Router 做什麼、有哪三種使用模式，以及課堂為什麼選資料模式。
+網址要對上元件、換頁要進瀏覽器歷史、重新整理要停在同一條路徑，這些事 React 本身不處理，自己監聽歷史事件再手寫拆路徑，成本很高。這一節說明專門處理這件事的 React Router 做什麼、有哪三種使用模式，以及課堂為什麼選資料模式。
 
 ### 路由套件做什麼
 
@@ -94,7 +94,7 @@ React Router v7 以前，瀏覽器用的 API 要從 `react-router-dom` 引入；
 
 路由物件上常見的欄位之後會逐項練習：`path` 對路徑，`Component`（或 `element`）是畫面，`loader` 進頁前讀資料，`action` 處理送出，`errorElement` 在讀取或送出失敗時換錯誤畫面。結業專案的行程列表、詳情、報名與後台，都是這一套在運作。
 
-檔案怎麼擺可以先有個印象：入口仍是 `main.jsx` 渲染 `App`；`App.jsx` 建立路由器；共用版面用 `Outlet` 留位子頁；各頁元件需要時再掛自己的 `loader`。可跑的示範從複製出 `04-react-router`、接上路由器之後開始；`loader` 與 `action` 的完整範例在後面「讀取與送出資料」那一章。
+檔案的擺法先有個印象：入口仍是 `main.jsx` 渲染 `App`，`App.jsx` 建立路由器，共用版面用 `Outlet` 留位置給子頁，各頁元件需要時再掛自己的 `loader`。可跑的範例從複製出 `04-react-router` 之後開始，`loader` 與 `action` 的完整範例在「讀取與送出資料」那一章。
 
 {% mermaid graph TD %}
   entry["main.jsx<br/>createRoot 渲染 App"]
@@ -187,7 +187,7 @@ export default function Trips({ loaderData }: Route.ComponentProps) {
 
 # 啟用路由
 
-這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份，清掉舊的依賴再安裝，然後裝上 `react-router`：把舊的 hash `App` 封存成 `App-hash.jsx`，再新建路由版 `App.jsx` 確認接得上，接著換成「版型 + 總覽」。真正沿用的是 `demoRegistry`、`Menu` 與 `demos/`，不是把 hash `App` 的程式搬進路由表。選單、單則頁與查詢參數留到下一章，先把觀念講完再動手改。同一檔的修改會用 diff 標出要改的行。
+這一章起，練習都在 `04-react-router`。先把 `03-react` 複製成這份、清掉舊的依賴再安裝並裝上 `react-router`，接著把 hash `App` 封存成 `App-hash.jsx`、新建路由版 `App.jsx` 確認接得上，再換成版型加總覽。沿用的是 `demoRegistry`、`Menu` 與 `demos/`，不是把 hash `App` 的程式搬進路由表。選單、單則頁與查詢參數留到下一章，先講觀念再動手改；同一檔的修改用 diff 標出要改的行。
 
 ## 安裝與入口
 
@@ -220,8 +220,8 @@ Copy-Item -Recurse 03-react 04-react-router
 ```
 
 {% note info %}
-**資料夾已經在倉庫裡**
-課堂倉庫的 `04-react-router` 就是這一章的練習專案，起點與 `03-react` 的成品相同，後面各節的示範檔也已經在裡面。此時不要再複製一次：macOS 的 `cp -R` 會把來源嵌進既有資料夾。直接做下一步。
+**練習倉庫已經有這個資料夾**
+`studiesAdvanced` 已附上完成的 `04-react-router`。資料夾已存在時不要再複製一次，macOS 的 `cp -R` 會把來源嵌進既有資料夾；直接做下一步。
 {% endnote %}
 
 ### 步驟 2：清掉依賴再安裝
@@ -266,7 +266,7 @@ pnpm add react-router@8
 
 ### 步驟 4：建立路由器
 
-剛從 `03-react` 複製過來時，`src/App.jsx` 仍是 hash 選單，`main.jsx` 引入的也是它。先把舊檔**改名封存**，再**新建**路由版 `App.jsx`：hash 那份只拿來對照「以前怎麼切頁」，路由表是新寫的，不要把 `readHash`、`replaceState`、`select` 搬進新的 `App`。
+剛從 `03-react` 複製過來時，`src/App.jsx` 仍是 hash 選單，`main.jsx` 引入的也是它。先把舊檔改名封存，再新建路由版 `App.jsx`：hash 那份只拿來對照以前怎麼切頁，路由表是新寫的，不要把 `readHash`、`replaceState`、`select` 搬進新的 `App`。
 
 #### 步驟 4-1：封存 hash App
 
@@ -317,15 +317,13 @@ export default function App() {
 - `App-hash.jsx` 仍留在專案裡，需要時打開對照即可；`main.jsx` 不要改指到它。
 
 {% note info %}
-**倉庫裡的 App-hash.jsx 與 App-init.jsx**
-課程倉庫的 `App.jsx` 已是後面章節的完整路由表。因此另存兩份對照檔：`App-hash.jsx` 是從 03 封存的 hash 選單；`App-init.jsx` 與上面這份最小路由起點相同，方便重看「剛接上路由器」。若要在完成檔上重看煙霧測試，可暫時把 `main.jsx` 改成引入 `./App-init.jsx`，看完再改回 `./App.jsx`。
+**練習倉庫的 App-hash.jsx 與 App-init.jsx**
+倉庫的 `App.jsx` 已是後面章節的完整路由表，所以另存兩份對照檔：`App-hash.jsx` 是封存的 hash 選單，`App-init.jsx` 與上面這份最小路由相同。想重看剛接上路由器的樣子，可暫時把 `main.jsx` 改成引入 `./App-init.jsx`，看完改回 `./App.jsx`。
 {% endnote %}
 
 ## 路由表與版型
 
-接著把路由版 `App.jsx` 從上一節的「路由已經接上」改成版型加總覽（自己動手的，就是在剛新建的最小 `App.jsx` 上整份換成下面起點；看倉庫完成檔的，請對照講義的 diff／起點，完成檔本身已含後面章節的路由）。沿用的仍是 `Menu`、`demoRegistry` 與 `demos/`，不是從 `App-hash.jsx` 抽程式。這一節只做到版型加總覽；`:slug`、選單、`?q=`、86–92 與 404 都在後面章節、觀念講完再掛。
-
-這一節依序看：路由表怎麼寫、版型怎麼留出位置、首頁怎麼接上。
+接著把剛新建的最小 `App.jsx` 整份換成版型加總覽。這一節只做到這裡：單則頁、選單、查詢參數與找不到的頁面都留到後面章節，觀念講完再掛。依序看路由表怎麼寫、版型怎麼留出位置、首頁怎麼接上。
 
 **一覽**
 
@@ -355,7 +353,7 @@ export default function App() {
 
 `index: true` 的子路由沒有自己的路徑，打開網站根目錄時就由它補在版型中間。
 
-之後的單則示範會寫成 `demos/:slug`，其中冒號開頭的 slug 是動態片段（路徑中會變動的一段），細節留到路徑參數那一節。子路由的路徑不加開頭斜線，會自動接在父路徑後面，變成 /demos/01-hello 這種網址。
+之後的單則示範會寫成 `demos/:slug`，其中冒號開頭的 slug 是動態片段（路徑中會變動的一段），細節留到路徑參數那一節。子路由的路徑不加開頭斜線，會自動接在父路徑後面，變成 `/demos/01-hello` 這種網址。
 
 `element` 收的是已經建立好的元素，也就是寫成 JSX 標籤的元件。官方文件的範例多半改寫 `Component`，直接傳元件函式，由路由器自己建立元素；兩種寫法都能用，本課這一節統一用 `element`，路由表因此一眼看得出畫什麼。
 
@@ -393,9 +391,7 @@ export default function App() {
 - 路由表是陣列，交給 `createBrowserRouter`，再由 `RouterProvider` 畫出來。
 - 打開 `/` 時，外層的版型與 index 的首頁一起出現：版型是外框，首頁在 `Outlet` 的位置。
 - 別的路徑目前沒有對應的路由，主區是空的；找不到頁面的處理在後面的章節。
-- 這是這一節的起點，之後每加一種頁面，只是在 `children` 多寫一筆。
-
-之後每加一種頁面，只在 `children` 裡用 diff 多寫一筆（`demos/:slug`、86–92、星號 404）。倉庫完成版見練習專案的 `src/App.jsx`。
+- 之後每加一種頁面，只是在 `children` 多寫一筆，講義用 diff 標出新增的那一筆。
 
 {% note info %}
 **不寫 path 的版型路由**
@@ -475,7 +471,7 @@ export default function MainLayout() {
 
 - `ScrollRestoration` 本身不畫出任何看得見的東西，只負責記住並還原每一個歷史紀錄的捲動位置。
 - 用連結或 `navigate` 換頁時，視窗捲到頂部；按上一頁或下一頁，回到離開那一頁之前的位置。
-- 整個應用只放一個。左側目錄下一章才接上，這一步先不要改成 `Menu`。
+- 整個應用只放一個。
 
 ### 首頁總覽
 
@@ -507,15 +503,15 @@ export default function Home() {
 
 - 打開 `/`，左側仍是版型裡的佔位站名，主區是標題與那一句說明。
 - 版型裡的站名與首頁裡的標題是兩個不同的元素，改其中一個不會影響另一個。
-- 倉庫完成版的 `Home.jsx` 已含則數與「從第一則開始」連結；下一章補上後會對齊。
+- 則數與「從第一則開始」的連結，下一章接上選單時再補。
 
 # 連結與選單
 
-上一章已接上路由器與版型，主區只有總覽。這一章先把換頁用的 `Link`／`NavLink`、路徑參數講清楚，再替 registry 加上 `slug`、掛上單則頁，然後才把 03 的按鈕選單改成路徑連結。搜尋寫進 `?q=` 留到會用 `useSearchParams` 之後。選讀補上讀取完整位置的方法。
+上一章已接上路由器與版型，主區只有總覽。這一章先講換頁用的 `Link`／`NavLink` 與路徑參數，再替 registry 加上 `slug`、掛上單則頁，然後把 03 的按鈕選單改成路徑連結，最後才把搜尋寫進 `?q=`。選讀補上讀取完整位置的 `useLocation`。
 
 ## 連結
 
-一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。React Router 提供兩個替代品：點了只改網址，由路由表換掉對應的那一塊畫面，其餘不動。這一節先把語法與用法講完；路徑參數與單則頁就緒後，再到「接上選單」改練習站。
+一般的 `<a href>` 點下去，瀏覽器會向伺服器重新要整頁，畫面上的狀態全部清掉。React Router 提供兩個替代品：點了只改網址，由路由表換掉對應的那一塊畫面，其餘不動。這一節先講語法與用法；路徑參數與單則頁就緒後，再到「接上選單」改練習站。
 
 **一覽**
 
@@ -556,7 +552,7 @@ const jump = <Link to="/demos/01-hello">從第一則開始</Link>;
 
 **觀念**
 
-`to` 以斜線開頭時是絕對路徑，不管現在停在哪一頁都指向同一處。不以斜線開頭的寫法是相對路徑，會接在目前這條路由的後面；它適合版型內的子頁互相連結，這份筆記站一律寫絕對路徑，比較不容易看錯。連結可以先寫上，但**本課規定：先掛好目標路由，再寫會點進去的連結**，避免中途點了主區是空的。
+`to` 以斜線開頭時是絕對路徑，不管現在停在哪一頁都指向同一處。不以斜線開頭的寫法是相對路徑，會接在目前這條路由的後面；它適合版型內的子頁互相連結，這份筆記站一律寫絕對路徑，比較不容易看錯。連結可以先寫上，但課堂的順序是先掛好目標路由，再寫會點進去的連結，避免中途點了主區是空的。
 
 ### NavLink：標出目前頁
 
@@ -685,17 +681,16 @@ navigate('/demos/03-expr', { replace: true }); // 取代目前這一筆，上一
 
 - `slug` 等於範例檔名去掉 `.jsx`（資料夾示範則用資料夾名，例如 `71-contextDemo`）。
 - 分組用 `group` 字串；`groups` 迴圈與 03 相同。
-- 後面「讀取與送出資料」的 86–92 也登在同一份清單（倉庫完成版已含）；它們在路由表會用固定路徑掛 `loader`／`action`，比 `demos/:slug` 更具體。
+- 後面「讀取與送出資料」的 86–92 也登在這份清單，路由表會另用固定路徑掛上它們，比 `demos/:slug` 更具體。
 
 ### 掛上單則路由
 
-在上一章的 `App.jsx` 起點上，掛上單則頁與選讀的位置頁（星號 404 下一章再加）。固定路徑的 86–92 比 `demos/:slug` 具體，之後掛進表時寫在 `:slug` 前面即可。
+在上一章的 `App.jsx` 上，替 `children` 多掛一筆單則頁。
 
 ```diff 04-react-router/src/App.jsx
   import MainLayout from './layouts/MainLayout.jsx';
 + import DemoPage from './pages/DemoPage.jsx';
   import Home from './pages/Home.jsx';
-+ import WherePage from './pages/WherePage.jsx';
 
   const router = createBrowserRouter(
     [
@@ -706,7 +701,6 @@ navigate('/demos/03-expr', { replace: true }); // 取代目前這一筆，上一
 +       children: [
 +         { index: true, element: <Home /> },
 +         { path: 'demos/:slug', element: <DemoPage /> },
-+         { path: 'where', element: <WherePage /> },
 +       ],
       },
     ],
@@ -800,7 +794,7 @@ export default function DemoPage() {
 
 ### 步驟 1：選單改成 NavLink
 
-複製過來的 `Menu.jsx` 仍靠父層傳入 `current`、`query`、`onSelect` 等 props，用 `<button>` 改 hash。改成路由後，選單要自己讀 `useParams`、自己管展開與搜尋狀態，**props API 整份換掉**，請用下面中間態**整份取代**（不要在舊 props 版上硬改）。此步**還沒**用 `useSearchParams`；`?q=` 下一節再加。
+複製過來的 `Menu.jsx` 仍靠父層傳入 `current`、`query`、`onSelect` 等 props，並用 `<button>` 改 hash。改成路由後，選單要自己讀 `useParams`、自己管展開與搜尋狀態，props 不再使用，所以下面整份取代舊檔，不在舊版上硬改。這一步還沒用 `useSearchParams`，`?q=` 留到下一節。
 
 ```jsx 04-react-router/src/Menu.jsx
 import { useState } from 'react';
@@ -909,18 +903,6 @@ export default function Menu() {
               </ul>
             </section>
           ))}
-          <p className="mt-4 px-4 text-sm">
-            <NavLink
-              to="/where"
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-teal-800 underline'
-                  : 'text-stone-600 underline'
-              }
-            >
-              位置（選讀）
-            </NavLink>
-          </p>
         </nav>
       </div>
     </aside>
@@ -932,8 +914,7 @@ export default function Menu() {
 
 - 不再接收 props：`useParams` 讀目前 `slug`，`useState` 管搜尋字串與手機版展開。
 - 站名與每一則是 `NavLink`；`isActive` 為真時用深色底標出目前頁。`end` 見「NavLink」那一節。
-- 連到 `/demos/` 加上該則 `slug` 時，主區會換成已掛好的 `DemoPage`。
-- 底部「位置」連到上一節已掛的 `/where`。
+- 每一則連到 `/demos/` 加上該則 `slug`，主區換成已掛好的 `DemoPage`。
 - 搜尋仍是元件內的 `query`：重新整理會清空，下一節才改成寫進網址。
 
 ### 步驟 2：選單放進版型
@@ -1067,7 +1048,7 @@ setParams((prev) => {
 
 網址是這個篩選的唯一資料來源：輸入框的值直接讀自查詢，打字就是寫回查詢，不另外放一個狀態。函式形式適合「只改其中一個參數、保留其餘」。它不像 `setState` 會把同一輪的多次呼叫串起來，所以同一個事件裡要改多個參數，合併成一次呼叫。
 
-接著在上一節的 `Menu.jsx` 上，把本機 `query` 改成 `useSearchParams` 的 `q`；連到單則時帶上同一個 `q`，換頁後篩選才還在。完成檔與倉庫相同。
+接著在上一節的 `Menu.jsx` 上，把本機 `query` 改成 `useSearchParams` 的 `q`；連到單則時帶上同一個 `q`，換頁後篩選才還在。
 
 ```diff 04-react-router/src/Menu.jsx
   import { useState } from 'react';
@@ -1128,7 +1109,7 @@ setParams((prev) => {
 **解析**
 
 - 在左側輸入「狀態」，網址列出現 `?q=...`，目錄只留下標題含這兩個字的列；直接打開帶 `?q=狀態` 的網址，結果相同。
-- 清空輸入框後，問號消失，全部主題回到左側。重新整理仍是同一組篩選結果。
+- 清空輸入框後，問號消失，全部示範回到目錄。重新整理仍是同一組篩選結果。
 - 點篩過的某一則，網址變成 `/demos/…?q=…`，目錄的篩選仍在，那一列是深色。`NavLink` 判斷使用中只比對路徑，不看問號後面的部分。
 - 每次輸入都用 `replace`，所以打完一個字詞再按上一頁，會離開這一頁，不必逐字倒退。
 
@@ -1153,7 +1134,7 @@ const location = useLocation();
 
 **觀念**
 
-位置在渲染時就讀得到，直接畫出來即可。這一頁把路徑、查詢與雜湊印出來，打開 `/where?q=狀態#note` 可以看到三段分開；沒有查詢或雜湊的網址，兩行都顯示「（沒有）」。`where` 路由與選單連結先前已接上，左側目錄仍在，因為這一頁也是版型的子路由。
+位置在渲染時就讀得到，直接畫出來即可。下面這一頁把路徑、查詢與雜湊印出來；做法是先建立頁面，再在路由表掛上 `where`，最後在選單底部加一條連結。
 
 ```jsx 04-react-router/src/pages/WherePage.jsx
 import { useLocation } from 'react-router';
@@ -1176,10 +1157,40 @@ export default function WherePage() {
 }
 ```
 
+```diff 04-react-router/src/App.jsx
+  import Home from './pages/Home.jsx';
++ import WherePage from './pages/WherePage.jsx';
+
+        children: [
+          …
+          { path: 'demos/:slug', element: <DemoPage /> },
++         { path: 'where', element: <WherePage /> },
+        ],
+```
+
+```diff 04-react-router/src/Menu.jsx
+            </section>
+          ))}
++         <p className="mt-4 px-4 text-sm">
++           <NavLink
++             to="/where"
++             className={({ isActive }) =>
++               isActive
++                 ? 'text-teal-800 underline'
++                 : 'text-stone-600 underline'
++             }
++           >
++             位置（選讀）
++           </NavLink>
++         </p>
+        </nav>
+```
+
 **解析**
 
+- 左側目錄仍在，因為這一頁也是版型的子路由。
 - 停在 `/where` 時，路徑是 `/where`，查詢與雜湊顯示「（沒有）」。
-- 網址加上 `?q=狀態#note` 後，三行分別是 `/where`、查詢、`#note`；中文會是百分比編碼（`?q=%E7%8B%80%E6%85%8B`），因為 `search` 是瀏覽器網址原樣的字串，要解碼後的值用 `useSearchParams` 的 `get`。
+- 打開 `/where?q=狀態#note`，三行分別是 `/where`、查詢、`#note`；中文會是百分比編碼（`?q=%E7%8B%80%E6%85%8B`），因為 `search` 是瀏覽器網址原樣的字串，要解碼後的值用 `useSearchParams` 的 `get`。
 
 # 找不到的頁面
 
@@ -1225,18 +1236,14 @@ const { '*': rest } = useParams();
 
 **觀念**
 
-在路徑參數那一節的 `children` 最後加上星號一筆。`demos/:slug` 比星號具體，所以 `/demos/01-hello` 不會掉進 404；`/demos/not-found` 也不會，它對上的是單則頁面，只是目錄裡沒有這個 `slug`，顯示的是那一頁自己的「沒有這個示範」。
+在路由表 `children` 的最後加上星號一筆。`demos/:slug` 比星號具體，所以 `/demos/01-hello` 不會掉進 404；`/demos/not-found` 也不會，它對上的是單則頁面，只是目錄裡沒有這個 `slug`，顯示的是那一頁自己的「沒有這個示範」。
 
 ```diff 04-react-router/src/App.jsx
-  import DemoPage from './pages/DemoPage.jsx';
   import Home from './pages/Home.jsx';
 + import NotFoundPage from './pages/NotFoundPage.jsx';
-  import WherePage from './pages/WherePage.jsx';
 
         children: [
-          { index: true, element: <Home /> },
-          { path: 'demos/:slug', element: <DemoPage /> },
-          { path: 'where', element: <WherePage /> },
+          …
 +         { path: '*', element: <NotFoundPage /> },
         ],
 ```
@@ -1273,12 +1280,12 @@ export default function NotFoundPage() {
 
 ### 星號與版型並列
 
-星號寫在最外層、與版型同級時，未知網址不會走進版型，目錄消失，整頁只剩 404 元件。這種寫法適合 404 想用完全不同外觀的網站。下面是對照用的路由表形狀，**不是**倉庫完成檔的內容。
+星號寫在最外層、與版型同級時，未知網址不會走進版型，目錄消失，整頁只剩 404 元件。這種寫法適合 404 想用完全不同外觀的網站。下面是對照用的路由表形狀，不放進練習專案。
 
-```jsx 04-react-router/src/App.jsx
+```jsx
 /**
  * 對照：星號與版型路由同級時，未知網址整頁換成 404，版型的目錄不會出現。
- * 筆記站與結業專案不用這一種；完成檔仍把星號放在版型 children 裡。
+ * 筆記站與結業專案不用這一種，星號仍放在版型的 children 裡。
  */
 const router = createBrowserRouter(
   [
@@ -1286,7 +1293,7 @@ const router = createBrowserRouter(
       path: '/',
       element: <MainLayout />,
       children: [
-        /* 首頁、單則與位置仍寫在版型裡 */
+        /* 首頁與單則仍寫在版型裡 */
       ],
     },
     { path: '*', element: <NotFoundPage /> },
@@ -1303,11 +1310,11 @@ const router = createBrowserRouter(
 **解析**
 
 - 星號與版型同級，不在 `children` 裡；找不到時整頁換成 404，目錄不會出現。
-- 完成檔請繼續用「星號放在版型裡」那一節的 diff，不要改成這份對照。
+- 練習專案仍用上一節的寫法，不要改成這份對照。
 
 ## 對不上網址時的錯誤處理
 
-沒有星號路由時，路由器會把對不上的網址當成一個 404 錯誤，交給最上層那條路由的錯誤畫面處理；沒有指定時，顯示路由器內建的預設 404 畫面。錯誤畫面用路由上的 `errorElement` 指定，它不只處理 404：路由的 `loader`、`action` 或畫面出錯時，同樣由最近的那一層接手，下一章會實際用到。下面是對照用的掛法，**不是**倉庫完成檔的內容。
+沒有星號路由時，路由器會把對不上的網址當成一個 404 錯誤，交給最上層那條路由的錯誤畫面處理；沒有指定時，顯示路由器內建的預設 404 畫面。錯誤畫面用路由上的 `errorElement` 指定，它不只處理 404：路由的 `loader`、`action` 或畫面出錯時，同樣由最近的那一層接手，下一章會實際用到。下面是對照用的掛法，不放進練習專案。
 
 **一覽**
 
@@ -1315,7 +1322,7 @@ const router = createBrowserRouter(
 - `errorElement`：寫在路由物件上的錯誤畫面。出錯時，路由器由內往外找最近的一個，換掉那條路由原本要畫的內容。
 - `useRouteError` 取得錯誤內容；`isRouteErrorResponse` 判斷它是不是帶狀態碼的回應（例如 404）。
 
-```jsx 04-react-router/src/App.jsx
+```jsx
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 
 /**
@@ -1367,11 +1374,11 @@ function ErrorPage() {
 - `errorElement`：`loader` 或 `action` 丟出錯誤時顯示的畫面。
 - `useFetcher` 與 `useNavigation`：不換頁的送出，以及換頁或送出時的「進行中」狀態。
 
-每一則練習的網址就是範例檔名去掉副檔名，從 86-loader 到 92-fetcher-key，網址前面加上 /demos/。
+每一則練習的網址是 `/demos/` 加上範例檔名去掉副檔名，從 `/demos/86-loader` 到 `/demos/92-fetcher-key`。
 
 {% note info %}
 **哪一種路由器能用**
-這一章的功能只配合資料路由器，也就是 createBrowserRouter、createHashRouter、createMemoryRouter 這幾個函式建立的路由器，再交給 RouterProvider。框架模式則是在路由模組裡匯出 loader 與 action。宣告式的 BrowserRouter 與 Routes 不支援，三種接法見[三種使用模式](#三種使用模式)。
+這一章的功能只配合資料路由器，也就是用 `createBrowserRouter`、`createHashRouter`、`createMemoryRouter` 建立、再交給 `RouterProvider` 的路由器。框架模式則是在路由模組裡匯出 `loader` 與 `action`。宣告式的 `BrowserRouter` 與 `Routes` 不支援，三種接法見[三種使用模式](#三種使用模式)。
 {% endnote %}
 
 {% mermaid graph TD %}
@@ -1398,7 +1405,7 @@ function ErrorPage() {
   style errHook fill:#ffebee
 {% endmermaid %}
 
-示範資料有兩個來源：86 與 89 到 91 讀寫 notes-db.js 裡的陣列，87 與 88 用 fake-api.js。陣列只存在記憶體，重新整理頁面就回到最初的「看海」與「寫筆記」兩筆。
+示範資料有兩個來源：86 與 89 到 91 讀寫 `notes-db.js` 裡的陣列，87 與 88 用 `fake-api.js`。陣列只存在記憶體，重新整理頁面就回到最初的「看海」與「寫筆記」兩筆。
 
 ## 用 loader 讀資料
 
@@ -1423,7 +1430,7 @@ function ErrorPage() {
 
 回傳什麼，元件裡的 `useLoaderData` 就拿到什麼；回傳 Promise 時路由器會等它完成。資料因此在畫面出現之前就備好，元件不必先畫一個空畫面，再靠 effect 與 state 補資料。
 
-示範的資料放在 notes-db.js。它把陣列留在模組變數裡，再匯出讀寫函式，讓不同檔案共用同一份資料。匯入與匯出的規則見選讀的 ES Module 一章：{% post_link lokiTech-15day-06-js-basics %}。
+示範的資料放在 `notes-db.js`。它把陣列留在模組變數裡，再匯出讀寫函式，讓不同檔案共用同一份資料。匯入與匯出的規則見選讀的 ES Module 一章：{% post_link lokiTech-15day-06-js-basics %}。
 
 ```js 04-react-router/src/demos/notes-db.js
 /** @type {{ id: string, title: string, done: boolean }[]} */
@@ -1515,15 +1522,14 @@ export default function LoaderDemo() {
 路由物件把 loader 與元件掛在一起。每個示範檔匯出的函式都叫 `loader`，所以 `App.jsx` 匯入時用 `as` 改名來區分。固定路徑要比 `demos/:slug` 更具體，寫在它前面：
 
 ```diff 04-react-router/src/App.jsx
-  import WherePage from './pages/WherePage.jsx';
+  import NotFoundPage from './pages/NotFoundPage.jsx';
 + import LoaderDemo, { loader as loader86 } from './demos/86-loader.jsx';
 
         children: [
           { index: true, element: <Home /> },
 +         { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
           { path: 'demos/:slug', element: <DemoPage /> },
-          { path: 'where', element: <WherePage /> },
-          { path: '*', element: <NotFoundPage /> },
+          …
         ],
 ```
 
@@ -1629,7 +1635,11 @@ export default function ActionDemo() {
         children: [
           { index: true, element: <Home /> },
           { path: 'demos/86-loader', loader: loader86, Component: LoaderDemo },
-+         { path: 'demos/87-action', action: action87, Component: ActionDemo },
++         {
++           path: 'demos/87-action',
++           action: action87,
++           Component: ActionDemo,
++         },
           { path: 'demos/:slug', element: <DemoPage /> },
           …
         ],
@@ -1799,7 +1809,6 @@ redirect 回傳的是一個 Response 物件，在 action 或 loader 裡用 retur
 
         children: [
           …
-          { path: 'demos/87-action', action: action87, Component: ActionDemo },
 +         {
 +           path: 'demos/88-redirect-list',
 +           loader: loader88List,
@@ -1892,7 +1901,7 @@ redirect 回傳的是一個 Response 物件，在 action 或 loader 裡用 retur
         ],
 ```
 
-89-error-element.jsx 放了清單、明細，以及明細路由的錯誤畫面。兩條路由共用同一個 loader：沒有 noteId 時回傳清單，有時找那一筆。
+`89-error-element.jsx` 放了清單、明細，以及明細路由的錯誤畫面。兩條路由共用同一個 loader：沒有 noteId 時回傳清單，有時找那一筆。
 
 ```jsx 04-react-router/src/demos/89-error-element.jsx
 import {
@@ -2478,8 +2487,7 @@ export default function FetcherKeyDemo() {
 +           Component: FetcherKeyDemo,
 +         },
           { path: 'demos/:slug', element: <DemoPage /> },
-          { path: 'where', element: <WherePage /> },
-          { path: '*', element: <NotFoundPage /> },
+          …
         ],
 ```
 
@@ -2527,7 +2535,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 26
       - run: npm install -g pnpm
       - run: pnpm install --frozen-lockfile
         working-directory: 04-react-router
@@ -2581,6 +2589,8 @@ GitHub Pages 無法設定「其他路徑都改走 `index.html`」的規則，常
 
 ### 404.html 備援
 
+最簡單的做法是讓 GitHub 在找不到檔案時改送 `404.html`，內容與 `index.html` 相同，React 照常載入，路由器再依網址畫出那一頁。
+
 **觀念**
 
 每次建置後，把 `dist/index.html` 複製成 `dist/404.html` 再部署。打包後的檔名帶有雜湊，所以每次都要重新複製，不能沿用舊的。上一節的工作流程已經包含這一步；本機要試的話可以手動執行：
@@ -2596,6 +2606,8 @@ cp dist/index.html dist/404.html
 - 本機的 `pnpm preview` 和開發伺服器一樣會把未知路徑改送 `index.html`，所以在本機看不出 404 問題，要部署後才會遇到。
 
 ### createHashRouter
+
+另一種做法是讓網址的路徑根本不送到伺服器：改用 `createHashRouter`，把頁面放在 `#` 後面。
 
 **觀念**
 
@@ -2625,7 +2637,7 @@ export default function App() {
 
 # 回家作業
 
-這份作業只用必教內容，資料取自專案的行程清單，題目依序累加。請用 `pnpm dev` 開啟練習專案，再到 `/homework.html`：作業用雜湊路由，網址會是 `homework.html#/tours`。課堂上不會批改，也不講解；每一題都附上完成後該看到的結果，可以自己對照。做完或卡住時，再看練習 repo 根目錄 `homework/11-react-router/` 裡的標準答案。
+這份作業只用主線內容，資料取自專案的行程清單。請用 `pnpm dev` 開啟練習專案，再到 `/homework.html`：作業用雜湊路由（`createHashRouter`，見選讀的部署一章），網址會是 `homework.html#/tours`。課堂上不會批改，也不講解；每一題都附上完成後該看到的結果，可以自己對照。做完或卡住時，再看練習 repo 根目錄 `homework/11-react-router/` 裡的標準答案。
 
 ## 起始檔
 
@@ -2692,6 +2704,8 @@ export async function getBookings() {
 
 ## 題目
 
+五題依序累加，每題都附上完成後該看到的結果，可以自己對照。
+
 ### 題目一：版型與導覽
 
 建立一個版型路由，頁首有「首頁」「行程」「報名」三個導覽連結，目前所在的連結要有不同外觀；各頁內容顯示在版型的出口。先為三個路徑各建立一個只有標題的頁面，路徑分別是 `/`、`/tours` 與 `/booking`。
@@ -2724,16 +2738,14 @@ export async function getBookings() {
 
 # 本篇重點回顧
 
-選讀的部分是「選讀：宣告式」、「選讀：框架模式」、「選讀：位置資訊」與「選讀：部署到 GitHub Pages」，其餘都是課堂主線。
-
-- `03-react` 的 hash 選單不夠支撐專案；課堂用資料模式：畫面與資料寫在路由物件上，進頁前跑 `loader`，送出走 `action`，再 `redirect` 或重跑 loader。
-- 複製後把 hash `App` 封存成 `App-hash.jsx`，新建路由版 `App.jsx` 接上 `createBrowserRouter` 與最小版型；再教 `Link`／`NavLink` 與路徑參數，最後才改選單與 `?q=`。
-- 路由表是物件陣列，路由器依路徑的具體程度比對，共用的版型用 `children` 與 Outlet 放進各頁。
-- 換頁用 Link，選單要標出目前頁就用 NavLink；`end` 要求路徑完全相同才算使用中，連到 `/` 時加不加結果相同。
+- `03-react` 的 hash 選單撐不起專案；課堂用資料模式，把畫面與資料寫在路由物件上，進頁前跑 `loader`，送出走 `action`。
+- 複製後把 hash `App` 封存成 `App-hash.jsx`，新建路由版 `App.jsx`，再依序教連結、路徑參數，最後才改選單與 `?q=`。
+- 路由表是物件陣列，路由器依路徑的具體程度比對，共用的版型用 `children` 與 `Outlet` 放進各頁。
+- 換頁用 `Link`，選單要標出目前頁就用 `NavLink`，`end` 要求路徑完全相同才算使用中。
 - 網址上會變的片段用路徑參數與 `useParams` 讀取，要保存篩選條件則用查詢參數與 `useSearchParams`。
 - 沒有路由對上時用星號路由接住，放在版型的 `children` 裡就能在 404 時保留左側目錄。
-- 讀寫資料用 `loader`、`action` 與 Form；失敗時用 `errorElement`，不換頁送出用 `useFetcher`，進行中狀態用 `useNavigation`。
-- 結業專案的列表、詳情、報名與後台，都沿用這一章的資料模式寫法。
+- 讀寫資料用 `loader`、`action` 與 `Form`，送出後用 `redirect` 轉址，失敗時用 `errorElement`。
+- 不換頁的送出用 `useFetcher`，換頁或送出的進行中狀態用 `useNavigation`。
 
 # 專有名詞中英對照
 

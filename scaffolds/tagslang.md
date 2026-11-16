@@ -74,6 +74,14 @@ A[使用者] --> B[瀏覽器] --> C[伺服器]
 {% post_link lokiTech-15day-05-tailwind-cheatsheet Tailwind CSS v4 公式表 %}
 ```
 
+要連到文章裡的某個標題（帶 `#錨點`）時，`post_link` 做不到，用 `post_path` 配 HTML 的 `<a>`。網址由 Hexo 產生，文章改日期不會壞；但標題改名時錨點要同步改：
+
+```md
+<a href="{% post_path lokiTech-15day-04-tailwind %}#認識-Vite">認識 Vite</a>
+```
+
+不要寫成 Markdown 的 `[文字]({% post_path … %}#錨點)`：Hexo 會先把標籤換成佔位符，連結不會被渲染，頁面上會直接出現原始文字。
+
 ### 程式碼區塊
 
 語言後面接檔名，會在程式碼視窗上方顯示檔名標籤。路徑很長也沒關係，窄螢幕會自動在 `/` 後換行。
