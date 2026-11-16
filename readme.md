@@ -61,9 +61,6 @@ npm install
 - [Hexo Tag Embed](https://github.com/hexojs/hexo-tag-embed) ^1.0.0
 - [Hexo Word Counter](https://github.com/willin/hexo-word-counter) ^0.2.0
 - [Patch Package](https://github.com/ds300/patch-package) ^8.0.0
-- [Browserify](https://github.com/browserify/browserify) ^17.0.0
-- [Range Parser](https://github.com/jshttp/range-parser) ^1.2.1
-- [npm-upgrade](https://github.com/pgilad/npm-upgrade) ^3.1.0
 
 ## 配置
 

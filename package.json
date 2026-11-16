@@ -15,7 +15,6 @@
     "version": "8.1.2"
   },
   "dependencies": {
-    "browserify": "^17.0.0",
     "hexo": "^8.1.2",
     "hexo-cli": "^4.3.2",
     "hexo-codepen": "^0.1.1",
@@ -32,8 +31,6 @@
     "hexo-server": "^3.0.0",
     "hexo-tag-embed": "^1.0.0",
     "hexo-word-counter": "^0.2.0",
-    "npm-upgrade": "^3.1.0",
-    "patch-package": "^8.0.0",
-    "range-parser": "^1.2.1"
+    "patch-package": "^8.0.0"
   }
 }
