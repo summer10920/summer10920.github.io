@@ -161,7 +161,7 @@ cd sandbox     # 進入剛建立的專案資料夾
 pnpm install   # 依 package.json 下載套件到 node_modules/
 ```
 
-清單裡有 `react`、`react-dom`、`vite` 與轉換 JSX 的 `@vitejs/plugin-react`，加上選 ESLint 後多出的檢查套件。版本號不用自己改。
+清單裡有 `react`、`react-dom`、`vite` 與轉換 JSX 的 `@vitejs/plugin-react`，加上選 ESLint 後多出的檢查套件。範本還會附 `@types/react` 與 `@types/react-dom`（React 的型別宣告），本課用 JavaScript、用不到，不影響，可以保留。版本號不用自己改。
 
 #### 步驟 3：設定 ESLint
 
@@ -445,7 +445,7 @@ pnpm dev
 
 開啟後，左側是示範目錄，點一筆就切換到對應的示範；清單登錄在 `src/demoRegistry.js`，每個示範檔放在 `src/demos/`。目前開啟哪一筆記在網址的 `#` 後面，做法見下方選讀。同樣請用「開啟資料夾」打開 `03-react`，專案內的 `.vscode` 才會生效。
 
-`package.json` 的 `engines.node` 要求 Node 26 以上，安裝時若抱怨版本，用 `node -v` 確認是 v26 開頭。`03-react` 的 `vite.config.js` 與 `src/index.css` 和 sandbox 步驟 6 的內容相同，套件也是同一批：`react` 與 `react-dom` 19.3、`vite` 8、`@vitejs/plugin-react` 6，加上步驟 3 至 6 裝的 ESLint、Prettier、Tailwind 與 React Compiler 相關套件。
+本課都用 Node 26，啟動前用 `node -v` 確認是 v26 開頭。`03-react` 的 `vite.config.js` 與 `src/index.css` 和 sandbox 步驟 6 的內容相同，套件也是同一批：`react` 與 `react-dom` 19.3、`vite` 8、`@vitejs/plugin-react` 6，加上步驟 3 至 6 裝的 ESLint、Prettier、Tailwind 與 React Compiler 相關套件。
 
 ### 選讀：用 hash 做示範選單
 

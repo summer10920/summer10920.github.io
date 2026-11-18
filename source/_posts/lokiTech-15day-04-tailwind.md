@@ -325,7 +325,7 @@ pnpm install
 pnpm dev
 ```
 
-同樣用終端機印出的 Local 網址開 Chrome，再依各章指定的檔名開啟 `pages/` 裡的範例。建置結果會輸出到 `02-tailwind/dist/`。專案的 `package.json` 要求 Node 26 以上；安裝時若抱怨版本，先用 `node -v` 確認，並確認終端機已經進到這個資料夾，版本檔才會讓 nvs 切換。請用「開啟資料夾」打開 `02-tailwind`，專案內的 `.vscode` 才會生效。
+同樣用終端機印出的 Local 網址開 Chrome，再依各章指定的檔名開啟 `pages/` 裡的範例。建置結果會輸出到 `02-tailwind/dist/`。本課都用 Node 26：啟動前先用 `node -v` 確認是 v26 開頭，並確認終端機已經進到這個資料夾，`.nvmrc` 才會讓 nvs 切換版本。請用「開啟資料夾」打開 `02-tailwind`，專案內的 `.vscode` 才會生效。
 
 {% note info %}
 **為什麼這裡不用 iframe**

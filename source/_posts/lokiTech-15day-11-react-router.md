@@ -1099,10 +1099,10 @@ setParams((prev) => {
 +             onChange={onSearch}
               placeholder="搜尋編號或標題"
               …
-                    <NavLink
--                     to={`/demos/${item.slug}`}
-+                     to={toDemo(item.slug)}
-                      onClick={() => setMenuOpen(false)}
+                      <NavLink
+-                       to={`/demos/${item.slug}`}
++                       to={toDemo(item.slug)}
+                        onClick={() => setMenuOpen(false)}
                       …
 ```
 
@@ -1169,21 +1169,21 @@ export default function WherePage() {
 ```
 
 ```diff 04-react-router/src/Menu.jsx
-            </section>
-          ))}
-+         <p className="mt-4 px-4 text-sm">
-+           <NavLink
-+             to="/where"
-+             className={({ isActive }) =>
-+               isActive
-+                 ? 'text-teal-800 underline'
-+                 : 'text-stone-600 underline'
-+             }
-+           >
-+             位置（選讀）
-+           </NavLink>
-+         </p>
-        </nav>
+              </section>
+            ))}
++           <p className="mt-4 px-4 text-sm">
++             <NavLink
++               to="/where"
++               className={({ isActive }) =>
++                 isActive
++                   ? 'text-teal-800 underline'
++                   : 'text-stone-600 underline'
++               }
++             >
++               位置（選讀）
++             </NavLink>
++           </p>
+          </nav>
 ```
 
 **解析**

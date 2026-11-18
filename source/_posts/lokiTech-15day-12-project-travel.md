@@ -90,9 +90,6 @@ pnpm create vite
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "engines": {
-    "node": ">=26"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -115,7 +112,7 @@ pnpm create vite
 **解析**
 
 - 網站執行時要用的 React 與 React DOM 放在 `dependencies`；Vite 與外掛只在開發時用，打包後的靜態檔不依賴它們。
-- `type` 設成 `module`，設定檔才能用 `import` 語法。Node.js 版本則由 `engines` 限定在 26 以上。
+- `type` 設成 `module`，設定檔才能用 `import` 語法。
 
 開發伺服器的設定與 React Compiler 寫在 `vite.config.js`。
 
