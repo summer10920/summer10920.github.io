@@ -1905,7 +1905,7 @@ onload = () => {
 ```
 
 ## 增添 js 行為
-參考舊文章說明 [Cookie 評估 24H 不顯示](https://summer10920.github.io/2020/04-21/js-sampleclass-1/#Cookie-%E8%A9%95%E4%BC%B0-24H-%E4%B8%8D%E9%A1%AF%E7%A4%BA)，cookie 的解說不再特別說明。於 custom.js 內部多增加以下動作：
+參考舊文章說明 [Cookie 評估 24H 不顯示](/post/javascript-fullscreen-ad-cookie/#Cookie-%E8%A9%95%E4%BC%B0-24H-%E4%B8%8D%E9%A1%AF%E7%A4%BA)，cookie 的解說不再特別說明。於 custom.js 內部多增加以下動作：
 
 - 將 cookie 取出轉為陣列。從陣列中去判斷是否存在指定的我方 cookie 字串
 - 若不存在指定的字串，則顯示 cookie 資訊。
