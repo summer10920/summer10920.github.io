@@ -1,5 +1,5 @@
 ﻿---
-title: "[學習之路] VSCode / Cursor 前端開發設定與擴充套件指南"
+title: "VSCode / Cursor：前端開發設定與擴充套件指南"
 categories:
   - 工具與其他
   - 開發工具
@@ -17,17 +17,15 @@ VSCode 與 Cursor 的擴充套件生態龐大，初學者常見的問題是不�
 
 <!-- more -->
 
-快捷鍵與 Emmet 語法請參考 <a href="{% post_path article-vscode %}">VSCode 使用技巧</a>。
+快捷鍵與 Emmet 語法請參考 <a href="{% post_path vscode-2020-tips %}">VSCode 使用技巧</a>。
 
 ## VSCode 與 Cursor 的差異
 
 Cursor 是以 VSCode 為基礎的分支（Fork），介面、快捷鍵與 `settings.json` 設定幾乎相同，多數擴充套件可直接使用。差異主要在擴充套件的來源與授權：
 
-| 項目           | VSCode                                      | Cursor                                   |
-| -------------- | ------------------------------------------- | ---------------------------------------- |
-| 擴充套件市集   | Visual Studio Marketplace                   | 以 Open VSX 為基礎的自家市集             |
-| 微軟閉源套件   | 可用（Remote - SSH、Dev Containers 等）     | 授權限制無法使用，需改用 Cursor 對應版本 |
-| AI 功能        | 內建 GitHub Copilot，登入 GitHub 帳號即可使用 | 內建 Tab 補全、Chat、Agent               |
+- 擴充套件市集：VSCode 使用 Visual Studio Marketplace；Cursor 使用以 Open VSX 為基礎的自家市集。
+- 微軟閉源套件：VSCode 可使用（Remote - SSH、Dev Containers 等）；Cursor 因授權限制無法使用，需改用 Cursor 對應版本。
+- AI 功能：VSCode 內建 GitHub Copilot，登入 GitHub 帳號即可使用；Cursor 內建 Tab 補全、Chat、Agent。
 
 使用時請注意：
 
@@ -65,12 +63,10 @@ Cursor 是以 VSCode 為基礎的分支（Fork），介面、快捷鍵與 `setti
 
 另有幾項內建功能不需要設定，直接呼叫即可：
 
-| 功能 | 取代的套件 | 呼叫方式 |
-| ---- | ---------- | -------- |
-| JS / TS 自動匯入與路徑補全 | Auto Import、Path Intellisense | 輸入時自動出現建議，按 Tab 或 Enter 接受 |
-| 排序選取的行 | Sort Lines | 選取多行，命令面板執行 `Sort Lines Ascending`（遞增排序） |
-| 產生假文字 | Lorem Ipsum | 在 HTML 內輸入 `lorem`（或 `lorem20` 產生 20 個字）後按 Tab |
-| 臨時啟用成對標籤修改 | Auto Rename Tag（不想全域開啟時） | 命令面板執行 `Start Linked Editing`，只對目前游標所在的標籤生效 |
+- JS / TS 自動匯入與路徑補全（取代 Auto Import、Path Intellisense）：輸入時自動出現建議，按 Tab 或 Enter 接受
+- 排序選取的行（取代 Sort Lines）：選取多行，命令面板執行 `Sort Lines Ascending`（遞增排序）
+- 產生假文字（取代 Lorem Ipsum）：在 HTML 內輸入 `lorem`（或 `lorem20` 產生 20 個字）後按 Tab
+- 臨時啟用成對標籤修改（取代 Auto Rename Tag（不想全域開啟時））：命令面板執行 `Start Linked Editing`，只對目前游標所在的標籤生效
 
 ### 儲存與縮排：建議的編輯習慣
 
@@ -124,105 +120,89 @@ Cursor 是以 VSCode 為基礎的分支（Fork），介面、快捷鍵與 `setti
 
 ### 通用基礎
 
-| 套件名稱                            | 套件 ID                                  | 說明                                                         |
-| ----------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
-| Prettier                            | `esbenp.prettier-vscode`                 | 程式碼格式化，支援 HTML、CSS、JS、TS、JSON、Markdown         |
-| ESLint                              | `dbaeumer.vscode-eslint`                 | JavaScript / TypeScript 程式碼檢查，React 與 Angular 專案都會使用 |
-| EditorConfig                        | `EditorConfig.EditorConfig`              | 讀取 `.editorconfig`，統一團隊的縮排與換行設定               |
-| Error Lens                          | `usernamehw.errorlens`                   | 將錯誤與警告訊息直接顯示在該行後方                           |
-| Code Spell Checker                  | `streetsidesoftware.code-spell-checker`  | 檢查變數、註解與文件中的英文拼字                             |
-| Material Icon Theme                 | `PKief.material-icon-theme`              | 依檔案類型顯示圖示，方便辨識專案結構                         |
-| Chinese (Traditional) Language Pack | `MS-CEINTL.vscode-language-pack-zh-hant` | 介面繁體中文化                                               |
-| Project Manager                     | `alefragnani.project-manager`            | 選用。在多個專案之間快速切換                                 |
-| Better Comments                     | `aaron-bond.better-comments`             | 選用。依 `TODO`、`!`、`?` 等標記為註解上色                   |
-| WakaTime                            | `WakaTime.vscode-wakatime`               | 選用。自動統計程式開發時間                                   |
+- Prettier（`esbenp.prettier-vscode`）：程式碼格式化，支援 HTML、CSS、JS、TS、JSON、Markdown
+- ESLint（`dbaeumer.vscode-eslint`）：JavaScript / TypeScript 程式碼檢查，React 與 Angular 專案都會使用
+- EditorConfig（`EditorConfig.EditorConfig`）：讀取 `.editorconfig`，統一團隊的縮排與換行設定
+- Error Lens（`usernamehw.errorlens`）：將錯誤與警告訊息直接顯示在該行後方
+- Code Spell Checker（`streetsidesoftware.code-spell-checker`）：檢查變數、註解與文件中的英文拼字
+- Material Icon Theme（`PKief.material-icon-theme`）：依檔案類型顯示圖示，方便辨識專案結構
+- Chinese (Traditional) Language Pack（`MS-CEINTL.vscode-language-pack-zh-hant`）：介面繁體中文化
+- Project Manager（`alefragnani.project-manager`）：選用。在多個專案之間快速切換
+- Better Comments（`aaron-bond.better-comments`）：選用。依 `TODO`、`!`、`?` 等標記為註解上色
+- WakaTime（`WakaTime.vscode-wakatime`）：選用。自動統計程式開發時間
 
 ### HTML、CSS、Tailwind、Bootstrap
 
-| 套件名稱                  | 套件 ID                               | 說明                                                         |
-| ------------------------- | ------------------------------------- | ------------------------------------------------------------ |
-| Tailwind CSS IntelliSense | `bradlc.vscode-tailwindcss`           | Tailwind 類別名稱補全與衝突檢查。類別的自動排序則是在專案安裝 npm 套件 `prettier-plugin-tailwindcss`，由 Prettier 處理 |
-| HTML CSS Support          | `ecmel.vscode-html-css`               | 依專案的 CSS 檔或 CDN 連結提供 class、id 補全。使用 Bootstrap 時，在設定 `html-css-support.styleSheets` 加入 Bootstrap 的 CDN 網址即可 |
-| Stylelint                 | `stylelint.vscode-stylelint`          | CSS / SCSS 程式碼檢查。與 Tailwind 並用時，需在 Stylelint 設定中忽略 `@apply`、`@theme` 等指令 |
-| HTMLHint                  | `HTMLHint.vscode-htmlhint`            | HTML 結構與常見問題檢查                                      |
-| Live Server               | `ritwickdey.LiveServer`               | 啟動本機預覽伺服器，儲存後自動重新整理瀏覽器。微軟官方的 Live Preview（`ms-vscode.live-server`）可內嵌預覽，兩者擇一 |
-| Image Preview             | `kisstkondoros.vscode-gutter-preview` | 在行號旁顯示圖片縮圖                                         |
+- Tailwind CSS IntelliSense（`bradlc.vscode-tailwindcss`）：Tailwind 類別名稱補全與衝突檢查。類別的自動排序則是在專案安裝 npm 套件 `prettier-plugin-tailwindcss`，由 Prettier 處理
+- HTML CSS Support（`ecmel.vscode-html-css`）：依專案的 CSS 檔或 CDN 連結提供 class、id 補全。使用 Bootstrap 時，在設定 `html-css-support.styleSheets` 加入 Bootstrap 的 CDN 網址即可
+- Stylelint（`stylelint.vscode-stylelint`）：CSS / SCSS 程式碼檢查。與 Tailwind 並用時，需在 Stylelint 設定中忽略 `@apply`、`@theme` 等指令
+- HTMLHint（`HTMLHint.vscode-htmlhint`）：HTML 結構與常見問題檢查
+- Live Server（`ritwickdey.LiveServer`）：啟動本機預覽伺服器，儲存後自動重新整理瀏覽器。微軟官方的 Live Preview（`ms-vscode.live-server`）可內嵌預覽，兩者擇一
+- Image Preview（`kisstkondoros.vscode-gutter-preview`）：在行號旁顯示圖片縮圖
 
 ### JavaScript、Node、React
 
-| 套件名稱                               | 套件 ID                                      | 說明                                                         |
-| -------------------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| Pretty TypeScript Errors               | `yoavbls.pretty-ts-errors`                   | 將冗長的 TypeScript 錯誤訊息重新排版，較容易閱讀             |
-| Vitest                                 | `vitest.explorer`                            | 在側邊欄執行與除錯 Vitest 測試（適用 Vite 專案）             |
-| Playwright Test                        | `ms-playwright.playwright`                   | 在編輯器內錄製與執行 Playwright 端對端測試                   |
-| Code Runner                            | `formulahendry.code-runner`                  | 一鍵執行單一檔案，適合練習與示範小段 JavaScript              |
-| REST Client                            | `humao.rest-client`                          | 在 `.http` 檔案撰寫並發送 HTTP 請求，測試 Node API。近年未更新，但功能穩定 |
-| ES7+ React/Redux/React-Native Snippets | `dsznajder.es7-react-js-snippets`            | 選用。提供 `rafce` 等 React 元件模板，近年未更新且可由 AI 補全取代 |
-| styled-components                      | `styled-components.vscode-styled-components` | 僅在使用 styled-components（CSS-in-JS）時需要                |
+- Pretty TypeScript Errors（`yoavbls.pretty-ts-errors`）：將冗長的 TypeScript 錯誤訊息重新排版，較容易閱讀
+- Vitest（`vitest.explorer`）：在側邊欄執行與除錯 Vitest 測試（適用 Vite 專案）
+- Playwright Test（`ms-playwright.playwright`）：在編輯器內錄製與執行 Playwright 端對端測試
+- Code Runner（`formulahendry.code-runner`）：一鍵執行單一檔案，適合練習與示範小段 JavaScript
+- REST Client（`humao.rest-client`）：在 `.http` 檔案撰寫並發送 HTTP 請求，測試 Node API。近年未更新，但功能穩定
+- ES7+ React/Redux/React-Native Snippets（`dsznajder.es7-react-js-snippets`）：選用。提供 `rafce` 等 React 元件模板，近年未更新且可由 AI 補全取代
+- styled-components（`styled-components.vscode-styled-components`）：僅在使用 styled-components（CSS-in-JS）時需要
 
 > **關於新一代工具**：Biome（`biomejs.biome`）與 Oxc（`oxc.oxc-vscode`）是以 Rust 開發的格式化與檢查工具，速度快且設定簡單，新專案可評估使用。但目前多數專案與教學仍以 ESLint + Prettier 為主，兩者擇一使用即可，不建議混用。
 
 ### Angular
 
-| 套件名稱                 | 套件 ID                          | 說明                                                         |
-| ------------------------ | -------------------------------- | ------------------------------------------------------------ |
-| Angular Language Service | `Angular.ng-template`            | 提供模板的補全、錯誤檢查與跳轉。Angular 專案必裝             |
-| Nx Console               | `nrwl.angular-console`           | Nx 與 Angular CLI 的圖形化介面，不需記憶 generate、build 指令 |
-| Angular Schematics       | `cyrilletuzi.angular-schematics` | 在檔案總管以右鍵選單產生 component、service 等檔案           |
-| Angular Snippets         | `johnpapa.Angular2`              | 選用。Angular 程式碼片段                                     |
+- Angular Language Service（`Angular.ng-template`）：提供模板的補全、錯誤檢查與跳轉。Angular 專案必裝
+- Nx Console（`nrwl.angular-console`）：Nx 與 Angular CLI 的圖形化介面，不需記憶 generate、build 指令
+- Angular Schematics（`cyrilletuzi.angular-schematics`）：在檔案總管以右鍵選單產生 component、service 等檔案
+- Angular Snippets（`johnpapa.Angular2`）：選用。Angular 程式碼片段
 
 ### Git 與協作
 
-| 套件名稱             | 套件 ID                             | 說明                                                         |
-| -------------------- | ----------------------------------- | ------------------------------------------------------------ |
-| GitLens              | `eamodio.gitlens`                   | 逐行顯示修改者、檔案歷史，並可比較分支                       |
-| Git Graph            | `mhutchie.git-graph`                | 以圖形顯示分支與合併流向。Open VSX 版本近年未更新，但功能穩定 |
-| GitHub Pull Requests | `GitHub.vscode-pull-request-github` | 在編輯器內檢視與審查 Pull Request、Issue                     |
-| GitHub Actions       | `GitHub.vscode-github-actions`      | 編輯 workflow 檔案並查看執行結果                             |
+- GitLens（`eamodio.gitlens`）：逐行顯示修改者、檔案歷史，並可比較分支
+- Git Graph（`mhutchie.git-graph`）：以圖形顯示分支與合併流向。Open VSX 版本近年未更新，但功能穩定
+- GitHub Pull Requests（`GitHub.vscode-pull-request-github`）：在編輯器內檢視與審查 Pull Request、Issue
+- GitHub Actions（`GitHub.vscode-github-actions`）：編輯 workflow 檔案並查看執行結果
 
 ### AI 與遠端開發
 
 VSCode 已內建 GitHub Copilot（程式碼補全、Chat、Agent），不需要另外安裝；若找不到相關功能，請先將 VSCode 更新到最新版。Cursor 則使用自身內建的 AI 功能。其他工具如下：
 
-| 套件名稱     | 套件 ID                       | 適用         | 說明                                              |
-| ------------ | ----------------------------- | ------------ | ------------------------------------------------- |
-| Claude Code  | `anthropic.claude-code`       | VSCode、Cursor | 在編輯器內以對話方式讀取、修改專案檔案          |
-| Cline        | `saoudrizwan.claude-dev`      | VSCode、Cursor | 開源的 AI 代理，可自行選擇模型                  |
-| Continue     | `Continue.continue`           | VSCode、Cursor | 開源的 AI 助手，可接本機或雲端模型              |
-| Remote - SSH | `ms-vscode-remote.remote-ssh` | 僅 VSCode    | 透過 SSH 連線到遠端伺服器開發                     |
-| Remote SSH   | `anysphere.remote-ssh`        | 僅 Cursor    | Cursor 提供的 SSH 遠端開發套件                    |
-| Docker       | `ms-azuretools.vscode-docker` | VSCode、Cursor | 管理容器與 Compose 檔案，有使用 Docker 時再安裝 |
+- Claude Code（`anthropic.claude-code`，VSCode、Cursor 皆可）：在編輯器內以對話方式讀取、修改專案檔案
+- Cline（`saoudrizwan.claude-dev`，VSCode、Cursor 皆可）：開源的 AI 代理，可自行選擇模型
+- Continue（`Continue.continue`，VSCode、Cursor 皆可）：開源的 AI 助手，可接本機或雲端模型
+- Remote - SSH（`ms-vscode-remote.remote-ssh`，僅 VSCode）：透過 SSH 連線到遠端伺服器開發
+- Remote SSH（`anysphere.remote-ssh`，僅 Cursor）：Cursor 提供的 SSH 遠端開發套件
+- Docker（`ms-azuretools.vscode-docker`，VSCode、Cursor 皆可）：管理容器與 Compose 檔案，有使用 Docker 時再安裝
 
 ### Markdown 與文件
 
 適合撰寫技術文件與部落格：
 
-| 套件名稱                         | 套件 ID                                | 說明                                               |
-| -------------------------------- | -------------------------------------- | -------------------------------------------------- |
-| Markdown All in One              | `yzhang.markdown-all-in-one`           | Markdown 快捷鍵、目錄產生、表格格式化              |
-| Markdown Preview Mermaid Support | `bierner.markdown-mermaid`             | 讓 Markdown 預覽支援 Mermaid 流程圖                |
-| markdownlint                     | `DavidAnson.vscode-markdownlint`       | 檢查 Markdown 語法與風格                           |
-| Markdown PDF                     | `yzane.markdown-pdf`                   | 將 Markdown 匯出為 PDF 或 HTML                     |
-| Markdown Paste Image             | `telesoho.vscode-markdown-paste-image` | 貼上剪貼簿的圖片，自動存入專案資料夾並插入圖片語法 |
-| Pangu2                           | `doggy8088.pangu2`                     | 在中文與英文、數字之間自動加入空格                 |
-| Draw.io Integration              | `hediet.vscode-drawio`                 | 在編輯器內繪製流程圖與架構圖                       |
-| Edit CSV                         | `janisdd.vscode-edit-csv`              | 以表格介面編輯 CSV                                 |
-| Rainbow CSV                      | `mechatroner.rainbow-csv`              | CSV 欄位依顏色標示，方便閱讀                       |
+- Markdown All in One（`yzhang.markdown-all-in-one`）：Markdown 快捷鍵、目錄產生、表格格式化
+- Markdown Preview Mermaid Support（`bierner.markdown-mermaid`）：讓 Markdown 預覽支援 Mermaid 流程圖
+- markdownlint（`DavidAnson.vscode-markdownlint`）：檢查 Markdown 語法與風格
+- Markdown PDF（`yzane.markdown-pdf`）：將 Markdown 匯出為 PDF 或 HTML
+- Markdown Paste Image（`telesoho.vscode-markdown-paste-image`）：貼上剪貼簿的圖片，自動存入專案資料夾並插入圖片語法
+- Pangu2（`doggy8088.pangu2`）：在中文與英文、數字之間自動加入空格
+- Draw.io Integration（`hediet.vscode-drawio`）：在編輯器內繪製流程圖與架構圖
+- Edit CSV（`janisdd.vscode-edit-csv`）：以表格介面編輯 CSV
+- Rainbow CSV（`mechatroner.rainbow-csv`）：CSV 欄位依顏色標示，方便閱讀
 
 ## 不建議安裝的套件
 
 網路上較舊的教學常推薦下列套件，目前已停止維護或有更好的替代方案。已由編輯器內建功能取代的套件（如 Auto Close Tag、Auto Rename Tag），請見前面「內建功能與基本設定」。
 
-| 套件                                                  | 狀況                                         | 建議替代                                                     |
-| ----------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| GitHub Copilot 與 GitHub Copilot Chat 兩個獨立擴充套件 | 已合併並內建於新版 VSCode，舊的 Copilot 擴充套件在 2025-10 後未再更新 | 更新 VSCode 到新版，登入 GitHub 帳號即可使用 |
-| Codeium（Windsurf）擴充套件                           | Open VSX 已標示為 Deprecated                 | Cursor 內建 AI、Claude Code；VSCode 內建 GitHub Copilot      |
-| Compile Hero、Live Sass Compiler（ritwickdey 版）     | 分別於 2020、2018 後未更新                   | 專案使用 Vite 或 Sass CLI（`--watch`）；需要編輯器內編譯時使用 Glenn Marks 維護的 Live Sass Compiler |
-| Paste Image（mushan）                                 | 2019 後未更新                                | Markdown Paste Image（`telesoho.vscode-markdown-paste-image`） |
-| AngularJS 1.x 相關套件                                | AngularJS 已終止支援                         | Angular Language Service                                     |
-| Angular 17 / 18 Snippets                              | 綁定特定版本，容易過期                       | Angular Language Service 搭配 Angular CLI                    |
-| jQuery Code Snippets、JavaScript (ES6) Code Snippets  | 2015、2020 後未更新                          | 程式碼片段類套件可由 AI 補全取代                             |
-| Open in Browser                                       | 2022 後未更新                                | Live Server 或 Live Preview                                  |
+- GitHub Copilot 與 GitHub Copilot Chat 兩個獨立擴充套件：已合併並內建於新版 VSCode，舊的 Copilot 擴充套件在 2025-10 後未再更新。建議：更新 VSCode 到新版，登入 GitHub 帳號即可使用
+- Codeium（Windsurf）擴充套件：Open VSX 已標示為 Deprecated。建議：Cursor 內建 AI、Claude Code；VSCode 內建 GitHub Copilot
+- Compile Hero、Live Sass Compiler（ritwickdey 版）：分別於 2020、2018 後未更新。建議：專案使用 Vite 或 Sass CLI（`--watch`）；需要編輯器內編譯時使用 Glenn Marks 維護的 Live Sass Compiler
+- Paste Image（mushan）：2019 後未更新。建議：Markdown Paste Image（`telesoho.vscode-markdown-paste-image`）
+- AngularJS 1.x 相關套件：AngularJS 已終止支援。建議：Angular Language Service
+- Angular 17 / 18 Snippets：綁定特定版本，容易過期。建議：Angular Language Service 搭配 Angular CLI
+- jQuery Code Snippets、JavaScript (ES6) Code Snippets：2015、2020 後未更新。建議：程式碼片段類套件可由 AI 補全取代
+- Open in Browser：2022 後未更新。建議：Live Server 或 Live Preview
 
 ## 以專案為單位統一套件與設定
 

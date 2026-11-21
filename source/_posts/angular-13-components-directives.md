@@ -1,0 +1,2433 @@
+---
+title: "Angular 13.2：元件互動與指令深入"
+categories:
+  - 前端
+  - Angular
+tag:
+  - Angular
+  - JavaScript
+  - TypeScript
+date: 2022-04-15 14:15:57
+---
+
+![](assets/images/banner/angular.png)
+
+本篇教學以 **Angular v13.2** 為範例，深入探討元件間的互動機制、資料綁定的進階應用，以及指令系統的完整運用。透過實際範例學習元件生命週期、自定義指令開發等核心技術。
+
+<!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文使用 Angular 13.2（2022 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準；獨立元件可參考 {% post_link angular-modules-deploy-standalone Angular 模組、部署與獨立元件 %}。
+{% endnote %}
+
+# 實作環境準備
+
+本教學提供完整的起始專案，讓你能快速開始學習 Angular v13.2 的進階功能。
+
+{% note primary %}
+**素材準備：**
+- 下載範例專案：[GitHub Repository](https://github.com/summer10920/angularTraining)
+- 使用 `lokiSecond-start` 資料夾作為起始環境
+- 下載後執行 `npm install` 安裝相依套件
+{% endnote %}
+
+## Bootstrap 整合設定
+
+本專案使用 Bootstrap 5 進行 UI 美化，以下是整合步驟：
+
+{% note info %}
+**Bootstrap 安裝與設定**
+
+1. 安裝 Bootstrap：
+```bash 安裝 Bootstrap
+npm install bootstrap
+```
+
+2. 在 `angular.json` 設定樣式：
+```json angular.json
+{
+  "styles": [
+    "node_modules/bootstrap/dist/css/bootstrap.min.css",
+    "src/styles.css"
+  ]
+}
+```
+{% endnote %}
+
+## 專案概述
+
+起始專案包含一個簡單的 Card 管理系統，具備以下功能：
+- 標題與內容輸入表單
+- 兩種不同類型的 Card 建立按鈕
+- 動態列表顯示功能
+
+目前所有功能都集中在單一元件中。接下來我們將學習如何將複雜的元件拆分成多個小元件，實現更好的程式碼組織和重用性。
+
+# 元件化架構設計
+
+在 Angular 開發中，良好的元件拆分是維持程式碼可讀性和重用性的關鍵。根元件應該保持簡潔，將複雜的功能委派給專門的子元件處理。
+
+## 元件拆分策略
+
+根據功能職責，我們將原始的單一元件拆分為：
+
+{% mermaid graph TD %}
+    A["App 根元件<br/>負責資料管理"] --> B["Cockpit 元件<br/>負責輸入表單"]
+    A --> C["Server Element 元件<br/>負責項目顯示"]
+    C --> D["可重複使用<br/>每個 Card 項目"]
+{% endmermaid %}
+
+- **Cockpit 元件** - 負責處理使用者輸入表單
+- **Server Element 元件** - 負責顯示個別的 Card 項目
+
+## 建立新元件
+
+使用 Angular CLI 快速建立所需元件：
+
+```bash 建立元件
+ng g c cockpit
+ng g c server-el
+```
+
+{% note info %}
+**元件命名慣例**
+- 使用有意義的名稱描述元件功能
+- 遵循 kebab-case 命名規則
+- CLI 會自動建立對應的目錄和檔案
+{% endnote %}
+
+## 元件拆分實作步驟
+
+接下來將實際進行元件拆分，將原本集中的程式碼分散到不同的專責元件中。
+
+{% note success %}
+**跟著做：拆分 Cockpit 元件**
+
+1. **移動表單 HTML** - 將表單相關的 HTML 從根元件移動到 `cockpit.component.html`
+2. **更新根元件模板** - 在根元件中使用新的子元件標籤
+3. **移動相關邏輯** - 將表單處理邏輯移動到對應的 TypeScript 檔案
+{% endnote %}
+
+### 步驟一：重組根元件模板
+
+```html app.component.html
+<div class="container">
+  <app-cockpit></app-cockpit>
+  <hr>
+  <!-- Server 列表將在下一步處理 -->
+</div>
+```
+
+### 步驟二：建立 Cockpit 元件模板
+
+```html cockpit.component.html
+<div class="row">
+  <div class="col-xs-12">
+    <p>Add new Servers or blueprints!</p>
+    
+    <label>Server Name</label>
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerName"
+    >
+    
+    <label>Server Content</label>
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerContent"
+    >
+    <br>
+    
+    <button
+      class="btn btn-primary"
+      (click)="onAddServer()"
+    >Add Server</button>
+    
+    <button
+      class="btn btn-primary"
+      (click)="onAddBlueprint()"
+    >Add Server Blueprint</button>
+  </div>
+</div>
+```
+
+### 步驟三：移動元件邏輯
+
+```typescript cockpit.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-cockpit',
+  templateUrl: './cockpit.component.html',
+  styleUrls: ['./cockpit.component.css']
+})
+export class CockpitComponent {
+  newServerName = '';
+  newServerContent = '';
+
+  onAddServer() {
+    // 暫時註解，稍後處理元件間通訊
+    // this.serverElements.push({
+    //   type: 'server',
+    //   name: this.newServerName,
+    //   content: this.newServerContent
+    // });
+  }
+
+  onAddBlueprint() {
+    // 暫時註解，稍後處理元件間通訊
+    // this.serverElements.push({
+    //   type: 'blueprint',
+    //   name: this.newServerName,
+    //   content: this.newServerContent
+    // });
+  }
+}
+```
+
+{% note warning %}
+**預期錯誤說明**
+現在會出現 `serverElements` 屬性缺少的錯誤，這是正常的。因為資料現在需要在元件間共享，我們將在下一節學習元件間通訊來解決這個問題。
+{% endnote %}
+### 步驟四：處理 Server Element 元件
+
+對於顯示元件，我們需要特別注意重用性的設計：
+
+{% note success %}
+**跟著做：拆分 Server Element 元件**
+
+由於需要透過 `*ngFor` 重複顯示多個 server 項目，`server-el` 元件應該設計為**可重用的單一項目元件**。
+{% endnote %}
+
+**根元件模板更新：**
+```html app.component.html
+<div class="container">
+  <app-cockpit></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <app-server-el 
+        *ngFor="let element of serverElements">
+      </app-server-el>
+    </div>
+  </div>
+</div>
+```
+
+**Server Element 元件模板：**
+```html server-el.component.html
+<div class="card mb-3">
+  <div class="card-header">{{ element.name }}</div>
+  <div class="card-body">
+    <p>
+      <strong
+        *ngIf="element.type === 'server'"
+        style="color: red"
+      >{{ element.content }}</strong>
+      <em 
+        *ngIf="element.type === 'blueprint'"
+      >{{ element.content }}</em>
+    </p>
+  </div>
+</div>
+```
+
+## 元件間通訊挑戰
+
+目前拆分後會遇到以下問題：
+
+{% note danger %}
+**常見錯誤**
+- `serverElements` 屬性在多個元件間需要共享
+- `element` 變數無法在子元件中直接存取
+- 表單提交無法更新列表資料
+{% endnote %}
+
+這些問題的根本原因是：**元件間缺乏有效的資料通訊機制**。
+
+接下來我們將學習 Angular 的元件間通訊解決方案：
+- **@Input** - 讓父元件傳遞資料給子元件
+- **@Output** - 讓子元件通知父元件事件發生
+
+# 元件間通訊機制
+
+Angular 中的屬性綁定和事件綁定不僅適用於 HTML 元素，也是元件間通訊的核心機制。讓我們了解不同層級的綁定應用：
+
+## 綁定機制概覽
+
+{% mermaid graph LR %}
+    A["HTML 元素綁定"] --> B["原生屬性與事件"]
+    C["指令綁定"] --> D["ngClass, ngStyle 等"]
+    E["元件綁定"] --> F["@Input/@Output 通訊"]
+    
+    B --> G["基礎功能實現"]
+    D --> G
+    F --> H["元件間資料交換"]
+{% endmermaid %}
+
+**綁定類型說明：**
+
+{% note primary %}
+**三種主要綁定對象**
+
+1. **HTML 元素** - 控制原生 DOM 屬性和事件（如 `disabled`、`click` 事件）
+2. **Angular 指令** - 使用內建指令（如 `ngClass`、`ngStyle`、`ngIf`）
+3. **自定義元件** - 透過 `@Input` 和 `@Output` 實現元件間通訊
+{% endnote %}
+
+本章節將重點學習**元件間通訊**，這是建立大型 Angular 應用程式的關鍵技能。
+
+## @Input 裝飾器：父元件傳資料給子元件
+
+`@Input` 裝飾器讓子元件能夠接收來自父元件的資料，是實現由上而下資料流的關鍵機制。
+
+### 問題分析
+
+目前 `server-el` 元件無法存取 `element` 變數，因為這個變數來自父元件的 `*ngFor` 迴圈。我們需要透過 `@Input` 讓父元件將資料傳遞給子元件。
+
+{% note warning %}
+**注意：暫停 Cockpit 功能**
+在解決 `server-el` 問題時，確保 `cockpit.component.ts` 中的方法已經註解，避免干擾學習。
+{% endnote %}
+### 實作步驟
+
+**步驟一：為子元件定義屬性**
+
+首先，在 `server-el` 元件中定義需要接收的資料結構：
+
+```typescript server-el.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css']
+})
+export class ServerElComponent {
+  element: { type: string, name: string, content: string };
+}
+```
+
+**步驟二：在父元件準備測試資料**
+
+在根元件中建立測試資料：
+
+```typescript app.component.ts
+export class AppComponent {
+  serverElements = [
+    { type: 'server', name: 'TestName', content: 'TestString!' }
+  ];
+}
+```
+**步驟三：嘗試屬性綁定**
+
+現在我們嘗試透過屬性綁定將資料從父元件傳遞給子元件：
+
+```html app.component.html
+<div class="container">
+  <app-cockpit></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <app-server-el
+        *ngFor="let item of serverElements"
+        [element]="item"
+      ></app-server-el>
+    </div>
+  </div>
+</div>
+```
+
+{% note danger %}
+**預期錯誤**
+此時會出現錯誤：`Can't bind to 'element' since it isn't a known property of 'app-server-el'`
+
+**錯誤原因：**子元件的屬性預設是私有的，父元件無法直接存取
+{% endnote %}
+
+**步驟四：使用 @Input 裝飾器**
+
+要解決這個問題，需要使用 `@Input` 裝飾器讓子元件的屬性變成可接收外部資料：
+
+```typescript server-el.component.ts
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css']
+})
+export class ServerElComponent {
+  @Input() element: { type: string, name: string, content: string };
+}
+```
+
+{% note success %}
+**成功！**
+現在父元件可以成功將 `item` 資料透過 `[element]="item"` 傳遞給子元件了。
+{% endnote %}
+
+## @Input 屬性別名
+
+`@Input` 裝飾器支援別名功能，讓外部使用的屬性名稱與內部實際屬性名稱不同。這有助於避免命名衝突並提供更好的 API 設計。
+
+**使用別名的語法：**
+```typescript
+@Input('外部名稱') 內部屬性名稱: 型別;
+```
+
+**範例實作：**
+
+```typescript server-el.component.ts
+export class ServerElComponent {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+}
+```
+
+```html app.component.html
+<app-server-el
+  *ngFor="let item of serverElements"
+  [srcElement]="item"
+></app-server-el>
+```
+
+{% note info %}
+**別名使用時機**
+- 避免屬性名稱衝突
+- 提供更語義化的外部 API
+- 保護內部實作細節
+{% endnote %}
+
+## @Output 裝飾器：子元件傳事件給父元件
+
+`@Output` 裝飾器搭配 `EventEmitter` 讓子元件能夠向父元件發送事件和資料，實現由下而上的資料流。
+
+### 需求分析
+
+現在需要讓 `cockpit` 元件的表單提交功能能夠通知父元件新增資料到 `serverElements` 陣列中。
+
+{% mermaid graph TD %}
+    A["使用者填寫表單"] --> B["Cockpit 元件處理"]
+    B --> C["透過 @Output 發送事件"]
+    C --> D["App 元件接收事件"]
+    D --> E["更新 serverElements 陣列"]
+    E --> F["透過 @Input 更新顯示"]
+{% endmermaid %}
+
+### 實作步驟
+
+**步驟一：準備父元件接收方法**
+
+```typescript app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  serverElements = [
+    { type: 'server', name: 'TestName', content: 'TestString!' }
+  ];
+
+  onAddServerDone(serverData: { sName: string, sContent: string }) {
+    this.serverElements.push({
+      type: 'server',
+      name: serverData.sName,
+      content: serverData.sContent
+    });
+  }
+
+  onAddBlueprintDone(serverData: { sName: string, sContent: string }) {
+    this.serverElements.push({
+      type: 'blueprint',
+      name: serverData.sName,
+      content: serverData.sContent
+    });
+  }
+}
+```
+
+{% note info %}
+**方法命名慣例**
+使用 `onAddServerDone` 表示這是接收來自子元件「完成」事件的處理方法，清楚區分職責。
+{% endnote %}
+
+**步驟二：在父元件模板綁定自定義事件**
+
+在父元件的模板中綁定子元件將要發送的自定義事件：
+
+```html app.component.html
+<app-cockpit
+  (serverCreated)="onAddServerDone($event)"
+  (blueprintCreated)="onAddBlueprintDone($event)"
+></app-cockpit>
+```
+
+{% note warning %}
+**注意**
+此時 `serverCreated` 和 `blueprintCreated` 事件還不存在，我們將在下一步驟中於子元件建立這些自定義事件。
+{% endnote %}
+
+**步驟三：在子元件建立 EventEmitter**
+
+在 `cockpit` 元件中建立自定義事件發射器：
+
+```typescript cockpit.component.ts
+import { Component, EventEmitter } from '@angular/core';
+
+@Component({
+  selector: 'app-cockpit',
+  templateUrl: './cockpit.component.html',
+  styleUrls: ['./cockpit.component.css']
+})
+export class CockpitComponent {
+  newServerName = '';
+  newServerContent = '';
+  
+  // 建立 EventEmitter 物件，並指定傳遞的資料型別
+  serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+  blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+
+  onAddServer() {
+    // 稍後實作發送事件的邏輯
+  }
+
+  onAddBlueprint() {
+    // 稍後實作發送事件的邏輯
+  }
+}
+```
+
+{% note info %}
+**EventEmitter 說明**
+- `EventEmitter` 是 Angular 提供的事件發射器類別
+- 用於建立自定義事件，讓子元件能向父元件發送資料
+- 透過泛型 `<T>` 指定傳遞資料的型別
+- 詳細資訊：[Angular EventEmitter API](https://angular.tw/api/core/EventEmitter)
+{% endnote %}
+
+**步驟四：使用 emit() 發送事件**
+
+現在在方法中使用 `emit()` 來發送事件和資料：
+
+```typescript cockpit.component.ts
+export class CockpitComponent {
+  newServerName = '';
+  newServerContent = '';
+  serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+  blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+
+  onAddServer() {
+    this.serverCreated.emit({
+      sName: this.newServerName,
+      sContent: this.newServerContent
+    });
+  }
+
+  onAddBlueprint() {
+    this.blueprintCreated.emit({
+      sName: this.newServerName,
+      sContent: this.newServerContent
+    });
+  }
+}
+```
+
+{% note success %}
+**emit() 方法說明**
+- `emit()` 用於觸發自定義事件
+- 可以傳遞任何型別的資料給父元件
+- 父元件透過 `$event` 參數接收這些資料
+{% endnote %}
+
+**步驟五：使用 @Output 裝飾器**
+
+目前雖然邏輯正確，但父元件仍無法接收到子元件發送的事件。就如同 `@Input` 讓屬性可以接收外部資料一樣，我們需要 `@Output` 讓父元件能夠監聽子元件的事件。
+
+```typescript cockpit.component.ts
+import { Component, EventEmitter, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-cockpit',
+  templateUrl: './cockpit.component.html',
+  styleUrls: ['./cockpit.component.css']
+})
+export class CockpitComponent {
+  newServerName = '';
+  newServerContent = '';
+  
+  @Output() serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+  @Output() blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+
+  onAddServer() {
+    this.serverCreated.emit({
+      sName: this.newServerName,
+      sContent: this.newServerContent
+    });
+  }
+
+  onAddBlueprint() {
+    this.blueprintCreated.emit({
+      sName: this.newServerName,
+      sContent: this.newServerContent
+    });
+  }
+}
+```
+
+{% note success %}
+**完整的元件間通訊**
+現在完整的父子元件通訊機制已經建立：
+- 父元件透過 `@Input` 傳遞資料給子元件
+- 子元件透過 `@Output` 發送事件給父元件
+- 實現了完整的雙向資料流
+{% endnote %}
+
+## 元件通訊總結
+
+恭喜！現在已經建立了完整的元件間通訊機制。這個過程展示了 Angular 中屬性綁定和事件綁定從 HTML 元素擴展到元件層級的應用。
+
+{% note primary %}
+**元件通訊核心概念**
+
+**基本綁定：**
+- HTML 元素的屬性和事件綁定
+
+**元件間通訊：**
+- `@Input` - 讓父元件可以透過屬性綁定傳遞資料給子元件
+- `@Output` - 讓子元件可以透過事件綁定發送資料給父元件
+
+元件間的獨立性要求我們明確標示哪些屬性和事件可以對外開放。
+{% endnote %}
+
+## @Output 事件別名
+
+與 `@Input` 相同，`@Output` 也支援別名功能：
+
+```typescript cockpit.component.ts
+@Output('serverAdded') serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+@Output('blueprintAdded') blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+```
+
+```html app.component.html
+<app-cockpit
+  (serverAdded)="onAddServerDone($event)"
+  (blueprintAdded)="onAddBlueprintDone($event)"
+></app-cockpit>
+```
+
+## 元件通訊策略比較
+
+透過 `@Input` 和 `@Output`，我們可以建立有效的父子元件通訊機制：
+
+{% mermaid graph TD %}
+    A["父元件"] --> |"@Input<br/>資料向下傳遞"| B["子元件 1"]
+    A --> |"@Input<br/>資料向下傳遞"| C["子元件 2"]
+    B --> |"@Output<br/>事件向上傳遞"| A
+    C --> |"@Output<br/>事件向上傳遞"| A
+{% endmermaid %}
+
+{% note warning %}
+**兄弟元件通訊限制**
+
+對於同層的兄弟元件通訊，使用 `@Input/@Output` 會變得複雜，需要透過父元件作為中介。更好的解決方案是使用：
+- **服務 (Services)** - 透過依賴注入共享資料
+- **狀態管理** - 使用 NgRx 或其他狀態管理方案
+
+這些進階主題將在後續章節中介紹。
+{% endnote %}
+
+ 元件之間的 View 封裝
+你是否過程中發現，分解之前會有藍色字樣的輸出，經過分解與通信修復後，這個藍色的 CSS 效果消失了。這個 p 元素的 style 被設定在 app 的 css 內。其不像過去我們 CSS 觀念上所繼承給下層元件。事實上這是 Angular 的強制行為而不是瀏覽器對 CSS 的默認繼承行為。透過網頁 F12 檢查可以很清楚發現 Angular 會自作主張的對每個元件下的元素添加一些有的沒的。現在試著將這個藍色的效果搬移到 server-el 元件內的 css 看看。
+
+```css server-el.component.css
+p {
+  color: blue;
+}
+```
+
+現在再去檢查並嘗試輸入一下欄位送出，會發現藍色字樣跑出來了。透過 F12 檢查可以發現 angular 對 p 元素添加了隨機的屬性名稱，而 css 的選擇器也自動添加這個屬性名稱。這都是 Angular 搞得鬼，這是一個保護機制，意味了我們每個元件都有自己封裝的 View 範圍彼此不受影響而被保護。如果你不想要這樣的保護，你可以編譯到 index.html 那層的 styles.css，那裏才是對整個網頁所影響的樣式表，元件內的樣式表只對該元件有效，這是 Angular 默認行為。
+
+# 取消元件封裝
+如果這個元件不想要封裝，也就是不要產生類似影子 DOM，將所有元件下的元素都不要添加相同亂碼的元素屬性某參數。可以找到該元件的 `@Component` 添加 ViewEncapsulation 並指定參數 None 調整 (Emulated 模擬為預設值可以不用寫）。
+
+```ts server-el.component.ts
+import { Component, Input, ViewEncapsulation } from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  //關閉封裝功能
+  // encapsulation: ViewEncapsulation.Emulated  //預設值，開啟封裝
+})
+export class ServerElComponent {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+}
+```
+
+現在回頭看一下 F12 發現已經沒有奇怪字串值屬性出現在這個元件內的元素上，同時該元件的 css 部分也不會去添加奇怪字串值屬性。因此現在這個元件下的 css 將會影響整個網頁。舉例
+
+```css server-el.component.css
+label{
+  color:red;
+  font-size: 2rem;
+}
+```
+
+現在這個效果因為沒有封裝而導致影響到另一個 cockpit 元件內的 label 元素之樣式了。
+
+# 使用本地變數做範本訪問
+舉例 cockpit 元件，原本的素材包有使用到 ngModal 來進行雙向綁定。每當我們輸入資料時，會同時的變動元件內的屬性值這是已知做法。事實上在同一份元件的 template 內，我們有更快的方法來取代這個雙向綁定。就是直接對本地進行引用參考。所謂的本地變數就是將 html 元素進行別名使用`#name`作為 html 屬性。
+
+## 透過事件綁定的參數傳遞
+接著透過 event binding 作為參數提供給 TS，這樣就能在 ts 內對這個元素進行使用。這裡拿其中一組 input 的 ngModal 做修改示範。
+
+- 對目標 HTML 元素提供 `#inputServerName` 屬性給予一個別名
+- 現在在這個 html 內已經存在這個物件，你可以找地方試試`{{inputServerName}}`當做字串輸出
+- 將這個別名放在按鈕的事件綁定成為一個本地的變數，當作參數傳遞給 TypeScript
+- 由於這個參數的強型別為 HTML 的 input 元素，記得給予 HTMLInputElement 型別，可試著 console.log 看看這是甚麼參數
+- 既然獲得了這個元素，很自然能用元素底下的 value 當作我們來源值使用
+- 最後，如果修改成功，原本 ts 內的 newServerName 初始屬性也就用不到了
+
+```html cockpit.component.html
+<div class="row">
+  <div class="col-xs-12">
+    <p>Add new Servers or blueprints!</p>
+    <label>Server Name</label>
+    <!-- <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerName"
+    > -->
+    <input
+      type="text"
+      class="form-control"
+      #inputServerName
+    >
+    <label>Server Content</label>
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerContent"
+    >
+    <br>
+    <button
+      class="btn btn-primary"
+      (click)="onAddServer(inputServerName)"
+    >Add Server</button>
+    <button
+      class="btn btn-primary"
+      (click)="onAddBlueprint(inputServerName)"
+    >Add Server Blueprint</button>
+    <!-- 將別名後的元素當作參數傳遞給元件的 method -->
+  </div>
+</div>
+```
+```ts cockpit.component.ts
+export class CockpitComponent {
+  // newServerName = '';  //用不到了
+  newServerContent = '';
+  @Output('sLoki') serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+  @Output('bLoki') blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+
+  onAddServer(inputEl: HTMLInputElement) {
+    //console.log(inputEl); 
+    //print  <input _ngcontent-cwy-c41="" type="text" class="form-control">
+
+    //因此我們可以利用 inputEl.value 作為我們來源值
+    this.serverCreated.emit({
+      sName: inputEl.value,
+      sContent: this.newServerContent
+    });
+  }
+
+  onAddBlueprint(inputEl: HTMLInputElement) {
+    this.blueprintCreated.emit({
+      sName: inputEl.value,
+      sContent: this.newServerContent
+    });
+  }
+}
+```
+這個方法只限定於本地上使用，同時需要搭配參數的方式傳遞給 TypeScript。
+
+## ViewChild 檢視查詢
+如果你不想透過 Method 使用參數方式傳遞給 TypeScript，可以考慮使用`@viewChild`方式來獲得該訪問權限。ViewChild 能透過查詢找到 View 裡面的小孩（需要別名）提取出來，我們拿另一個 input 做修改示範。
+
+- 首先還是需要一個本地變數來實作第一步。這裡命名為 `#inputServerContent`
+- 現在不透過 html 這裡的 event binding，而是直接來到 TypeScript 這裡創造一個初始屬性為透過 `@viewChild` 並根據變數別名而獲得的屬性值。
+- 在`@ViewChild`輸入指定該 HTML 別名使其找到，並指定一個新變數名稱做存放。若在其他用途上 `@ViewChild` 也能指定 component 名稱而使用。
+- 嘗試 Console 出來看看，拿到一個 ElementRef。所以回頭補上強型別為 ElementRef，而一開始不認識 ElementRef，所以也要宣告 ElementRef 的來源。
+- 要取出 value，就藏在這個物件的 nativeElement.value 底下。所以修改了 Method 改從這裡提取來源值。
+- 如此一來我們透過`@viewChild`方式來獲取，直接去訪問 template 範本內的本地變數，而不是透過事件綁定來獲得。
+
+```html cockpit.component.html
+<div class="row">
+  <div class="col-xs-12">
+    <p>Add new Servers or blueprints!</p>
+    <label>Server Name</label>
+    <!-- <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerName"
+    > -->
+    <input
+      type="text"
+      class="form-control"
+      #inputServerName
+    >
+    <label>Server Content</label>
+    <!-- <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="newServerContent"
+    > -->
+    <input
+      type="text"
+      class="form-control"
+      #inputServerContent
+    >
+    <br>
+    <button
+      class="btn btn-primary"
+      (click)="onAddServer(inputServerName)"
+    >Add Server</button>
+    <!-- 將別名後的元素當作參數傳遞給元件的 method -->
+    <button
+      class="btn btn-primary"
+      (click)="onAddBlueprint(inputServerName)"
+    >Add Server Blueprint</button>
+  </div>
+</div>
+```
+```ts cockpit.component.ts
+import { Component, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core'; //宣告 Output 來源
+
+@Component({
+  selector: 'app-cockpit',
+  templateUrl: './cockpit.component.html',
+  styleUrls: ['./cockpit.component.css']
+})
+export class CockpitComponent {
+  // newServerName = '';
+  // newServerContent = '';  //也用不到了
+  @Output('sLoki') serverCreated = new EventEmitter<{ sName: string, sContent: string }>();
+  @Output('bLoki') blueprintCreated = new EventEmitter<{ sName: string, sContent: string }>();
+
+  @ViewChild('inputServerContent') inputServerContent: ElementRef;
+
+  onAddServer(inputEl: HTMLInputElement) {
+    // console.log(this.inputServerContent);
+    // 是 ElementRef 物件
+
+    //因此我們可以利用 this.inputServerContent.nativeElement.value 作為我們來源值
+    this.serverCreated.emit({
+      sName: inputEl.value,
+      // sContent: this.newServerContent
+      sContent: this.inputServerContent.nativeElement.value
+    });
+  }
+
+  onAddBlueprint(inputEl: HTMLInputElement) {
+
+    this.blueprintCreated.emit({
+      sName: inputEl.value,
+      // sContent: this.newServerContent
+      sContent: this.inputServerContent.nativeElement.value
+    });
+  }
+}
+```
+
+>目前這兩招都不是透過雙向綁定來讀出資料，都是透過本地變數搭配參數傳遞或從 ViewChild 來獲取。但是是直接去對應到元素的記憶體位置，因此不建議你在 TypeScript 去直接修改寫入 value 例如`this.inputServerContent.nativeElement.value='LokiString'`，這會影響 View 這裡的值會被固定住。
+
+ ng-content 內容投影
+內容投影是一種模式，你可以在其中插入來自另一個地方中使用的內容進行投影。舉例來說下層的 cockpit 內的 ngFor 想搬到上層元件內（雖然一開始素材就這樣做，這裡只是為了示範有這種神操作）。在那之前有一個觀念要說明，在上層元件的 html 內，使用子元件作為元素替代時，此時該子元件元素下的內容，任何東西都會被 Angular 所捨棄。
+
+```html app.component.html
+<app-server-el
+  *ngFor="let item of serverElements"
+  [srcElement]="item"
+>
+  <!-- 這裡寫的任何東西都會被 Angular 所拋棄 -->
+</app-server-el>
+```
+
+如果子元件內的 html 有指定 ng-content 元素，則代表我有一部份內容投影到來自放在上層元素 html 那裏。為了示範方便把原本的部分代碼註解起來。
+
+```html server-el.component.html
+<div class="card mb-3">
+  <div class="card-header">{{ element.name }}</div>
+  <div class="card-body">
+    <!-- 這裡有東西放在爸爸那裏唷 -->
+    <ng-content></ng-content>
+    <!-- <p>
+      <strong
+        *ngIf="element.type === 'server'"
+        style="color: red"
+      >{{ element.content }}</strong>
+      <em *ngIf="element.type === 'blueprint'">{{ element.content }}</em>
+    </p> -->
+  </div>
+</div>
+```
+
+此時觀看畫面，會發現 card-body 內的這個地方會來自父元件 html 那裏所填寫的子元件內容。這就是 ng-content 的用法。現在把註解的地方搬移到父元件那裏的子元件元素當做內容。然而因為提升到父元件那裏，element 這個變數認不得，但我們可以取到上源父元件這裡的 item 做替換。
+
+```html app.component.html
+<div class="container">
+  <app-cockpit
+    (sLoki)="onAddServerDone($event)"
+    (bLoki)="onAddBlueprintDone($event)"
+  ></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <app-server-el
+        *ngFor="let item of serverElements"
+        [srcElement]="item"
+      >
+        <!-- 投影 start，事實上這裡應該還有 card>card-header+card-body -->
+        <p>
+          <strong
+            *ngIf="item.type === 'server'"
+            style="color: red"
+          >{{ item.content }}</strong>
+          <em *ngIf="item.type === 'blueprint'">{{ item.content }}</em>
+        </p>
+        <!-- 投影 end -->
+      </app-server-el>
+    </div>
+  </div>
+</div>
+```
+
+現在畫面正常了，事實上子元件還是跑到父元件那裏索討內容，這例子唯一比較搞混的問題是 template 範本內的變數是否存在。ng-content 可以做為取代一些屬性綁定的資料傳送，本身就是一種 HTML 轉義行為，在跨網域 Script 駭客攻擊上有很好的預防效果。
+
+ 元件的生命週期 Hook
+生命週期是每一個框架經典需知道的重要觀念。Angular 提供了一些相關流程過程並提供一些方法，允許你監聽指令和元件的生命週期，比如建立、更新和銷燬等。舉例來說每次 CLI 產生的原件就有附加提供 onInit 的 Hook 使用。Angular 會按以下順序呼叫 Hook 鉤子方法：
+
+- ngOnChanges - 在輸入屬性 (input)/輸出屬性 (output) 的繫結值發生變化時呼叫。
+- ngOnInit - 在第一次 ngOnChanges 完成後呼叫。
+- ngDoCheck - 開發者自訂變更檢測。
+- ngAfterContentInit - 在元件內容初始化後呼叫。
+- ngAfterContentChecked - 在元件內容每次檢查後呼叫。
+- ngAfterViewInit - 在元件檢視 (View) 初始化後呼叫。
+- ngAfterViewChecked - 在元件檢視 (View) 每次檢查後呼叫。
+- ngOnDestroy - 在指令銷燬前呼叫。
+
+> 參閱官方文件關於 [生命週期鉤子（Lifecycle hook）](https://angular.tw/guide/glossary#lifecycle-hook)
+
+當創建一個元件並運行時 Angular 透過 selector 對象找到這個元件開始實體化創建到我們的 DOM，過程上會經歷一些階段。因此我們可以利用這些階段安排一些代碼作業。透過 Angular 提供的方法來進行這些 Hook 動作。
+
+**OnChanges**
+第一個 Hook 階段，一開始創建元件時就開始執行，且後續還可能會被執行很多次，當我們屬性綁定的`@Input`或`@Output`接受到新值會再經歷一次。
+
+**OnInit**
+第二個 Hook 階段，當元件被初始化後就會被執行，此時還沒有添加到 DOM 上，只是 Angular 正在對元件做基本的初始化，ngOnInit 會在建構函式 constructor 之後執行，
+
+**DoCheck**
+第三個階段且只有在變更檢測當下運行。因為第一階段 ngOnChange 的關係也可能影響到到被執行多次。變更檢測只是 Angular 需要確定元件內的 template 或內部資料要確認是否有些內容被更改。譬如某個數字 1 變成 2 並該屬性需要在 template 輸出，那就會需要做變更檢測才能重新渲染這個 template。
+
+有些時候第一階段的 ngDoCheck 會再次運行，因為你可能做了一些沒有改變資料的事件，但由於是一個事件行為，Angular 還是得去進行 ngDoCheck 的變更檢測作業執行。Angular 會確保檢查是否有變。
+
+雖然看起來很吃效能但 Angular 處理得很好沒有花費多少效能，你可以利用變更檢測當下週期做一些 Angular 無法預判到的變化時給予代碼作業。
+
+**AfterContentInit**
+第四階段，每當使用 ng-content 內容投影進行初始化時會觸發這個階段。因此不是指該元件本的 View，而是父元件的 View 那裏，尤其是透過內容投影添加到自己元件的 View 時。每當改變檢測檢查時發現到我們的內容投影有更改而被執行，
+
+**AfterViewInit**
+第五步驟，當第四步驟完成了該元件的 View 完成初始化後就會達到這階段。
+
+**AfterViewChecked**
+第六步驟，前步驟會緊接著將 View 進行被檢查，確保所有的更改都會顯示到 View 內，或者當 Angular 沒有檢測到任何變化時，會進入這個階段。
+
+**OnDestroy**
+如果你要銷毀一個元件，例如透過 ngIf 設定為 false，要求 DOM 銷毀掉這個元件，在銷毀之前就會觸發這個階段。
+
+# 連續示範操作
+使用剛剛的教材做一下示範流程透過 Console 探討這些 Hook 發生的時機為何。
+
+## ngOnInit()
+跳到 server-el 的 ts，也許被我們刪除掉了試著重新使用 ngOnInit。
+
+>使用這些 Hook 需注意要在 Class 後面宣告使用該工具 (implements) 以及宣告來源。每個 Hook 都是獨立實施。
+
+```ts server-el.component.ts
+import { Component, Input, ViewEncapsulation, OnInit } from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None
+})
+export class ServerElComponent implements OnInit { //使用工具 OnInit
+  @Input('srcElement') element: { type: string, name: string, content: string };
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  //1st 是 OnChanges 等等談
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+}
+```
+
+當我們執行加載應用程式時，我們會發現這個元件會經歷了 1th 與 2nd 兩個。如果嘗試操作按鈕讓 server-el 元件重複地被使用並實體化出來。會出現 1th > 2nd > 1th > 2nd > ...，因此所有的 Hook 都會再次被執行，因為每次的元件使用都是全新被實體化出來。以及有個共通點在於物件類別 Class 的建構函式之後。
+
+## ngOnChanges()
+回到週期的一開始討論到 ngOnChanges 會第一階段被執行。這裡的例子剛好有使用`@Input`可以拿來示範，添加 ngOnChanges 方法來運行。另外再告知這裡事實上能接受到一個參數（只有這個 Hook 才有），他的強型別為 SimpleChanges 故需要宣告來源。
+
+```ts server-el.component.ts
+import { Component, Input, ViewEncapsulation, OnInit, OnChanges, SimpleChanges } from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  //關閉封裝功能
+})
+export class ServerElComponent implements OnInit, OnChanges { //使用工具 OnInit & OnChanges
+  @Input('srcElement') element: { type: string, name: string, content: string };
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChanges');
+    console.log(changes);
+/* print 
+{element: SimpleChange}
+  element: SimpleChange
+    currentValue: {type: 'server', name: 'TestName', content: 'TestString!'}
+    firstChange: true
+    previousValue: undefined
+    [[Prototype]]: Object
+*/
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+}
+```
+
+查看 changes 參數就是我們的@input 所提供的元素（使用 SimpleChange 型別）。可以獲得一些資訊
+- currentValue : 我們因為@input 而獲得資料在 element.currentValue
+- firstChange: 這是我們第一次的改變，因為才剛初始化。
+- previousValue: 前一次的舊值為 undefined，因為之前還沒有獲得此資料。
+
+也就是說可推理出 ngOnChanges 會發生很多次影響這些 SimpleChanges 不同內容。跟著做以下代碼操作來試著測出這些可能性。
+
+- 到父元件 app，找一個單純地方增加一個按鈕為 Change First Element 並做事件綁定觸發 onChangeOne() 方法
+- 同樣父元件 app 需提供一個 onChangeOne() 方法去修改，我們只想更改原本 element.currentValue.name 而已。
+
+```html app.component.html
+<div class="container">
+  <app-cockpit
+    (sLoki)="onAddServerDone($event)"
+    (bLoki)="onAddBlueprintDone($event)"
+  ></app-cockpit>
+  <hr>
+  <div class="row">
+    <div class="col-xs-12">
+      <!-- 放在這，迴圈之外 -->
+      <button class="btn btn-danger" (click)="onChangeOne()">Change 1st Element</button>
+      <app-server-el
+        *ngFor="let item of serverElements"
+        [srcElement]="item"
+      >
+        <!-- 投影 start -->
+        <p>
+          <strong
+            *ngIf="item.type === 'server'"
+            style="color: red"
+          >{{ item.content }}</strong>
+          <em *ngIf="item.type === 'blueprint'">{{ item.content }}</em>
+        </p>
+        <!-- 投影 end -->
+      </app-server-el>
+    </div>
+  </div>
+</div>
+```
+```ts app.component.ts
+export class AppComponent {
+  serverElements = [
+    { type: 'server', name: 'TestName', content: 'TestString!' }
+  ];
+
+  onAddServerDone(serverData: { sName: string, sContent: string }) {
+    this.serverElements.push({
+      type: 'server',
+      name: serverData.sName,
+      content: serverData.sContent
+    });
+  }
+
+  onAddBlueprintDone(serverData: { sName: string, sContent: string }) {
+    this.serverElements.push({
+      type: 'blueprint',
+      name: serverData.sName,
+      content: serverData.sContent
+    });
+  }
+  //只對陣列指定處修改值，因為我們要改變值而不是對 serverElements 陣列重寫。
+  onChangeOne() {
+    this.serverElements[0].name = 'Test by OnChanges again';
+  }
+}
+```
+
+現在觀察畫面，嘗試按下 btn-danger 按鈕，可以成功改寫 Server Name 但是 console.log 不會觸發 OnChanges 執行。因為我們只是更改`@input element{...}`裡面的記憶體內某處的數據，Angular 不會感覺到這個值被改寫而觸發 OnChanges，因此我們要多做一個@input 只感應 name 這個參數。
+
+- 對子元件 server-el 多設計一個`@input name`，因為原本的@input 我們沒有辦法去改變整個陣列
+- 對父元件 app 對引用元件的地方做屬性綁定，將我們的 name 提供給子元件。
+
+```ts server-el.component.html
+export class ServerElComponent implements OnInit, OnChanges {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String; //為了能被 Angular 偵測到變化，多一個 input 做前後改變
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+}
+```
+
+現在試著回到畫面，一開始的 ngOnChange 被觸發因為有兩個`@input`提供到 SimpleChange 物件。可以看到第二組`@input`的初始之況狀，接著下一步驟按下 btn-danger 可以又獲得 ngOnChange（且無 0th & 2nd)。經檢查發現第二組`@input`有感受到變化而再次運行提供給我們並得知為修改之況狀（新舊值且非初次變化）。
+
+![](assets/images/6GpusZM.png)
+
+最後清楚了解根據以上的示範，換言之可以利用這方法，找出用戶修改前的舊值並把它儲存起來，提供資料復原的神操作。
+
+## ngDoCheck()
+能提供每次變更檢測的方法，來示範 ngDoCheck 如何被使用。並透過檢查畫面發現 3rd 的訊息出現（基本上應該只會出現一次，但因為目前在開發模式下 Angular 會多一次進行額外的更改檢測週期）。
+
+```ts server-el.component.ts
+export class ServerElComponent implements OnInit, OnChanges, DoCheck {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String;
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+}
+```
+
+現在嘗試去按幾次 btn-danger 來觀察 3rd 在 console 上的時機，如下圖可以解釋出
+- 紅色部分 - 因為一開始初始化會進行變更檢測
+- 黃色部分 - 因為 ng serve 的開發模式影響多一次額外檢測
+- 綠色部分第 1 下 - 按下 btn-danger 也會進行變更檢測（同時因為有變化觸發 ngOnChanges)
+- 綠色部分第 2~10 下 - 再次按下 btn-danger 也會進行變更檢測（因為`@input`值沒有變化不會再出現 ngOnChanges)
+
+![](assets/images/dwbgjNg.png)
+
+最後每次 Angular 要進行變更檢測時都會觸發這個方法，不管是不是有改還是沒改的 event 事件或是 promise 承諾來觸發（還有其他的觸發器）。但你通常不會在這裡寫太多代碼，不然每次都會被觸發這些代碼很浪費效能，畢竟他運行頻率太頻繁。如果只是開發上的 Debug 測試就蠻適合的。
+
+## ngAfterContentInit()
+在經過更改檢查週期之下一階段才進行此部分，透過添加方法並觀察後畫面上的第一組 server 是透過內容投影產生到 View 上面，因此只有一次調用，在此之後就沒有任何重新變化下這裡不會重新初始化。
+
+```ts server-el.component.ts
+import {
+  Component, Input, ViewEncapsulation,
+  OnInit, OnChanges, SimpleChanges,
+  DoCheck, AfterContentInit
+} from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  //關閉封裝功能
+})
+export class ServerElComponent implements OnInit, OnChanges, DoCheck, AfterContentInit {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String; //為了能被 Angular 偵測到變化，多一個 input 做前後改變
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    console.log('4th is ngAfterContentInit');
+  }
+}
+```
+
+接著嘗試以下動作
+- 按下 btn-danger 10 次，沒再次執行因為內容投影未改變。
+- 填值（輸入 No.2 *) 並按下 Add Server 來增加第二組 Server，因為內容投影有更改故對第二組 server 內容進行初始化。
+
+現在來討論顏色範圍的時機為
+- 第一次紫色 - 那是 Test Server 的系列過程，最後停留在 4th 也就是該內容被初始化
+- 第一次綠色 - 同前一次觀念 btn-danger 在第一下觸發到 ngOnChange（`@Input`有新變化），之後每下 click 僅剩更改檢查
+- 第二次紫色 - 那是 No.2 Server 的產生過程
+- 第二次綠色 - 這來開發模式下的更改檢測動作。
+
+![](assets/images/2dtNwUO.png)
+
+## ngAfterViewInit() & ngAfterViewChecked()
+ngAfterViewInit 將所需要的 View 畫面產生出來後執行，並透過 ngAfterViewChecked 已確保所有的更改結果都在這個 View 裡面後執行。
+
+```ts server-el.component.ts
+import {
+  Component, Input, ViewEncapsulation,
+  OnInit, OnChanges, SimpleChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked
+} from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  //關閉封裝功能
+})
+export class ServerElComponent implements OnInit, OnChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String; //為了能被 Angular 偵測到變化，多一個 input 做前後改變
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    console.log('4th is ngAfterContentInit');
+  }
+  ngAfterContentChecked() {
+    console.log('5th is ngAfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    console.log('6th is ngAfterViewInit');
+  }
+  ngAfterViewChecked() {
+    console.log('7th is ngAfterViewChecked');
+  }
+}
+```
+
+## ngAfterViewChecked()
+元件被銷毀時觸發，除了宣告 OnDestroy 工具使用外，我們額外做一個 click 事件綁定銷毀第一組 server 的元件。
+
+```ts server-el.component.ts
+import {
+  Component, Input, ViewEncapsulation,
+  OnInit, OnChanges, SimpleChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked, OnDestroy
+} from '@angular/core'; //宣告來源
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  //關閉封裝功能
+})
+export class ServerElComponent implements OnInit, OnChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked,
+  OnDestroy {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String;
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    console.log('4th is ngAfterContentInit');
+  }
+  ngAfterContentChecked() {
+    console.log('5th is ngAfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    console.log('6th is ngAfterViewInit');
+  }
+  ngAfterViewChecked() {
+    console.log('7th is ngAfterViewChecked');
+  }
+  ngOnDestroy() {
+    console.log('8th is ngOnDestroy');
+  }
+}
+```
+
+來到 app 元件這裡規劃一個本地的事件綁定。並試著刪掉陣列中第一組 server-el 元件，陣列拔除的方式因為到時候 ngFor 執行時因為失去了陣列之中的這格也就會被 DOM 所刪除。
+
+```ts app.component.ts
+onKillOne() {
+  this.serverElements.splice(0, 1);
+}
+```
+```html app.component.html
+<button class="btn btn-warning" (click)="onKillOne()">Kill 1st Element</button>
+```
+
+現在操作添加第二組 server-el 元件後，嘗試刪除第一組 server-el 元件。透過
+
+![](assets/images/HkqfbYX.png)
+
+最後結論上，告知你會很少會使用到這些 Hook 工具，除非你需要這些 Hook 來幫助你做一些特定的代碼。
+
+# ViewChild 的使用問題
+前面聊過本地變數與範本訪問做法，從同一元件我們學過可以 TS 的`@VueChild`來訪問範本的本地變數來取得 DOM。但是如果我們的生命週期上使用有啥問題存在。
+
+試著建立 viewChild 在 server-el 看看，讓範本的本地變數能被 TS 所使用。這裡本地變數為`#cardHeader`。
+
+```html server-el.component.html
+<div class="card-header" #cardHeader>{{ element.name }}</div>
+```
+```ts server-el.component.ts
+import {
+  Component, Input, ViewEncapsulation,
+  OnInit, OnChanges, SimpleChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked, OnDestroy,
+  ViewChild, ElementRef  //※　重點：宣告
+} from '@angular/core'; 
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None
+})
+export class ServerElComponent implements OnInit, OnChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked,
+  OnDestroy {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String;
+
+  //※　重點：透過 ViewChild 來獲得範本內的本地變數成為本檔案的變數
+  @ViewChild('cardHeader') cardHeader: ElementRef;　
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+    console.log('2nd: ' + this.cardHeader);
+    //※　重點：undefined，因為 DOM 還沒生成怎會有本地變數
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    console.log('4th is ngAfterContentInit');
+  }
+  ngAfterContentChecked() {
+    console.log('5th is ngAfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    console.log('6th is ngAfterViewInit');
+    console.log('6td: ' + this.cardHeader);
+    //※　重點：undefined，因為 View 生成了，才會有本地變數可獲得
+
+  }
+  ngAfterViewChecked() {
+    console.log('7th is ngAfterViewChecked');
+  }
+  ngOnDestroy() {
+    console.log('8th is ngOnDestroy');
+  }
+}
+```
+
+由此可知，生命週期的 View 生成時間，會影響到我們去取得本地變數的存在與否 (View 是否已出來了）。
+
+# ContentChild 用於內容投影
+之前學到 ViewChild 可以從 View 找到指定的元素。但如果是在 ng-content 內容投影就無法處理。因為內容投影的那段 html 被放置在父元件那裏根本不是 View 的一部分。這時侯需要改用 ContentChild 來作業。兩者的差異在於一個是在 View 上查找取得；一個是 Content（內容投影）上查找取得。
+
+- 舉例我們來到使用內容投影的地方，位於 app 元件上，對其 Content 部分規劃別名。
+- app 元件的內容會被投影到 server-el 這裡，因此在下層元件這裡我們需要宣告`@ContentChild()`來補貨，記得提供別名作為 selector 給該函式。
+- 回到 element-el 的週期，他的出現時機在於 ContentInit 時才會產生（比 ViewInit 早）。
+- 也參考 OnInit 是否可讀到此元素。
+
+```html app.component.html
+<app-server-el
+  *ngFor="let item of serverElements"
+  [srcElement]="item"
+  [name]="item.name"
+>
+  <!-- 投影 start，事實上這裡應該還有 card>card-header+card-body -->
+  <p #contentPpp>
+    <strong
+      *ngIf="item.type === 'server'"
+      style="color: red"
+    >{{ item.content }}</strong>
+    <em *ngIf="item.type === 'blueprint'">{{ item.content }}</em>
+  </p>
+  <!-- 投影 end -->
+</app-server-el>
+```
+```ts server-el.component.ts
+import {
+  Component, Input, ViewEncapsulation,
+  OnInit, OnChanges, SimpleChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked, OnDestroy,
+  ViewChild, ElementRef,
+  ContentChild // ※重點：宣告
+} from '@angular/core';
+
+@Component({
+  selector: 'app-server-el',
+  templateUrl: './server-el.component.html',
+  styleUrls: ['./server-el.component.css'],
+  encapsulation: ViewEncapsulation.None  
+})
+export class ServerElComponent implements OnInit, OnChanges, DoCheck,
+  AfterContentInit, AfterContentChecked,
+  AfterViewInit, AfterViewChecked,
+  OnDestroy {
+  @Input('srcElement') element: { type: string, name: string, content: string };
+  @Input() name: String;
+
+  @ViewChild('cardHeader') cardHeader: ElementRef;　
+  @ContentChild('contentPpp') contentByApp: ElementRef;　// ※重點
+
+  constructor() {
+    console.log('0th is constructor');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('1st is ngOnChange');
+    console.log(changes);
+  }
+
+  ngOnInit() {
+    console.log('2nd is ngOnInit');
+    console.error('2nd View: ' + this.cardHeader);
+    console.warn('2nd Content: ' + this.contentByApp);// ※重點
+  }
+
+  ngDoCheck() {
+    console.log('3rd is ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    console.log('4th is ngAfterContentInit');
+    console.warn('4th Content: ' + this.contentByApp);// ※重點
+  }
+  ngAfterContentChecked() {
+    console.log('5th is ngAfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    console.log('6th is ngAfterViewInit');
+    console.error('6td View: ' + this.cardHeader);
+
+  }
+  ngAfterViewChecked() {
+    console.log('7th is ngAfterViewChecked');
+  }
+  ngOnDestroy() {
+    console.log('8th is ngOnDestroy');
+  }
+}
+```
+
+最後回到 console 這裡，你就能知道 ContentInit 在生命週期內的用途時機為何了，這裡為了顏色差異才做 error 與 warn 提示。
+
+![](assets/images/iPYMK3j.png)
+
+ 小節練習 
+以下根據本篇學到的東西做一個練習，動作要求如下：
+
+1. 建立三個元件 GameControl, Odd, Even
+2. GameControl 需要提供 Start 與 Pause 按鈕
+3. 當開始遊戲時，GameControl 事件會一直記數（記錄這個值）並每秒`ref=setInterval()`累加
+4. 這個事件產生的數字必須列表輸出到外面的元件上
+5. 當暫停遊戲時，原本的事件會停止記數`clearInterval(ref)`
+6. 新 Odd 元件要能捕獲到每個奇數值，Even 元件也是要捕獲到偶數值
+7. 簡單的輸出文字規格為`ODD - *`與 `EVEN - *`在這兩個元件
+8. 使用樣式表例如 p 為選擇器做不同的文字顯示在這兩個元件內
+
+作法如下：
+
+- 首先我們需要對 Game-ctl 進行設計規劃兩個按鈕並提供兩個事件綁定分別是 onGameStart 與 onGamePause
+- 然後到 TS 這裡規劃這兩個方法，而在 Start 那裡規劃 setInterval 並獲得一個 key 方便之後做 clearInterval 把動作取消
+- key 放置在 class 內作為屬性初始，雖然 JS 的 setInterval 所回傳的是一個 key，但 Node.js 這裡的回傳的型別是`<Timer>`我們無法給予初始值因此給予 any 型別
+- 由於要透過外層元件也就是上層的 app 負責輸出，這裡用自訂事件來儲存 count 數字（不是用 type number 來做，因為我們要`@Output`一個事件綁定給外層）
+- 規劃 count 的強行別為 new EventEmitter() 並提供回傳的強型別會是 number。然後我們還要用一個 number 型別的變數拿來做疊加的紀錄值好更新我們自訂事件的回傳值
+- 來到 onGameStart() 這裡，使用 setInterval 於每秒使用 emit 來更新這個自訂事件的回傳值
+- 目前為止只需要輸出到外層元件去，因此我們需要透過@Output 把我們的 count 送出去，記得 count 是一個自訂事件
+- 來到外層元件 app 這裡，設定一個自訂事件綁定，來呼喊 app 元件下的方法負責輸出工作，先用 console 來測試 Start 與 Pause 是否成功
+
+```html game-ctl.component.html
+<button (click)="onGameStart()">Start</button>
+<button (click)="onGamePause()">Pause</button>
+```
+```ts game-ctl.component.ts
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-game-ctl',
+  templateUrl: './game-ctl.component.html',
+  styleUrls: ['./game-ctl.component.css']
+})
+export class GameCtlComponent implements OnInit {
+  @Output() count = new EventEmitter<number>();
+  lastNum = 0;
+  intervalKey: any;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  onGameStart() {
+    this.intervalKey = setInterval(() => {
+      this.count.emit(this.lastNum + 1);
+      this.lastNum++;
+    }, 1000);
+
+  }
+  onGamePause() {
+    clearInterval(this.intervalKey);
+  }
+
+}
+```
+```html app.component.html
+<app-game-ctl (count)="onGetCount($event)"></app-game-ctl>
+```
+```ts app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+  onGetCount(arg: number) {
+    console.log(arg);
+  }
+}
+```
+
+接下來根據要求，需要把值送到 Odd 與 Event 元件內由它們來負責輸出到畫面上。
+
+- odd 與 even 元件代表的是一個 p 段落就好。由 app 來控制重複使用 even 與 odd 元件，先嘗試各別都只有完成一個元素，因為要接受來是外部元件所以要用到`@Input`
+- 來到 Odd 與 Even，來創造一個可訪問的`@input`屬性，同時這個屬性變數會提供給範本 html 使用，透過字串差值來輸出畫面。
+- 來到 app 元件這裡，我們會跑回圈重複使用下層元件 Odd 與 Even，既然是迴圈就必須要把數字存成陣列。且還要把數字弄成屬性綁定要提供給下層各元件使用。
+- 最後是強型別的問題，注意 app 那裏的數字陣列如何宣告，以及 Odd 與 Even 的屬性強行別，因為不想弄初始值會報錯，所以用斷言符號強迫一定是數字。
+- 目前跑起來，兩邊底層元件都會跑 12345 有成功透過`@input`將資料傳送進去。
+
+```html odd.component.html
+<p>ODD - {{number}}</p>
+```
+```html even.component.html
+<p>EVEN - {{number}}</p>
+```
+```ts odd.component.ts
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-odd',
+  templateUrl: './odd.component.html',
+  styleUrls: ['./odd.component.css']
+})
+export class OddComponent {
+  @Input() number!: number;
+}
+```
+```ts even.component.ts
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-even',
+  templateUrl: './even.component.html',
+  styleUrls: ['./even.component.css']
+})
+export class EvenComponent {
+  @Input() number!: number;
+}
+```
+```html app.component.html
+<app-game-ctl (count)="onGetCount($event)"></app-game-ctl>
+<app-even
+  *ngFor="let item of args"
+  [number]="item"
+></app-even>
+<app-odd
+  *ngFor="let item of args"
+  [number]="item"
+></app-odd>
+```
+```ts app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  args: number[] = [];
+  onGetCount(arg: number) {
+    this.args.push(arg);
+  }
+}
+```
+
+最後想辦法多個判斷式弄成兩個陣列給不同下層元件，利用餘數是否為 0 判斷奇偶數。
+
+```html app.component.html
+<app-game-ctl (count)="onGetCount($event)"></app-game-ctl>
+<app-even
+  *ngFor="let item of argsEven"
+  [number]="item"
+></app-even>
+<app-odd
+  *ngFor="let item of argsOdd"
+  [number]="item"
+></app-odd>
+```
+```ts app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  argsOdd: number[] = [];
+  argsEven: number[] = [];
+  onGetCount(arg: number) {
+    if (arg % 2 === 0) this.argsEven.push(arg);
+    else this.argsOdd.push(arg);
+  }
+}
+```
+
+以及最後一小段要求，在這兩個小元件規劃 P 字色就好。
+
+```css odd.component.css
+p {
+  color: blue;
+}
+```
+```css even.component.css
+p {
+  color: green;
+}
+```
+
+最後美中不足的是，如果 click 連續同一按會跑多次 interval 動作。所以多一個判斷是否給予按鈕禁用屬性。
+
+```html game-ctl.component.html
+<button (click)="onGameStart()" [disabled]="bool">Start</button>
+<button (click)="onGamePause()" [disabled]="!bool">Pause</button>
+```
+```ts game-ctl.component.ts
+export class GameCtlComponent {
+  @Output() count = new EventEmitter<number>();
+  lastNum = 0;
+  intervalKey: any;
+
+  bool: boolean = false;
+
+  onGameStart() {
+    this.bool = !this.bool;
+    this.intervalKey = setInterval(() => {
+      this.count.emit(this.lastNum + 1);
+      this.lastNum++;
+    }, 1000);
+
+  }
+  onGamePause() {
+    this.bool = !this.bool;
+    clearInterval(this.intervalKey);
+  }
+}
+```
+
+完成如下
+
+{% iframe https://stackblitz.com/edit/angular-ivy-muvwvn 100% 500 %}
+
+ Directives 指令
+目前為止，Angular 可探討出有三種 directive 指令，且部分 directive 已經使用過：
+
+- 元件 - 包含 template 的 directive。
+- 結構指令 - 通過添加和刪除 DOM 多數元素組合之結構，來更改 DOM 的佈局 View 方式。（如 ngFor、ngIf)
+- 屬性指令 - 編寫在元素上面，就像屬性指定一樣。可改變本身元素，元件或其他指令的外觀或行為。（如 ngStyle)
+
+# 使用結構指令
+使用 github 資源包內的 lokiDirectives-start 作為環境，做一個結構指令的小試牛刀。在素材包當中，已持有一個 event 按鈕，透過 click 希望呈現單或雙的畫面切換。在 TS 內已存在一個 array，試著先輸出 li 清單畫面。
+
+- 已知 numbers 為一個數字陣列。在 html 畫面上使用結構指令 ngFor 跑出
+- 捨棄原本 ng-template 的測試用代碼，值得注意的是 ng-template 需要透過`[ngIf=*]`來代表屬性控制個 template 是否執行。若是直接寫在 p 元素上才是使用`*ngIf=*`來指定是否生成。
+- 對 li 規劃`*ngFor`來跑陣列生成與內容 textContent。
+
+```ts app.component.ts
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  numbers = [1, 2, 3, 4, 5]; //持有一個陣列，試著將輸出在 li 上。
+  onlyOdd = false;
+}
+```
+```html app.component.html
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      <button
+        class="btn btn-primary"
+        (click)="onlyOdd = !onlyOdd"
+      >Only show odd numbers</button>
+      <br><br>
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          *ngFor="let number of numbers"
+        >{{number}} </li>
+      </ul>
+      <!-- <ng-template [ngIf]="onlyOdd">
+        <p>Only odd</p>
+      </ng-template> -->
+    </div>
+  </div>
+</div>
+```
+
+然而如果我們需要透過 click 去控制 li 只顯示單或雙，若直接考量 li 多添加一個結構指令* ngIf 來判別動作，會出現問題為
+- 同一個元素不可以設定多個控制指令。 => Can't have multiple template bindings on one element. Use only one attribute prefixed with *
+- ngIf 無法讀取到 number 的值。 => Property 'number' does not exist on type 'AppComponent'. Did you mean 'numbers'?
+
+```html
+<ul class="list-group">
+  <li
+    class="list-group-item"
+    *ngFor="let number of numbers"
+    *ngIf="onlyOdd == number%2==0"
+  >{{number}} </li>
+</ul>
+```
+
+因此我們需要調整一下做法：
+
+- TS 這裡簡化了 array 資料處理，為了示意而貪快直接準備 2 個陣列。
+- 將兩組結構指令規劃到不同的元素上。
+
+```typescript app.component.ts
+export class AppComponent {
+  // numbers = [1, 2, 3, 4, 5];
+  odds = [1, 3, 5];
+  evens = [2, 4];
+  onlyOdd = false;
+}
+```
+```html app.component.html
+<ul
+  *ngIf="onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of odds"
+  >{{number}} </li>
+</ul>
+<ul
+  *ngIf="!onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of evens"
+  >{{number}} </li>
+</ul>
+```
+
+# 使用屬性指令
+同樣快速使用屬性指令，舉例 ngStyle 與 ngClass。在 css 內規劃 odd 與 even 的樣式效果。
+
+- ngClass 由於是指定給元素當作屬性，因此需要增加`[]`裝飾，ngStyle 亦同。
+- 在判別 ngClass 是否成立方式為`className:boolean`，舉例指定 class 名稱為 odd 這個值的條件之下`:`，當 number 能夠不被 2 整除時成立。
+- 在判別 ngStyle 是否成立方式為`cssAttrKey:value`，舉例指定 backgroundColor 的 value 透過三元表達來獲取。
+
+```css app.component.css
+.odd {
+  color: red;
+}
+
+.even {
+  color: blue;
+}
+```
+```typescript app.component.ts
+<ul
+  *ngIf="onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of odds"
+    [ngClass]="{odd:number%2!==0}"
+    [ngStyle]="{backgroundColor:number%2==0?'yellow':null}"
+  >{{number}} </li>
+</ul>
+<ul
+  *ngIf="!onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of evens"
+    [ngClass]="{even:number%2==0}"
+    [ngStyle]="{backgroundColor:number%2==0?'green':null}"
+  >{{number}} </li>
+</ul>
+```
+
+# 自訂的屬性指令
+建立一個自訂的屬性指令方式，探討一些操作自訂屬性指令的用法，同時探討這些屬性指令的使用時機。
+
+## 透過 ElementRef 直接修改 DOM
+ElementRef 是一個用於封裝原生 DOM 元素的類別。它可以讓您在元件中訪問和操作 DOM 元素，但通常不推薦直接使用它來操作 DOM，因為這樣可能會引起安全問題。ElementRef 是通過依賴注入（dependency injection）在元件中使用的。當一個元件需要訪問它所屬的 DOM 元素時，可以通過將 ElementRef 注入到該元件中來實現。
+
+### 舉例
+先手動建立所需的檔案，如同建立 Component 但我們這次要建立 Directive。
+
+- 建立 class 並指定路徑檔案，檔名為 basic-hight-light.directive.ts
+- 如果`@Component`方式，建立`@Directive`並提供 selector 選擇器名稱為`[basicHightLight]`，這裡使用`[]`裝飾是由於這會是一個 style 樣式要提供給指定 HTML 元素，提早在這裡打到時候元素上面就可以省略輸入`[]`。
+- 然後規劃一個內部屬性為 elementRef，其 type 為 ElementRef，代表被指定的 HTML 元素。
+- 當此 directive 被初始 init 時，透過 nativeElement 找到此元素的 style 參數之 backgroundColor 直接指定 value 值。
+- 此時已完成 directive 設計，但需要將此 directive 掛載給 app.module 使得這份專案認得此 directive。
+
+```typescript src\app\basic-hight-light\basic-hight-light.directive.ts
+import { Directive, ElementRef, OnInit } from "@angular/core";
+
+@Directive({
+  selector: '[basicHightLight]'
+})
+export class BasicHightLightDirective implements OnInit{
+
+  constructor(
+    private elementRef: ElementRef
+  ) {
+    this.elementRef.nativeElement.style.backgroundColor = 'lightblue';
+  }
+
+  ngOnInit() {
+    // this.elementRef.nativeElement.style.backgroundColor = 'lightblue';
+  }
+}
+```
+```typescript src\app\app.module.ts
+import { BasicHightLightDirective } from './basic-hight-light/basic-hight-light.directive';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    BasicHightLightDirective //聲明宣告加入 
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+```
+
+然後，可以找到 html 位置添加一個 p 段落，並在元素上指定此屬性指令 basicHightLight（來自於 selector 的命名）來指定，已獲得結果為 style 背景色。
+
+```html app.component.html
+<p basicHightLight>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+```
+
+## 使用 Renderer2 渲染 DOM 對象
+在 Angular 中，Renderer2 是一個用於將 DOM 操作與平台相分離的 API。它提供了一個抽象層，讓您可以在不同的平台上（如 Web 和 Native）使用相同的 API 來操縱 DOM。Renderer2 的主要用途是在不直接操作 DOM 的情況下，創建、修改和刪除 DOM 元素。它提供了一組方法，可以讓您在元件中動態創建、修改和刪除 DOM 元素，而不需要直接訪問 DOM API。這樣做的好處是可以提高應用程序的性能和安全性。
+
+以下是一些常見的 Renderer2 方法：
+
+- createElement(tagName: string): 創建一個新的 DOM 元素。
+- createText(text: string): 創建一個新的文本節點。
+- appendChild(parent: any, newChild: any): 在父元素中添加一個新的子元素。
+- removeChild(parent: any, oldChild: any): 從父元素中刪除一個子元素。
+- setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2): 設置元素的樣式屬性。
+- addClass(el: any, name: string): 為元素添加一個 CSS 類。
+
+使用 Renderer2 API 可以使您的代碼更具可移植性，因為它可以在不同的平台上運行，而不需要對平台特定的 DOM API 進行修改。這樣可以使您的應用程序更容易維護和升級。
+
+### 舉例
+這裡改用 ng 指令來自動完成建立所需的檔案為 better-high-light，同樣再另產生一組 Directive 利於對照。
+
+```powershell
+# full command
+ ng generate directive --skip-tests=true yourDirectiveName 
+
+# quick command
+ng g d --skip-tests=true better-high-light/better-high-light
+```
+
+此時已產生指定目錄下的 directive 檔案，接著編寫 directive。
+
+- 使用 Renderer2 並載入，與前面方一相同也需載入 ElementRef 元件。
+- 與透過 ElementRef 直接修改 DOM 不同的是，這裡透過 render2 來操作 DOM，透過 setStyle 指定 ElementRef 完成 style 修改。
+- 注意這裡的 selector 名稱自動被命名為`[appBetterHighLight]`。
+- appModule 已自動編寫宣告次 directive，直接到 app.component.html 做顯示。
+
+```typescript
+import { ElementRef } from '@angular/core';
+import { Directive, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighLight]'
+})
+export class BetterHighLightDirective {
+
+  constructor(
+    private elRef: ElementRef,
+    private render: Renderer2
+  ) {
+    this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightblue');
+  }
+}
+```
+```html app.component.html
+<p basicHightLight>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+<p appBetterHighLight>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+```
+
+## HostListener 監聽 DOM 對象
+HostListener 是一個裝飾器，用於綁定 DOM 事件到元件的方法上。當事件發生時，綁定的方法會被觸發。HostListener 可以應用於元件的方法上，在下面的簡易範例代碼中，我們在 ExampleComponent 的 onClick 方法上使用了 HostListener 裝飾器，綁定了 click 事件。當點擊按鈕時，該方法會被調用，並且可以訪問 MouseEvent 對象。
+
+```typescript
+import { Component, HostListener } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  template: '<button>Click Me</button>',
+})
+export class ExampleComponent {
+  @HostListener('click', ['$event']) onClick(event: MouseEvent) {
+    console.log('Button clicked', event);
+  }
+}
+```
+
+您可以使用第一個參數指定要綁定的事件名稱，並可以使用第二個參數傳遞一個可選的參數數組，其中包含要傳遞給方法的任何額外參數。HostListener 可以綁定任何標準的 DOM 事件名稱，以下是一些常見的 DOM 事件：
+
+- click：當元素被單擊時觸發
+- mousedown：當鼠標按下時觸發
+- mouseup：當鼠標放開時觸發
+- mouseover：當鼠標移動到元素上方時觸發
+- mouseout：當鼠標移出元素時觸發
+- mousemove：當鼠標在元素內移動時觸發
+- keydown：當按下鍵盤上的任何鍵時觸發
+- keyup：當放開鍵盤上的任何鍵時觸發
+- input：當輸入字段的值更改時觸發
+- change：當表單控件的值更改時觸發
+- submit：當表單提交時觸發
+- focus：當元素獲得焦點時觸發
+- blur：當元素失去焦點時觸發
+- scroll：當元素被滾動時觸發
+- resize：當窗口或元素的大小更改時觸發
+- 
+除了標準的 DOM 事件外，HostListener 還可以綁定自定義事件。需要注意的是，自定義事件名稱應該以字母開頭，並且應該避免與標準 DOM 事件名稱重複。
+
+```typescript
+import { Component, HostListener } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  template: '<button>Click Me</button>',
+})
+export class ExampleComponent {
+  @HostListener('customEvent', ['$event']) onCustomEvent(event: CustomEvent) {
+    console.log('Custom event triggered', event);
+  }
+
+  triggerCustomEvent() {
+    const customEvent = new CustomEvent('customEvent', { detail: { message: 'Hello World' } });
+    this.elementRef.nativeElement.dispatchEvent(customEvent);
+  }
+}
+```
+
+在範例中，我們定義了一個名為 customEvent 的自定義事件，並在 ExampleComponent 的 onCustomEvent 方法上使用 HostListener 綁定了它。當該事件被觸發時，該方法會被調用，並且可以訪問 CustomEvent 對象。在 triggerCustomEvent 方法中，我們使用 ElementRef 訪問 DOM 元素，並手動觸發了自定義事件。
+
+使用 HostListener 可以使您的代碼更具可讀性和可維護性，因為它將 DOM 事件和相應的事件處理程序方法放在一起。這樣也使得您可以輕鬆地添加和刪除事件處理程序，並且不需要在模板中進行冗長的事件綁定。
+
+### 舉例
+在素材範例上調整 better-high-light.directive 的代碼，試著增加滑鼠滑入滑出的 style 變換。
+
+```typescript src\app\better-high-light\better-high-light.directive.ts
+import { ElementRef, HostListener } from '@angular/core';
+import { Directive, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighLight]'
+})
+export class BetterHighLightDirective {
+
+  constructor(
+    private elRef: ElementRef,
+    private render: Renderer2
+  ) {
+    // this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightblue');
+  }
+
+  // @HostListener('mouseenter') onMouserover(eventData: Event) {  // 可省略 on 的駝峰寫法
+  @HostListener('mouseenter') mouserover(eventData: Event) {
+    this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightgreen');
+  }
+  @HostListener('mouseleave') mouseleave(eventData: Event) {
+    this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightblue');
+  }
+}
+```
+
+## HostBinding 綁定 DOM 屬性
+HostBinding 是一個裝飾器，它可以用於綁定 DOM 元素的屬性。使用 HostBinding，您可以將元素屬性綁定到元件中的屬性，當該屬性值發生更改時，元素的屬性值也會跟著更新。
+
+範例中，我們使用`@HostBinding`裝飾器將 isExample 屬性綁定到 div 元素的 class 屬性。當 isExample 屬性值為 true 時，div 元素的 class 屬性值將包含 example 類。您還可以使用 `@HostBinding` 裝飾器綁定其他 DOM 元素的屬性，例如 style、id、title 等等。與 HostListener 一樣，HostBinding 也是一個方便的方法，可以幫助您更輕鬆地操作 DOM 元素屬性。
+
+```typescript
+import { Component, HostBinding } from '@angular/core';
+
+@Component({
+  selector: 'app-example',
+  template: '<div>Example</div>',
+  styles: ['.example { color: red; }']
+})
+export class ExampleComponent {
+  @HostBinding('class.example') isExample = true;
+}
+```
+
+### 舉例
+沿用素材，取消原本的 Render2 的方式，改用 HostBinging 來指定某個屬性，且這個屬性的值會被我們換掉。例如我們希望選到該元素的 style.backgroundColor 屬性，將值以 backgroundColor 變數方式遇到特定條件就替換此值。如此一來只要任何屬性套用此屬性指令，我們就綁定它的`style.backgroundColor`值為某字串內容（根據 event 事件我們給予兩種不同結果）。
+
+```typescript src\app\better-high-light\better-high-light.directive.ts
+import { ElementRef, HostBinding, HostListener } from '@angular/core';
+import { Directive, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighLight]'
+})
+export class BetterHighLightDirective {
+  @HostBinding('style.backgroundColor') backgroundColor: string;
+
+  constructor(
+    private elRef: ElementRef,
+    private render: Renderer2
+  ) {
+    // this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightblue');
+  }
+
+  // @HostListener('mouseenter') onMouserover(eventData: Event) {  // 可省略 on 的駝峰寫法
+  @HostListener('mouseenter') mouserover(eventData: Event) {
+    // this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightgreen');
+    this.backgroundColor = 'lightblue';
+  }
+  @HostListener('mouseleave') mouseleave(eventData: Event) {
+    // this.render.setStyle(this.elRef.nativeElement, 'background-color', 'lightblue');
+    this.backgroundColor = 'lightgreen';
+  }
+}
+```
+
+## Input 與 Directive 的共用別名技巧補充
+先規劃一個具備 Input 與 Directive 的特定環境，先在此 Directive 環境中規劃 Input，這樣在指定 DOM 元素上使用 Directive 也可以從外部將指定值 Input 到此 Directive 內。
+
+- 規劃兩組 Input 為 defaultColor 與 focusColor，是否預設指定值皆可，因屆時會由外部去提供新值。
+- 替換各現場下應該出現的 Color，其中建議使用 onInit 才能正常捕捉到 Input 提供的新值 gray
+- 至該 DOM 元素上，透過屬性的資料綁定規劃 Input。
+
+```typescript
+import { ElementRef, HostBinding, HostListener, Input } from '@angular/core';
+import { Directive, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighLight]'
+})
+export class BetterHighLightDirective {
+  @Input() defaultColor: string = 'lightblue'; //可不指定 value，改從外層讀出 gray
+  @Input() focusColor: string = 'lightgreen'; //可不指定 value，改從外層讀出 yellow
+  @HostBinding('style.backgroundColor') backgroundColor: string;
+
+  constructor(
+    private elRef: ElementRef,
+    private render: Renderer2
+  ) {
+    // this.backgroundColor = this.defaultColor; // 在這裡，會因為還沒準備好，導致初始下 input 不會指定到顏色
+  }
+
+  ngOnInit() {
+    this.backgroundColor = this.defaultColor; // 在這裡，才能完整渲染出來
+  }
+
+  @HostListener('mouseenter') mouserover(eventData: Event) {
+    this.backgroundColor = this.focusColor;
+  }
+  @HostListener('mouseleave') mouseleave(eventData: Event) {
+    this.backgroundColor = this.defaultColor;
+  }
+}
+```
+```html app.component.html
+<p appBetterHighLight [defaultColor]="'gray'" [focusColor]="'yellow'">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+```
+
+目前以正常的運作出預設灰與高亮黃。開始得以解釋一些特別技巧：
+
+### Input 別名合併 Directive 名稱
+input 可以指定一個別名，使得外部可以根據這個別名對應 input 為何。然而 delector selector 名稱與 input 別名是可以同一個，Angular 會聰明去理解這兩者的名稱對象。根據以下簡約後的寫法結果將一致不變化。
+
+```typescript
+import { ElementRef, HostBinding, HostListener, Input } from '@angular/core';
+import { Directive, Renderer2 } from '@angular/core';
+
+@Directive({
+  selector: '[appBetterHighLight]'
+})
+export class BetterHighLightDirective {
+  @Input('appBetterHighLight') defaultColor: string = 'lightblue'; //同 selector name
+  @Input() focusColor: string = 'lightgreen';
+  @HostBinding('style.backgroundColor') backgroundColor: string;
+
+  constructor(
+    private elRef: ElementRef,
+    private render: Renderer2
+  ) {}
+
+    // ...
+}
+```
+```html app.component.html
+<p
+  [appBetterHighLight]="'gray'"
+  [focusColor]="'yellow'"
+>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+```
+
+### 屬性傳遞 string 的簡約
+不論屬性綁定還是屬性指令，當因屬性綁定而有傳遞字串時，`[]`與`''`是可被簡化的，Angular 只會把它當作屬性綁定，並不會把它當作 DOM 原生元素之屬性來看待。
+
+```html app.component.html
+<p
+  appBetterHighLight="gray"
+  focusColor="yellow"
+>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque, architecto.</p>
+```
+
+# 自訂的結構指令
+在正式介紹之前，先討論在一些結構指令上出現了*符號，其代表的意義為何
+## 關於*的使用時機
+結構指令是一種特殊的指令，它用於根據特定的條件來創建、刪除或更新 DOM 元素。Angular 有三種內置的結構指令，它們是 ngIf、ngFor 和 ngSwitch。在 DOM 元素上，我們使用`*`符號綁定結構指令，這是因為這些指令會動態改變 DOM 元素的結構。使用符號可以告訴 Angular 在解析模板時，使用該指令創建、刪除或更新 DOM 元素。
+
+例如：我們使用 ngIf 指令，並將其應用於 div 元素上。當 condition 變為 true 時，div 元素會被動態創建，當 condition 變為 false 時，div 元素則會被刪除。使用符號可以讓我們更容易地識別結構指令，並且可以簡化模板代碼。
+
+```html
+<div *ngIf="condition">This div is shown if condition is true.</div>
+```
+
+然而，當結構指令用於 ng-template 時，我們使用 [] 符號來綁定指令。這是因為 ng-template 通常用於創建複雜的模板結構，並且需要通過屬性綁定的方式來控制結構指令。
+
+例如：我們使用`[ngIf]`語法來綁定 ng-template 的 ngIf 指令，並且在 ng-template 中創建 div 元素。當 condition 變為 true 時，div 元素將被動態創建，當 condition 變為 false 時，div 元素則會被刪除。使用`[]`符號可以讓我們更容易地識別屬性綁定，並且可以更好地控制結構指令的行為。
+
+```html
+<ng-template [ngIf]="condition">
+  <div>This div is shown if condition is true.</div>
+</ng-template>
+```
+
+## 規劃結構指令
+先建立 CLI 指令新生成一個 directive 檔案，會自動協助寫入到 app.module.ts 內。同時 selector 為 appUnless。
+
+```powershell
+ng g d --skip-tests=true unless/unless
+```
+### ViewContainerRef
+ViewContainerRef 是一個重要的類別，它表示了一個視圖容器的參照，該容器可以動態地創建、插入和移除視圖。一個 ViewContainerRef 實例通常代表一個 DOM 元素，我們可以通過它來動態地創建、插入和移除視圖。ViewContainerRef 提供了以下常用的方法：
+
+- `createComponent(componentFactory: ComponentFactory<C>): ComponentRef<C>`
+此方法用於通過 ComponentFactory 創建一個新的元件，並將其添加到視圖容器中。
+```typescript
+@Component({
+  selector: 'app-example',
+  template: '<ng-template #vc></ng-template>',
+})
+export class ExampleComponent {
+  @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+
+  createChildComponent() {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(ChildComponent);
+    const componentRef = this.vc.createComponent(componentFactory);
+    // do something with the componentRef
+  }
+}
+```
+- `insert(viewRef: ViewRef, index?: number): ViewRef`
+此方法用於在視圖容器的指定位置插入一個視圖。
+```typescript
+@Component({
+  selector: 'app-example',
+  template: '<ng-template #vc></ng-template>',
+})
+export class ExampleComponent {
+  @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+
+  insertView(viewRef: ViewRef, index: number) {
+    this.vc.insert(viewRef, index);
+  }
+}
+```
+- `clear(): void`
+此方法用於從視圖容器中刪除所有視圖。
+```typescript
+@Component({
+  selector: 'app-example',
+  template: '<ng-template #vc></ng-template>',
+})
+export class ExampleComponent {
+  @ViewChild('vc', { read: ViewContainerRef }) vc: ViewContainerRef;
+
+  clearViews() {
+    this.vc.clear();
+  }
+}
+```
+ViewContainerRef 是 Angular 中一個非常強大的概念，可以用於實現動態的視圖創建和管理。在實現複雜的動態 UI 時，ViewContainerRef 是一個必不可少的工具。
+
+### TemplateRef
+TemplateRef 是一個非常重要的類別，它表示一個模板的參照，這個模板可以被動態地插入到視圖中。TemplateRef 通常是通過 ng-template 指令定義的模板，這個模板可以在結構指令中使用。一個 TemplateRef 實例通常代表一個包含 HTML 標記的模板，我們可以通過它來動態地插入這個模板的內容。TemplateRef 提供了以下常用的方法：
+
+- `createEmbeddedView(context?: C): EmbeddedViewRef<C>`
+此方法用於創建一個 EmbeddedViewRef 實例，並將其插入到視圖中。該方法還可以接受一個可選的上下文對象，用於設置模板內部的變量。例如：
+```typescript
+@Component({
+  selector: 'app-example',
+  template: `
+    <ng-template #template let-name="name">
+      <p>Hello, {{ name }}!</p>
+    </ng-template>
+    <ng-container *ngTemplateOutlet="template; context: { name: 'Alice' }"></ng-container>
+  `,
+})
+export class ExampleComponent {
+  @ViewChild('template', { read: TemplateRef }) template: TemplateRef<any>;
+  
+  constructor(private vcRef: ViewContainerRef) {}
+
+  createEmbeddedView() {
+    const embeddedViewRef = this.template.createEmbeddedView({ name: 'Bob' });
+    this.vcRef.insert(embeddedViewRef);
+  }
+}
+```
+- `elementRef: ElementRef`
+此屬性返回模板中的根元素的 ElementRef 參照。該屬性通常用於從模板中訪問元素的屬性和方法。例如：
+```typescript
+@Component({
+  selector: 'app-example',
+  template: `
+    <ng-template #template>
+      <p #message>Hello, world!</p>
+    </ng-template>
+  `,
+})
+export class ExampleComponent {
+  @ViewChild('template', { read: TemplateRef }) template: TemplateRef<any>;
+
+  createEmbeddedView() {
+    const embeddedViewRef = this.template.createEmbeddedView();
+    const messageElementRef = embeddedViewRef.rootNodes[0].querySelector('#message');
+    console.log(messageElementRef.nativeElement.innerText);
+  }
+}
+```
+TemplateRef 是 Angular 中一個非常重要的概念，它提供了動態模板創建和管理的能力。在實現複雜的動態 UI 時，TemplateRef 是一個必不可少的工具。
+
+### 設計類似 ngIf 的自訂結構指令
+總和以上兩處觀念，來設計類似 ngIf 的練習用結構指令。首先取消原素材的 ngIf 部分內容，改以`*appUnless="!onlyOdd"`來使用結構指令。
+
+```html app.component.html
+<!-- <ul
+  *ngIf="!onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of evens"
+    [ngClass]="{even:number%2==0}"
+    [ngStyle]="{backgroundColor:number%2==0?'green':null}"
+  >{{number}} </li>
+</ul> -->
+<ul
+  *appUnless="!onlyOdd"
+  class="list-group"
+>
+  <li
+    class="list-group-item"
+    *ngFor="let number of evens"
+    [ngClass]="{even:number%2==0}"
+    [ngStyle]="{backgroundColor:number%2==0?'green':null}"
+  >{{number}} </li>
+</ul>
+```
+
+接著根據以下步驟規劃 directive。
+
+- 透過 Input 來獲取一個外部條件，在 html 上提供了 boolean 值來給予條件。這裡的@input 可以由上層原件來動態更改子元件的屬性值，但如果上層的數據產生變化，下層並不會自動更新。因此需要依賴 setter 方法來做監聽行為 (set 參數）。
+- input 的變數名稱（以 set 方式）使用同 selector 名稱，如前面小節提到共用此名稱，如此一來就不需要多編寫屬性綁定。
+- 當獲得 boolean 為 true，透過 ViewContainerRef 去要求產生插入到畫面上中，插入的容器也就是目前的 TemplateRef 本體。
+- 反之 false，則銷毀這個容器餘畫面上。
+
+```typescript src\app\unless\unless.directive.ts
+import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+
+@Directive({
+  selector: '[appUnless]'
+})
+export class UnlessDirective {
+  @Input() set appUnless(condition: boolean) {
+    if (condition)
+      this.vcRef.createEmbeddedView(this.templateRef);
+    else
+      this.vcRef.clear();
+  }
+  constructor(
+    private vcRef: ViewContainerRef,
+    private templateRef: TemplateRef<any>
+  ) { }
+}
+```
+
+# ngSwitch 內建結構指令示範
+這裡簡單示範 ngSwitch 的用途。可自行更改 values 值做 switchCase 的預期結果為何。
+
+- 以屬性綁定的方式規劃 ngSwitch，不是用星號且與 values 進行綁定。
+- 內層的 DOM 元素規劃`*ngSwitchCase`做一個 case 的參考傳遞過來，使得條件成立時顯示。
+- 若為 case default，則使用`*ngSwitchDefault`
+
+```html app.component.html
+<div [ngSwitch]="values">
+  <p *ngSwitchCase="5">value is 5</p>
+  <p *ngSwitchCase="10">value is 10</p>
+  <p *ngSwitchCase="15">value is 15</p>
+  <p *ngSwitchDefault>value is default</p>
+</div>
+```
+
+```typescript app.component.ts
+export class AppComponent {
+  // numbers = [1, 2, 3, 4, 5];
+  odds = [1, 3, 5];
+  evens = [2, 4];
+  onlyOdd = false;
+  values = 10;  // new item
+}
+```
+
+ 參考文獻
+- [Udemy Angular - The Complete Guide (2022 Edition)](https://www.udemy.com/course/the-complete-guide-to-angular-2/) SESSION 5, 7

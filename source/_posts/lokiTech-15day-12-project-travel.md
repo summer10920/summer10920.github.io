@@ -1,5 +1,5 @@
 ---
-title: "結業專案：洛奇旅行（一）切版"
+title: "結業專案：洛奇旅行（一）切版（React 19、Tailwind 4.3）"
 categories:
   - 課程與考試
   - 職訓課程

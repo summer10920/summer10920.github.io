@@ -1,5 +1,5 @@
 ---
-title: "React 進階：Effect 與共用狀態"
+title: "React 19：Effect 與共用狀態"
 categories:
   - 課程與考試
   - 職訓課程

@@ -1,5 +1,5 @@
 ---
-title: "React 基礎：JSX、元件、狀態與表單"
+title: "React 19：JSX、元件、狀態與表單"
 categories:
   - 課程與考試
   - 職訓課程

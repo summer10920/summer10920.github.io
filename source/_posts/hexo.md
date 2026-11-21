@@ -1,10 +1,10 @@
 ---
-title: "[隨手紀錄] HEXO 維護相關問題紀錄"
+title: "Hexo 4.2 → 5.4：升級與維護紀錄（Node.js 16）"
 categories:
   - 工具與其他
   - 私人
 tag:
-  - HEXO
+  - Hexo
 date: 2021-08-22 14:52:18
 # hidden: true
 ---
