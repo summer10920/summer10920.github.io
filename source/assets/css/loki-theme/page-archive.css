@@ -4,19 +4,116 @@
          .collection-title、.collection-year、.post-header::before（時間軸圓點與線）。
    ========================================================================== */
 
-/* 分類總覽：分類名稱橫向排列，用品牌色粗體 */
+/* 分類總覽：第一層（領域）做成卡片，標題是領域名稱；第二層（技術）在卡片內排成標籤，篇數是標籤右側的圓形徽章。
+   同一列的卡片等高；技術標籤超過 5 個的領域（目前是前端）獨占一整列，避免卡片又高又窄。
+   欄數隨視窗自動增減，手機寬度為單欄。
+   依賴：.category-list > .category-list-item > .category-list-link / .category-list-count，
+         以及第二層的 .category-list-child。 */
 .main-inner.page.posts-expand {
   .category-all > .category-list {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
 
+    /* 領域卡片 */
     > .category-list-item {
-      margin: 10px;
-      flex: 1 0 auto;
+      margin: 0;
+      padding: 18px 22px 20px;
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
 
-      > a {
-        color: var(--main-color);
+      /* 技術標籤多的領域獨占一列 */
+      &:has(.category-list-child > .category-list-item:nth-child(6)) {
+        grid-column: 1 / -1;
+      }
+
+      > .category-list-link {
+        border-bottom: 0;
+        color: var(--text-color);
+        font-size: 1.125rem;
         font-weight: bold;
+
+        &:hover {
+          color: var(--main-color);
+        }
+      }
+
+      /* 領域的總篇數：淡色小字，不搶標題 */
+      > .category-list-count {
+        margin-left: 8px;
+        padding: 0;
+        background: none;
+        color: #999;
+        font-size: 0.8125rem;
+
+        &::after {
+          content: ' 篇';
+        }
+      }
+    }
+
+    /* 技術標籤 */
+    .category-list-child {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+
+      > .category-list-item {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        padding: 4px 6px 4px 14px;
+        white-space: nowrap;
+        border: 1px solid var(--main-color);
+        transition: background-color 0.2s;
+
+        > .category-list-link {
+          border-bottom: 0;
+          color: var(--main-color);
+          font-size: 0.9375rem;
+          transition: color 0.2s;
+
+          /* 篇數是連結的兄弟節點，不在連結裡；讓連結鋪滿整個標籤，滑到篇數或空白處也能點 */
+          &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+          }
+        }
+
+        /* 篇數：品牌色圓形徽章（站上其餘元素是直角，只有這個用圓） */
+        > .category-list-count {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 22px;
+          height: 22px;
+          padding: 0;
+          background: var(--main-color);
+          border-radius: 50%;
+          color: #fff;
+          font-size: 0.75rem;
+          font-weight: bold;
+          transition: background-color 0.2s, color 0.2s;
+        }
+
+        &:hover {
+          background: var(--main-color);
+
+          > .category-list-link {
+            color: #fff;
+          }
+
+          > .category-list-count {
+            background: #fff;
+            color: var(--main-color);
+          }
+        }
       }
     }
   }
