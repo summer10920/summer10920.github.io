@@ -1,8 +1,8 @@
 ---
 title: "[學習之路] Git 與 GitHub 版本管理工具"
 categories:
-  - Misc Notes
-  - Tools
+  - 工具與其他
+  - 開發工具
 tag:
   - Git/GitHub
   - VSCode

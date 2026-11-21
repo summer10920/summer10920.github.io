@@ -1,8 +1,8 @@
 ---
 title: "[練習教材] 使用編譯器完成網頁丙級題組一"
 categories:
-  - Archived Courses
-  - HTML/CSS
+  - 課程與考試
+  - 技能檢定
 tag:
   - 前端網頁開發技術（職前班）
 date: 2020-11-06 19:40:23

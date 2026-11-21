@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] Bootstrap5 教學（二）：工具、通用、表單"
 categories:
-  - 職訓課程
+  - 前端
   - Bootstrap
 tag:
   - PHP 資料庫網頁設計（職前班）

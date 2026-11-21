@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React 19 教學（六）- API 串接與 CRUD 操作'
 categories:
-  - 職訓課程
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-11-14 13:16:22

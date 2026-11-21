@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] jQuery 基礎實作（一）：網頁乙級相關範例"
 categories:
-  - Archived Courses
+  - 前端
   - jQuery
 tag:
   - JavaScript 程式設計（假日班）

@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React v18 教學（二）- 初始學習與語法'
 categories:
-  - Archived Courses
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-01-17 13:09:14

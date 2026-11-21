@@ -1,8 +1,8 @@
 ﻿---
 title: "[學習之路] VSCode / Cursor 前端開發設定與擴充套件指南"
 categories:
-  - Misc Notes
-  - Tools
+  - 工具與其他
+  - 開發工具
 tag:
   - VSCode
   - Cursor

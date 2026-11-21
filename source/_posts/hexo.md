@@ -1,8 +1,8 @@
 ---
 title: "[隨手紀錄] HEXO 維護相關問題紀錄"
 categories:
-  - Misc Notes
-  - HEXO
+  - 工具與其他
+  - 私人
 tag:
   - HEXO
 date: 2021-08-22 14:52:18

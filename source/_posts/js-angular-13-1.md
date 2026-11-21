@@ -1,7 +1,7 @@
 ---
 title: "[獨自升級] Angular v13.2 框架入門 - 介紹與環境設定"
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular v13.2

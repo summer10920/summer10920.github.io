@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] PHP 基礎觀念與環境建置"
 categories:
-  - Archived Courses
+  - 後端與資料庫
   - PHP/MySQL
 tag:
   - 前端網頁開發技術（職前班）

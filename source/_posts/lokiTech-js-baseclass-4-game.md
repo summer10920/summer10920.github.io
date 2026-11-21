@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] JavaScript 教學（四）：實作打地鼠遊戲"
 categories:
-  - 職訓課程
+  - 前端
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

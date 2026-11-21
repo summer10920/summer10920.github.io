@@ -1,8 +1,8 @@
 ---
 title: '[實用工具] Tailwind CSS v4 - 公式表（選讀附錄）'
 categories:
+  - 課程與考試
   - 職訓課程
-  - 本年度課程
 tag:
   - CSS
   - TailwindCSS

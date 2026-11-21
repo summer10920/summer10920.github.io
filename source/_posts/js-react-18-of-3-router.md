@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React v18 教學（三）- 動態路由'
 categories:
-  - Archived Courses
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-02-01 13:09:14

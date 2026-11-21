@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] PHP 常用函式與自訂函式"
 categories:
-  - Archived Courses
+  - 後端與資料庫
   - PHP/MySQL
 tag:
   - PHP 程式設計（假日班）

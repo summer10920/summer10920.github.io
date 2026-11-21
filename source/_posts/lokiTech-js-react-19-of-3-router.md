@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React 19 教學（三）- React Router 動態路由'
 categories:
-  - 職訓課程
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-18 13:09:14

@@ -1,8 +1,8 @@
 ---
 title: "[學習之路] VSCode 的技巧大補帖"
 categories:
-  - Misc Notes
-  - Tools
+  - 工具與其他
+  - 開發工具
 tag:
   - VSCode
 date: 2020-10-23 16:02:24

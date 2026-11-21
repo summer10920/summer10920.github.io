@@ -1,10 +1,11 @@
 ---
 title: "[期末課程] JavaScript 期末實作：商務網站"
 categories:
-  - 職訓課程
-  - 範例實作網站
+  - 前端
+  - JavaScript
 tag:
   - JavaScript 程式設計（假日班）
+  - 商務網站實作
 date: 2022-11-15 23:03:07
 ---
 

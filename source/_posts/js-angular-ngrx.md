@@ -1,7 +1,7 @@
 ---
 title: '[學習之路] JS 前端框架 Angular - NgRx'
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular

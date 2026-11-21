@@ -1,7 +1,7 @@
 ---
 title: "[練習課程] jQuery 基礎實作（二）：OpenData API 串接"
 categories:
-  - Archived Courses
+  - 前端
   - jQuery
 tag:
   - JavaScript 程式設計（假日班）

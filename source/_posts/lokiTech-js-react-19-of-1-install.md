@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React 19 教學（一）- 環境安裝與準備'
 categories:
-  - 職訓課程
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-15 13:09:14

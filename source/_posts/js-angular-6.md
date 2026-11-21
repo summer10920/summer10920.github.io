@@ -1,7 +1,7 @@
 ---
 title: '[前端框架] Angular - 模組、部屬、獨立元件'
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular

@@ -1,8 +1,8 @@
 ---
 title: "CSS 基礎：選擇器、盒模型、Flex、Grid、RWD"
 categories:
+  - 課程與考試
   - 職訓課程
-  - 本年度課程
 tag:
   - JS 網頁 AI 開發（假日班）
 date: 2026-08-30 10:02:00

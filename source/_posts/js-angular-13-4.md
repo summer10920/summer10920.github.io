@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] Angular v13.2 進階開發 - Observable、表單與管道"
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular v13.2

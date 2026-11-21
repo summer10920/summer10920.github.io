@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] JavaScript 教學（三）：BOM 與 DOM"
 categories:
-  - 職訓課程
+  - 前端
   - JavaScript
 tag:
   - JavaScript 程式設計（假日班）

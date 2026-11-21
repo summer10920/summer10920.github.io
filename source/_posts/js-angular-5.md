@@ -1,7 +1,7 @@
 ---
 title: '[前端框架] Angular - HTTP 請求、身分驗證、動態元件'
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular

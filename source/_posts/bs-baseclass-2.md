@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] Bootstrap4 教學（二）：內容與通用"
 categories:
-  - Archived Courses
+  - 前端
   - Bootstrap
 tag:
   - RWD 響應式網頁設計（假日班）

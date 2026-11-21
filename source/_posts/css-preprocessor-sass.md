@@ -1,8 +1,8 @@
 ---
 title: '[學習之路] CSS 預處理器 Sass'
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 前端
+  - HTML/CSS
 tag:
   - SASS
   - CSS

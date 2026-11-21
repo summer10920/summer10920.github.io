@@ -1,8 +1,8 @@
 ---
 title: '[前端框架] React - 思考練習'
 categories:
-  - Misc Notes
-  - ReactJS
+  - 前端
+  - React
 tag:
   - ReactJS
   - JavaScript

@@ -1,7 +1,7 @@
 ---
 title: "[基礎課程] Angular v13.2 服務與路由 - 依賴注入與 SPA 導航"
 categories:
-  - Misc Notes
+  - 前端
   - Angular
 tag:
   - Angular v13.2

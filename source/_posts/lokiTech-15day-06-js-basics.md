@@ -1,10 +1,8 @@
 ---
 title: "JavaScript 基礎：值、函式、陣列與模組"
 categories:
-
+  - 課程與考試
   - 職訓課程
-
-  - 本年度課程
 tag:
 
   - JS 網頁 AI 開發（假日班）

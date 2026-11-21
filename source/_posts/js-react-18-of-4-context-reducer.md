@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React v18 教學（四）- Context 與 Reducer'
 categories:
-  - Archived Courses
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-02-02 13:09:14

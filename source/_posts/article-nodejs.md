@@ -1,8 +1,8 @@
 ---
 title: "[學習之路] Node.js 入門教學"
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 後端與資料庫
+  - Node.js
 tag:
   - JavaScript
   - NodeJS

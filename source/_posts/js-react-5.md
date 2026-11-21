@@ -1,8 +1,8 @@
 ---
 title: '[前端框架] React - 技巧'
 categories:
-  - Misc Notes
-  - Web Frontend
+  - 前端
+  - React
 tag:
   - ReactJS
   - JavaScript

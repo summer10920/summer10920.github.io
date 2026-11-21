@@ -1,8 +1,8 @@
 ---
 title: '[框架課程] React 19 教學（四）- Context 與 useReducer'
 categories:
-  - 職訓課程
-  - ReactJS
+  - 前端
+  - React
 tag:
   - JavaScript 程式設計（假日班）
 date: 2025-10-19 13:09:14

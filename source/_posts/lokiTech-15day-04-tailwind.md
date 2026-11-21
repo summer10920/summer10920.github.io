@@ -1,8 +1,8 @@
 ---
 title: "Tailwind：utilities、RWD、深色模式"
 categories:
+  - 課程與考試
   - 職訓課程
-  - 本年度課程
 tag:
   - JS 網頁 AI 開發（假日班）
   - TailwindCSS
