@@ -816,146 +816,46 @@ my-react-app/
 React 開發必裝！安裝後在瀏覽器的開發者工具（F12）會多出 **Components** 和 **Profiler** 兩個分頁，可以即時查看 React 元件的狀態和效能。
 {% endnote %}
 
-### VSCode 擴充套件推薦
+### VSCode / Cursor 擴充套件推薦
 
-以下是 React 開發時強烈推薦的 VSCode 擴充套件，能大幅提升開發效率：
+React 開發建議安裝下列擴充套件。VSCode 與 Cursor 皆可使用，完整的分類清單、內建功能設定與兩者差異，請見 <a href="{% post_path vscode-extension %}">VSCode / Cursor 前端開發設定與擴充套件指南</a>。
 
-#### 🎯 必裝套件
-
-**1. ES7+ React/Redux/React-Native snippets**
-- **作者：** dsznajder
-- **功能：** 提供大量 React 程式碼片段快捷鍵
-- **常用快捷鍵：**
-  - `rfce` → 建立函式元件（附 export）
-  - `rafce` → 建立箭頭函式元件（附 export）
-  - `useState` → 快速插入 useState Hook
-  - `useEffect` → 快速插入 useEffect Hook
-- **為什麼需要：** 大幅減少重複輸入，提升開發速度
-
-**2. Auto Rename Tag**
-- **作者：** Jun Han
-- **功能：** 自動重新命名成對的 HTML/JSX 標籤
-- **範例：** 修改 `<div>` 時自動同步修改 `</div>`
-- **為什麼需要：** 避免標籤不配對的錯誤
-
-**3. Auto Close Tag**
-- **作者：** Jun Han
-- **功能：** 自動補全閉合標籤
-- **範例：** 輸入 `<div>` 自動補上 `</div>`
-- **為什麼需要：** 減少手動輸入，避免遺漏閉合標籤
-
-**4. Prettier - Code formatter**
-- **作者：** Prettier
-- **功能：** 自動格式化程式碼，統一程式碼風格
-- **設定建議：** 啟用「Format On Save」自動儲存時格式化
-- **為什麼需要：** 團隊協作必備，確保程式碼風格一致
-
-**5. ESLint**
-- **作者：** Microsoft
-- **功能：** 即時檢查程式碼錯誤和潛在問題
-- **特點：** 顯示錯誤提示、語法警告、最佳實踐建議
-- **為什麼需要：** 提早發現錯誤，養成良好編碼習慣
-
-#### 💡 進階推薦套件
-
-**6. ES6 Code Snippets**
-- **作者：** charalampos karypidis
-- **功能：** 提供 ES6+ 語法快捷鍵
-- **常用快捷鍵：**
-  - `imp` → `import moduleName from 'module'`
-  - `imd` → `import { } from 'module'`
-  - `exp` → `export default`
-  - `fof` → `for...of` 迴圈
-- **為什麼需要：** 加速現代 JavaScript 語法撰寫
-
-**7. Console Ninja**
-- **作者：** WallabyJs
-- **功能：** 在編輯器內直接顯示 console.log 結果
-- **特點：** 不用切換到瀏覽器就能看到 log 輸出
-- **為什麼需要：** 極大提升除錯效率
-
-**8. Error Lens**
-- **作者：** Alexander
-- **功能：** 將錯誤和警告直接顯示在程式碼行末
-- **特點：** 不用移到問題面板就能看到錯誤訊息
-- **為什麼需要：** 即時發現問題，減少來回切換
-
-**9. Path Intellisense**
-- **作者：** Christian Kohler
-- **功能：** 自動補全檔案路徑
-- **範例：** 輸入 `import './` 自動顯示可用檔案
-- **為什麼需要：** 避免路徑打錯，加速檔案引入
-
-**10. GitLens — Git supercharged**
-- **作者：** GitKraken
-- **功能：** 強化 Git 功能，顯示程式碼作者和修改歷史
-- **特點：** 可以看到每行程式碼是誰、何時寫的
-- **為什麼需要：** 團隊協作時追蹤程式碼變更
-
-#### 🎨 UI/UX 增強套件
-
-**11. Material Icon Theme**
-- **作者：** Philipp Kief
-- **功能：** 為檔案和資料夾提供美觀的圖示
-- **特點：** 快速辨識檔案類型
-- **為什麼需要：** 提升視覺辨識度，更容易找到檔案
-
-**12. Indent Rainbow**
-- **作者：** oderwat
-- **功能：** 為縮排添加彩色標記
-- **特點：** 更容易看出程式碼層級
-- **為什麼需要：** 減少縮排錯誤，提升可讀性
-
-**13. Highlight Matching Tag**
-- **作者：** vincaslt
-- **功能：** 高亮顯示配對的 HTML/JSX 標籤
-- **特點：** 游標移到標籤時，自動標記對應的開始/結束標籤
-- **為什麼需要：** 快速找到標籤配對，避免結構混亂
-
-#### 🔧 React 專屬套件
-
-**14. vscode-styled-components**
-- **作者：** Styled Components
-- **功能：** 為 styled-components 提供語法高亮和自動補全
-- **適用對象：** 使用 CSS-in-JS 的開發者
-- **為什麼需要：** 在 JS 檔案中撰寫 CSS 時獲得完整支援
-
-**15. Tailwind CSS IntelliSense**
-- **作者：** Tailwind Labs
-- **功能：** Tailwind CSS 自動補全和語法提示
-- **適用對象：** 使用 Tailwind CSS 的開發者
-- **為什麼需要：** 不用記住所有 class 名稱，大幅提升效率
+| 套件 | 套件 ID | 說明 |
+| ---- | ------- | ---- |
+| Prettier | `esbenp.prettier-vscode` | 自動格式化程式碼，統一團隊的程式碼風格 |
+| ESLint | `dbaeumer.vscode-eslint` | 即時檢查程式碼錯誤與潛在問題，Vite 建立的 React 專案已內建 ESLint 設定 |
+| Error Lens | `usernamehw.errorlens` | 將錯誤與警告直接顯示在該行後方，不必另外開啟問題面板 |
+| Pretty TypeScript Errors | `yoavbls.pretty-ts-errors` | 將冗長的 TypeScript 錯誤訊息重新排版，使用 TypeScript 時建議安裝 |
+| Tailwind CSS IntelliSense | `bradlc.vscode-tailwindcss` | Tailwind 類別名稱補全與提示，使用 Tailwind 時必裝 |
+| GitLens | `eamodio.gitlens` | 逐行顯示程式碼的修改者與歷史，方便團隊協作時追蹤變更 |
+| Material Icon Theme | `PKief.material-icon-theme` | 依檔案類型顯示圖示，方便辨識專案結構 |
+| ES7+ React/Redux/React-Native Snippets | `dsznajder.es7-react-js-snippets` | 提供 `rafce`、`useState` 等程式碼片段。近年未更新且可由 AI 補全取代，屬選用 |
+| vscode-styled-components | `styled-components.vscode-styled-components` | 僅在使用 styled-components（CSS-in-JS）時需要 |
 
 {% note info %}
-**快速安裝設定**
+**不需要再安裝的套件**
 
-你可以在 VSCode 中按下 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>（macOS: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>）開啟擴充套件面板，直接搜尋套件名稱安裝。
+舊教學常推薦 Auto Rename Tag、Auto Close Tag、Path Intellisense，這些功能現在已內建於編輯器。例如要在修改 JSX 標籤時同步更新結尾標籤，只要在設定開啟 `"editor.linkedEditing": true` 即可，詳見上方指南的「內建功能與基本設定」。
+{% endnote %}
 
-**Prettier 設定建議（settings.json）：**
+{% note info %}
+**快速安裝與設定**
+
+在 VSCode 或 Cursor 按下 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>（macOS: <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>）開啟擴充套件面板，直接搜尋套件名稱或套件 ID 安裝。
+
+**settings.json 建議設定：**
 ```json
 {
+  "editor.linkedEditing": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "prettier.semi": true,
-  "prettier.singleQuote": true,
-  "prettier.tabWidth": 2
+    "source.fixAll.eslint": "explicit"
+  }
 }
 ```
 
-**ESLint 設定建議（.eslintrc.json）：**
-Vite 建立的 React 專案會自動產生，通常不需要額外設定。
-{% endnote %}
-
-{% note success %}
-**新手建議安裝順序：**
-1. 先裝「必裝套件」（1-5）
-2. 熟悉後再加裝「進階推薦」（6-10）
-3. 根據專案需求選裝「UI/UX」和「React 專屬」套件
-
-不用一次全裝，太多套件可能影響 VSCode 效能。建議根據實際需求逐步添加。
+Prettier 的縮排、分號、引號等格式規則，建議寫在專案根目錄的 `.prettierrc`，讓所有成員共用同一份設定。
 {% endnote %}
 
 # 參考文獻
