@@ -295,9 +295,7 @@ pnpm add -D prettier
     "ritwickdey.LiveServer",
     "mhutchie.git-graph",
     "MS-CEINTL.vscode-language-pack-zh-hant",
-    "christian-kohler.path-intellisense",
-    "kisstkondoros.vscode-gutter-preview",
-    "GitHub.copilot"
+    "kisstkondoros.vscode-gutter-preview"
   ]
 }
 ```

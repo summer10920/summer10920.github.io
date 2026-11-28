@@ -272,27 +272,24 @@ cd studiesAdvanced
 ### 建議的 VS Code 套件
 **套件（extension）**為編輯器增加功能。用 VS Code 開啟根目錄後，它會讀取 `.vscode/extensions.json` 並跳出「建議安裝」，這份清單只是這個資料夾的推薦，安裝後的套件屬於這台電腦的 VS Code。如果提示沒有出現，在左側活動列的套件頁依名稱搜尋即可。
 
-必裝的六個：
+必裝的五個：
 
 - Live Server（Ritwick Dey）：在本機啟動靜態伺服器，存檔後瀏覽器自動更新。
 - Prettier（Prettier）：依規則格式化程式碼，搭配存檔自動排版。
 - Tailwind CSS IntelliSense（Tailwind Labs）：Tailwind class 的自動完成與色票提示。
-- ES7+ React/Redux/React-Native snippets（dsznajder）：React 常用語法的程式碼片段。
 - Git Graph（mhutchie）：用圖形檢視提交歷史與分支。
 - Chinese (Traditional) Language Pack（Microsoft）：編輯器界面改為繁體中文。
 
-建議安裝的四個：
+建議安裝的兩個：
 
 - ESLint（Microsoft）：依專案規則標出程式問題。
-- Path Intellisense（Christian Kohler）：輸入路徑時自動補全。
 - Image Preview（Kiss Tamás）：在行號旁顯示圖片預覽。
-- GitHub Copilot（GitHub）：在編輯器內給程式建議，課堂用免費方案即可。
 
-ESLint 與 Tailwind IntelliSense 要到有對應設定的專案才會作用，現在沒反應是正常的。裝完若提示重載，就重載視窗。
+ESLint 與 Tailwind IntelliSense 要到有對應設定的專案才會作用，現在沒反應是正常的。裝完若提示重載，就重載視窗。輸入檔案路徑時的自動補全，例如 `src`、`href` 的值，編輯器本身就有，不需要另外安裝套件。
 
 {% note success %}
 **跟著做**
-1. 在已開啟根目錄的 VS Code，安裝必裝的六個，建議的四個也一併裝。
+1. 在已開啟根目錄的 VS Code，安裝必裝的五個，建議的兩個也一併裝。
 2. 到套件頁確認它們都顯示為已啟用。
 {% endnote %}
 

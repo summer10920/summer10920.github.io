@@ -298,13 +298,10 @@ Prettier 是自動排版工具。把排版與編輯器行為寫在專案裡，�
     "ritwickdey.LiveServer",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
-    "dsznajder.es7-react-js-snippets",
     "mhutchie.git-graph",
     "MS-CEINTL.vscode-language-pack-zh-hant",
     "dbaeumer.vscode-eslint",
-    "christian-kohler.path-intellisense",
-    "kisstkondoros.vscode-gutter-preview",
-    "GitHub.copilot"
+    "kisstkondoros.vscode-gutter-preview"
   ]
 }
 ```
