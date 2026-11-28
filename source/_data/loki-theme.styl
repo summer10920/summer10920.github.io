@@ -1,9 +1,9 @@
 // NexT 樣式變數覆蓋：載入時機在官方變數之後，所以直接重新指定即可。
 // 對應官方的 themes/next/source/css/_variables/base.styl。
 
-// 品牌色，並讓側欄高亮跟著它
+// 品牌色，側欄是深底，高亮要用深底上對比夠的淺紅（對 #2b323a 為 4.8:1）
 $main-bright = #e91061;
-$sidebar-highlight = $main-bright;
+$sidebar-highlight = #ff6aa2;
 
 // 字級改用 rem，與頁面其他自訂樣式一致
 $font-size-smallest = .75rem;
@@ -26,3 +26,9 @@ $line-height-base = 2.25;
 $content-desktop = 800px;
 $content-desktop-large = 900px;
 $content-desktop-largest = 1200px;
+
+// 標籤雲：主題用 .tag-cloud-0～10 依篇數從 $tag-cloud-start 漸層到 $tag-cloud-end，
+// 預設從 #aaa 開始，淺色那幾個對頁面底色的對比只有 2～3:1。兩端設成同一個深灰（對 #f2f4f6 5.4:1），
+// 字級仍會依篇數變化。
+$tag-cloud-start = #5a6571;
+$tag-cloud-end = #5a6571;

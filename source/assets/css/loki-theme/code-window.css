@@ -8,7 +8,7 @@
   figure.highlight {
     overflow: hidden;
     border-radius: 5px;
-    box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+    box-shadow: var(--shadow-raised);
     margin-bottom: 20px;
 
     /* 有檔名時，標題列自己占高度，上方不再預留圓點的空間 */
@@ -29,25 +29,32 @@
     figcaption {
       background: unset;
       min-height: 30px;
-      overflow-wrap: anywhere;
       padding: 7px 4.5rem;
       position: relative;
       text-align: center;
-      word-break: normal; /* 蓋掉全域的 break-all，才會只在 / 處換行 */
-
-      span {
-        overflow-wrap: anywhere;
-        word-break: normal;
-      }
     }
 
-    /* 右上角的語言標籤 */
+    /* 右上角的語言標籤：用實色而不是 opacity */
     .code-lang {
+      color: var(--code-lang-color);
       font-family: monospace, sans-serif;
-      opacity: 0.5;
+      opacity: 1;
       right: 2rem;
       top: 0.5rem;
       font-size: 1rem;
+    }
+
+    /* 語法上色：主題 atom-one-dark-reasonable 有兩種顏色對 #282c34 不到 4.5:1，
+       換成 variables.css 裡亮一階的版本，其餘顏色本來就合格 */
+    .hljs-name,
+    .hljs-selector-tag,
+    .hljs-subst,
+    .hljs-deletion {
+      color: var(--code-token-red-color);
+    }
+
+    .hljs-keyword {
+      color: var(--code-token-keyword-color);
     }
 
     /* 程式碼本體：底色與細的品牌色橫向捲軸 */

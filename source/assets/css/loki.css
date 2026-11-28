@@ -1,5 +1,6 @@
 /* ==========================================================================
    站台樣式入口（由 source/_data/head.njk 載入，排在 NexT 的 main.css 之後）
+   這裡列出所有「站台自己的客製」，一眼就能看出改了主題的哪些部分、各檔做什麼。
 
    base/        與 NexT 結構無關：顏色變數、全域元素
    loki-theme/  依賴 NexT 的 class 與標記，依畫面區塊分檔。升級 NexT 後逐檔檢查這裡，
@@ -9,24 +10,24 @@
    ========================================================================== */
 
 /* ---- 基礎 ---- */
-@import 'base/variables.css';
-@import 'base/reboot.css';
+@import 'base/variables.css'; /* 顏色、陰影、轉場等變數（含符合 WCAG AA 的衍生色） */
+@import 'base/reboot.css'; /* 全域：斷行、連結、kbd、鍵盤焦點外框、減少動態效果、程式碼字型 */
 
 /* ---- 頁面骨架與固定區塊 ---- */
-@import 'loki-theme/layout.css';
-@import 'loki-theme/header.css';
-@import 'loki-theme/sidebar.css';
-@import 'loki-theme/footer.css';
+@import 'loki-theme/layout.css'; /* body 撐滿視窗、內容區留白、768～840px 不溢出、分頁 */
+@import 'loki-theme/header.css'; /* 頁首：文字雲上的遮罩、標題、主選單、手機版開關 */
+@import 'loki-theme/sidebar.css'; /* 側欄、頂端細條、GitHub 角落、回頂端進度、文章目錄 */
+@import 'loki-theme/footer.css'; /* 頁尾：版權與站台統計 */
 
-/* ---- 文章共用：標題列、行內程式碼 ---- */
-@import 'loki-theme/post-header.css';
-@import 'loki-theme/inline-code.css';
+/* ---- 文章共用：標題列、行內元素（行內程式碼、粗體） ---- */
+@import 'loki-theme/post-header.css'; /* 發表、更新日期、分類、閱讀統計 */
+@import 'loki-theme/post-inline.css'; /* 行內程式碼與粗體（首頁摘要與內頁共用） */
 
 /* ---- 各頁面 ---- */
-@import 'loki-theme/page-home.css';
-@import 'loki-theme/page-archive.css';
-@import 'loki-theme/page-post.css';
+@import 'loki-theme/page-home.css'; /* 首頁文章卡片 */
+@import 'loki-theme/page-archive.css'; /* 分類總覽、歸檔與分類文章頁的時間軸 */
+@import 'loki-theme/page-post.css'; /* 文章內頁：卡片、h1～h6、連結、引用、分頁籤、提示框、手機版 */
 
 /* ---- 文章內頁的內容元件 ---- */
-@import 'loki-theme/post-table.css';
-@import 'loki-theme/code-window.css';
+@import 'loki-theme/post-table.css'; /* 表格 */
+@import 'loki-theme/code-window.css'; /* 程式碼視窗與語法顏色 */

@@ -1,12 +1,17 @@
 /* ==========================================================================
    頁首橫幅與主選單
-   依賴：.main > .column、header.header、.site-brand-container、.site-nav .main-menu；
+   橫幅是 loki-theme.js 畫的文字雲（lokiKeyword），保持原本的灰底與字雲；
+   整個橫幅蓋一層冷灰藍半透明遮罩，字雲變暗但仍看得到，遮罩上的白字約 8.7:1（WCAG AA）。
+   標題、副標題、選單直接用白字疊放並垂直置中，不再各自墊深色方塊；
+   選單是無底色的文字連結，滑過與目前所在項目底下一條紅色細線（目前項目的數字徽章是紅底白字）。
+   依賴：.main > .column、header.header、.site-brand-container > .site-meta（a.brand、
+         p.site-title、p.site-subtitle）、nav.site-nav > ul.main-menu > li.menu-item > a；
          #lokiBanner 由 loki-theme.js 在載入時建立（文字雲畫在它上面）。
    ========================================================================== */
 .main > .column {
   position: relative;
 
-  /* 橫幅畫布：鋪滿整個頁首，文字與選單疊在上面 */
+  /* 橫幅畫布：鋪滿整個頁首（高度由 header 撐開），內容疊在上面 */
   canvas {
     width: 100%;
     height: 100%;
@@ -14,53 +19,121 @@
     position: absolute;
   }
 
-  header.header {
-    padding-top: 40px;
-    z-index: 1;
-    position: relative;
+  /* 遮罩：畫在 .column 而不是 header，才會蓋住整個畫布（header 比畫布窄） */
+  &::after {
+    background: var(--header-scrim);
+    content: '';
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
 
-    /* 網站名稱的白底 */
+  header.header {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    justify-content: center;
+    padding: 2.25rem 0 1.5rem;
+    position: relative;
+    z-index: 1;
+
+    /* 標題與副標題：白字、置中、上下疊放 */
     .site-brand-container {
-      span {
-        background-color: white;
+      justify-content: center;
+      padding: 0;
+
+      .site-meta {
+        text-align: center;
+      }
+
+      /* 主題的 a.brand 預設有深色方塊底與左右內距，拿掉 */
+      .brand {
+        background: none;
+        padding: 0;
+      }
+
+      /* 手機版的選單開關（漢堡圖示）與搜尋圖示：主題預設是深色，疊在遮罩上要換成白色才看得到 */
+      .toggle-line {
+        background: var(--on-dark-color);
+      }
+
+      .site-nav-right .toggle {
+        color: var(--on-dark-color);
+      }
+
+      .site-title {
+        color: var(--on-dark-color);
+        font-size: 1.65rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        line-height: 1.4;
+      }
+
+      .site-subtitle {
+        background: none;
+        color: var(--on-dark-soft-color);
+        display: block;
+        font-size: 0.875rem;
+        letter-spacing: 0.08em;
+        margin: 0.35rem 0 0;
+        padding: 0;
       }
     }
 
-    /* 主選單：置中，每項寬 10%，目前所在項目用頁面底色 */
-    .site-nav .main-menu {
+    /* 主選單：無底色的文字連結，圖示在文字前面 */
+    .site-nav {
       display: flex;
       justify-content: center;
 
-      .menu-item {
-        flex: 0 1 10%;
+      .main-menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1.5rem;
+        justify-content: center;
+        padding: 0;
 
-        &:has(a.menu-item-active) {
-          background-color: var(--main-bg-color);
-        }
+        .menu-item {
+          flex: 0 0 auto;
+          margin: 0;
 
-        a {
-          color: white;
-          transition: 1s color;
-          font-weight: bold;
+          a {
+            align-items: center;
+            background: none;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            color: var(--on-dark-color);
+            display: inline-flex;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            gap: 0.5rem;
+            padding: 0.45rem 0.25rem;
+            transition: border-color var(--transition-fast);
 
-          i {
-            font-size: 1.25rem;
-            letter-spacing: normal;
-          }
-
-          .badge {
-            transition: 1s;
-            letter-spacing: normal;
-          }
-
-          &:hover,
-          &.menu-item-active {
-            color: var(--main-color);
-            border-bottom: 1px solid var(--main-color);
+            i {
+              display: inline-block;
+              font-size: 1.1rem;
+              letter-spacing: normal;
+              line-height: 1;
+              width: auto;
+            }
 
             .badge {
-              background-color: var(--main-color);
-              color: white;
+              background: var(--on-dark-badge-color);
+              color: var(--on-dark-color);
+              letter-spacing: normal;
+            }
+
+            /* 滑過與目前所在項目的底線都用品牌紅（裝飾線，文字本身仍是白字）；
+               目前項目的徽章用白字紅底（5.2:1） */
+            &:hover,
+            &.menu-item-active {
+              border-bottom-color: var(--main-color);
+            }
+
+            &.menu-item-active .badge {
+              background: var(--main-strong-color);
             }
           }
         }
@@ -72,9 +145,15 @@
 /* 手機：選單改成直式排列 */
 @media (max-width: 767px) {
   .main > .column {
-    & header.header {
+    header.header {
       .site-nav .main-menu {
         display: block;
+        text-align: center;
+
+        .menu-item a {
+          display: flex;
+          justify-content: center;
+        }
       }
     }
   }

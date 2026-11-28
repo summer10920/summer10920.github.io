@@ -2,25 +2,58 @@
    全域基礎樣式（與 NexT 結構無關，只用元素選擇器）
    ========================================================================== */
 
-/* 中文與長英文都允許在任意位置斷行，避免撐破版面 */
+/* 斷行：中文本來就能在任意字之間換行；英文單字保持完整，只有一個字就比容器還長時才強制斷開。
+   （原本用 break-all，會把 script 切成 scr / ipt，閱讀時很難辨認） */
 * {
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
-/* 連結：平常用文字色，滑過變品牌色 */
+/* 連結：平常用文字色，滑過變品牌紅 */
 a {
   color: var(--link-color);
   &:hover {
-    color: var(--link-color-hover);
-    border-color: var(--link-color-hover);
+    color: var(--main-text-color);
+    border-color: var(--main-text-color);
   }
 }
 
 kbd {
   margin: 0 0.25rem;
   border: 0;
-  color: white;
+  color: var(--on-dark-color);
   font-size: 1rem;
+}
+
+/* 鍵盤焦點：主題把連結的 outline 設成 0，用 Tab 鍵走訪時看不到目前位置（WCAG 2.4.7）。
+   只對鍵盤操作顯示，滑鼠點擊不會出現外框。深色區塊改用淺色外框，見下方。 */
+:focus-visible {
+  outline: 3px solid var(--focus-ring-color);
+  outline-offset: 3px;
+}
+
+/* 深色區塊：在區塊上重設變數，裡面所有可聚焦的元素就自動換成淺色外框 */
+.sidebar,
+footer.footer,
+figure.highlight {
+  --focus-ring-color: var(--main-on-dark);
+}
+
+/* 頁首疊在文字雲與遮罩上，紅色外框對它只有約 2:1，改用白色 */
+header.header {
+  --focus-ring-color: var(--on-dark-color);
+}
+
+/* 使用者在系統設定了「減少動態效果」時，停掉轉場與動畫 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 pre {

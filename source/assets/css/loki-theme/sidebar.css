@@ -12,7 +12,7 @@
   transition: 1s opacity;
 
   &:hover .toggle-line {
-    background-color: #fff;
+    background-color: var(--on-dark-color);
   }
 }
 
@@ -21,13 +21,15 @@
   fill: var(--main-color);
 }
 
-/* 頁面最上方的品牌色細條；主題在某些情況會隱藏它，所以強制顯示 */
+/* 頁面最上方的品牌色細條；主題的 Mist 配色會把它隱藏（display: none），這裡改回來 */
 .headband {
   background: var(--main-color);
-  display: block !important;
+  display: block;
 }
 
 .sidebar {
+  background: var(--dark-surface);
+
   /* 目錄與概覽的捲動區：限制高度並換成細的品牌色捲軸 */
   .sidebar-panel-container {
     max-height: calc(100vh - 200px);
@@ -51,18 +53,41 @@
     }
   }
 
+  /* 側欄是深底：連結與目前項目用白色（11:1 以上），次要文字用 --muted-on-dark（6.8:1，原本的 #666 只有 2.8:1）。
+     紅色只留在章節編號與目前分頁的底線，當點綴 */
+  .sidebar-nav li {
+    color: var(--muted-on-dark);
+
+    &.sidebar-nav-active {
+      color: var(--on-dark-color);
+    }
+  }
+
+  .post-toc .nav {
+    .nav-link:hover,
+    .active > .nav-link,
+    .active-current,
+    .active > .nav-link .nav-text {
+      color: var(--on-dark-color);
+    }
+
+    .nav-number {
+      color: var(--main-on-dark);
+    }
+  }
+
   /* 回頂端按鈕：同時當閱讀進度條，用 --progress 控制漸層填滿的寬度 */
   .back-to-top {
-    border: var(--main-color) 1px solid;
+    border: var(--main-on-dark) 1px solid;
     margin: 20px 0;
     border-radius: 5px;
-    color: white;
+    color: var(--on-dark-color);
     position: relative;
     line-height: 1.5;
 
     &::before {
       content: '';
-      background: linear-gradient(var(--main-color) 0%, #bb1352 25%, var(--main-color) 70%);
+      background: linear-gradient(var(--main-color) 0%, var(--main-deep-color) 25%, var(--main-color) 70%);
       position: absolute;
       left: 0;
       right: calc(100% - var(--progress));

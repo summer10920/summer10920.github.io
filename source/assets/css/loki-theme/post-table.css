@@ -1,6 +1,6 @@
 /* ==========================================================================
    文章裡的表格
-   外框圓角加陰影、深色表頭、斑馬紋，內容太寬時在容器內橫向捲動。
+   外框圓角加陰影、深色表頭、斑馬紋（偶數列淡灰），內容太寬時在容器內橫向捲動。
    依賴：.post-body 裡的 div.table-container > table（程式碼區塊的 .table-container 不在此列）。
    ========================================================================== */
 .main-inner.post.posts-expand {
@@ -9,7 +9,7 @@
       --border-radius: 0.5rem;
 
       margin-bottom: 3rem;
-      box-shadow: 0px 2px 5px 0 rgb(0 0 0 / 50%);
+      box-shadow: var(--shadow-raised);
       border-radius: var(--border-radius);
       overflow: auto;
       scrollbar-color: var(--main-color) transparent;
@@ -22,7 +22,7 @@
         /* 表頭：深色底，頭尾兩格做圓角 */
         thead tr {
           background: var(--text-color);
-          color: var(--body-bg-color);
+          color: var(--on-dark-color);
 
           th {
             border: none;
@@ -39,10 +39,10 @@
         /* 表身：偶數列淡灰、滑過變亮，最後一列做圓角 */
         tbody tr {
           &:nth-of-type(even) {
-            background: var(--body-bg-color);
+            background: var(--main-bg-color);
           }
           &:hover {
-            background: #eee;
+            background: var(--chip-bg-color);
           }
 
           &:last-child td:first-child {
@@ -60,15 +60,13 @@
           min-width: 200px;
         }
 
-        /* 表格裡的行內程式碼：較淺的品牌色底、白色粗斜體，不換行 */
+        /* 表格裡的行內程式碼：外觀沿用內文的灰底紅字（post-inline.css），
+           這裡只調整表格需要的部分：不換行（欄位窄，換行會很難讀）、貼齊欄位 */
         code {
+          font-size: 0.9em;
           margin: 0;
-          padding: 2px 4px;
-          font-weight: bold;
-          color: white;
-          background: var(--main-light-color);
+          padding: 1px 6px;
           text-wrap-mode: nowrap;
-          font-style: italic;
         }
       }
     }

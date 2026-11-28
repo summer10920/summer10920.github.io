@@ -5,9 +5,38 @@
 
 /* 頁面撐滿視窗高度，內容不足時頁尾也貼在視窗底部（頁尾高度不固定，不能用寫死的 min-height） */
 body {
+  background: var(--main-bg-color);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* 內容區與頁首之間留出空間，文章卡片不要貼著橫幅 */
+main .main-inner {
+  padding-top: 2.5rem;
+}
+
+/* 視窗寬 768～840px 時，主題把頁首與內容區固定成 800px 寬，會比視窗寬而橫向溢出；
+   讓它們不超過視窗，這個區間左右補上留白 */
+.header,
+.main-inner {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) and (max-width: 840px) {
+  .main-inner {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* 手機：內容區左右留白縮小，卡片才夠寬 */
+@media (max-width: 767px) {
+  main .main-inner {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 }
 
 main {
@@ -15,4 +44,11 @@ main {
   /* 基準高度取內容高度、可以長高；min-height 歸零是怕主題或其他規則寫死高度 */
   flex: 1 0 auto;
   min-height: 0;
+}
+
+/* 分頁：目前頁的白字要配 --main-strong-color（主題預設的 #ccc 底只有 1.6:1）。
+   首頁、歸檔、分類頁共用，所以放在這裡，page-home.css 不再重複 */
+.pagination .page-number.current {
+  background-color: var(--main-strong-color);
+  color: var(--on-dark-color);
 }

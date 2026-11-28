@@ -1,50 +1,114 @@
 /* ==========================================================================
    文章內頁的內文
    標題階層、清單、引用、連結、分頁籤與提示框。表格見 post-table.css，
-   程式碼區塊見 code-window.css，行內程式碼見 inline-code.css。
+   程式碼區塊見 code-window.css，行內程式碼與粗體見 post-inline.css。
    依賴：.main-inner.post.posts-expand .post-body 底下的標準 Markdown 輸出，
          以及主題的 .tabs、.note、.headerlink、.mermaid、p.image-caption。
    ========================================================================== */
 .main-inner.post.posts-expand {
+  /* 整篇文章放在一張白色卡片裡：和頁面的冷灰藍底分開，標題與內文有明確的閱讀區域 */
+  .post-block {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-card);
+    padding: 2rem 2.4rem 2.4rem;
+  }
+
   .post-body {
-    /* 文章裡的圖片：淡淡的陰影與上下間距（圖片群組除外） */
+    /* 內文字級：原本 20px / 行高 2.25 偏大，改成 18px / 1.95，一行能容納更多字、不用一直捲 */
+    font-size: 1.125rem;
+    line-height: 1.95;
+
+    /* 文章裡的圖片：圓角與柔和的陰影，上下留白（圖片群組除外） */
     &:not(.group-picture) img {
-      box-shadow: 0 0 4px 0px #a6a6a670;
+      border-radius: 8px;
+      box-shadow: var(--shadow-image);
       margin: 20px auto;
     }
 
-    /* ---- 標題：每一級用不同的底線與左側粗線區分 ---- */
-    h1 {
-      border-bottom: 1px solid;
-      text-align: right;
-    }
-    h2 {
-      background: #ddd;
-    }
-    h3 {
-      border-bottom: 1px solid;
-    }
-    h4 {
-      border-bottom: 1px dashed;
-    }
-    h5 {
-      border-bottom: 1px dashed;
-      width: fit-content;
-    }
+    /* ---- 標題：六個層級六種版型，文字黑灰、用品牌紅當線條點綴 ----
+       不靠符號前綴，而是靠「版型」區分：
+       h1 大字加底線與紅色短線；h2 灰藍色帶加粗紅色左線；h3 細底線加紅色短線；
+       h4 只有紅色左線；h5 紅色虛線底線；h6 縮小變淡、灰色點線底線。
+       紅色只出現在線條上，不做色塊（整塊紅看起來像警告提示）。 */
+    h1,
     h2,
     h3,
     h4,
     h5,
     h6 {
-      border-left: 5px solid;
-      padding-left: 10px;
+      color: var(--text-strong-color);
+      font-weight: 700;
+      line-height: 1.5;
     }
-    h1,
-    h2,
+
+    h1 {
+      border-bottom: 2px solid var(--border-color);
+      font-size: 1.9rem;
+      margin-top: 3.5rem;
+      padding-bottom: 0.6rem;
+      position: relative;
+      text-align: left;
+
+      &::after {
+        background: var(--main-color);
+        bottom: -2px;
+        content: '';
+        height: 3px;
+        left: 0;
+        position: absolute;
+        width: 3.5rem;
+      }
+    }
+
+    h2 {
+      background: var(--chip-bg-color);
+      border-left: 5px solid var(--main-color);
+      font-size: 1.5rem;
+      margin-top: 2.5rem;
+      padding: 0.35rem 0.9rem;
+    }
+
     h3 {
+      border-bottom: 1px solid var(--border-color);
+      font-size: 1.25rem;
       margin-top: 2rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.4rem;
+      position: relative;
+
+      &::after {
+        background: var(--main-color);
+        bottom: -1px;
+        content: '';
+        height: 2px;
+        left: 0;
+        position: absolute;
+        width: 2rem;
+      }
+    }
+
+    h4 {
+      border-left: 3px solid var(--main-color);
+      font-size: 1.1rem;
+      padding-left: 0.7rem;
+    }
+
+    h5 {
+      border-bottom: 1px dashed var(--main-color);
+      font-size: 1rem;
+      padding-bottom: 0.15rem;
+      width: fit-content;
+    }
+
+    h6 {
+      border-bottom: 1px dotted var(--muted-text-color);
+      color: var(--muted-text-color); /* 對白 5.9:1 */
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding-bottom: 0.1rem;
+      width: fit-content;
     }
 
     /* ---- 清單 ---- */
@@ -67,10 +131,10 @@
       margin: 0 10px;
     }
 
-    /* ---- 引用區塊：品牌色左線與淡粉底 ---- */
+    /* ---- 引用區塊：深灰左線與極淡的灰底 ---- */
     blockquote {
-      border-left-color: var(--main-color);
-      background: #e91e6312;
+      border-left-color: var(--muted-text-color);
+      background: color-mix(in srgb, var(--text-color) 5%, transparent);
       font-size: 1rem;
       padding: 10px 15px;
       margin-bottom: 20px;
@@ -82,47 +146,28 @@
     }
 
     /* ---- 內文、引用、清單、表格裡的連結 ----
-       平常：前面一個鎖鏈圖示，品牌色文字加底線，一看就知道是連結。
-       滑過：底線往上長成實心品牌色塊，文字與圖示轉白，直角；不改字重，所以不會讓整行跳動。
-       色塊用背景畫（跨行時用 box-decoration-break 讓每一行都完整）。 */
+       平常：紅色文字加底線，不只靠顏色辨識（WCAG 1.4.1），對比見 --main-text-color。
+       滑過：底線加粗、背景浮出淡淡的紅，不改字重，所以不會讓整行跳動。 */
     p,
     blockquote,
     li,
     td {
       a:not(.fancybox) {
-        padding: 0 4px;
         border-bottom: 0;
-        color: var(--main-color);
+        border-radius: 3px;
+        color: var(--main-text-color);
+        padding: 0 2px;
         text-decoration: underline;
-        text-underline-offset: 3px;
         text-decoration-thickness: 1px;
-        background: linear-gradient(var(--main-color), var(--main-color)) no-repeat
-          left bottom / 100% 0;
-        -webkit-box-decoration-break: clone;
-        box-decoration-break: clone;
+        text-underline-offset: 3px;
         transition:
-          background-size 0.25s ease,
-          color 0.25s ease;
-
-        /* 鎖鏈圖示（Font Awesome link），比文字小一點 */
-        &::before {
-          content: '\f0c1';
-          display: inline-block;
-          margin-right: 4px;
-          font-family: 'Font Awesome 6 Free';
-          font-weight: 900;
-          font-size: 0.8em;
-          text-decoration: none;
-        }
+          background-color var(--transition-fast),
+          text-decoration-thickness var(--transition-fast);
 
         &:hover {
-          color: #fff;
-          text-decoration-color: transparent;
-          background-size: 100% 100%;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          transition: none;
+          background: color-mix(in srgb, var(--main-color) 10%, transparent);
+          color: var(--main-hover-color);
+          text-decoration-thickness: 2px;
         }
       }
     }
@@ -130,17 +175,17 @@
     /* ---- 分頁籤（tabs 標籤） ---- */
     .tabs {
       .nav-tabs .tab {
-        background: #f6eaef;
-        transition: 0.5s;
+        background: var(--chip-bg-color);
+        transition: background-color 0.5s;
       }
 
       .tab-content,
       .nav-tabs .tab.active {
-        background: #fff;
+        background: var(--surface-color);
       }
 
       ul.nav-tabs li.tab.active {
-        border-top-color: var(--main-color);
+        border-top-color: var(--text-strong-color);
       }
     }
 
@@ -150,7 +195,7 @@
 
     /* ---- 提示框（note 標籤） ---- */
     .note {
-      background: #fcfcfc;
+      background: var(--surface-soft-color);
 
       &:not(.no-icon)::before {
         top: 0.5rem;
@@ -165,6 +210,30 @@
         p {
           margin: 0;
         }
+      }
+    }
+  }
+}
+
+/* 手機：卡片左右留白縮小、字級與標題略縮，內文才有足夠的行寬（原本卡片內距 2.4rem，手機上只剩約 280px） */
+@media (max-width: 767px) {
+  .main-inner.post.posts-expand {
+    .post-block {
+      padding: 1.25rem 1rem 1.5rem;
+    }
+
+    .post-body {
+      font-size: 1.0625rem;
+      line-height: 1.9;
+
+      h1 {
+        font-size: 1.6rem;
+      }
+      h2 {
+        font-size: 1.35rem;
+      }
+      h3 {
+        font-size: 1.2rem;
       }
     }
   }

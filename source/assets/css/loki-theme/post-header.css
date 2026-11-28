@@ -8,7 +8,7 @@
 
   .post-title a {
     &:hover {
-      color: var(--link-color-hover);
+      color: var(--main-text-color);
     }
   }
 
@@ -16,9 +16,9 @@
   .post-meta-container {
     font-size: 1rem;
     a {
-      color: var(--link-color-hover);
+      color: var(--main-text-color);
       &:hover {
-        border-color: var(--link-color-hover);
+        border-color: var(--main-text-color);
       }
     }
   }
@@ -49,16 +49,16 @@
   }
 
   /* 第一行的標籤：直角、灰階，只有分類帶一點品牌色。
-     日期是淺灰底、深灰字，最不搶眼；分類是深灰底，與頁首橫幅的黑底標題呼應 */
+     日期是淺灰底、深灰字，最不搶眼；分類是深灰藍底，與側欄、頁尾的深色呼應 */
   .post-meta-item:not([title]) {
     padding: 3px 12px;
     font-size: 0.875rem;
-    color: #666;
-    background: #e3e3e3;
-    border-bottom: 2px solid #b5b5b5;
+    color: var(--muted-text-color);
+    background: var(--chip-bg-color);
+    border-bottom: 2px solid var(--chip-line-color);
 
     .post-meta-item-icon {
-      color: #999;
+      color: var(--icon-muted-color);
     }
 
     time {
@@ -69,7 +69,6 @@
     .post-meta-item-text {
       order: 3;
       font-size: 0.8125rem;
-      opacity: 0.75;
     }
 
     /* 分類：深灰底淺色字，只有圖示與底邊細線用品牌色。
@@ -80,17 +79,17 @@
       text-align: center;
       /* 項目本身的文字色用品牌色：分類之間的「×」（languages.yml 設定）是裸文字，
          只能靠這裡上色；分類名稱是連結，下面另外設淺色 */
-      color: var(--main-color);
-      background: #3a3a3a;
+      color: var(--main-on-dark); /* 對 #2b323a 為 4.8:1 */
+      background: var(--dark-surface);
       border-bottom: 2px solid var(--main-color);
 
       a {
-        color: #eee;
+        color: var(--on-dark-color);
         border-bottom: 0;
-        transition: color 0.2s;
+        transition: color var(--transition-fast);
 
         &:hover {
-          color: var(--main-color);
+          color: var(--main-on-dark);
           text-decoration: underline;
         }
       }
@@ -102,7 +101,7 @@
 
       .post-meta-item-icon {
         margin-right: 6px;
-        color: var(--main-color);
+        color: var(--main-on-dark);
       }
     }
   }
@@ -115,7 +114,7 @@
   .post-meta-item[title] {
     order: 2;
     font-size: 0.8125rem;
-    color: #8a8a8a;
+    color: var(--muted-text-color);
     gap: 4px;
     margin: 0 7px;
   }
@@ -123,7 +122,7 @@
   /* 說明文字後的「×」（由 loki-theme.js 把冒號換成這個 span）：品牌色，和分類之間的「×」一致 */
   .loki-meta-sep {
     margin-left: 2px;
-    color: var(--main-color);
+    color: var(--main-text-color);
   }
 
   @media (max-width: 767px) {
@@ -140,11 +139,13 @@
   /* 「編輯此頁」的小鉛筆：平常淡淡的，滑過才清楚 */
   a.post-edit-link {
     font-size: calc((1.5em / 2));
-    opacity: 0.25;
+    color: var(--muted-text-color);
+    opacity: 0.7;
     margin-top: calc((1.5em / 4));
 
-    &:hover {
-      color: var(--main-color);
+    &:hover,
+    &:focus-visible {
+      color: var(--main-text-color);
       opacity: 1;
     }
   }

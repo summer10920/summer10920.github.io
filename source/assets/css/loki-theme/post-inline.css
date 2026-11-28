@@ -1,0 +1,44 @@
+/* ==========================================================================
+   文章內的行內元素：行內程式碼與粗體
+   首頁的文章摘要與文章內頁用同一組樣式；表格裡的行內程式碼只調整表格需要的部分（post-table.css）。
+   顏色都在 base/variables.css，符合 WCAG AA。
+   依賴：.main-inner.index / .main-inner.post 與 .post-body。
+   ========================================================================== */
+.main-inner.index.posts-expand .post-body,
+.main-inner.post.posts-expand .post-body {
+  /* ---- 行內程式碼：紅色文字、灰底加細框線（文字對底色 5.8:1）----
+     字級略小於內文（等寬字型同樣的字級看起來比中文大），間距用相對單位跟著字級走。
+     不處理程式碼區塊（pre 裡面的 code）；斷行只在整個 token 比容器還長時才發生。
+     :not(pre) > code 只看直接父元素，比 :not(pre code) 少走訪祖先（文章裡有數百個行內碼）。 */
+  :not(pre) > code {
+    border: 1px solid var(--chip-border-color);
+    border-radius: 0.3em;
+    background: var(--chip-bg-color);
+    color: var(--code-text-color);
+    font-size: 0.88em;
+    margin: 0 0.12em;
+    padding: 0.1em 0.4em;
+    overflow-wrap: anywhere; /* 主題對 code 設了 break-word，要蓋回全域的 anywhere */
+  }
+
+  /* ---- 粗體：加深文字色（對 #f2f4f6 為 14.2:1），再加一條很淡的灰色標記線（紅色留給連結與點綴）----
+     表頭與程式碼視窗是深色底，不套用，以免深字配深底。 */
+  strong,
+  b {
+    background: linear-gradient(transparent 68%, color-mix(in srgb, var(--text-color) 12%, transparent) 0);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    color: var(--text-strong-color);
+    font-weight: 700;
+    padding: 0 0.08em;
+  }
+
+  thead strong,
+  thead b,
+  figure.highlight strong,
+  figure.highlight b {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+}

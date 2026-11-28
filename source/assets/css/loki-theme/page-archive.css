@@ -19,8 +19,9 @@
     > .category-list-item {
       margin: 0;
       padding: 18px 22px 20px;
-      background: #fff;
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
 
       /* 技術標籤多的領域獨占一列 */
       &:has(.category-list-child > .category-list-item:nth-child(6)) {
@@ -34,16 +35,19 @@
         font-weight: bold;
 
         &:hover {
-          color: var(--main-color);
+          color: var(--text-strong-color);
+          text-decoration: underline;
+          text-decoration-color: var(--main-color);
+          text-decoration-thickness: 2px;
         }
       }
 
-      /* 領域的總篇數：淡色小字，不搶標題 */
+      /* 領域的總篇數：小字，不搶標題；顏色要夠深才讀得到（#999 只有 2.9:1） */
       > .category-list-count {
         margin-left: 8px;
         padding: 0;
         background: none;
-        color: #999;
+        color: var(--muted-text-color);
         font-size: 0.8125rem;
 
         &::after {
@@ -69,14 +73,14 @@
         margin: 0;
         padding: 4px 6px 4px 14px;
         white-space: nowrap;
-        border: 1px solid var(--main-color);
-        transition: background-color 0.2s;
+        border: 1px solid var(--border-strong-color);
+        transition: background-color var(--transition-fast);
 
         > .category-list-link {
           border-bottom: 0;
-          color: var(--main-color);
+          color: var(--text-color);
           font-size: 0.9375rem;
-          transition: color 0.2s;
+          transition: color var(--transition-fast);
 
           /* 篇數是連結的兄弟節點，不在連結裡；讓連結鋪滿整個標籤，滑到篇數或空白處也能點 */
           &::after {
@@ -86,7 +90,7 @@
           }
         }
 
-        /* 篇數：品牌色圓形徽章（站上其餘元素是直角，只有這個用圓） */
+        /* 篇數：圓形徽章，平常深灰藍、滑過變品牌紅（站上其餘元素是直角，只有這個用圓） */
         > .category-list-count {
           display: inline-flex;
           align-items: center;
@@ -94,24 +98,25 @@
           width: 22px;
           height: 22px;
           padding: 0;
-          background: var(--main-color);
+          background: var(--dark-surface);
           border-radius: 50%;
-          color: #fff;
+          color: var(--on-dark-color);
           font-size: 0.75rem;
           font-weight: bold;
-          transition: background-color 0.2s, color 0.2s;
+          transition:
+            background-color var(--transition-fast),
+            color var(--transition-fast);
         }
 
         &:hover {
-          background: var(--main-color);
+          background: var(--dark-surface);
 
           > .category-list-link {
-            color: #fff;
+            color: var(--on-dark-color);
           }
 
           > .category-list-count {
-            background: #fff;
-            color: var(--main-color);
+            background: var(--main-strong-color);
           }
         }
       }
@@ -131,7 +136,7 @@
     }
 
     .collection-title::before,
-    .posts-collapse .post-content .collection-year::before,
+    .collection-year::before,
     .post-header::before {
       background-color: var(--main-color);
     }

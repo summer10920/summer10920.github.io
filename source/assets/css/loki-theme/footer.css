@@ -5,13 +5,9 @@
 }
 
 footer.footer {
-  --footer-text: #c4c4cc;
-  --footer-label: #9a9aa5;
-  --footer-value: #f2f2f4;
-
-  background: #1f1f23;
+  background: var(--dark-surface);
   border-top: 3px solid var(--main-color);
-  color: var(--footer-text);
+  color: var(--on-dark-text-color);
   font-size: 0.875rem;
   line-height: 1.6;
   padding: 24px 16px 22px;
@@ -39,13 +35,13 @@ footer.footer {
 
     .author {
       border: 0;
-      color: var(--footer-value);
+      color: var(--on-dark-color);
       font-weight: 700;
       letter-spacing: 0.04em;
     }
 
     .loki-copyright-note::before {
-      color: var(--footer-label);
+      color: var(--on-dark-label-color);
       content: '·';
       margin: 0 0.6em;
     }
@@ -67,7 +63,7 @@ footer.footer {
   }
 
   .post-meta-item {
-    color: var(--footer-value);
+    color: var(--on-dark-color);
     font-variant-numeric: tabular-nums;
 
     &::before {
@@ -79,7 +75,7 @@ footer.footer {
     }
 
     [title]::before {
-      color: var(--footer-label);
+      color: var(--on-dark-label-color);
       content: attr(title);
       font-variant-numeric: normal;
       margin-right: 0.5em;

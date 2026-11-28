@@ -1,13 +1,61 @@
 /* ==========================================================================
-   站台顏色變數
-   品牌色是粉紅 #e91061；其他樣式一律引用這裡的變數，不要在別處寫死顏色。
+   站台顏色變數：冷灰藍（slate）搭配血紅點綴
+   紅色 #e91061 只當點綴（連結、行內碼文字、小段強調線、數字），不整塊使用；
+   黑色只出現在大面積深色區塊（側欄、頁尾、頁首遮罩），而且用帶藍的炭灰，不用純黑。
+   品牌紅直接當文字或配白字底，對比略低於 WCAG AA 的 4.5:1（對淺底 4.04、白字 4.46），
+   所以「文字」用微微加深的衍生色，#e91061 本身只用在非文字（色條、圖示、邊框、捲軸）。
+   其他樣式一律引用這裡的變數，不要在別處寫死顏色。
+   對比度是實測值：淺底 #f2f4f6、白、深底 #2b323a / #282c34。
    ========================================================================== */
 :root {
-  --main-color: #e91061; /* 品牌色：連結、強調、進度條 */
-  --text-color: #333; /* 內文文字 */
-  --main-bg-color: #f1f1f1; /* 頁面底色 */
-  --main-light-color: #d85f8c; /* 較淺的品牌色：表格內的行內程式碼底色 */
+  /* ---- 紅色點綴 ---- */
+  --main-color: #e91061; /* 品牌紅：非文字的色條、圖示、邊框、捲軸 */
+  --main-strong-color: #d40f58; /* 白字的紅色底（徽章）：白字 5.24:1 */
+  --main-text-color: #cc0e55; /* 淺底上的紅色文字：對 #f2f4f6 5.06:1、對白 5.58:1 */
+  --main-hover-color: #a80d53; /* 紅色文字滑過時再加深：對 #f2f4f6 6.69:1 */
+  --main-on-dark: #ff6aa2; /* 深底上的紅色文字：對 #2b323a 4.84:1、對 #282c34 5.22:1（與 loki-theme.styl 的 $sidebar-highlight 同值，改一邊要改另一邊） */
+  --main-deep-color: #bb1352; /* 品牌紅的深一階：回頂端進度條漸層的中間色 */
 
-  --link-color: var(--text-color);
-  --link-color-hover: var(--main-color);
+  /* ---- 冷灰藍：文字 ---- */
+  --text-color: #2b333b; /* 內文：對 #f2f4f6 11.6:1 */
+  --text-strong-color: #1d242b; /* 粗體與標題：14.2:1 */
+  --muted-text-color: #5a6571; /* 次要文字：對 #f2f4f6 5.4:1、白 5.9:1、#e4e8ec 4.8:1 */
+  --muted-on-dark: #b4bdc7; /* 深底上的次要文字：對 #2b323a 6.8:1 */
+  --on-dark-color: #fff; /* 深色底與紅色底上的文字、線條 */
+  --on-dark-soft-color: #e6edf3; /* 深色底上稍柔和的文字（頁首副標題）：對遮罩後的底色 7.4:1 */
+  --on-dark-text-color: #c4ccd4; /* 頁尾文字：對 #2b323a 8.0:1 */
+  --on-dark-label-color: #a3adb8; /* 頁尾標籤：對 #2b323a 5.7:1 */
+  --on-dark-badge-color: rgba(255, 255, 255, 0.2); /* 深色底上的半透明徽章底 */
+
+  /* ---- 冷灰藍：表面 ---- */
+  --main-bg-color: #f2f4f6; /* 頁面底色 */
+  --surface-color: #ffffff; /* 卡片 */
+  --border-color: #d6dce1; /* 卡片邊框與分隔線 */
+  --chip-bg-color: #e4e8ec; /* 淺色小標籤與行內碼底 */
+  --chip-border-color: #cfd6dc;
+  --chip-line-color: #b9c2cb; /* 日期標籤的底邊線 */
+  --border-strong-color: #7d8894; /* 需要看得見的框線（分類標籤），對白 3.6:1 */
+  --icon-muted-color: #78838f; /* 標籤裡的圖示 */
+  --surface-soft-color: #fcfcfc; /* 提示框的底色，比卡片白略淡一階 */
+  --dark-surface: #2b323a; /* 側欄、頁尾、深色小標籤 */
+  --header-scrim: rgba(55, 64, 74, 0.78); /* 頁首遮罩：蓋在文字雲上，白字約 8.7:1 */
+
+  /* ---- 卡片與陰影 ---- */
+  --card-radius: 14px;
+  --shadow-card: 0 1px 2px rgb(43 51 59 / 0.06), 0 10px 28px rgb(43 51 59 / 0.07); /* 文章與首頁卡片 */
+  --shadow-raised: 0 2px 5px 0 rgb(0 0 0 / 0.5); /* 表格與程式碼視窗 */
+  --shadow-image: 0 2px 10px rgb(43 51 59 / 0.18); /* 文章裡的圖片 */
+  --transition-fast: 0.2s; /* 滑過的顏色、底線、背景轉場 */
+
+  /* ---- 程式碼視窗（底色 #282c34）：主題的兩種語法顏色對比不到 4.5:1，改用亮一階的 ---- */
+  --code-lang-color: #9aa1ae; /* 右上角的語言標籤：5.4:1 */
+  --code-token-red-color: #e8808a; /* 原 #e06c75（4.38:1）→ 5.26:1 */
+  --code-token-keyword-color: #ff6f9f; /* 原 #f92672（3.70:1）→ 5.35:1 */
+
+  /* ---- 行內程式碼：灰藍底（--chip-bg-color），紅色只用在文字 ---- */
+  --code-text-color: #b0083f; /* 對 #e4e8ec 為 5.8:1 */
+
+  /* ---- 連結與焦點 ---- */
+  --link-color: var(--text-color); /* 主題的 a 用它：平常用文字色，滑過用 --main-text-color */
+  --focus-ring-color: var(--main-text-color); /* 深色區塊改在區塊上重設，見 base/reboot.css */
 }
