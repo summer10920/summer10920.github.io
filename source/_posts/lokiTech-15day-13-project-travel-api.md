@@ -2357,7 +2357,7 @@ pnpm build
 
 終端機會印出類似下面的內容。檔名後面的雜湊會隨內容改變。
 
-```
+```text
 vite v8.3.5 building client environment for production...
 transforming...
 ✓ 771 modules transformed.

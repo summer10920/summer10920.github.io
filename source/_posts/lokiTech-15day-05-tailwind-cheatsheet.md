@@ -1404,7 +1404,7 @@ Flex 和 Grid 是現代網頁佈局的兩大主力，提供了強大且靈活的
 | `flex-[<value>]`           | `flex: <value>;`                 | 任意值             |
 
 {% note info %}
-**CSS `flex` 簡寫如何解讀？**
+**CSS flex 簡寫如何解讀？**
 - 一個「無單位數字」：視為 `flex-grow`。`flex: 2` 等價 `flex: 2 1 0%`。
 - 一個「長度/百分比/關鍵字」：視為 `flex-basis`。例如 `flex: 200px`、`flex: 30%`、`flex: auto` 皆等價「簡寫展開」為 `flex: 1 1 <basis>`。
 - 兩個值：
@@ -3044,6 +3044,7 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 | `decoration-<color>-<step>` | `text-decoration-color: var(--color-<color>-<step>);` | 指定顏色 <step> 階段的裝飾線 |
 | `decoration-(--自訂變數)`   | `text-decoration-color: var(--自訂變數);`             | 使用 CSS 變數自訂裝飾線顏色  |
 | `decoration-[<value>]`      | `text-decoration-color: <value>;`                     | 任意自訂裝飾線顏色           |
+
 {% note info %}
 **color & step**
 - `<color>` 代表 Tailwind CSS 預設色彩名稱，你可以參考 [官方色彩文件](https://tailwindcss.com/docs/colors) 取得完整色彩名稱與對應色階。
@@ -3288,7 +3289,7 @@ text-align 用來設定文字的水平對齊方式，常見於段落、標題或
 | `bg-clip-text`    | `background-clip: text;`        | 背景僅顯示於文字（需搭配文字透明） |
 
 {% note info %}
-**小技巧：`bg-clip-text` 需搭配 `text-transparent` 使用，才能讓背景顯示於文字形狀內。**
+**小技巧**：`bg-clip-text` 需搭配 `text-transparent` 使用，才能讓背景顯示於文字形狀內。
 
 ```html
 <p class="bg-linear-to-r from-pink-500 to-violet-500 bg-clip-text text-5xl font-extrabold text-transparent">

@@ -935,7 +935,7 @@ export default function App() {
 
 路由已經接上。這一節組出整站外框 `SiteLayout`：它包住頁首、頁尾與中間放各頁的位置，頁首裡又有主導覽與圖示。做法是先用文字標記放好頁首、主導覽與頁尾，並把外框接到路由當父路由，在畫面上確認位置，再逐一換成真正的元件。頁首的登入鈕在這裡只是連到 `/login` 的連結，登入頁之後再做。
 
-```
+```text
 src/
 ├── _shared/
 │   └── Icon.jsx
@@ -2131,7 +2131,7 @@ export default function HeroSlider({ slides }) {
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 motion-reduce:transition-none ${itemIndex === index ? 'opacity-100' : 'opacity-0'}`}
         />
       ))}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-ink/85 via-ink/55 to-ink/35" />
       <IconButton
         aria-label="上一張"
         onClick={() => go(index - 1)}
@@ -2368,7 +2368,7 @@ export default function ThemeSection() {
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/25 to-transparent" />
+                <span className="absolute inset-0 bg-linear-to-t from-ink via-ink/25 to-transparent" />
                 <span className="relative mt-auto flex flex-col px-5 py-5 text-white">
                   <span className="font-serif text-3xl font-semibold">
                     {item.theme}
@@ -3055,7 +3055,7 @@ export default function TourCard({ tour, showTheme = false }) {
         component="img"
         image={tour.cover}
         alt=""
-        className="aspect-[4/3] w-full object-cover"
+        className="aspect-4/3 w-full object-cover"
       />
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <div className="flex flex-wrap gap-2">
@@ -3114,7 +3114,7 @@ export default function TourCard({ tour, showTheme = false }) {
 - `BookingCard`
 - `MobileBookingBar`
 
-```
+```text
 src/features/tours/
 ├── ToursPage.jsx
 ├── TourDetailPage.jsx
@@ -3839,7 +3839,7 @@ export default function Gallery({ images, title }) {
   return (
     <div className="mt-8">
       <img
-        className="aspect-[3/2] w-full rounded-card object-cover shadow-card"
+        className="aspect-3/2 w-full rounded-card object-cover shadow-card"
         src={current}
         width="1200"
         height="800"
@@ -5470,7 +5470,7 @@ export default function LoginPage() {
 
 後台頁放在 `features/admin/`，目錄如下。下面每一節先說明該頁拆哪些元件、用圖畫出誰組誰，再組出該頁並放 placeholder、接到路由，最後逐一換成真正的零件，讓每一步都能在畫面上對照。
 
-```
+```text
 src/features/admin/
 ├── AdminLoginPage.jsx
 ├── AdminToursPage.jsx
@@ -7617,7 +7617,7 @@ pnpm build
 
 終端機會印出類似下面的內容。模組數量與檔案大小會依套件版本而不同；檔名後面那串雜湊（hash）由檔案內容算出，內容一改就跟著變。
 
-```
+```text
 vite v8.3.5 building client environment for production...
 transforming...
 ✓ 745 modules transformed.
