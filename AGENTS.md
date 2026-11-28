@@ -6,13 +6,14 @@
 放在 `.claude/skills/<名稱>/SKILL.md`：Claude Code 原生讀這個路徑，Cursor 也原生相容讀取，所以只有這一份，不需要複製或符號連結。
 - `lokitech-15day-lecture-rules`：15 天講義（`lokiTech-15day-*`）的教學模型與寫作流程。
 - `lokitech-post-polish`：舊文章潤字與標題加精準版本號的流程。
-- `lokitech-private-notes`：私人筆記／個人學習歸類（非講義、非舊文潤稿）的口吻、章法與深度規範；參考文 `css-scope.md`。
+- `lokitech-private-notes`：私人筆記／個人學習歸類（非講義、非舊文潤稿）的深度標準（要和講義一樣精彩）、查證驗證流程、章節骨架與 Hexo 慣例；參考文 `css-scope.md`。
+- `lokitech-theme-css`：站台樣式（配色、頁首、側欄、文章版型、RWD、無障礙）與 NexT 升級；細節見 `loki-theme.md`。
 
 規則入口：根目錄 `AGENTS.md`（本檔）。`CLAUDE.md` 只有一行 `@AGENTS.md`，讓 Claude Code 讀到同一份。
 
 ## 文章類型（先選對 skill）
 - **15 天講義**（`lokiTech-15day-*`）：給初學上課生；觀念→Demo→解析；有作業／回顧／名詞表 → `lokitech-15day-lecture-rules`。
-- **私人筆記**（個人學習歸類、有深度的非教學文）：給有基礎的自己；痛點→機制→對照；收尾保留 `# 瀏覽器支援`（視主題）與 `# 專有名詞中英對照`，但**不要**講義的作業／回顧 → `lokitech-private-notes`。
+- **私人筆記**（個人學習歸類、有深度的非教學文）：豐富度與深度要比照 15 天講義（真實情境、完整可跑範例、錯／對對照、機制、取捨、查證過的支援度），不可寫成 API 清單；給有基礎的自己；痛點→機制→對照；收尾保留 `# 瀏覽器支援`（視主題）與 `# 專有名詞中英對照`，但**不要**講義的作業／回顧 → `lokitech-private-notes`。
 - **舊文潤稿**：只潤字與標題版本號，不重排版面 → `lokitech-post-polish`。
 - 下方「文章撰寫規則」的 Hexo／front matter／標籤／粗體內禁行內碼等，**新寫的講義與私人筆記都要遵守**；章節模型以對應 skill 為準（講義的「每個 # 至少兩個 ##、作業／回顧收尾」**不要**套用到私人筆記）。
 

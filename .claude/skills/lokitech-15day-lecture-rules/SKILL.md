@@ -8,6 +8,8 @@ description: >-
 ---
 # lokiTech 15-day 講義 rules
 
+Related skills: personal deep-dive notes → `lokitech-private-notes` (its depth bar is modeled on these lectures); old-post polishing → `lokitech-post-polish`; site styling → `lokitech-theme-css`.
+
 Repos (Loki's Mac): blog `/Users/loki/github/summer10920.github.io`, practice repo `/Users/loki/github/studiesAdvanced` (GitHub `summer10920/studiesAdvanced`, students fork branch `new-tech` and open the repo root in VS Code).
 
 Ongoing lecture work commits on blog `master` and practice repo `new-tech` (students fork `new-tech`). Do not open or continue on `revise-15day` / `new-tech-revise` unless Loki asks. Demos and articles may still be renamed, merged or deleted when the course content changes.
