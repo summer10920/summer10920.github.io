@@ -1,5 +1,5 @@
 ---
-title: "PHP：SESSION 與 COOKIE"
+title: "PHP 7：SESSION 與 COOKIE"
 categories:
   - 後端與資料庫
   - PHP/MySQL
@@ -14,6 +14,11 @@ date: 2020-05-12 15:49:42
 本篇介紹 PHP 能跨網頁的共用變數，如果有一些變數希望能跨（同網站）網頁彼此共用，就能用 session 跟 cookie。請開始在 Web 目錄下新增檔案 **3_session_cookie.php**，為了簡化程式碼結構將不建置 HTML 基本結構。請開始做 PHP 各種練習並預覽網頁結果。
 
 <!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文使用 PHP 7（約 2020 年，搭配 XAMPP）。多數基礎語法在 PHP 8 仍可用，但執行環境與部分預設行為已有差異；新專案建議使用現行 PHP 8.x。本文可作為維護舊專案與課程教材的參考。
+{% endnote %}
 
 也許你聽過 cookie 或 session，這些是瀏覽器上的用戶數據，常作為網站裡提供多個網頁共用存取，舉凡來說會員登入紀錄、購物車、購買清單、都是設計師偷偷藏個變數紀錄每個使用者的體驗資料。session 是存放在伺服器端的變數，cookie 是存放在用戶端瀏覽器內。
 

@@ -1,11 +1,11 @@
 ---
-title: "Ajax：相關領域技術與應用"
+title: "jQuery 3：Ajax 相關領域技術與應用"
 categories:
   - 前端
-  - JavaScript
-tag:
-  - JavaScript
   - jQuery
+tag:
+  - jQuery
+  - JavaScript
   - axios
 date: 2020-12-14 17:40:15
 ---
@@ -13,6 +13,11 @@ date: 2020-12-14 17:40:15
 Ajax 是「Asynchronous JavaScript and XML」（非同步的 JavaScript 與 XML 技術）的縮寫。我們知道靜態網頁都是一次性同步 (Synchronous HTTP Requests) 的請求與加載，每次要更新一個小部分都需要重新載入網頁。而透過 Ajax 能將網頁像電腦應用程式，不需要重新加載網頁情況下就能透過瀏覽器偷偷跟伺服器取得資料，並透過 DOM 技術更新一小部分的畫面。伺服器對 Ajax 資料請求回應通常是以三種資料格式其中之一（HTML、XML、JSON）
 
 <!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文以 jQuery 3 時期的 Ajax 應用為主軸（約 2020 年），並順帶對照原生 `XMLHttpRequest`、`fetch` 與 axios **0.21.0**。現行專案多半改用原生 `fetch` 或 axios 1.x；維護 jQuery 專案時仍可參考本文。
+{% endnote %}
 
 Ajax 使用非同步 (Asynchronous HTTP Requests) 方式，讓瀏覽器跟伺服器互相傳遞資料（可能是 string, html code, xml, json 格式），緊接著需畫面翻新時，直接透過 DOM 完成畫面調整。因此 Ajax 是指多種技術來接力完成行為：
 - HTML/CSS: 先提供瀏覽器畫面讓使用者進行操作觸發

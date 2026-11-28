@@ -18,7 +18,7 @@ Angular 是由 Google 主導開發的現代化前端框架，採用 TypeScript �
 
 {% note warning %}
 **版本提醒**
-本文使用 Angular 13.2（2022 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準；獨立元件可參考 {% post_link angular-modules-deploy-standalone Angular 模組、部署與獨立元件 %}。
+本文使用 Angular 13.2（2022 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準；獨立元件可參考 {% post_link angular-13-modules-deploy-standalone Angular 模組、部署與獨立元件 %}。
 {% endnote %}
 
 Angular 通常是指 Angular 2+ 以上的版本（與早期的 Angular 1 版本完全不同，第一代稱為 AngularJS），於 2016 年重新改寫。與 React 相同都採用元件 Component-based 觀念導向設計，不同於 VueJS 的 MVVM 架構，Angular 將所有功能整合在 Component 零件內。

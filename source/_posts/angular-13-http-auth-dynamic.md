@@ -1,5 +1,5 @@
 ---
-title: 'Angular：HTTP 請求、身分驗證、動態元件'
+title: "Angular 13.2：HTTP 請求、身分驗證、動態元件"
 categories:
   - 前端
   - Angular
@@ -13,6 +13,11 @@ date: 2023-03-08 14:37:20
 本篇深入探討一些 REST API 串接相關技術應用觀念，並使用 Firebase 做為後端實作端點。以及相關用戶身分認證的通用作法，包含 token 驗證機制與路由守衛規劃。以及示範如何透過將靜態元件改為一組動態創建的元件根據事件過程產生。
 
 <!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文使用 Angular 13.2（2022～2023 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準。
+{% endnote %}
 
 # Http Request 伺服器請求
 本節將介紹如何跟後端進行連線作業，透過 API 的方式進行串接。而 API 常見的 Server 連線方式有 REST 或 GraphQL 等，我們將以 REST 方式進行教導，以及搭配免費的虛擬後端做測試，減少開發練習的環境複雜性。

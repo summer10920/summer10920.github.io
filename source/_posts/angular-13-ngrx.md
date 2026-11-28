@@ -1,5 +1,5 @@
 ---
-title: 'Angular：NgRx 狀態管理'
+title: "Angular 13.2：NgRx 狀態管理"
 categories:
   - 前端
   - Angular
@@ -7,7 +7,6 @@ tag:
   - Angular
   - JavaScript
 date: 2023-03-20 16:08:50
-# hidden: true
 ---
 
 ![](assets/images/banner/ngrx.png)
@@ -15,6 +14,11 @@ date: 2023-03-20 16:08:50
 NgRx 是一個強大，且功能完整的 Angular 狀態管理套件，在我們的應用程式越來越複雜的時候，它很適合用來管理一些資料狀態，並透過適度的抽象化以及加入一定的規範，降低整體程式的耦合性，打造出更好維護及管理的程式碼。
 
 <!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文使用 Angular 13.2（2022～2023 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準。
+{% endnote %}
 
 # 觀念
 state 是指整個前端的資料狀態為何。過去我們跟後端進行存取資料會利用 service 去獲取，而元件會儲存資料到 service 內，這樣的整個資料流範圍就是一種前端的資料狀態，再利用 service 本身再跟後端進行 CRUD。因此每個小元件都會依賴自己的 service 或是別人的 service 去存取後端資料，這樣的 state 會隨著架構越大你的整個網站的資料狀態就會越複雜而難以維護。原因包含：
@@ -1072,4 +1076,8 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
 現在畫面上的 shopping-list 如果欄位沒有值或透過 clear 操作則不能按 Add，一旦對表單欄位做添加操作時會開放 Add 按鈕，這是在 ngOnInit 階段上我們去觀察 state 變化。
 
-https://www.udemy.com/course/the-complete-guide-to-angular-2/learn/lecture/14466572#content
+# 本篇收斂
+
+到這裡，購物清單已從 service 內的區域狀態，改成由 Store 集中管理：讀取走 Selector、寫入走 Action → Reducer，編輯中的索引也一併放進 state，讓表單與清單共用同一份真相。元件本身變薄，邏輯落在 NgRx 各角色裡，之後若要再串 HTTP，只要在 Effects 接上 service，成功／失敗再 dispatch 另一組 Action 即可，不必回頭把非同步細節塞回元件。
+
+實務上不是每個小功能都該上 NgRx；狀態會跨多個功能、或更新路徑很雜時再引入較划算。本篇示範的是 Angular 13 時期經典的 `@ngrx/store` 寫法，現行專案若已改用獨立元件與較新的 Store API，請以官方文件為準，觀念（單向資料流、不可變更新、副作用外移）仍然通用。

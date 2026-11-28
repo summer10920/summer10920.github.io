@@ -1,5 +1,5 @@
 ---
-title: "TypeScript：基礎"
+title: "TypeScript 4：基礎"
 categories:
   - 前端
   - TypeScript
@@ -7,11 +7,15 @@ tag:
   - JavaScript
   - TypeScript
 date: 2021-08-25 13:31:03
-# hidden: true
 ---
 ![](assets/images/VL6vpbF.png)
 如名般的 Type Script（類型腳本語言），微軟所提供的一種超集 JavaScript 之程式語言，可當作具有 type 類型系統的 JavaScript。主要是解決 JavaScript 的動態 type 設計不良所存在，可以當做它是一種 JS 預處理前置作業的檢查類型無誤後透過編譯 complier 後轉為 JavaScript。TypeScript 的語法可以使用純 JavaScript 來編寫，兩者差異就只是 type 的補足完整宣告。
 <!-- more -->
+
+{% note warning %}
+**版本提醒**
+本文約 2021 年整理，未釘住精確 patch；語法與 `tsconfig` 氛圍對應 **TypeScript 4.x**。現行 TypeScript 已是 5.x，基礎型別觀念大多仍適用，新語法與預設行為請以官方文件為準。
+{% endnote %}
 
 由於 JavaScript 原本誕生作為簡單的腳本語言，隨著主流性發展導致原本語意單調設計上的引起錯亂，舉例來說：
 
@@ -2133,9 +2137,16 @@ $.ajax('/api/get_something');
 ```
 
 ## 開發套件之類型包
-整理後餘時另編寫 \[學習之路、] TypeScript 的進階篇 。有興趣請自詳閱 [這裡](https://willh.gitbook.io/typescript-tutorial/basics/declaration-files#npm-tao-jian)
+多數第三方套件不會把型別寫在主包裝裡，而是另外提供 `@types/*` 定義包。安裝方式與一般 npm 套件相同，只是名稱多了 `@types` 前綴，例如：
 
-To Be Continued...
+```bash
+npm i lodash
+npm i -D @types/lodash
+```
+
+安裝後，編輯器與 `tsc` 就能辨識該套件的匯出型別，不必自己手寫整份 `.d.ts`。是否已有現成定義，可到 [TypeScript 的 typed packages 搜尋](https://www.typescriptlang.org/dt/search) 查。套件若在 `package.json` 標了 `types`／`typings`，或本身就是用 TypeScript 寫的，通常不需再裝 `@types`。
+
+本篇停在基礎型別、設定與宣告檔入門；模組解析細節、進階泛型與專案級宣告策略，請另參官方 Handbook 或下方參考文獻。以 TypeScript 4 語境讀完至此，已足夠銜接當時的前端框架教材。
 
 # 參考文獻
 - [TypeScript: TSConfig Reference - Docs on every TSConfig option](https://www.staging-typescript.org/tsconfig)

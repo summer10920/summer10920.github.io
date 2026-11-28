@@ -18,7 +18,7 @@ date: 2022-04-25 20:08:43
 
 {% note warning %}
 **版本提醒**
-本文使用 Angular 13.2（2022 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準；獨立元件可參考 {% post_link angular-modules-deploy-standalone Angular 模組、部署與獨立元件 %}。
+本文使用 Angular 13.2（2022 年）。Angular 之後有大幅更新（例如獨立元件 standalone、signals 與新的控制流程語法），新專案請以官方文件為準；獨立元件可參考 {% post_link angular-13-modules-deploy-standalone Angular 模組、部署與獨立元件 %}。
 {% endnote %}
 
 # Angular 響應式程式設計概述
