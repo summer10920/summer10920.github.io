@@ -38,7 +38,7 @@ https://summer10920.github.io/studies_TeachDemo_CSSBS/Bootstrap50_Hotel/
 6. 為了練習簡化，會對使用的所有 Bootstrap 元件，全都會移除 aria-* 系列屬性或是 visually-hidden 之類的無障礙設計。
 
 **files**
-```
+```text
 plugins/
 ├─ bootstrap.min.css  // 包含 BS 各種 Class 樣式表，這裡已不需要反向學習，為了檔案大小我們採用 min 壓縮版本。
 ├─ bootstrap.min.css.map  // 為前者的印象檔，非必要。

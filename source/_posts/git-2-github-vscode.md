@@ -154,7 +154,7 @@ Unpacking objects: 100% (3/3), 654 bytes | 3.00 KiB/s, done.
 
 #### 從本地 repo 進行 clone
 也可以從某個已存在的 repo 進行複製成新的，同時建議另外命名為新的 repo 名稱 (URL 也適用重新命名）。
-```
+```text
 # git clone <來源之相對路徑<新名稱>
 > L:\>git clone git_study git_copy
 
@@ -1343,7 +1343,7 @@ Your branch is up to date with 'origin/master'.
 | git add .                        | 指定符號 `.` 代表為工作目錄內的全部檔案列入暫存                                                      |
 | git add *                        | 同上                                                                                                 |
 | git add -u                       | 指 update 用途，對於曾提交成功的檔案，換句話說用在修改刪除且未新增之全部檔案提交                     |
-| git add *.html                   | 加入所有指定的附檔名 HTML 之格式                                                                     |  |
+| git add *.html                   | 加入所有指定的附檔名 HTML 之格式 |
 | git rm \<FILE_NAME>              | 透過 GIT 刪除未暫存之實體檔案 (window 為 del 指令，Linux 為 rm 指令），並提交 deleted 紀錄列入暫存區 |
 | git rm -f \<FILE_NAME>           | 同上，強制刪除已暫存的檔案作業                                                                       |
 | git rm -cached \<FILE_NAME>      | 保留實體檔案僅做提交 deleted 紀錄，同時檔案退回未追蹤狀態                                            |
@@ -1423,7 +1423,7 @@ Your branch is up to date with 'origin/master'.
 | git checkout -b \<BRANCH_NAME> \<REMOTE_NAME>/\<BRANCH_NAME> | 規劃成 BRANCH_NAME 新分支且 merge 整合本地端的遠端分支，同時切換分支至此                                                 |
 | git checkout -b --track \<REMOTE_NAME>/\<BRANCH_NAME>        | 同上，但本地分支名稱與遠端分支相同                                                                                       |
 | git push \<REMOTE_NAME> \<BRANCH_NAME>                       | 指定一個 BRANCH 分支上傳給遠端分支同步                                                                                   |
-| git push                                                     | 同上，未指定遠端 repo 時根據追蹤自動找到上游分支並將 HEAD 所在分支進行上傳                                               | 為指定一個 BRANCH 分支上傳給遠端分支同步 |
+| git push                                                     | 同上，未指定遠端 repo 時根據追蹤自動找到上游分支並將 HEAD 所在分支進行上傳                                               |
 | git push \<REMOTE_NAME> \<LOCAL_BRANCH>:\<REMOTE_BRANCH>     | 指定一個本地 BRANCH 分支上傳給遠端一個指定分支同步（若目標分支不存在會自動生成）                                         |
 | git push \<REMOTE_NAME> --delete \<BRANCH_NAME>              | 有權限情況下，要求遠端 repo 刪除此分支                                                                                   |
 | git push \<REMOTE_NAME> :<REMOTE_BRANCH>                     | 同上，要求遠端指定分支同步為空分支（等於設為移除）                                                                       |

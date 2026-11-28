@@ -42,7 +42,7 @@ React 應用程式採用 **SPA（Single Page Application，單頁應用程式）
 ```
 
 {% note info %}
-**為什麼使用 `.jsx` 副檔名？**
+**為什麼使用** `.jsx` **副檔名？**
 
 `.jsx` 副檔名明確告訴 Vite 這個檔案包含 JSX 語法，需要進行特殊處理。雖然 Vite 也能處理 `.js` 檔案中的 JSX，但使用 `.jsx` 能讓檔案用途更清晰，也方便編輯器提供更好的語法高亮和自動補全。
 {% endnote %}
@@ -211,7 +211,7 @@ export default App; // 預設匯出，讓 main.jsx 可以引入
    - return 回傳 JSX，描述 UI 長什麼樣子
    - 每次狀態改變，函式會重新執行
 
-4. **JSX Fragment（空標籤 `<>...</>`）**
+4. **JSX Fragment（空標籤** `<>...</>`）
    - 用途：包裹多個並列元素，但不產生額外的 DOM 節點
    - 等同於 `<React.Fragment>...</React.Fragment>`
    - **為什麼需要？** React 元件的 return 只能回傳一個根元素
@@ -720,7 +720,7 @@ items.map((item) => (
 - 這時要用 `<Fragment key={...}>` 完整寫法
 {% endnote %}
 
-**3. JavaScript 表達式需用 `{}` 包裹**
+**3. JavaScript 表達式需用** `{}` **包裹**
 
 ```jsx
 function Greeting({ name, age }) {
@@ -757,7 +757,7 @@ function Greeting({ name, age }) {
 | `onclick`  | `onClick`   | 事件處理採用駝峰命名             |
 | `onchange` | `onChange`  | 事件處理採用駝峰命名             |
 | `tabindex` | `tabIndex`  | 屬性採用駝峰命名                 |
-| `data-id`  | `data-id`   | data-* 和 aria-* 保持 kebab-case |
+| `data-id`  | `data-id`   | `data-*` 和 `aria-*` 保持 kebab-case |
 
 ```jsx
 // ✅ 正確的 JSX 寫法
@@ -806,7 +806,7 @@ function StyledComponent() {
 }
 ```
 
-**6. 多行 JSX 需用 `()` 包裹**
+**6. 多行 JSX 需用** `()` **包裹**
 
 ```jsx
 // ✅ 正確：多行 JSX 用括號包裹
@@ -1001,7 +1001,7 @@ React 使用 JSX 描述 UI，但瀏覽器只認識真實的 DOM 節點。React �
   A --> B --> C --> D --> E
 {% endmermaid %}
 
-**關鍵角色：`ReactDOM.createRoot`**
+**關鍵角色：**`ReactDOM.createRoot`
 
 `react-dom/client` 提供的 `createRoot` API 負責：
 1. 建立 React 根節點
@@ -1333,7 +1333,7 @@ function App() {
 ```
 
 **元件樹結構：**
-```
+```text
 App
 ├── Header
 │   ├── Logo
@@ -1430,7 +1430,7 @@ export default function App() {
 4. **測試友好**：可以單獨測試每個小元件
 
 **元件組合結構：**
-```
+```text
 App
 ├── MyLogo
 │   ├── LinkA
@@ -2360,7 +2360,7 @@ git config --global core.eol lf
 
 統一使用 `LF` 是**跨平台開發的業界標準**，所有平台 ( Windows、Mac、Linux ) 都能正確處理，不會造成困擾。
 
-**步驟 1：建立 `.editorconfig` 檔案 ( 團隊統一標準 ) **
+**步驟 1：建立** `.editorconfig` **檔案 ( 團隊統一標準 )** 
 
 在專案根目錄建立 `.editorconfig`，所有主流編輯器會自動讀取：
 
@@ -3044,7 +3044,7 @@ function EventObjectDemo() {
 ```
 
 {% note warning %}
-**React 不支援 `return false`**
+**React 不支援** `return false`
 
 在 HTML 中可以用 `return false` 阻止預設行為，但在 React 中必須明確呼叫 `preventDefault()`：
 

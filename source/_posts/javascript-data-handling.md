@@ -53,7 +53,7 @@ JavaScript 提供了陣列（Array）、物件（Object）和函式（Function�
 在 JavaScript 中，Array（陣列）是一種用來儲存有序資料集合的物件。陣列的每個元素都可以透過索引（從 0 開始）來存取。現代 JavaScript 提供了許多強大的陣列方法，讓資料處理更加方便與彈性。
 {% endblockquote %}
 
-**`[]` 與 `new Array()` 差異說明**
+`[]` **與** `new Array()` **差異說明**
 
 - 使用 `[]`（陣列字面量）建立陣列是最常見且推薦的方式，例如：`let arr = [1, 2, 3];`
 - 使用 `new Array()` 建立陣列時，如果只傳一個數字參數，會建立指定長度但內容為空的陣列，例如：`let arr = new Array(3);` 會產生長度為 3 的空陣列（內容皆為 empty slot）。
@@ -212,6 +212,7 @@ console.log(fruits.join(", ")); // 蘋果，香蕉，橘子
 | `sort()`     | 排序陣列元素                    | `array.sort([compareFn])`                    | `fruits.sort()`                       |
 | `includes()` | 判斷陣列是否包含某個值          | `array.includes(value)`                      | `fruits.includes("蘋果")`             |
 | `indexOf()`  | 尋找元素的索引（找不到回傳 -1） | `array.indexOf(value)`                       | `fruits.indexOf("橘子")`              |
+
 {% endnote %}
 
 #### 資料處理方法
@@ -946,8 +947,8 @@ myFunction(); // 輸出：Hello from outer function
 
 這個範例展示了閉包的基本運作方式：
 
-1. **`outerFunction` 建立作用域**：宣告了 `message` 變數，這是外部函式的私有變數
-2. **`innerFunction` 形成閉包**：內部函式可以存取外部的 `message` 變數
+1. `outerFunction` **建立作用域**：宣告了 `message` 變數，這是外部函式的私有變數
+2. `innerFunction` **形成閉包**：內部函式可以存取外部的 `message` 變數
 3. **返回內部函式**：將 `innerFunction` 返回給外部，此時閉包已經形成
 4. **外部執行**：即使 `outerFunction` 執行完畢，`myFunction`（實際上是 `innerFunction`）仍然可以存取 `message` 變數
 

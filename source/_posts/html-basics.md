@@ -136,7 +136,7 @@ HTML 是一種標記語言（Markup Language），使用元素（element）來�
 **實際範例：**
 假設你的檔案結構如下：
 
-```
+```text
 website/
 ├── index.html
 ├── about.html
@@ -3660,9 +3660,9 @@ ARIA（Accessible Rich Internet Applications）屬性提供更詳細的無障礙
 鍵盤導航是無障礙設計的重要組成部分，讓無法使用滑鼠的使用者能夠透過鍵盤操作網頁。主要透過 tabindex 屬性和適當的事件處理來實現。
 
 **tabindex 屬性值：**
-- **`tabindex="0"`**：讓元素能夠被鍵盤聚焦，按照自然順序
-- **`tabindex="-1"`**：讓元素能夠被程式聚焦，但不在鍵盤導航順序中
-- **`tabindex="1"`以上**：自訂聚焦順序（不建議使用）
+- `tabindex="0"`：讓元素能夠被鍵盤聚焦，按照自然順序
+- `tabindex="-1"`：讓元素能夠被程式聚焦，但不在鍵盤導航順序中
+- `tabindex="1"`**以上**：自訂聚焦順序（不建議使用）
 
 ```html
 <!-- 可用鍵盤操作的自訂元素 -->

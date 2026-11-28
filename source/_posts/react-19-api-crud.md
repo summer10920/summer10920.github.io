@@ -611,7 +611,7 @@ npm run dev
 
 {% note success %}
 **後端專案結構：**
-```
+```text
 backend/
 ├── server.js          # Express 伺服器主檔案（入口點）
 ├── database.js        # SQLite 資料庫設定與初始化
@@ -634,7 +634,7 @@ backend/
 
 在前端專案中建立 API 串接相關的檔案結構：
 
-```
+```text
 src/
 ├── pages/
 │   └── lesson04/          # 第四章：API 串接

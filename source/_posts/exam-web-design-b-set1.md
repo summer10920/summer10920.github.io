@@ -1280,7 +1280,7 @@ foreach ($re as $data)
 
 我們為了要規劃文字大小，我們把<a>部分移到 sql.php 提取的作業去
 
-### 增添 lib.php
+### 增添 lib.php（續）
 ```php lib.php
 //for news.php pagenav
 $re = navpage("q1t9_news", "dpy=1", 5, $nowpage);
@@ -1289,7 +1289,7 @@ foreach ($re as $key => $value)
   $t9_page .= '<a class="bl" style="font-size:' . (($nowpage == $key) ? "60" : "30") . 'px;" href="?page=' . $value . '">' . $key . '</a>';
 ```
 
-### 修改 news.php
+### 修改 news.php（續）
 ```html news.php
 <div style="text-align:center;">
   <?=$t9_page?>

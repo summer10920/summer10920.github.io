@@ -1062,7 +1062,7 @@ if (!empty($_SESSION['admin'])) $menu = '
 
 接著，除了選單區因應 admin 不同，內容區要跟著 admin 也不同。修改 T4 的內容（同個 lib.php)，這部分之前在 t4 已經處理過
 
-### 修改 index.php
+### 修改 index.php（續）
 ```php
 $admain=(empty($_SESSION['admin']))?"main":"admain";
 $main=(empty($_GET['do']))?$admain:$_GET['do'];

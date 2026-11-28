@@ -31,18 +31,18 @@ date: 2020-05-13 19:49:42
 {% note success %}
 先學會知道有哪些方式能夠產生 GET 的連結
 1. 如果是 `a:link`，直接網址用 `?var=value` 即可
-```
+```html
 <a href="?page=test">測試連結</a>
 ```
 2. 如果是 button+from，指定 name 跟 value 即可。button 預設自帶 submit 效果，故可省略 type。
-```
+```html
 <form>
     <button type="submit" name="page" value="test">測試按鈕</button>
     <button name="page" value="test">測試按鈕</button>
 </form>
 ```
 3. 如果是 button+onclick 由 JavaScript 觸發。但無法放在 form 內使用，因為按下去會先觸發 submit 無法觸發 onclick。
-```
+```text
 <button onclick="document.location.href='?page=test'">測試按鈕</button> 
 ```
 {% endnote %}

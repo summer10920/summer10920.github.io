@@ -422,7 +422,7 @@ React.createElement(
 - ❌ 容易出錯
 - ✅ JSX 更直觀、更接近 HTML
 
-**了解 `React.createElement` 的價值：**
+**了解** `React.createElement` **的價值：**
 - 理解 JSX 的本質（只是語法糖）
 - 除錯時看懂編譯後的程式碼
 - 理解 React 的底層運作
@@ -749,7 +749,7 @@ pnpm preview      # 在本地啟動預覽 Web Server 伺服器，載入 dist/ �
 
 建立完成後，專案目錄結構如下：
 
-```
+```text
 my-react-app/
 ├── node_modules/       # 套件依賴目錄（pnpm 管理）
 ├── public/             # 靜態資源目錄

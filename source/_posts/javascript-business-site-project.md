@@ -255,9 +255,9 @@ const calendarService = () => {
 透過 [`.date(1)`](https://day.js.org/docs/en/get-set/date) 可以把物件變為 1 號，再接著用 [`.day()`](https://day.js.org/docs/en/get-set/day) 查詢周幾。dayjs 特性可以連續作業。
 - **totalDay 這個月有幾天**
 透過 [`.daysInMonth()`](https://day.js.org/docs/zh-CN/display/days-in-month) 就能快速得到。
-- **1 號之前的空白日子`<li class="JsCal"></li>`有幾個並寫入 listBox**
+- **1 號之前的空白日子**`<li class="JsCal"></li>`**有幾個並寫入 listBox**
 由於初格是周一，因此如果 firstDay => 空格數，那麼 1 => 0 、6 => 5 、0 （等價 7) => 6。思考轉換邏輯跑迴圈，這些可以先塞入 listBox。
-- **1 號開始的存在日子`<li class="JsCal"></li>`有幾個並寫入 listBox**
+- **1 號開始的存在日子**`<li class="JsCal"></li>`**有幾個並寫入 listBox**
 第一次規劃保留 className 的彈性，之後會再複雜去判斷追加 class。
 
 ```js lokiCalendar.js

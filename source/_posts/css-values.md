@@ -2752,7 +2752,7 @@ th {
 **重要概念：border-collapse**
 - `separate`：邊框分離，可使用 `border-spacing` 控制間距
 - `collapse`：邊框合併，忽略 `border-spacing` 和 `empty-cells`
-**建議使用 `collapse` 以獲得更緊湊的外觀**
+**建議使用** `collapse` **以獲得更緊湊的外觀**
 {% endnote %}
 
 ### 現代表格設計

@@ -234,7 +234,7 @@ export class AppComponent {
 {% endnote %}
 
 錯誤訊息會顯示：
-```
+```text
 Can't bind to 'ngModel' since it isn't a known property of 'input'.
 ```
 

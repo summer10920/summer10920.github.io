@@ -1216,7 +1216,7 @@ function Counter() {
 | -------------------- | ------------------------------ | ------------------ | ---------------- | ------------------ | -------------------- | ------------------------ |
 | **直接寫在元件內**   | `console.log('*')`             | 每次渲染時同步執行 | 在渲染過程中     | ✅ 總是使用最新狀態 | ❌ 效能差，阻塞渲染   | 簡單計算，不涉及副作用   |
 | **不提供第二個參數** | `useEffect(() => {})`          | 每次渲染後異步執行 | 在渲染完成後     | ✅ 總是使用最新狀態 | ❌ 效能差，重複執行   | 很少使用，通常會造成問題 |
-| **空依賴陣列 `[]`**  | `useEffect(() => {}, [])`      | 只在掛載時執行一次 | 在首次渲染完成後 | ❌ 使用初始狀態值   | ✅ 效能好，只執行一次 | 初始化設定，不依賴狀態   |
+| **空依賴陣列** `[]`  | `useEffect(() => {}, [])`      | 只在掛載時執行一次 | 在首次渲染完成後 | ❌ 使用初始狀態值   | ✅ 效能好，只執行一次 | 初始化設定，不依賴狀態   |
 | **正確依賴項**       | `useEffect(() => {}, [state])` | 依賴項改變時執行   | 在依賴項改變後   | ✅ 使用最新狀態值   | ✅ 效能好，按需執行   | 依賴狀態的副作用         |
 
 ```javascript 執行時機的實際差異
@@ -1321,8 +1321,8 @@ function MyComponent() {
 **重要提醒：**
 - **直接寫在元件內**：同步執行，可能阻塞渲染，無法清理副作用
 - **不提供第二個參數**：異步執行，不阻塞渲染，但每次渲染都執行，可能造成無限迴圈
-- **空依賴項 `[]`**：只在掛載時執行，狀態改變時不會更新
-- **正確依賴項 `[state]`**：狀態改變時才執行，效能最佳
+- **空依賴項** `[]`：只在掛載時執行，狀態改變時不會更新
+- **正確依賴項** `[state]`：狀態改變時才執行，效能最佳
 {% endnote %}
 
 ### useEffect 與狀態同步
@@ -1926,7 +1926,7 @@ function App() {
    - 在任何時候存取到正確的 DOM 元素
    - 呼叫原生 DOM 方法（如 `.focus()`、`.scrollIntoView()`）
    - 讀取 DOM 屬性（如 `.offsetWidth`、`.value`）
-3. **為什麼不用 `document.querySelector()`？**
+3. **為什麼不用** `document.querySelector()`？
    - 在 React 中，直接用 `document.querySelector()` 是不推薦的，因為：
      - 你需要給元素加上 `id` 或 `class`，容易造成命名衝突
      - 在服務端渲染（SSR）時，`document` 不存在
@@ -1937,7 +1937,7 @@ function App() {
 - 傳統 JS：用「門牌號碼」（id/class）去找房子（DOM）
 - React useRef：直接拿到房子的「鑰匙」（ref），隨時都能開門進去
 
-**ref 物件的 `.current` 屬性**
+**ref 物件的** `.current` **屬性**
 - `useRef()` 回傳的物件有一個 `.current` 屬性，這個屬性會指向你綁定的 DOM 元素
 - 在元件首次渲染時，`.current` 是 `null`（或你設定的初始值）
 - 當元素渲染到畫面上後，React 會自動將 DOM 元素賦值給 `.current`
@@ -2160,7 +2160,7 @@ export default Parent;
 **測試步驟與執行結果：**
 
 **步驟 1：初次載入頁面**
-```
+```text
 ❌ NormalChild 重新渲染了
 ✅ MemoChildWithoutProps 重新渲染了
 🔍 MemoChildWithProps 重新渲染了
@@ -2168,7 +2168,7 @@ export default Parent;
 說明：所有元件都會進行初次渲染
 
 **步驟 2：點擊「增加計數」按鈕**
-```
+```text
 ❌ NormalChild 重新渲染了
 ```
 說明：
@@ -2177,7 +2177,7 @@ export default Parent;
 - `MemoChildWithProps`：使用 memo，props 沒變（`userName` 還是 'Loki'），不需要重新渲染 ✅
 
 **步驟 3：點擊「切換使用者名稱」按鈕**
-```
+```text
 ❌ NormalChild 重新渲染了
 🔍 MemoChildWithProps 重新渲染了
 ```
@@ -2343,7 +2343,7 @@ const increment = () => { setCount(count + 1); };  // 記憶體位置：0x002
 - 雖然函式的程式碼相同，但每次都是**新的函式物件**（不同的記憶體位置）
 - `React.memo` 使用 `===` 進行淺比較：`新函式 === 舊函式` 結果是 `false`
 - 所以 `React.memo` 認為 props 改變了，導致 `Button` 重新渲染
-- **即使我們沒有點擊「增加計數」按鈕，只是改變了其他狀態，`Button` 還是會不必要地重新渲染！**
+- **即使我們沒有點擊「增加計數」按鈕，只是改變了其他狀態，**`Button` **還是會不必要地重新渲染！**
 {% endnote %}
 
 **你可能會想：「重新渲染一個按鈕有什麼關係？」**
@@ -2354,7 +2354,7 @@ const increment = () => { setCount(count + 1); };  // 記憶體位置：0x002
 - 可能有很多個子元件同時重新渲染
 - 會造成頁面卡頓、效能下降
 
-**這就是為什麼需要 `useCallback`！** 它可以讓函式在依賴項不變時保持相同的參考，讓 `React.memo` 的優化能正常運作。
+**這就是為什麼需要** `useCallback`！ 它可以讓函式在依賴項不變時保持相同的參考，讓 `React.memo` 的優化能正常運作。
 
 ### useCallback 語法
 
@@ -3388,7 +3388,7 @@ import ReactDOM from 'react-dom';
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-**`useDeferredValue` 與並發模式的關係：**
+`useDeferredValue` **與並發模式的關係：**
 - `useDeferredValue` 是 React 18 的新功能，需要並發渲染機制才能運作
 - 它利用並發模式的優先級調度能力，將某些更新標記為「低優先級」
 - 如果你的專案還在用 React 17 或 `ReactDOM.render`，`useDeferredValue` 將無法發揮作用
@@ -5427,7 +5427,7 @@ function App() {
 - ✅ 維持良好的封裝性
 
 {% note warning %}
-**這就是為什麼需要 `useImperativeHandle`！**
+**這就是為什麼需要** `useImperativeHandle`！
 
 - `forwardRef` 解決了「能否傳遞 ref」的問題
 - `useImperativeHandle` 解決了「暴露什麼內容」的問題
@@ -7338,7 +7338,7 @@ function PaymentForm() {
 
 根據以下決策樹選擇：
 
-**使用 `permalink` 參數（自動跳轉）當：**
+**使用** `permalink` **參數（自動跳轉）當：**
 - ✅ 成功後**總是**跳轉到同一個頁面
 - ✅ 不需要根據結果做條件判斷
 - ✅ 追求簡潔的程式碼
@@ -7350,7 +7350,7 @@ function PaymentForm() {
 
 ---
 
-**使用 `router.push()` / `navigate()`（手動跳轉）當：**
+**使用** `router.push()` / `navigate()`**（手動跳轉）當：**
 - ✅ 需要根據**不同結果**跳轉到不同頁面
 - ✅ 需要在跳轉前執行**額外邏輯**
 - ✅ 多步驟流程需要**動態決定**下一步
@@ -7746,14 +7746,14 @@ const [state, formAction, isPending] = useActionState(submitForm, null);
 #### 重點回顧
 
 **三個回傳值的用途：**
-1. **`state`** → 儲存 action 執行結果（成功訊息、錯誤訊息、資料等）
-2. **`formAction`** → 直接綁定到 `<form action={formAction}>`
-3. **`isPending`** → 判斷是否正在執行（用於 loading 狀態）
+1. `state` → 儲存 action 執行結果（成功訊息、錯誤訊息、資料等）
+2. `formAction` → 直接綁定到 `<form action={formAction}>`
+3. `isPending` → 判斷是否正在執行（用於 loading 狀態）
 
 **三個參數的配置：**
-1. **`action`（必填）** → 處理表單的非同步函式
-2. **`initialState`（必填）** → 初始狀態
-3. **`permalink`（可選）** → 成功後自動跳轉的固定頁面
+1. `action`**（必填）** → 處理表單的非同步函式
+2. `initialState`**（必填）** → 初始狀態
+3. `permalink`**（可選）** → 成功後自動跳轉的固定頁面
 
 **關鍵技巧：**
 - ✅ 使用 `FormData` 取得資料，避免受控元件的效能損耗
@@ -8125,7 +8125,7 @@ await api.toggleLike();  // 拋出錯誤
 
 {% tabs 語法問題 %}
 <!-- tab 為什麼不直接更新 state？ -->
-**問題：為什麼不直接先更新 `state`，等 API 失敗再回滾？**
+**問題：為什麼不直接先更新** `state`**，等 API 失敗再回滾？**
 
 ```javascript
 // ❌ 錯誤做法：直接更新 state
@@ -8160,7 +8160,7 @@ const handleLike = async () => {
 <!-- endtab -->
 
 <!-- tab updateFn 可以有副作用嗎？ -->
-**問題：可以在 `updateFn` 中執行副作用嗎（如 localStorage、console.log）？**
+**問題：可以在** `updateFn` **中執行副作用嗎（如 localStorage、console.log）？**
 
 ```javascript
 // ❌ 錯誤：不要在 updateFn 中執行副作用
@@ -8180,7 +8180,7 @@ const [optimisticData, updateOptimistic] = useOptimistic(
 <!-- endtab -->
 
 <!-- tab 可以不傳 optimisticValue 嗎？ -->
-**問題：`addOptimistic()` 必須傳參數嗎？**
+**問題：**`addOptimistic()` **必須傳參數嗎？**
 
 ```javascript
 // ✅ 可以不傳參數（如果 updateFn 不需要）
@@ -8526,7 +8526,7 @@ function ChatApp() {
 
 由於 `handleSendMessage` 函式定義在元件內部，它會在每次 `ChatApp` 渲染時重新創建。
 
-**解決方案：使用 `useCallback` 避免重複建立**
+**解決方案：使用** `useCallback` **避免重複建立**
 
 ```javascript
 import React, { useState, useOptimistic, useRef, useCallback } from 'react';
@@ -8753,7 +8753,7 @@ function TodoApp() {
 2. **列表項目全部重新渲染**：在 `optimisticTodos.map()` 中，每個 `<li>` 的 `onChange` 和 `onClick` 都是新的函式引用，導致所有列表項目都重新渲染
 3. **useEffect 依賴問題**：如果函式作為 useEffect 的依賴項，會導致 effect 不必要地重新執行
 
-**解決方案：使用 `useCallback` 避免重複建立**
+**解決方案：使用** `useCallback` **避免重複建立**
 
 透過 `useCallback` 可以讓函式引用保持穩定，只有在依賴項改變時才重新創建。這樣即使 `TodoApp` 因為 `input` 或 `todos` 改變而重新渲染，這些 handler 函式的引用也不會改變：
 
@@ -8913,7 +8913,7 @@ function SocialFeed() {
 
 由於 `handleLike` 函式定義在元件內部，它會在每次 `SocialPost` 渲染時重新創建。雖然這個範例中影響較小（只有一個按鈕使用這個函式），但在有多個互動元素時，使用 `useCallback` 仍是好習慣。
 
-**解決方案：使用 `useCallback` 避免重複建立**
+**解決方案：使用** `useCallback` **避免重複建立**
 
 ```javascript
 import React, { useState, useOptimistic, useCallback } from 'react';
@@ -9089,7 +9089,7 @@ function LoginForm() {
 ### ✅ useId 完美解決
 `useId` 是 React 18+ 提供的全新 Hook，專為產生**穩定且唯一的 ID** 而設計。它用來解決表單欄位等元件「ID 衝突」、「SSR 不一致」等老問題，讓可訪問性（accessibility）開發變得既直觀又安全。本節將介紹 `useId` 的基本用法、常見錯誤寫法與最佳實作建議。
 
-**應用一：`useId` 的基本用法**
+**應用一：**`useId` **的基本用法**
 
 ```javascript
 import React, { useId } from 'react';
@@ -9294,7 +9294,7 @@ function UserStatus() {
 ```
 
 **在 React DevTools 中看到的**：
-```
+```text
 UserStatus
   └─ Hooks
        ├─ useOnlineStatus
@@ -9340,7 +9340,7 @@ function useOnlineStatus() {
 ```
 
 **在 React DevTools 中看到的**：
-```
+```text
 UserStatus
   └─ useOnlineStatus: "🟢 在線"  // ✅ 一目了然！
 ```
@@ -9459,7 +9459,7 @@ function LoginForm() {
 ```
 
 **在 React DevTools 中看到的**：
-```
+```text
 LoginForm
   ├─ useFormField: "user@example.com" | 📝 已修改
   └─ useFormField: "••••••" | 📝 已修改 | ⚠️ 1 個錯誤
@@ -9603,14 +9603,14 @@ function StyledButton() {
 
 **問題流程**：
 1. React 渲染元件 → `<button className="btn">` 出現在 DOM
-2. 瀏覽器繪製 → **使用者看到按鈕，但沒有 `.btn` 樣式**（閃一下）
+2. 瀏覽器繪製 → **使用者看到按鈕，但沒有** `.btn` **樣式**（閃一下）
 3. `useEffect` 執行 → 在 `<head>` 插入 `.btn` 樣式
 4. 瀏覽器重新繪製 → 按鈕突然有了樣式
 
 **結果**：使用者會看到按鈕先是灰色無樣式，然後突然變成藍色（閃爍）⚡
 
 **視覺效果**：
-```
+```text
 時間軸：
 0ms:  [灰色按鈕]          ← 沒有樣式
 100ms: [藍色按鈕]         ← 樣式生效（使用者看到閃爍）
@@ -9796,7 +9796,7 @@ useInsertionEffect(() => {
 
 在前面介紹 `useInsertionEffect` 時，我們了解了三種 Effect Hook 的執行順序：
 
-```
+```text
 useInsertionEffect（插入樣式）→ DOM 更新 → useLayoutEffect（讀取佈局）→ 繪製 → useEffect（副作用）
 ```
 

@@ -242,7 +242,7 @@ const contextValue = useContext(MyContext);
 ### 規劃專案結構
 讓我們從一個簡單的主題切換範例開始，理解 Context 的基本用法。延續前面的課程，我們將在 `lesson03` 中建立 Context 相關的範例：
 
-```
+```text
 src/
 ├── pages/
 │   ├── lesson01/          # 第一章：基礎元件
@@ -1056,7 +1056,7 @@ export default function MenuItem({ data }) {
 
 將 `.css` 改名為 `.module.css`：
 
-```
+```text
 MenuItem.css       → MenuItem.module.css
 todoList.css       → todoList.module.css
 ```
@@ -1532,7 +1532,7 @@ export default function CounterReducer() {
 
 **專案結構：**
 
-```
+```text
 src/pages/lesson03/pages/TodoExample/
 ├── index.jsx              # Todo 主元件
 ├── index.css              # 主樣式
@@ -2218,7 +2218,7 @@ export default function TodoExample() {
    - 子元件：負責 UI 渲染
 
 **Props 資料流向：**
-```
+```text
 TodoExample（父元件）
    ├─ state: list
    ├─ handleAdd()
@@ -2532,7 +2532,7 @@ export default function TodoExample() {
 {% note success %}
 **專案結構（重構後）：**
 
-```
+```text
 src/pages/lesson03/pages/TodoExample/
 ├── index.jsx              # 主元件（使用 useReducer）
 ├── index.css              # 主樣式
@@ -2556,7 +2556,7 @@ src/pages/lesson03/pages/TodoExample/
 
 將 Context 和 useReducer 結合，可建立更強大的狀態管理方案。即使使用了 `useReducer`，若仍透過 Props 傳遞 `dispatch` 和 `state`，會遇到 Props Drilling 問題：主元件需要管理所有 handler 函式，每個子元件都需要透過 Props 接收函式，當元件層級更深時，Props 傳遞會更複雜。
 
-**解決方案是將 `state` 和 `dispatch` 放入 Context**，讓任何深層子元件都可以直接存取，完全消除 Props Drilling。
+**解決方案是將** `state` **和** `dispatch` **放入 Context**，讓任何深層子元件都可以直接存取，完全消除 Props Drilling。
 
 {% mermaid graph TD %}
     A["TodoContext Provider<br/>（提供 state + dispatch)"]
@@ -2871,7 +2871,7 @@ const value = useMemo(() => ({ user, theme }), [user, theme]);
 ### 專案結構與錯誤處理
 
 **建議的專案結構：**
-```
+```text
 src/
 ├── contexts/              # 全域 Context
 │   ├── AuthContext.jsx    # 使用者認證

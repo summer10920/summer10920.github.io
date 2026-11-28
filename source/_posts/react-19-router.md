@@ -50,7 +50,7 @@ hidden: false
 
 這時候就需要 **React Router** 來管理路由！我們要將原本單一頁面的應用改造成：
 
-```
+```text
 課程學習系統
 ├── Lesson01：基礎元件（原本的 App.jsx 內容）
 ├── Lesson02：Router 功能教學（新建立的課程）
@@ -241,7 +241,7 @@ createRoot(document.getElementById('root')).render(
 
 建立模組化的目錄結構，每個頁面都是獨立的模組：
 
-```
+```text
 src/
 ├── main.jsx                 # 配置 BrowserRouter
 ├── App.jsx                  # 路由配置
@@ -570,12 +570,12 @@ export default function Layout() {
 
 **Layout 設計重點：**
 
-1. **側邊選單（`<aside>`）**：
+1. **側邊選單（**`<aside>`）：
    - 使用 `position: fixed` 固定在左側
    - 使用 `NavLink` 自動為當前頁面添加 `.active` class
    - 漸層背景與 hover 動畫效果提升視覺體驗
 
-2. **主要內容區（`<main>`）**：
+2. **主要內容區（**`<main>`）：
    - 使用 `<Outlet />` 作為子路由的渲染位置
    - `margin-left: 280px` 避免內容被側邊選單遮擋
    - 淺灰背景（`#f7fafc`）提升可讀性
@@ -667,7 +667,7 @@ pnpm dev
 
 我們要在 Lesson02 中建立一個包含以下功能的作品集系統：
 
-```
+```text
 Lesson02（作品集系統）
 ├── 作品列表頁面（ProjectList）
 ├── 作品詳情頁面（ProjectDetail）- 使用動態路由 ✨
@@ -815,7 +815,7 @@ export default function Lesson02() {
 ```
 
 {% note info %}
-**Link 的 `to` 參數說明：**
+**Link 的** `to` **參數說明：**
 
 `to` 接受的是 **URL 路徑**（不是元件名稱或檔案路徑），React Router 會根據這個 URL 去匹配 `<Route>` 的 `path`，然後渲染對應的元件。
 
@@ -1112,7 +1112,7 @@ export default function ProjectList() {
 
 這是第一次使用 `<Link>` 元件，讓我們了解它與前面使用的 `<NavLink>` 有什麼不同：
 
-**`<Link>`：一般導航連結**
+`<Link>`**：一般導航連結**
 ```jsx
 <Link to="/lesson02/projects/1" className="project-card">
   <h3>React 部落格系統</h3>
@@ -1122,7 +1122,7 @@ export default function ProjectList() {
 - **不會**自動添加任何樣式或 class
 - 適合：內容卡片、操作按鈕、文章列表
 
-**`<NavLink>`：導航選單專用連結**
+`<NavLink>`**：導航選單專用連結**
 ```jsx
 <NavLink to="/lesson01" className="nav-link">
   Lesson 01
@@ -1210,7 +1210,7 @@ navigate('/lesson02/projects', { replace: true });
 - ✅ **瀏覽器歷史操作**：返回上一頁、前進一頁
 - ✅ **傳遞狀態資料**：跳轉時可以傳遞資料給目標頁面
 
-**與 `<Link>` 的差異：**
+**與** `<Link>` **的差異：**
 - `<Link>`：用於**使用者點擊**的導航連結（按鈕、卡片、選單）
 - `useNavigate`：用於**程式邏輯**中的導航（表單提交、條件判斷、事件處理）
 
@@ -1980,13 +1980,14 @@ C -->|讀取 state.message| D
 - ✅ 登入成功後顯示歡迎訊息
 - ✅ 從編輯頁返回列表時保留篩選條件
 
-**與 URL 參數 (`?key=value`) 的差異：**
+**與 URL 參數 (**`?key=value`**) 的差異：**
 
 | 方式         | 範例                                  | 特點                           | 適用場景           |
 | ------------ | ------------------------------------- | ------------------------------ | ------------------ |
 | `state`      | `navigate('/page', { state: {...} })` | 不會出現在 URL，重新整理會消失 | 臨時訊息、敏感資料 |
 | URL 參數     | `navigate('/page?id=1&tab=2')`        | 會出現在 URL，可分享連結       | 篩選條件、頁碼、ID |
 | 動態路由參數 | `navigate('/projects/123')`           | RESTful 風格，SEO 友好         | 資源 ID、詳情頁    |
+
 {% endnote %}
 
 ## 步驟 7：404 錯誤處理策略
@@ -2030,7 +2031,7 @@ E --> G
 
 #### 路由架構圖
 
-```
+```text
 App.jsx（集中管理所有路由）
 ├── /                     → Navigate to /lesson01
 ├── /lesson01             → Lesson01 元件
@@ -2388,7 +2389,7 @@ export default function ProjectDetail() {
 
 #### 路由架構圖（三層 404）
 
-```
+```text
 App.jsx（定義模組入口）
 ├── /lesson01                → Lesson01 元件
 ├── /lesson02/*              → Lesson02 元件（管理內部路由）
@@ -2439,7 +2440,7 @@ export default function App() {
 
 雖然方案 B 採用分散式路由，但**全站 404 可以定義為共用元件**，放在 `src/components/GlobalNotFound.jsx`：
 
-```
+```text
 src/
 ├── components/
 │   ├── Layout.jsx
@@ -2846,7 +2847,7 @@ pnpm dev
 
 使用 BrowserRouter 時，在部署到伺服器後會遇到一個常見問題：
 
-```
+```text
 情境：
 1. 訪問 https://example.com → 正常顯示首頁 ✅
 2. 點擊連結到 /lessons → 正常顯示課程列表 ✅

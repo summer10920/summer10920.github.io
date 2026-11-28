@@ -547,6 +547,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 | 維護性     | ❌ 新增步驟困難       | ✅ 容易新增或修改步驟 |
 | 除錯       | ❌ 難以追蹤錯誤來源   | ✅ 錯誤堆疊清晰       |
 | 程式碼結構 | ❌ 向右延伸           | ✅ 向下延伸           |
+
 {% endnote %}
 
 ### Promise 組合方法
@@ -560,6 +561,7 @@ console.log('=== 主程式繼續執行（非阻塞）===');
 | `Promise.allSettled` | 需要知道每個任務的結果 | 不管成功失敗都會完成   |
 | `Promise.race`       | 競速或超時處理         | 回傳最先完成的         |
 | `Promise.any`        | 多個備援方案           | 任一成功就算成功       |
+
 {% endnote %}
 
 #### Promise.all
@@ -3114,7 +3116,7 @@ Cookie 是最早的瀏覽器儲存機制，主要用於會話識別和認證。�
 Cookie 是伺服器發送給瀏覽器的小型文字檔案，瀏覽器會將它儲存起來，並在每次向該伺服器發送請求時自動附帶。
 
 **Cookie 的組成結構：**
-```
+```text
 name=value; expires=date; path=/; domain=example.com; secure; httponly
 ```
 

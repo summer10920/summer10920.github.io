@@ -1076,7 +1076,7 @@ $ro = $re[0];
 <input type="button" value="返回修改訂單" onclick="window.history.back()">
 ```
 
-### 增添 api.php
+### 增添 api.php（續）
 SESSION 直接打包成字串並清除購物車 (SESSION)，acc 跟 date 以及將用戶資訊也要塞入 $_POST 內一併上傳，方便後台上的直接讀取。另外題目要求有提示 alert，所以轉址要用 JS 不能用 PHP 否則還沒跑 JS 就被 PHP 轉走。
 
 ```php api.php
@@ -1332,7 +1332,7 @@ $bot=$re[0]['text'];
 ![q4layout](https://i.imgur.com/Ji8jU7J.png)
 ![q4scroll](https://i.imgur.com/J0Rxhw4.png)
 
-### 修改 index.php & admin.php
+## 修改 index.php & admin.php
 
 找到主區域的 div 修改為
 

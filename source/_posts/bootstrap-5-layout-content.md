@@ -51,7 +51,7 @@ Bootstrap 最早是 Twitter 公司內部的前端視覺框架，後來將常用�
 安裝方式有很多種（例如 CDN、npm、webpack 等），這裡採用最基本的下載方式：下載包內有許多不同用途的版本，可參考 [CSS 檔案差異說明](https://bootstrap5.hexschool.com/docs/5.0/getting-started/contents/#css-files) 了解各檔案的用途。
 
 初始環境只需要 BS 下載包內的兩個檔案：完整的 CSS（初學者建議使用非 min 版本，藉此理解 CSS 內容）與綑綁版 JS（要完整使用所有元件，必須包含 `popper.js`）。另外，如果不想直接修改 BS 的 CSS，應該把自訂樣式寫在自己的 CSS 檔，並利用優先權（權重）去覆蓋，所以整個檔案的初始結構如下：
-```
+```text
 plugins/
 ├── bootstrap.css
     // 包含 BS 各種 Class 樣式表，由於我們需要反向理解樣式表加深印象，建議使用非壓縮版本。（實際工作上若不會修改你應該使用 min 版）

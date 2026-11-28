@@ -53,7 +53,7 @@ Angular 服務（Service）是一個專門用於封裝共用邏輯、資料存�
 
 假設我們有以下元件結構，其中包含重複的功能：
 
-```
+```text
 AppComponent
 ├── AboutComponent (功能: 記錄資料到 console)
 ├── UserComponent (功能: 儲存用戶資料)
@@ -102,7 +102,7 @@ AppComponent
 
 起始專案包含以下元件架構：
 
-```
+```text
 AppComponent (根元件)
 ├── NewAccountComponent (新增用戶元件)
 └── AccountComponent (用戶紀錄元件)

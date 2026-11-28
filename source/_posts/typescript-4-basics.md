@@ -1518,7 +1518,7 @@ joyCon.btnB(spell_3); //按下按鈕 D 觸發 spell_3
 在沒有介面的約束情況下，這些 class 等於是各自提供自己 type 來告知傳遞內容物為何。一旦加上介面整個物件導向的流程會明確清晰：
 
 - 3 個法術 class 都是根據介面約束的定義 method 之應用。
-- joycon 拿到傳遞引數之 type 不再是 cls* 之 class，而是這些共同約束 itf* 之介面當作 type。
+- joycon 拿到傳遞引數之 type 不再是 `cls*` 之 class，而是這些共同約束 `itf*` 之介面當作 type。
 
 ```ts
 interface itfAdd {

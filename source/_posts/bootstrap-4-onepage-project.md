@@ -40,7 +40,7 @@ https://summer10920.github.io/studies_TeachDemo_CSSBS/Bootstrap45_Hotel/
 6. 為了簡化練習，使用的所有 Bootstrap 元件都會移除 `aria-*` 屬性與 `sr-only` 等無障礙設計（實務上仍建議保留）。
 
 **files**
-```
+```text
 plugins/
 ├─ bootstrap.min.css  // 包含 BS 各種 Class 樣式表，這裡已不需要反向學習，為了檔案大小我們採用 min 壓縮版本。
 ├─ custom.css  //你應該把自訂的 CSS 寫在這裡而不是去調整 BS 的 CSS
