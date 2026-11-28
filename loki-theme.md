@@ -18,9 +18,9 @@ source/_data/
 source/assets/
   js/loki-theme.js                站台所有的 JS
   css/
-    loki.css                      CSS 入口，只列匯入順序
+    loki.css                      CSS 入口：列出所有站台客製的檔案與各自用途，順序即層疊順序
     base/                         與 NexT 結構無關
-      variables.css               顏色變數
+      variables.css               顏色變數（含無障礙用的衍生色）
       reboot.css                  全域元素：連結、kbd、程式碼字型
     loki-theme/                   依賴 NexT 結構，依畫面區塊分檔
       layout.css                  頁面骨架：body flex、main
@@ -28,7 +28,7 @@ source/assets/
       sidebar.css                 側欄、回頂端、文章目錄、頂端細條
       footer.css                  頁尾
       post-header.css             文章標題列（首頁與內頁共用）
-      inline-code.css             行內程式碼（首頁摘要與內頁共用）
+      post-inline.css             文章內的行內程式碼與粗體（首頁摘要與內頁共用）
       page-home.css               首頁文章列表
       page-archive.css            分類總覽、歸檔、分類文章頁
       page-post.css               文章內頁的內文
@@ -36,11 +36,46 @@ source/assets/
       code-window.css             程式碼區塊與檔名標題列
 ```
 
-CSS 的匯入順序就是層疊順序，寫在 `loki.css`，不要隨意調換。每個 CSS 檔開頭都有註解，說明它管哪個區塊、依賴哪些主題的 class。
+CSS 的匯入順序就是層疊順序，寫在 `loki.css`（每個 `@import` 旁都有註解說明用途，哪些是站台客製一眼就看得出來），不要隨意調換；新增或改名 CSS 檔要同步改那裡。每個 CSS 檔開頭都有註解，說明它管哪個區塊、依賴哪些主題的 class。
 
 ### 為什麼用原生 CSS
 
 CSS 用原生巢狀語法（`.a { .b { } }`），現代瀏覽器都支援，不需要 Sass 或 Stylus 建置，檔案放在 `source/assets/` 底下 Hexo 會直接原樣輸出。主題自己的 Stylus 變數則在 `loki-theme.styl`。
+
+## 顏色與無障礙（WCAG AA）
+
+配色是**冷灰藍（slate）搭配血紅點綴**。紅色 `#e91061` 只當點綴，不整塊使用（整塊紅看起來像警告提示）：標題文字、引用、側欄文字、分類標籤、表格行內碼都是灰藍系；紅色只出現在連結、行內碼文字、章節編號、標題的線條（h1、h3 底線上的短線，h2、h4 的左側粗線，h5 的虛線底線）、頁首選單滑過與目前項目的底線、頁首與頁尾的細條這類線條與小面積，不做成色塊。黑色只用在大面積深色區塊（側欄、頁尾、頁首遮罩），而且是帶藍的炭灰（`#2b323a`、`#37404a`），不用純黑。新增樣式時延續這兩個原則。
+
+品牌紅直接當文字或配白字底，對比略低於 AA 的 4.5:1（對淺底 4.04、白字 4.46），所以**文字一律用 `base/variables.css` 裡依底色分開的衍生色**，`#e91061` 本身只用在非文字（色條、圖示、邊框、捲軸）：
+
+- `--main-text-color`：淺底上的紅色文字（對 `#f2f4f6` 5.06:1）；滑過加深用 `--main-hover-color`。
+- `--main-strong-color`：白字的紅色底（徽章），白字 5.24:1。
+- `--main-on-dark`：深底（側欄、程式碼視窗）上的紅色文字，對 `#2b323a` 4.84:1。
+- `--text-color`、`--text-strong-color`：內文與標題粗體，11:1 以上。
+- `--muted-text-color` / `--muted-on-dark`：淺底、深底上的次要文字，4.8:1 以上。
+
+新增樣式時不要在別處寫死顏色，也不要用 opacity 把文字變淡（會讓對比度掉到 AA 以下）。
+
+頁首：橫幅仍是 `loki-theme.js` 畫的文字雲（`lokiKeyword`），整個橫幅蓋一層 `--header-scrim`（冷灰藍半透明），字雲變暗但看得到；標題、副標題、選單直接用白字（對遮罩後的底色 7.4～8.7:1）垂直置中、上下疊放，選單是無底色的文字連結，目前項目底下一條紅線（`loki-theme/header.css`）。
+
+標題 h1～h6 沿用原本「每一級用不同版型區分」的做法，不靠符號前綴（`loki-theme/page-post.css`）：
+
+- h1：大字、灰色底線加紅色短線。
+- h2：灰藍色帶加 5px 紅色左線。
+- h3：細底線加紅色短線。
+- h4：3px 紅色左線。
+- h5：紅色虛線底線。
+- h6：縮小變淡（`--muted-text-color`），灰色點線底線。
+
+其他無障礙處理都在樣式裡，沒有改主題的標記：
+
+- 主題把連結的 `outline` 設成 0，鍵盤操作看不到焦點，所以 `base/reboot.css` 補了 `:focus-visible` 外框；深色區塊與頁首改用淺色外框。
+- 內文連結一律有底線，不只靠顏色辨識。
+- 斷行不再用 `word-break: break-all`（會把英文單字切成兩半），改成 `overflow-wrap: anywhere`。
+- `prefers-reduced-motion` 開啟時停用轉場與動畫。
+- 程式碼視窗的語法顏色有兩種（紅、粉紅）對 `#282c34` 不到 4.5:1，在 `loki-theme/code-window.css` 調亮。
+
+檢查方式：用 chrome-devtools 在每個頁面逐段計算對比度（含祖先的 opacity；頁首文字的底色是文字雲灰疊上遮罩），9 個頁面、約 3.8 萬段文字沒有不合格。標籤雲的顏色來自主題的 `.tag-cloud-0`～`.tag-cloud-10`（由 `$tag-cloud-start` 漸層到 `$tag-cloud-end`），在 `loki-theme.styl` 把兩端設成同一個深灰。`loki-theme.styl` 改的是 NexT 編譯進 `main.css` 的品牌色與側欄高亮，改完要重啟 dev server 才會生效。
 
 ## 各項客製放在哪裡
 
@@ -93,16 +128,16 @@ CSS 用原生巢狀語法（`.a { .b { } }`），現代瀏覽器都支援，不�
 | 站台端檔案 | 依賴 |
 | --- | --- |
 | `custom_file_path` 四項 | 新版仍支援 `head`、`footer`、`bodyEnd`、`variable` |
-| 全部 CSS | 主題的 CSS 變數：`--body-bg-color`、`--highlight-background`（`--main-color` 等是站台自己在 `base/variables.css` 定義的） |
-| `loki-theme/layout.css` | `<body>` 的直接子層結構：`.headband`、`main`、`footer` |
-| `loki-theme/header.css` | `.main > .column`、`header.header`、`.site-brand-container`、`.site-nav .main-menu`；`#lokiBanner` 由 `loki-theme.js` 建立 |
+| 全部 CSS | 主題的 CSS 變數：`--highlight-background`（`--main-color` 等是站台自己在 `base/variables.css` 定義的；`--link-color` 與主題同名，覆蓋它會影響主題所有連結） |
+| `loki-theme/layout.css` | `<body>` 的直接子層結構：`.headband`、`main`、`footer`；`.header`、`.main-inner`（主題在 768～840px 把它們固定成 800px，這裡限制不超過視窗）；`.pagination .page-number.current` |
+| `loki-theme/header.css` | `.main > .column`、`header.header`、`.site-brand-container`（含手機版的 `.toggle-line`）、`.site-nav .main-menu`；`#lokiBanner` 由 `loki-theme.js` 建立 |
 | `loki-theme/sidebar.css` | `.sidebar-toggle`、`.github-corner`、`.headband`、`.sidebar-panel-container`、`.back-to-top`（`--progress`）、`.post-toc .nav .active > .nav-child`（主題寫入的 `--height`） |
 | `loki-theme/footer.css`、`inject/loki-theme.njk` | `theme.footer.icon.name`、`theme.footer.since`、`config.author`；`.footer-inner` 是 flex（才能用 `order`）；`.wordcount`、`.busuanzi-count`、`.post-meta-item` 以及各項目的 `[title]` 屬性（當統計的文字標籤）；`.use-motion .footer`；`#busuanzi_container_site_uv / _pv` |
 | `loki-theme/post-header.css` | `.posts-expand header.post-header`、`.post-title`、`.post-meta-container`、`a.post-edit-link` |
-| `loki-theme/page-home.css` | `.main-inner.index.posts-expand .post-block`、`article.post-content`、`a.fancybox`、`.pagination` |
+| `loki-theme/page-home.css` | `.main-inner.index.posts-expand .post-block`、`article.post-content`、`a.fancybox` |
 | `loki-theme/page-archive.css` | `.main-inner.page / .archive / .category`、`.posts-collapse`、`.category-all`、`.collection-title`、`.collection-year` |
-| `loki-theme/page-post.css`、`post-table.css`、`inline-code.css` | `.main-inner.post.posts-expand .post-body`、`.tabs`、`.note`、`.headerlink`、`div.table-container` |
-| `loki-theme/code-window.css` | `figure.highlight`、`figcaption`、`.code-lang`、`.table-container`；並蓋掉全域的 `word-break: break-all` |
+| `loki-theme/page-post.css`、`post-table.css`、`post-inline.css` | `.main-inner.post.posts-expand .post-body`、`.tabs`、`.note`、`.headerlink`、`div.table-container` |
+| `loki-theme/code-window.css` | `figure.highlight`、`figcaption`、`.code-lang`、`.table-container` |
 | `loki-theme.js` | `.main > .column`、`.back-to-top`、`figure.highlight figcaption`、`#busuanzi_value_*`、`.post-meta-container .post-meta-item-text`（結尾的冒號換成 `.loki-meta-sep`） |
 | `inject/loki-theme.njk` | 模板變數 `theme`、`config`，以及 `date()` 函式 |
 
